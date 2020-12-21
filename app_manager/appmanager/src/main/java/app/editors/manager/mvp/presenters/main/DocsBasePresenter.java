@@ -182,6 +182,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     private boolean mIsTerminate = false;
     private boolean mIsAccessDenied = false;
 
+
+    private boolean mIsMultipleDelete = false;
+
     @Inject
     protected Context mContext;
     @Inject
@@ -371,23 +374,64 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                             resetDatesHeaders();
                             setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
                             getViewState().onDeleteBatch(getListWithHeaders(mModelExplorerStack.last(), true));
-                            onBatchOperations();
+                            if (mIsMultipleDelete) {
+                                onFileDeleteProtected();
+                                mIsMultipleDelete = false;
+                            } else {
+                                onBatchOperations();
+                            }
                         });
     }
 
     public boolean delete() {
         if (mModelExplorerStack.getCountSelectedItems() > 0) {
+            for (Item item : mModelExplorerStack.getSelectedFiles()) {
+                mDisposable.add(isFileDeleteProtected(item).subscribe(isFileProtected -> {
+                            if (isFileProtected) {
+                                mIsMultipleDelete = true;
+                                mModelExplorerStack.setSelectById(item, false);
+                            }
+                        })
+                );
+            }
             getViewState().onDialogQuestion(mContext.getString(R.string.dialogs_question_delete), null,
                     TAG_DIALOG_BATCH_DELETE_SELECTED);
-            return true;
         } else if (mItemClicked != null) {
-            deleteItems();
-            return true;
+            if (mItemClicked instanceof File) {
+                mDisposable.add(
+                        mFileProvider.fileInfo(mItemClicked).subscribe(
+                                response -> {
+                                    if (response.getFileStatus().equals(String.valueOf(Api.FileStatus.IS_EDITING))) {
+                                        onFileDeleteProtected();
+                                    } else {
+                                        deleteItems();
+                                    }
+                                }
+                        )
+                );
+            } else {
+                deleteItems();
+            }
         } else {
             getViewState().onSnackBar(mContext.getString(R.string.operation_empty_lists_data));
         }
         return true;
     }
+
+
+    private Observable<Boolean> isFileDeleteProtected(Item item) {
+        return Observable.just(mFileProvider.fileInfo(item))
+                .flatMap(response -> {
+                    return response.flatMap(test -> {
+                        if (test.getFileStatus().equals(String.valueOf(Api.FileStatus.IS_EDITING))) {
+                            return Observable.just(Boolean.TRUE);
+                        } else {
+                            return Observable.just(Boolean.FALSE);
+                        }
+                    });
+                });
+    }
+
 
     private void deleteRecent() {
         List<File> files = mModelExplorerStack.getSelectedFiles();
@@ -807,6 +851,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             if (explorerStack != null) {
                 explorerStack.removeUnselected();
                 getViewState().onBatchMove(explorerStack.getExplorer());
+                getBackStack();
             }
             return;
         }
@@ -963,7 +1008,11 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                     entityList.addAll(fileList);
                 }
             }
-            setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
+            if (mIsFilteringMode) {
+                setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
+            } else {
+                setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
+            }
             return entityList;
         }
 
@@ -1104,6 +1153,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     public void deselectAll() {
         getViewState().onStateUpdateSelection(true);
         getViewState().onItemsSelection(String.valueOf(mModelExplorerStack.setSelection(false)));
+        getBackStack();
     }
 
     public boolean isSelectionMode() {
@@ -1130,14 +1180,25 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         if (mIsSelectionMode) {
             final boolean isChecked = !mItemClicked.isSelected();
             mModelExplorerStack.setSelectById(item, isChecked);
-            getViewState().onStateUpdateSelection(true);
-            getViewState().onItemSelected(position, String.valueOf(mModelExplorerStack.getCountSelectedItems()));
+            if(!isSelectedItemsEmpty()) {
+                getViewState().onStateUpdateSelection(true);
+                getViewState().onItemSelected(position, String.valueOf(mModelExplorerStack.getCountSelectedItems()));
+            }
         } else {
             if (mItemClicked instanceof Folder) {
                 openFolder(mItemClicked.getId(), position);
             } else if (mItemClicked instanceof File) {
                 getFileInfo();
             }
+        }
+    }
+    protected boolean isSelectedItemsEmpty()
+    {
+        if(mModelExplorerStack.getCountSelectedItems() <= 0) {
+            getBackStack();
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -1260,6 +1321,16 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     void onBatchOperations() {
         getViewState().onDialogClose();
         getViewState().onSnackBar(mContext.getString(R.string.operation_complete_message));
+        getViewState().onDocsBatchOperation();
+    }
+
+    void onFileDeleteProtected() {
+        getViewState().onDialogClose();
+        if (mIsMultipleDelete) {
+            getViewState().onSnackBar(mContext.getString(R.string.operation_complete_message) + mContext.getString(R.string.operation_delete_multiple));
+        } else {
+            getViewState().onSnackBar(mContext.getString(R.string.operation_delete_impossible));
+        }
         getViewState().onDocsBatchOperation();
     }
 

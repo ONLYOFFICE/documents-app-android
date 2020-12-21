@@ -103,8 +103,10 @@ public class DocsCloudPresenter extends DocsBasePresenter<DocsCloudView>
         if (mIsSelectionMode) {
             final boolean isChecked = !mItemClicked.isSelected();
             mModelExplorerStack.setSelectById(item, isChecked);
-            getViewState().onStateUpdateSelection(true);
-            getViewState().onItemSelected(position, String.valueOf(mModelExplorerStack.getCountSelectedItems()));
+            if (!isSelectedItemsEmpty()) {
+                getViewState().onStateUpdateSelection(true);
+                getViewState().onItemSelected(position, String.valueOf(mModelExplorerStack.getCountSelectedItems()));
+            }
         } else if (!mIsTrashMode) {
             if (mItemClicked instanceof Folder) {
                 openFolder(mItemClicked.getId(), position);

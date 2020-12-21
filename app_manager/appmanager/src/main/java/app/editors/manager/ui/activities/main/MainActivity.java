@@ -45,7 +45,6 @@ import app.editors.manager.mvp.presenters.main.MainActivityPresenter;
 import app.editors.manager.mvp.views.main.MainActivityView;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
 import app.editors.manager.ui.dialogs.AccountBottomDialog;
-import app.editors.manager.ui.dialogs.ActionBottomDialog;
 import app.editors.manager.ui.fragments.main.CloudAccountsFragment;
 import app.editors.manager.ui.fragments.main.DocsMyFragment;
 import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment;
@@ -60,11 +59,12 @@ import butterknife.Unbinder;
 import lib.toolkit.base.managers.utils.FragmentUtils;
 import lib.toolkit.base.managers.utils.PermissionUtils;
 import lib.toolkit.base.managers.utils.UiUtils;
+import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog;
 import lib.toolkit.base.ui.dialogs.common.CommonDialog;
 import moxy.presenter.InjectPresenter;
 
 public class MainActivity extends BaseAppActivity implements MainActivityView,
-        BottomNavigationView.OnNavigationItemSelectedListener {
+        BottomNavigationView.OnNavigationItemSelectedListener, BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -180,6 +180,11 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
     }
 
     @Override
+    public void onContextDialogOpen() {
+        mMainActivityPresenter.setDialogOpen(true);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mUnbinder.unbind();
@@ -229,12 +234,15 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
         for (Fragment fragment : fragments) {
             if (fragment instanceof MainPagerFragment && fragment.isVisible()) {
                 ((MainPagerFragment) fragment).showActionDialog();
+                mMainActivityPresenter.setDialogOpen(true);
                 break;
             } else if (fragment instanceof DocsOnDeviceFragment && fragment.isVisible()) {
                 ((DocsOnDeviceFragment) fragment).showActionDialog();
+                mMainActivityPresenter.setDialogOpen(true);
                 break;
             } else if (fragment instanceof DocsWebDavFragment && fragment.isVisible()) {
                 ((DocsWebDavFragment) fragment).showActionDialog();
+                mMainActivityPresenter.setDialogOpen(true);
                 break;
             }
         }
@@ -242,8 +250,12 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        mMainActivityPresenter.navigationItemClick(menuItem.getItemId());
-        return true;
+        if (mMainActivityPresenter.isDialogOpen()) {
+            return false;
+        } else {
+            mMainActivityPresenter.navigationItemClick(menuItem.getItemId());
+            return true;
+        }
     }
 
     @Override
@@ -451,10 +463,7 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
 
     @Override
     public void onCloseActionDialog() {
-        Fragment actionBottomDialog = getSupportFragmentManager().findFragmentByTag(ActionBottomDialog.TAG);
-        if(actionBottomDialog instanceof ActionBottomDialog) {
-            ((ActionBottomDialog) actionBottomDialog).dismiss();
-        }
+        //Stub
     }
 
     /*
@@ -648,4 +657,17 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
         context.startActivity(intent);
     }
 
+    @Override
+    public void onBottomDialogClose() {
+        mMainActivityPresenter.setDialogOpen(false);
+    }
+
+    @Override
+    public void onCommonClose() {
+        mMainActivityPresenter.setDialogOpen(false);
+    }
+    @Override
+    public void setCommonDialogOpen() {
+        mMainActivityPresenter.setDialogOpen(true);
+    }
 }

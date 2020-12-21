@@ -63,6 +63,7 @@ public class MainActivityPresenter extends BasePresenter<MainActivityView, Respo
     @Nullable
     private AccountsSqlData mAccount;
     private boolean mRestoreFlag = false;
+    private boolean mIsDialogOpen = false;
 
     @Nullable
     private ReviewInfo mReviewInfo;
@@ -367,4 +368,13 @@ public class MainActivityPresenter extends BasePresenter<MainActivityView, Respo
         mDisposable.clear();
         getViewState().onShowToolbarAccount("", "", false);
     }
+
+    public void setDialogOpen(boolean isOpen) {
+        mIsDialogOpen = isOpen;
+    }
+
+    public boolean isDialogOpen() {
+        return mIsDialogOpen;
+    }
+
 }

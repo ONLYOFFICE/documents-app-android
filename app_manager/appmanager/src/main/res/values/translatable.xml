@@ -416,6 +416,8 @@
     <string name="operation_title">Select folder</string>
     <string name="operation_choose_section">Choose section</string>
     <string name="operation_complete_message">Operation complete</string>
+    <string name="operation_delete_impossible">Cannot delete file. File is opened on the portal.</string>
+    <string name="operation_delete_multiple">. One or more files haven`t been deleted due to open on the portal</string>
     <string name="operation_panel_move_button">Move here</string>
     <string name="operation_panel_copy_button">Copy here</string>
     <string name="operation_panel_cancel_button">Cancel</string>

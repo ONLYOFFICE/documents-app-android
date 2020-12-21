@@ -63,6 +63,10 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         override fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
             this@BaseActivity.onCancelClick(dialogs, tag)
         }
+
+        override fun onCloseCommonDialog() {
+            this@BaseActivity.onCloseCommonDialog()
+        }
     }
 
     val isTablet: Boolean
@@ -119,6 +123,10 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         if (!isFragmentBackPress()) {
             super.onBackPressed()
         }
+    }
+
+    open fun setCommonDialogOpen() {
+
     }
 
     /*
@@ -231,6 +239,10 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     open fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
         Log.d(TAG, "onCancelClick() - $dialogs - tag: $tag")
         mOnFragmentDialogClickListener?.onCancelClick(dialogs, tag)
+    }
+
+    open fun onCloseCommonDialog() {
+        mOnFragmentDialogClickListener?.onCloseCommonDialog()
     }
 
     /*

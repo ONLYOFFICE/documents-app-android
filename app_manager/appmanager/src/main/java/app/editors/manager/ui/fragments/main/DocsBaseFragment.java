@@ -52,6 +52,7 @@ import lib.toolkit.base.managers.utils.StringUtils;
 import lib.toolkit.base.managers.utils.TimeUtils;
 import lib.toolkit.base.ui.activities.base.BaseActivity;
 import lib.toolkit.base.ui.adapters.BaseAdapter;
+import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog;
 import lib.toolkit.base.ui.dialogs.common.CommonDialog;
 
 import static lib.toolkit.base.ui.activities.base.BaseActivity.REQUEST_ACTIVITY_MEDIA;
@@ -101,7 +102,6 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -122,6 +122,13 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
                 case REQUEST_ACTIVITY_MEDIA:
                     break;
             }
+        }
+    }
+
+    @Override
+    public void onContextDialogClose() {
+        if (getActivity() != null && getActivity() instanceof BaseBottomDialog.OnBottomDialogCloseListener) {
+            ((BaseBottomDialog.OnBottomDialogCloseListener) getActivity()).onBottomDialogClose();
         }
     }
 
@@ -304,6 +311,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     public void onItemContextClick(View view, int position) {
         final Entity item = mExplorerAdapter.getItem(position);
         if (item instanceof Item && !isFastClick()) {
+            mContextDialogListener.onContextDialogOpen();
             getPresenter().onContextClick((Item) item, position, false);
         }
     }
@@ -929,6 +937,19 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
             getPresenter().transfer(operationType, false);
         } else {
             getPresenter().transfer(operationType, true);
+        }
+    }
+
+    @Override
+    public void onActionDialogClose() {
+        if (getActivity() != null && getActivity() instanceof BaseBottomDialog.OnBottomDialogCloseListener) {
+            ((BaseBottomDialog.OnBottomDialogCloseListener) getActivity()).onBottomDialogClose();
+        }
+    }
+    @Override
+    public void onCloseCommonDialog() {
+        if (getActivity() != null && getActivity() instanceof CommonDialog.OnCommonDialogClose) {
+            ((CommonDialog.OnCommonDialogClose) getActivity()).onCommonClose();
         }
     }
 

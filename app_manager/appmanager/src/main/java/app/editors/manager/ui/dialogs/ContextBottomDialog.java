@@ -2,6 +2,7 @@ package app.editors.manager.ui.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -40,6 +41,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
 
     public interface OnClickListener {
         void onContextButtonClick(Buttons buttons);
+        void onContextDialogClose();
     }
 
     public static class State implements Serializable {
@@ -133,6 +135,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
     public void onDestroyView() {
         super.onDestroyView();
         mUnbinder.unbind();
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        mOnClickListener.onContextDialogClose();
     }
 
     @OnClick({R.id.list_explorer_context_folder_name,

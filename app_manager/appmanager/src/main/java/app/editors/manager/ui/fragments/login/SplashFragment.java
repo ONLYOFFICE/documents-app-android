@@ -1,8 +1,8 @@
 package app.editors.manager.ui.fragments.login;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import java.util.concurrent.TimeUnit;
 
 import app.editors.manager.R;
+import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.ui.activities.main.MainActivity;
 import app.editors.manager.ui.fragments.base.BaseAppFragment;
 import butterknife.BindView;
@@ -68,8 +69,9 @@ public class SplashFragment extends BaseAppFragment {
         try {
             Drawable drawable = ContextCompat.getDrawable(requireContext(), R.drawable.image_onlyoffice_text);
             mAppCompatImageView.setImageDrawable(drawable);
-        } catch (InflateException e) {
-            Log.d(TAG, e.toString());
+        } catch (InflateException | Resources.NotFoundException e) {
+            FirebaseUtils.addCrash("Inflate error when start");
+            e.printStackTrace();
         }
 
         mDisposable = Observable.just(1).delay(DELAY_SPLASH, TimeUnit.MILLISECONDS)

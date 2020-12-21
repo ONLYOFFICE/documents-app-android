@@ -7,7 +7,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.view.*
+import android.view.Gravity
+import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
@@ -21,6 +24,11 @@ import moxy.MvpBottomSheetDialogFragment
 
 abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterface.OnShowListener,
     BaseInterfaceDialog, CommonDialog.OnClickListener {
+
+
+    interface OnBottomDialogCloseListener {
+        fun onBottomDialogClose()
+    }
 
     companion object {
         val TAG = BaseBottomDialog::class.java.simpleName
@@ -73,7 +81,6 @@ abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterfac
         super.onDestroyView()
         mBottomSheetCallback?.let { mBottomSheetBehavior.removeBottomSheetCallback(it) }
     }
-
     override fun onDialogAdded() {
 
     }

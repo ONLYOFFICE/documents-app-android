@@ -271,6 +271,8 @@
     </string>
     <string name="operation_choose_section">Выбор раздела</string>
     <string name="operation_complete_message">Операция завершена</string>
+    <string name="operation_delete_impossible">Невозможно удалить файл. Файл открыт на портале.</string>
+    <string name="operation_delete_multiple">. Один или несколько файлов не были удалены, так как открыты на портале</string>>
     <string name="operation_empty_lists_data">Выберите элементы для выполнения операции</string>
     <string name="operation_error_move_to_same">Нельзя переносить в ту же самую папку</string>
     <string name="operation_error_move_to_same_subfolder">Нельзя переносить в ту же самую подпапку</string>
