@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:height="@dimen/image_size"
+        android:width="@dimen/image_size">
+        <shape android:shape="oval">
+            <solid android:color="@color/colorDarkLight" />
+        </shape>
+    </item>
+    <item
+        android:height="@dimen/image_size"
+        android:width="@dimen/image_size">
+        <bitmap
+            android:gravity="center"
+            android:tint="@color/colorGrey"
+            android:src="@drawable/ic_list_item_share_user_icon" />
+    </item>
+</layer-list>

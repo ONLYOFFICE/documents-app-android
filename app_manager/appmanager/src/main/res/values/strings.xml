@@ -1,0 +1,25 @@
+<resources>
+    <!-- App -->
+    <string name="app_package" translatable="false">app.editors.manager</string>
+    <string name="placeholder_point" translatable="false">" • "</string>
+
+    <!-- Google -->
+    <string name="google_scope" translatable="false">oauth2:profile email</string>
+    <string name="google_user_agent" translatable="false">
+        Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36
+    </string>
+
+    <!-- About -->
+    <string name="app_support_email" translatable="false">support@onlyoffice.com</string>
+    <string name="app_licenses_path" translatable="false">file:///android_asset/licenses.html</string>
+    <string name="app_url_main" translatable="false">https://onlyoffice.com</string>
+    <string name="app_url_policy" translatable="false">
+        https://help.onlyoffice.com/products/files/doceditor.aspx?fileid=5048502&amp;doc=SXhWMEVzSEYxNlVVaXJJeUVtS0kyYk14YWdXTEFUQmRWL250NllHNUFGbz0_IjUwNDg1MDIi0&amp;_ga=2.88767003.1895363220.1524051386-398072085.1517577558
+    </string>
+    <string name="app_url_terms" translatable="false">
+        https://help.onlyoffice.com/products/files/doceditor.aspx?fileid=5048471&amp;doc=bXJ6UmJacDVnVDMxV01oMHhrUlpwaGFBcXJUUUE3VHRuTGZrRUF5a1NKVT0_IjUwNDg0NzEi0
+    </string>
+    <string name="app_url_help" translatable="true">https://helpcenter.onlyoffice.com/mobile-applications/documents/android/</string>
+
+
+</resources>

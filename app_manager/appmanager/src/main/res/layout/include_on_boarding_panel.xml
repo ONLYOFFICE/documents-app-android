@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/page_indicator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/default_on_boarding_panel_height"
+    android:background="@drawable/drawable_on_boarding_background"
+    android:translationZ="12dp"
+    android:elevation="12dp">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/on_boarding_panel_skip_button"
+        style="@style/TransparentBlackButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/screen_margin_large"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/on_boarding_skip_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/on_boarding_panel_next_button"
+        style="@style/TransparentBlackButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/screen_margin_large"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/on_boarding_next_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.rd.PageIndicatorView
+        android:id="@+id/on_boarding_panel_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/screen_margin_large"
+        android:layout_marginRight="@dimen/screen_margin_large"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/on_boarding_panel_next_button"
+        app:layout_constraintStart_toEndOf="@+id/on_boarding_panel_skip_button"
+        app:layout_constraintTop_toTopOf="parent"
+        app:piv_animationType="scale"
+        app:piv_dynamicCount="true"
+        app:piv_interactiveAnimation="true"
+        app:piv_radius="4dp"
+        app:piv_selectedColor="@color/colorBlack"
+        app:piv_unselectedColor="@color/colorPagerOnBoarding" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

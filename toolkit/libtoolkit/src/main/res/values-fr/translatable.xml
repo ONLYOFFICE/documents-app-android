@@ -1,0 +1,9 @@
+<resources>
+
+  <string name="dialogs_edit_forbidden_symbols">N\'utilisez pas ces symboles\u0020</string>
+  <string name="sizes_bytes">Octets</string>
+  <string name="sizes_gigabytes">Go</string>
+  <string name="sizes_kilobytes">Ko</string>
+  <string name="sizes_megabytes">Mo</string>
+  <string name="sizes_terabytes">To</string>
+</resources>

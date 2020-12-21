@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/default_bottom_panel_height"
+    card_view:cardElevation="@dimen/default_bottom_panel_elevation">
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/share_panel_message_edit_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/screen_margin_large"
+            android:layout_marginRight="@dimen/screen_margin_large"
+            android:hint="@string/share_panel_message_notification"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/share_panel_message_edit"
+                style="@style/MediumEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="none"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/share_panel_reset_button"
+            style="@style/AlphaImageButton"
+            android:layout_width="@dimen/image_size"
+            android:layout_height="@dimen/image_size"
+            android:layout_marginLeft="@dimen/screen_margin_large"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="false"
+            android:padding="@dimen/image_padding_icon"
+            android:src="@drawable/ic_access_panel_close"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/share_panel_count_selected_text"
+            style="@style/ItemMediumGreyText"
+            android:layout_width="@dimen/image_size"
+            android:layout_height="@dimen/image_size"
+            android:layout_marginLeft="@dimen/screen_margin_medium"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="@color/colorGrey"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toEndOf="@+id/share_panel_reset_button"
+            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout" />
+
+        <include
+            android:id="@+id/button_popup_layout"
+            layout="@layout/include_button_popup"
+            android:layout_width="@dimen/image_size"
+            android:layout_height="@dimen/image_size"
+            android:layout_marginLeft="@dimen/screen_margin_medium"
+            android:padding="@dimen/image_padding_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/share_panel_count_selected_text"
+            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/share_panel_message_button"
+            style="@style/AlphaImageButton"
+            android:layout_width="@dimen/image_size"
+            android:layout_height="@dimen/image_size"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:padding="@dimen/image_padding_icon"
+            android:src="@drawable/ic_access_panel_message"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button_popup_layout"
+            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/share_panel_add_button"
+            style="@style/AccentButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="@dimen/screen_margin_large"
+            android:clickable="true"
+            android:text="@string/share_panel_button_add"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/share_panel_message_button"
+            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
+

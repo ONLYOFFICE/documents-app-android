@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:isScrollContainer="true">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/storage_web_dav_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/storage_web_dav_url_layout"
+                android:layout_width="@dimen/default_screen_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:hint="@string/storage_web_dav_settings_url">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/storage_web_dav_url_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusable="true"
+                    android:imeOptions="actionNext"
+                    android:importantForAutofill="noExcludeDescendants"
+                    android:inputType="textWebEditText"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/storage_web_dav_login_layout"
+                android:layout_width="@dimen/default_screen_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:hint="@string/storage_web_dav_settings_login">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/storage_web_dav_login_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:imeOptions="actionNext"
+                    android:importantForAutofill="noExcludeDescendants"
+                    android:inputType="textWebEditText"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/storage_web_dav_password_layout"
+                android:layout_width="@dimen/default_screen_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:hint="@string/storage_web_dav_settings_password"
+                app:passwordToggleEnabled="true">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/storage_web_dav_password_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:imeOptions="actionNext"
+                    android:importantForAutofill="noExcludeDescendants"
+                    android:inputType="textWebPassword"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/storage_web_dav_title_layout"
+                android:layout_width="@dimen/default_screen_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:hint="@string/storage_web_dav_settings_title">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/storage_web_dav_title_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:imeOptions="actionDone"
+                    android:importantForAutofill="noExcludeDescendants"
+                    android:inputType="textWebEditText"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/storage_web_dav_save_button"
+                style="@style/FixedAccentButtons"
+                android:layout_width="@dimen/default_screen_width"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:text="@string/storage_connect_button"
+                app:layout_constraintEnd_toEndOf="@+id/storage_web_dav_url_layout"
+                app:layout_constraintStart_toStartOf="@+id/storage_web_dav_url_layout"
+                app:layout_constraintTop_toBottomOf="@+id/storage_web_dav_title_layout" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.core.widget.NestedScrollView>
+</RelativeLayout>

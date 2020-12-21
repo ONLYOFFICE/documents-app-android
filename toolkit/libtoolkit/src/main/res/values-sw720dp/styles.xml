@@ -1,0 +1,54 @@
+<resources>
+
+    <!-- ======================================================================================= -->
+    <!-- Base application dialogs theme. -->
+    <style name="DialogCommonTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowBackground">@color/colorWhiteLight</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- Close window by swiping-->
+        <!--<item name="android:windowSwipeToDismiss">true</item>-->
+        <!-- If set this attributes width ok, but wrong heigth with coordinator layout -->
+        <!--<item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>-->
+        <!--<item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>-->
+    </style>
+
+    <!-- ======================================================================================= -->
+    <!-- Custom dialogs themes -->
+    <style name="DialogStoreTheme" parent="DialogCommonTheme">
+        <item name="colorControlActivated">@color/colorPrimaryLight</item>
+    </style>
+
+    <style name="DialogShareTheme" parent="NoActionBarTheme">
+        <item name="searchViewStyle">@style/SearchViewEditHint</item>
+    </style>
+
+    <style name="DialogAccountsTheme" parent="DialogCommonTheme">
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
+
+    <!-- Collapse toolbar text -->
+    <style name="ExpandedTextView" parent="CommonCollapseTextView">
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <style name="CollapsedTextView" parent="CommonCollapseTextView">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="FabPopupAnimation">
+        <item name="android:windowEnterAnimation">@anim/fab_popup_enter</item>
+    </style>
+
+</resources>

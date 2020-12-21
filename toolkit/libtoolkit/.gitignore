@@ -1,0 +1,6 @@
+*.iml
+*.a
+*.so
+
+/build
+/src/main/assets

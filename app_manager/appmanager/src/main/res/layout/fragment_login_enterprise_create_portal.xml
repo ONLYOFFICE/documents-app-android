@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:fillViewport="true"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/screen_padding_medium_left_right">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/login_create_portal_address_edit_container"
+            android:layout_width="@dimen/default_screen_width"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/screen_top_bottom_padding"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/login_create_portal_address_edit_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:hint="@string/login_create_portal_address_hint"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/login_create_portal_address_edit"
+                    style="@style/MediumEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:importantForAutofill="noExcludeDescendants"
+                    android:inputType="text"
+                    android:paddingRight="@dimen/hints_in_end_create_domain" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/login_create_portal_address_hint_end"
+                style="@style/MediumTextView"
+                android:layout_width="@dimen/hints_in_end_create_domain"
+                android:layout_height="22dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="4dp"
+                android:ellipsize="none"
+                android:gravity="right"
+                android:text="Hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/login_create_portal_address_edit_layout" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_create_portal_email_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/login_create_portal_email_hint"
+            app:layout_constraintEnd_toEndOf="@+id/login_create_portal_address_edit_container"
+            app:layout_constraintStart_toStartOf="@+id/login_create_portal_address_edit_container"
+            app:layout_constraintTop_toBottomOf="@+id/login_create_portal_address_edit_container">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/login_create_portal_email_edit"
+                style="@style/MediumEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionNext"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textEmailAddress|text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_create_portal_first_name_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/login_create_signin_first_name_hint"
+            app:layout_constraintEnd_toEndOf="@+id/login_create_portal_address_edit_container"
+            app:layout_constraintStart_toStartOf="@+id/login_create_portal_address_edit_container"
+            app:layout_constraintTop_toBottomOf="@+id/login_create_portal_email_layout">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/login_create_portal_first_name_edit"
+                style="@style/MediumEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionNext"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textPersonName|text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_create_portal_last_name_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/login_create_signin_last_name_hint"
+            app:layout_constraintEnd_toEndOf="@+id/login_create_portal_address_edit_container"
+            app:layout_constraintStart_toStartOf="@+id/login_create_portal_address_edit_container"
+            app:layout_constraintTop_toBottomOf="@+id/login_create_portal_first_name_layout">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/login_create_portal_last_name_edit"
+                style="@style/MediumEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textPersonName|text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/login_signin_create_portal_button"
+            style="@style/FixedAccentButtons"
+            android:layout_width="0dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/login_create_portal_next_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/login_create_portal_address_edit_container"
+            app:layout_constraintStart_toStartOf="@+id/login_create_portal_address_edit_container"
+            app:layout_constraintTop_toBottomOf="@+id/login_create_portal_last_name_layout"
+            app:layout_constraintVertical_bias="0.0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
+

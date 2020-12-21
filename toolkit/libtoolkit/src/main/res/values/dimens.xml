@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ======================================================================================= -->
+    <!-- Different screens values -->
+    <integer name="screen_size">0</integer>
+    <dimen name="screen_top_bottom_padding">8dp</dimen>
+    <dimen name="screen_left_right_padding">0dp</dimen>
+    <dimen name="screen_bottom_padding">16dp</dimen>
+    <dimen name="screen_collapse_layout_height">180dp</dimen>
+    <dimen name="screen_padding_medium_left_right">16dp</dimen>
+    <dimen name="screen_margin_large">16dp</dimen>
+    <dimen name="screen_margin_medium">8dp</dimen>
+    <dimen name="screen_storage_height">56dp</dimen>
+    <dimen name="screen_on_boarding_header_text_size">20sp</dimen>
+    <dimen name="screen_on_boarding_info_text_size">15sp</dimen>
+    <dimen name="screen_on_boarding_image_width">300dp</dimen>
+    <dimen name="screen_on_boarding_image_height">533dp</dimen>
+    <dimen name="screen_on_boarding_image_horizontal_margin">32dp</dimen>
+    <dimen name="screen_share_panel_button_width">0dp</dimen>
+    <dimen name="dialog_about_height">550dp</dimen>
+    <integer name="screen_media_grid_columns">2</integer>
+    <item name="screen_on_boarding_layout_height" format="dimension" type="dimen">0dp</item>
+
+    <dimen name="screen_auth_image_width">240dp</dimen>
+    <dimen name="screen_auth_image_height">180dp</dimen>
+
+    <!-- Margins/Padding -->
+    <dimen name="default_margin_xxxlarge">48dp</dimen>
+    <dimen name="default_margin_xxlarge">32dp</dimen>
+    <dimen name="default_margin_xlarge">24dp</dimen>
+    <dimen name="default_margin_large">16dp</dimen>
+    <dimen name="default_margin_medium">8dp</dimen>
+    <dimen name="default_margin_small">4dp</dimen>
+    <dimen name="default_margin_micro">2dp</dimen>
+
+    <!-- Corners -->
+    <dimen name="default_corner_radius_medium">8dp</dimen>
+    <dimen name="default_corner_radius_small">4dp</dimen>
+    <dimen name="default_corner_radius_micro">2dp</dimen>
+
+    <!-- Fragment animation time -->
+    <integer name="fragment_replace_main_animation_duration">100</integer>
+
+    <!-- Items -->
+    <dimen name="item_one_line_height">48dp</dimen>
+    <dimen name="item_two_line_height">72dp</dimen>
+    <dimen name="item_three_line_height">96dp</dimen>
+
+    <!-- Popup -->
+    <dimen name="popup_width_context">225dp</dimen>
+    <dimen name="popup_margins_top_bottom">8dp</dimen>
+    <dimen name="context_popup_width">320dp</dimen>
+
+    <!-- Alpha -->
+    <item name="alpha_medium" format="float" type="dimen">0.54</item>
+
+    <!--Toolbar-->
+    <dimen name="toolbar_title_margin_left">72dp</dimen>
+
+    <!-- Image dimens -->
+    <dimen name="image_size">40dp</dimen>
+    <dimen name="image_padding_icon">8dp</dimen>
+    <dimen name="image_default_size">24dp</dimen>
+    <dimen name="image_social_size">48dp</dimen>
+
+    <!-- Line separator for lists, menus and etc -->
+    <dimen name="line_separator_height">1dp</dimen>
+    <dimen name="line_separator_group_top">7dp</dimen>
+    <dimen name="line_separator_group_bottom">8dp</dimen>
+    <dimen name="line_separator_left_margin">72dp</dimen>
+
+    <!-- Default common values-->
+    <dimen name="default_elevation_height">4dp</dimen>
+    <dimen name="default_tab_layout_height">48dp</dimen>
+    <dimen name="default_screen_width">300dp</dimen>
+    <dimen name="default_action_button_margin">24dp</dimen>
+    <dimen name="default_toolbar_height">56dp</dimen>
+    <dimen name="default_bottom_panel_height">56dp</dimen>
+    <dimen name="default_bottom_panel_elevation">16dp</dimen>
+    <dimen name="default_action_bottom_size">56dp</dimen>
+    <dimen name="default_login_accent_button_height">56dp</dimen>
+    <dimen name="default_login_transparent_button_height">48dp</dimen>
+    <dimen name="default_notice_text_size">12sp</dimen>
+    <dimen name="default_on_boarding_panel_height">48dp</dimen>
+
+
+    <!-- Drawer values -->
+    <dimen name="drawer_header_avatar_size">64dp</dimen>
+    <dimen name="design_header_arrow_size">20dp</dimen>
+    <dimen name="design_navigation_icon_size" tools:override="true">24dp</dimen>
+
+    <!-- Share screen -->
+    <dimen name="share_access_arrow_size">16dp</dimen>
+    <dimen name="share_group_guideline">56dp</dimen>
+    <dimen name="share_settings_list_padding">72dp</dimen>
+
+    <!-- Fonts sizes-->
+    <dimen name="fonts_size_large">18sp</dimen>
+    <dimen name="fonts_size_medium">16sp</dimen>
+    <dimen name="fonts_size_small">14sp</dimen>
+    <dimen name="fonts_size_micro">12sp</dimen>
+
+    <!-- Hints in end -->
+    <dimen name="hints_in_end_create_domain">125dp</dimen>
+
+    <!-- Tooltip -->
+    <dimen name="tooltip_padding">10dp</dimen>
+
+    <!-- Elevations -->
+    <dimen name="elevation_height_micro">2dp</dimen>
+
+    <dimen name="design_bottom_navigation_text_size" tools:override="true">10sp</dimen>
+    <dimen name="design_bottom_navigation_active_text_size" tools:override="true">10sp</dimen>
+
+</resources>

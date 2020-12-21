@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:fillViewport="true"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/screen_padding_medium_left_right">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_enterprise_portal_email_layout"
+            android:layout_width="@dimen/default_screen_width"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/screen_top_bottom_padding"
+            android:hint="@string/login_enterprise_email_hint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/login_enterprise_portal_email_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionNext"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textEmailAddress|text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_enterprise_portal_password_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:hint="@string/login_enterprise_password_hint"
+            app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_email_layout"
+            app:layout_constraintStart_toStartOf="@+id/login_enterprise_portal_email_layout"
+            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_portal_email_layout"
+            app:passwordToggleEnabled="true">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/login_enterprise_portal_password_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/login_enterprise_signin_button"
+            style="@style/FixedAccentButtons"
+            android:layout_width="0dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/login_enterprise_signin_button"
+            app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_email_layout"
+            app:layout_constraintStart_toStartOf="@+id/login_enterprise_portal_email_layout"
+            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_portal_password_layout" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/login_enterprise_signon_button"
+            style="@style/FixedAccentButtons"
+            android:layout_width="0dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/login_enterprise_single_sign_button"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_email_layout"
+            app:layout_constraintStart_toStartOf="@+id/login_enterprise_portal_email_layout"
+            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_signin_button" />
+
+        <include
+            android:id="@+id/social_network_layout"
+            layout="@layout/include_social_networks_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:clickable="false"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_signon_button"
+            app:layout_constraintVertical_chainStyle="spread_inside" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/login_enterprise_forgot_pwd_button"
+            style="@style/FixedTransparentAccentButtonsNoCaps"
+            android:layout_width="@dimen/default_screen_width"
+            android:layout_marginBottom="8dp"
+            android:padding="8dp"
+            android:text="@string/login_enterprise_forgot_password"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/social_network_layout"
+            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
+

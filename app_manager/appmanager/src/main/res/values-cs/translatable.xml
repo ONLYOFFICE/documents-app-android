@@ -1,0 +1,530 @@
+<resources>
+    <string name="app_name">Dokumenty</string>
+    <string name="app_name_full">Dokumenty ONLYOFFICE</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Permissions -->
+    <string name="permission_account_write_label">Štítek oprávnění účtu k zápisu</string>
+    <string name="permission_account_write_description">Popis oprávnění účtu k zápisu</string>
+    <string name="permission_account_read_label">Štítek oprávnění účtu k zápisu</string>
+    <string name="permission_account_read_description">Popis oprávnění účtu k zápisu</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Versions -->
+    <string name="app_versions_title">Byla vydána verze 3.0</string>
+    <string name="app_versions_cancel">Později</string>
+    <string name="app_versions_without_release_accept">Instalovat oficiální aplikaci</string>
+    <string name="app_versions_without_release_info">
+        Děkujeme za účast na beta testování! Byla vydána verze 3.0 aplikace Dokumenty ONLYOFFICE. Beta verze již není nadále podporována. Abyste měli přístup k dalším aktualizacím, začněte používat oficiální aplikaci.
+    </string>
+    <string name="app_versions_update_accept">Aktualizovat oficiální aplikaci</string>
+    <string name="app_versions_update_info">
+        Děkujeme za účast na beta testování! Byla vydána verze 3.0 aplikace Dokumenty ONLYOFFICE. Beta verze již není nadále podporována. Abyste měli přístup k dalším aktualizacím, začněte používat oficiální aplikaci.
+    </string>
+    <string name="app_versions_actual_release_accept">Otevřít oficiální aplikaci</string>
+    <string name="app_versions_actual_release_info">
+        Děkujeme za účast na beta testování! Byla vydána verze 3.0 aplikace Dokumenty ONLYOFFICE. Beta verze již není nadále podporována. Začněte používat oficiální aplikaci.
+    </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Snackbar common -->
+    <string name="snackbar_copied">Zkopírováno</string>
+
+    <!-- ======================================================================================= -->
+    <!-- About -->
+    <string name="about_title">O produktu</string>
+    <string name="about_app_version">Verze %1$s, build %2$s, SDK %3$s</string>
+    <string name="about_terms">Podmínky použití</string>
+    <string name="about_policy">Zásady ochrany osobních údajů</string>
+    <string name="about_license">Licenční smlouva</string>
+    <string name="about_website">Webové stránky ONLYOFFICE</string>
+    <string name="about_email_subject">Zpětná vazba k aplikaci Dokumenty ONLYOFFICE pro Android</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Common errors -->
+    <string name="errors_unknown_error">Chyba připojení. Zkuste to znovu později.</string>
+    <string name="errors_ssl_error">Chyba metody handshake SSL</string>
+    <string name="errors_connection_error">Zkontrolujte připojení k internetu</string>
+    <string name="errors_unknown_host_error">Neznámý hostitel</string>
+    <string name="errors_redirect_error">Neznámá chyba přesměrování (kód:\u0020)</string>
+    <string name="errors_client_error">Neznámá chyba klienta (kód:\u0020)</string>
+    <string name="errors_client_portal_exist">Portál s tímto názvem již existuje</string>
+    <string name="errors_client_portal_sms">Odeslali jste příliš mnoho SMS zpráv. Zkuste to prosím znovu později.</string>
+    <string name="errors_client_host_not_found">Adresa nenalezena</string>
+    <string name="errors_client_forbidden">Přístup odepřen</string>
+    <string name="errors_client_unauthorized">Neoprávněná žádost</string>
+    <string name="errors_client_payment_required"> Vyžadována platba</string>
+    <string name="errors_server_error">Neznámá chyba serveru (kód:\u0020)</string>
+    <string name="errors_server_auth_error">Chyba ověření</string>
+    <string name="errors_email_syntax_error">Neplatný e-mail</string>
+    <string name="errors_viewer_download_name">Stahování se nezdařilo</string>
+    <string name="errors_email_already_registered">Tento e-mail už byl použit k registraci jiného uživatele</string>
+    <string name="errors_path_url">Neplatná adresa URL</string>&gt;
+
+    <!-- SignIn -->
+    <string name="errors_sign_in_splash_error">Přístup k portálu se nezdařil</string>
+    <string name="errors_sign_in_account_error">Přihlášení se nezdařilo</string>
+    <string name="errors_sign_in_account_already_use">Tento účet už používáte</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Login -->
+    <string name="login_api_init_error">Chyba inicializace</string>
+    <string name="login_api_init_portal_error">Chyba v syntaxi názvu portálu</string>
+    <string name="login_api_portal_name">Nesprávný název portálu. Příklad: example.onlyoffice.com</string>
+    <string name="login_api_portal_name_length">Název portálu musí obsahovat alespoň 6 znaků</string>
+    <string name="login_api_portal_name_content">Název portálu může obsahovat znaky A–Z, a–z, 0–9</string>
+
+
+    <string name="login_retry">Opakovat připojení</string>
+
+    <!-- Accounts -->
+    <string name="login_accounts_select_title">Vybrat účet</string>
+    <string name="login_accounts_select_add">Přidat cloudový účet</string>
+
+    <!-- Portal pager -->
+    <string name="login_pager_enterprise">PORTÁL</string>
+    <string name="login_pager_personal">OSOBNÍ</string>
+    <string name="login_pager_title">Připojení ke cloudu ONLYOFFICE</string>
+
+    <!-- Portal enterprise-->
+    <string name="login_enterprise_edit_hint">Adresa portálu</string>
+    <string name="login_enterprise_button_next">DALŠÍ</string>
+    <string name="login_enterprise_edit_error_hint">Zadejte platnou adresu</string>
+    <string name="login_enterprise_forgot_password">Zapomněli jste heslo nebo e-mail?</string>
+    <string name="login_enterprise_button_create">VYTVOŘIT PORTÁL</string>
+    <string name="login_enterprise_button_select">ÚČTY</string>
+    <string name="login_enterprise_email_hint">E-mail</string>
+    <string name="login_enterprise_password_hint">Heslo</string>
+    <string name="login_enterprise_signin_button">PŘIHLÁSIT SE</string>
+    <string name="login_enterprise_single_sign_button">Jednotné přihlašování</string>
+    <string name="login_enterprise_info">
+        ONLYOFFICE umožňuje ukládat soubory do cloudu, sdílet je s kolegy a společně dokumenty upravovat v reálném čase.
+    </string>
+    <string name="login_not_authorization_info">V %2$s se nepodařilo přihlásit se do %1$s</string>
+    <string name="login_not_authorization_button">ZKUSIT ZNOVU</string>
+    <string name="errors_first_name">Jméno je neplatné. Nesmí obsahovat číslice.</string>
+    <string name="errors_last_name">Příjmení je neplatné. Nesmí obsahovat číslice.</string>
+
+    <!-- Portal personal -->
+    <string name="login_personal_edit_email_hint">E-mail</string>
+    <string name="login_personal_edit_password_hint">Heslo</string>
+    <string name="login_personal_signin_button">PŘIHLÁSIT SE</string>
+    <string name="login_personal_signup_button">REGISTROVAT</string>
+    <string name="login_personal_signup_title">Registrovat se k osobnímu portálu</string>
+    <string name="login_personal_signup_edit_info">Potvrzovací odkaz bude zaslán na tuto adresu</string>
+    <string name="login_personal_signup_dialog_info">Potvrzovací odkaz byl zaslán na e-mail %1$s\nNež budete pokračovat, přejděte na odkaz v e-mailu</string>
+    <string name="login_personal_info">
+        Abyste mohli ukládat soubory do cloudu, připojte se k osobnímu portálu ONLYOFFICE
+    </string>
+    <string name="login_web_dav_title">Připojit k %1$s</string>
+
+    <!-- Portal create-->
+    <string name="login_create_portal_title">Vytvořit portál pro organizaci</string>
+    <string name="login_create_portal_address_hint">Adresa portálu</string>
+    <string name="login_create_portal_email_hint">E-mail</string>
+    <string name="login_create_signin_first_name_hint">Jméno</string>
+    <string name="login_create_signin_last_name_hint">Příjmení</string>
+    <string name="login_create_portal_next_button">DALŠÍ</string>
+
+    <!-- Portal create sign in -->
+    <string name="login_create_signin_title">Nastavit heslo</string>
+    <string name="login_create_signin_password">Heslo</string>
+    <string name="login_create_signin_repeat">Zadejte heslo znovu</string>
+    <string name="login_create_signin_create_button">VYTVOŘIT</string>
+    <string name="login_create_signin_passwords_mismatch">Hesla se neshodují</string>
+    <string name="login_create_signin_info">
+        Kliknutím na toto tlačítko přijímáte podmínky poskytování služby
+    </string>
+
+    <!-- Portal SMS -->
+    <string name="login_sms_code_label">SMS zpráva s kódem byla odeslána</string>
+    <string name="login_sms_send_again">ODESLAT ZNOVU</string>
+    <string name="login_sms_send_again_after">ODESLAT ZNOVU PO</string>
+    <string name="login_sms_change_number">ZMĚNIT ČÍSLO</string>
+    <string name="login_sms_phone_number_verification">Ověření telefonního čísla</string>
+    <string name="login_sms_phone_header">Nastavit telefonní číslo</string>
+    <string name="login_sms_phone_country_label">Země</string>
+    <string name="login_sms_phone_number_label">Telefonní číslo</string>
+    <string name="login_sms_phone_send_button">ODESLAT KÓD</string>
+    <string name="login_sms_phone_error_format">Nesprávný formát</string>
+    <string name="login_sms_phone_send_code">Zašleme vám ověřovací kód prostřednictvím SMS zprávy</string>
+    <string name="login_sms_resend_ok">SMS zpráva s kódem byla odeslána</string>
+
+    <!-- Countries codes -->
+    <string name="countries_codes_title">Vyberte zemi</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Dialogs -->
+    <string name="bottom_sheet_portal_title">Portál</string>
+    <string name="bottom_sheet_cloud_title">Cloudy</string>
+    <!--Move copy dialog-->
+    <string name="dialog_move_copy_title_files">Dokumenty (%1$d) s totožnými názvy již existují ve složce \"%2$s\"</string>
+    <string name="dialog_move_copy_title_one_file">Soubor s názvem \"%1$s\" již existuje ve složce \"%2$s\"</string>
+    <string name="dialog_move_copy_overwrite">Přepsat aktualizací verze</string>
+    <string name="dialog_move_copy_copy">Vytvořit kopii souboru</string>
+    <string name="dialog_move_copy_skip">Přeskočit</string>
+    <string name="dialog_move_copy_title">Soubor s totožným názvem</string>
+
+    <!-- Common -->
+    <string name="dialogs_common_ok_button">PŘIJMOUT</string>
+    <string name="dialogs_common_cancel_button">ZRUŠIT</string>
+    <string name="dialogs_check_portal_header_text">Kontrola možností portálu</string>
+    <string name="dialogs_sign_in_portal_header_text">Přihlášení do portálu</string>
+    <string name="dialogs_sign_in_register_portal">Registrování portálu</string>
+
+    <!-- Waiting -->
+    <string name="dialogs_wait_title">Probíhá operace...</string>
+    <string name="dialogs_wait_title_storage">Připojování úložiště...</string>
+
+    <!-- Question -->
+    <string name="dialogs_question_accept_yes">ANO</string>
+    <string name="dialogs_question_accept_no">NE</string>
+    <string name="dialogs_question_accept_delete">ODSTRANIT</string>
+    <string name="dialogs_question_accept_remove">ODEBRAT</string>
+    <string name="dialogs_question_accept_not_really">NE TAK DOCELA</string>
+    <string name="dialogs_question_accept_sure">ANO, JISTĚ</string>
+    <string name="dialogs_question_accept_no_thanks">NE, DÍKY</string>
+    <string name="dialogs_question_delete">Přejete si vybranou položku odstranit?</string>
+    <string name="dialogs_question_share_remove">Přejete si vybranou položku odebrat ze seznamu?</string>
+    <string name="dialogs_question_http_title">Bezpečnostní varování</string>
+    <string name="dialogs_question_http_question">Připojení prostřednictvím protokolu HTTPS není k dispozici, lze však použít protokol HTTP. Přejete si pokračovat?</string>
+    <string name="dialogs_question_facebook_title">Facebook</string>
+    <string name="dialogs_question_facebook_question">Pokračovat pomocí účtu:\u0020</string>
+    <string name="dialogs_question_remove_account_title">Odebrat účet?</string>
+    <string name="dialogs_question_remove_account_info">
+        Účet spojený s e-mailovou adresou %1$s z portálu %2$s bude odhlášen a odebrán ze seznamu
+    </string>
+    <string name="dialogs_question_personal_confirm_link_title">Potvrdit e-mail</string>
+    <string name="dialogs_question_personal_confirm_cancel">ZKUSIT ZNOVU</string>
+    <string name="dialogs_question_personal_confirm_accept">POKRAČOVAT</string>
+    <string name="dialogs_question_rate_first_info">Líbí se vám aplikace Dokumenty ONLYOFFICE?</string>
+    <string name="dialogs_question_rate_second_info">Věnujte prosím chvilku hodnocení aplikace na Google Play.</string>
+    <string name="dialog_question_delete_file">Soubor bude nenávratně smazán.</string>
+    <string name="dialog_question_delete_folder">Složka bude nenávratně smazána.</string>
+
+    <!-- Edit -->
+    <string name="dialogs_edit_rename_title">Přejmenovat</string>
+    <string name="dialogs_edit_hint">Zadejte název</string>
+    <string name="dialogs_edit_create_sheet">Nová tabulka</string>
+    <string name="dialogs_edit_create_presentation">Nová prezentace</string>
+    <string name="dialogs_edit_create_docs">Nový dokument</string>
+    <string name="dialogs_edit_create_folder">Nová složka</string>
+    <string name="dialogs_edit_forbidden_symbols">Nepoužívejte tyto symboly\u0020</string>
+    <string name="dialogs_edit_accept_create">VYTVOŘIT</string>
+    <string name="dialogs_edit_accept_rename">PŘEJMENOVAT</string>
+    <string name="dialogs_edit_feedback_title">Zpětná vazba</string>
+    <string name="dialogs_edit_feedback_rate_title">Najdete si chvilku na poskytnutí zpětné vazby?</string>
+    <string name="dialogs_edit_feedback_rate_hint">Co bychom měli zlepšit</string>
+    <string name="dialogs_edit_feedback_rate_accept">ODESLAT</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Activity chooser -->
+    <string name="chooser_web_browser">Zvolte prohlížeč...</string>
+    <string name="chooser_email_client">Zvolte e-mailového klienta...</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Main -->
+    <!-- Title -->
+    <string name="actionbar_title_main">Dokumenty</string>
+    <string name="chooser_activity_not_found">V rámci této akce nebyla nalezena žádná aplikace...</string>
+    <string name="fragment_clouds_title">Cloudy</string>
+    <string name="fragment_clouds_portal_title">Připojení k portálu</string>
+    <string name="fragment_clouds_storage_title">Připojení k úložišti</string>
+    <string name="fragment_clouds_onlyoffice_item">ONLYOFFICE</string>
+    <string name="fragment_recent_title">Nedávné</string>
+    <string name="fragment_on_device_title">Na zařízení</string>
+    <string name="fragment_profile_title">Profil</string>
+
+    <!-- Drawer -->
+    <string name="navigation_drawer_open">Otevřít navigační panel</string>
+    <string name="navigation_drawer_close">Zavřít navigační panel</string>
+
+    <!-- Main drawer menu-->
+    <string name="navigation_drawer_menu_my">Moje dokumenty</string>
+    <string name="navigation_drawer_menu_shared">Sdílené se mnou</string>
+    <string name="navigation_drawer_menu_common">Společné dokumenty</string>
+    <string name="navigation_drawer_menu_projects">Projekty</string>
+    <string name="navigation_drawer_menu_trash">Koš</string>
+    <string name="navigation_drawer_menu_about">O produktu</string>
+    <string name="navigation_drawer_menu_help">Nápověda</string>
+    <string name="navigation_drawer_menu_logout">Odhlásit se</string>
+    <string name="navigation_drawer_menu_add_account">Přidat účet</string>
+    <string name="navigation_drawer_menu_feedback">Zpětná vazba</string>
+    <string name="settings_item_title">Nastavení</string>
+    <string name="settings_item_change_account">Změnit účet</string>
+    <string name="settings_clear_cache">Vymazat mezipaměť</string>
+    <string name="settings_title_common">Společné</string>
+    <string name="setting_wifi">Nahrávat soubory pouze v případě připojení prostřednictvím Wi-Fi</string>
+    <string name="setting_title_wifi">Wi-Fi</string>
+    <string name="setting_cache_cleared">Mezipaměť vymazána</string>
+
+    <!-- Main toolbar menu -->
+    <string name="toolbar_menu_search_result">Výsledek vyhledávání</string>
+    <string name="toolbar_menu_search_hint">Hledat...</string>
+    <string name="toolbar_menu_main_options">Možnosti</string>
+    <string name="toolbar_menu_main_share">Sdílet</string>
+    <string name="toolbar_menu_main_move">Přesunout</string>
+    <string name="toolbar_menu_main_copy">Kopírovat</string>
+    <string name="toolbar_menu_main_remove_from_list">Odebrat ze seznamu</string>
+    <string name="toolbar_menu_main_rename">Přejmenovat</string>
+    <string name="toolbar_menu_main_delete">Odstranit</string>
+    <string name="toolbar_menu_main_select">Vybrat...</string>
+    <string name="toolbar_menu_main_select_all">Vybrat vše</string>
+    <string name="toolbar_menu_main_deselect">Zrušit výběr</string>
+    <string name="toolbar_menu_sort_by">Řadit podle</string>
+    <string name="toolbar_menu_sort_order">Pořadí řazení</string>
+    <string name="toolbar_menu_sort_date_modified">Poslední změna</string>
+    <string name="toolbar_menu_sort_title">Název</string>
+    <string name="toolbar_menu_sort_type">Typ</string>
+    <string name="toolbar_menu_sort_size">Velikost</string>
+    <string name="toolbar_menu_sort_owner">Vlastník</string>
+    <string name="toolbar_menu_sort_asc">Vzestupně</string>
+    <string name="toolbar_menu_sort_desc">Sestupně</string>
+    <string name="toolbar_menu_main_download">Stáhnout</string>
+    <string name="toolbar_menu_main_open">Otevřít</string>
+
+    <!-- List context menu -->
+    <string name="list_context_folder_name">Jméno složky</string>
+    <string name="list_context_folder_title">Název složky</string>
+    <string name="list_context_edit">Upravit dokument</string>
+    <string name="list_context_share">Sdílet</string>
+    <string name="list_context_external_link">Externí přístup skrze odkaz</string>
+    <string name="list_context_move">Přesunout</string>
+    <string name="list_context_create_copy">Kopírovat</string>
+    <string name="list_context_create_download">Stáhnout</string>
+    <string name="list_context_rename">Přejmenovat</string>
+    <string name="list_context_rename_success">Úspěšně přejmenováno</string>
+    <string name="list_context_delete">Odstranit</string>
+    <string name="list_context_delete_storage">Odpojit úložiště</string>
+    <string name="list_context_delete_success">Úspěšně odstraněno</string>
+    <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
+    <string name="list_context_delete_recent">Odebrat z nedávných</string>
+    <string name="list_context_upload_to_portal">Nahrát na portál</string>
+
+    <!-- List action menu -->
+    <string name="list_action_sheet">Tabulka</string>
+    <string name="list_action_presentation">Prezentace</string>
+    <string name="list_action_doc">Textový dokument</string>
+    <string name="list_action_folder">Složka</string>
+    <string name="list_action_photo">Pořídit fotografii</string>
+    <string name="list_action_upload">Nahrát soubor</string>
+    <string name="list_action_storage">Připojit úložiště třetí strany</string>
+
+    <!-- Dialog info -->
+
+    <!-- Pager -->
+    <string name="main_pager_docs_my">Moje</string>
+    <string name="main_pager_docs_common">Společné</string>
+    <string name="main_pager_docs_share">Sdílené se mnou</string>
+    <string name="main_pager_docs_projects">Projekty</string>
+    <string name="main_pager_docs_trash">Koš</string>
+
+    <!-- Placeholder -->
+    <string name="placeholder_connection">Chyba připojení</string>
+    <string name="placeholder_empty">Prázdná složka</string>
+    <string name="placeholder_search">Nic nenalezeno</string>
+    <string name="placeholder_share">Není sdíleno</string>
+    <string name="placeholder_access_denied">Přístup odepřen</string>
+    <string name="placeholder_no_subfolders">Žádné podsložky</string>
+    <string name="placeholder_no_users">Žádní uživatelé</string>
+    <string name="placeholder_no_groups">Žádné skupiny</string>
+    <string name="placeholder_no_users_groups">Žádní uživatelé ani skupiny</string>
+    <string name="placeholder_media_error">Média nelze načíst</string>
+    <string name="placeholder_try_again">Zkusit znovu</string>
+    <string name="placeholder_loading_files">Načítání souborů...</string>
+
+    <!-- Time marks-->
+    <string name="list_headers_folder">Složky</string>
+    <string name="list_headers_files">Soubory</string>
+    <string name="list_headers_created">Právě vytvořeno</string>
+    <string name="list_headers_today">Dnes</string>
+    <string name="list_headers_yesterday">Včera</string>
+    <string name="list_headers_week">Tento týden</string>
+    <string name="list_headers_month">Tento měsíc</string>
+    <string name="list_headers_year">Tento rok</string>
+    <string name="list_headers_more_year">Více než před rokem</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Share -->
+    <string name="share_title_main">Nastavení sdílení</string>
+    <string name="share_title_add">Přidat osoby</string>
+    <string name="share_title_search">Hledat osoby</string>
+
+    <string name="share_goal_user">Uživatelé</string>
+    <string name="share_goal_group">Skupiny</string>
+    <string name="share_main_external_access">Externí přístup skrze odkaz</string>
+    <string name="share_main_external_access_info">K dokumentu bude moct přistupovat každý, kdo bude mít k dispozici odkaz</string>
+    <string name="share_main_external_copy_button">KOPÍROVAT ODKAZ</string>
+    <string name="list_context_get_external_link">Získat odkaz pro externí přístup</string>
+
+    <string name="share_popup_access_full">Plný přístup</string>
+    <string name="share_popup_access_review">Přehled</string>
+    <string name="share_popup_access_read_only">Pouze ke čtení</string>
+    <string name="share_popup_access_deny_access">Odepřít přístup</string>
+    <string name="share_popup_access_deny_remove">Odebrat</string>
+    <string name="share_popup_access_fill_forms">Vyplňování formulářů</string>
+    <string name="share_popup_access_comment">Komentování</string>
+
+    <!-- External link -->
+    <string name="share_access_success">Externí přístup byl úspěšně udělen</string>
+    <string name="share_access_denied">Externí přístup byl odepřen</string>
+    <string name="share_clipboard_external_copied">Tajný odkaz byl zkopírován do schránky</string>
+    <string name="share_clipboard_internal_copied">Odkaz na uživatele portálu byl zkopírován do schránky</string>
+    <string name="share_clipboard_external_link_label">Externí odkaz</string>
+
+    <!-- Tabs -->
+    <string name="share_tab_users">UŽIVATELÉ</string>
+    <string name="share_tab_groups">SKUPINY</string>
+
+    <!-- List headers -->
+    <string name="share_add_common_header_users">Uživatelé</string>
+    <string name="share_add_common_header_groups">Skupiny</string>
+
+    <!-- Panel -->
+    <string name="share_panel_message_notification">Vložte zprávu oznámení</string>
+    <string name="share_panel_button_add">PŘIDAT</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Storage -->
+    <string name="storage_select_title">Volba služby</string>
+    <string name="storage_select_google_drive">Google Drive</string>
+    <string name="storage_select_drop_box">Dropbox</string>
+    <string name="storage_select_one_drive">OneDrive</string>
+    <string name="storage_select_next_cloud">Nextcloud</string>
+    <string name="storage_select_yandex">Yandex.Disk</string>
+    <string name="storage_select_box">Box</string>
+    <string name="storage_select_share_point">SharePoint</string>
+    <string name="storage_select_own_cloud">ownCloud</string>
+    <string name="storage_select_web_dav">Jiné úložiště WebDAV</string>
+
+    <string name="storage_connect_title">Nastavení složky</string>
+    <string name="storage_connect_folder_name">Jméno složky</string>
+    <string name="storage_connect_save_button">ULOŽIT</string>
+    <string name="storage_connect_empty_title">Název vstupního úložiště</string>
+
+    <string name="storage_web_title">Připojení služby </string>
+    <string name="storage_connect_button">PŘIPOJIT</string>
+
+    <string name="storage_web_dav_settings_url">Adresa URL připojení</string>
+    <string name="storage_web_dav_settings_login">Přihlásit se</string>
+    <string name="storage_web_dav_settings_password">Heslo</string>
+    <string name="storage_web_dav_settings_title">Vstupní název služby</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Operations -->
+    <string name="operation_title">Vybrat složku</string>
+    <string name="operation_choose_section">Zvolit oddíl</string>
+    <string name="operation_complete_message">Operace byla dokončena</string>
+    <string name="operation_panel_move_button">Přesunout sem</string>
+    <string name="operation_panel_copy_button">Kopírovat sem</string>
+    <string name="operation_panel_cancel_button">Zrušit</string>
+    <string name="operation_empty_lists_data">Vyberte položky pro operaci</string>
+    <string name="operation_error_move_to_same">Nelze přesunout do stejné složky</string>
+    <string name="operation_error_move_to_same_subfolder">Nelze přesunout do stejné podsložky</string>
+    <string name="operation_snackbar_send_link">ODESLAT ODKAZ</string>
+    <string name="operation_snackbar_return">VRÁTIT</string>
+    <string name="operation_share_send_link">ODESLAT</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Trash -->
+    <string name="trash_dialog_empty_title">Vysypat koš?</string>
+    <string name="trash_snackbar_move_text">Soubory z KOŠE lze přesunout</string>
+    <string name="trash_snackbar_move_button">PŘESUNOUT</string>
+    <string name="trash_popup_move">Přesunout do</string>
+    <string name="trash_popup_delete">Trvale odstranit</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Managers load -->
+    <string name="download_manager_title">Stažené položky ONLYOFFICE</string>
+    <string name="download_manager_progress_title">Probíhá stahování</string>
+    <string name="download_manager_complete">Stahování bylo dokončeno</string>
+    <string name="download_manager_error">Chyba stahování</string>
+    <string name="download_manager_error_free_space">Není k dispozici dostatek volného místa</string>
+    <string name="download_manager_error_url">Chyba v syntaxi adresy URL</string>
+    <string name="download_manager_cancel">Stahování bylo zrušeno</string>
+    <string name="download_manager_repeat">Stahování souboru již probíhá</string>
+    <string name="download_manager_open">Otevřít</string>
+    <string name="download_manager_notification_cancel_download">Zrušit stahování</string>
+    <string name="download_manager_folders_download">Složky nelze stahovat</string>
+    <string name="download_manager_select_files">Vybrat soubory</string>
+
+    <string name="upload_manager_file_picker_title">Vyberte soubor k nahrání</string>
+    <string name="upload_manager_progress_title">Probíhá nahrávání</string>
+    <string name="upload_manager_error">Chyba nahrávání</string>
+    <string name="upload_manager_cancel">Nahrávání bylo zrušeno</string>
+    <string name="upload_manager_repeat">Nahrávání souboru již probíhá</string>
+    <string name="upload_manager_complete">Nahrávání bylo dokončeno</string>
+    <string name="upload_manager_error_url">Chyba v syntaxi adresy URL</string>
+    <string name="upload_manager_error_number_files">Nelze nahrávat více než 20 souborů najednou</string>
+    <string name="upload_manager_image_picker_title">Vyberte obrázek k nahrání</string>
+    <string name="upload_manager_error_file_size">Maximální velikost souboru je 100 MB</string>
+    <string name="upload_manager_notification_cancel_upload">Zrušit nahrávání</string>
+    <string name="upload_manager_waiting_title">Čeká se na nahrávání</string>
+    <string name="upload_error_wifi">Nahrávat lze pouze s povoleným připojením prostřednictvím Wi-Fi</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Socials -->
+    <string name="socials_twitter_failed_auth">Přihlášení pomocí účtu Twitter se nezdařilo</string>
+    <string name="socials_facebook_cancel_auth">Zrušit přihlášení pomocí účtu Facebook</string>
+    <string name="socials_facebook_failed_auth">Přihlášení pomocí účtu Facebook se nezdařilo</string>
+    <string name="socials_google_failed_auth">Přihlášení pomocí účtu Google se nezdařilo</string>
+
+    <!-- ======================================================================================= -->
+    <!-- On boarding -->
+    <string name="on_boarding_skip_button">PŘESKOČIT</string>
+    <string name="on_boarding_next_button">DALŠÍ</string>
+    <string name="on_boarding_finish_button">HOTOVO</string>
+
+    <string name="on_boarding_welcome_header">Vítejte v aplikaci ONLYOFFICE</string>
+    <string name="on_boarding_welcome_info">
+        Aplikace Dokumenty ONLYOFFICE pro Android prošla zásadními vylepšeními. Více informací získáte potažením.
+    </string>
+
+    <string name="on_boarding_edit_header">Úprava kancelářských dokumentů</string>
+    <string name="on_boarding_edit_info">
+        Vytvářejte a upravujte textové dokumenty, tabulky a prezentace na portálu ONLYOFFICE.
+    </string>
+
+    <string name="on_boarding_access_header">Udílení přístupu k dokumentům</string>
+    <string name="on_boarding_access_info">
+        Sdílejte dokumenty se členy týmu a mějte pod kontrolou oprávnění k přístupu. K dispozici je také sdílení prostřednictvím externího odkazu.
+    </string>
+
+    <string name="on_boarding_collaborate_header">Spolupráce</string>
+    <string name="on_boarding_collaborate_info">
+        Upravujte společně s kolegy dokumenty v reálném čase.
+    </string>
+
+    <string name="on_boarding_third_party_header">Připojení ke cloudovým úložištím třetích stran</string>
+    <string name="on_boarding_third_party_info">
+        Aplikaci lze propojit s dalšími cloudovými úložišti: Google Drive, Dropbox, Nextcloud aj.
+    </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Media -->
+    <string name="media_image_share_chooser">Zvolte aplikaci ke sdílení</string>
+    <string name="media_image_list_info">Soubory médií: %1$s</string>
+    <string name="media_video_error">Neznámá chyba přehrávače: %1$s</string>
+
+    <string name="auth_header_screen_1">Nastavení dvoufaktorového ověřování</string>
+    <string name="auth_info_screen_1">Nainstalujte si ověřovací aplikaci (např. Google Authenticator nebo Authy), pomocí které budete moct generovat kódy pro práci s portálem</string>
+    <string name="auth_header_screen_2">Spuštění ověřovací aplikace</string>
+    <string name="auth_info_screen_2">Spusťte aplikaci a klepněte na ikonu nového účtu</string>
+    <string name="auth_header_screen_3">Vložení tajného klíče</string>
+    <string name="auth_info_screen_3">Zkopírujte klíč a vložte jej do ověřovací aplikace </string>
+    <string name="auth_header_screen_4">Zkopírování kódu</string>
+    <string name="auth_info_screen_4">Zkopírujte kód z ověřovací aplikace a vložte jej níže</string>
+
+    <string name="rename_file_exist">Existuje soubor s totožným názvem.</string>
+    <string name="device_path_file_error">Tento soubor neexistuje.</string>
+    <string name="device_trash_files_restore">Obnovit</string>
+    <string name="error_recent_account">Soubor byl odstraněn nebo není pro tento účet k dispozici.</string>
+    <string name="error_recent_enter_account">Vložte účet.</string>
+    <string name="operation_move_file_existing">Soubor (%1$s) již v cílovém adresáři existuje.</string>
+    <string name="upload_to_portal">Nahrát na portál</string>
+    <string name="this_device">Toto zařízení</string>
+    <string name="dialog_clear_cache">Vymazat mezipaměť?</string>
+    <string name="error_unsupported_path">Nepodporovaná cesta</string>
+    <string name="error_unsupported_format">Nepodporovaný formát</string>
+
+</resources>

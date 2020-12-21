@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cloudLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/bannerImage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/image_account_cloud"
+        app:layout_constraintEnd_toStartOf="@+id/horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/descriptionTextView" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/onlyOfficeLogoImage"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/default_margin_medium"
+        android:src="@drawable/only_office_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/horizontal"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/descriptionTextView"
+        style="@style/CloudStorageText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_xlarge"
+        android:layout_marginTop="@dimen/default_margin_xlarge"
+        android:layout_marginEnd="@dimen/default_margin_xlarge"
+        android:text="@string/cloud_account_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/horizontal"
+        app:layout_constraintTop_toBottomOf="@id/onlyOfficeLogoImage" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/startButton"
+        style="@style/FixedAccentButtons"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/default_margin_xlarge"
+        android:text="@string/cloud_account_start_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/horizontal"
+        app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/otherStorageButton"
+        style="@style/FixedTransparentAccentButtonsNoCaps"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/default_margin_medium"
+        android:text="@string/cloud_account_other_storages_button"
+        app:layout_constraintBottom_toBottomOf="@+id/bannerImage"
+        app:layout_constraintEnd_toEndOf="@id/startButton"
+        app:layout_constraintStart_toStartOf="@id/startButton"
+        app:layout_constraintTop_toBottomOf="@id/startButton" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

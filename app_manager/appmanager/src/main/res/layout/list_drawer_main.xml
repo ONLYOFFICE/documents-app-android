@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/list_drawer_main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/popup_margins_top_bottom"
+    android:paddingBottom="@dimen/popup_margins_top_bottom">
+
+    <LinearLayout
+        android:id="@+id/list_drawer_my"
+        style="@style/ContextListLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            style="@style/ContextListImage"
+            app:srcCompat="@drawable/ic_drawer_menu_my_docs" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/ContextDrawerListText"
+            android:text="@string/navigation_drawer_menu_my" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/list_drawer_share"
+        style="@style/ContextListLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            style="@style/ContextListImage"
+            app:srcCompat="@drawable/ic_share_docs" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/ContextDrawerListText"
+            android:text="@string/navigation_drawer_menu_shared" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/list_drawer_common"
+        style="@style/ContextListLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            style="@style/ContextListImage"
+            app:srcCompat="@drawable/ic_drawer_menu_common_docs" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/ContextDrawerListText"
+            android:text="@string/navigation_drawer_menu_common" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/list_drawer_project"
+        style="@style/ContextListLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            style="@style/ContextListImage"
+            app:srcCompat="@drawable/ic_drawer_menu_projects" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/ContextDrawerListText"
+            android:text="@string/navigation_drawer_menu_projects" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/list_drawer_trash"
+        style="@style/ContextListLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            style="@style/ContextListImage"
+            app:srcCompat="@drawable/ic_drawer_menu_trash" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/ContextDrawerListText"
+            android:text="@string/navigation_drawer_menu_trash" />
+    </LinearLayout>
+
+    <include
+        layout="@layout/view_line_separator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_separator_height"
+        android:layout_marginTop="@dimen/line_separator_group_top"
+        android:layout_marginBottom="@dimen/line_separator_group_bottom" />
+
+    <LinearLayout
+        android:id="@+id/list_drawer_about"
+        style="@style/ContextListLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            style="@style/ContextListImage"
+            app:srcCompat="@drawable/ic_drawer_menu_about" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/ContextDrawerListText"
+            android:text="@string/navigation_drawer_menu_about" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/list_drawer_help"
+        style="@style/ContextListLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            style="@style/ContextListImage"
+            app:srcCompat="@drawable/drawable_ic_drawer_menu_help_fill" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/ContextDrawerListText"
+            android:text="@string/navigation_drawer_menu_help" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/list_drawer_feedback"
+        style="@style/ContextListLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            style="@style/ContextListImage"
+            app:srcCompat="@drawable/ic_drawer_menu_feedback" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/ContextDrawerListText"
+            android:text="@string/navigation_drawer_menu_feedback" />
+    </LinearLayout>
+
+</LinearLayout>

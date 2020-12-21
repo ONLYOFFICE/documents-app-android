@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="dialogs_edit_forbidden_symbols">Do not use these symbols\u0020</string>
+
+    <!-- File/Folder info -->
+    <string name="sizes_bytes">Bytes</string>
+    <string name="sizes_kilobytes">Kb</string>
+    <string name="sizes_megabytes">Mb</string>
+    <string name="sizes_gigabytes">Gb</string>
+    <string name="sizes_terabytes">Tb</string>
+    <string name="item_owner_self">Me</string>
+</resources>

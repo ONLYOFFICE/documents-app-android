@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>android_documents_rating</key>
+        <value>false</value>
+    </entry>
+    <entry>
+        <key>android_documents_20_beta_enabled</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>android_documents_20_beta_version</key>
+        <value>45</value>
+    </entry>
+</defaultsMap>

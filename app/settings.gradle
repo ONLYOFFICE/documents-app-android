@@ -1,0 +1,17 @@
+rootProject.name = "DocumentsAndroid"
+include ':libdocs'
+
+settings.createProjectDescriptor(settings.rootProject, 'libtoolkit', file('../toolkit/libtoolkit'))
+include ':libtoolkit'
+
+settings.createProjectDescriptor(settings.rootProject, 'appmanager', file('../app_manager/appmanager'))
+include ':appmanager'
+
+include ':libx2t'
+include ':libgeditors'
+include ':libslides'
+include ':libgslides'
+include ':libgdocs'
+include ':libgcells'
+include ':libeditors'
+include ':libcells'

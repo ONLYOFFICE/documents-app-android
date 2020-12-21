@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
+
+    <WebView
+        style="@style/CommonWebView"
+        android:id="@+id/license_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:layout_marginLeft="@dimen/screen_margin_large"
+        android:layout_marginRight="@dimen/screen_margin_large"/>
+
+</RelativeLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_item_recent"
+        android:icon="@drawable/ic_navigation_recent"
+        android:title="@string/fragment_recent_title" />
+    <item
+        android:id="@+id/menu_item_cloud"
+        android:icon="@drawable/ic_header_cloud"
+        android:title="@string/fragment_clouds_title" />
+    <item
+        android:id="@+id/menu_item_on_device"
+        android:icon="@drawable/ic_drawer_menu_on_device"
+        android:title="@string/fragment_on_device_title" />
+    <item
+        android:id="@+id/menu_item_setting"
+        android:icon="@drawable/ic_account_circle"
+        android:title="@string/cloud_accounts_title" />
+
+</menu>

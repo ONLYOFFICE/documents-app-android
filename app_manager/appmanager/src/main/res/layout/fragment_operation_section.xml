@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/operation_sections_my"
+            style="@style/OperationLayout">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/OperationImage"
+                app:srcCompat="@drawable/ic_drawer_menu_my_docs" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/ContextListMediumText"
+                android:text="@string/navigation_drawer_menu_my" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/operation_sections_share"
+            style="@style/OperationLayout">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/OperationImage"
+                app:srcCompat="@drawable/ic_share_docs" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/ContextListMediumText"
+                android:text="@string/navigation_drawer_menu_shared" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/operation_sections_common"
+            style="@style/OperationLayout">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/OperationImage"
+                app:srcCompat="@drawable/ic_drawer_menu_common_docs" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/ContextListMediumText"
+                android:text="@string/navigation_drawer_menu_common" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/operation_sections_projects"
+            style="@style/OperationLayout">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/OperationImage"
+                app:srcCompat="@drawable/ic_drawer_menu_projects" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/ContextListMediumText"
+                android:text="@string/navigation_drawer_menu_projects" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
+
+

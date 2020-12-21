@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="sizes_bytes">Bajty</string>
+    <string name="sizes_kilobytes">Kb</string>
+    <string name="sizes_megabytes">Mb</string>
+    <string name="sizes_gigabytes">Gb</string>
+    <string name="sizes_terabytes">Tb</string>
+    <string name="item_owner_self">Moje</string>
+</resources>

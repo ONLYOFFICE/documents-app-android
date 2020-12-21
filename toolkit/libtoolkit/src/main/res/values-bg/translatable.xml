@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="sizes_bytes">Bytes</string>
+    <string name="sizes_gigabytes">Gb</string>
+    <string name="sizes_kilobytes">KB</string>
+    <string name="sizes_megabytes">MB</string>
+    <string name="sizes_terabytes">TB</string>
+
+</resources>

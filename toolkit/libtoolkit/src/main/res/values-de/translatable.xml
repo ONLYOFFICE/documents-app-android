@@ -1,0 +1,10 @@
+<resources>
+
+  <string name="dialogs_edit_forbidden_symbols">Verwenden Sie diese Symbole nicht\u0020</string>
+  <string name="sizes_bytes">Bytes</string>
+  <string name="sizes_kilobytes">kB</string>
+  <string name="sizes_megabytes">MB</string>
+  <string name="sizes_gigabytes">GB</string>
+  <string name="sizes_terabytes">TB</string>
+  <string name="item_owner_self">Ich</string>
+</resources>

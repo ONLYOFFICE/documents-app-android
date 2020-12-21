@@ -1,0 +1,6 @@
+google-services.json
+
+/build
+
+/src/main/res/values/facebook_id.xml
+/src/main/java/app/editors/manager/managers/utils/Constants.java

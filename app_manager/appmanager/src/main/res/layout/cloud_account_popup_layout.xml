@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Created by Michael Efremov on 30.07.20 11:22
+  -->
+
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/context_popup_width"
+    android:layout_height="wrap_content"
+    android:background="@drawable/drawable_bottom_sheet_fragment"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/default_margin_medium">
+
+    <include
+        android:id="@+id/headerItem"
+        layout="@layout/account_list_item_layout"
+        android:layout_width="@dimen/context_popup_width"
+        android:layout_height="@dimen/item_three_line_height" />
+
+    <include
+        android:id="@+id/signInItem"
+        layout="@layout/account_context_item" />
+
+    <include
+        android:id="@+id/profileItem"
+        layout="@layout/account_context_item" />
+
+    <include
+        android:id="@+id/logoutItem"
+        layout="@layout/account_context_item" />
+
+    <include
+        android:id="@+id/removeItem"
+        layout="@layout/account_context_item" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

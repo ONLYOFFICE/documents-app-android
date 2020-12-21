@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by Michael Efremov on 08.09.20 12:32
+  -->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="opaque">
+
+    <item android:drawable="@color/colorWhite"/>
+
+    <item>
+
+        <bitmap android:src="@drawable/image_onlyoffice_text"
+            android:gravity="center"/>
+
+    </item>
+
+</layer-list>

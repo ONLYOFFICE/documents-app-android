@@ -1,0 +1,9 @@
+<resources>
+
+  <string name="dialogs_edit_forbidden_symbols">Не используйте эти символы\u0020</string>
+  <string name="sizes_bytes">байт</string>
+  <string name="sizes_gigabytes">Гб</string>
+  <string name="sizes_kilobytes">Кб</string>
+  <string name="sizes_megabytes">Мб</string>
+  <string name="sizes_terabytes">Тб</string>
+</resources>

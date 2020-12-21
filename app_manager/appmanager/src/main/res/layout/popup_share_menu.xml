@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@color/colorWhite"
+    android:paddingTop="@dimen/popup_margins_top_bottom"
+    android:paddingBottom="@dimen/popup_margins_top_bottom">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/popup_share_access_full"
+            style="@style/PopupLayout">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_access_full" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/PopupText"
+                android:text="@string/share_popup_access_full" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/popup_share_access_fill_forms"
+            style="@style/PopupLayout">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_access_fill_form" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/PopupText"
+                android:text="@string/share_popup_access_fill_forms" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/popup_share_access_comment"
+            style="@style/PopupLayout">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_access_comment" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/PopupText"
+                android:text="@string/share_popup_access_comment" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/popup_share_access_review"
+            style="@style/PopupLayout">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_access_review" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/PopupText"
+                android:text="@string/share_popup_access_review" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/popup_share_access_read"
+            style="@style/PopupLayout">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_access_read" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/PopupText"
+                android:text="@string/share_popup_access_read_only" />
+        </LinearLayout>
+
+        <include
+            android:id="@+id/popup_share_access_separator_deny"
+            layout="@layout/view_line_separator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_separator_height"
+            android:layout_marginTop="@dimen/line_separator_group_top"
+            android:layout_marginBottom="@dimen/line_separator_group_bottom" />
+
+        <LinearLayout
+            android:id="@+id/popup_share_access_deny"
+            style="@style/PopupLayout">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_access_deny" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/PopupText"
+                android:text="@string/share_popup_access_deny_access" />
+        </LinearLayout>
+
+        <include
+            android:id="@+id/popup_share_access_separator_remove"
+            layout="@layout/view_line_separator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_separator_height"
+            android:layout_marginTop="@dimen/line_separator_group_top"
+            android:layout_marginBottom="@dimen/line_separator_group_bottom"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/popup_share_access_remove"
+            style="@style/PopupLayout"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_access_remove" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/PopupText"
+                android:text="@string/share_popup_access_deny_remove" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
+

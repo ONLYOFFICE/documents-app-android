@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@color/colorWhite"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/popup_margins_top_bottom"
+    android:paddingBottom="@dimen/popup_margins_top_bottom">
+
+    <LinearLayout
+        android:id="@+id/popup_trash_move"
+        style="@style/PopupLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            style="@style/ContextListImage"
+            app:srcCompat="@drawable/ic_trash_move" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/popup_move_title"
+            style="@style/PopupText" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/popup_trash_delete"
+        style="@style/PopupLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            style="@style/ContextListImage"
+            app:srcCompat="@drawable/ic_trash_delete" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/PopupText"
+            android:text="@string/trash_popup_delete" />
+    </LinearLayout>
+
+</LinearLayout>

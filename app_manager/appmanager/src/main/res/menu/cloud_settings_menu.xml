@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/settingsItem"
+        android:icon="@drawable/drawable_setting_icon"
+        android:title="@string/settings_item_title"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/deleteSelected"
+        android:icon="@drawable/drawable_ic_trash"
+        android:visible="false"
+        app:showAsAction="always"
+        tools:ignore="MenuTitle" />
+
+    <item
+        android:id="@+id/selectAll"
+        android:title="@string/toolbar_menu_main_select_all"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/deselect"
+        android:title="@string/toolbar_menu_main_deselect"
+        android:visible="false"
+        app:showAsAction="never" />
+</menu>

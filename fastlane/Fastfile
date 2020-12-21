@@ -1,0 +1,230 @@
+fastlane_version "2.62.1"
+
+fastlane_require 'dotenv'
+Dotenv.load '.env.secret'
+
+default_platform(:android)
+skip_docs # Do not create fastlane/README.md
+
+platform :android do
+  before_all do
+    ensure_env_vars(
+      env_vars: ['GIT_ANDROID_DOCUMENTS_PASSPHRASE']
+    )
+
+    sh "../.github/secrets/decrypt_secret.sh"
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Composit task (clean, incriment, build, deploy, commit) fo deploy a new internal testing build to Google Play Store"
+  lane :bundleRelease do
+    versionCode = android_get_version_code(
+      gradle_file: "app_manager/appmanager/build.gradle"
+    )
+
+    versionName = android_get_version_name(
+      gradle_file: "app_manager/appmanager/build.gradle"
+    )
+
+    versionCode = increment_version_code(
+      gradle_file_path: "app_manager/appmanager/build.gradle"
+    )
+
+    # get the last commit comments from Git history
+    # and creates our changelog
+    changelog = changelog_from_git_commits(
+      pretty: "- %s",
+      date_format: "short",
+      match_lightweight_tag: false,
+      merge_commit_filtering: "exclude_merges"
+    )
+
+    # Cleanup and build
+    cleanup
+
+    gradle(
+      task: 'bundle',
+      build_type: 'Release',
+      project_dir: 'app_manager/'
+    )
+
+    # Submit to Play Market
+    upload_to_play_store(
+      track: 'internal',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true
+    )
+
+    git_version_bumped
+
+    begin
+      telegram(
+        token: ENV['TELEGRAM_BOT_TOKEN'],
+        chat_id: ENV['TELEGRAM_CHAT_ID'],
+        parse_mode: 'Markdown',
+        text: ENV["TELEGRAM_DOCUMENTS_ANDROID_MESSAGE"] % [versionName: "#{versionName}", versionCode: "#{versionCode}", changelog: "#{changelog}"]
+        )
+    rescue => ex
+      UI.error(ex)
+    end
+
+    sleep(5)
+
+  end
+
+
+  desc "Task for CI"
+  lane :publish_market_and_apk do
+    cleanup
+    increment_build
+    deploy_playmarket
+    apk
+    git_version_bumped
+  end
+
+
+  desc "Cleanup build"
+  lane :cleanup do
+    gradle(task: 'clean', project_dir: 'app_manager/')
+    gradle(task: 'clearAssets', project_dir: 'app_manager/')
+  end
+
+
+  desc "Increment build number"
+  lane :increment_build do
+    increment_version_code(
+      gradle_file_path: "app_manager/appmanager/build.gradle"
+    )
+  end
+
+
+  desc "Commit bumped version"
+  lane :git_version_bumped do
+    versionCode = android_get_version_code(
+      gradle_file: "app_manager/appmanager/build.gradle"
+    )
+
+    versionName = android_get_version_name(
+      gradle_file: "app_manager/appmanager/build.gradle"
+    )
+
+    # creates a bump version commit 
+    git_commit(
+      path: "app_manager/appmanager/build.gradle",
+      message: "Version bumped to v#{versionName}(#{versionCode})"
+    )
+
+    # create a local tag with the new version
+    add_git_tag(
+      tag: "v#{versionName}-#{versionCode}",
+      build_number: versionCode
+    )
+
+    # push changes
+    push_to_git_remote
+  end
+
+
+  desc "Deploy a new internal testing build to Google Play Store"
+  lane :deploy_playmarket do
+    versionCode = android_get_version_code(
+      gradle_file: "app_manager/appmanager/build.gradle"
+    )
+
+    versionName = android_get_version_name(
+      gradle_file: "app_manager/appmanager/build.gradle"
+    )
+
+    # get the last commit comments from Git history
+    # and creates our changelog
+    changelog = changelog_from_git_commits(
+      pretty: "- %s",
+      date_format: "short",
+      match_lightweight_tag: false,
+      merge_commit_filtering: "exclude_merges"
+    )
+
+    # Build
+    gradle(
+      task: 'bundle',
+      build_type: 'Release',
+      project_dir: 'app_manager/'
+    )
+
+    # Submit to Play Market
+    upload_to_play_store(
+      track: 'internal',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true
+    )
+
+    # Post message
+    begin
+      telegram(
+        token: ENV['TELEGRAM_BOT_TOKEN'],
+        chat_id: ENV['TELEGRAM_CHAT_ID'],
+        parse_mode: 'Markdown',
+        text: ENV["TELEGRAM_DOCUMENTS_ANDROID_MESSAGE"] % [versionName: "#{versionName}", versionCode: "#{versionCode}", changelog: "#{changelog}"]
+      )
+    rescue => ex
+      UI.error(ex)
+    end
+
+    sleep(5)
+
+  end
+
+
+  desc "Build the application as APK files for all platforms"
+  lane :apk do
+    versionCode = android_get_version_code(
+      gradle_file: "app_manager/appmanager/build.gradle"
+    )
+
+    versionName = android_get_version_name(
+      gradle_file: "app_manager/appmanager/build.gradle"
+    )
+
+    # get the last commit comments from Git history
+    # and creates our changelog
+    changelog = changelog_from_git_commits(
+      pretty: "- %s",
+      date_format: "short",
+      match_lightweight_tag: false,
+      merge_commit_filtering: "exclude_merges"
+    )
+
+    # Build
+    gradle(
+      task: 'assemble',
+      build_type: 'Release',
+      project_dir: 'app_manager/'
+    )
+
+    # Post message
+    begin
+      telegram(
+        token: ENV['TELEGRAM_BOT_TOKEN'],
+        chat_id: ENV['TELEGRAM_CHAT_ID'],
+        parse_mode: 'Markdown',
+        text: ENV["TELEGRAM_DOCUMENTS_ANDROID_APK_MESSAGE"] % [versionName: "#{versionName}", versionCode: "#{versionCode}", changelog: "#{changelog}"]
+      )
+    rescue => ex
+      UI.error(ex)
+    end
+
+    sleep(5)
+
+  end
+
+
+end
+

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Different screens values -->
+    <integer name="screen_size">1</integer>
+
+    <dimen name="screen_top_bottom_padding">8dp</dimen>
+    <dimen name="screen_left_right_padding">72dp</dimen>
+    <dimen name="screen_bottom_padding">24dp</dimen>
+    <dimen name="screen_collapse_layout_height">200dp</dimen>
+    <dimen name="screen_padding_medium_left_right">16dp</dimen>
+    <dimen name="screen_margin_large">24dp</dimen>
+    <dimen name="screen_margin_medium">16dp</dimen>
+    <dimen name="screen_storage_height">72dp</dimen>
+
+    <dimen name="screen_on_boarding_header_text_size">30sp</dimen>
+    <dimen name="screen_on_boarding_info_text_size">20sp</dimen>
+    <dimen name="screen_on_boarding_image_width">450dp</dimen>
+    <dimen name="screen_on_boarding_image_height">720dp</dimen>
+    <dimen name="screen_on_boarding_image_horizontal_margin">48dp</dimen>
+    <dimen name="screen_share_panel_button_width">128dp</dimen>
+
+    <dimen name="screen_auth_image_width">496dp</dimen>
+    <dimen name="screen_auth_image_height">422dp</dimen>
+
+    <item name="screen_on_boarding_layout_height" format="integer" type="dimen">-2</item>
+
+    <dimen name="design_bottom_navigation_text_size" tools:override="true">10sp</dimen>
+    <dimen name="design_bottom_navigation_active_text_size" tools:override="true">10sp</dimen>
+</resources>

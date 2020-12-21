@@ -1,0 +1,2 @@
+json_key_file("app_manager/google_api.json") #put secret .json
+package_name("com.onlyoffice.documents")

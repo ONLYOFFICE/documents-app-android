@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/item_three_line_height"
+    android:background="@color/colorWhite"
+    android:clickable="false"
+    android:focusable="false">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/accountItemLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingBottom="@dimen/line_separator_height">
+
+        <include
+            android:id="@+id/selectableLayout"
+            layout="@layout/view_icon_selectable"
+            android:layout_width="@dimen/image_size"
+            android:layout_height="@dimen/image_size"
+            android:layout_marginStart="@dimen/screen_margin_large"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageCheck"
+            android:layout_width="@dimen/default_margin_large"
+            android:layout_height="@dimen/default_margin_large"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/ic_check"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@id/selectableLayout"
+            app:layout_constraintEnd_toEndOf="@id/selectableLayout" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/accountItemName"
+            style="@style/ItemMediumBlackText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin_medium"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            app:layout_constraintBottom_toTopOf="@+id/accountItemPortal"
+            app:layout_constraintLeft_toRightOf="@+id/selectableLayout"
+            app:layout_constraintRight_toLeftOf="@+id/accountItemContext"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Name" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/accountItemPortal"
+            style="@style/ItemSmallGreyText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin_medium"
+            android:layout_marginTop="@dimen/default_margin_small"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            android:layout_marginBottom="@dimen/default_margin_small"
+            app:layout_constraintBottom_toTopOf="@+id/accountItemEmail"
+            app:layout_constraintEnd_toStartOf="@+id/accountItemContext"
+            app:layout_constraintStart_toEndOf="@+id/selectableLayout"
+            app:layout_constraintTop_toBottomOf="@+id/accountItemName"
+            tools:text="Portal" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/accountItemEmail"
+            style="@style/ItemSmallGreyText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@+id/accountItemPortal"
+            app:layout_constraintRight_toRightOf="@+id/accountItemPortal"
+            app:layout_constraintTop_toBottomOf="@+id/accountItemPortal"
+            tools:text="Email" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/accountItemContext"
+            style="@style/AlphaImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="@dimen/screen_margin_large"
+            android:src="@drawable/ic_list_context_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        layout="@layout/view_line_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom" />
+
+</FrameLayout>

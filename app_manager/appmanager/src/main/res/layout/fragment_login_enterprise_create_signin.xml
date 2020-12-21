@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:fillViewport="true"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/screen_padding_medium_left_right">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_signin_password_layout"
+            android:layout_width="@dimen/default_screen_width"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/screen_top_bottom_padding"
+            android:hint="@string/login_create_signin_password"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:passwordToggleEnabled="true">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/login_signin_password_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionNext"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_signin_repeat_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/login_create_signin_repeat"
+            app:layout_constraintEnd_toEndOf="@+id/login_signin_password_layout"
+            app:layout_constraintStart_toStartOf="@+id/login_signin_password_layout"
+            app:layout_constraintTop_toBottomOf="@+id/login_signin_password_layout"
+            app:passwordToggleEnabled="true">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/login_signin_repeat_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/login_signin_create_portal_button"
+            style="@style/FixedAccentButtons"
+            android:layout_width="0dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/login_create_signin_create_button"
+            app:layout_constraintEnd_toEndOf="@+id/login_signin_password_layout"
+            app:layout_constraintStart_toStartOf="@+id/login_signin_password_layout"
+            app:layout_constraintTop_toBottomOf="@+id/login_signin_repeat_layout"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/login_signin_terms_info_button"
+            style="@style/FixedTransparentAccentButtonsNoCaps"
+            android:layout_width="@dimen/default_screen_width"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:lines="2"
+            android:maxLines="2"
+            android:text="@string/login_create_signin_info"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/login_signin_create_portal_button" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
+

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite"
+    app:cardCornerRadius="@dimen/default_corner_radius_micro">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/dialogContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_margin_medium">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/dialogCommonTopTitleText"
+            style="@style/ItemLargeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/screen_margin_large"
+            android:layout_marginTop="@dimen/screen_margin_large"
+            android:layout_marginRight="@dimen/screen_margin_large"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="start|center_vertical"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:lines="10"
+            android:maxLines="10"
+            android:minLines="1"
+            android:singleLine="false"
+            tools:text="Top title" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/dialogCommonBottomTitleText"
+            style="@style/SmallTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/screen_margin_large"
+            android:layout_marginTop="@dimen/screen_margin_large"
+            android:layout_marginRight="@dimen/screen_margin_large"
+            android:gravity="start|center_vertical"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:lines="10"
+            android:maxLines="10"
+            android:minLines="1"
+            android:singleLine="false"
+            tools:text="Bottom title" />
+
+        <FrameLayout
+            android:id="@+id/dialogCommonFrameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/screen_margin_large"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="@dimen/screen_margin_large">
+
+            <include
+                layout="@layout/dialog_fragment_progress_waiting"
+                android:visibility="visible" />
+
+            <include
+                layout="@layout/dialog_fragment_progress_loading"
+                android:visibility="gone" />
+
+            <include
+                layout="@layout/dialog_fragment_edit_line_hint"
+                android:visibility="gone" />
+
+            <include
+                layout="@layout/dialog_fragment_edit_multiline"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/screen_margin_large"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialogCommonFrameLayout">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/dialogCommonCancelButton"
+                style="@style/TransparentAccentButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/screen_margin_medium"
+                android:paddingRight="@dimen/screen_margin_medium"
+                tools:text="Cancel" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/dialogCommonAcceptButton"
+                style="@style/TransparentAccentButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/screen_margin_medium"
+                android:paddingLeft="@dimen/screen_margin_medium"
+                android:paddingRight="@dimen/screen_margin_medium"
+                tools:text="Accept" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.cardview.widget.CardView>

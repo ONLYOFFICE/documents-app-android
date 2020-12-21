@@ -1,0 +1,222 @@
+import java.text.SimpleDateFormat
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.firebase.crashlytics'
+
+// Onlyoffice
+def APP_ID = "com.onlyoffice.documents"
+def APP_ID_BETA = APP_ID + ".beta"
+def APP_NAME = "onlyoffice-manager"
+
+/*
+* Create a variable called keystorePropertiesFile, and initialize it to your
+* keystore.properties file, in the rootProject folder.
+* Example of file content:
+*   storePassword=password
+*   keyPassword=password
+*   keyAlias=AliasInKeyStore
+*   storeFile=C:/example/MyAndroidKeys.jks
+*/
+
+def getKeystore(String filePath) {
+    // Initialize a new Properties() object called keystoreProperties.
+    def keystoreProperties = new Properties()
+
+    // You can place here passwords and path to keystore instead of file properties
+    keystoreProperties["keyAlias"] = "<YOUR_ALIAS>"
+    keystoreProperties["keyPassword"] = "<YOUR_PASSWORD>"
+    keystoreProperties["storeFile"] = "<PATH_TO_KEYSTORE_FILE>"
+    keystoreProperties["storePassword"] = "<KEYSTORE_PASSWORD>"
+
+    // Get file with properties
+    def keystorePropertiesFile = rootProject.file(filePath)
+    // File check to exist for success script building
+    if (keystorePropertiesFile.exists()) {
+        // Load your keystore.properties file into the keystoreProperties object.
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    } else {
+        def writer = new FileWriter(keystorePropertiesFile, false)
+        keystoreProperties.store(writer, "Google keystore file")
+    }
+
+    return keystoreProperties
+}
+
+
+android {
+
+    buildToolsVersion '30.0.2'
+    compileSdkVersion 30
+
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 29
+        versionCode 239
+        versionName "5.0.1"
+        multiDexEnabled true
+        applicationId "com.onlyoffice.documents"
+        buildConfigField "boolean", "IS_BETA", "false"
+        manifestPlaceholders = [permissionId: APP_ID_BETA]
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' //comment to armv7
+        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' //comment to armv7
+            universalApk true
+        }
+    }
+
+    signingConfigs {
+        onlyoffice {
+            def keystoreProperties = getKeystore("Onlyoffice-keystore.properties")
+            keyAlias = keystoreProperties['keyAlias']
+            keyPassword = keystoreProperties['keyPassword']
+            storeFile = file(keystoreProperties['storeFile'])
+            storePassword = keystoreProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+
+        release {
+            zipAlignEnabled true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.onlyoffice
+        }
+
+        debug {
+            minifyEnabled false
+        }
+
+        applicationVariants.all { variant ->
+            variant.outputs.all { output ->
+                // Constants
+                buildConfigField "String", "RELEASE_ID", "\"" + APP_ID + "\""
+                buildConfigField "String", "BETA_ID", "\"" + APP_ID_BETA + "\""
+
+                // Apk name
+                def timeMark = new SimpleDateFormat("MMMMM.dd_HH-mm").format(new Date())
+                def buildAbi = output.getFilter(com.android.build.OutputFile.ABI)
+                def buildType = variant.buildType.isDebuggable() ? "debug" : "release"
+                def buildCode = "_build-" + versionCode
+
+                outputFileName = "${APP_NAME}-${variant.versionName}-" +
+                        "${variant.flavorName.toUpperCase()}-" +
+                        "${buildAbi}-${buildType}${buildCode}${timeMark}.apk"
+            }
+        }
+    }
+
+    preBuild.doFirst {
+        delete fileTree(buildDir) {
+            include '**/*.apk'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    bundle {
+        density {
+            enableSplit true
+        }
+        abi {
+            enableSplit true
+        }
+        language {
+            enableSplit false
+        }
+    }
+
+    packagingOptions {
+        ['armeabi-v7a', 'x86' ,'arm64-v8a',  'x86_64' ].each { abi ->
+            pickFirst "lib/$abi/lib${NAME_LIB_DJVUFILE}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_DOCTRENDERER}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_GRAPHICS}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_HTMLFILE}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_HTMLRENDERER}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_KERNEL}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_PDFREADER}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_PDFWRITER}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_UNICODECONVERTER}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_X2T}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_XPSFILE}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_FB2FILE}.so"
+            pickFirst "lib/$abi/lib${NAME_LIB_EPUBFILE}.so"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(":libtoolkit")
+    implementation project(':libx2t')
+    implementation project(':libeditors')
+    implementation project(':libslides')
+    implementation project(':libdocs')
+    implementation project(':libcells')
+    implementation project(':libgeditors')
+    implementation project(':libgslides')
+    implementation project(':libgdocs')
+    implementation project(':libgcells')
+
+    implementation "com.google.firebase:firebase-core:18.0.0"
+    implementation "com.google.firebase:firebase-config:20.0.2"
+    implementation "com.google.android.gms:play-services-auth:19.0.0"
+    implementation "com.google.android.play:core:1.9.0"
+    implementation "com.google.android.material:material:1.2.1"
+    implementation "com.google.code.gson:gson:2.8.6"
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
+
+    implementation "androidx.appcompat:appcompat:1.2.0"
+    implementation "androidx.appcompat:appcompat-resources:1.2.0"
+    implementation "androidx.recyclerview:recyclerview:1.2.0-beta01"
+    implementation "androidx.cardview:cardview:1.0.0"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+
+    implementation "com.google.dagger:dagger:2.27"
+    annotationProcessor "com.google.dagger:dagger-compiler:2.27"
+
+    implementation "com.jakewharton:butterknife:10.2.1"
+    annotationProcessor "com.jakewharton:butterknife-compiler:10.2.1"
+
+    implementation "com.squareup.retrofit2:retrofit:2.8.1"
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
+    implementation "com.squareup.retrofit2:converter-simplexml:2.4.0"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.5.0"
+
+    implementation "com.github.moxy-community:moxy-androidx:2.1.2"
+    implementation "com.github.moxy-community:moxy-material:2.1.2"
+    annotationProcessor "com.github.moxy-community:moxy-compiler:2.1.2"
+
+    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
+    implementation "io.michaelrocks:libphonenumber-android:8.8.5"
+    implementation "com.j256.ormlite:ormlite-android:5.1"
+    implementation "com.twitter.sdk.android:twitter-core:3.1.1"
+    implementation "com.facebook.android:facebook-login:4.31.0"
+    implementation "com.romandanylyk:pageindicatorview:1.0.0"
+    implementation "com.github.bumptech.glide:glide:4.11.0"
+    implementation "com.github.chrisbanes:PhotoView:2.3.0"
+
+    implementation "android.arch.work:work-runtime:1.0.1"
+
+}
+
+apply plugin: 'com.google.gms.google-services'
+
+

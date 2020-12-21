@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Primary -->
+    <color name="colorPrimary">#104071</color>
+    <color name="colorPrimaryDark">#10315A</color>
+    <color name="colorPrimaryLight">#3E73A3</color>
+    <color name="colorAccent">#ED7208</color>
+
+    <!-- Common -->
+    <color name="colorBlack">#000000</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorDark">#de000000</color>
+    <color name="colorDarkGrey">#b2000000</color>
+    <color name="colorGrey">#8a000000</color>
+    <color name="colorLightGrey">#61000000</color>
+    <color name="colorDarkLight">#1f000000</color>
+    <color name="colorLight">#8affffff</color>
+    <color name="colorLightWhite">#33ffffff</color>
+    <color name="colorWhiteLight">#F5F5F5</color>
+    <color name="colorLightRed">#deff1744</color>
+    <color name="colorPagerOnBoarding">#D4D4D4</color>
+    <color name="colorTransparent">#00000000</color>
+    <color name="colorSelectedBorder">#446995</color>
+
+    <!-- Ripple -->
+    <color name="colorRipple">#1f000000</color>
+
+    <!-- Items -->
+    <color name="colorDocTint">#446995</color>
+    <color name="colorSheetTint">#40865c</color>
+    <color name="colorPresentationTint">#aa5252</color>
+    <color name="colorPicTint">#a671d8</color>
+    <color name="colorPdfTint">#db4437</color>
+    <color name="colorVideoTint">#00a9cd</color>
+
+    <!-- StatusBar for viewer-->
+    <color name="colorStatusBarDefault">#32000000</color>
+    <color name="colorStatusBarDocTint">#365477</color>
+    <color name="colorStatusBarSheetTint">#336B4A</color>
+    <color name="colorStatusBarPresentationTint">#884242</color>
+
+</resources>

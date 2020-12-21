@@ -1,0 +1,557 @@
+<resources>
+    <string name="app_name">Documents</string>
+    <string name="app_name_full">ONLYOFFICE Documents</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Permissions -->
+    <string name="permission_account_write_label" translatable="false">Account write permission label</string>
+    <string name="permission_account_write_description" translatable="false">Account write permission description</string>
+    <string name="permission_account_read_label" translatable="false">Account write permission label</string>
+    <string name="permission_account_read_description" translatable="false">Account write permission description</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Versions -->
+    <string name="app_versions_title">Version 3.0 released</string>
+    <string name="app_versions_cancel">Later</string>
+    <string name="app_versions_without_release_accept">Install official app</string>
+    <string name="app_versions_without_release_info">
+        Thanks for beta testing! ONLYOFFICE Documents 3.0 is now released, and beta version is no longer supported. Switch to the official app to receive further updates.
+    </string>
+    <string name="app_versions_update_accept">Update official app</string>
+    <string name="app_versions_update_info">
+        Thanks for beta testing! ONLYOFFICE Documents 3.0 is now released, and beta version is no longer supported. Please, switch to official app to receive further updates.
+    </string>
+    <string name="app_versions_actual_release_accept">Open official app</string>
+    <string name="app_versions_actual_release_info">
+        Thanks for beta testing! ONLYOFFICE Documents 3.0 is now released, and beta version is no longer supported. Please, switch to the official app.
+    </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Snackbar common -->
+    <string name="snackbar_copied">Copied</string>
+
+    <!-- ======================================================================================= -->
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_app_version">Version %1$s, build %2$s, SDK %3$s</string>
+    <string name="about_terms">Terms of use</string>
+    <string name="about_policy">Privacy policy</string>
+    <string name="about_license">License agreement</string>
+    <string name="about_website">ONLYOFFICE website</string>
+    <string name="about_email_subject">ONLYOFFICE Documents for Android feedback</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Common errors -->
+    <string name="errors_unknown_error">Connection error. Try again later.</string>
+    <string name="errors_ssl_error">SSL handshake error</string>
+    <string name="errors_connection_error">Check the internet connection</string>
+    <string name="errors_unknown_host_error">Unknown host</string>
+    <string name="errors_redirect_error">Unknown redirect error with code:\u0020</string>
+    <string name="errors_client_error">Unknown client error with code:\u0020</string>
+    <string name="errors_client_portal_exist">Portal with the same name already exists</string>
+    <string name="errors_client_portal_sms">You have sent too many text messages. Please try again later.</string>
+    <string name="errors_client_host_not_found">Address not found</string>
+    <string name="errors_client_forbidden">Access denied</string>
+    <string name="errors_client_unauthorized">Unauthorized request</string>
+    <string name="errors_client_payment_required"> Payment required</string>
+    <string name="errors_server_error">Unknown server error with code:\u0020</string>
+    <string name="errors_server_auth_error">Authentication error</string>
+    <string name="errors_email_syntax_error">Invalid email</string>
+    <string name="errors_viewer_download_name">Download failed</string>
+    <string name="errors_email_already_registered">User with this email is already registered</string>
+    <string name="errors_path_url">Invalid URL</string>
+    <string name="errors_create_local_file">Failed create file</string>
+
+    <!-- SignIn -->
+    <string name="errors_sign_in_splash_error">Failed to access the portal</string>
+    <string name="errors_sign_in_account_error">Login failed</string>
+    <string name="errors_sign_in_account_already_use">You are already using this account</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Login -->
+    <string name="login_api_init_error">Init error</string>
+    <string name="login_api_init_portal_error">Portal name syntax error</string>
+    <string name="login_api_portal_name">Wrong portal name. Example: example.onlyoffice.com</string>
+    <string name="login_api_portal_name_length">Portal name must consist of at least 6 characters</string>
+    <string name="login_api_portal_name_content">Portal name must consist of A-Z, a-z, 0-9</string>
+
+
+    <string name="login_retry">Retry connect</string>
+
+    <!-- Accounts -->
+    <string name="login_accounts_select_title">Select account</string>
+    <string name="login_accounts_select_add">Add cloud account</string>
+
+    <!-- Portal pager -->
+    <string name="login_pager_enterprise">PORTAL</string>
+    <string name="login_pager_personal">PERSONAL</string>
+    <string name="login_pager_title">Connect ONLYOFFICE cloud</string>
+
+    <!-- Portal enterprise-->
+    <string name="login_enterprise_edit_hint">Portal address</string>
+    <string name="login_enterprise_button_next">NEXT</string>
+    <string name="login_enterprise_edit_error_hint">Enter valid address</string>
+    <string name="login_enterprise_forgot_password">Forgot password or email?</string>
+    <string name="login_enterprise_button_create">CREATE PORTAL</string>
+    <string name="login_enterprise_button_select">ACCOUNTS</string>
+    <string name="login_enterprise_email_hint">Email</string>
+    <string name="login_enterprise_password_hint">Password</string>
+    <string name="login_enterprise_signin_button">SIGN IN</string>
+    <string name="login_enterprise_single_sign_button">Single Sign-on</string>
+    <string name="login_enterprise_info">
+        ONLYOFFICE portal allows to save files in the cloud, share it with co-workers and co-edit in real time.
+    </string>
+    <string name="login_not_authorization_info">Could not sign in to %1$s at %2$s</string>
+    <string name="login_not_authorization_button">TRY AGAIN</string>
+    <string name="errors_first_name">First name is not valid. It must not contain digits.</string>
+    <string name="errors_last_name">Last name is not valid. It must not contain digits.</string>
+
+    <!-- Portal personal -->
+    <string name="login_personal_edit_email_hint">Email</string>
+    <string name="login_personal_edit_password_hint">Password</string>
+    <string name="login_personal_signin_button">SIGN IN</string>
+    <string name="login_personal_signup_button">SIGN UP</string>
+    <string name="login_personal_signup_title">Sign up to personal portal</string>
+    <string name="login_personal_signup_edit_info">Confirmation link will be sent to this address</string>
+    <string name="login_personal_signup_dialog_info">Confirmation link sent to email %1$s\nFollow link in mail before you continue</string>
+    <string name="login_personal_info">
+        Connect ONLYOFFICE Personal to save files in the cloud
+    </string>
+    <string name="login_web_dav_title">Connect to %1$s</string>
+
+    <!-- Portal create-->
+    <string name="login_create_portal_title">Create portal for organization</string>
+    <string name="login_create_portal_address_hint">Portal address</string>
+    <string name="login_create_portal_email_hint">Email</string>
+    <string name="login_create_signin_first_name_hint">First name</string>
+    <string name="login_create_signin_last_name_hint">Last name</string>
+    <string name="login_create_portal_next_button">NEXT</string>
+
+    <!-- Portal create sign in -->
+    <string name="login_create_signin_title">Set password</string>
+    <string name="login_create_signin_password">Password</string>
+    <string name="login_create_signin_repeat">Repeat password</string>
+    <string name="login_create_signin_create_button">CREATE</string>
+    <string name="login_create_signin_passwords_mismatch">Passwords mismatch</string>
+    <string name="login_create_signin_info">
+        By clicking this button you accept our Terms of service
+    </string>
+
+    <!-- Portal SMS -->
+    <string name="login_sms_code_label">We sent a text message with the code to number</string>
+    <string name="login_sms_send_again">SEND AGAIN</string>
+    <string name="login_sms_send_again_after">SEND AGAIN AFTER</string>
+    <string name="login_sms_change_number">CHANGE NUMBER</string>
+    <string name="login_sms_phone_number_verification">Phone number verification</string>
+    <string name="login_sms_phone_header">Set phone number</string>
+    <string name="login_sms_phone_country_label">Country</string>
+    <string name="login_sms_phone_number_label">Phone number</string>
+    <string name="login_sms_phone_send_button">SEND CODE</string>
+    <string name="login_sms_phone_error_format">Wrong format</string>
+    <string name="login_sms_phone_send_code">We will send verification code via text message</string>
+    <string name="login_sms_resend_ok">Text message code sent</string>
+
+    <!-- Countries codes -->
+    <string name="countries_codes_title">Select country</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Dialogs -->
+    <string name="bottom_sheet_portal_title">Portal</string>
+    <string name="bottom_sheet_cloud_title">Clouds</string>
+    <!--Move copy dialog-->
+    <string name="dialog_move_copy_title_files">%1$d documents with the same names already exist in the \"%2$s\" folder</string>
+    <string name="dialog_move_copy_title_one_file">The file with the \"%1$s\" name already exists in the \"%2$s\" folder</string>
+    <string name="dialog_move_copy_overwrite">Overwrite with version update</string>
+    <string name="dialog_move_copy_copy">Create file copy</string>
+    <string name="dialog_move_copy_skip">Skip</string>
+    <string name="dialog_move_copy_title">File with the same name</string>
+
+    <!-- Common -->
+    <string name="dialogs_common_ok_button">ACCEPT</string>
+    <string name="dialogs_common_cancel_button">CANCEL</string>
+    <string name="dialogs_check_portal_header_text">Check portal capabilities</string>
+    <string name="dialogs_sign_in_portal_header_text">Sign in to portal</string>
+    <string name="dialogs_sign_in_register_portal">Registering portal</string>
+
+    <!-- Waiting -->
+    <string name="dialogs_wait_title">Operation in progress...</string>
+    <string name="dialogs_wait_title_storage">Connecting storage...</string>
+
+    <!-- Question -->
+    <string name="dialogs_question_accept_yes">YES</string>
+    <string name="dialogs_question_accept_no">NO</string>
+    <string name="dialogs_question_accept_delete">DELETE</string>
+    <string name="dialogs_question_accept_remove">REMOVE</string>
+    <string name="dialogs_question_accept_not_really">NOT REALLY</string>
+    <string name="dialogs_question_accept_sure">OK, SURE</string>
+    <string name="dialogs_question_accept_no_thanks">NO, THANKS</string>
+    <string name="dialogs_question_delete">Delete selected item?</string>
+    <string name="dialogs_question_share_remove">Remove the selected item from list?</string>
+    <string name="dialogs_question_http_title">Security warning</string>
+    <string name="dialogs_question_http_question">HTTPS connection is not available, but HTTP connection can be used. Continue?</string>
+    <string name="dialogs_question_facebook_title">Facebook</string>
+    <string name="dialogs_question_facebook_question">Continue with an account:\u0020</string>
+    <string name="dialogs_question_remove_account_title">Remove account?</string>
+    <string name="dialogs_question_remove_account_info">
+        Account with email %1$s from portal %2$s will be logged out and removed from list
+    </string>
+    <string name="dialogs_question_personal_confirm_link_title">Confirm email</string>
+    <string name="dialogs_question_personal_confirm_cancel">TRY AGAIN</string>
+    <string name="dialogs_question_personal_confirm_accept">CONTINUE</string>
+    <string name="dialogs_question_rate_first_info">Do you enjoy using ONLYOFFICE Documents?</string>
+    <string name="dialogs_question_rate_second_info">Would you mind rating the app on Google Play?</string>
+    <string name="dialog_question_delete_file">The file will be irretrievably deleted.</string>
+    <string name="dialog_question_delete_folder">The folder will be irretrievably deleted.</string>
+
+    <!-- Edit -->
+    <string name="dialogs_edit_rename_title">Rename</string>
+    <string name="dialogs_edit_hint">Enter title</string>
+    <string name="dialogs_edit_create_sheet">New spreadsheet</string>
+    <string name="dialogs_edit_create_presentation">New presentation</string>
+    <string name="dialogs_edit_create_docs">New document</string>
+    <string name="dialogs_edit_create_folder">New folder</string>
+    <string name="dialogs_edit_forbidden_symbols">Do not use these symbols\u0020</string>
+    <string name="dialogs_edit_accept_create">CREATE</string>
+    <string name="dialogs_edit_accept_rename">RENAME</string>
+    <string name="dialogs_edit_feedback_title">Feedback</string>
+    <string name="dialogs_edit_feedback_rate_title">Would you mind sending us feedback?</string>
+    <string name="dialogs_edit_feedback_rate_hint">Tell us what to improve</string>
+    <string name="dialogs_edit_feedback_rate_accept">SEND</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Activity chooser -->
+    <string name="chooser_web_browser">Choose browser...</string>
+    <string name="chooser_email_client">Choose email client...</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Main -->
+    <!-- Title -->
+    <string name="actionbar_title_main">Documents</string>
+    <string name="chooser_activity_not_found">Could not find any application for this action...</string>
+    <string name="fragment_clouds_title">Clouds</string>
+    <string name="fragment_clouds_portal_title">Connect to portal</string>
+    <string name="fragment_clouds_storage_title">Connect to storage</string>
+    <string name="fragment_clouds_onlyoffice_item">ONLYOFFICE</string>
+    <string name="fragment_recent_title">Recent</string>
+    <string name="fragment_on_device_title">On Device</string>
+    <string name="fragment_profile_title">Profile</string>
+
+    <!-- Drawer -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- Main drawer menu-->
+    <string name="navigation_drawer_menu_my">My documents</string>
+    <string name="navigation_drawer_menu_shared">Shared with me</string>
+    <string name="navigation_drawer_menu_common">Common documents</string>
+    <string name="navigation_drawer_menu_projects">Projects</string>
+    <string name="navigation_drawer_menu_trash">Trash</string>
+    <string name="navigation_drawer_menu_about">About</string>
+    <string name="navigation_drawer_menu_help">Help</string>
+    <string name="navigation_drawer_menu_logout">Log out</string>
+    <string name="navigation_drawer_menu_add_account">Add account</string>
+    <string name="navigation_drawer_menu_feedback">Feedback</string>
+    <string name="settings_item_title">Settings</string>
+    <string name="settings_item_change_account">Change account</string>
+    <string name="settings_clear_cache">Clear cache</string>
+    <string name="settings_title_common">Common</string>
+    <string name="setting_wifi">Upload files only using Wi-Fi</string>
+    <string name="setting_title_wifi">Wi-Fi</string>
+    <string name="setting_cache_cleared">Cache cleared</string>
+
+    <!-- Main toolbar menu -->
+    <string name="toolbar_menu_search_result">Search result</string>
+    <string name="toolbar_menu_search_hint">Search...</string>
+    <string name="toolbar_menu_main_options">Options</string>
+    <string name="toolbar_menu_main_share">Share</string>
+    <string name="toolbar_menu_main_move">Move</string>
+    <string name="toolbar_menu_main_copy">Copy</string>
+    <string name="toolbar_menu_main_remove_from_list">Remove from list</string>
+    <string name="toolbar_menu_main_rename">Rename</string>
+    <string name="toolbar_menu_main_delete">Delete</string>
+    <string name="toolbar_menu_main_select">Select...</string>
+    <string name="toolbar_menu_main_select_all">Select all</string>
+    <string name="toolbar_menu_main_deselect">Deselect</string>
+    <string name="toolbar_menu_sort_by">Sort by</string>
+    <string name="toolbar_menu_sort_order">Sort order</string>
+    <string name="toolbar_menu_sort_date_modified">Last modified</string>
+    <string name="toolbar_menu_sort_title">Title</string>
+    <string name="toolbar_menu_sort_type">Type</string>
+    <string name="toolbar_menu_sort_size">Size</string>
+    <string name="toolbar_menu_sort_owner">Owner</string>
+    <string name="toolbar_menu_sort_asc">Ascending</string>
+    <string name="toolbar_menu_sort_desc">Descending</string>
+    <string name="toolbar_menu_main_download">Download</string>
+    <string name="toolbar_menu_main_open">Open</string>
+
+    <!-- List context menu -->
+    <string name="list_context_folder_name">Folder name</string>
+    <string name="list_context_folder_title">Folder title</string>
+    <string name="list_context_edit">Edit document</string>
+    <string name="list_context_share">Share</string>
+    <string name="list_context_external_link">External access by link</string>
+    <string name="list_context_move">Move</string>
+    <string name="list_context_create_copy">Copy</string>
+    <string name="list_context_create_download">Download</string>
+    <string name="list_context_rename">Rename</string>
+    <string name="list_context_rename_success">Renamed successfully</string>
+    <string name="list_context_delete">Delete</string>
+    <string name="list_context_delete_storage">Disconnect storage</string>
+    <string name="list_context_delete_success">Deleted successfully</string>
+    <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
+    <string name="list_context_delete_recent">Remove from recent</string>
+    <string name="list_context_upload_to_portal">Upload to portal</string>
+
+    <!-- List action menu -->
+    <string name="list_action_sheet">Spreadsheet</string>
+    <string name="list_action_presentation">Presentation</string>
+    <string name="list_action_doc">Text document</string>
+    <string name="list_action_folder">Folder</string>
+    <string name="list_action_photo">Make photo</string>
+    <string name="list_action_upload">Upload file</string>
+    <string name="list_action_storage">Connect third-party storage</string>
+
+    <!-- Dialog info -->
+
+    <!-- Pager -->
+    <string name="main_pager_docs_my">My</string>
+    <string name="main_pager_docs_common">Common</string>
+    <string name="main_pager_docs_share">Shared with me</string>
+    <string name="main_pager_docs_projects">Projects</string>
+    <string name="main_pager_docs_trash">Trash</string>
+
+    <!-- Placeholder -->
+    <string name="placeholder_connection">Connection error</string>
+    <string name="placeholder_empty">Empty folder</string>
+    <string name="placeholder_search">Nothing found</string>
+    <string name="placeholder_share">Not shared</string>
+    <string name="placeholder_access_denied">Access denied</string>
+    <string name="placeholder_no_subfolders">No subfolders</string>
+    <string name="placeholder_no_users">No users</string>
+    <string name="placeholder_no_groups">No groups</string>
+    <string name="placeholder_no_users_groups">No users and groups</string>
+    <string name="placeholder_media_error">Unable to load media</string>
+    <string name="placeholder_try_again">Try again</string>
+    <string name="placeholder_loading_files">Loading files...</string>
+
+    <!-- Time marks-->
+    <string name="list_headers_folder">Folders</string>
+    <string name="list_headers_files">Files</string>
+    <string name="list_headers_created">Just created</string>
+    <string name="list_headers_today">Today</string>
+    <string name="list_headers_yesterday">Yesterday</string>
+    <string name="list_headers_week">This week</string>
+    <string name="list_headers_month">This month</string>
+    <string name="list_headers_year">This year</string>
+    <string name="list_headers_more_year">More than a year</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Share -->
+    <string name="share_title_main">Share settings</string>
+    <string name="share_title_add">Add people</string>
+    <string name="share_title_search">Search people</string>
+
+    <string name="share_goal_user">Users</string>
+    <string name="share_goal_group">Groups</string>
+    <string name="share_main_external_access">External access by link</string>
+    <string name="share_main_external_access_info">Provide access for everyone who has link</string>
+    <string name="share_main_external_copy_button">COPY LINK</string>
+    <string name="list_context_get_external_link">Get link for external access</string>
+
+    <string name="share_popup_access_full">Full access</string>
+    <string name="share_popup_access_review">Review</string>
+    <string name="share_popup_access_read_only">Read only</string>
+    <string name="share_popup_access_deny_access">Deny access</string>
+    <string name="share_popup_access_deny_remove">Remove</string>
+    <string name="share_popup_access_fill_forms">Fill forms</string>
+    <string name="share_popup_access_comment">Comment</string>
+
+    <!-- External link -->
+    <string name="share_access_success">External access successful</string>
+    <string name="share_access_denied">External access denied</string>
+    <string name="share_clipboard_external_copied">Secret link copied to clipboard</string>
+    <string name="share_clipboard_internal_copied">Link for portal users copied to clipboard</string>
+    <string name="share_clipboard_external_link_label">External link</string>
+
+    <!-- Tabs -->
+    <string name="share_tab_users">USERS</string>
+    <string name="share_tab_groups">GROUPS</string>
+
+    <!-- List headers -->
+    <string name="share_add_common_header_users">Users</string>
+    <string name="share_add_common_header_groups">Groups</string>
+
+    <!-- Panel -->
+    <string name="share_panel_message_notification">Enter message for notification</string>
+    <string name="share_panel_button_add">ADD</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Storage -->
+    <string name="storage_select_title">Select service</string>
+    <string name="storage_select_google_drive">Google Drive</string>
+    <string name="storage_select_drop_box">Dropbox</string>
+    <string name="storage_select_one_drive">OneDrive</string>
+    <string name="storage_select_next_cloud">Nextcloud</string>
+    <string name="storage_select_yandex">Yandex.Disk</string>
+    <string name="storage_select_box">Box</string>
+    <string name="storage_select_share_point">SharePoint</string>
+    <string name="storage_select_own_cloud">ownCloud</string>
+    <string name="storage_select_web_dav">Other WebDAV storage</string>
+
+    <string name="storage_connect_title">Folder settings</string>
+    <string name="storage_connect_folder_name">Folder name</string>
+    <string name="storage_connect_save_button">SAVE</string>
+    <string name="storage_connect_empty_title">Input storage title</string>
+
+    <string name="storage_web_title">Connect service </string>
+    <string name="storage_connect_button">CONNECT</string>
+
+    <string name="storage_web_dav_settings_url">Connection URL</string>
+    <string name="storage_web_dav_settings_login">Login</string>
+    <string name="storage_web_dav_settings_password">Password</string>
+    <string name="storage_web_dav_settings_title">Input title for service</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Operations -->
+    <string name="operation_title">Select folder</string>
+    <string name="operation_choose_section">Choose section</string>
+    <string name="operation_complete_message">Operation complete</string>
+    <string name="operation_panel_move_button">Move here</string>
+    <string name="operation_panel_copy_button">Copy here</string>
+    <string name="operation_panel_cancel_button">Cancel</string>
+    <string name="operation_empty_lists_data">Select items for operation</string>
+    <string name="operation_error_move_to_same">Can not be moved to the same folder</string>
+    <string name="operation_error_move_to_same_subfolder">Can not be moved to the same subfolder</string>
+    <string name="operation_snackbar_send_link">SEND LINK</string>
+    <string name="operation_snackbar_return">RETURN</string>
+    <string name="operation_share_send_link">SEND</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Trash -->
+    <string name="trash_dialog_empty_title">Empty trash?</string>
+    <string name="trash_snackbar_move_text">You can move files from the TRASH</string>
+    <string name="trash_snackbar_move_button">MOVE</string>
+    <string name="trash_popup_move">Move to</string>
+    <string name="trash_popup_delete">Delete forever</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Managers load -->
+    <string name="download_manager_title">ONLYOFFICE downloads</string>
+    <string name="download_manager_progress_title">Download in progress</string>
+    <string name="download_manager_complete">Download complete</string>
+    <string name="download_manager_error">Download error</string>
+    <string name="download_manager_error_free_space">Not enough free space</string>
+    <string name="download_manager_error_url">URL syntax error</string>
+    <string name="download_manager_cancel">Download canceled</string>
+    <string name="download_manager_repeat">File is already being downloaded</string>
+    <string name="download_manager_open">Open</string>
+    <string name="download_manager_notification_cancel_download">Cancel download</string>
+    <string name="download_manager_folders_download">Folders cannot be downloaded</string>
+    <string name="download_manager_select_files">Select files</string>
+
+    <string name="upload_manager_file_picker_title">Select a file to upload</string>
+    <string name="upload_manager_progress_title">Upload in progress</string>
+    <string name="upload_manager_error">Upload error</string>
+    <string name="upload_manager_cancel">Upload canceled</string>
+    <string name="upload_manager_repeat">File is already being uploaded</string>
+    <string name="upload_manager_complete">Upload complete</string>
+    <string name="upload_manager_error_url">URL syntax error</string>
+    <string name="upload_manager_error_number_files">You cannot upload more than 20 files at once</string>
+    <string name="upload_manager_image_picker_title">Select an image to upload</string>
+    <string name="upload_manager_error_file_size">The file size cannot be more than 100 megabytes</string>
+    <string name="upload_manager_notification_cancel_upload">Cancel upload</string>
+    <string name="upload_manager_waiting_title">Waiting for upload</string>
+    <string name="upload_error_wifi">You can upload only when Wi-Fi is enabled</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Socials -->
+    <string name="socials_twitter_failed_auth">Failed login with Twitter</string>
+    <string name="socials_facebook_cancel_auth">Cancel login with Facebook</string>
+    <string name="socials_facebook_failed_auth">Failed login with Facebook</string>
+    <string name="socials_google_failed_auth">Failed login with Google</string>
+
+    <!-- ======================================================================================= -->
+    <!-- On boarding -->
+    <string name="on_boarding_skip_button">SKIP</string>
+    <string name="on_boarding_next_button">NEXT</string>
+    <string name="on_boarding_finish_button">DONE</string>
+
+    <string name="on_boarding_welcome_header">Welcome to ONLYOFFICE</string>
+    <string name="on_boarding_welcome_info">
+        We have significantly updated ONLYOFFICE Documents for Android. Swipe to learn more.
+    </string>
+
+    <string name="on_boarding_edit_header">Edit office documents</string>
+    <string name="on_boarding_edit_info">
+        Create and edit text documents, spreadsheets and presentations on ONLYOFFICE portal.
+    </string>
+
+    <string name="on_boarding_access_header">Grant access to docs</string>
+    <string name="on_boarding_access_info">
+        Share docs to your team granting full access, review or read only rights. Sharing via external link available as well.
+    </string>
+
+    <string name="on_boarding_collaborate_header">Collaborate</string>
+    <string name="on_boarding_collaborate_info">
+        Co-edit office documents with your teammates in real time.
+    </string>
+
+    <string name="on_boarding_third_party_header">Connect to third-party clouds</string>
+    <string name="on_boarding_third_party_info">
+        Connect the app to other cloud storages you use: Google Drive, Dropbox, Nextcloud, etc.
+    </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Media -->
+    <string name="media_image_share_chooser">Choose app for sharing</string>
+    <string name="media_image_list_info">Media files: %1$s</string>
+    <string name="media_video_error">Player unknown error: %1$s</string>
+
+    <string name="auth_header_screen_1">Set up two-factor authentication</string>
+    <string name="auth_info_screen_1">Install an authenticator app to generate access codes (e.g. Google Authenticator, Authy) to continue working with your portal</string>
+    <string name="auth_header_screen_2">Launch an authenticator app</string>
+    <string name="auth_info_screen_2">Run the app and tap the new account icon</string>
+    <string name="auth_header_screen_3">Add a secret key</string>
+    <string name="auth_info_screen_3">Copy the key and paste it to your authenticator app </string>
+    <string name="auth_header_screen_4">Copy the code</string>
+    <string name="auth_info_screen_4">Copy the code from your authenticator app and insert it below</string>
+
+    <string name="rename_file_exist">File with the same name exists.</string>
+    <string name="device_path_file_error">This file does not exist.</string>
+    <string name="device_trash_files_restore">Restore</string>
+    <string name="error_recent_account">File has been deleted or is not available from this account.</string>
+    <string name="error_recent_enter_account">Please enter account.</string>
+    <string name="operation_move_file_existing">%1$s file already exists in the destination directory.</string>
+    <string name="upload_to_portal">Upload to portal</string>
+    <string name="this_device">This device</string>
+    <string name="dialog_clear_cache">Clear cache?</string>
+
+    <string name="error_unsupported_path">Unsupported path</string>
+    <string name="error_unsupported_format">Unsupported format</string>
+
+    <string name="cloud_account_description">Collaborate in secure environment and connect third-party storages</string>
+    <string name="cloud_account_start_button">Get started</string>
+    <string name="cloud_account_other_storages_button">Other storages</string>
+    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
+    <string name="cloud_only_office_description">Store documents in the cloud and collaborate on them</string>
+    <string name="cloud_accounts_title">Accounts</string>
+    <string name="error_long_file_name">File name is too long</string>
+    <string name="dialog_remove_account_title">Remove account</string>
+    <string name="dialog_remove_account_description">
+        User with %1$s from the %2$s portal will be logged out and removed from the account list. \n\nPlease, note: to log in, you\'ll need to enter portal address, email and password. All your files will be safe.
+    </string>
+    <string name="dialog_logout_account_title">Are you sure to log out?</string>
+    <string name="dialog_logout_account_description">
+        After you log out, you won\'t need to enter your portal address or email, only the password. Don\'t worry, all the files will be safe in the cloud.
+    </string>
+    <string name="profile_username_title">Username</string>
+    <string name="profile_type_account">Type</string>
+    <string name="profile_portal_address">Portal address</string>
+    <string name="profile_type_admin">Admin</string>
+    <string name="profile_type_visitor">Guest</string>
+    <string name="profile_type_user">User</string>
+    <string name="profile_thirdparty_title">Connected services</string>
+
+    <string name="app_settings_analytic_title">Help improve the product</string>
+    <string name="app_settings_analytic">Share app analytics</string>
+</resources>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name_base">base</string>
+    <string name="toolbar_menu_search_hint">Search...</string>
+
+</resources>
