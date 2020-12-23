@@ -12,10 +12,7 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.*
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
@@ -557,6 +554,20 @@ object UiUtils {
     @JvmStatic
     fun getButtonTint(context: Context, color: Int): ColorStateList? {
         return ContextCompat.getColorStateList(context, color)
+    }
+
+    fun getTabStateList(context: Context): ColorStateList {
+        val states = arrayOf(
+            intArrayOf(android.R.attr.state_selected),
+            intArrayOf(-android.R.attr.state_selected)
+        )
+
+        val colors = intArrayOf(
+            ContextCompat.getColor(context, R.color.colorWhite),
+            ContextCompat.getColor(context, R.color.colorLight),
+        )
+
+        return ColorStateList(states, colors)
     }
 
 }
