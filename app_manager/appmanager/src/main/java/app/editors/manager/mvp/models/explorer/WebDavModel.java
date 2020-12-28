@@ -56,7 +56,11 @@ public class WebDavModel {
 
 
         public Date getLastModifiedDate() {
-            return new Date(lastModified);
+            if (lastModified == null) {
+                return new Date();
+            } else {
+                return new Date(lastModified);
+            }
         }
 
 
