@@ -235,4 +235,13 @@ object ActivitiesUtils {
         return appId == "app.editors.gcells" || appId == "app.editors.gdocs" || appId == "app.editors.gslides"
     }
 
+    @JvmStatic
+    fun createFile(fragment: Fragment?, name: String, code: Int) {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = StringUtils.getMimeTypeFromPath(name)
+        intent.putExtra(Intent.EXTRA_TITLE, name)
+        fragment?.startActivityForResult(intent, code)
+    }
+
 }

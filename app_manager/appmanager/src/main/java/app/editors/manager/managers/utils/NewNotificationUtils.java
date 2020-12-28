@@ -61,7 +61,7 @@ public class NewNotificationUtils {
                 .setSmallIcon(R.drawable.ic_notify)
                 .setContentText(mContext.getString(R.string.download_manager_progress_title))
                 .setTicker(mContext.getString(R.string.app_name))
-                .setOnlyAlertOnce(false)
+                .setOnlyAlertOnce(true)
                 .setChannelId(mServiceName)
                 .setGroup(DOWNLOAD_GROUP)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
@@ -94,8 +94,8 @@ public class NewNotificationUtils {
         mNotificationManager.notify(id, builder.build());
     }
 
-    public void showCompleteNotification(java.io.File file, int id, @Nullable String title) {
-        showDownloadedAction(file, id, title);
+    public void showCompleteNotification(int id, @Nullable String title) {
+        showDownloadedAction(id, title);
     }
 
     public void showCanceledNotification(int id, @Nullable String title) {
@@ -107,7 +107,7 @@ public class NewNotificationUtils {
         mNotificationManager.cancel(id);
     }
 
-    private void showDownloadedAction(final File file, final int id, final String title) {
+    private void showDownloadedAction(final int id, final String title) {
         // Add file to default downloadFile manager
 
         final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, ActivitiesUtils.getDownloadsViewerIntent(), 0);

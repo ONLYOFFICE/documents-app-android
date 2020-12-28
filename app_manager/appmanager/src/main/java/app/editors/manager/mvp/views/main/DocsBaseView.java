@@ -136,4 +136,7 @@ public interface DocsBaseView extends BaseViewExt {
     void onOpenLocalFile(File file);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onNoProvider();
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onCreateDownloadFile(String name);
 }

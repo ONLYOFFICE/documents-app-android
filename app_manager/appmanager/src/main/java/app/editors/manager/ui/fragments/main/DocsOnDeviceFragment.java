@@ -306,11 +306,11 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
                 break;
             case COPY:
                 mOperation = Operation.COPY;
-                showFolderChooser();
+                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER);
                 break;
             case MOVE:
                 mOperation = Operation.MOVE;
-                showFolderChooser();
+                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER);
                 break;
             case RENAME:
                 showEditDialogRename(getString(R.string.dialogs_edit_rename_title), mOnDevicePresenter.getItemTitle(),
@@ -347,7 +347,7 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
 
     @Override
     public void onShowFolderChooser() {
-        showFolderChooser();
+        showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER);
     }
 
     @Override

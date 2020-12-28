@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.presenters.main;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.Context;
@@ -10,7 +9,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
+import androidx.documentfile.provider.DocumentFile;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +35,7 @@ import app.editors.manager.app.Api;
 import app.editors.manager.managers.exceptions.NoConnectivityException;
 import app.editors.manager.managers.providers.BaseFileProvider;
 import app.editors.manager.managers.providers.ProviderError;
+import app.editors.manager.managers.providers.WebDavFileProvider;
 import app.editors.manager.managers.services.DownloadService;
 import app.editors.manager.managers.services.UploadService;
 import app.editors.manager.managers.tools.AccountManagerTool;
@@ -40,6 +43,7 @@ import app.editors.manager.managers.tools.AccountSqlTool;
 import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.FirebaseUtils;
+import app.editors.manager.managers.works.DownloadWork;
 import app.editors.manager.mvp.models.account.Recent;
 import app.editors.manager.mvp.models.base.Download;
 import app.editors.manager.mvp.models.base.Entity;
@@ -182,6 +186,11 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     private boolean mIsTerminate = false;
     private boolean mIsAccessDenied = false;
 
+
+    /*
+     * Download WorkManager
+     */
+    WorkManager mDownloadManager = WorkManager.getInstance();
 
     private boolean mIsMultipleDelete = false;
 
@@ -581,51 +590,41 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     /*
      * Downloads/Uploads
      * */
-    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public void download() {
-        if (mPreferenceTool.getUploadWifiState() && !NetworkUtils.isWifiEnable(mContext)) {
-            getViewState().onSnackBar(mContext.getString(R.string.upload_error_wifi));
-            return;
+
+    public void createDownloadFile() {
+        if (!mModelExplorerStack.getSelectedFiles().isEmpty() || !mModelExplorerStack.getSelectedFolders().isEmpty() || (mItemClicked instanceof Folder)) {
+            getViewState().onCreateDownloadFile(Api.DOWNLOAD_ZIP_NAME);
+        } else if (mItemClicked instanceof File) {
+            getViewState().onCreateDownloadFile(mItemClicked.getTitle());
         }
-        if (mItemClicked instanceof File) {
-            final File file = (File) mItemClicked;
-            if (mIsContextClick) {
-                DownloadService.startDownload(true, false, file.getId(), file.getViewUrl(), file.getTitle(), file.getFileExst());
-            } else {
-                final boolean isImage = StringUtils.isImage(file.getFileExst());
-                DownloadService.startDownload(!isImage, isImage, file.getId(), file.getViewUrl(), file.getTitle(), file.getFileExst());
-            }
-        } else if (mItemClicked instanceof Folder) {
-            final List<Folder> foldersIds = new ArrayList<>();
-            foldersIds.add((Folder) mItemClicked);
-            bulkDownload(null, foldersIds);
-        }
-        getViewState().onDialogProgress(mContext.getString(R.string.download_manager_progress_title), false,
-                TAG_DIALOG_CANCEL_DOWNLOAD);
     }
 
-    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public void downloadSelected() {
+    public void download(@NonNull Uri downloadTo) {
         if (mPreferenceTool.getUploadWifiState() && !NetworkUtils.isWifiEnable(mContext)) {
             getViewState().onSnackBar(mContext.getString(R.string.upload_error_wifi));
             return;
         }
-        final List<File> files = mModelExplorerStack.getSelectedFiles();
-        final List<Folder> folders = mModelExplorerStack.getSelectedFolders();
-        if (folders != null && !folders.isEmpty()) {
-//            if (mFileProvider instanceof WebDavFileProvider) {
-                getViewState().onError(mContext.getString(R.string.download_manager_folders_download));
-                return;
-//            }
-//            bulkDownload(files, folders);
-        } else if (files != null && !files.isEmpty()) {
-            for (File file : files) {
-                DownloadService.startDownload(true, false, file.getId(), file.getViewUrl(), file.getTitle(), file.getFileExst());
-            }
-        } else {
-            getViewState().onError(mContext.getString(R.string.download_manager_select_files));
+
+        if (mModelExplorerStack.getCountSelectedItems() > 0 || mItemClicked instanceof Folder) {
+            downloadSelected(downloadTo);
             return;
         }
+
+        if (mItemClicked != null && mItemClicked instanceof File) {
+            startDownloadWork(downloadTo, mItemClicked.getId(), ((File) mItemClicked).getViewUrl());
+        }
+    }
+
+    private void downloadSelected(@NonNull Uri downloadTo) {
+        final List<File> files = mModelExplorerStack.getSelectedFiles();
+        final List<Folder> folders = mModelExplorerStack.getSelectedFolders();
+
+        if (mFileProvider instanceof WebDavFileProvider && !folders.isEmpty()) {
+            getViewState().onError(mContext.getString(R.string.download_manager_folders_download));
+            return;
+        }
+        bulkDownload(files, folders, downloadTo);
+
 
         if (isSelectionMode()) {
             getBackStack();
@@ -633,7 +632,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     @SuppressLint("MissingPermission")
-    private void bulkDownload(@Nullable List<File> files,@Nullable List<Folder> folders) {
+    private void bulkDownload(@Nullable List<File> files, @Nullable List<Folder> folders, @NonNull Uri downloadTo) {
         final List<String> filesIds = new ArrayList<>();
         final List<String> foldersIds = new ArrayList<>();
         if (files != null) {
@@ -664,16 +663,31 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 })
                 .subscribe(download -> {
                     if (download != null) {
-                        DownloadService.startDownload(true,
-                                false,
-                                download.getId(),
-                                download.getUrl(),
-                                Api.DOWNLOAD_ZIP_NAME,
-                                "");
+                        startDownloadWork(downloadTo, download.getId(), download.getUrl());
                     } else {
                         getViewState().onError(mContext.getString(R.string.download_manager_select_files));
                     }
-                }, this::fetchError);
+                }, throwable -> {
+                    final DocumentFile file = DocumentFile.fromSingleUri(mContext, downloadTo);
+                    if (file != null) {
+                        file.delete();
+                    }
+                    fetchError(throwable);
+                });
+    }
+
+    private void startDownloadWork(Uri to, String id, String url) {
+        final Data workData = new Data.Builder()
+                .putString(DownloadWork.FILE_ID_KEY, id)
+                .putString(DownloadWork.URL_KEY, url)
+                .putString(DownloadWork.FILE_URI_KEY, to.toString())
+                .build();
+
+        final OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(DownloadWork.class)
+                .setInputData(workData)
+                .build();
+
+        mDownloadManager.enqueue(request);
     }
 
     public void cancelDownload() {
@@ -1008,11 +1022,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                     entityList.addAll(fileList);
                 }
             }
-            if (mIsFilteringMode) {
-                setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
-            } else {
-                setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
-            }
+            setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
             return entityList;
         }
 
@@ -1180,7 +1190,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         if (mIsSelectionMode) {
             final boolean isChecked = !mItemClicked.isSelected();
             mModelExplorerStack.setSelectById(item, isChecked);
-            if(!isSelectedItemsEmpty()) {
+            if (!isSelectedItemsEmpty()) {
                 getViewState().onStateUpdateSelection(true);
                 getViewState().onItemSelected(position, String.valueOf(mModelExplorerStack.getCountSelectedItems()));
             }
@@ -1192,9 +1202,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             }
         }
     }
-    protected boolean isSelectedItemsEmpty()
-    {
-        if(mModelExplorerStack.getCountSelectedItems() <= 0) {
+
+    protected boolean isSelectedItemsEmpty() {
+        if (mModelExplorerStack.getCountSelectedItems() <= 0) {
             getBackStack();
             return true;
         } else {

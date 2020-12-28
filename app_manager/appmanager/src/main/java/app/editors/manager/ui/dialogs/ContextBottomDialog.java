@@ -240,7 +240,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
                 mListExplorerContextDeleteText.setText(R.string.list_context_delete);
             }
 
-//            mListExplorerContextDownload.setVisibility(View.VISIBLE);
+            mListExplorerContextDownload.setVisibility(View.VISIBLE);
 
         } else {
             // File can downloaded

@@ -47,10 +47,10 @@ import app.editors.manager.ui.dialogs.ContextBottomDialog;
 import app.editors.manager.ui.dialogs.MoveCopyDialog;
 import app.editors.manager.ui.fragments.base.ListFragment;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
+import lib.toolkit.base.managers.utils.ActivitiesUtils;
 import lib.toolkit.base.managers.utils.PermissionUtils;
 import lib.toolkit.base.managers.utils.StringUtils;
 import lib.toolkit.base.managers.utils.TimeUtils;
-import lib.toolkit.base.ui.activities.base.BaseActivity;
 import lib.toolkit.base.ui.adapters.BaseAdapter;
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog;
 import lib.toolkit.base.ui.dialogs.common.CommonDialog;
@@ -68,6 +68,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     protected static final int REQUEST_PRESENTATION = 10002;
     protected static final int REQUEST_SHEETS = 10003;
     protected static final int REQUEST_PDF = 10004;
+    protected static final int REQUEST_DOWNLOAD = 10005;
 
     protected enum EditorsType {
         DOCS, CELLS, PRESENTATION, PDF
@@ -121,6 +122,11 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
                     removeCommonDialog();
                 case REQUEST_ACTIVITY_MEDIA:
                     break;
+                case REQUEST_DOWNLOAD:
+                    if (data.getData() != null) {
+                        getPresenter().download(data.getData());
+                    }
+                    break;
             }
         }
     }
@@ -140,7 +146,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
             switch (requestCode) {
                 case PERMISSION_WRITE_STORAGE: {
                     if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        getPresenter().download();
+                        getPresenter().createDownloadFile();
                     }
                     break;
                 }
@@ -260,9 +266,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
                 getPresenter().selectAll();
                 break;
             case R.id.toolbar_selection_download:
-                if (checkWritePermission()) {
-                    getPresenter().downloadSelected();
-                }
+                getPresenter().createDownloadFile();
                 break;
         }
 
@@ -805,12 +809,9 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         showMediaActivity(explorer, isWebDAv);
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onFileDownloadPermission() {
-        if (checkWritePermission()) {
-            getPresenter().download();
-        }
+        getPresenter().createDownloadFile();
     }
 
     @Override
@@ -818,6 +819,11 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         if (checkReadPermission()) {
             showMultipleFilePickerActivity();
         }
+    }
+
+    @Override
+    public void onCreateDownloadFile(String name) {
+        ActivitiesUtils.createFile(this, name, REQUEST_DOWNLOAD);
     }
 
     @Override
@@ -1042,10 +1048,10 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         }
     }
 
-    void showFolderChooser() {
+    void showFolderChooser(int requestCode) {
         Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         i.addCategory(Intent.CATEGORY_DEFAULT);
-        startActivityForResult(i, BaseActivity.REQUEST_SELECT_FOLDER);
+        startActivityForResult(i, requestCode);
     }
 
     /*

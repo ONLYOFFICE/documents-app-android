@@ -585,7 +585,8 @@ object FileUtils {
     @JvmStatic
     fun writeFromResponseBody(
             response: ResponseBody?,
-            to: File?,
+            to: Uri,
+            context: Context,
             progress: Progress?,
             finish: Finish?,
             error: Error?)
@@ -594,8 +595,7 @@ object FileUtils {
         var outputStream: OutputStream? = null
         try {
             inputStream = BufferedInputStream(response?.byteStream(), 1024 * 8)
-            outputStream = FileOutputStream(to)
-
+            outputStream = BufferedOutputStream(context.contentResolver.openOutputStream(to))
             val buffer = ByteArray(1024 * 4)
             // Downloading with progress
             var countBytes: Int
