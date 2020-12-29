@@ -45,7 +45,6 @@ import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.managers.works.DownloadWork;
 import app.editors.manager.mvp.models.account.Recent;
-import app.editors.manager.mvp.models.base.Download;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.File;
@@ -430,15 +429,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     private Observable<Boolean> isFileDeleteProtected(Item item) {
         return Observable.just(mFileProvider.fileInfo(item))
-                .flatMap(response -> {
-                    return response.flatMap(test -> {
-                        if (test.getFileStatus().equals(String.valueOf(Api.FileStatus.IS_EDITING))) {
-                            return Observable.just(Boolean.TRUE);
-                        } else {
-                            return Observable.just(Boolean.FALSE);
-                        }
-                    });
-                });
+                .flatMap(response -> response.flatMap(fileStatus -> {
+                    if (fileStatus.getFileStatus().equals(String.valueOf(Api.FileStatus.IS_EDITING))) {
+                        return Observable.just(Boolean.TRUE);
+                    } else {
+                        return Observable.just(Boolean.FALSE);
+                    }
+                }));
     }
 
 
@@ -631,6 +628,31 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         }
     }
 
+    private Observable<Operation> getOperationFromStatus() {
+        return Observable.<Operation>create(emitter -> {
+            do {
+                try {
+                    if (mIsTerminate && mBatchDisposable.isDisposed()) {
+                        terminateOperation();
+                        break;
+                    }
+                    List<Operation> response = mFileProvider.getStatusOperation().getResponse();
+                    if (!response.isEmpty()) {
+                        emitter.onNext(response.get(0));
+                    } else {
+                        emitter.onComplete();
+                        break;
+                    }
+                } catch (Exception e) {
+                    emitter.onError(ProviderError.throwInterruptException());
+                    break;
+                }
+            } while (true);
+        }).subscribeOn(Schedulers.single())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+
     @SuppressLint("MissingPermission")
     private void bulkDownload(@Nullable List<File> files, @Nullable List<Folder> folders, @NonNull Uri downloadTo) {
         final List<String> filesIds = new ArrayList<>();
@@ -653,27 +675,28 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         mDownloadDisposable = mRetrofitTool.getApiWithPreferences().downloadFiles(mToken, requestDownload)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(responseDownload -> {
-                    for (Download download : responseDownload.getResponse()) {
-                        if (download.getFinished() && download.getUrl() != null) {
-                            return download;
-                        }
-                    }
-                    return null;
-                })
-                .subscribe(download -> {
-                    if (download != null) {
-                        startDownloadWork(downloadTo, download.getId(), download.getUrl());
-                    } else {
-                        getViewState().onError(mContext.getString(R.string.download_manager_select_files));
-                    }
-                }, throwable -> {
-                    final DocumentFile file = DocumentFile.fromSingleUri(mContext, downloadTo);
-                    if (file != null) {
-                        file.delete();
-                    }
-                    fetchError(throwable);
-                });
+                .toObservable()
+                .flatMap(responseDownload -> Observable.fromIterable(responseDownload.getResponse()))
+                .flatMap(download -> getOperationFromStatus()
+                        .map(operation -> {
+                            if (operation.getFinished() && operation.getId().equals(download.getId())) {
+                                return operation;
+                            }
+                            return new Object();
+                        }))
+                .subscribe(operation -> {
+                            if (operation instanceof Operation) {
+                                final Operation download = (Operation) operation;
+                                startDownloadWork(downloadTo, download.getId(), download.getUrl());
+                            }
+                        },
+                        throwable -> {
+                            final DocumentFile file = DocumentFile.fromSingleUri(mContext, downloadTo);
+                            if (file != null) {
+                                file.delete();
+                            }
+                            fetchError(throwable);
+                        });
     }
 
     private void startDownloadWork(Uri to, String id, String url) {
