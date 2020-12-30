@@ -93,7 +93,7 @@
             android:launchMode="singleTask"
             android:supportsPictureInPicture="true"
             android:theme="@style/MainActivityTheme"
-            android:windowSoftInputMode="adjustResize|adjustPan|stateHidden">
+            android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
             <intent-filter android:label="@string/upload_to_portal">
                 <action android:name="android.intent.action.SEND" />
 
