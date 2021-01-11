@@ -52,7 +52,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 29
         versionCode 239
-        versionName "5.0.1"
+        versionName "5.1.0"
         multiDexEnabled true
         applicationId "com.onlyoffice.documents"
         buildConfigField "boolean", "IS_BETA", "false"
