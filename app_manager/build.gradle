@@ -33,3 +33,22 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+task buildAar {
+    childProjects.each { set ->
+        if (set.key == "libtoolkit" || set.key == "appmanager") {
+            return
+        }
+
+        dependsOn "${set.key}:assembleRelease"
+
+        doLast {
+            def lib = new File("${set.value.projectDir.path}/build/outputs/aar/${set.key}-release.aar")
+
+            copy {
+                from lib
+                into "${getRootDir().parent}/libs"
+            }
+        }
+    }
+}
