@@ -68,6 +68,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     protected static final int REQUEST_PRESENTATION = 10002;
     protected static final int REQUEST_SHEETS = 10003;
     protected static final int REQUEST_PDF = 10004;
+    protected static final int REQUEST_STORAGE_ACCESS = 10005;
 
     protected enum EditorsType {
         DOCS, CELLS, PRESENTATION, PDF
