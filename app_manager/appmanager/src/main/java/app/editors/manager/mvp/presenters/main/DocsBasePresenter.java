@@ -1323,10 +1323,6 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     /*
-     * Get clicked action
-     * */
-
-    /*
      * Check on empty stack
      * */
     public void checkBackStack() {
@@ -1626,5 +1622,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     public void clearStack() {
         mModelExplorerStack.clear();
+    }
+
+    public void recreateStack() {
+        mModelExplorerStack = new ModelExplorerStack();
     }
 }
