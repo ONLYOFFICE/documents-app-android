@@ -65,16 +65,22 @@ class LocalContentTools(private val mContext: Context) {
                 "/storage/microsd"                                                         //ASUS ZenFone 2
         )
 
-        var ONLYOFFICE_ROOT_DIR = "${Environment.getExternalStorageDirectory().absolutePath}/OnlyOffice"
+        fun getDir(context: Context): String {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+                "${context.filesDir.path}/Onlyoffice"
+            } else {
+                "${Environment.getExternalStorageDirectory().absolutePath}/OnlyOffice"
+            }
+        }
+
     }
 
     private val mContentResolver: ContentResolver = mContext.contentResolver
     private val mUri: Uri = MediaStore.Files.getContentUri(URI_KEY)
-    private lateinit var mRootTrashStorage: File
     private lateinit var mRootDir: File
 
     fun createRootDir(): File {
-        val rootDir = File(ONLYOFFICE_ROOT_DIR)
+        val rootDir = File(getDir(mContext))
         if (!rootDir.exists() && rootDir.mkdirs()) {
             addSamples(rootDir)
         }
@@ -98,8 +104,6 @@ class LocalContentTools(private val mContext: Context) {
             }
         }
     }
-
-    fun getTrashFiles(): List<File> = mRootTrashStorage.listFiles().asList()
 
     @JvmOverloads
     fun moveFiles(file: File, parentFile: File, isCopy: Boolean = false): Boolean {

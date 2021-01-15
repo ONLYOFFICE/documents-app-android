@@ -22,6 +22,8 @@ import java.util.List;
 
 import app.editors.manager.R;
 import app.editors.manager.app.Api;
+import app.editors.manager.app.App;
+import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
@@ -59,11 +61,14 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
         COPY, MOVE
     }
 
+    private PreferenceTool mPreferenceTool;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
             mMainActivity = (MainActivity) context;
+            mPreferenceTool = App.getApp().getAppComponent().getPreference();
         } catch (ClassCastException e) {
             throw new RuntimeException(MainPagerFragment.class.getSimpleName() + " - must implement - " +
                     MainActivity.class.getSimpleName());
@@ -102,7 +107,9 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
                     mOnDevicePresenter.deletePhoto();
                     break;
                 case REQUEST_STORAGE_ACCESS:
-                    onRefresh();
+                    mPreferenceTool.setShowStorageAccess(false);
+                    mOnDevicePresenter.recreateStack();
+                    mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
                     break;
             }
         }
@@ -204,7 +211,7 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     @Override
     protected boolean onSwipeRefresh() {
         if (!super.onSwipeRefresh()) {
-            mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getONLYOFFICE_ROOT_DIR());
+            mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
             return true;
         }
 
@@ -237,7 +244,7 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
         if (mSwipeRefresh != null) {
             mSwipeRefresh.setRefreshing(true);
         }
-        mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getONLYOFFICE_ROOT_DIR());
+        mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
     }
 
     @Override
@@ -312,8 +319,9 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     public void onCancelClick(CommonDialog.Dialogs dialogs, @Nullable String tag) {
         super.onCancelClick(dialogs, tag);
         if (tag != null && tag.equals(TAG_STORAGE_ACCESS)) {
-            mPlaceholderViews.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS);
-            mSwipeRefresh.setEnabled(false);
+            mPreferenceTool.setShowStorageAccess(false);
+            mOnDevicePresenter.recreateStack();
+            mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
         }
     }
 
@@ -438,7 +446,9 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     }
 
     private void checkStorage() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                !Environment.isExternalStorageManager() &&
+                App.getApp().getAppComponent().getPreference().isShowStorageAccess()) {
             showQuestionDialog(getString(R.string.app_manage_files_title),
                     getString(R.string.app_manage_files_description),
                     getString(R.string.dialogs_common_ok_button),
