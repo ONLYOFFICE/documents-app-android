@@ -45,7 +45,7 @@ def getKeystore(String filePath) {
 
 android {
 
-    buildToolsVersion '30.0.2'
+    buildToolsVersion '30.0.3'
     compileSdkVersion 30
 
     defaultConfig {
