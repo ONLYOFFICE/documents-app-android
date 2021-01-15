@@ -62,11 +62,15 @@ public class FirebaseUtils {
     }
 
     public static void addCrash(@NonNull final String message) {
-        FirebaseCrashlytics.getInstance().log(message);
+        if (App.getApp().isAnalyticEnable()) {
+            FirebaseCrashlytics.getInstance().log(message);
+        }
     }
 
     public static void addCrash(@NonNull final Throwable throwable) {
-        FirebaseCrashlytics.getInstance().recordException(throwable);
+        if (App.getApp().isAnalyticEnable()) {
+            FirebaseCrashlytics.getInstance().recordException(throwable);
+        }
     }
 
     private static void initRemoteConfig() {

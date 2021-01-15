@@ -448,12 +448,19 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     private void checkStorage() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
                 !Environment.isExternalStorageManager() &&
-                App.getApp().getAppComponent().getPreference().isShowStorageAccess()) {
-            showQuestionDialog(getString(R.string.app_manage_files_title),
-                    getString(R.string.app_manage_files_description),
-                    getString(R.string.dialogs_common_ok_button),
-                    getString(R.string.dialogs_common_cancel_button),
-                    TAG_STORAGE_ACCESS);
+                mPreferenceTool.isShowStorageAccess()) {
+
+            //TODO удалить когда будет доступно разрешение
+            mPreferenceTool.setShowStorageAccess(false);
+            mOnDevicePresenter.recreateStack();
+            mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
+
+            //TODO раскоментировать когда будет доступно разрешение
+//            showQuestionDialog(getString(R.string.app_manage_files_title),
+//                    getString(R.string.app_manage_files_description),
+//                    getString(R.string.dialogs_common_ok_button),
+//                    getString(R.string.dialogs_common_cancel_button),
+//                    TAG_STORAGE_ACCESS);
         }
     }
 
