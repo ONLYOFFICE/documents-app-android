@@ -44,6 +44,7 @@ import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.managers.works.DownloadWork;
+import app.editors.manager.managers.works.UploadWork;
 import app.editors.manager.mvp.models.account.Recent;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.Explorer;
@@ -762,18 +763,20 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 return;
             }
 
-            UploadFile uploadFile = new UploadFile();
-            uploadFile.setProgress(0);
-            uploadFile.setUri(uri);
-            uploadFile.setId(uri.getPath());
-            uploadFile.setName(ContentResolverUtils.getName(mContext, uri));
-            uploadFile.setSize(setSize(uri));
-            UploadService.startUploadToMy(uploadFile);
+            String [] uris = new String[1];
+            uris[0] = uri.toString();
+            final Data workData = new Data.Builder()
+                    .putStringArray(UploadWork.TAG_UPLOAD_FILES, uris)
+                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
+                    .putString(UploadWork.TAG_FOLDER_ID, null)
+                    .build();
+            startUpload(workData);
         }
     }
 
     private void addUploadFiles(ArrayList<Uri> uriList, String id) {
         ArrayList<UploadFile> uploadFiles = new ArrayList<>();
+        String [] uris = new String[uriList.size()];
         for (int i = 0; i < uriList.size(); i++) {
             Uri uri = uriList.get(i);
             if (ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE) {
@@ -788,16 +791,32 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             uploadFile.setName(ContentResolverUtils.getName(mContext, uri));
             uploadFile.setSize(setSize(uri));
             uploadFiles.add(uploadFile);
+            uris[i] = uri.toString();
         }
         if (!uploadFiles.isEmpty()) {
-            UploadService.startUpload(id, uploadFiles);
-            UploadService.putNewUploadFiles(id, uploadFiles);
+            final Data workData = new Data.Builder()
+                    .putStringArray(UploadWork.TAG_UPLOAD_FILES, uris)
+                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
+                    .putString(UploadWork.TAG_FOLDER_ID, id)
+                    .build();
+            startUpload(workData);
+            UploadWork.putNewUploadFiles(id, uploadFiles);
+
+
             if (mModelExplorerStack.last().getItemsCount() == 0) {
                 refresh();
             } else {
                 getViewState().onAddUploadsFile(uploadFiles);
             }
         }
+    }
+
+    private void startUpload(Data data) {
+        final OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(UploadWork.class)
+                .setInputData(data)
+                .build();
+
+        mDownloadManager.enqueue(request);
     }
 
 
@@ -959,10 +978,10 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 resetDatesHeaders();
             }
 
-            if (UploadService.getUploadFiles(mModelExplorerStack.getCurrentId()) != null &&
-                    UploadService.getUploadFiles(mModelExplorerStack.getCurrentId()).size() != 0) {
+            if (UploadWork.getUploadFiles(mModelExplorerStack.getCurrentId()) != null &&
+                    UploadWork.getUploadFiles(mModelExplorerStack.getCurrentId()).size() != 0) {
                 entityList.add(new Header(mContext.getString(R.string.upload_manager_progress_title)));
-                entityList.addAll(UploadService.getUploadFiles(mModelExplorerStack.getCurrentId()));
+                entityList.addAll(UploadWork.getUploadFiles(mModelExplorerStack.getCurrentId()));
             }
 
             // Set folders headers

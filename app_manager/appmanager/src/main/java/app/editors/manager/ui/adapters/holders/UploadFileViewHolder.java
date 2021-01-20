@@ -12,7 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import java.util.Locale;
 
 import app.editors.manager.R;
-import app.editors.manager.managers.services.UploadService;
+import app.editors.manager.managers.works.UploadWork;
 import app.editors.manager.mvp.models.explorer.UploadFile;
 import app.editors.manager.ui.adapters.ExplorerAdapter;
 import butterknife.BindView;
@@ -43,7 +43,7 @@ public class UploadFileViewHolder extends BaseViewHolderExplorer<UploadFile> {
 
     public UploadFileViewHolder(View itemView, ExplorerAdapter adapter) {
         super(itemView, adapter);
-        mButtonCancelUpload.setOnClickListener(v -> UploadService.cancelUpload(mFile.getUri(), mFile.getId()));
+        mButtonCancelUpload.setOnClickListener(v -> UploadWork.isCancelled = true);
     }
 
     @Override
