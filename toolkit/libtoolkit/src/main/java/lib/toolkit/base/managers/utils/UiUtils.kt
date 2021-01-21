@@ -263,6 +263,7 @@ object UiUtils {
 
         val view = snackbar.view
         val textView = view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.maxLines = 3
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             textView.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
