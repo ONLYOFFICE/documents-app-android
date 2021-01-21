@@ -118,8 +118,17 @@ public class NewNotificationUtils {
         mNotificationManager.notify(id, builder.build());
     }
 
+    public void showUploadErrorNotification(int id, @Nullable String title) {
+        NotificationCompat.Builder builder = getNotification(title, ERROR_GROUP, mContext.getString(R.string.upload_manager_error));
+        mNotificationManager.notify(id, builder.build());
+    }
+
     public void showCompleteNotification(int id, @Nullable String title) {
         showDownloadedAction(id, title);
+    }
+
+    public void showUploadCompleteNotification(int id, @Nullable String title) {
+        showUploadedAction(id, title);
     }
 
     public void showCanceledNotification(int id, @Nullable String title) {
@@ -141,6 +150,19 @@ public class NewNotificationUtils {
         final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, ActivitiesUtils.getDownloadsViewerIntent(), 0);
 
         NotificationCompat.Builder builder = getNotification(title, null, mContext.getString(R.string.download_manager_complete))
+                .setGroupSummary(false)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setContentIntent(contentIntent);
+        mNotificationManager.notify(id, builder.build());
+    }
+
+    private void showUploadedAction(final int id, final String title) {
+
+        Intent mainActivityIntent = new Intent(mContext, MainActivity.class);
+
+        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, mainActivityIntent, 0);
+
+        NotificationCompat.Builder builder = getNotification(title, null, mContext.getString(R.string.upload_manager_complete))
                 .setGroupSummary(false)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setContentIntent(contentIntent);

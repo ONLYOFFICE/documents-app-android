@@ -763,10 +763,8 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 return;
             }
 
-            String [] uris = new String[1];
-            uris[0] = uri.toString();
             final Data workData = new Data.Builder()
-                    .putStringArray(UploadWork.TAG_UPLOAD_FILES, uris)
+                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
                     .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
                     .putString(UploadWork.TAG_FOLDER_ID, null)
                     .build();
@@ -776,7 +774,6 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     private void addUploadFiles(ArrayList<Uri> uriList, String id) {
         ArrayList<UploadFile> uploadFiles = new ArrayList<>();
-        String [] uris = new String[uriList.size()];
         for (int i = 0; i < uriList.size(); i++) {
             Uri uri = uriList.get(i);
             if (ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE) {
@@ -791,18 +788,17 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             uploadFile.setName(ContentResolverUtils.getName(mContext, uri));
             uploadFile.setSize(setSize(uri));
             uploadFiles.add(uploadFile);
-            uris[i] = uri.toString();
         }
         if (!uploadFiles.isEmpty()) {
-            final Data workData = new Data.Builder()
-                    .putStringArray(UploadWork.TAG_UPLOAD_FILES, uris)
-                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
-                    .putString(UploadWork.TAG_FOLDER_ID, id)
-                    .build();
-            startUpload(workData);
             UploadWork.putNewUploadFiles(id, uploadFiles);
-
-
+            for(Uri uri : uriList) {
+                final Data workData = new Data.Builder()
+                        .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                        .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
+                        .putString(UploadWork.TAG_FOLDER_ID, id)
+                        .build();
+                startUpload(workData);
+            }
             if (mModelExplorerStack.last().getItemsCount() == 0) {
                 refresh();
             } else {
@@ -813,6 +809,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     private void startUpload(Data data) {
         final OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(UploadWork.class)
+                .addTag(data.getString(UploadWork.TAG_UPLOAD_FILES))
                 .setInputData(data)
                 .build();
 

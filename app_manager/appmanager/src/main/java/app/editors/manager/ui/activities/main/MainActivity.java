@@ -155,7 +155,7 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
         if (action != null && action.equals(UploadReceiver.UPLOAD_ACTION_CANCELED)) {
             final Bundle extras = intent.getExtras();
             if (extras != null) {
-               UploadWork.isCancelled = true;
+               WorkManager.getInstance().cancelWorkById(UUID.fromString(extras.getString(UploadReceiver.EXTRAS_KEY_ID)));
             }
             return;
         }
