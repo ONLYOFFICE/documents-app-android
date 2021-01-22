@@ -213,10 +213,10 @@ public class UploadService extends Service {
     public Flowable<Integer> uploadFileToMy(Uri uri) {
         return Flowable.create(emitter -> {
             try {
-                mResponseFile = mRetrofitTool
-                        .getApiWithPreferences()
-                        .uploadFileToMy(mPreferenceTool.getToken(), createMultipartBody(uri, emitter))
-                        .blockingGet();
+//                mResponseFile = mRetrofitTool
+//                        .getApiWithPreferences()
+//                        .uploadFileToMy(mPreferenceTool.getToken(), createMultipartBody(uri, emitter))
+//                        .blockingGet();
                 emitter.onComplete();
             } catch (Exception e) {
                 emitter.tryOnError(e);
@@ -227,10 +227,10 @@ public class UploadService extends Service {
     public Flowable<Integer> uploadFile(Uri uri) {
         return Flowable.create(emitter -> {
             try {
-                mResponseFile = mRetrofitTool
-                        .getApiWithPreferences()
-                        .uploadFile(mPreferenceTool.getToken(), mFolderId, createMultipartBody(uri, emitter))
-                        .blockingGet();
+//                mResponseFile = mRetrofitTool
+//                        .getApiWithPreferences()
+//                        .uploadFile(mPreferenceTool.getToken(), mFolderId, createMultipartBody(uri, emitter))
+//                        .blockingGet();
                 emitter.onComplete();
             } catch (Exception e) {
                 emitter.tryOnError(e);

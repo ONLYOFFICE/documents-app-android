@@ -44,6 +44,7 @@ import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.managers.works.DownloadWork;
+import app.editors.manager.managers.works.UploadWork;
 import app.editors.manager.mvp.models.account.Recent;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.Explorer;
@@ -762,13 +763,12 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 return;
             }
 
-            UploadFile uploadFile = new UploadFile();
-            uploadFile.setProgress(0);
-            uploadFile.setUri(uri);
-            uploadFile.setId(uri.getPath());
-            uploadFile.setName(ContentResolverUtils.getName(mContext, uri));
-            uploadFile.setSize(setSize(uri));
-            UploadService.startUploadToMy(uploadFile);
+            final Data workData = new Data.Builder()
+                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
+                    .putString(UploadWork.TAG_FOLDER_ID, null)
+                    .build();
+            startUpload(workData);
         }
     }
 
@@ -790,14 +790,30 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             uploadFiles.add(uploadFile);
         }
         if (!uploadFiles.isEmpty()) {
-            UploadService.startUpload(id, uploadFiles);
-            UploadService.putNewUploadFiles(id, uploadFiles);
+            UploadWork.putNewUploadFiles(id, uploadFiles);
+            for(Uri uri : uriList) {
+                final Data workData = new Data.Builder()
+                        .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                        .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
+                        .putString(UploadWork.TAG_FOLDER_ID, id)
+                        .build();
+                startUpload(workData);
+            }
             if (mModelExplorerStack.last().getItemsCount() == 0) {
                 refresh();
             } else {
                 getViewState().onAddUploadsFile(uploadFiles);
             }
         }
+    }
+
+    private void startUpload(Data data) {
+        final OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(UploadWork.class)
+                .addTag(data.getString(UploadWork.TAG_UPLOAD_FILES))
+                .setInputData(data)
+                .build();
+
+        mDownloadManager.enqueue(request);
     }
 
 
@@ -959,10 +975,10 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 resetDatesHeaders();
             }
 
-            if (UploadService.getUploadFiles(mModelExplorerStack.getCurrentId()) != null &&
-                    UploadService.getUploadFiles(mModelExplorerStack.getCurrentId()).size() != 0) {
+            if (UploadWork.getUploadFiles(mModelExplorerStack.getCurrentId()) != null &&
+                    UploadWork.getUploadFiles(mModelExplorerStack.getCurrentId()).size() != 0) {
                 entityList.add(new Header(mContext.getString(R.string.upload_manager_progress_title)));
-                entityList.addAll(UploadService.getUploadFiles(mModelExplorerStack.getCurrentId()));
+                entityList.addAll(UploadWork.getUploadFiles(mModelExplorerStack.getCurrentId()));
             }
 
             // Set folders headers

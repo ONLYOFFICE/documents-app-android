@@ -584,7 +584,7 @@ public interface Api {
      * */
     @Multipart
     @POST("api/" + API_VERSION + "/files/{folder_id}/upload" + RESPONSE_FORMAT)
-    Single<ResponseFile> uploadFile(@Header(HEADER_AUTHORIZATION) String token,
+    Call<ResponseFile> uploadFile(@Header(HEADER_AUTHORIZATION) String token,
                                     @Path(value = "folder_id") String folderId,
                                     @Part MultipartBody.Part part);
 
@@ -596,7 +596,7 @@ public interface Api {
 
     @Multipart
     @POST("api/" + API_VERSION + "/files/@my/upload" + RESPONSE_FORMAT)
-    Single<ResponseFile> uploadFileToMy(@Header(HEADER_AUTHORIZATION) String token,
+    Call<ResponseFile> uploadFileToMy(@Header(HEADER_AUTHORIZATION) String token,
                                         @Part MultipartBody.Part part);
 
     /*

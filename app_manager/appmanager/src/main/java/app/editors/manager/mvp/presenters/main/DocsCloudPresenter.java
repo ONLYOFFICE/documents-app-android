@@ -19,6 +19,7 @@ import app.editors.manager.managers.receivers.DownloadReceiver;
 import app.editors.manager.managers.receivers.UploadReceiver;
 import app.editors.manager.managers.services.UploadService;
 import app.editors.manager.managers.utils.FirebaseUtils;
+import app.editors.manager.managers.works.UploadWork;
 import app.editors.manager.mvp.models.account.AccountsSqlData;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.File;
@@ -302,9 +303,9 @@ public class DocsCloudPresenter extends DocsBasePresenter<DocsCloudView>
     }
 
     @Override
-    public void onUploadError(@Nullable String path, String info, UploadFile file) {
+    public void onUploadError(@Nullable String path, String info, String file) {
         getViewState().onSnackBar(info);
-        getViewState().onDeleteUploadFile(file.getId());
+        //getViewState().onDeleteUploadFile(file);
     }
 
     @Override
@@ -333,7 +334,7 @@ public class DocsCloudPresenter extends DocsBasePresenter<DocsCloudView>
     public void onUploadCanceled(String path, String info, String id) {
         getViewState().onSnackBar(info);
         getViewState().onDeleteUploadFile(id);
-        if (UploadService.getUploadFiles(mModelExplorerStack.getCurrentId()).isEmpty()) {
+        if (UploadWork.getUploadFiles(mModelExplorerStack.getCurrentId()).isEmpty()) {
             getViewState().onRemoveUploadHead();
             getListWithHeaders(mModelExplorerStack.last(), true);
         }

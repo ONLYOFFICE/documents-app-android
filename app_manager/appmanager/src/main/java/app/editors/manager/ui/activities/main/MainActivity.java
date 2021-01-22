@@ -41,6 +41,8 @@ import java.util.UUID;
 import app.editors.manager.R;
 import app.editors.manager.app.WebDavApi;
 import app.editors.manager.managers.receivers.DownloadReceiver;
+import app.editors.manager.managers.receivers.UploadReceiver;
+import app.editors.manager.managers.works.UploadWork;
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter;
 import app.editors.manager.mvp.views.main.MainActivityView;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
@@ -147,6 +149,13 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
             final Bundle extras = intent.getExtras();
             if (extras != null) {
                 WorkManager.getInstance().cancelWorkById(UUID.fromString(extras.getString(DownloadReceiver.EXTRAS_KEY_ID)));
+            }
+            return;
+        }
+        if (action != null && action.equals(UploadReceiver.UPLOAD_ACTION_CANCELED)) {
+            final Bundle extras = intent.getExtras();
+            if (extras != null) {
+               WorkManager.getInstance().cancelWorkById(UUID.fromString(extras.getString(UploadReceiver.EXTRAS_KEY_ID)));
             }
             return;
         }
