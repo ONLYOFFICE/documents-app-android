@@ -55,6 +55,19 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
     @Expose
     private boolean providerItem = false;
 
+    @SerializedName("favorite")
+    @Expose
+    private boolean favorite = false;
+
+
+    public boolean getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
     public String getId() {
         return id;
     }
@@ -146,6 +159,7 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
         createdBy = item.getCreatedBy();
         created = item.getCreated();
         providerItem = item.getProviderItem();
+        favorite = item.getFavorite();
     }
 
     @Override

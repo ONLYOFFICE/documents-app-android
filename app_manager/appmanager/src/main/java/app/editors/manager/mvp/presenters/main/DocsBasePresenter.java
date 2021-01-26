@@ -1065,7 +1065,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         if (!mIsAccessDenied) {
             getViewState().onDocsGet(getListWithHeaders(mModelExplorerStack.last(), true));
         }
-        updateViewsState();
+        refresh();
         updateOperationStack(mModelExplorerStack.getCurrentId());
     }
 

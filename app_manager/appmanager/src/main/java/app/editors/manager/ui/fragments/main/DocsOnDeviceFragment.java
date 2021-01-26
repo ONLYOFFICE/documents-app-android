@@ -266,6 +266,11 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     }
 
     @Override
+    public void onRemoveItemFromFavorites() {
+
+    }
+
+    @Override
     public void onActionButtonClick(ActionBottomDialog.Buttons buttons) {
         super.onActionButtonClick(buttons);
         if (buttons == ActionBottomDialog.Buttons.PHOTO) {

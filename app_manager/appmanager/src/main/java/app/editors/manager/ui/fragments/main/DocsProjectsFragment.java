@@ -60,6 +60,11 @@ public class DocsProjectsFragment extends DocsCloudFragment {
         mCloudPresenter.getItemsById(ID);
     }
 
+    @Override
+    public void onRemoveItemFromFavorites() {
+
+    }
+
     private void init() {
         mCloudPresenter.checkBackStack();
     }

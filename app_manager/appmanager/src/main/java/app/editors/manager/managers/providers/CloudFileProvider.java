@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import app.editors.manager.app.Api;
+import app.editors.manager.mvp.models.base.Base;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.File;
 import app.editors.manager.mvp.models.explorer.Folder;
@@ -19,6 +20,7 @@ import app.editors.manager.mvp.models.request.RequestBatchBase;
 import app.editors.manager.mvp.models.request.RequestBatchOperation;
 import app.editors.manager.mvp.models.request.RequestCreate;
 import app.editors.manager.mvp.models.request.RequestExternal;
+import app.editors.manager.mvp.models.request.RequestFavorites;
 import app.editors.manager.mvp.models.request.RequestRenameFile;
 import app.editors.manager.mvp.models.request.RequestTitle;
 import app.editors.manager.mvp.models.response.ResponseExternal;
@@ -35,7 +37,8 @@ public class CloudFileProvider implements BaseFileProvider {
         Common("@common"),
         Shared("@share"),
         Projects("@projects"),
-        Trash("@trash");
+        Trash("@trash"),
+        Favorites("@favorites");
 
         String mPath;
 
@@ -295,6 +298,26 @@ public class CloudFileProvider implements BaseFileProvider {
                     } else {
                         throw new HttpException(operationResponse);
                     }
+                });
+    }
+
+    @Override
+    public Observable<Base> addToFavorites(RequestFavorites requestFavorites) {
+        return Observable.fromCallable(() -> mApi.addToFavorites(mToken, requestFavorites).execute())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(baseResponse -> {
+                    return baseResponse.body();
+                });
+    }
+
+    @Override
+    public Observable<Base> deleteFromFavorites(RequestFavorites requestFavorites) {
+        return Observable.fromCallable(() -> mApi.deleteFromFavorites(mToken, requestFavorites).execute())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(baseResponse -> {
+                    return baseResponse.body();
                 });
     }
 

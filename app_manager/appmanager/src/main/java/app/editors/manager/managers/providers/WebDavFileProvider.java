@@ -23,6 +23,7 @@ import app.editors.manager.app.App;
 import app.editors.manager.app.WebDavApi;
 import app.editors.manager.managers.retrofit.ProgressRequestBody;
 import app.editors.manager.managers.utils.NotificationUtils;
+import app.editors.manager.mvp.models.base.Base;
 import app.editors.manager.mvp.models.explorer.Current;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.File;
@@ -32,6 +33,7 @@ import app.editors.manager.mvp.models.explorer.Operation;
 import app.editors.manager.mvp.models.explorer.WebDavModel;
 import app.editors.manager.mvp.models.request.RequestCreate;
 import app.editors.manager.mvp.models.request.RequestExternal;
+import app.editors.manager.mvp.models.request.RequestFavorites;
 import app.editors.manager.mvp.models.response.ResponseExternal;
 import app.editors.manager.mvp.models.response.ResponseOperation;
 import io.reactivex.Emitter;
@@ -47,7 +49,8 @@ import okhttp3.ResponseBody;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
-public class WebDavFileProvider implements BaseFileProvider {
+public
+class WebDavFileProvider implements BaseFileProvider {
 
     private static final String TAG = WebDavFileProvider.class.getSimpleName();
 
@@ -448,6 +451,16 @@ public class WebDavFileProvider implements BaseFileProvider {
 
     @Override
     public Observable<List<Operation>> terminate() {
+        return null;
+    }
+
+    @Override
+    public Observable<Base> addToFavorites(RequestFavorites fileId) {
+         return null;//stub
+    }
+
+    @Override
+    public Observable<Base> deleteFromFavorites(RequestFavorites requestFavorites) {
         return null;
     }
 

@@ -135,6 +135,43 @@
                     android:visibility="gone" />
 
                 <LinearLayout
+                    android:id="@+id/list_explorer_context_add_to_favorite"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_list_context_not_favorites" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/ContextListMediumText"
+                        android:text="@string/list_context_add_to_favorite" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/list_explorer_context_delete_from_favorite"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_list_context_favorites" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/ContextListMediumText"
+                        android:text="@string/list_context_delete_from_favorite" />
+                </LinearLayout>
+
+                <include
+                    android:id="@+id/view_line_separator_favorites"
+                    style="@style/ContextLineSeparator"
+                    layout="@layout/view_line_separator"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/line_separator_height"
+                    android:layout_marginTop="@dimen/line_separator_group_top"
+                    android:layout_marginBottom="@dimen/line_separator_group_bottom"
+                    android:visibility="gone" />
+
+                <LinearLayout
                     android:id="@+id/list_explorer_context_move"
                     style="@style/ContextListLayout"
                     android:visibility="gone">
@@ -230,6 +267,8 @@
                         style="@style/ContextListMediumText"
                         android:text="@string/list_context_remove_from_list" />
                 </LinearLayout>
+
+
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

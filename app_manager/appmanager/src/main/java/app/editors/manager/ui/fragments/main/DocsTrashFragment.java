@@ -175,4 +175,9 @@ public class DocsTrashFragment extends DocsCloudFragment implements View.OnClick
         }
         super.onDeleteBatch(list);
     }
+
+    @Override
+    public void onRemoveItemFromFavorites() {
+
+    }
 }

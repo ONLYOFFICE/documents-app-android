@@ -36,7 +36,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
     private static final String TAG_STATE = "TAG_STATE";
 
     public enum Buttons {
-        NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD, RENAME, DELETE, SHARE_DELETE
+        NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD, RENAME, DELETE, SHARE_DELETE, FAVORITE_ADD, FAVORITE_DELETE
     }
 
     public interface OnClickListener {
@@ -61,6 +61,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
         public boolean mIsRecent = false;
         public boolean mIsWebDav = false;
         public boolean mIsTrash = false;
+        public boolean mIsFavorite = false;
     }
 
     protected PreferenceTool mPreferenceTool;
@@ -100,6 +101,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
     protected LinearLayout mListContextShareDelete;
     @BindView(R.id.list_explorer_context_delete_text)
     protected AppCompatTextView mListExplorerContextDeleteText;
+    @BindView(R.id.list_explorer_context_add_to_favorite)
+    protected LinearLayout mListContextAddFavorite;
+    @BindView(R.id.list_explorer_context_delete_from_favorite)
+    protected LinearLayout mListContextDeleteFavorite;
+    @BindView(R.id.view_line_separator_favorites)
+    protected View mViewLineSeparatorFavorites;
 
     protected View mRootView;
     protected State mState = new State();
@@ -152,7 +159,9 @@ public class ContextBottomDialog extends BaseBottomDialog {
             R.id.list_explorer_context_download,
             R.id.list_explorer_context_rename,
             R.id.list_explorer_context_delete,
-            R.id.list_explorer_context_share_delete})
+            R.id.list_explorer_context_share_delete,
+            R.id.list_explorer_context_add_to_favorite,
+            R.id.list_explorer_context_delete_from_favorite})
     protected void onButtonsClick(final View view) {
         if (mOnClickListener != null) {
             switch (view.getId()) {
@@ -185,6 +194,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
                     break;
                 case R.id.list_explorer_context_share_delete:
                     mOnClickListener.onContextButtonClick(Buttons.SHARE_DELETE);
+                    break;
+                case R.id.list_explorer_context_add_to_favorite:
+                    mOnClickListener.onContextButtonClick(Buttons.FAVORITE_ADD);
+                    break;
+                case R.id.list_explorer_context_delete_from_favorite:
+                    mOnClickListener.onContextButtonClick(Buttons.FAVORITE_DELETE);
                     break;
             }
             dismiss();
@@ -245,6 +260,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
         } else {
             // File can downloaded
             mListExplorerContextDownload.setVisibility(View.VISIBLE);
+            mViewLineSeparatorFavorites.setVisibility(View.VISIBLE);
+            if(mState.mIsFavorite) {
+                mListContextDeleteFavorite.setVisibility(View.VISIBLE);
+            } else {
+                mListContextAddFavorite.setVisibility(View.VISIBLE);
+            }
 
             // File is document
             if (mState.mIsDocs && !mState.mIsPdf) {
