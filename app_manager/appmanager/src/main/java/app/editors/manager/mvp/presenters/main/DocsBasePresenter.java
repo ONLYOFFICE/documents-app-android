@@ -603,8 +603,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             return;
         }
 
-        if (mModelExplorerStack.getCountSelectedItems() > 0 || mItemClicked instanceof Folder) {
+        if (mModelExplorerStack.getCountSelectedItems() > 0) {
             downloadSelected(downloadTo);
+            return;
+        }
+
+        if(mItemClicked instanceof Folder) {
+            bulkDownload(null, new ArrayList<>(Collections.singleton((Folder) mItemClicked)), downloadTo);
             return;
         }
 
