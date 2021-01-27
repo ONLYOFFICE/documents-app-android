@@ -157,6 +157,8 @@
     <string name="list_context_rename_success">Успешно переименовано</string>
     <string name="list_context_share">Поделиться</string>
     <string name="list_context_upload_to_portal">Загрузить на портал</string>
+    <string name="list_context_add_to_favorite">Добавить в Избранное</string>
+    <string name="list_context_delete_from_favorite">Удалить из Избранного</string>
     <string name="list_headers_created">Только что созданные</string>
     <string name="list_headers_files">Файлы</string>
     <string name="list_headers_folder">Папки</string>
@@ -232,6 +234,7 @@
     <string name="main_pager_docs_projects">Проекты</string>
     <string name="main_pager_docs_share">Доступные мне</string>
     <string name="main_pager_docs_trash">Корзина</string>
+    <string name="main_pager_docs_favorites">Избранное</string>
     <string name="media_image_list_info">Медиа-файлы: %1$s</string>
     <string name="media_image_share_chooser">Выберите приложение, чтобы поделиться</string>
     <string name="media_video_error">Неизвестная ошибка воспроизведения: %1$s</string>
@@ -284,6 +287,8 @@
     <string name="operation_snackbar_return">ВЕРНУТЬСЯ</string>
     <string name="operation_snackbar_send_link">ОТПРАВИТЬ ССЫЛКУ</string>
     <string name="operation_title">Выбор папки</string>
+    <string name="operation_add_to_favorites">Добавлено в Избранное</string>
+    <string name="operation_remove_from_favorites">Удалено из Избранного</string>
     <string name="placeholder_access_denied">Доступ запрещен</string>
     <string name="placeholder_connection">Ошибка подключения</string>
     <string name="placeholder_empty">Пустая папка</string>

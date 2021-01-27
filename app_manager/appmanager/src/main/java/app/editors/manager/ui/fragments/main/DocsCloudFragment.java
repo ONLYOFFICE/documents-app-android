@@ -193,6 +193,12 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
                         getString(R.string.dialogs_question_share_remove), getString(R.string.dialogs_common_cancel_button),
                         DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE);
                 break;
+            case FAVORITE_ADD:
+                mCloudPresenter.addToFavorite();
+                break;
+            case FAVORITE_DELETE:
+                mCloudPresenter.deleteFromFavorite();
+                break;
         }
     }
 

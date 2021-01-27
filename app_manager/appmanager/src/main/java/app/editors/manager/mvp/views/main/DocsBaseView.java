@@ -139,4 +139,7 @@ public interface DocsBaseView extends BaseViewExt {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onCreateDownloadFile(String name);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onRemoveItemFromFavorites();
 }

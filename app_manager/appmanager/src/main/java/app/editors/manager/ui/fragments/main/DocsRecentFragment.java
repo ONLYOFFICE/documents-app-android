@@ -150,6 +150,11 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
     }
 
     @Override
+    public void onRemoveItemFromFavorites() {
+
+    }
+
+    @Override
     protected Boolean isWebDav() {
         return false;
     }

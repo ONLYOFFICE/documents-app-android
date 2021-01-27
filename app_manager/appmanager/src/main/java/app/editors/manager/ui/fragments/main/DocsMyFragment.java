@@ -51,6 +51,11 @@ public class DocsMyFragment extends DocsCloudFragment {
         mCloudPresenter.getItemsById(ID);
     }
 
+    @Override
+    public void onRemoveItemFromFavorites() {
+
+    }
+
     private void init() {
         mExplorerAdapter.setSectionMy(true);
         mCloudPresenter.checkBackStack();

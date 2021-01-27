@@ -301,6 +301,8 @@
     <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Remove from recent</string>
     <string name="list_context_upload_to_portal">Upload to portal</string>
+    <string name="list_context_add_to_favorite">Add to Favorite</string>
+    <string name="list_context_delete_from_favorite">Delete from Favorite</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
@@ -319,6 +321,7 @@
     <string name="main_pager_docs_share">Shared with me</string>
     <string name="main_pager_docs_projects">Projects</string>
     <string name="main_pager_docs_trash">Trash</string>
+    <string name="main_pager_docs_favorites">Favorites</string>
 
     <!-- Placeholder -->
     <string name="placeholder_connection">Connection error</string>
@@ -427,6 +430,8 @@
     <string name="operation_snackbar_send_link">SEND LINK</string>
     <string name="operation_snackbar_return">RETURN</string>
     <string name="operation_share_send_link">SEND</string>
+    <string name="operation_add_to_favorites">Added to Favorites</string>
+    <string name="operation_remove_from_favorites">Removed from Favorites</string>
 
     <!-- ======================================================================================= -->
     <!-- Trash -->

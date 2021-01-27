@@ -8,13 +8,11 @@ import androidx.annotation.Nullable;
 
 import app.editors.manager.managers.providers.CloudFileProvider;
 
-public class DocsCommonFragment extends DocsCloudFragment {
+public class DocsFavoritesFragment extends DocsCloudFragment {
 
-    public static DocsCommonFragment newInstance() {
-        return new DocsCommonFragment();
-    }
+    public static DocsFavoritesFragment newInstance() { return new DocsFavoritesFragment(); }
 
-    public static final String ID = CloudFileProvider.Section.Common.getPath();
+    public static final String ID = CloudFileProvider.Section.Favorites.getPath();
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -35,7 +33,7 @@ public class DocsCommonFragment extends DocsCloudFragment {
     @Override
     public void onScrollPage() {
         super.onScrollPage();
-        if  (mCloudPresenter.getStack() == null){
+        if (mCloudPresenter.getStack() == null) {
             mCloudPresenter.getItemsById(ID);
         }
     }
@@ -48,14 +46,12 @@ public class DocsCommonFragment extends DocsCloudFragment {
         }
         mCloudPresenter.getItemsById(ID);
     }
-
     @Override
     public void onRemoveItemFromFavorites() {
-
+        mCloudPresenter.removeFromFavorites();
     }
 
     private void init() {
         mCloudPresenter.checkBackStack();
     }
-
 }
