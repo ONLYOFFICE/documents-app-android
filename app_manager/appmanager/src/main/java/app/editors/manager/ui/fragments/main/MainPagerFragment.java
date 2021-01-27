@@ -160,6 +160,7 @@ public class MainPagerFragment extends BaseAppFragment {
         } else {
             pairs.addAll(getMyFragments());
         }
+        pairs.add(new ViewPagerAdapter.Container(DocsFavoritesFragment.newInstance(), getString(R.string.main_pager_docs_favorites)));
         pairs.add(new ViewPagerAdapter.Container(DocsTrashFragment.newInstance(), getString(R.string.main_pager_docs_trash)));
         return pairs;
     }
@@ -174,7 +175,6 @@ public class MainPagerFragment extends BaseAppFragment {
             pairs.add(new ViewPagerAdapter.Container(DocsProjectsFragment.newInstance(),
                     getString(R.string.main_pager_docs_projects)));
         }
-        pairs.add(new ViewPagerAdapter.Container(DocsFavoritesFragment.newInstance(), getString(R.string.main_pager_docs_favorites)));
         return pairs;
     }
 
