@@ -1066,7 +1066,12 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                     entityList.addAll(fileList);
                 }
             }
-            setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
+
+            if (mIsFilteringMode) {
+                setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
+            } else {
+                setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
+            }
             return entityList;
         }
 
