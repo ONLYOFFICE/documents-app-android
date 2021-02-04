@@ -181,7 +181,7 @@ public class DocsRecentPresenter extends DocsBasePresenter<DocsRecentView> {
         mAccountsSqlData.getRecent();
     }
 
-    public void sortBy(String parameters, boolean isAscending) {
+    public boolean sortBy(String parameters, boolean isAscending) {
         mPreferenceTool.setSortBy(parameters);
         setOrder(isAscending);
         switch (parameters) {
@@ -203,6 +203,14 @@ public class DocsRecentPresenter extends DocsBasePresenter<DocsRecentView> {
             case Api.Parameters.VAL_SORT_BY_SIZE:
                 sortBySize(isAscending);
                 break;
+        }
+        return false;
+    }
+
+    public void reverseSortOrder(List<Entity> itemList) {
+        if(!itemList.isEmpty()) {
+            Collections.reverse(itemList);
+            getViewState().onReverseSortOrder(itemList);
         }
     }
 

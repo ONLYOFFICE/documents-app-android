@@ -238,9 +238,23 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return false;
     }
 
-    public boolean sortBy(@NonNull String value) {
+    public boolean sortBy(@NonNull String value, boolean isRepeatedTap) {
         mPreferenceTool.setSortBy(value);
+
+        if(isRepeatedTap) {
+            reverseSortOrder();
+        }
         return refresh();
+    }
+
+    protected void reverseSortOrder() {
+        if(mPreferenceTool.getSortOrder().equals(Api.Parameters.VAL_SORT_ORDER_ASC)) {
+            mPreferenceTool.setSortOrder(Api.Parameters.VAL_SORT_ORDER_DESC);
+            getViewState().onReverseSortOrder(Api.Parameters.VAL_SORT_ORDER_DESC);
+        } else {
+            mPreferenceTool.setSortOrder(Api.Parameters.VAL_SORT_ORDER_ASC);
+            getViewState().onReverseSortOrder(Api.Parameters.VAL_SORT_ORDER_ASC);
+        }
     }
 
     public boolean orderBy(@NonNull String value) {
@@ -993,6 +1007,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             // Set files headers
             if (!explorer.getFiles().isEmpty() && !mIsFoldersMode) {
                 final String sortBy = mPreferenceTool.getSortBy();
+                final String sortOrder = mPreferenceTool.getSortOrder();
                 final List<File> fileList = explorer.getFiles();
 
                 if (Api.Parameters.VAL_SORT_BY_UPDATED.equals(sortBy)) { // For date sort add times headers
@@ -1005,7 +1020,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
                     // Set time headers
                     Collections.sort(fileList, (o1, o2) -> o1.getUpdated().compareTo(o2.getUpdated()));
-                    Collections.reverse(fileList);
+                    if(sortOrder.equals(Api.Parameters.VAL_SORT_ORDER_DESC)) {
+                        Collections.reverse(fileList);
+                    }
 
                     for (File item : fileList) {
                         itemMs = item.getUpdated().getTime();
