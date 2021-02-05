@@ -239,6 +239,7 @@ public interface Api {
     String DEFAULT_HOST = "onlyoffice.com";
     String PERSONAL_HOST = PERSONAL_SUBDOMAIN + "." + DEFAULT_HOST;
     String RESPONSE_FORMAT = ".json";
+    String COOKIE_HEADER = "asc_auth_key=";
 
     /*
      * Portals versions
@@ -574,7 +575,7 @@ public interface Api {
      * */
     @Streaming
     @GET
-    Call<ResponseBody> downloadFile(@Header(HEADER_AUTHORIZATION) String token, @Url String url);
+    Call<ResponseBody> downloadFile(@Header(HEADER_AUTHORIZATION) String token, @Url String url, @Header("Cookie") String cookie);
 
     @PUT("api/" + API_VERSION + "/files/fileops/bulkdownload" + RESPONSE_FORMAT)
     Single<ResponseDownload> downloadFiles(@Header(HEADER_AUTHORIZATION) String token, @Body RequestDownload requestDownload);
