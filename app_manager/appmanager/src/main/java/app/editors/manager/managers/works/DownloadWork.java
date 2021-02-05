@@ -18,6 +18,7 @@ import androidx.work.WorkerParameters;
 
 import java.io.IOException;
 
+import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.app.WebDavApi;
 import app.editors.manager.managers.receivers.DownloadReceiver;
@@ -74,7 +75,7 @@ public class DownloadWork extends Worker {
             AccountsSqlData sqlData = App.getApp().getAppComponent().getAccountsSql().getAccountOnline();
             call = WebDavApi.getApi(sqlData.getScheme() + sqlData.getPortal()).download(mId);
         } else {
-            call = mRetrofitTool.getApiWithPreferences().downloadFile(mToken, mUrl);
+            call = mRetrofitTool.getApiWithPreferences().downloadFile(mToken, mUrl, Api.COOKIE_HEADER + mToken);
         }
 
         try {
@@ -97,6 +98,10 @@ public class DownloadWork extends Worker {
                         sendBroadcastUnknownError(mId, mUrl, mFile.getName());
                     }
                 });
+            } else {
+                mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
+                sendBroadcastUnknownError(mId, mUrl, mFile.getName());
+                mFile.delete();
             }
         } catch (IOException e) {
             mFile.delete();
