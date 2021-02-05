@@ -188,6 +188,15 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     }
 
     @Override
+    public void onReverseSortOrder(String order) {
+        if(order.equals(Api.Parameters.VAL_SORT_ORDER_ASC)) {
+            mMenu.findItem(R.id.toolbar_sort_item_asc).setChecked(true);
+        } else {
+            mMenu.findItem(R.id.toolbar_sort_item_desc).setChecked(true);
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // Sort by
@@ -196,7 +205,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_date_update:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_UPDATED);
+                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_UPDATED, item.isChecked());
                 item.setChecked(true);
                 break;
 //            case R.id.toolbar_sort_item_date_create:
@@ -204,19 +213,19 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 //                item.setSelected(true);
 //                break;
             case R.id.toolbar_sort_item_title:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_TITLE);
+                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_TITLE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_type:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_TYPE);
+                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_TYPE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_size:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_SIZE);
+                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_SIZE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_owner:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_OWNER);
+                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_OWNER, item.isChecked());
                 item.setChecked(true);
                 break;
 
