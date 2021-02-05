@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">文档</string>
+    <string name="app_name_full">ONLYOFFICE文档</string>
+    <!-- ======================================================================================= -->
+    <!-- Permissions -->
+    <string name="permission_account_write_label" translatable="false">账户写入权限标签</string>
+    <string name="permission_account_write_description" translatable="false">账户写入权限描述</string>
+    <string name="permission_account_read_label" translatable="false">账户写入权限标签</string>
+    <string name="permission_account_read_description" translatable="false">账户写入权限描述</string>
+    <!-- ======================================================================================= -->
+    <!-- Versions -->
+    <string name="app_versions_title">版本3.0发布</string>
+    <string name="app_versions_cancel">稍后</string>
+    <string name="app_versions_without_release_accept">安装官方应用</string>
+    <string name="app_versions_without_release_info">
+感谢您加入Beta测试！ONLYOFFICE文档3.0现已发布，测试版将不再受到支持。切换到官方应用以获得进一步更新。
+</string>
+    <string name="app_versions_update_accept">更新官方应用</string>
+    <string name="app_versions_update_info">
+感谢您加入Beta测试！ONLYOFFICE文档3.0现已发布，测试版将不再受到支持。请切换到官方应用以接收进一步更新。
+</string>
+    <string name="app_versions_actual_release_accept">打开官方应用</string>
+    <string name="app_versions_actual_release_info">
+感谢您加入Beta测试！ONLYOFFICE文档3.0现已发布，测试版将不再受到支持。请切换到官方应用。
+</string>
+    <!-- ======================================================================================= -->
+    <!-- Snackbar common -->
+    <string name="snackbar_copied">已复制</string>
+    <!-- ======================================================================================= -->
+    <!-- About -->
+    <string name="about_title">关于</string>
+    <string name="about_app_version">版本 %1$s, build %2$s, SDK %3$s</string>
+    <string name="about_terms">使用条款</string>
+    <string name="about_policy">隐私政策</string>
+    <string name="about_license">许可协议</string>
+    <string name="about_website">ONLYOFFICE网站</string>
+    <string name="about_email_subject">适用于安卓反馈的ONLYOFFICE文档</string>
+    <!-- ======================================================================================= -->
+    <!-- Common errors -->
+    <string name="errors_unknown_error">连接错误。稍后再试。</string>
+    <string name="errors_ssl_error">SSL握手错误</string>
+    <string name="errors_connection_error">检查网络连接</string>
+    <string name="errors_unknown_host_error">未知主机</string>
+    <string name="errors_redirect_error">未知重定向错误代码：\u0020</string>
+    <string name="errors_client_error">未知客户端错误代码：\u0020</string>
+    <string name="errors_client_portal_exist">具有相同名称的门户已存在</string>
+    <string name="errors_client_portal_sms">您发送了太多短信。请稍后再试。</string>
+    <string name="errors_client_host_not_found">地址未找到</string>
+    <string name="errors_client_forbidden">拒绝访问</string>
+    <string name="errors_client_unauthorized">未经授权的请求</string>
+    <string name="errors_client_payment_required">需要付款</string>
+    <string name="errors_server_error">未知服务器错误代码：\u0020</string>
+    <string name="errors_server_auth_error">身份验证错误</string>
+    <string name="errors_email_syntax_error">无效邮箱</string>
+    <string name="errors_viewer_download_name">下载失败</string>
+    <string name="errors_email_already_registered">已有使用此邮箱的已注册用户</string>
+    <string name="errors_path_url">无效URL</string>
+    <string name="errors_create_local_file">创建文件失败</string>
+    <!-- SignIn -->
+    <string name="errors_sign_in_splash_error">访问门户失败</string>
+    <string name="errors_sign_in_account_error">登录失败</string>
+    <string name="errors_sign_in_account_already_use">您已在使用此账户</string>
+    <!-- ======================================================================================= -->
+    <!-- Login -->
+    <string name="login_api_init_error">初始化错误</string>
+    <string name="login_api_init_portal_error">门户名称语法错误</string>
+    <string name="login_api_portal_name">错误的门户名称。示例：example.onlyoffice.com</string>
+    <string name="login_api_portal_name_length">门户名称必须包含至少6个字符</string>
+    <string name="login_api_portal_name_content">门户名称必须由A-Z、a-z、0-9组成</string>
+    <string name="login_retry">重试连接</string>
+    <!-- Accounts -->
+    <string name="login_accounts_select_title">选择账户</string>
+    <string name="login_accounts_select_add">添加云账户</string>
+    <!-- Portal pager -->
+    <string name="login_pager_enterprise">门户</string>
+    <string name="login_pager_personal">个人</string>
+    <string name="login_pager_title">连接ONLYOFFICE云</string>
+    <!-- Portal enterprise-->
+    <string name="login_enterprise_edit_hint">门户地址</string>
+    <string name="login_enterprise_button_next">下一个</string>
+    <string name="login_enterprise_edit_error_hint">输入有效地址</string>
+    <string name="login_enterprise_forgot_password">忘记密码或邮箱？</string>
+    <string name="login_enterprise_button_create">创建门户</string>
+    <string name="login_enterprise_button_select">账户</string>
+    <string name="login_enterprise_email_hint">邮箱</string>
+    <string name="login_enterprise_password_hint">密码</string>
+    <string name="login_enterprise_signin_button">登录</string>
+    <string name="login_enterprise_single_sign_button">单点登录</string>
+    <string name="login_enterprise_info">
+ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以及实时协同编辑。
+</string>
+    <string name="login_not_authorization_info">无法在%2$s登录到%1$s</string>
+    <string name="login_not_authorization_button">再试一次</string>
+    <string name="errors_first_name">名字无效。不得包含数字。</string>
+    <string name="errors_last_name">姓氏无效。不得包含数字。</string>
+    <!-- Portal personal -->
+    <string name="login_personal_edit_email_hint">邮箱</string>
+    <string name="login_personal_edit_password_hint">密码</string>
+    <string name="login_personal_signin_button">登录</string>
+    <string name="login_personal_signup_button">注册</string>
+    <string name="login_personal_signup_title">注册个人门户</string>
+    <string name="login_personal_signup_edit_info">确认链接将被发送至此地址</string>
+    <string name="login_personal_signup_dialog_info">确认链接将被发送至邮箱：%1$s\n继续前请根据邮件中的链接操作</string>
+    <string name="login_personal_info">
+连接ONLYOFFICE个人以将文件保存至云端
+</string>
+    <string name="login_web_dav_title">连接至%1$s</string>
+    <!-- Portal create-->
+    <string name="login_create_portal_title">为组织创建门户</string>
+    <string name="login_create_portal_address_hint">门户地址</string>
+    <string name="login_create_portal_email_hint">邮箱</string>
+    <string name="login_create_signin_first_name_hint">名字</string>
+    <string name="login_create_signin_last_name_hint">姓氏</string>
+    <string name="login_create_portal_next_button">下一个</string>
+    <!-- Portal create sign in -->
+    <string name="login_create_signin_title">设置密码</string>
+    <string name="login_create_signin_password">密码</string>
+    <string name="login_create_signin_repeat">重复密码</string>
+    <string name="login_create_signin_create_button">创建</string>
+    <string name="login_create_signin_passwords_mismatch">密码不匹配</string>
+    <string name="login_create_signin_info">
+点击此按钮即代表您接受我们的服务条款
+</string>
+    <!-- Portal SMS -->
+    <string name="login_sms_code_label">我们已向此号码发送包含代码的文本消息</string>
+    <string name="login_sms_send_again">再次发送</string>
+    <string name="login_sms_send_again_after">稍后再次发送</string>
+    <string name="login_sms_change_number">更改号码</string>
+    <string name="login_sms_phone_number_verification">电话号码验证</string>
+    <string name="login_sms_phone_header">设置电话号码</string>
+    <string name="login_sms_phone_country_label">国家</string>
+    <string name="login_sms_phone_number_label">电话号码</string>
+    <string name="login_sms_phone_send_button">发送代码</string>
+    <string name="login_sms_phone_error_format">格式错误</string>
+    <string name="login_sms_phone_send_code">我们将通过短信发送验证码</string>
+    <string name="login_sms_resend_ok">已发送短信代码</string>
+    <!-- Countries codes -->
+    <string name="countries_codes_title">选择国家/地区</string>
+    <!-- ======================================================================================= -->
+    <!-- Dialogs -->
+    <string name="bottom_sheet_portal_title">门户</string>
+    <string name="bottom_sheet_cloud_title">云</string>
+    <!--Move copy dialog-->
+    <string name="dialog_move_copy_title_files">名称相同的%1$d文档已存在于\"%2$s\"文件夹中</string>
+    <string name="dialog_move_copy_title_one_file">名称为\"%1$s\"的文件已存在于\"%2$s\"文件夹中</string>
+    <string name="dialog_move_copy_overwrite">使用版本更新覆盖</string>
+    <string name="dialog_move_copy_copy">创建文件副本</string>
+    <string name="dialog_move_copy_skip">跳过</string>
+    <string name="dialog_move_copy_title">具有相同名称的文件</string>
+    <!-- Common -->
+    <string name="dialogs_common_ok_button">接受</string>
+    <string name="dialogs_common_cancel_button">取消</string>
+    <string name="dialogs_check_portal_header_text">检查门户功能</string>
+    <string name="dialogs_sign_in_portal_header_text">登录门户</string>
+    <string name="dialogs_sign_in_register_portal">注册门户</string>
+    <!-- Waiting -->
+    <string name="dialogs_wait_title">正在操作…</string>
+    <string name="dialogs_wait_title_storage">连接存储…</string>
+    <!-- Question -->
+    <string name="dialogs_question_accept_yes">是</string>
+    <string name="dialogs_question_accept_no">否</string>
+    <string name="dialogs_question_accept_delete">删除</string>
+    <string name="dialogs_question_accept_remove">移除</string>
+    <string name="dialogs_question_accept_not_really">不一定</string>
+    <string name="dialogs_question_accept_sure">好的，当然</string>
+    <string name="dialogs_question_accept_no_thanks">不用了，谢谢</string>
+    <string name="dialogs_question_delete">删除选定的项目？</string>
+    <string name="dialogs_question_share_remove">从列表中移除选定项目？</string>
+    <string name="dialogs_question_http_title">安全警告</string>
+    <string name="dialogs_question_http_question">HTTPS链接不可用，但可使用HTTP连接。继续？</string>
+    <string name="dialogs_question_facebook_title">Facebook</string>
+    <string name="dialogs_question_facebook_question">使用账户继续：\u0020</string>
+    <string name="dialogs_question_remove_account_title">移除账户？</string>
+    <string name="dialogs_question_remove_account_info">
+来自门户%2$s使用邮箱%1$s的账户将被登出并从列表中移除
+</string>
+    <string name="dialogs_question_personal_confirm_link_title">确认邮箱</string>
+    <string name="dialogs_question_personal_confirm_cancel">再试一次</string>
+    <string name="dialogs_question_personal_confirm_accept">继续</string>
+    <string name="dialogs_question_rate_first_info">您喜欢ONLYOFFICE文档的使用体验吗？</string>
+    <string name="dialogs_question_rate_second_info">请在Google Play中评价我们的应用。</string>
+    <string name="dialog_question_delete_file">该文件将被不可撤销地删除。</string>
+    <string name="dialog_question_delete_folder">该文件夹将被不可撤销地删除。</string>
+    <!-- Edit -->
+    <string name="dialogs_edit_rename_title">重命名</string>
+    <string name="dialogs_edit_hint">输入标题</string>
+    <string name="dialogs_edit_create_sheet">新电子表格</string>
+    <string name="dialogs_edit_create_presentation">新演示文稿</string>
+    <string name="dialogs_edit_create_docs">新文档</string>
+    <string name="dialogs_edit_create_folder">新文件夹</string>
+    <string name="dialogs_edit_forbidden_symbols">不要使用这些符号\u0020</string>
+    <string name="dialogs_edit_accept_create">创建</string>
+    <string name="dialogs_edit_accept_rename">重命名</string>
+    <string name="dialogs_edit_feedback_title">反馈</string>
+    <string name="dialogs_edit_feedback_rate_title">请问您愿意给我们一些反馈吗？</string>
+    <string name="dialogs_edit_feedback_rate_hint">告诉我们应该如何改进</string>
+    <string name="dialogs_edit_feedback_rate_accept">发送</string>
+    <!-- ======================================================================================= -->
+    <!-- Activity chooser -->
+    <string name="chooser_web_browser">选择浏览器…</string>
+    <string name="chooser_email_client">选择电子邮件客户端…</string>
+    <!-- ======================================================================================= -->
+    <!-- Main -->
+    <!-- Title -->
+    <string name="actionbar_title_main">文档</string>
+    <string name="chooser_activity_not_found">无法为此操作找到任何应用程序…</string>
+    <string name="fragment_clouds_title">云</string>
+    <string name="fragment_clouds_portal_title">连接到门户</string>
+    <string name="fragment_clouds_storage_title">连接到存储</string>
+    <string name="fragment_clouds_onlyoffice_item">ONLYOFFICE</string>
+    <string name="fragment_recent_title">最近</string>
+    <string name="fragment_on_device_title">在设备中</string>
+    <string name="fragment_profile_title">档案</string>
+    <!-- Drawer -->
+    <string name="navigation_drawer_open">打开导航抽屉</string>
+    <string name="navigation_drawer_close">关闭导航抽屉</string>
+    <!-- Main drawer menu-->
+    <string name="navigation_drawer_menu_my">我的文档</string>
+    <string name="navigation_drawer_menu_shared">与我分享</string>
+    <string name="navigation_drawer_menu_common">共同文档</string>
+    <string name="navigation_drawer_menu_projects">项目</string>
+    <string name="navigation_drawer_menu_trash">垃圾</string>
+    <string name="navigation_drawer_menu_about">关于</string>
+    <string name="navigation_drawer_menu_help">帮助</string>
+    <string name="navigation_drawer_menu_logout">注销</string>
+    <string name="navigation_drawer_menu_add_account">添加账户</string>
+    <string name="navigation_drawer_menu_feedback">反馈</string>
+    <string name="settings_item_title">设置</string>
+    <string name="settings_item_change_account">更改账户</string>
+    <string name="settings_clear_cache">清除缓存</string>
+    <string name="settings_title_common">常见</string>
+    <string name="setting_wifi">仅使用Wi-Fi上传文件</string>
+    <string name="setting_title_wifi">Wi-Fi</string>
+    <string name="setting_cache_cleared">缓存已清除</string>
+    <!-- Main toolbar menu -->
+    <string name="toolbar_menu_search_result">搜索结果</string>
+    <string name="toolbar_menu_search_hint">搜索…</string>
+    <string name="toolbar_menu_main_options">选项</string>
+    <string name="toolbar_menu_main_share">分享</string>
+    <string name="toolbar_menu_main_move">移动</string>
+    <string name="toolbar_menu_main_copy">复制</string>
+    <string name="toolbar_menu_main_remove_from_list">从列表中移除</string>
+    <string name="toolbar_menu_main_rename">重命名</string>
+    <string name="toolbar_menu_main_delete">删除</string>
+    <string name="toolbar_menu_main_select">选择…</string>
+    <string name="toolbar_menu_main_select_all">全选</string>
+    <string name="toolbar_menu_main_deselect">取消选择</string>
+    <string name="toolbar_menu_sort_by">排序方式</string>
+    <string name="toolbar_menu_sort_order">排序顺序</string>
+    <string name="toolbar_menu_sort_date_modified">最后修改</string>
+    <string name="toolbar_menu_sort_title">标题</string>
+    <string name="toolbar_menu_sort_type">类型</string>
+    <string name="toolbar_menu_sort_size">大小</string>
+    <string name="toolbar_menu_sort_owner">所有者</string>
+    <string name="toolbar_menu_sort_asc">升序</string>
+    <string name="toolbar_menu_sort_desc">降序</string>
+    <string name="toolbar_menu_main_download">下载</string>
+    <string name="toolbar_menu_main_open">打开</string>
+    <!-- List context menu -->
+    <string name="list_context_folder_name">文件夹名称</string>
+    <string name="list_context_folder_title">文件夹标题</string>
+    <string name="list_context_edit">编辑文档</string>
+    <string name="list_context_share">分享</string>
+    <string name="list_context_external_link">通过链接进行外部访问</string>
+    <string name="list_context_move">移动</string>
+    <string name="list_context_create_copy">复制</string>
+    <string name="list_context_create_download">下载</string>
+    <string name="list_context_rename">重命名</string>
+    <string name="list_context_rename_success">重命名成功</string>
+    <string name="list_context_delete">删除</string>
+    <string name="list_context_delete_storage">断开存储</string>
+    <string name="list_context_delete_success">删除成功</string>
+    <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
+    <string name="list_context_delete_recent">从最近中移除</string>
+    <string name="list_context_upload_to_portal">上传到门户</string>
+    <!-- List action menu -->
+    <string name="list_action_sheet">电子表格</string>
+    <string name="list_action_presentation">演示文稿</string>
+    <string name="list_action_doc">文本文档</string>
+    <string name="list_action_folder">文件夹</string>
+    <string name="list_action_photo">制作照片</string>
+    <string name="list_action_upload">上传文件</string>
+    <string name="list_action_storage">连接第三方存储</string>
+    <!-- Dialog info -->
+    <!-- Pager -->
+    <string name="main_pager_docs_my">我的</string>
+    <string name="main_pager_docs_common">常见</string>
+    <string name="main_pager_docs_share">与我分享</string>
+    <string name="main_pager_docs_projects">项目</string>
+    <string name="main_pager_docs_trash">垃圾</string>
+    <!-- Placeholder -->
+    <string name="placeholder_connection">连接错误</string>
+    <string name="placeholder_empty">空文件夹</string>
+    <string name="placeholder_search">未找到任何东西</string>
+    <string name="placeholder_share">未分享</string>
+    <string name="placeholder_access_denied">拒绝访问</string>
+    <string name="placeholder_no_subfolders">无子文件夹</string>
+    <string name="placeholder_no_users">无用户</string>
+    <string name="placeholder_no_groups">无群组</string>
+    <string name="placeholder_no_users_groups">无用户和群组</string>
+    <string name="placeholder_media_error">无法加载媒体</string>
+    <string name="placeholder_try_again">再试一次</string>
+    <string name="placeholder_loading_files">正在加载文件…</string>
+    <!-- Time marks-->
+    <string name="list_headers_folder">文件夹</string>
+    <string name="list_headers_files">文件</string>
+    <string name="list_headers_created">刚刚创建</string>
+    <string name="list_headers_today">今天</string>
+    <string name="list_headers_yesterday">昨天</string>
+    <string name="list_headers_week">本周</string>
+    <string name="list_headers_month">本月</string>
+    <string name="list_headers_year">本年</string>
+    <string name="list_headers_more_year">超过一年</string>
+    <!-- ======================================================================================= -->
+    <!-- Share -->
+    <string name="share_title_main">共享设置</string>
+    <string name="share_title_add">添加人员</string>
+    <string name="share_title_search">搜索人员</string>
+    <string name="share_goal_user">用户</string>
+    <string name="share_goal_group">群组</string>
+    <string name="share_main_external_access">通过链接进行外部访问</string>
+    <string name="share_main_external_access_info">为拥有链接的所有人提供访问权限</string>
+    <string name="share_main_external_copy_button">复制链接</string>
+    <string name="list_context_get_external_link">获取外部访问链接</string>
+    <string name="share_popup_access_full">完全访问权限</string>
+    <string name="share_popup_access_review">审阅</string>
+    <string name="share_popup_access_read_only">只读</string>
+    <string name="share_popup_access_deny_access">拒绝访问</string>
+    <string name="share_popup_access_deny_remove">移除</string>
+    <string name="share_popup_access_fill_forms">填写表单</string>
+    <string name="share_popup_access_comment">评论</string>
+    <!-- External link -->
+    <string name="share_access_success">外部访问成功</string>
+    <string name="share_access_denied">外部访问拒绝</string>
+    <string name="share_clipboard_external_copied">Secret链接已复制到剪贴板</string>
+    <string name="share_clipboard_internal_copied">门户用户链接已复制到剪贴板</string>
+    <string name="share_clipboard_external_link_label">外部链接</string>
+    <!-- Tabs -->
+    <string name="share_tab_users">用户</string>
+    <string name="share_tab_groups">群组</string>
+    <!-- List headers -->
+    <string name="share_add_common_header_users">用户</string>
+    <string name="share_add_common_header_groups">群组</string>
+    <!-- Panel -->
+    <string name="share_panel_message_notification">输入通知消息</string>
+    <string name="share_panel_button_add">添加</string>
+    <!-- ======================================================================================= -->
+    <!-- Storage -->
+    <string name="storage_select_title">选择服务</string>
+    <string name="storage_select_google_drive">Google Drive</string>
+    <string name="storage_select_drop_box">Dropbox</string>
+    <string name="storage_select_one_drive">OneDrive</string>
+    <string name="storage_select_next_cloud">Nextcloud</string>
+    <string name="storage_select_yandex">Yandex.Disk</string>
+    <string name="storage_select_box">Box</string>
+    <string name="storage_select_share_point">SharePoint</string>
+    <string name="storage_select_own_cloud">ownCloud</string>
+    <string name="storage_select_web_dav">其他WebDAV存储</string>
+    <string name="storage_connect_title">文件夹设置</string>
+    <string name="storage_connect_folder_name">文件夹名称</string>
+    <string name="storage_connect_save_button">保存</string>
+    <string name="storage_connect_empty_title">输入存储标题</string>
+    <string name="storage_web_title">连接服务</string>
+    <string name="storage_connect_button">连接</string>
+    <string name="storage_web_dav_settings_url">连接URL</string>
+    <string name="storage_web_dav_settings_login">登录</string>
+    <string name="storage_web_dav_settings_password">密码</string>
+    <string name="storage_web_dav_settings_title">输入服务标题</string>
+    <!-- ======================================================================================= -->
+    <!-- Operations -->
+    <string name="operation_title">选择文件夹</string>
+    <string name="operation_choose_section">选择分区</string>
+    <string name="operation_complete_message">操作完成</string>
+    <string name="operation_delete_impossible">无法删除文件。文件已在门户中打开。</string>
+    <string name="operation_delete_multiple">.由于有一个或多个文件已在门户上打开，所以其没有被删除</string>
+    <string name="operation_panel_move_button">移至此处</string>
+    <string name="operation_panel_copy_button">复制至此处</string>
+    <string name="operation_panel_cancel_button">取消</string>
+    <string name="operation_empty_lists_data">选择操作项目</string>
+    <string name="operation_error_move_to_same">无法移动到相同的文件夹</string>
+    <string name="operation_error_move_to_same_subfolder">无法移动到相同的子文件夹</string>
+    <string name="operation_snackbar_send_link">发送链接</string>
+    <string name="operation_snackbar_return">返回</string>
+    <string name="operation_share_send_link">发送</string>
+    <!-- ======================================================================================= -->
+    <!-- Trash -->
+    <string name="trash_dialog_empty_title">清空垃圾箱？</string>
+    <string name="trash_snackbar_move_text">您可从垃圾箱中移动文件</string>
+    <string name="trash_snackbar_move_button">移动</string>
+    <string name="trash_popup_move">移动至</string>
+    <string name="trash_popup_delete">永久删除</string>
+    <!-- ======================================================================================= -->
+    <!-- Managers load -->
+    <string name="download_manager_title">ONLYOFFICE下载</string>
+    <string name="download_manager_progress_title">正在下载</string>
+    <string name="download_manager_complete">下载完成</string>
+    <string name="download_manager_error">下载错误</string>
+    <string name="download_manager_error_free_space">没有足够的空闲空间</string>
+    <string name="download_manager_error_url">URL语法错误</string>
+    <string name="download_manager_cancel">下载已取消</string>
+    <string name="download_manager_repeat">已在下载文件</string>
+    <string name="download_manager_open">打开</string>
+    <string name="download_manager_notification_cancel_download">取消下载</string>
+    <string name="download_manager_folders_download">无法下载文件夹</string>
+    <string name="download_manager_select_files">选择文件</string>
+    <string name="upload_manager_file_picker_title">选择要上传的文件</string>
+    <string name="upload_manager_progress_title">正在上传</string>
+    <string name="upload_manager_error">上传错误</string>
+    <string name="upload_manager_cancel">已取消上传</string>
+    <string name="upload_manager_repeat">已在上传文件</string>
+    <string name="upload_manager_complete">上传完成</string>
+    <string name="upload_manager_error_url">URL语法错误</string>
+    <string name="upload_manager_error_number_files">您不能同时上传超过20个文件</string>
+    <string name="upload_manager_image_picker_title">选择要上传的图像</string>
+    <string name="upload_manager_error_file_size">文件大小不能超过100MB</string>
+    <string name="upload_manager_notification_cancel_upload">取消上传</string>
+    <string name="upload_manager_waiting_title">等待上传</string>
+    <string name="upload_error_wifi">您只能在启用Wi-Fi时上传</string>
+    <!-- ======================================================================================= -->
+    <!-- Socials -->
+    <string name="socials_twitter_failed_auth">使用Twitter登录失败</string>
+    <string name="socials_facebook_cancel_auth">取消使用Facebook登陆</string>
+    <string name="socials_facebook_failed_auth">使用Facebook登录失败</string>
+    <string name="socials_google_failed_auth">使用Google登录失败</string>
+    <!-- ======================================================================================= -->
+    <!-- On boarding -->
+    <string name="on_boarding_skip_button">跳过</string>
+    <string name="on_boarding_next_button">下一个</string>
+    <string name="on_boarding_finish_button">完成</string>
+    <string name="on_boarding_welcome_header">欢迎来到ONLYOFFICE</string>
+    <string name="on_boarding_welcome_info">
+我们对Android版ONLYOFFICE文档进行了重大更新。滑动以了解更多信息。
+</string>
+    <string name="on_boarding_edit_header">编辑办公文档</string>
+    <string name="on_boarding_edit_info">
+在ONLYOFFICE门户中创建并编辑文本文档、电子表格以及演示文稿。
+</string>
+    <string name="on_boarding_access_header">授予对文档的访问权限</string>
+    <string name="on_boarding_access_info">
+为团队成员授予文档的完整访问权限、审阅权限或只读权限。也可通过外部链接共享。
+</string>
+    <string name="on_boarding_collaborate_header">协作</string>
+    <string name="on_boarding_collaborate_info">
+与团队成员实时协同编辑办公文档。
+</string>
+    <string name="on_boarding_third_party_header">连接至第三方云</string>
+    <string name="on_boarding_third_party_info">
+将应用连接至其他您在使用的云存储：Google Drive、Dropbox、Nextcloud等。
+</string>
+    <!-- ======================================================================================= -->
+    <!-- Media -->
+    <string name="media_image_share_chooser">选择应用以进行共享</string>
+    <string name="media_image_list_info">媒体文件：%1$s</string>
+    <string name="media_video_error">播放器未知错误：%1$s</string>
+    <string name="auth_header_screen_1">设置双因素身份验证</string>
+    <string name="auth_info_screen_1">安装身份验证器应用（例如Google Authenticator、Authy）以生成访问代码并继续使用您的门户</string>
+    <string name="auth_header_screen_2">启动身份验证器应用</string>
+    <string name="auth_info_screen_2">运行应用，然后点击新账户图标</string>
+    <string name="auth_header_screen_3">添加密钥</string>
+    <string name="auth_info_screen_3">复制密钥并将其粘贴至您的身份验证器应用中</string>
+    <string name="auth_header_screen_4">复制代码</string>
+    <string name="auth_info_screen_4">从您的身份验证器应用中复制代码并将其在下方插入</string>
+    <string name="rename_file_exist">存在具有相同名称的文件</string>
+    <string name="device_path_file_error">此文件不存在。</string>
+    <string name="device_trash_files_restore">恢复</string>
+    <string name="error_recent_account">文件已被删除或在此账户中不可用。</string>
+    <string name="error_recent_enter_account">请输入账户。</string>
+    <string name="operation_move_file_existing">%1$s已在目标目录中存在。</string>
+    <string name="upload_to_portal">上传到门户</string>
+    <string name="this_device">此设备</string>
+    <string name="dialog_clear_cache">清除缓存？</string>
+    <string name="error_unsupported_path">不支持的路径</string>
+    <string name="error_unsupported_format">不支持的格式</string>
+    <string name="cloud_account_description">在安全环境中协作并连接第三方存储</string>
+    <string name="cloud_account_start_button">开始</string>
+    <string name="cloud_account_other_storages_button">其他存储</string>
+    <string name="cloud_only_office">ONLYOFFICE云</string>
+    <string name="cloud_only_office_description">将文档存储与云端并就其展开协作</string>
+    <string name="cloud_accounts_title">账户</string>
+    <string name="error_long_file_name">文件名过长</string>
+    <string name="dialog_remove_account_title">移除账户</string>
+    <string name="dialog_remove_account_description">
+%2$s门户中带有%1$s的用户将被登出，并从账户列表中移除。\n\n请注意：如需登录，您需要输入门户地址、邮箱以及密码。您的所有文件均将被安全存储。
+</string>
+    <string name="dialog_logout_account_title">确定要登出？</string>
+    <string name="dialog_logout_account_description">
+登出后，您将不需要输入门户地址或邮箱，仅需输入密码即可。别担心，所有文件都将被安全地存储于云端。
+</string>
+    <string name="profile_username_title">用户名</string>
+    <string name="profile_type_account">类型</string>
+    <string name="profile_portal_address">门户地址</string>
+    <string name="profile_type_admin">管理员</string>
+    <string name="profile_type_visitor">访客</string>
+    <string name="profile_type_user">用户</string>
+    <string name="profile_thirdparty_title">已连接的服务</string>
+    <string name="app_settings_analytic_title">帮助改进产品</string>
+    <string name="app_settings_analytic">共享应用分析数据</string>
+    <string name="app_manage_files_title">访问管理文件</string>
+    <string name="app_manage_files_description">需要授予文件访问权限。如果访问被拒，则在应用丢失后所有文件都将被删除。</string>
+</resources>
