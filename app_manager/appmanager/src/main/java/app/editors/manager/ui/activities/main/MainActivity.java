@@ -42,7 +42,6 @@ import app.editors.manager.R;
 import app.editors.manager.app.WebDavApi;
 import app.editors.manager.managers.receivers.DownloadReceiver;
 import app.editors.manager.managers.receivers.UploadReceiver;
-import app.editors.manager.managers.works.UploadWork;
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter;
 import app.editors.manager.mvp.views.main.MainActivityView;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
@@ -63,6 +62,7 @@ import lib.toolkit.base.managers.utils.PermissionUtils;
 import lib.toolkit.base.managers.utils.UiUtils;
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog;
 import lib.toolkit.base.ui.dialogs.common.CommonDialog;
+import lib.toolkit.base.ui.dialogs.common.holders.InfoHolder;
 import moxy.presenter.InjectPresenter;
 
 public class MainActivity extends BaseAppActivity implements MainActivityView,
@@ -127,13 +127,29 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_CANCELED) {
-            if (requestCode == REQUEST_ACTIVITY_WEB_VIEWER) {
-                mMainActivityPresenter.getRemoteConfigRate();
-                if (data != null && data.hasExtra(WebViewerActivity.TAG_VIEWER_FAIL)) {
-                    showSnackBar("BAD bad viewer activity... :(");
+            switch (requestCode) {
+                case REQUEST_ACTIVITY_WEB_VIEWER: {
+                    mMainActivityPresenter.getRemoteConfigRate();
+                    if (data != null && data.hasExtra(WebViewerActivity.TAG_VIEWER_FAIL)) {
+                        showSnackBar("BAD bad viewer activity... :(");
+                    }
+                    break;
                 }
-            } else if (requestCode == REQUEST_ACTIVITY_PORTAL) {
-                mMainActivityPresenter.setUser();
+                case REQUEST_ACTIVITY_PORTAL: {
+                    mMainActivityPresenter.setUser();
+                    break;
+                }
+            }
+            if (data != null && data.getExtras() != null) {
+                if (data.getExtras().containsKey("fragment_error")) {
+                    final InfoHolder.Builder dialog = getInfoDialog(getString(R.string.app_internal_error),
+                            getString(R.string.app_fragment_crash_error),
+                            getString(R.string.common_ok),
+                            null);
+                    if (dialog != null) {
+                        dialog.show();
+                    }
+                }
             }
         }
         if (requestCode == ProfileActivity.REQUEST_PROFILE) {
