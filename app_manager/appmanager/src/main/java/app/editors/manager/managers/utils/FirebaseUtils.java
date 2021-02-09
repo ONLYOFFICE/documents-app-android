@@ -74,7 +74,7 @@ public class FirebaseUtils {
     }
 
     private static void initRemoteConfig() {
-        if (sRemoteConfig == null) {
+        if (sRemoteConfig == null && App.getApp().isAnalyticEnable()) {
             sRemoteConfig = FirebaseRemoteConfig.getInstance();
             final FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
                     .setFetchTimeoutInSeconds(3600L)
