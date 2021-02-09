@@ -12,6 +12,7 @@ import java.util.Map;
 
 import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
+import app.editors.manager.mvp.models.base.Base;
 import app.editors.manager.mvp.models.explorer.Current;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.File;
@@ -20,6 +21,7 @@ import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.explorer.Operation;
 import app.editors.manager.mvp.models.request.RequestCreate;
 import app.editors.manager.mvp.models.request.RequestExternal;
+import app.editors.manager.mvp.models.request.RequestFavorites;
 import app.editors.manager.mvp.models.response.ResponseExternal;
 import app.editors.manager.mvp.models.response.ResponseOperation;
 import io.reactivex.Observable;
@@ -170,6 +172,16 @@ public class LocalFileProvider implements BaseFileProvider {
     @Override
     public Observable<List<Operation>> terminate() {
         // Stub to local
+        return null;
+    }
+
+    @Override
+    public Observable<Base> addToFavorites(RequestFavorites fileId) {
+         return null;//stub
+    }
+
+    @Override
+    public Observable<Base> deleteFromFavorites(RequestFavorites requestFavorites) {
         return null;
     }
 

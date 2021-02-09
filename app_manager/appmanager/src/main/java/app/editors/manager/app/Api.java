@@ -10,6 +10,7 @@ import app.editors.manager.mvp.models.request.RequestCreate;
 import app.editors.manager.mvp.models.request.RequestDeleteShare;
 import app.editors.manager.mvp.models.request.RequestDownload;
 import app.editors.manager.mvp.models.request.RequestExternal;
+import app.editors.manager.mvp.models.request.RequestFavorites;
 import app.editors.manager.mvp.models.request.RequestNumber;
 import app.editors.manager.mvp.models.request.RequestRegister;
 import app.editors.manager.mvp.models.request.RequestRenameFile;
@@ -200,6 +201,7 @@ public interface Api {
         public static final int IS_CONVERTING = 0x4;
         public static final int IS_ORIGINAL = 0x8;
         public static final int BACKUP = 0x10;
+        public static final int FAVORITE = 0x20;
     }
 
     final class Storage {
@@ -622,4 +624,15 @@ public interface Api {
             HEADER_ACCEPT + ": " + VALUE_ACCEPT})
     @GET("api/" + API_VERSION + "/settings/security" + RESPONSE_FORMAT)
     Single<ResponseModules> getModules(@Header(HEADER_AUTHORIZATION) String token, @Query("ids") List<String> modulesIds);
+
+    @Headers({HEADER_CONTENT_TYPE + ": " + VALUE_CONTENT_TYPE,
+            HEADER_ACCEPT + ": " + VALUE_ACCEPT})
+    @POST("api/" + API_VERSION + "/files/favorites" + RESPONSE_FORMAT)
+    Call<Base> addToFavorites(@Header(HEADER_AUTHORIZATION) String token, @Body RequestFavorites body);
+
+    @Headers({HEADER_CONTENT_TYPE + ": " + VALUE_CONTENT_TYPE,
+            HEADER_ACCEPT + ": " + VALUE_ACCEPT})
+    @HTTP(method = "DELETE", path = "api/" + API_VERSION + "/files/favorites" + RESPONSE_FORMAT, hasBody = true)
+    Call<Base> deleteFromFavorites(@Header(HEADER_AUTHORIZATION) String token, @Body RequestFavorites body);
+
 }

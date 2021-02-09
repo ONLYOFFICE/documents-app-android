@@ -222,8 +222,13 @@ public class DocsOnDevicePresenter extends DocsBasePresenter<DocsOnDeviceView> {
     }
 
     @Override
-    public boolean sortBy(@NonNull String value) {
+    public boolean sortBy(@NonNull String value, boolean isRepeatedTap) {
         mPreferenceTool.setSortBy(value);
+
+        if(isRepeatedTap) {
+            reverseSortOrder();
+        }
+
         getItemsById(mModelExplorerStack.getCurrentId());
         return true;
     }

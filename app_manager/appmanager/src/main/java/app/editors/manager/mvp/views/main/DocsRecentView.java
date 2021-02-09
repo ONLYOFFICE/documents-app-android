@@ -27,4 +27,5 @@ public interface DocsRecentView extends DocsBaseView {
     void onOpenPresentation(Uri uri);
     void onOpenPdf(Uri uri);
     void onOpenMedia(Explorer images, boolean isWebDav);
+    void onReverseSortOrder(List<Entity> itemList);
 }

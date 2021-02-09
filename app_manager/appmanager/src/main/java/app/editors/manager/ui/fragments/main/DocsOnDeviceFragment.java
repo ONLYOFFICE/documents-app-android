@@ -151,19 +151,19 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_date_update:
-                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_UPDATED);
+                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_UPDATED, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_title:
-                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_TITLE);
+                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_TITLE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_type:
-                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_TYPE);
+                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_TYPE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_size:
-                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_SIZE);
+                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_SIZE, item.isChecked());
                 item.setChecked(true);
                 break;
 
@@ -263,6 +263,11 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     @Override
     public void onActionBarTitle(String title) {
         setActionBarTitle(title);
+    }
+
+    @Override
+    public void onRemoveItemFromFavorites() {
+
     }
 
     @Override

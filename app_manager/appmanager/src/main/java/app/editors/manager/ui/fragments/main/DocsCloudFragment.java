@@ -114,8 +114,10 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
     @Override
     public void onUploadFileProgress(int progress, String id) {
         UploadFile uploadFile = mExplorerAdapter.getUploadFileById(id);
-        uploadFile.setProgress(progress);
-        mExplorerAdapter.updateItem(uploadFile);
+        if(uploadFile != null) {
+            uploadFile.setProgress(progress);
+            mExplorerAdapter.updateItem(uploadFile);
+        }
     }
 
     @Override
@@ -192,6 +194,12 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
                 showQuestionDialog(getString(R.string.dialogs_question_share_remove), mCloudPresenter.getItemTitle(),
                         getString(R.string.dialogs_question_share_remove), getString(R.string.dialogs_common_cancel_button),
                         DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE);
+                break;
+            case FAVORITE_ADD:
+                mCloudPresenter.addToFavorite();
+                break;
+            case FAVORITE_DELETE:
+                mCloudPresenter.deleteFromFavorite();
                 break;
         }
     }

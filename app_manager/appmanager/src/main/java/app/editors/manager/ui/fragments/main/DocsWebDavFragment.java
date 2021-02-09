@@ -168,6 +168,11 @@ public class DocsWebDavFragment extends DocsBaseFragment implements DocsWebDavVi
     }
 
     @Override
+    public void onRemoveItemFromFavorites() {
+        //stub
+    }
+
+    @Override
     public void onActionDialog() {
         mActionBottomDialog.setLocal(true);
         mActionBottomDialog.setWebDav(true);
