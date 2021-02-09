@@ -122,9 +122,8 @@ public class App extends Application {
     }
 
     private void initCrashlytics() {
-        if (isAnalyticEnable && !BuildConfig.DEBUG) {
-            FirebaseApp.initializeApp(this);
-        } else {
+        FirebaseApp.initializeApp(this);
+        if (BuildConfig.DEBUG || !isAnalyticEnable) {
             FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
         }
     }
