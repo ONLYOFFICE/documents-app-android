@@ -114,8 +114,10 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
     @Override
     public void onUploadFileProgress(int progress, String id) {
         UploadFile uploadFile = mExplorerAdapter.getUploadFileById(id);
-        uploadFile.setProgress(progress);
-        mExplorerAdapter.updateItem(uploadFile);
+        if(uploadFile != null) {
+            uploadFile.setProgress(progress);
+            mExplorerAdapter.updateItem(uploadFile);
+        }
     }
 
     @Override
