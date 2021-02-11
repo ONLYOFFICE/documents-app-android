@@ -98,6 +98,7 @@
     <string name="download_manager_notification_cancel_download">Скачивание отменено</string>
     <string name="download_manager_open">Открыть</string>
     <string name="download_manager_progress_title">Скачивание выполняется</string>
+    <string name="download_manager_archiving_progress">Создание архива</string>
     <string name="download_manager_repeat">Файл уже скачивается</string>
     <string name="download_manager_select_files">Выбрать файлы</string>
     <string name="download_manager_title">Скачивания ONLYOFFICE</string>

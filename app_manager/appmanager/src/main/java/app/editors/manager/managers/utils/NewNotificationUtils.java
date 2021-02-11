@@ -69,6 +69,19 @@ public class NewNotificationUtils {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
     }
 
+    private NotificationCompat.Builder getArchivingNotificationBuilder(@NonNull String title) {
+        return new NotificationCompat.Builder(App.getApp(), mServiceName)
+                .setPriority(Notification.PRIORITY_DEFAULT)
+                .setOngoing(true)
+                .setContentTitle(title)
+                .setSmallIcon(R.drawable.ic_notify)
+                .setContentText(mContext.getString(R.string.download_manager_archiving_progress))
+                .setTicker(mContext.getString(R.string.app_name))
+                .setOnlyAlertOnce(true)
+                .setChannelId(mServiceName)
+                .setGroup(DOWNLOAD_GROUP)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+    }
     private NotificationCompat.Builder getUploadNotificationBuilder(@NonNull String title) {
         return new NotificationCompat.Builder(App.getApp(), mServiceName)
                 .setPriority(Notification.PRIORITY_DEFAULT)
@@ -99,6 +112,14 @@ public class NewNotificationUtils {
 
     public void showProgressNotification(int id, @NonNull String tag, @NonNull String title, int progress) {
         Notification notification = getDownloadNotificationBuilder(title)
+                .addAction(R.drawable.drawable_ic_cancel_download_upload, mContext.getString(R.string.operation_panel_cancel_button), getDownloadIntent(tag))
+                .setProgress(100, progress, false)
+                .build();
+        mNotificationManager.notify(id, notification);
+    }
+
+    public void showArchivingProgressNotification(int id, @NonNull String tag, @NonNull String title, int progress) {
+        Notification notification = getArchivingNotificationBuilder(title)
                 .addAction(R.drawable.drawable_ic_cancel_download_upload, mContext.getString(R.string.operation_panel_cancel_button), getDownloadIntent(tag))
                 .setProgress(100, progress, false)
                 .build();

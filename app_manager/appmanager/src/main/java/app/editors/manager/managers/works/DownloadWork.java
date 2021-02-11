@@ -16,7 +16,10 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
+import java.util.List;
 
 import app.editors.manager.app.App;
 import app.editors.manager.app.WebDavApi;
@@ -24,6 +27,9 @@ import app.editors.manager.managers.receivers.DownloadReceiver;
 import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.NewNotificationUtils;
 import app.editors.manager.mvp.models.account.AccountsSqlData;
+import app.editors.manager.mvp.models.base.Download;
+import app.editors.manager.mvp.models.explorer.Operation;
+import app.editors.manager.mvp.models.request.RequestDownload;
 import lib.toolkit.base.managers.utils.FileUtils;
 import lib.toolkit.base.managers.utils.PathUtils;
 import lib.toolkit.base.managers.utils.StringUtils;
@@ -38,6 +44,7 @@ public class DownloadWork extends Worker {
     public static String URL_KEY = "URL_KEY";
     public static String FILE_ID_KEY = "FILE_ID_KEY";
     public static String FILE_URI_KEY = "FILE_URI_KEY";
+    public static String REQUEST_DOWNLOAD = "REQUEST_DOWNLOAD";
 
     private RetrofitTool mRetrofitTool;
     private String mToken;
@@ -48,6 +55,7 @@ public class DownloadWork extends Worker {
     private Uri mTo;
     private Long mTimeMark = 0L;
     private Context mContext;
+    private RequestDownload mRequestDownload;
 
     public DownloadWork(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -69,6 +77,10 @@ public class DownloadWork extends Worker {
     public Result doWork() {
         getArgs();
 
+        if(mRequestDownload != null) {
+            downloadFiles();
+        }
+
         Call<ResponseBody> call;
         if (App.getApp().getAppComponent().getAccountsSql().getAccountOnline().isWebDav()) {
             AccountsSqlData sqlData = App.getApp().getAppComponent().getAccountsSql().getAccountOnline();
@@ -81,7 +93,7 @@ public class DownloadWork extends Worker {
             Response<ResponseBody> response = call.execute();
             if (response.isSuccessful() && response.body() != null) {
                 FileUtils.writeFromResponseBody(response.body(), mTo, mContext, (total, progress) -> {
-                    showProgress(total, progress);
+                    showProgress(total, progress, false);
                     return isStopped();
                 }, () -> {
                     mNotificationUtils.removeNotification(getId().hashCode());
@@ -89,12 +101,13 @@ public class DownloadWork extends Worker {
                     sendBroadcastDownloadComplete(mId, mUrl, mFile.getName(), PathUtils.getPath(mContext, mTo), StringUtils.getMimeTypeFromPath(mFile.getName()));
                 }, message -> {
                     mNotificationUtils.removeNotification(getId().hashCode());
-                    mFile.delete();
                     if (isStopped()) {
                         mNotificationUtils.showCanceledNotification(getId().hashCode(), mFile.getName());
+                        mFile.delete();
                     } else {
                         mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
                         sendBroadcastUnknownError(mId, mUrl, mFile.getName());
+                        mFile.delete();
                     }
                 });
             }
@@ -102,24 +115,64 @@ public class DownloadWork extends Worker {
             mFile.delete();
             mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
         }
+
         return Result.success();
     }
 
-    private void showProgress(Long total, Long progress) {
+    private void showProgress(Long total, Long progress, boolean isArchiving) {
         final long deltaTime = System.currentTimeMillis() - mTimeMark;
         if (deltaTime > FileUtils.LOAD_PROGRESS_UPDATE) {
             mTimeMark = System.currentTimeMillis();
             final int percent = FileUtils.getPercentOfLoading(total, progress);
             final int id = getId().hashCode();
             final String tag = getId().toString();
-            mNotificationUtils.showProgressNotification(id, tag, mFile.getName(), percent);
+            if(!isArchiving) {
+                mNotificationUtils.showProgressNotification(id, tag, mFile.getName(), percent);
+            } else {
+                mNotificationUtils.showArchivingProgressNotification(id, tag, mFile.getName(), percent);
+            }
+        }
+    }
+
+    private void downloadFiles() {
+        List<Download> downloads = mRetrofitTool.getApiWithPreferences().downloadFiles(mToken, mRequestDownload).blockingGet().getResponse();
+
+        for(Download download : downloads) {
+            do {
+                if(!isStopped()) {
+                    List<Operation> response = mRetrofitTool.getApiWithPreferences().status(mToken).blockingGet().getResponse();
+                    if (!response.isEmpty()) {
+                        if(response.get(0).getError() == null) {
+                            showProgress((long) FileUtils.LOAD_MAX_PROGRESS, (long) response.get(0).getProgress(), true);
+                            if (response.get(0).getFinished() && response.get(0).getId().equals(download.getId())) {
+                                mUrl = response.get(0).getUrl();
+                                mId = response.get(0).getId();
+                                break;
+                            }
+                        } else {
+                            mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
+                            sendBroadcastUnknownError(mId, mUrl, mFile.getName());
+                            mFile.delete();
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                } else {
+                    mNotificationUtils.showCanceledNotification(getId().hashCode(), mFile.getName());
+                    mFile.delete();
+                    break;
+                }
+            } while (true);
         }
     }
 
     private void getArgs() {
         final Data data = getInputData();
+        final Gson gson = new Gson();
         mUrl = StringUtils.getEncodedString(data.getString(URL_KEY));
         mId = data.getString(FILE_ID_KEY);
+        mRequestDownload = gson.fromJson(data.getString(REQUEST_DOWNLOAD), RequestDownload.class);
         mTo = Uri.parse(data.getString(FILE_URI_KEY));
         mFile = DocumentFile.fromSingleUri(mContext, mTo);
     }

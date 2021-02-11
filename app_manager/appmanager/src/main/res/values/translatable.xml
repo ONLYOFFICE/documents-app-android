@@ -445,6 +445,7 @@
     <!-- Managers load -->
     <string name="download_manager_title">ONLYOFFICE downloads</string>
     <string name="download_manager_progress_title">Download in progress</string>
+    <string name="download_manager_archiving_progress">Creating archive</string>
     <string name="download_manager_complete">Download complete</string>
     <string name="download_manager_error">Download error</string>
     <string name="download_manager_error_free_space">Not enough free space</string>

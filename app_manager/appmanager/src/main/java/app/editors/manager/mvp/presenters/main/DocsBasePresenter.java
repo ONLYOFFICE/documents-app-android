@@ -14,6 +14,8 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.google.gson.Gson;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -623,7 +625,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         }
 
         if (mItemClicked != null && mItemClicked instanceof File) {
-            startDownloadWork(downloadTo, mItemClicked.getId(), ((File) mItemClicked).getViewUrl());
+            startDownloadWork(downloadTo, mItemClicked.getId(), ((File) mItemClicked).getViewUrl(), null);
         }
     }
 
@@ -642,31 +644,6 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             getBackStack();
         }
     }
-
-    private Observable<Operation> getOperationFromStatus() {
-        return Observable.<Operation>create(emitter -> {
-            do {
-                try {
-                    if (mIsTerminate && mBatchDisposable.isDisposed()) {
-                        terminateOperation();
-                        break;
-                    }
-                    List<Operation> response = mFileProvider.getStatusOperation().getResponse();
-                    if (!response.isEmpty()) {
-                        emitter.onNext(response.get(0));
-                    } else {
-                        emitter.onComplete();
-                        break;
-                    }
-                } catch (Exception e) {
-                    emitter.onError(ProviderError.throwInterruptException());
-                    break;
-                }
-            } while (true);
-        }).subscribeOn(Schedulers.single())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
 
     @SuppressLint("MissingPermission")
     private void bulkDownload(@Nullable List<File> files, @Nullable List<Folder> folders, @NonNull Uri downloadTo) {
@@ -687,38 +664,20 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         requestDownload.setFilesIds(filesIds);
         requestDownload.setFoldersIds(foldersIds);
 
-        mDownloadDisposable = mRetrofitTool.getApiWithPreferences().downloadFiles(mToken, requestDownload)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .toObservable()
-                .flatMap(responseDownload -> Observable.fromIterable(responseDownload.getResponse()))
-                .flatMap(download -> getOperationFromStatus()
-                        .map(operation -> {
-                            if (operation.getFinished() && operation.getId().equals(download.getId())) {
-                                return operation;
-                            }
-                            return new Object();
-                        }))
-                .subscribe(operation -> {
-                            if (operation instanceof Operation) {
-                                final Operation download = (Operation) operation;
-                                startDownloadWork(downloadTo, download.getId(), download.getUrl());
-                            }
-                        },
-                        throwable -> {
-                            final DocumentFile file = DocumentFile.fromSingleUri(mContext, downloadTo);
-                            if (file != null) {
-                                file.delete();
-                            }
-                            fetchError(throwable);
-                        });
+        startDownloadWork(downloadTo, null, null, requestDownload);
     }
 
-    private void startDownloadWork(Uri to, String id, String url) {
+    private void startDownloadWork(Uri to, String id, String url, RequestDownload requestDownload) {
+
+        final Gson gson = new Gson();
+
+        final String stringRequestDownload = gson.toJson(requestDownload);
+
         final Data workData = new Data.Builder()
                 .putString(DownloadWork.FILE_ID_KEY, id)
                 .putString(DownloadWork.URL_KEY, url)
                 .putString(DownloadWork.FILE_URI_KEY, to.toString())
+                .putString(DownloadWork.REQUEST_DOWNLOAD, stringRequestDownload)
                 .build();
 
         final OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(DownloadWork.class)
