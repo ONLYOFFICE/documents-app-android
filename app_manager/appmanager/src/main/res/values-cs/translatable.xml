@@ -199,8 +199,6 @@
     <string name="dialogs_question_personal_confirm_accept">POKRAČOVAT</string>
     <string name="dialogs_question_rate_first_info">Líbí se vám aplikace Dokumenty ONLYOFFICE?</string>
     <string name="dialogs_question_rate_second_info">Věnujte prosím chvilku hodnocení aplikace na Google Play.</string>
-    <string name="dialog_question_delete_file">Soubor bude nenávratně smazán.</string>
-    <string name="dialog_question_delete_folder">Složka bude nenávratně smazána.</string>
 
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Přejmenovat</string>
@@ -527,4 +525,31 @@
     <string name="error_unsupported_path">Nepodporovaná cesta</string>
     <string name="error_unsupported_format">Nepodporovaný formát</string>
 
+    <string name="cloud_account_description">Spolupracujte v bezpečném prostředí a připojujte úložiště třetích stran</string>
+    <string name="cloud_account_start_button">Začínáme</string>
+    <string name="cloud_account_other_storages_button">Ostatní úložiště</string>
+    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
+    <string name="cloud_only_office_description">Ukládejte dokumenty v cloudu a spolupracujte na nich</string>
+    <string name="cloud_accounts_title">Účty</string>
+    <string name="error_long_file_name">Název souboru je příliš dlouhý</string>
+    <string name="dialog_remove_account_title">Odebrat účet</string>
+    <string name="dialog_remove_account_description">Uživatel s %1$s z portálu %2$s bude odhlášen a odebrán ze seznamu účtů. \n\nProsím, mějte na paměti: pro přihlášení je třeba zadat adresu portálu, emailovou adresu a heslo. Všechny vaše soubory budou v bezpečí.</string>
+    <string name="dialog_logout_account_title">Jste si jisti, že se chcete odhlásit?</string>
+    <string name="dialog_logout_account_description">Po odhlášení nemusíte zadávat adresu portálu ani emailovou adresu, pouze heslo. Buďte bez obav, všechny soubory budou v bezpečí v cloudu.</string>
+    <string name="profile_username_title">Uživatelské jméno</string>
+    <string name="profile_type_account">Typ</string>
+    <string name="profile_portal_address">Adresa portálu</string>
+    <string name="profile_type_admin">Admin</string>
+    <string name="profile_type_visitor">Host</string>
+    <string name="profile_type_user">User</string>
+    <string name="profile_thirdparty_title">Připojené služby</string>
+    <string name="errors_create_local_file">Vytvoření souboru se nezdařilo</string>
+    <string name="dialog_question_delete_file">Soubor bude nenávratně smazán.</string>
+    <string name="dialog_question_delete_folder">Složka bude nenávratně smazána.</string>
+    <string name="operation_delete_impossible">Soubor nelze odstranit. Soubor je otevřen na portálu.</string>
+    <string name="operation_delete_multiple">. Jeden nebo více souborů nebyly smazány, protože jsou otevřeny na portálu</string>
+    <string name="app_settings_analytic_title">Pomožte vylepšit produkt</string>
+    <string name="app_settings_analytic">Sdílejte analytiku aplikací</string>
+    <string name="app_manage_files_title">Přistupujte ke správě souborů</string>
+    <string name="app_manage_files_description">Je třeba udělit přístup k souborům. Pokud je přístup odepřen, budou všechny soubory ve ztracených aplikacích smazány.</string>
 </resources>

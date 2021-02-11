@@ -405,4 +405,12 @@
   <string name="profile_thirdparty_title">Свързани услуги</string>
   <string name="list_context_upload_to_portal">Зареждане на пристанището</string>
   <string name="error_unsupported_format">Неподдържан формат</string>
+  <string name="errors_create_local_file">Неуспешно създаване на файл</string>
+  <string name="operation_delete_impossible">Файлът не може да се изтрие. Файлът е отворен в портала.</string>
+  <string name="operation_delete_multiple">. Един или повече файлове не са изтрити, защото са отворени в портала</string>
+  <string name="app_settings_analytic_title">Помогнете да подобрим продукта</string>
+  <string name="app_settings_analytic">Сподели анализи на приложението</string>
+  <string name="app_manage_files_title">Управление на файловете за достъп</string>
+  <string name="app_manage_files_description">Трябва да ви се предостави достъп до файловете. Ако достъпът е отказан, всички файлове след загубените приложения ще бъдат изтрити.</string>
+
 </resources>
