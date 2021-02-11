@@ -929,6 +929,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         mExplorerAdapter.removeHeader(App.getApp().getString(R.string.upload_manager_progress_title));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onAddUploadsFile(List<? extends Entity> uploadFiles) {
         onRemoveUploadHead();
@@ -1241,6 +1242,6 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         }
     }
 
-    abstract protected DocsBasePresenter getPresenter();
+    abstract protected DocsBasePresenter<? extends DocsBaseView> getPresenter();
 
 }

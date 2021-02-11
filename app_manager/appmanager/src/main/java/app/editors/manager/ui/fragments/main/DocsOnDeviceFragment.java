@@ -28,6 +28,7 @@ import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter;
+import app.editors.manager.mvp.views.main.DocsBaseView;
 import app.editors.manager.mvp.views.main.DocsOnDeviceView;
 import app.editors.manager.ui.activities.main.MainActivity;
 import app.editors.manager.ui.activities.main.MediaActivity;
@@ -423,7 +424,7 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     }
 
     @Override
-    protected DocsBasePresenter getPresenter() {
+    protected DocsBasePresenter<? extends DocsBaseView> getPresenter() {
         return mOnDevicePresenter;
     }
 

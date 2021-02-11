@@ -14,6 +14,7 @@ import app.editors.manager.app.WebDavApi;
 import app.editors.manager.mvp.models.account.AccountsSqlData;
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter;
+import app.editors.manager.mvp.views.main.DocsBaseView;
 import app.editors.manager.mvp.views.main.DocsWebDavView;
 import app.editors.manager.ui.activities.main.MainActivity;
 import app.editors.manager.ui.dialogs.ActionBottomDialog;
@@ -210,7 +211,7 @@ public class DocsWebDavFragment extends DocsBaseFragment implements DocsWebDavVi
     }
 
     @Override
-    protected DocsBasePresenter getPresenter() {
+    protected DocsBasePresenter<? extends DocsBaseView> getPresenter() {
         return mWebDavPresenter;
     }
 
