@@ -45,6 +45,7 @@ import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.managers.works.DownloadWork;
 import app.editors.manager.managers.works.UploadWork;
+import app.editors.manager.mvp.models.account.AccountsSqlData;
 import app.editors.manager.mvp.models.account.Recent;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.Explorer;
@@ -361,7 +362,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     public abstract void onActionClick();
 
     private void loadSuccess(Explorer explorer) {
-        mModelExplorerStack.addStack(changeContent(explorer));
+        final AccountsSqlData account = mAccountSqlTool.getAccountOnline();
+        if (account != null && account.isWebDav()) {
+            mModelExplorerStack.addStack(explorer);
+        } else {
+            mModelExplorerStack.addStack(changeContent(explorer));
+        }
+
         updateViewsState();
         setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
 
