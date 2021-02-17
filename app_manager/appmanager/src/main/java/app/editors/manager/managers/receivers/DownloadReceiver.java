@@ -26,6 +26,7 @@ public class DownloadReceiver extends BaseReceiver<Intent> {
     public static final String EXTRAS_KEY_MIME_TYPE = "EXTRAS_KEY_MIME_TYPE";
     public static final String EXTRAS_KEY_PROGRESS = "EXTRAS_KEY_PROGRESS";
     public static final String EXTRAS_KEY_CANCELED = "EXTRAS_KEY_CANCELED";
+    public static final String EXTRAS_KEY_ERROR = "EXTRAS_KEY_ERROR";
 
     public static final int EXTRAS_VALUE_CANCELED = 0;
     public static final int EXTRAS_VALUE_CANCELED_NOT_FOUND = 1;
@@ -54,8 +55,12 @@ public class DownloadReceiver extends BaseReceiver<Intent> {
                         final String id = intent.getStringExtra(EXTRAS_KEY_ID);
                         final String url = intent.getStringExtra(EXTRAS_KEY_URL);
                         final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
-                        final String info = context.getString(R.string.download_manager_error);
-                        mOnDownloadListener.onDownloadError(title, id, url, info);
+                        final String info = intent.getStringExtra(EXTRAS_KEY_ERROR);//context.getString(R.string.download_manager_error);
+                        if(info != null) {
+                            mOnDownloadListener.onDownloadError(title, id, url, info);
+                        } else {
+                            mOnDownloadListener.onDownloadError(title, id, url, context.getString(R.string.download_manager_error));
+                        }
                         break;
                     }
 

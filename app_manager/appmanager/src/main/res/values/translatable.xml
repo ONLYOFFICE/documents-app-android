@@ -456,6 +456,8 @@
     <string name="download_manager_notification_cancel_download">Cancel download</string>
     <string name="download_manager_folders_download">Folders cannot be downloaded</string>
     <string name="download_manager_select_files">Select files</string>
+    <string name="download_manager_exceed_size_100">Exceeds the maximum file size (100MB)</string>
+    <string name="download_manager_exceed_size_25">Exceeds the maximum file size (25MB)</string>
 
     <string name="upload_manager_file_picker_title">Select a file to upload</string>
     <string name="upload_manager_progress_title">Upload in progress</string>

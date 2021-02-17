@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.documentfile.provider.DocumentFile;
@@ -18,23 +19,32 @@ import androidx.work.WorkerParameters;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 
+import app.editors.manager.R;
+import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.app.WebDavApi;
 import app.editors.manager.managers.receivers.DownloadReceiver;
 import app.editors.manager.managers.tools.RetrofitTool;
+import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.managers.utils.NewNotificationUtils;
 import app.editors.manager.mvp.models.account.AccountsSqlData;
 import app.editors.manager.mvp.models.base.Download;
 import app.editors.manager.mvp.models.explorer.Operation;
 import app.editors.manager.mvp.models.request.RequestDownload;
+import app.editors.manager.mvp.models.response.ResponseDownload;
+import io.reactivex.Single;
 import lib.toolkit.base.managers.utils.FileUtils;
 import lib.toolkit.base.managers.utils.PathUtils;
 import lib.toolkit.base.managers.utils.StringUtils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 public class DownloadWork extends Worker {
@@ -45,6 +55,9 @@ public class DownloadWork extends Worker {
     public static String FILE_ID_KEY = "FILE_ID_KEY";
     public static String FILE_URI_KEY = "FILE_URI_KEY";
     public static String REQUEST_DOWNLOAD = "REQUEST_DOWNLOAD";
+
+    private static final String KEY_ERROR_INFO = "error";
+    private static final String KEY_ERROR_INFO_MESSAGE = "message";
 
     private RetrofitTool mRetrofitTool;
     private String mToken;
@@ -65,12 +78,6 @@ public class DownloadWork extends Worker {
         mContext = getApplicationContext();
     }
 
-    @Override
-    public void onStopped() {
-        mNotificationUtils.removeNotification(mId.hashCode());
-        super.onStopped();
-    }
-
     @SuppressLint("MissingPermission")
     @NonNull
     @Override
@@ -86,7 +93,12 @@ public class DownloadWork extends Worker {
             AccountsSqlData sqlData = App.getApp().getAppComponent().getAccountsSql().getAccountOnline();
             call = WebDavApi.getApi(sqlData.getScheme() + sqlData.getPortal()).download(mId);
         } else {
-            call = mRetrofitTool.getApiWithPreferences().downloadFile(mToken, mUrl);
+            if(mUrl != null) {
+                call = mRetrofitTool.getApiWithPreferences().downloadFile(mToken, mUrl);
+            } else {
+                mFile.delete();
+                return Result.failure();
+            }
         }
 
         try {
@@ -112,7 +124,6 @@ public class DownloadWork extends Worker {
                 });
             }
         } catch (IOException e) {
-            mFile.delete();
             mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
         }
 
@@ -135,35 +146,89 @@ public class DownloadWork extends Worker {
     }
 
     private void downloadFiles() {
-        List<Download> downloads = mRetrofitTool.getApiWithPreferences().downloadFiles(mToken, mRequestDownload).blockingGet().getResponse();
-
-        for(Download download : downloads) {
-            do {
-                if(!isStopped()) {
-                    List<Operation> response = mRetrofitTool.getApiWithPreferences().status(mToken).blockingGet().getResponse();
-                    if (!response.isEmpty()) {
-                        if(response.get(0).getError() == null) {
-                            showProgress((long) FileUtils.LOAD_MAX_PROGRESS, (long) response.get(0).getProgress(), true);
-                            if (response.get(0).getFinished() && response.get(0).getId().equals(download.getId())) {
-                                mUrl = response.get(0).getUrl();
-                                mId = response.get(0).getId();
+        Single<ResponseDownload> responseDownloadCall = mRetrofitTool.getApiWithPreferences().downloadFiles(mToken, mRequestDownload);
+        try {
+            ResponseDownload response = responseDownloadCall.blockingGet();
+            List<Download> downloads = response.getResponse();
+            for (Download download : downloads) {
+                do {
+                    if (!isStopped()) {
+                        List<Operation> operations = mRetrofitTool.getApiWithPreferences().status(mToken).blockingGet().getResponse();
+                        if (!operations.isEmpty()) {
+                            if (operations.get(0).getError() == null) {
+                                showProgress((long) FileUtils.LOAD_MAX_PROGRESS, (long) operations.get(0).getProgress(), true);
+                                if (operations.get(0).getFinished() && operations.get(0).getId().equals(download.getId())) {
+                                    mUrl = operations.get(0).getUrl();
+                                    mId = operations.get(0).getId();
+                                    break;
+                                }
+                            } else {
+                                mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
+                                onError(operations.get(0).getError());
+                                mFile.delete();
                                 break;
                             }
                         } else {
-                            mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
-                            sendBroadcastUnknownError(mId, mUrl, mFile.getName());
-                            mFile.delete();
                             break;
                         }
                     } else {
+                        mNotificationUtils.showCanceledNotification(getId().hashCode(), mFile.getName());
+                        mFile.delete();
                         break;
                     }
-                } else {
-                    mNotificationUtils.showCanceledNotification(getId().hashCode(), mFile.getName());
-                    mFile.delete();
-                    break;
+                } while (true);
+            }
+        } catch (Exception e) {
+            if (e instanceof HttpException) {
+                HttpException exception = (HttpException) e;
+                onError(exception.response().errorBody());
+            }
+        }
+
+    }
+
+    private void onError(ResponseBody responseBody) {
+        String errorMessage;
+        String responseMessage = null;
+
+        try {
+            responseMessage = responseBody.string();
+        } catch (Exception e) {
+            sendBroadcastUnknownError(mId, mUrl, mFile.getName());
+            mFile.delete();
+            return;
+        }
+
+        if (responseMessage != null) {
+            final JSONObject jsonObject = StringUtils.getJsonObject(responseMessage);
+            if (jsonObject != null) {
+                try {
+                    errorMessage = jsonObject.getJSONObject(KEY_ERROR_INFO).getString(KEY_ERROR_INFO_MESSAGE);
+                    sendBroadcastError(mId, mUrl, mFile.getName(), errorMessage);
+                } catch (JSONException e) {
+                    Log.e(TAG, "onErrorHandle()", e);
+                    FirebaseUtils.addCrash(e);
                 }
-            } while (true);
+            }
+            else {
+                sendBroadcastUnknownError(mId, mUrl, mFile.getName());
+                mFile.delete();
+                return;
+            }
+        }
+    }
+
+    private void onError(String errorMessage) {
+        switch (errorMessage) {
+            case Api.Errors.EXCEED_FILE_SIZE_100:
+                sendBroadcastError(mId, mUrl, mFile.getName(), mContext.getString(R.string.download_manager_exceed_size_100));
+                break;
+            case Api.Errors.EXCEED_FILE_SIZE_25:
+                sendBroadcastError(mId, mUrl, mFile.getName(), mContext.getString(R.string.download_manager_exceed_size_25));
+                break;
+            default:
+                sendBroadcastError(mId, mUrl, mFile.getName(), errorMessage);
+                break;
         }
     }
 
@@ -191,6 +256,14 @@ public class DownloadWork extends Worker {
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id);
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url);
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title);
+        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent);
+    }
+    public static void sendBroadcastError(final String id, final String url, final String title, String error) {
+        Intent intent = new Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR);
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id);
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url);
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title);
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_ERROR, error);
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent);
     }
 }
