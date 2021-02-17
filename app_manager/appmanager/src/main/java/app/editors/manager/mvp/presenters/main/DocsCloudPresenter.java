@@ -222,6 +222,7 @@ public class DocsCloudPresenter extends DocsBasePresenter<DocsCloudView>
         } else {
             if (mIsTrashMode) {
                 getViewState().onStateActionButton(false);
+                getViewState().onActionBarTitle("");
             } else if (mIsFoldersMode) {
                 getViewState().onActionBarTitle(mContext.getString(R.string.operation_title));
                 getViewState().onStateActionButton(false);
