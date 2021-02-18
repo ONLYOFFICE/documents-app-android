@@ -6,6 +6,7 @@ import app.editors.manager.managers.retrofit.ConverterFactory;
 import app.editors.manager.managers.retrofit.WebDavInterceptor;
 import app.editors.manager.mvp.models.explorer.WebDavModel;
 import io.reactivex.Observable;
+import lib.toolkit.base.managers.http.UnsafeClient;
 import lib.toolkit.base.managers.tools.RetrofitTool;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -47,17 +48,34 @@ public interface WebDavApi {
 
     }
 
-    static WebDavApi getApi(String baseUrl) {
+    static WebDavApi getApi(String baseUrl, Boolean isSslState) {
         if (!baseUrl.endsWith("/")) {
             baseUrl = baseUrl.concat("/");
         }
+
+        OkHttpClient client;
+        if (!isSslState) {
+            client = getUnsafeClient();
+        } else {
+            client = getClient();
+        }
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(new ConverterFactory())
-                .client(getClient())
+                .client(client)
                 .build();
         return retrofit.create(WebDavApi.class);
+    }
+
+    static OkHttpClient getUnsafeClient() {
+        return UnsafeClient.getUnsafeBuilder()
+                .readTimeout(RetrofitTool.READ_TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(RetrofitTool.WRITE_TIMEOUT, TimeUnit.SECONDS)
+                .connectTimeout(RetrofitTool.CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                .addInterceptor(new WebDavInterceptor())
+                .build();
     }
 
     static OkHttpClient getClient() {
