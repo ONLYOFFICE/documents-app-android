@@ -4,7 +4,7 @@ buildscript {
 
     ext.NDK_VERSION = "21.3.6528147"
 
-    ext.kotlin_version = '1.4.21'
+    ext.kotlin_version = '1.4.10'
 
     repositories {
         google()
