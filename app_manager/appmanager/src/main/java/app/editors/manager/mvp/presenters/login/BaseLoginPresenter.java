@@ -30,6 +30,7 @@ import app.editors.manager.mvp.presenters.base.BasePresenter;
 import app.editors.manager.mvp.views.base.BaseView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import lib.toolkit.base.managers.utils.StringUtils;
 import retrofit2.Call;
@@ -59,6 +60,7 @@ public abstract class BaseLoginPresenter<View extends BaseView, Response> extend
 
     private int mTryCounter = 0;
     protected Api mApi;
+    private Disposable mDisposable;
 
     /*
      * Common sign in
@@ -179,58 +181,34 @@ public abstract class BaseLoginPresenter<View extends BaseView, Response> extend
                 mPreferenceTool.setSslCiphers(sqlData.isSslCiphers());
                 mRetrofitApi.setCiphers(sqlData.isSslCiphers());
                 mRetrofitApi.setSslOn(sqlData.isSslState());
-                mRequestUserCall = mRetrofitApi.init(sqlData.getScheme() + StringUtils.getEncodedString(sqlData.getPortal()))
-                        .getApi(sqlData.getScheme() + StringUtils.getEncodedString(sqlData.getPortal()))
-                        .getUserInfo(token);
+                mApi = mRetrofitApi.init(sqlData.getScheme() + StringUtils.getEncodedString(sqlData.getPortal()))
+                        .getApi(sqlData.getScheme() + StringUtils.getEncodedString(sqlData.getPortal()));
             } catch (UrlSyntaxMistake urlSyntaxMistake) {
                 urlSyntaxMistake.printStackTrace();
             }
         } else {
-            mRequestUserCall = mRetrofitTool.getApiWithPreferences().getUserInfo(token);
+            mApi = mRetrofitTool.getApiWithPreferences();
         }
-        mRequestUserCall.enqueue(new CommonCallback<ResponseUser>() {
-
-            @Override
-            public void onSuccessResponse(retrofit2.Response<ResponseUser> response) {
-                final User user = response.body().getResponse();
-                Observable<ResponseSettings> responseSettingsObservable = null;
-                try {
-                    if(sqlData != null) {
-                        responseSettingsObservable = mRetrofitApi.init(sqlData.getScheme() + StringUtils.getEncodedString(sqlData.getPortal()))
-                                .getApi(sqlData.getScheme() + StringUtils.getEncodedString(sqlData.getPortal())).getSettings();
+        mDisposable = mApi.getSettings()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(responseSettings -> {
+                    mPreferenceTool.setServerVersion(responseSettings.getResponse().getCommunityServer());
+                    return Observable.fromCallable(() -> mApi.getUserInfo(token).execute())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread());
+                })
+                .subscribe(responseUser -> {
+                    if (responseUser.body() != null && responseUser.isSuccessful()) {
+                        onGetUser(responseUser.body().getResponse());
                     } else {
-                        responseSettingsObservable = mRetrofitTool.getApiWithPreferences().getSettings();
+                        onErrorUser(responseUser);
                     }
-                } catch (Exception e) {}
-
-                responseSettingsObservable
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .map(ResponseSettings::getResponse)
-                        .subscribe(settings -> {
-                                    mPreferenceTool.setServerVersion(settings.getCommunityServer());
-                                    onGetUser(user);
-                                }
-                                , throwable -> {
-                                    mPreferenceTool.setServerVersion("");
-                                    onGetUser(user);
-                                });
-            }
-
-            @Override
-            public void onErrorResponse(retrofit2.Response<ResponseUser> response) {
-                super.onErrorResponse(response);
-                onErrorUser(response);
-            }
-
-            @Override
-            public void onFailResponse(Throwable t) {
-                super.onFailResponse(t);
-                if (!(t instanceof NoConnectivityException)) {
-                    onFailUser(t);
-                }
-            }
-        });
+                }, throwable -> {
+                    if (!(throwable instanceof NoConnectivityException)) {
+                        onFailUser(throwable);
+                    }
+                });
     }
 
     protected void onGetUser(User user) {
@@ -241,6 +219,13 @@ public abstract class BaseLoginPresenter<View extends BaseView, Response> extend
             initRetrofitPref(mPreferenceTool.getPortal());
         } catch (UrlSyntaxMistake urlSyntaxMistake) {
             urlSyntaxMistake.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mDisposable != null){
+            mDisposable.dispose();
         }
     }
 
