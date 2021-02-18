@@ -26,6 +26,7 @@ import app.editors.manager.ui.views.pager.ViewPagerAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import lib.toolkit.base.managers.utils.StringUtils;
 
 public class MainPagerFragment extends BaseAppFragment {
 
@@ -160,7 +161,9 @@ public class MainPagerFragment extends BaseAppFragment {
         } else {
             pairs.addAll(getMyFragments());
         }
-        pairs.add(new ViewPagerAdapter.Container(DocsFavoritesFragment.newInstance(), getString(R.string.main_pager_docs_favorites)));
+        if(StringUtils.convertServerVersion(mPreferenceTool.getServerVersion()) >= 11) {
+            pairs.add(new ViewPagerAdapter.Container(DocsFavoritesFragment.newInstance(), getString(R.string.main_pager_docs_favorites)));
+        }
         pairs.add(new ViewPagerAdapter.Container(DocsTrashFragment.newInstance(), getString(R.string.main_pager_docs_trash)));
         return pairs;
     }

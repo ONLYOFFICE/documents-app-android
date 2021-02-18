@@ -98,7 +98,7 @@ public class EnterprisePortalPresenter extends BaseLoginPresenter<EnterprisePort
 //                        mPreferenceTool.setAuthProviders(capabilities.getProviders());
 //                    }
 
-                    checkPortalVersion();
+                    //checkPortalVersion();
 
                     // Show user security message for http connection
                     if (mPreferenceTool.isHttpsConnect()) {
