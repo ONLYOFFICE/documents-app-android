@@ -21,12 +21,16 @@ import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.mvp.models.account.AccountsSqlData;
 import app.editors.manager.mvp.models.request.RequestSignIn;
+import app.editors.manager.mvp.models.response.ResponseSettings;
 import app.editors.manager.mvp.models.response.ResponseSignIn;
 import app.editors.manager.mvp.models.response.ResponseUser;
 import app.editors.manager.mvp.models.user.Token;
 import app.editors.manager.mvp.models.user.User;
 import app.editors.manager.mvp.presenters.base.BasePresenter;
 import app.editors.manager.mvp.views.base.BaseView;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import lib.toolkit.base.managers.utils.StringUtils;
 import retrofit2.Call;
 
@@ -189,7 +193,28 @@ public abstract class BaseLoginPresenter<View extends BaseView, Response> extend
             @Override
             public void onSuccessResponse(retrofit2.Response<ResponseUser> response) {
                 final User user = response.body().getResponse();
-                onGetUser(user);
+                Observable<ResponseSettings> responseSettingsObservable = null;
+                try {
+                    if(sqlData != null) {
+                        responseSettingsObservable = mRetrofitApi.init(sqlData.getScheme() + StringUtils.getEncodedString(sqlData.getPortal()))
+                                .getApi(sqlData.getScheme() + StringUtils.getEncodedString(sqlData.getPortal())).getSettings();
+                    } else {
+                        responseSettingsObservable = mRetrofitTool.getApiWithPreferences().getSettings();
+                    }
+                } catch (Exception e) {}
+
+                responseSettingsObservable
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .map(ResponseSettings::getResponse)
+                        .subscribe(settings -> {
+                                    mPreferenceTool.setServerVersion(settings.getCommunityServer());
+                                    onGetUser(user);
+                                }
+                                , throwable -> {
+                                    mPreferenceTool.setServerVersion("");
+                                    onGetUser(user);
+                                });
             }
 
             @Override
