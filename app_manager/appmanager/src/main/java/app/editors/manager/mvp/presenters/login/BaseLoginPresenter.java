@@ -191,24 +191,18 @@ public abstract class BaseLoginPresenter<View extends BaseView, Response> extend
         }
         mDisposable = mApi.getSettings()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(responseSettings -> {
                     mPreferenceTool.setServerVersion(responseSettings.getResponse().getCommunityServer());
-                    return Observable.fromCallable(() -> mApi.getUserInfo(token).execute())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread());
+                    return Observable.fromCallable(() -> mApi.getUserInfo(token).execute());
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(responseUser -> {
                     if (responseUser.body() != null && responseUser.isSuccessful()) {
                         onGetUser(responseUser.body().getResponse());
                     } else {
                         onErrorUser(responseUser);
                     }
-                }, throwable -> {
-                    if (!(throwable instanceof NoConnectivityException)) {
-                        onFailUser(throwable);
-                    }
-                });
+                }, this::fetchError);
     }
 
     protected void onGetUser(User user) {
