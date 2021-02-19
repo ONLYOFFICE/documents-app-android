@@ -48,17 +48,17 @@ public interface WebDavApi {
 
     }
 
-    static WebDavApi getApi(String baseUrl, Boolean isSslState) {
+    static WebDavApi getApi(String baseUrl) {
         if (!baseUrl.endsWith("/")) {
             baseUrl = baseUrl.concat("/");
         }
 
         OkHttpClient client;
-        if (!isSslState) {
-            client = getUnsafeClient();
-        } else {
+//        if (!isSslState) {
+//            client = getUnsafeClient();
+//        } else {
             client = getClient();
-        }
+//        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
