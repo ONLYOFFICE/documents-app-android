@@ -181,7 +181,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * */
     private Runnable mFilterRun;
     protected CompositeDisposable mDisposable = new CompositeDisposable();
-    private Disposable mBatchDisposable;
+    protected Disposable mBatchDisposable;
     private Disposable mDownloadDisposable;
     protected Disposable mUploadDisposable;
     private boolean mIsTerminate = false;
@@ -392,6 +392,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         mBatchDisposable = mFileProvider.delete(items, null)
                 .switchMap(operations -> getStatus())
                 .subscribe(progress -> {
+                            getViewState().onDialogProgress(100, progress);
                         },
                         this::fetchError,
                         () -> {
