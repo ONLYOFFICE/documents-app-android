@@ -28,6 +28,7 @@ public class StorageAdapter extends BaseAdapter<String> {
         mContext = context;
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int typeHolder) {
         final View viewItem = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_storage_select_item, viewGroup, false);
@@ -35,13 +36,13 @@ public class StorageAdapter extends BaseAdapter<String> {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         final ViewHolderItem mViewHolder = (ViewHolderItem) viewHolder;
         setContentByKey(mViewHolder, getItem(position));
     }
 
     private void setContentByKey(final ViewHolderItem mViewHolder, final String id) {
-        mViewHolder.mStorageTitle.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+        mViewHolder.mStorageTitle.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
         mViewHolder.mStorageImage.setAlpha(1.0f);
         mViewHolder.mStorageImage.setPadding(0, 0, 0, 0);
 
@@ -50,6 +51,8 @@ public class StorageAdapter extends BaseAdapter<String> {
             params.guidePercent= 0.0f;
             mViewHolder.mGuideline.setLayoutParams(params);
         }
+
+        final int padding = (int) mContext.getResources().getDimension(R.dimen.image_padding_icon);
 
         switch (id) {
             case Api.Storage.BOXNET:
@@ -85,11 +88,16 @@ public class StorageAdapter extends BaseAdapter<String> {
                 mViewHolder.mStorageTitle.setText(R.string.storage_select_next_cloud);
                 break;
             case Api.Storage.WEBDAV:
-                final int padding = (int) mContext.getResources().getDimension(R.dimen.image_padding_icon);
                 mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_webdav);
                 mViewHolder.mStorageImage.setAlpha(UiUtils.getFloatResource(mContext, R.dimen.alpha_medium));
                 mViewHolder.mStorageImage.setPadding(padding, padding, padding, padding);
                 mViewHolder.mStorageTitle.setText(R.string.storage_select_web_dav);
+                break;
+            default:
+                mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_webdav);
+                mViewHolder.mStorageImage.setAlpha(UiUtils.getFloatResource(mContext, R.dimen.alpha_medium));
+                mViewHolder.mStorageImage.setPadding(padding, padding, padding, padding);
+                mViewHolder.mStorageTitle.setText(id);
                 break;
         }
     }

@@ -21,59 +21,49 @@ public class StorageUtils {
     public static final String ARG_SCOPE = "scope";
     public static final String ARG_CODE = "code";
 
+    public static final class Box {
+        public static final String AUTH_URL = "https://account.box.com/api/oauth2/authorize?";
+        public static final String VALUE_RESPONSE_TYPE = "code";
+    }
 
-    @Nullable
-    public static String getStorageUrl(final String providerKey, final boolean isInfo) {
-        switch (providerKey) {
-            case Api.Storage.BOXNET:
-                return box(providerKey, isInfo).getUrl();
+    public static final class DropBox {
+        public static final String AUTH_URL = "https://www.dropbox.com/oauth2/authorize?";
+        public static final String VALUE_RESPONSE_TYPE = "code";
+    }
 
-            case Api.Storage.DROPBOX:
-                return dropBox(providerKey, isInfo).getUrl();
+    public static final class Google {
 
-            case Api.Storage.GOOGLEDRIVE:
-                return google(providerKey, isInfo).getUrl();
+        public static final String AUTH_URL = "https://accounts.google.com/o/oauth2/auth?";
+        public static final String VALUE_RESPONSE_TYPE = "code";
+        public static final String VALUE_ACCESS_TYPE = "offline";
+        public static final String VALUE_APPROVAL_PROMPT = "force";
+        public static final String VALUE_SCOPE = "https://www.googleapis.com/auth/drive";
+    }
 
-            case Api.Storage.ONEDRIVE:
-                return oneDrive(providerKey, isInfo).getUrl();
-        }
+    public static final class OneDrive {
+        public static final String AUTH_URL = "https://login.live.com/oauth20_authorize.srf?";
+        public static final String VALUE_RESPONSE_TYPE = "code";
+        public static final String VALUE_SCOPE = "wl.signin wl.skydrive_update wl.offline_access";
+    }
 
-        return null;
+    public static final class WevDav {
+        public static final String URL_YANDEX = "https://webdav.yandex.ru";
     }
 
     @Nullable
-    public static Storage getStorageInstance(final String providerKey, final boolean isInfo) {
+    public static String getStorageUrl(final String providerKey, final String clientId, final String redirectUrl) {
         switch (providerKey) {
             case Api.Storage.BOXNET:
-                return box(providerKey, isInfo);
+                return box(providerKey, clientId, redirectUrl).getUrl();
 
             case Api.Storage.DROPBOX:
-                return dropBox(providerKey, isInfo);
+                return dropBox(providerKey, clientId, redirectUrl).getUrl();
 
             case Api.Storage.GOOGLEDRIVE:
-                return google(providerKey, isInfo);
+                return google(providerKey, clientId, redirectUrl).getUrl();
 
             case Api.Storage.ONEDRIVE:
-                return oneDrive(providerKey, isInfo);
-        }
-
-        return null;
-    }
-
-    @Nullable
-    public static Storage getNewStorageInstance(final String providerKey, app.editors.manager.mvp.models.account.Storage storage) {
-        switch (providerKey) {
-            case Api.Storage.BOXNET:
-                return newBox(providerKey, storage);
-
-            case Api.Storage.DROPBOX:
-                return newDropBox(providerKey, storage);
-
-            case Api.Storage.GOOGLEDRIVE:
-                return newGoogle(providerKey, storage);
-
-            case Api.Storage.ONEDRIVE:
-                return newOneDrive(providerKey, storage);
+                return oneDrive(providerKey, clientId, redirectUrl).getUrl();
         }
 
         return null;
@@ -82,131 +72,59 @@ public class StorageUtils {
     /*
      * Get Box instance for request token
      * */
-    private static Storage box(final String providerKey, final boolean isInfo) {
+    private static Storage box(final String providerKey, final String clientId, final String redirectUrl) {
         final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, Constants.Box.VALUE_RESPONSE_TYPE);
-
-        if (isInfo) {
-            uriMap.put(ARG_CLIENT_ID, Constants.Box.INFO_CLIENT_ID);
-            uriMap.put(ARG_REDIRECT_URI, Constants.Box.INFO_REDIRECT_URL);
-        } else {
-            uriMap.put(ARG_CLIENT_ID, Constants.Box.COM_CLIENT_ID);
-            uriMap.put(ARG_REDIRECT_URI, Constants.Box.COM_REDIRECT_URL);
-        }
-
-        return new Storage(providerKey, Constants.Box.AUTH_URL, uriMap);
+        uriMap.put(ARG_RESPONSE_TYPE, Box.VALUE_RESPONSE_TYPE);
+        uriMap.put(ARG_CLIENT_ID, clientId);
+        uriMap.put(ARG_REDIRECT_URI, redirectUrl);
+        return new Storage(providerKey, Box.AUTH_URL, uriMap);
     }
 
-    private static Storage newBox(final String providerKey, app.editors.manager.mvp.models.account.Storage storage) {
-        final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, Constants.Box.VALUE_RESPONSE_TYPE);
-
-        uriMap.put(ARG_CLIENT_ID, storage.getClientId());
-        uriMap.put(ARG_REDIRECT_URI, storage.getRedirectUrl());
-
-        return new Storage(providerKey, Constants.Box.AUTH_URL, uriMap);
-    }
 
     /*
      * Get DropBox instance for request token
      * */
-    private static Storage dropBox(final String providerKey, final boolean isInfo) {
+    private static Storage dropBox(final String providerKey, final String clientId, final String redirectUrl) {
         final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, Constants.DropBox.VALUE_RESPONSE_TYPE);
-
-        if (isInfo) {
-            uriMap.put(ARG_CLIENT_ID, Constants.DropBox.INFO_CLIENT_ID);
-            uriMap.put(ARG_REDIRECT_URI, Constants.DropBox.INFO_REDIRECT_URL);
-        } else {
-            uriMap.put(ARG_CLIENT_ID, Constants.DropBox.COM_CLIENT_ID);
-            uriMap.put(ARG_REDIRECT_URI, Constants.DropBox.COM_REDIRECT_URL);
-        }
-
-        return new Storage(providerKey, Constants.DropBox.AUTH_URL, uriMap);
+        uriMap.put(ARG_RESPONSE_TYPE, DropBox.VALUE_RESPONSE_TYPE);
+        uriMap.put(ARG_CLIENT_ID, clientId);
+        uriMap.put(ARG_REDIRECT_URI, redirectUrl);
+        return new Storage(providerKey, DropBox.AUTH_URL, uriMap);
     }
 
-    private static Storage newDropBox(final String providerKey, final app.editors.manager.mvp.models.account.Storage storage) {
-        final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, Constants.DropBox.VALUE_RESPONSE_TYPE);
-
-        uriMap.put(ARG_CLIENT_ID, storage.getClientId());
-        uriMap.put(ARG_REDIRECT_URI, storage.getRedirectUrl());
-
-        return new Storage(providerKey, Constants.DropBox.AUTH_URL, uriMap);
-    }
 
     /*
      * Get Google instance for request token
      * */
-    private static Storage google(final String providerKey, final boolean isInfo) {
+    private static Storage google(final String providerKey, final String clientId, final String redirectUrl) {
         final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, Constants.Google.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_APPROVAL_PROMPT, Constants.Google.VALUE_APPROVAL_PROMPT);
-        uriMap.put(ARG_RESPONSE_TYPE, Constants.Google.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_ACCESS_TYPE, Constants.Google.VALUE_ACCESS_TYPE);
-        uriMap.put(ARG_SCOPE, Constants.Google.VALUE_SCOPE);
-
-        if (isInfo) {
-            uriMap.put(ARG_CLIENT_ID, Constants.Google.INFO_CLIENT_ID);
-            uriMap.put(ARG_REDIRECT_URI, Constants.Google.INFO_REDIRECT_URL);
-        } else {
-            uriMap.put(ARG_CLIENT_ID, Constants.Google.COM_CLIENT_ID);
-            uriMap.put(ARG_REDIRECT_URI, Constants.Google.COM_REDIRECT_URL);
-        }
-
-        return new Storage(providerKey, Constants.Google.AUTH_URL, uriMap);
+        uriMap.put(ARG_APPROVAL_PROMPT, Google.VALUE_APPROVAL_PROMPT);
+        uriMap.put(ARG_RESPONSE_TYPE, Google.VALUE_RESPONSE_TYPE);
+        uriMap.put(ARG_ACCESS_TYPE, Google.VALUE_ACCESS_TYPE);
+        uriMap.put(ARG_SCOPE, Google.VALUE_SCOPE);
+        uriMap.put(ARG_CLIENT_ID, clientId);
+        uriMap.put(ARG_REDIRECT_URI, redirectUrl);
+        return new Storage(providerKey, Google.AUTH_URL, uriMap);
     }
 
-
-    private static Storage newGoogle(final String providerKey, final app.editors.manager.mvp.models.account.Storage storage) {
-        final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, Constants.Google.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_APPROVAL_PROMPT, Constants.Google.VALUE_APPROVAL_PROMPT);
-        uriMap.put(ARG_RESPONSE_TYPE, Constants.Google.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_ACCESS_TYPE, Constants.Google.VALUE_ACCESS_TYPE);
-        uriMap.put(ARG_SCOPE, Constants.Google.VALUE_SCOPE);
-
-        uriMap.put(ARG_CLIENT_ID, storage.getClientId());
-        uriMap.put(ARG_REDIRECT_URI, storage.getRedirectUrl());
-
-        return new Storage(providerKey, Constants.Google.AUTH_URL, uriMap);
-    }
 
     /*
      * Get OneDrive instance for request token
      * */
-    private static Storage oneDrive(final String providerKey, final boolean isInfo) {
+    private static Storage oneDrive(final String providerKey, final String clientId, final String redirectUrl) {
         final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, Constants.Google.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_SCOPE, Constants.Google.VALUE_SCOPE);
-
-        if (isInfo) {
-            uriMap.put(ARG_CLIENT_ID, Constants.Google.INFO_CLIENT_ID);
-            uriMap.put(ARG_REDIRECT_URI, Constants.Google.INFO_REDIRECT_URL);
-        } else {
-            uriMap.put(ARG_CLIENT_ID, Constants.Google.COM_CLIENT_ID);
-            uriMap.put(ARG_REDIRECT_URI, Constants.Google.COM_REDIRECT_URL);
-        }
-
-        return new Storage(providerKey, Constants.Google.AUTH_URL, uriMap);
-    }
-
-    private static Storage newOneDrive(final String providerKey, final app.editors.manager.mvp.models.account.Storage storage) {
-        final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, Constants.Google.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_SCOPE, Constants.Google.VALUE_SCOPE);
-
-        uriMap.put(ARG_CLIENT_ID, storage.getClientId());
-        uriMap.put(ARG_REDIRECT_URI, storage.getRedirectUrl());
-
-        return new Storage(providerKey, Constants.Google.AUTH_URL, uriMap);
+        uriMap.put(ARG_RESPONSE_TYPE, OneDrive.VALUE_RESPONSE_TYPE);
+        uriMap.put(ARG_SCOPE, OneDrive.VALUE_SCOPE);
+        uriMap.put(ARG_CLIENT_ID, clientId);
+        uriMap.put(ARG_REDIRECT_URI, redirectUrl);
+        return new Storage(providerKey, OneDrive.AUTH_URL, uriMap);
     }
 
 
     /*
      * Storage info
      * */
-    public static final class Storage implements Serializable {
+    private static final class Storage implements Serializable {
 
         public final String mProviderKey;
         public final String mRequestUrl;

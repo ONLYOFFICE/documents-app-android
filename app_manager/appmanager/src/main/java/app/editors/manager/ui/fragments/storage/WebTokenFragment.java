@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.storage;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -26,6 +27,7 @@ import app.editors.manager.R;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.managers.utils.StorageUtils;
+import app.editors.manager.mvp.models.account.Storage;
 import app.editors.manager.ui.fragments.base.BaseAppFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,16 +49,17 @@ public class WebTokenFragment extends BaseAppFragment implements SwipeRefreshLay
     protected SwipeRefreshLayout mSwipeRefreshLayout;
 
     private Unbinder mUnbinder;
-    private StorageUtils.Storage mStorage;
+    private String mUrl;
+    private Storage mStorage;
     private String mRedirectUrl;
     private boolean mIsPageLoad;
 
     @Inject
     PreferenceTool mPreferenceTool;
 
-    public static WebTokenFragment newInstance(final StorageUtils.Storage storage) {
+    public static WebTokenFragment newInstance(final Storage storage) {
         final Bundle bundle = new Bundle();
-        bundle.putSerializable(TAG_STORAGE, storage);
+        bundle.putParcelable(TAG_STORAGE, storage);
         final WebTokenFragment fileViewerFragment = new WebTokenFragment();
         fileViewerFragment.setArguments(bundle);
         return fileViewerFragment;
@@ -69,7 +72,7 @@ public class WebTokenFragment extends BaseAppFragment implements SwipeRefreshLay
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         final View view = inflater.inflate(R.layout.fragment_storage_web, container, false);
         mUnbinder = ButterKnife.bind(this, view);
@@ -83,7 +86,7 @@ public class WebTokenFragment extends BaseAppFragment implements SwipeRefreshLay
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(TAG_PAGE_LOAD, mIsPageLoad);
 
@@ -105,17 +108,21 @@ public class WebTokenFragment extends BaseAppFragment implements SwipeRefreshLay
 
     @Override
     public void onRefresh() {
-        loadWebView(mStorage.getUrl());
+        loadWebView(mUrl);
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void init(final Bundle savedInstanceState) {
         setActionBarTitle(getString(R.string.storage_web_title));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
 
         mIsPageLoad = false;
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.colorAccent));
+        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.colorAccent));
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setAppCacheEnabled(false);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -129,8 +136,14 @@ public class WebTokenFragment extends BaseAppFragment implements SwipeRefreshLay
 
     private void getArgs() {
         final Bundle bundle = getArguments();
-        mStorage = (StorageUtils.Storage) bundle.getSerializable(TAG_STORAGE);
-        mRedirectUrl = mStorage.mRequestArgs.get(StorageUtils.ARG_REDIRECT_URI);
+        if (bundle != null) {
+            mStorage = bundle.getParcelable(TAG_STORAGE);
+            if (mStorage != null) {
+                mUrl = StorageUtils.getStorageUrl(mStorage.getName(), mStorage.getClientId(), mStorage.getRedirectUrl());
+                mRedirectUrl = mStorage.getRedirectUrl();
+            }
+        }
+
     }
 
     private void restoreStates(final Bundle savedInstanceState) {
@@ -138,14 +151,16 @@ public class WebTokenFragment extends BaseAppFragment implements SwipeRefreshLay
             if (savedInstanceState.containsKey(TAG_WEB_VIEW)) {
                 final Bundle bundle = savedInstanceState.getBundle(TAG_WEB_VIEW);
                 mSwipeRefreshLayout.setRefreshing(true);
-                mWebView.restoreState(bundle);
+                if (bundle != null) {
+                    mWebView.restoreState(bundle);
+                }
             }
 
             if (savedInstanceState.containsKey(TAG_PAGE_LOAD)) {
                 mIsPageLoad = savedInstanceState.getBoolean(TAG_PAGE_LOAD);
             }
         } else {
-            loadWebView(mStorage.getUrl());
+            loadWebView(mUrl);
         }
     }
 
@@ -186,7 +201,7 @@ public class WebTokenFragment extends BaseAppFragment implements SwipeRefreshLay
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             super.onReceivedError(view, request, error);
             mSwipeRefreshLayout.setRefreshing(false);
-            if (!NetworkUtils.isOnline(getContext())) {
+            if (!NetworkUtils.isOnline(requireContext())) {
                 showSnackBar(R.string.errors_connection_error);
             }
         }
