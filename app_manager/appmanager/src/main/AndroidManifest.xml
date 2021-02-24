@@ -76,7 +76,7 @@
         </activity>
         <activity
             android:name=".ui.activities.login.PortalsActivity"
-            android:launchMode="singleTask"
+            android:launchMode="standard"
             android:theme="@style/PortalTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
