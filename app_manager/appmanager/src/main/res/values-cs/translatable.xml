@@ -552,4 +552,15 @@
     <string name="app_settings_analytic">Sdílejte analytiku aplikací</string>
     <string name="app_manage_files_title">Přistupujte ke správě souborů</string>
     <string name="app_manage_files_description">Je třeba udělit přístup k souborům. Pokud je přístup odepřen, budou všechny soubory ve ztracených aplikacích smazány.</string>
+
+    <string name="app_internal_error">Vnitřní chyba</string>
+    <string name="app_fragment_crash_error">Prosím vypněte aplikaci a zkuste to znovu</string>
+
+    <string name="operation_add_to_favorites">Přidáno do Oblíbených</string>
+    <string name="operation_remove_from_favorites">Odstraněno z Oblíbených</string>
+
+    <string name="main_pager_docs_favorites">Oblíbené</string>
+
+    <string name="list_context_add_to_favorite">Přidat do Oblíbených</string>
+    <string name="list_context_delete_from_favorite">Smazat z Oblíbených</string>
 </resources>

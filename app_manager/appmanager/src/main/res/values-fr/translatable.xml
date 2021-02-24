@@ -413,4 +413,15 @@
     <string name="app_manage_files_title">Gérer l\'accès aux fichiers</string>
     <string name="app_manage_files_description">Besoin d\'accorder l\'accès aux fichiers. Si l\'accès est interdit, tous les fichiers seront effacés après la suppression de l\'application.</string>
 
+    <string name="app_internal_error">Erreur interne</string>
+    <string name="app_fragment_crash_error">Veuillez fermer l\'application et réessayer</string>
+
+    <string name="operation_add_to_favorites">Ajouter aux Favoris</string>
+    <string name="operation_remove_from_favorites">Effacer des Favoris</string>
+
+    <string name="main_pager_docs_favorites">Favoris</string>
+
+    <string name="list_context_add_to_favorite">Ajouter aux Favoris</string>
+    <string name="list_context_delete_from_favorite">Effacer des Favoris</string>
+
 </resources>

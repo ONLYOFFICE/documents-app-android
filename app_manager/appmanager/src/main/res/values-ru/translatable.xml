@@ -434,4 +434,7 @@
     <string name="app_manage_files_title">Доступ к управлению файлами</string>
     <string name="app_manage_files_description">Необходимо предоставить доступ к файлам. Если доступ запрещен, все файлы после удаления приложений будут удалены.</string>
 
+    <string name="app_internal_error">Внутренняя ошибка</string>
+    <string name="app_fragment_crash_error">Закройте приложение и попробуйте снова</string>
+
 </resources>

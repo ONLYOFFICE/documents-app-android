@@ -412,4 +412,15 @@
     <string name="app_settings_analytic">Compartilhe as análises de aplicativos</string>
     <string name="app_manage_files_title">Acesse para gerenciar arquivos</string>
     <string name="app_manage_files_description">É necessário dar acesso aos arquivos. Se for negado acesso, todos os arquivos serão excluídos após a perda do aplicativo.</string>
+
+    <string name="app_internal_error">Erro interno</string>
+    <string name="app_fragment_crash_error">Feche este aplicativo e tente novamente</string>
+
+    <string name="operation_add_to_favorites">Adicionado aos Favoritos</string>
+    <string name="operation_remove_from_favorites">Excluído dos favoritos</string>
+
+    <string name="main_pager_docs_favorites">Favoritos</string>
+
+    <string name="list_context_add_to_favorite">Adicionar aos Favoritos</string>
+    <string name="list_context_delete_from_favorite">Excluir dos Favoritos</string>
 </resources>

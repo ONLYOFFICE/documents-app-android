@@ -559,4 +559,15 @@
     <string name="app_manage_files_title">ການເຂົ້າເຖິງການຄຸ້ມຄອງເອກະສານ</string>
     <string name="app_manage_files_description">ຕ້ອງການການອະນຸຍາດເຂົ້າເຖິງເອກະສານ. ຖ້າການເຂົ້າເຖິງຖືກປະຕິເສດທຸກເອກະສານຫຼັງຈາກການສູນເສຍໂປແກຼມຈະຖືກລຶບອອກ.</string>
 
+    <string name="app_internal_error">ພົບບັນຫາພາຍໃນ</string>
+    <string name="app_fragment_crash_error">ກະລຸນາປິດແອັບ ແລ້ວລອງໃໝ່</string>
+
+    <string name="operation_add_to_favorites">ໄດ້ເພີ່ມເຂົ້າໃນໝວດໃຊ້ປະຈຳ</string>
+    <string name="operation_remove_from_favorites">ໄດ້ເອົາອອກຈາກໝວດໃຊ້ປະຈຳ</string>
+
+    <string name="main_pager_docs_favorites">ໝວດໃຊ້ປະຈຳ</string>
+
+    <string name="list_context_add_to_favorite">ເພີ່ມເຂົ້າໃນໝວດໃຊ້ປະຈຳ</string>
+    <string name="list_context_delete_from_favorite">ລຶບອອກຈາກໝວດໃຊ້ປະຈຳ</string>
+
 </resources>
