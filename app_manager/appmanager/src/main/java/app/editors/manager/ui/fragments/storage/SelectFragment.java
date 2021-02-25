@@ -99,6 +99,7 @@ public class SelectFragment extends BaseAppFragment implements BaseAdapter.OnIte
         mStorageAdapter = new StorageAdapter(requireContext());
         mStorageAdapter.setOnItemClickListener(this);
         mRecyclerView.setAdapter(mStorageAdapter);
+        mRefreshLayout.setOnRefreshListener(() -> mPresenter.getStorages());
     }
 
     @Override
