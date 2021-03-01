@@ -432,7 +432,8 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 mDisposable.add(
                         mFileProvider.fileInfo(mItemClicked).subscribe(
                                 response -> {
-                                    if (response.getFileStatus().equals(String.valueOf(Api.FileStatus.IS_EDITING))) {
+                                    int statusMask = Integer.parseInt(response.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                                    if (statusMask != 0) {
                                         onFileDeleteProtected();
                                     } else {
                                         deleteItems();
