@@ -209,6 +209,10 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
         mMainActivityPresenter.setDialogOpen(true);
     }
 
+    public void onContextDialogClose() {
+        mMainActivityPresenter.setDialogOpen(false);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
