@@ -182,6 +182,13 @@ public class CloudAccountsFragment extends BaseAppFragment implements CloudAccou
             mCloudAccountsPresenter.removeAccount();
             hideDialog();
         }
+        mMainActivity.onContextDialogClose();
+    }
+
+    @Override
+    public void onCancelClick(@Nullable CommonDialog.Dialogs dialogs, @Nullable String tag) {
+        super.onCancelClick(dialogs, tag);
+        mMainActivity.onContextDialogClose();
     }
 
 
