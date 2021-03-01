@@ -454,7 +454,8 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     private Observable<Boolean> isFileDeleteProtected(Item item) {
         return Observable.just(mFileProvider.fileInfo(item))
                 .flatMap(response -> response.flatMap(fileStatus -> {
-                    if (fileStatus.getFileStatus().equals(String.valueOf(Api.FileStatus.IS_EDITING))) {
+                    int statusMask = Integer.parseInt(fileStatus.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                    if (statusMask != 0) {
                         return Observable.just(Boolean.TRUE);
                     } else {
                         return Observable.just(Boolean.FALSE);

@@ -155,10 +155,14 @@ public class ExplorerAdapter extends BaseAdapter<Entity> {
 
     private void setFileFavoriteStatus(int position) {
         if(mList.get(position) instanceof File){
-            if(((File) mList.get(position)).getFileStatus().equals(String.valueOf(Api.FileStatus.FAVORITE))){
-                ((File) mList.get(position)).setFavorite(true);
-            } else {
-                ((File) mList.get(position)).setFavorite(false);
+            File file = ((File)mList.get(position));
+            if(!file.getFileStatus().isEmpty()) {
+                int favoriteMask = Integer.parseInt(file.getFileStatus()) & Api.FileStatus.FAVORITE;
+                if (favoriteMask != 0) {
+                    file.setFavorite(true);
+                } else {
+                    file.setFavorite(false);
+                }
             }
         }
     }
