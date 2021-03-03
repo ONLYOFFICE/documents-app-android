@@ -72,6 +72,8 @@ public interface Api {
         public static final String PORTAL_EXIST = "Portal already exist";
         public static final String SMS_TO_MANY = "You have sent too many text messages";
         public static final String DISK_SPACE_QUOTA = "Disk space quota exceeded";
+        public static final String EXCEED_FILE_SIZE_100 = "Exceeds the maximum file size (100MB)";
+        public static final String EXCEED_FILE_SIZE_25 = "Exceeds the maximum file size (25MB)";
     }
 
     final class HttpCodes {
@@ -261,7 +263,7 @@ public interface Api {
     String VALUE_ACCEPT = "application/json";
     String VALUE_CACHE = "no-cache";
 
-    String DOWNLOAD_ZIP_NAME = "download.zip";
+    String DOWNLOAD_ZIP_NAME = "download.tgz";
 
     /*
      * Sign in
