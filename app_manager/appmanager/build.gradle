@@ -51,7 +51,7 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 250
+        versionCode 251
         versionName "5.1.0"
         multiDexEnabled true
         applicationId "com.onlyoffice.documents"
