@@ -120,7 +120,12 @@ object ContentResolverUtils {
             }
 
             ContentResolver.SCHEME_CONTENT -> {
-                return DocumentFile.fromSingleUri(context, uri)?.name ?: ""
+                return if (uri.query != null) {
+                    DocumentFile.fromFile(File(uri.path  ?: "")).name ?: ""
+                } else {
+                    DocumentFile.fromSingleUri(context, uri)?.name ?: ""
+                }
+
             }
         }
         return ""
