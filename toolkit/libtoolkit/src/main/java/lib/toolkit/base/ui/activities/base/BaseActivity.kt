@@ -226,6 +226,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     fun hideDialog() {
+        supportFragmentManager.executePendingTransactions()
         if (mCommonDialog?.isAdded == true) {
             mCommonDialog?.dismiss()
         }
