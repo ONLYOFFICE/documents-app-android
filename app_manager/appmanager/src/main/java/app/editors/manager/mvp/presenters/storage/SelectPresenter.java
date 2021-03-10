@@ -74,24 +74,45 @@ public class SelectPresenter extends MvpPresenter<SelectView> {
 
     private ArrayList<Storage> collectListStorage(JSONObject jsonObject) throws JSONException {
         ArrayList<Storage> storages = new ArrayList<>();
+
+        final Storage nextcloud = new Storage();
+        nextcloud.setName(Api.Storage.NEXTCLOUD);
+        final Storage owncloud = new Storage();
+        owncloud.setName(Api.Storage.OWNCLOUD);
+        final Storage sharePoint = new Storage();
+        sharePoint.setName(Api.Storage.SHAREPOINT);
+        final Storage yandex = new Storage();
+        yandex.setName(Api.Storage.YANDEX);
+        final Storage webDav = new Storage();
+        webDav.setName(Api.Storage.WEBDAV);
+
+        storages.add(nextcloud);
+        storages.add(owncloud);
+        storages.add(sharePoint);
+
         JSONArray array = jsonObject.getJSONArray("response");
 
         for (int i = 0; i < array.length(); i++) {
             JSONArray arrayString = array.getJSONArray(i);
-            Storage storage = new Storage();
 
-            for (int j = 0; j < arrayString.length(); j++) {
-                if (j == 0) {
-                    storage.setName(arrayString.getString(j));
-                } else if (j == 1) {
-                    storage.setClientId(arrayString.getString(j));
-                } else if (j == 2) {
-                    storage.setRedirectUrl(arrayString.getString(j));
+            if (arrayString.length() == 3) {
+                Storage storage = new Storage();
+                for (int j = 0; j < arrayString.length(); j++) {
+                    if (j == 0) {
+                        storage.setName(arrayString.getString(j));
+                    } else if (j == 1) {
+                        storage.setClientId(arrayString.getString(j));
+                    } else if (j == 2) {
+                        storage.setRedirectUrl(arrayString.getString(j));
+                    }
+
                 }
-
+                storages.add(storage);
             }
-            storages.add(storage);
         }
+
+        storages.add(yandex);
+        storages.add(webDav);
         return storages;
     }
 
@@ -110,6 +131,7 @@ public class SelectPresenter extends MvpPresenter<SelectView> {
                     break;
                 case Api.Storage.SHAREPOINT:
                     title = mContext.getString(R.string.storage_select_share_point);
+                    providerKey = Api.Storage.WEBDAV;
                     break;
                 case Api.Storage.OWNCLOUD:
                     title = mContext.getString(R.string.storage_select_own_cloud);
