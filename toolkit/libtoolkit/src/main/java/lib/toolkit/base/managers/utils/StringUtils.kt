@@ -430,4 +430,9 @@ object StringUtils {
             else -> Locale.ENGLISH.language
         }
     }
+
+    @JvmStatic
+    fun getHelpUrl(context: Context): String {
+        return context.getString(R.string.app_url_help)
+    }
 }
