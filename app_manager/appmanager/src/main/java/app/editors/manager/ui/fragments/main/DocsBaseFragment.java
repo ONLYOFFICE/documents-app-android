@@ -624,6 +624,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
                 // Set close button visibility
                 if (mSearchCloseButton != null) {
+                    mSearchCloseButton.setEnabled(value != null && !value.isEmpty());
                     mSearchCloseButton.setVisibility(value != null && !value.isEmpty() ?
                             View.VISIBLE : View.INVISIBLE);
                 }
