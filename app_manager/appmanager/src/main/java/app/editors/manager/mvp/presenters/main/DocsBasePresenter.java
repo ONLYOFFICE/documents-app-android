@@ -432,13 +432,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 mDisposable.add(
                         mFileProvider.fileInfo(mItemClicked).subscribe(
                                 response -> {
-                                    if (!response.getFileStatus().isEmpty()) {
-                                        int statusMask = Integer.parseInt(response.getFileStatus()) & Api.FileStatus.IS_EDITING;
-                                        if (statusMask != 0) {
-                                            onFileDeleteProtected();
-                                        } else {
-                                            deleteItems();
-                                        }
+                                    int statusMask = Integer.parseInt(response.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                                    if (statusMask != 0) {
+                                        onFileDeleteProtected();
                                     } else {
                                         deleteItems();
                                     }
@@ -457,13 +453,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     private Observable<Boolean> isFileDeleteProtected(Item item) {
         return Observable.just(mFileProvider.fileInfo(item))
                 .flatMap(response -> response.flatMap(file -> {
-                    if (!file.getFileStatus().isEmpty()) {
-                        int statusMask = Integer.parseInt(file.getFileStatus()) & Api.FileStatus.IS_EDITING;
-                        if (statusMask != 0) {
-                            return Observable.just(Boolean.TRUE);
-                        } else {
-                            return Observable.just(Boolean.FALSE);
-                        }
+                    int statusMask = Integer.parseInt(file.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                    if (statusMask != 0) {
+                        return Observable.just(Boolean.TRUE);
                     } else {
                         return Observable.just(Boolean.FALSE);
                     }
