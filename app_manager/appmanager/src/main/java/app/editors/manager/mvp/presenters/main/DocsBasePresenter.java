@@ -422,7 +422,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                                 mIsMultipleDelete = true;
                                 mModelExplorerStack.setSelectById(item, false);
                             }
-                        })
+                        }, throwable -> fetchError(throwable))
                 );
             }
             getViewState().onDialogQuestion(mContext.getString(R.string.dialogs_question_delete), null,
@@ -432,14 +432,17 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 mDisposable.add(
                         mFileProvider.fileInfo(mItemClicked).subscribe(
                                 response -> {
-                                    int statusMask = Integer.parseInt(response.getFileStatus()) & Api.FileStatus.IS_EDITING;
-                                    if (statusMask != 0) {
-                                        onFileDeleteProtected();
+                                    if (!response.getFileStatus().isEmpty()) {
+                                        int statusMask = Integer.parseInt(response.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                                        if (statusMask != 0) {
+                                            onFileDeleteProtected();
+                                        } else {
+                                            deleteItems();
+                                        }
                                     } else {
                                         deleteItems();
                                     }
-                                }
-                        )
+                                }, throwable -> fetchError(throwable))
                 );
             } else {
                 deleteItems();
@@ -453,10 +456,14 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     private Observable<Boolean> isFileDeleteProtected(Item item) {
         return Observable.just(mFileProvider.fileInfo(item))
-                .flatMap(response -> response.flatMap(fileStatus -> {
-                    int statusMask = Integer.parseInt(fileStatus.getFileStatus()) & Api.FileStatus.IS_EDITING;
-                    if (statusMask != 0) {
-                        return Observable.just(Boolean.TRUE);
+                .flatMap(response -> response.flatMap(file -> {
+                    if (!file.getFileStatus().isEmpty()) {
+                        int statusMask = Integer.parseInt(file.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                        if (statusMask != 0) {
+                            return Observable.just(Boolean.TRUE);
+                        } else {
+                            return Observable.just(Boolean.FALSE);
+                        }
                     } else {
                         return Observable.just(Boolean.FALSE);
                     }
