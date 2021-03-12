@@ -47,6 +47,7 @@ import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.managers.works.DownloadWork;
 import app.editors.manager.managers.works.UploadWork;
+import app.editors.manager.mvp.models.account.AccountsSqlData;
 import app.editors.manager.mvp.models.account.Recent;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.Explorer;
@@ -182,7 +183,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * */
     private Runnable mFilterRun;
     protected CompositeDisposable mDisposable = new CompositeDisposable();
-    private Disposable mBatchDisposable;
+    protected Disposable mBatchDisposable;
     private Disposable mDownloadDisposable;
     protected Disposable mUploadDisposable;
     private boolean mIsTerminate = false;
@@ -363,7 +364,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     public abstract void onActionClick();
 
     private void loadSuccess(Explorer explorer) {
-        mModelExplorerStack.addStack(changeContent(explorer));
+        final AccountsSqlData account = mAccountSqlTool.getAccountOnline();
+        if (account != null && account.isWebDav()) {
+            mModelExplorerStack.addStack(explorer);
+        } else {
+            mModelExplorerStack.addStack(changeContent(explorer));
+        }
+
         updateViewsState();
         setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
 
@@ -387,6 +394,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         mBatchDisposable = mFileProvider.delete(items, null)
                 .switchMap(operations -> getStatus())
                 .subscribe(progress -> {
+                            getViewState().onDialogProgress(100, progress);
                         },
                         this::fetchError,
                         () -> {
@@ -416,7 +424,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                                 mIsMultipleDelete = true;
                                 mModelExplorerStack.setSelectById(item, false);
                             }
-                        })
+                        }, throwable -> fetchError(throwable))
                 );
             }
             getViewState().onDialogQuestion(mContext.getString(R.string.dialogs_question_delete), null,
@@ -426,13 +434,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 mDisposable.add(
                         mFileProvider.fileInfo(mItemClicked).subscribe(
                                 response -> {
-                                    if (response.getFileStatus().equals(String.valueOf(Api.FileStatus.IS_EDITING))) {
+                                    int statusMask = Integer.parseInt(response.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                                    if (statusMask != 0) {
                                         onFileDeleteProtected();
                                     } else {
                                         deleteItems();
                                     }
-                                }
-                        )
+                                }, throwable -> fetchError(throwable))
                 );
             } else {
                 deleteItems();
@@ -446,8 +454,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     private Observable<Boolean> isFileDeleteProtected(Item item) {
         return Observable.just(mFileProvider.fileInfo(item))
-                .flatMap(response -> response.flatMap(fileStatus -> {
-                    if (fileStatus.getFileStatus().equals(String.valueOf(Api.FileStatus.IS_EDITING))) {
+                .flatMap(response -> response.flatMap(file -> {
+                    int statusMask = Integer.parseInt(file.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                    if (statusMask != 0) {
                         return Observable.just(Boolean.TRUE);
                     } else {
                         return Observable.just(Boolean.FALSE);
@@ -619,8 +628,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             return;
         }
 
-        if (mModelExplorerStack.getCountSelectedItems() > 0 || mItemClicked instanceof Folder) {
+        if (mModelExplorerStack.getCountSelectedItems() > 0) {
             downloadSelected(downloadTo);
+            return;
+        }
+
+        if(mItemClicked instanceof Folder) {
+            bulkDownload(null, new ArrayList<>(Collections.singleton((Folder) mItemClicked)), downloadTo);
             return;
         }
 
@@ -1037,7 +1051,12 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                     entityList.addAll(fileList);
                 }
             }
-            setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
+
+            if (mIsFilteringMode) {
+                setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
+            } else {
+                setPlaceholderType(entityList.isEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
+            }
             return entityList;
         }
 

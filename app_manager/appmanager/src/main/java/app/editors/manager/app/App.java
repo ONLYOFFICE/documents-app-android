@@ -122,17 +122,9 @@ public class App extends Application {
     }
 
     private void initCrashlytics() {
-        if (isAnalyticEnable) {
-            FirebaseApp.initializeApp(this);
-            if (BuildConfig.DEBUG) {
-                FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
-            }
-        } else {
-            try {
-                FirebaseApp.getInstance().delete();
-            } catch (IllegalStateException e) {
-                Log.e(TAG, "initCrashlytics: ", e);
-            }
+        FirebaseApp.initializeApp(this);
+        if (BuildConfig.DEBUG || !isAnalyticEnable) {
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
         }
     }
 

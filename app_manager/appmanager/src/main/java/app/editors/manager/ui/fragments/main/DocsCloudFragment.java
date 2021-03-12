@@ -20,6 +20,7 @@ import app.editors.manager.mvp.models.explorer.UploadFile;
 import app.editors.manager.mvp.models.list.Header;
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter;
+import app.editors.manager.mvp.views.main.DocsBaseView;
 import app.editors.manager.mvp.views.main.DocsCloudView;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
 import app.editors.manager.ui.activities.main.ShareActivity;
@@ -114,8 +115,10 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
     @Override
     public void onUploadFileProgress(int progress, String id) {
         UploadFile uploadFile = mExplorerAdapter.getUploadFileById(id);
-        uploadFile.setProgress(progress);
-        mExplorerAdapter.updateItem(uploadFile);
+        if(uploadFile != null) {
+            uploadFile.setProgress(progress);
+            mExplorerAdapter.updateItem(uploadFile);
+        }
     }
 
     @Override
@@ -128,6 +131,7 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
         mExplorerAdapter.removeHeader(App.getApp().getString(R.string.upload_manager_progress_title));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onAddUploadsFile(List<? extends Entity> uploadFiles) {
         onRemoveUploadHead();
@@ -240,7 +244,7 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
     }
 
     @Override
-    protected DocsBasePresenter getPresenter() {
+    protected DocsBasePresenter<? extends DocsBaseView> getPresenter() {
         return mCloudPresenter;
     }
 

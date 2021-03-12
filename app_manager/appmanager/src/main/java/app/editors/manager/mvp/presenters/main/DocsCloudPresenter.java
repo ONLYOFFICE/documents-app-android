@@ -40,6 +40,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import lib.toolkit.base.managers.utils.FileUtils;
 import lib.toolkit.base.managers.utils.KeyboardUtils;
 import lib.toolkit.base.managers.utils.StringUtils;
 import lib.toolkit.base.managers.utils.TimeUtils;
@@ -222,6 +223,7 @@ public class DocsCloudPresenter extends DocsBasePresenter<DocsCloudView>
         } else {
             if (mIsTrashMode) {
                 getViewState().onStateActionButton(false);
+                getViewState().onActionBarTitle("");
             } else if (mIsFoldersMode) {
                 getViewState().onActionBarTitle(mContext.getString(R.string.operation_title));
                 getViewState().onStateActionButton(false);
@@ -478,16 +480,17 @@ public class DocsCloudPresenter extends DocsBasePresenter<DocsCloudView>
     public void emptyTrash() {
         final Explorer explorer = mModelExplorerStack.last();
         if (explorer != null) {
-
             CloudFileProvider provider = (CloudFileProvider) mFileProvider;
-            mDisposable.add(provider.clearTrash()
-                    .doOnSubscribe(disposable -> showDialogWaiting(TAG_DIALOG_CANCEL_BATCH_OPERATIONS))
-                    .subscribe(response -> {
+            showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS);
+            mBatchDisposable = provider.clearTrash()
+                    .switchMap(operations -> getStatus())
+                    .subscribe(progress -> {
+                                getViewState().onDialogProgress(FileUtils.LOAD_MAX_PROGRESS, progress);
+                            }, this::fetchError,
+                            () -> {
                                 onBatchOperations();
                                 refresh();
-                            },
-                            this::fetchError
-                    ));
+                            });
         }
 
     }

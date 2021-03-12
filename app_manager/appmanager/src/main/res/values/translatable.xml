@@ -301,8 +301,8 @@
     <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Remove from recent</string>
     <string name="list_context_upload_to_portal">Upload to portal</string>
-    <string name="list_context_add_to_favorite">Add to Favorite</string>
-    <string name="list_context_delete_from_favorite">Delete from Favorite</string>
+    <string name="list_context_add_to_favorite">Add to Favorites</string>
+    <string name="list_context_delete_from_favorite">Delete from Favorites</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
@@ -566,4 +566,7 @@
     <string name="app_settings_analytic">Share app analytics</string>
     <string name="app_manage_files_title">Access manage files</string>
     <string name="app_manage_files_description">Need to grant access to the files. If access is denied all files after lost applications will be deleted.</string>
+
+    <string name="app_internal_error">Internal error</string>
+    <string name="app_fragment_crash_error">Please close this app and try again</string>
 </resources>

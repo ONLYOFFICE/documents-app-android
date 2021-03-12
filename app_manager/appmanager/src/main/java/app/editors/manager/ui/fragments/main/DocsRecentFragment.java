@@ -27,6 +27,7 @@ import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.File;
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter;
+import app.editors.manager.mvp.views.main.DocsBaseView;
 import app.editors.manager.mvp.views.main.DocsRecentView;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
 import app.editors.manager.ui.activities.main.MainActivity;
@@ -404,7 +405,7 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
     }
 
     @Override
-    protected DocsBasePresenter getPresenter() {
+    protected DocsBasePresenter<? extends DocsBaseView> getPresenter() {
         return mDocsRecentPresenter;
     }
 }

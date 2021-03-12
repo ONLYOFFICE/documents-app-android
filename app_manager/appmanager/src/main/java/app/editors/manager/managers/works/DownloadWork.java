@@ -78,6 +78,12 @@ public class DownloadWork extends Worker {
         mContext = getApplicationContext();
     }
 
+    @Override
+    public void onStopped() {
+        mNotificationUtils.removeNotification(mId.hashCode());
+        super.onStopped();
+    }
+
     @SuppressLint("MissingPermission")
     @NonNull
     @Override
@@ -122,8 +128,13 @@ public class DownloadWork extends Worker {
                         mFile.delete();
                     }
                 });
+            } else {
+                mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
+                sendBroadcastUnknownError(mId, mUrl, mFile.getName());
+                mFile.delete();
             }
         } catch (IOException e) {
+            mFile.delete();
             mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
         }
 

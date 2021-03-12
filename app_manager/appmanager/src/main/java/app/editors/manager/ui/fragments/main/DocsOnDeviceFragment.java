@@ -28,6 +28,7 @@ import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter;
+import app.editors.manager.mvp.views.main.DocsBaseView;
 import app.editors.manager.mvp.views.main.DocsOnDeviceView;
 import app.editors.manager.ui.activities.main.MainActivity;
 import app.editors.manager.ui.activities.main.MediaActivity;
@@ -423,7 +424,7 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     }
 
     @Override
-    protected DocsBasePresenter getPresenter() {
+    protected DocsBasePresenter<? extends DocsBaseView> getPresenter() {
         return mOnDevicePresenter;
     }
 
@@ -453,12 +454,19 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     private void checkStorage() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
                 !Environment.isExternalStorageManager() &&
-                App.getApp().getAppComponent().getPreference().isShowStorageAccess()) {
-            showQuestionDialog(getString(R.string.app_manage_files_title),
-                    getString(R.string.app_manage_files_description),
-                    getString(R.string.dialogs_common_ok_button),
-                    getString(R.string.dialogs_common_cancel_button),
-                    TAG_STORAGE_ACCESS);
+                mPreferenceTool.isShowStorageAccess()) {
+
+            //TODO удалить когда будет доступно разрешение
+            mPreferenceTool.setShowStorageAccess(false);
+            mOnDevicePresenter.recreateStack();
+            mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
+
+            //TODO раскоментировать когда будет доступно разрешение
+//            showQuestionDialog(getString(R.string.app_manage_files_title),
+//                    getString(R.string.app_manage_files_description),
+//                    getString(R.string.dialogs_common_ok_button),
+//                    getString(R.string.dialogs_common_cancel_button),
+//                    TAG_STORAGE_ACCESS);
         }
     }
 

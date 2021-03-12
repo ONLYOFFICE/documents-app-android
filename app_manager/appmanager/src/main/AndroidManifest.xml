@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+<!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>-->
     <uses-permission android:name="${permissionId}.permission.WRITE" />
     <uses-permission android:name="${permissionId}.permission.READ" />
 
@@ -76,7 +76,7 @@
         </activity>
         <activity
             android:name=".ui.activities.login.PortalsActivity"
-            android:launchMode="singleTask"
+            android:launchMode="standard"
             android:theme="@style/PortalTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity

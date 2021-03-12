@@ -142,6 +142,7 @@ public class LocalFileProvider implements BaseFileProvider {
 
     @Override
     public Observable<File> fileInfo(Item item) {
+        ((File) item).setFileStatus(String.valueOf(Api.FileStatus.NONE));
         return Observable.just((File) item);
     }
 

@@ -583,6 +583,7 @@ class ActivityLayoutListener : ViewTreeObserver.OnGlobalLayoutListener {
                 topPadding: Int,
                 bottomPadding: Int
         )
+        fun onFinishDrawingActivity()
     }
 
     var activityTotalHeight: Int = 0
@@ -622,6 +623,7 @@ class ActivityLayoutListener : ViewTreeObserver.OnGlobalLayoutListener {
                     activityTopPadding,
                     activityBottomPadding
             )
+            mWeakListener?.get()?.onFinishDrawingActivity()
         }
     }
 

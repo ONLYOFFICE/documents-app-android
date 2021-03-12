@@ -312,6 +312,9 @@ public class DocsOnDevicePresenter extends DocsBasePresenter<DocsOnDeviceView> {
             case VIDEO_SUPPORT:
                 showMedia();
                 break;
+            default:
+                getViewState().onError(mContext.getString(R.string.error_unsupported_format));
+                break;
         }
     }
 

@@ -27,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import lib.toolkit.base.managers.utils.KeyboardUtils;
+import lib.toolkit.base.managers.utils.StringUtils;
 import lib.toolkit.base.managers.utils.UiUtils;
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog;
 
@@ -260,11 +261,13 @@ public class ContextBottomDialog extends BaseBottomDialog {
         } else {
             // File can downloaded
             mListExplorerContextDownload.setVisibility(View.VISIBLE);
-            mViewLineSeparatorFavorites.setVisibility(View.VISIBLE);
-            if(mState.mIsFavorite) {
-                mListContextDeleteFavorite.setVisibility(View.VISIBLE);
-            } else {
-                mListContextAddFavorite.setVisibility(View.VISIBLE);
+            if(StringUtils.convertServerVersion(mPreferenceTool.getServerVersion()) >= 11) {
+                mViewLineSeparatorFavorites.setVisibility(View.VISIBLE);
+                if (mState.mIsFavorite) {
+                    mListContextDeleteFavorite.setVisibility(View.VISIBLE);
+                } else {
+                    mListContextAddFavorite.setVisibility(View.VISIBLE);
+                }
             }
 
             // File is document

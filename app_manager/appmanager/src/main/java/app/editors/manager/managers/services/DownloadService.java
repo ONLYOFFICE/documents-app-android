@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import app.editors.manager.R;
+import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.app.WebDavApi;
 import app.editors.manager.managers.exceptions.UrlSyntaxMistake;
@@ -182,7 +183,7 @@ public class DownloadService extends Service {
                 AccountsSqlData sqlData = App.getApp().getAppComponent().getAccountsSql().getAccountOnline();
                 mBodyCall = WebDavApi.getApi(sqlData.getScheme() + sqlData.getPortal()).download(id);
             } else {
-                mBodyCall = mRetrofitTool.getApiWithPreferences().downloadFile(mPreferenceTool.getToken(), mUri);
+                mBodyCall = mRetrofitTool.getApiWithPreferences().downloadFile(mPreferenceTool.getToken(), mUri, Api.COOKIE_HEADER + mPreferenceTool.getToken());
             }
             this.service = service;
 

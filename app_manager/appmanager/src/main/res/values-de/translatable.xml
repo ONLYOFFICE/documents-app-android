@@ -137,8 +137,7 @@
     <string name="dialogs_question_personal_confirm_accept">FORTSETZEN</string>
     <string name="dialogs_question_rate_first_info">Mögen Sie ONLYOFFICE Documents?</string>
     <string name="dialogs_question_rate_second_info">Hätten Sie Lust die App kurz bei Google Play zu bewerten?</string>
-    <string name="dialog_question_delete_file">Die Datei wird unwiderruflich gelöscht.</string>
-    <string name="dialog_question_delete_folder">Der Ordner wird unwiderruflich gelöscht.</string>
+
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Umbenennen</string>
     <string name="dialogs_edit_hint">Titel eingeben</string>
@@ -402,5 +401,26 @@
     <string name="profile_type_user">Benutzer</string>
     <string name="profile_thirdparty_title">Verbundene Services</string>
     <string name="error_unsupported_format">Das Format wird nicht unterstützt</string>
+    <string name="errors_create_local_file">Datei konnte nicht erstellt werden</string>
+    <string name="dialog_question_delete_file">Die Datei wird unwiderruflich gelöscht.</string>
+    <string name="dialog_question_delete_folder">Der Ordner wird unwiderruflich gelöscht.</string>
+    <string name="operation_delete_impossible">Datei konnte nicht gelöscht werden. Die Datei wurde auf dem Portal geöffnet.</string>
+    <string name="operation_delete_multiple">. Eine oder mehrere Dateien wurden nicht gelöscht, weil sie auf dem Portal geöffnet sind</string>
+    <string name="app_settings_analytic_title">Bei der App-Verbesserung helfen</string>
+    <string name="app_settings_analytic">Analysedaten der App teilen</string>
+    <string name="app_manage_files_title">Zugriff auf Dateiverwaltung</string>
+    <string name="app_manage_files_description">Zugriff auf die Dateien erforderlich. Wenn dieser verweigert bleibt werden alle Dateien nach der Deinstallation gelöscht.</string>
+
+    <string name="app_internal_error">Interner Fehler</string>
+    <string name="app_fragment_crash_error">Bitte App schließen und erneut versuchen</string>
+
+    <string name="operation_add_to_favorites">Als Favorit markiert</string>
+    <string name="operation_remove_from_favorites">Aus Favoriten entfernt</string>
+
+    <string name="main_pager_docs_favorites">Favoriten</string>
+
+    <string name="list_context_add_to_favorite">Als Favorit markieren</string>
+    <string name="list_context_delete_from_favorite">Aus Favoriten entfernen</string>
+
 
 </resources>

@@ -403,4 +403,26 @@
     <string name="profile_type_user">Utente</string>
     <string name="profile_thirdparty_title">Servizi connessi</string>
     <string name="error_unsupported_format">Formato non supportato</string>
+    <string name="errors_create_local_file">Creazione del file non riuscita</string>
+    <string name="dialog_question_delete_file">Il file sarà irrimediabilmente eliminato.</string>
+    <string name="dialog_question_delete_folder">La cartella sarà irrimediabilmente eliminata.</string>
+    <string name="operation_delete_impossible">Impossibile eliminare il file. Il file è aperto sul portale.</string>
+    <string name="operation_delete_multiple">. Uno o più file non sono stati eliminati perché erano aperti sul portale</string>
+    <string name="app_settings_analytic_title">Aiuta a migliorare il prodotto</string>
+    <string name="app_settings_analytic">Condividi le analisi dellapp</string>
+    <string name="app_manage_files_title">Accedi per gestire i file</string>
+    <string name="app_manage_files_description">È necessario concedere l’accesso ai file. Se neghi l’accesso, tutti i file dopo le applicazioni perse verranno cancellati.</string>
+
+
+    <string name="app_internal_error">Errore interno</string>
+    <string name="app_fragment_crash_error">Chiudi questa applicazione e riprova</string>
+
+    <string name="operation_add_to_favorites">Aggiunto ai Preferiti</string>
+    <string name="operation_remove_from_favorites">Rimosso dai Preferiti</string>
+
+    <string name="main_pager_docs_favorites">Preferiti</string>
+
+    <string name="list_context_add_to_favorite">Aggiungi ai Preferiti</string>
+    <string name="list_context_delete_from_favorite">Rimuovi dai Preferiti</string>
+
 </resources>

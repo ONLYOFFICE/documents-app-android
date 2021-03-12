@@ -429,6 +429,13 @@
     <string name="profile_thirdparty_title">Подключенные сервисы</string>
     <string name="error_unsupported_format">Неподдерживаемый формат</string>
 
-    <string name="app_settings_analytic_title">Помочь улучшить продукт</string>
+    <string name="errors_create_local_file">Ошибка создания файла</string>
+    <string name="app_settings_analytic_title">Помогите улучшить продукт</string>
     <string name="app_settings_analytic">Поделиться аналитикой приложения</string>
+    <string name="app_manage_files_title">Доступ к управлению файлами</string>
+    <string name="app_manage_files_description">Необходимо предоставить доступ к файлам. Если доступ запрещен, все файлы после удаления приложений будут удалены.</string>
+
+    <string name="app_internal_error">Внутренняя ошибка</string>
+    <string name="app_fragment_crash_error">Закройте приложение и попробуйте снова</string>
+
 </resources>

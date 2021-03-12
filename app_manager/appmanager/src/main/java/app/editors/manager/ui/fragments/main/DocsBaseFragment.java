@@ -48,6 +48,7 @@ import app.editors.manager.ui.dialogs.MoveCopyDialog;
 import app.editors.manager.ui.fragments.base.ListFragment;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import lib.toolkit.base.managers.utils.ActivitiesUtils;
+import lib.toolkit.base.managers.utils.EditorsContract;
 import lib.toolkit.base.managers.utils.PermissionUtils;
 import lib.toolkit.base.managers.utils.StringUtils;
 import lib.toolkit.base.managers.utils.TimeUtils;
@@ -624,6 +625,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
                 // Set close button visibility
                 if (mSearchCloseButton != null) {
+                    mSearchCloseButton.setEnabled(value != null && !value.isEmpty());
                     mSearchCloseButton.setVisibility(value != null && !value.isEmpty() ?
                             View.VISIBLE : View.INVISIBLE);
                 }
@@ -913,8 +915,10 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     @Override
     public void onUploadFileProgress(int progress, String id) {
         UploadFile uploadFile = mExplorerAdapter.getUploadFileById(id);
-        uploadFile.setProgress(progress);
-        mExplorerAdapter.updateItem(uploadFile);
+        if(uploadFile != null) {
+            uploadFile.setProgress(progress);
+            mExplorerAdapter.updateItem(uploadFile);
+        }
     }
 
     @Override
@@ -927,6 +931,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         mExplorerAdapter.removeHeader(App.getApp().getString(R.string.upload_manager_progress_title));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onAddUploadsFile(List<? extends Entity> uploadFiles) {
         onRemoveUploadHead();
@@ -1204,23 +1209,24 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         try {
             final Intent intent = new Intent();
             intent.setData(uri);
+            intent.putExtra(EditorsContract.KEY_HELP_URL, StringUtils.getHelpUrl(requireContext()));
             intent.setAction(Intent.ACTION_VIEW);
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             switch (type) {
                 case DOCS:
-                    intent.setClassName(requireContext(), "lib.editors.gdocs.ui.activities.DocsActivity");
+                    intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS);
                     startActivityForResult(intent, REQUEST_DOCS);
                     break;
                 case CELLS:
-                    intent.setClassName(requireContext(), "lib.editors.gcells.ui.activities.CellsActivity");
+                    intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS);
                     startActivityForResult(intent, REQUEST_SHEETS);
                     break;
                 case PRESENTATION:
-                    intent.setClassName(requireContext(), "lib.editors.gslides.ui.activities.SlidesActivity");
+                    intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES);
                     startActivityForResult(intent, REQUEST_PRESENTATION);
                     break;
                 case PDF:
-                    intent.setClassName(requireContext(), "lib.editors.gbase.ui.activities.PdfActivity");
+                    intent.setClassName(requireContext(), EditorsContract.PDF);
                     startActivityForResult(intent, REQUEST_PDF);
                     break;
             }
@@ -1239,6 +1245,6 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         }
     }
 
-    abstract protected DocsBasePresenter getPresenter();
+    abstract protected DocsBasePresenter<? extends DocsBaseView> getPresenter();
 
 }

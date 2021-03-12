@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
 
-import moxy.presenter.InjectPresenter;
 import com.google.android.material.textfield.TextInputLayout;
 
 import javax.inject.Inject;
@@ -23,7 +22,7 @@ import app.editors.manager.R;
 import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.managers.utils.StorageUtils;
+import app.editors.manager.mvp.models.account.Storage;
 import app.editors.manager.mvp.models.explorer.Folder;
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter;
 import app.editors.manager.mvp.views.storage.ConnectView;
@@ -36,6 +35,7 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.Unbinder;
 import lib.toolkit.base.ui.dialogs.common.CommonDialog;
+import moxy.presenter.InjectPresenter;
 
 public class ConnectFragment extends BaseAppFragment implements ConnectView {
 
@@ -58,14 +58,14 @@ public class ConnectFragment extends BaseAppFragment implements ConnectView {
 
     private Unbinder mUnbinder;
     private StorageActivity mStorageActivity;
-    private StorageUtils.Storage mStorage;
+    private Storage mStorage;
     private String mToken;
 
-    public static ConnectFragment newInstance(final String token, final StorageUtils.Storage storage) {
+    public static ConnectFragment newInstance(final String token, final Storage storage) {
         final ConnectFragment connectFragment = new ConnectFragment();
         final Bundle bundle = new Bundle();
         bundle.putString(TAG_TOKEN, token);
-        bundle.putSerializable(TAG_STORAGE, storage);
+        bundle.putParcelable(TAG_STORAGE, storage);
         connectFragment.setArguments(bundle);
         return connectFragment;
     }
@@ -83,7 +83,7 @@ public class ConnectFragment extends BaseAppFragment implements ConnectView {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         final View view = inflater.inflate(R.layout.fragment_storage_connect, container, false);
         mUnbinder = ButterKnife.bind(this, view);
@@ -113,7 +113,7 @@ public class ConnectFragment extends BaseAppFragment implements ConnectView {
         final String storageTitle = mTitleEdit.getText().toString();
         if (!storageTitle.isEmpty()) {
             showWaitingDialog(getString(R.string.dialogs_wait_title_storage));
-            mConnectPresenter.connectService(mToken, mStorage.mProviderKey, storageTitle, !mStorageActivity.isMySection());
+            mConnectPresenter.connectService(mToken, mStorage.getName(), storageTitle, !mStorageActivity.isMySection());
         } else {
             showSnackBar(R.string.storage_connect_empty_title);
         }
@@ -159,14 +159,14 @@ public class ConnectFragment extends BaseAppFragment implements ConnectView {
     private void getArgs() {
         final Bundle bundle = getArguments();
         mToken = bundle.getString(TAG_TOKEN);
-        mStorage = (StorageUtils.Storage) bundle.getSerializable(TAG_STORAGE);
+        mStorage = bundle.getParcelable(TAG_STORAGE);
     }
 
     private void initViews() {
         String title = getString(R.string.storage_connect_title);
         title = title.concat(" ");
         // Set default title
-        switch (mStorage.mProviderKey) {
+        switch (mStorage.getName()) {
             case Api.Storage.BOXNET:
                 mTitleEdit.setText(R.string.storage_select_box);
                 title = title.concat(getString(R.string.storage_select_box));
