@@ -100,7 +100,7 @@ public class DownloadWork extends Worker {
             call = WebDavApi.getApi(sqlData.getScheme() + sqlData.getPortal()).download(mId);
         } else {
             if(mUrl != null) {
-                call = mRetrofitTool.getApiWithPreferences().downloadFile(mToken, mUrl);
+                call = mRetrofitTool.getApiWithPreferences().downloadFile(mToken, mUrl, Api.COOKIE_HEADER + mToken);
             } else {
                 mFile.delete();
                 return Result.failure();
@@ -121,12 +121,11 @@ public class DownloadWork extends Worker {
                     mNotificationUtils.removeNotification(getId().hashCode());
                     if (isStopped()) {
                         mNotificationUtils.showCanceledNotification(getId().hashCode(), mFile.getName());
-                        mFile.delete();
                     } else {
                         mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
                         sendBroadcastUnknownError(mId, mUrl, mFile.getName());
-                        mFile.delete();
                     }
+                    mFile.delete();
                 });
             } else {
                 mNotificationUtils.showErrorNotification(getId().hashCode(), mFile.getName());
