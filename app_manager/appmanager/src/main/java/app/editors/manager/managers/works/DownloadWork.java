@@ -78,12 +78,6 @@ public class DownloadWork extends Worker {
         mContext = getApplicationContext();
     }
 
-    @Override
-    public void onStopped() {
-        mNotificationUtils.removeNotification(mId.hashCode());
-        super.onStopped();
-    }
-
     @SuppressLint("MissingPermission")
     @NonNull
     @Override
