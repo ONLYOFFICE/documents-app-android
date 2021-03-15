@@ -580,8 +580,8 @@ object UiUtils {
         val boundEnd = newEnd - size
 
         return when {
-            boundStart > 0 -> delta + boundStart - 20
-            boundEnd > 0 -> delta - boundEnd + 20
+            boundStart > 0 -> delta + boundStart
+            boundEnd > 0 -> delta - boundEnd
             else -> delta
         }
 
