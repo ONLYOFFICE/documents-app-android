@@ -571,6 +571,22 @@ object UiUtils {
         return ColorStateList(states, colors)
     }
 
+    @JvmStatic
+    fun getBoundCoordinate(size: Int, start: Int, end: Int, delta: Float): Float {
+        val newStart = start + delta
+        val newEnd = end + delta
+
+        val boundStart = 0 - newStart
+        val boundEnd = newEnd - size
+
+        return when {
+            boundStart > 0 -> delta + boundStart - 20
+            boundEnd > 0 -> delta - boundEnd + 20
+            else -> delta
+        }
+
+    }
+
 }
 
 
