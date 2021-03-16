@@ -389,7 +389,7 @@
     <string name="error_long_file_name">O nome do arquivo é muito longo</string>
     <string name="dialog_remove_account_title">Remover conta</string>
     <string name="dialog_remove_account_description">
-        O usuário com o email %1$s do portal %2$ s será desconectada e removida da lista de contas. \n\nObserve que para fazer log-in precisará digitar o endereço do portal, email e senha. Todos os arquivos estarão seguros.
+        O usuário com o email %1$s do portal %2$s será desconectada e removida da lista de contas. \n\nObserve que para fazer log-in precisará digitar o endereço do portal, email e senha. Todos os arquivos estarão seguros.
     </string>
     <string name="dialog_logout_account_title">Tem certeza que deseja sair?</string>
     <string name="dialog_logout_account_description">
@@ -403,4 +403,24 @@
     <string name="profile_type_user">Usuário</string>
     <string name="profile_thirdparty_title">Serviços conectados</string>
     <string name="error_unsupported_format">Formato não suportado</string>
+    <string name="errors_create_local_file">Falha ao criar arquivo</string>
+    <string name="dialog_question_delete_file">O arquivo será excluído permanentemente.</string>
+    <string name="dialog_question_delete_folder">A pasta será excluída permanentemente.</string>
+    <string name="operation_delete_impossible">Não é possível excluir o arquivo. O arquivo está aberto no portal.</string>
+    <string name="operation_delete_multiple">. Um ou mais arquivos não foram excluídos por estarem abertos no portal</string>
+    <string name="app_settings_analytic_title">Ajude a melhorar o produto</string>
+    <string name="app_settings_analytic">Compartilhe as análises de aplicativos</string>
+    <string name="app_manage_files_title">Acesse para gerenciar arquivos</string>
+    <string name="app_manage_files_description">É necessário dar acesso aos arquivos. Se for negado acesso, todos os arquivos serão excluídos após a perda do aplicativo.</string>
+
+    <string name="app_internal_error">Erro interno</string>
+    <string name="app_fragment_crash_error">Feche este aplicativo e tente novamente</string>
+
+    <string name="operation_add_to_favorites">Adicionado aos Favoritos</string>
+    <string name="operation_remove_from_favorites">Excluído dos favoritos</string>
+
+    <string name="main_pager_docs_favorites">Favoritos</string>
+
+    <string name="list_context_add_to_favorite">Adicionar aos Favoritos</string>
+    <string name="list_context_delete_from_favorite">Excluir dos Favoritos</string>
 </resources>

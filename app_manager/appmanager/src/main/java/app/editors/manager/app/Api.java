@@ -10,6 +10,7 @@ import app.editors.manager.mvp.models.request.RequestCreate;
 import app.editors.manager.mvp.models.request.RequestDeleteShare;
 import app.editors.manager.mvp.models.request.RequestDownload;
 import app.editors.manager.mvp.models.request.RequestExternal;
+import app.editors.manager.mvp.models.request.RequestFavorites;
 import app.editors.manager.mvp.models.request.RequestNumber;
 import app.editors.manager.mvp.models.request.RequestRegister;
 import app.editors.manager.mvp.models.request.RequestRenameFile;
@@ -200,6 +201,7 @@ public interface Api {
         public static final int IS_CONVERTING = 0x4;
         public static final int IS_ORIGINAL = 0x8;
         public static final int BACKUP = 0x10;
+        public static final int FAVORITE = 0x20;
     }
 
     final class Storage {
@@ -239,6 +241,7 @@ public interface Api {
     String DEFAULT_HOST = "onlyoffice.com";
     String PERSONAL_HOST = PERSONAL_SUBDOMAIN + "." + DEFAULT_HOST;
     String RESPONSE_FORMAT = ".json";
+    String COOKIE_HEADER = "asc_auth_key=";
 
     /*
      * Portals versions
@@ -574,7 +577,7 @@ public interface Api {
      * */
     @Streaming
     @GET
-    Call<ResponseBody> downloadFile(@Header(HEADER_AUTHORIZATION) String token, @Url String url);
+    Call<ResponseBody> downloadFile(@Header(HEADER_AUTHORIZATION) String token, @Url String url, @Header("Cookie") String cookie);
 
     @PUT("api/" + API_VERSION + "/files/fileops/bulkdownload" + RESPONSE_FORMAT)
     Single<ResponseDownload> downloadFiles(@Header(HEADER_AUTHORIZATION) String token, @Body RequestDownload requestDownload);
@@ -584,7 +587,7 @@ public interface Api {
      * */
     @Multipart
     @POST("api/" + API_VERSION + "/files/{folder_id}/upload" + RESPONSE_FORMAT)
-    Single<ResponseFile> uploadFile(@Header(HEADER_AUTHORIZATION) String token,
+    Call<ResponseFile> uploadFile(@Header(HEADER_AUTHORIZATION) String token,
                                     @Path(value = "folder_id") String folderId,
                                     @Part MultipartBody.Part part);
 
@@ -596,7 +599,7 @@ public interface Api {
 
     @Multipart
     @POST("api/" + API_VERSION + "/files/@my/upload" + RESPONSE_FORMAT)
-    Single<ResponseFile> uploadFileToMy(@Header(HEADER_AUTHORIZATION) String token,
+    Call<ResponseFile> uploadFileToMy(@Header(HEADER_AUTHORIZATION) String token,
                                         @Part MultipartBody.Part part);
 
     /*
@@ -621,4 +624,15 @@ public interface Api {
             HEADER_ACCEPT + ": " + VALUE_ACCEPT})
     @GET("api/" + API_VERSION + "/settings/security" + RESPONSE_FORMAT)
     Single<ResponseModules> getModules(@Header(HEADER_AUTHORIZATION) String token, @Query("ids") List<String> modulesIds);
+
+    @Headers({HEADER_CONTENT_TYPE + ": " + VALUE_CONTENT_TYPE,
+            HEADER_ACCEPT + ": " + VALUE_ACCEPT})
+    @POST("api/" + API_VERSION + "/files/favorites" + RESPONSE_FORMAT)
+    Call<Base> addToFavorites(@Header(HEADER_AUTHORIZATION) String token, @Body RequestFavorites body);
+
+    @Headers({HEADER_CONTENT_TYPE + ": " + VALUE_CONTENT_TYPE,
+            HEADER_ACCEPT + ": " + VALUE_ACCEPT})
+    @HTTP(method = "DELETE", path = "api/" + API_VERSION + "/files/favorites" + RESPONSE_FORMAT, hasBody = true)
+    Call<Base> deleteFromFavorites(@Header(HEADER_AUTHORIZATION) String token, @Body RequestFavorites body);
+
 }

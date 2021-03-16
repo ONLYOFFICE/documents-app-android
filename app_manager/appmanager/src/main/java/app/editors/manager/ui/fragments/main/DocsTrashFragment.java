@@ -26,6 +26,8 @@ public class DocsTrashFragment extends DocsCloudFragment implements View.OnClick
     private MainActivity mMainActivity;
     private MenuItem mEmptyTrashItem;
 
+    private boolean isEmptyTrashVisible = false;
+
     public static DocsTrashFragment newInstance() {
         return new DocsTrashFragment();
     }
@@ -58,6 +60,10 @@ public class DocsTrashFragment extends DocsCloudFragment implements View.OnClick
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         super.onCreateOptionsMenu(menu, menuInflater);
         if (isVisible()) {
+            mEmptyTrashItem = menu.findItem(R.id.toolbar_item_empty_trash);
+            if(mEmptyTrashItem != null) {
+                mEmptyTrashItem.setVisible(isEmptyTrashVisible);
+            }
             showMenu(menu);
         }
     }
@@ -115,7 +121,8 @@ public class DocsTrashFragment extends DocsCloudFragment implements View.OnClick
     protected void setMenuMainEnabled(boolean isEnabled) {
         super.setMenuMainEnabled(isEnabled);
         if (mEmptyTrashItem != null) {
-            mEmptyTrashItem.setVisible(isEnabled);
+            isEmptyTrashVisible = isEnabled;
+            mEmptyTrashItem.setVisible(isEmptyTrashVisible);
         }
         if (mSearchItem != null) {
             mSearchItem.setVisible(isEnabled);
@@ -137,8 +144,6 @@ public class DocsTrashFragment extends DocsCloudFragment implements View.OnClick
             mMoveItem.setVisible(true);
             mCopyItem.setVisible(false);
         } else {
-            mEmptyTrashItem = menu.findItem(R.id.toolbar_item_empty_trash);
-            mEmptyTrashItem.setVisible(false);
             setActionBarTitle("");
             UiUtils.setMenuItemTint(requireContext(), mEmptyTrashItem, R.color.colorWhite);
         }
@@ -174,5 +179,10 @@ public class DocsTrashFragment extends DocsCloudFragment implements View.OnClick
             setMenuMainEnabled(false);
         }
         super.onDeleteBatch(list);
+    }
+
+    @Override
+    public void onRemoveItemFromFavorites() {
+
     }
 }

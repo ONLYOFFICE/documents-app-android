@@ -27,6 +27,7 @@ import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.File;
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter;
+import app.editors.manager.mvp.views.main.DocsBaseView;
 import app.editors.manager.mvp.views.main.DocsRecentView;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
 import app.editors.manager.ui.activities.main.MainActivity;
@@ -150,6 +151,11 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
     }
 
     @Override
+    public void onRemoveItemFromFavorites() {
+
+    }
+
+    @Override
     protected Boolean isWebDav() {
         return false;
     }
@@ -195,19 +201,44 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
                     mMainActivity.setNavigationButton(true);
                     break;
                 case R.id.toolbar_sort_item_title:
-                    mDocsRecentPresenter.sortBy(Api.Parameters.VAL_SORT_BY_TITLE, isAscending);
+                    if(item.isChecked()) {
+                        mDocsRecentPresenter.reverseSortOrder(mAdapter.getItemList());
+                    } else {
+                        mDocsRecentPresenter.sortBy(Api.Parameters.VAL_SORT_BY_TITLE, isAscending);
+                    }
+                    item.setChecked(true);
                     break;
                 case R.id.toolbar_sort_item_date_update:
-                    mDocsRecentPresenter.sortBy(Api.Parameters.VAL_SORT_BY_UPDATED, isAscending);
+                    if(item.isChecked()) {
+                        mDocsRecentPresenter.reverseSortOrder(mAdapter.getItemList());
+                    } else {
+                        mDocsRecentPresenter.sortBy(Api.Parameters.VAL_SORT_BY_UPDATED, isAscending);
+                    }
+                    item.setChecked(true);
                     break;
                 case R.id.toolbar_sort_item_owner:
-                    mDocsRecentPresenter.sortBy(Api.Parameters.VAL_SORT_BY_OWNER, isAscending);
+                    if(item.isChecked()) {
+                        mDocsRecentPresenter.reverseSortOrder(mAdapter.getItemList());
+                    } else {
+                        mDocsRecentPresenter.sortBy(Api.Parameters.VAL_SORT_BY_OWNER, isAscending);
+                    }
+                    item.setChecked(true);
                     break;
                 case R.id.toolbar_sort_item_size:
-                    mDocsRecentPresenter.sortBy(Api.Parameters.VAL_SORT_BY_SIZE, isAscending);
+                    if(item.isChecked()) {
+                        mDocsRecentPresenter.reverseSortOrder(mAdapter.getItemList());
+                    } else {
+                        mDocsRecentPresenter.sortBy(Api.Parameters.VAL_SORT_BY_SIZE, isAscending);
+                    }
+                    item.setChecked(true);
                     break;
                 case R.id.toolbar_sort_item_type:
-                    mDocsRecentPresenter.sortBy(Api.Parameters.VAL_SORT_BY_TYPE, isAscending);
+                    if(item.isChecked()) {
+                        mDocsRecentPresenter.reverseSortOrder(mAdapter.getItemList());
+                    } else {
+                        mDocsRecentPresenter.sortBy(Api.Parameters.VAL_SORT_BY_TYPE, isAscending);
+                    }
+                    item.setChecked(true);
                     break;
                 case R.id.toolbar_sort_item_asc:
                 case R.id.toolbar_sort_item_desc:
@@ -218,6 +249,18 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
         item.setChecked(true);
         return false;
     }
+
+    @Override
+    public void onReverseSortOrder(List<Entity> itemList) {
+        mAdapter.setData(itemList);
+        mAdapter.notifyDataSetChanged();
+        if(mMenu.findItem(R.id.toolbar_sort_item_desc).isChecked()) {
+            mMenu.findItem(R.id.toolbar_sort_item_asc).setChecked(true);
+        } else {
+            mMenu.findItem(R.id.toolbar_sort_item_desc).setChecked(true);
+        }
+    }
+
 
     @Override
     public void updateFiles(List<Entity> files) {
@@ -362,7 +405,7 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
     }
 
     @Override
-    protected DocsBasePresenter getPresenter() {
+    protected DocsBasePresenter<? extends DocsBaseView> getPresenter() {
         return mDocsRecentPresenter;
     }
 }

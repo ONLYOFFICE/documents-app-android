@@ -564,7 +564,7 @@ public class WebViewerFragment extends BaseAppFragment implements SwipeRefreshLa
     private void showSaveActivity(String name) {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
+        intent.setType(StringUtils.getMimeTypeFromPath(name));
         intent.putExtra(Intent.EXTRA_TITLE, name);
         startActivityForResult(intent, REQUEST_DOWNLOAD);
     }

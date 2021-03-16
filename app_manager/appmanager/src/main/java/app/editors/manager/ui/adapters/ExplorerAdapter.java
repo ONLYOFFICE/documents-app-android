@@ -21,6 +21,7 @@ import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.mvp.models.base.Entity;
+import app.editors.manager.mvp.models.explorer.File;
 import app.editors.manager.mvp.models.explorer.Folder;
 import app.editors.manager.mvp.models.explorer.UploadFile;
 import app.editors.manager.mvp.models.list.Footer;
@@ -75,6 +76,7 @@ public class ExplorerAdapter extends BaseAdapter<Entity> {
             viewHolder.bind(mFooter);
         } else {
             BaseViewHolderExplorer viewHolder = (BaseViewHolderExplorer) holder;
+            setFileFavoriteStatus(position);
             viewHolder.bind(mList.get(position));
         }
     }
@@ -146,6 +148,20 @@ public class ExplorerAdapter extends BaseAdapter<Entity> {
                         notifyItemRemoved(position);
                         break;
                     }
+                }
+            }
+        }
+    }
+
+    private void setFileFavoriteStatus(int position) {
+        if(mList.get(position) instanceof File){
+            File file = ((File)mList.get(position));
+            if(!file.getFileStatus().isEmpty()) {
+                int favoriteMask = Integer.parseInt(file.getFileStatus()) & Api.FileStatus.FAVORITE;
+                if (favoriteMask != 0) {
+                    file.setFavorite(true);
+                } else {
+                    file.setFavorite(false);
                 }
             }
         }

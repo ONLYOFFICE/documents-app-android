@@ -41,11 +41,11 @@ import java.util.UUID;
 import app.editors.manager.R;
 import app.editors.manager.app.WebDavApi;
 import app.editors.manager.managers.receivers.DownloadReceiver;
+import app.editors.manager.managers.receivers.UploadReceiver;
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter;
 import app.editors.manager.mvp.views.main.MainActivityView;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
 import app.editors.manager.ui.dialogs.AccountBottomDialog;
-import app.editors.manager.ui.dialogs.ActionBottomDialog;
 import app.editors.manager.ui.fragments.main.CloudAccountsFragment;
 import app.editors.manager.ui.fragments.main.DocsMyFragment;
 import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment;
@@ -60,11 +60,13 @@ import butterknife.Unbinder;
 import lib.toolkit.base.managers.utils.FragmentUtils;
 import lib.toolkit.base.managers.utils.PermissionUtils;
 import lib.toolkit.base.managers.utils.UiUtils;
+import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog;
 import lib.toolkit.base.ui.dialogs.common.CommonDialog;
+import lib.toolkit.base.ui.dialogs.common.holders.InfoHolder;
 import moxy.presenter.InjectPresenter;
 
 public class MainActivity extends BaseAppActivity implements MainActivityView,
-        BottomNavigationView.OnNavigationItemSelectedListener {
+        BottomNavigationView.OnNavigationItemSelectedListener, BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -125,13 +127,29 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_CANCELED) {
-            if (requestCode == REQUEST_ACTIVITY_WEB_VIEWER) {
-                mMainActivityPresenter.getRemoteConfigRate();
-                if (data != null && data.hasExtra(WebViewerActivity.TAG_VIEWER_FAIL)) {
-                    showSnackBar("BAD bad viewer activity... :(");
+            switch (requestCode) {
+                case REQUEST_ACTIVITY_WEB_VIEWER: {
+                    mMainActivityPresenter.getRemoteConfigRate();
+                    if (data != null && data.hasExtra(WebViewerActivity.TAG_VIEWER_FAIL)) {
+                        showSnackBar("BAD bad viewer activity... :(");
+                    }
+                    break;
                 }
-            } else if (requestCode == REQUEST_ACTIVITY_PORTAL) {
-                mMainActivityPresenter.setUser();
+                case REQUEST_ACTIVITY_PORTAL: {
+                    mMainActivityPresenter.setUser();
+                    break;
+                }
+            }
+            if (data != null && data.getExtras() != null) {
+                if (data.getExtras().containsKey("fragment_error")) {
+                    final InfoHolder.Builder dialog = getInfoDialog(getString(R.string.app_internal_error),
+                            getString(R.string.app_fragment_crash_error),
+                            getString(R.string.common_ok),
+                            null);
+                    if (dialog != null) {
+                        dialog.show();
+                    }
+                }
             }
         }
         if (requestCode == ProfileActivity.REQUEST_PROFILE) {
@@ -147,6 +165,13 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
             final Bundle extras = intent.getExtras();
             if (extras != null) {
                 WorkManager.getInstance().cancelWorkById(UUID.fromString(extras.getString(DownloadReceiver.EXTRAS_KEY_ID)));
+            }
+            return;
+        }
+        if (action != null && action.equals(UploadReceiver.UPLOAD_ACTION_CANCELED)) {
+            final Bundle extras = intent.getExtras();
+            if (extras != null) {
+               WorkManager.getInstance().cancelWorkById(UUID.fromString(extras.getString(UploadReceiver.EXTRAS_KEY_ID)));
             }
             return;
         }
@@ -177,6 +202,15 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
 
         intent.setData(null);
         intent.setClipData(null);
+    }
+
+    @Override
+    public void onContextDialogOpen() {
+        mMainActivityPresenter.setDialogOpen(true);
+    }
+
+    public void onContextDialogClose() {
+        mMainActivityPresenter.setDialogOpen(false);
     }
 
     @Override
@@ -229,12 +263,15 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
         for (Fragment fragment : fragments) {
             if (fragment instanceof MainPagerFragment && fragment.isVisible()) {
                 ((MainPagerFragment) fragment).showActionDialog();
+                mMainActivityPresenter.setDialogOpen(true);
                 break;
             } else if (fragment instanceof DocsOnDeviceFragment && fragment.isVisible()) {
                 ((DocsOnDeviceFragment) fragment).showActionDialog();
+                mMainActivityPresenter.setDialogOpen(true);
                 break;
             } else if (fragment instanceof DocsWebDavFragment && fragment.isVisible()) {
                 ((DocsWebDavFragment) fragment).showActionDialog();
+                mMainActivityPresenter.setDialogOpen(true);
                 break;
             }
         }
@@ -242,8 +279,12 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        mMainActivityPresenter.navigationItemClick(menuItem.getItemId());
-        return true;
+        if (mMainActivityPresenter.isDialogOpen()) {
+            return false;
+        } else {
+            mMainActivityPresenter.navigationItemClick(menuItem.getItemId());
+            return true;
+        }
     }
 
     @Override
@@ -451,10 +492,7 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
 
     @Override
     public void onCloseActionDialog() {
-        Fragment actionBottomDialog = getSupportFragmentManager().findFragmentByTag(ActionBottomDialog.TAG);
-        if(actionBottomDialog instanceof ActionBottomDialog) {
-            ((ActionBottomDialog) actionBottomDialog).dismiss();
-        }
+        //Stub
     }
 
     /*
@@ -648,4 +686,17 @@ public class MainActivity extends BaseAppActivity implements MainActivityView,
         context.startActivity(intent);
     }
 
+    @Override
+    public void onBottomDialogClose() {
+        mMainActivityPresenter.setDialogOpen(false);
+    }
+
+    @Override
+    public void onCommonClose() {
+        mMainActivityPresenter.setDialogOpen(false);
+    }
+    @Override
+    public void setCommonDialogOpen() {
+        mMainActivityPresenter.setDialogOpen(true);
+    }
 }

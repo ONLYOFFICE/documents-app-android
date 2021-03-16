@@ -9,12 +9,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import app.editors.manager.R;
+import app.editors.manager.ui.interfaces.ContextDialogInterface;
 import lib.toolkit.base.managers.utils.ActivitiesUtils;
 import lib.toolkit.base.managers.utils.FragmentUtils;
 import lib.toolkit.base.managers.utils.UiUtils;
 import lib.toolkit.base.ui.activities.base.BaseActivity;
 
-public abstract class BaseAppActivity extends BaseActivity implements FragmentManager.OnBackStackChangedListener {
+public abstract class BaseAppActivity extends BaseActivity implements FragmentManager.OnBackStackChangedListener, ContextDialogInterface {
 
     private final String TAG = getClass().getSimpleName();
     private static final String TAG_FINISH = "TAG_FINISH";
@@ -35,6 +36,11 @@ public abstract class BaseAppActivity extends BaseActivity implements FragmentMa
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(TAG_FINISH, mIsFinish);
+    }
+
+    @Override
+    public void onContextDialogOpen() {
+
     }
 
     @Override

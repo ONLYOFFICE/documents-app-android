@@ -2,6 +2,7 @@ package app.editors.manager.ui.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -29,6 +30,7 @@ public class ActionBottomDialog extends BaseBottomDialog {
 
     public interface OnClickListener {
         void onActionButtonClick(Buttons buttons);
+        void onActionDialogClose();
     }
 
     @BindView(R.id.list_explorer_action_sheet)
@@ -90,6 +92,12 @@ public class ActionBottomDialog extends BaseBottomDialog {
             mUnbinder.unbind();
         }
         mOnClickListener = null;
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        mOnClickListener.onActionDialogClose();
     }
 
     @OnClick({R.id.list_explorer_action_sheet,

@@ -12,10 +12,7 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.*
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
@@ -266,6 +263,7 @@ object UiUtils {
 
         val view = snackbar.view
         val textView = view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.maxLines = 3
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             textView.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
@@ -559,6 +557,20 @@ object UiUtils {
         return ContextCompat.getColorStateList(context, color)
     }
 
+    fun getTabStateList(context: Context): ColorStateList {
+        val states = arrayOf(
+            intArrayOf(android.R.attr.state_selected),
+            intArrayOf(-android.R.attr.state_selected)
+        )
+
+        val colors = intArrayOf(
+            ContextCompat.getColor(context, R.color.colorWhite),
+            ContextCompat.getColor(context, R.color.colorLight),
+        )
+
+        return ColorStateList(states, colors)
+    }
+
 }
 
 
@@ -571,6 +583,7 @@ class ActivityLayoutListener : ViewTreeObserver.OnGlobalLayoutListener {
                 topPadding: Int,
                 bottomPadding: Int
         )
+        fun onFinishDrawingActivity()
     }
 
     var activityTotalHeight: Int = 0
@@ -610,6 +623,7 @@ class ActivityLayoutListener : ViewTreeObserver.OnGlobalLayoutListener {
                     activityTopPadding,
                     activityBottomPadding
             )
+            mWeakListener?.get()?.onFinishDrawingActivity()
         }
     }
 

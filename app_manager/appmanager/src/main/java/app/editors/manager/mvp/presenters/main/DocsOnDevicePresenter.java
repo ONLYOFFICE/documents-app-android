@@ -222,8 +222,13 @@ public class DocsOnDevicePresenter extends DocsBasePresenter<DocsOnDeviceView> {
     }
 
     @Override
-    public boolean sortBy(@NonNull String value) {
+    public boolean sortBy(@NonNull String value, boolean isRepeatedTap) {
         mPreferenceTool.setSortBy(value);
+
+        if(isRepeatedTap) {
+            reverseSortOrder();
+        }
+
         getItemsById(mModelExplorerStack.getCurrentId());
         return true;
     }
@@ -306,6 +311,9 @@ public class DocsOnDevicePresenter extends DocsBasePresenter<DocsOnDeviceView> {
             case IMAGE_GIF:
             case VIDEO_SUPPORT:
                 showMedia();
+                break;
+            default:
+                getViewState().onError(mContext.getString(R.string.error_unsupported_format));
                 break;
         }
     }

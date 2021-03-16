@@ -112,6 +112,11 @@ public class DocsCloudOperationFragment extends DocsCloudFragment implements Ope
         getDocs();
     }
 
+    @Override
+    public void onRemoveItemFromFavorites() {
+        //stub
+    }
+
     public void onActionClick() {
         switch (mOperationType) {
             case COPY:

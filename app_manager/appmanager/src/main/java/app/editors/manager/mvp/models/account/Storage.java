@@ -1,5 +1,8 @@
 package app.editors.manager.mvp.models.account;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -7,7 +10,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import static app.editors.manager.mvp.models.account.Storage.TABLE_NAME;
 
 @DatabaseTable(tableName = TABLE_NAME)
-public class Storage {
+public class Storage implements Parcelable {
 
     public static final String TABLE_NAME = "STORAGE";
     public static final String FIELD_NAME_ID = "ID";
@@ -82,4 +85,37 @@ public class Storage {
         this.accountsSqlData = accountsSqlData;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.clientId);
+        dest.writeString(this.redirectUrl);
+        dest.writeParcelable(this.accountsSqlData, flags);
+    }
+
+    protected Storage(Parcel in) {
+        this.id = in.readString();
+        this.name = in.readString();
+        this.clientId = in.readString();
+        this.redirectUrl = in.readString();
+        this.accountsSqlData = in.readParcelable(AccountsSqlData.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<Storage> CREATOR = new Parcelable.Creator<Storage>() {
+        @Override
+        public Storage createFromParcel(Parcel source) {
+            return new Storage(source);
+        }
+
+        @Override
+        public Storage[] newArray(int size) {
+            return new Storage[size];
+        }
+    };
 }

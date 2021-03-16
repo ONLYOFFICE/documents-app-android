@@ -26,10 +26,11 @@ public class UploadReceiver extends BaseReceiver<Intent> {
     public static final String EXTRAS_KEY_FILE = "EXTRAS_KEY_FILE";
     public static final String EXTRAS_KEY_PROGRESS = "EXTRAS_KEY_PROGRESS";
     public static final String EXTRAS_KEY_ID = "EXTRAS_KEY_ID";
+    public static final String EXTRAS_FOLDER_ID = "EXTRAS_FOLDER_ID";
 
 
     public interface OnUploadListener {
-        void onUploadError(@Nullable String path, String info, UploadFile file);
+        void onUploadError(@Nullable String path, String info, String file);
 
         void onUploadComplete(String path, String info, @Nullable String title, File file, String id);
 
@@ -56,7 +57,7 @@ public class UploadReceiver extends BaseReceiver<Intent> {
                 switch (action) {
                     case UPLOAD_ACTION_ERROR: {
                         final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
-                        final UploadFile file = intent.getParcelableExtra(EXTRAS_KEY_FILE);
+                        final String file = intent.getStringExtra(EXTRAS_KEY_FILE);
                         final String info = context.getString(R.string.upload_manager_error);
                         mOnUploadListener.onUploadError(title, info, file);
                         break;
@@ -70,9 +71,10 @@ public class UploadReceiver extends BaseReceiver<Intent> {
                     }
 
                     case UPLOAD_ACTION_PROGRESS: {
-                        final UploadFile file = intent.getParcelableExtra(EXTRAS_KEY_FILE);
+                        final String file = intent.getStringExtra(EXTRAS_KEY_FILE);
+                        final String folder = intent.getStringExtra(EXTRAS_FOLDER_ID);
                         final int progress = intent.getIntExtra(EXTRAS_KEY_PROGRESS, 0);
-                        mOnUploadListener.onUploadFileProgress(progress, file.getId(), file.getFolderId());
+                        mOnUploadListener.onUploadFileProgress(progress, file, folder);
                         break;
                     }
 

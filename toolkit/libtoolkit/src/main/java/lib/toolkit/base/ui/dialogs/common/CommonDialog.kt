@@ -26,9 +26,16 @@ class CommonDialog : BaseDialog() {
         }
     }
 
+    interface OnCommonDialogClose {
+        fun onCommonClose()
+    }
+
     interface OnClickListener {
         fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?)
         fun onCancelClick(dialogs: Dialogs?, tag: String?)
+        fun onCloseCommonDialog() {
+
+        }
     }
 
     interface ViewHolder {
@@ -106,6 +113,11 @@ class CommonDialog : BaseDialog() {
         }, 100)
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        mOnClickListener?.onCloseCommonDialog()
+    }
+
     override fun onBackPressed(): Boolean {
         if (mViewHolders[mDialogType]?.isBackPress() != false) {
             super.onBackPressed()
@@ -117,6 +129,7 @@ class CommonDialog : BaseDialog() {
 
     private fun init(savedInstanceState: Bundle?) {
         restoreValues(savedInstanceState)
+        mBaseActivity.setCommonDialogOpen()
         initViews()
     }
 

@@ -2,6 +2,7 @@ package app.editors.manager.ui.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -26,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import lib.toolkit.base.managers.utils.KeyboardUtils;
+import lib.toolkit.base.managers.utils.StringUtils;
 import lib.toolkit.base.managers.utils.UiUtils;
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog;
 
@@ -35,11 +37,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
     private static final String TAG_STATE = "TAG_STATE";
 
     public enum Buttons {
-        NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD, RENAME, DELETE, SHARE_DELETE
+        NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD, RENAME, DELETE, SHARE_DELETE, FAVORITE_ADD, FAVORITE_DELETE
     }
 
     public interface OnClickListener {
         void onContextButtonClick(Buttons buttons);
+        void onContextDialogClose();
     }
 
     public static class State implements Serializable {
@@ -59,6 +62,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
         public boolean mIsRecent = false;
         public boolean mIsWebDav = false;
         public boolean mIsTrash = false;
+        public boolean mIsFavorite = false;
     }
 
     protected PreferenceTool mPreferenceTool;
@@ -98,6 +102,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
     protected LinearLayout mListContextShareDelete;
     @BindView(R.id.list_explorer_context_delete_text)
     protected AppCompatTextView mListExplorerContextDeleteText;
+    @BindView(R.id.list_explorer_context_add_to_favorite)
+    protected LinearLayout mListContextAddFavorite;
+    @BindView(R.id.list_explorer_context_delete_from_favorite)
+    protected LinearLayout mListContextDeleteFavorite;
+    @BindView(R.id.view_line_separator_favorites)
+    protected View mViewLineSeparatorFavorites;
 
     protected View mRootView;
     protected State mState = new State();
@@ -135,6 +145,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
         mUnbinder.unbind();
     }
 
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        mOnClickListener.onContextDialogClose();
+    }
+
     @OnClick({R.id.list_explorer_context_folder_name,
             R.id.list_explorer_context_edit,
             R.id.list_explorer_context_share,
@@ -144,7 +160,9 @@ public class ContextBottomDialog extends BaseBottomDialog {
             R.id.list_explorer_context_download,
             R.id.list_explorer_context_rename,
             R.id.list_explorer_context_delete,
-            R.id.list_explorer_context_share_delete})
+            R.id.list_explorer_context_share_delete,
+            R.id.list_explorer_context_add_to_favorite,
+            R.id.list_explorer_context_delete_from_favorite})
     protected void onButtonsClick(final View view) {
         if (mOnClickListener != null) {
             switch (view.getId()) {
@@ -177,6 +195,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
                     break;
                 case R.id.list_explorer_context_share_delete:
                     mOnClickListener.onContextButtonClick(Buttons.SHARE_DELETE);
+                    break;
+                case R.id.list_explorer_context_add_to_favorite:
+                    mOnClickListener.onContextButtonClick(Buttons.FAVORITE_ADD);
+                    break;
+                case R.id.list_explorer_context_delete_from_favorite:
+                    mOnClickListener.onContextButtonClick(Buttons.FAVORITE_DELETE);
                     break;
             }
             dismiss();
@@ -232,11 +256,19 @@ public class ContextBottomDialog extends BaseBottomDialog {
                 mListExplorerContextDeleteText.setText(R.string.list_context_delete);
             }
 
-//            mListExplorerContextDownload.setVisibility(View.VISIBLE);
+            mListExplorerContextDownload.setVisibility(View.VISIBLE);
 
         } else {
             // File can downloaded
             mListExplorerContextDownload.setVisibility(View.VISIBLE);
+            if(StringUtils.convertServerVersion(mPreferenceTool.getServerVersion()) >= 11) {
+                mViewLineSeparatorFavorites.setVisibility(View.VISIBLE);
+                if (mState.mIsFavorite) {
+                    mListContextDeleteFavorite.setVisibility(View.VISIBLE);
+                } else {
+                    mListContextAddFavorite.setVisibility(View.VISIBLE);
+                }
+            }
 
             // File is document
             if (mState.mIsDocs && !mState.mIsPdf) {

@@ -405,4 +405,23 @@
     <string name="profile_type_user">Utilisateur</string>
     <string name="profile_thirdparty_title">Services connectés</string>
     <string name="error_unsupported_format">Format non pris en charge</string>
+    <string name="errors_create_local_file">Erreur de création de fichier</string>
+    <string name="operation_delete_impossible">Impossible de supprimer le fichier. Le fichier est ouvert sur le portail.</string>
+    <string name="operation_delete_multiple">Un ou plusieurs fichiers n\'ont pas été supprimés. Ces fichiers sont ouverts sur le portail.</string>
+    <string name="app_settings_analytic_title">Aider à améliorer l\'application</string>
+    <string name="app_settings_analytic">Partager les statistiques de l\'application</string>
+    <string name="app_manage_files_title">Gérer l\'accès aux fichiers</string>
+    <string name="app_manage_files_description">Besoin d\'accorder l\'accès aux fichiers. Si l\'accès est interdit, tous les fichiers seront effacés après la suppression de l\'application.</string>
+
+    <string name="app_internal_error">Erreur interne</string>
+    <string name="app_fragment_crash_error">Veuillez fermer l\'application et réessayer</string>
+
+    <string name="operation_add_to_favorites">Ajouter aux Favoris</string>
+    <string name="operation_remove_from_favorites">Effacer des Favoris</string>
+
+    <string name="main_pager_docs_favorites">Favoris</string>
+
+    <string name="list_context_add_to_favorite">Ajouter aux Favoris</string>
+    <string name="list_context_delete_from_favorite">Effacer des Favoris</string>
+
 </resources>

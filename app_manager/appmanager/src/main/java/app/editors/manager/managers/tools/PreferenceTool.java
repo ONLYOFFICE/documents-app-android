@@ -61,6 +61,7 @@ public class PreferenceTool {
     private final String KEY_31 = "KEY_31";
     private final String KEY_WIFI_STATE = "KEY_WIFI_STATE";
     private final String KEY_ANALYTIC = "KEY_ANALYTIC";
+    private final String KEY_STORAGE_ACCESS = "KEY_STORAGE_ACCESS";
 
     private SharedPreferences mSharedPreferences;
 
@@ -93,6 +94,7 @@ public class PreferenceTool {
         setProjectDisable(false);
         setServerVersion("");
         setNoPortal(true);
+        setShowStorageAccess(true);
     }
 
     public void setDefaultPortal() {
@@ -415,4 +417,13 @@ public class PreferenceTool {
     public boolean isAnalyticEnable() {
         return mSharedPreferences.getBoolean(KEY_ANALYTIC, true);
     }
+
+    public void setShowStorageAccess(boolean isShow) {
+        mSharedPreferences.edit().putBoolean(KEY_STORAGE_ACCESS, isShow).apply();
+    }
+
+    public boolean isShowStorageAccess() {
+        return mSharedPreferences.getBoolean(KEY_STORAGE_ACCESS, true);
+    }
+
 }

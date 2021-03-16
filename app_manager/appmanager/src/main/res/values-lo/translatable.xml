@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ເອກະສານ</string>
+    <string name="app_name_full">ເອກະສານ ONLYOFFICE ເທົ່ານັ້ນ </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Permissions -->
+    <string name="permission_account_write_label" translatable="false">ບັນຊີການອະນຸຍາດ</string>
+    <string name="permission_account_write_description" translatable="false">ປ້າຍອະນຸຍາດໃຫ້ບັນຊີ</string>
+    <string name="permission_account_read_label" translatable="false">ປ້າຍອະນຸຍາດໃຫ້ບັນຊີ</string>
+    <string name="permission_account_read_description" translatable="false">ຂຽນລາຍລະອຽດການອະນຸຍາດ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Versions -->
+    <string name="app_versions_title">ລູ້ນທີ 3.0 </string>
+    <string name="app_versions_cancel">ພາຍຫຼັງ </string>
+    <string name="app_versions_without_release_accept">ຕິດຕັ້ງແອັບຢ່າງເປັນທາງການ</string>
+    <string name="app_versions_without_release_info">
+        ຂໍຂອບໃຈ ສຳ ລັບການທົດລອງເບຕ້າ! ເອກະສານ ONLYOFFICE ລຸ້ນ3.0 ຖືກນຳໃຊ້ດຽວນີ້, ແລະ ລຸ້ນ beta ບໍ່ໄດ້ຮັບການສະໜັບສະໜູນອີກຕໍ່ໄປ. ປ່ຽນໄປທີ່ແອັບທາງການເພື່ອຮັບການອັບເດດເພີ່ມເຕີມ.
+    </string>
+    <string name="app_versions_update_accept">ອັບເດດແອັບຢ່າງເປັນທາງການ </string>
+    <string name="app_versions_update_info">
+         ຂໍຂອບໃຈ ສຳ ລັບການທົດລອງເບຕ້າ! ເອກະສານ ONLYOFFICE ລຸ້ນ3.0 ຖືກນຳໃຊ້ດຽວນີ້, ແລະ ລຸ້ນ beta ບໍ່ໄດ້ຮັບການສະໜັບສະໜູນອີກຕໍ່ໄປ. ກະລຸນາ, ປ່ຽນໄປທີ່ແອັບທາງການເພື່ອຮັບການປັບປຸງຕື່ມອີ.
+    </string>
+    <string name="app_versions_actual_release_accept">ເປີດແອັບຢ່າງເປັນທາງການ </string>
+    <string name="app_versions_actual_release_info">
+        ຂໍຂອບໃຈ ສຳ ລັບການທົດລອງເບຕ້າ! ເອກະສານ ONLYOFFICE ລຸ້ນ3.0 ຖືກນຳໃຊ້, ແລະ ລຸ້ນ beta ບໍ່ໄດ້ຮັບການສະໜັບສະໜູນອີກຕໍ່ໄປ. ກະລຸນາປ່ຽນໄປທີ່ແອັບທາງການ..
+    </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Snackbar common -->
+    <string name="snackbar_copied">ສຳເນົາ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- About -->
+    <string name="about_title">ກ່ຽວກັບ</string>
+    <string name="about_app_version">ລູ້ນ % 1 $ s, ສ້າງ% 2 $ s, SDK% 3 $ s</string>
+    <string name="about_terms">ເງື່ອນໄຂການນຳໃຊ້</string>
+    <string name="about_policy">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</string>
+    <string name="about_license">ການອະນຸຍາດ</string>
+    <string name="about_website">ເວັບໄຊທ໌ ONLYOFFICE ເທົ່ານັ້ນ</string>
+    <string name="about_email_subject">ເອກະສານ ONLYOFFICE  ສຳລັບຄຳຕິຊົມຈາກ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Common errors -->
+    <string name="errors_unknown_error">ຜິດພາດໃນການເຊື່ອມຕໍ່. ລອງໃໝ່ໃນພາຍຫຼັງ. .</string>
+    <string name="errors_ssl_error">ຜິດພາດຂອງ SSL</string>
+    <string name="errors_connection_error">ກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດ</string>
+    <string name="errors_unknown_host_error">ບໍ່ລະບຸຕົວຕົນ</string>
+    <string name="errors_redirect_error">ຜິດພາດໃນການປ່ຽນເສັ້ນທາງທີ່ບໍ່ຮູ້ຈັກກັບລະຫັດ:\u0020</string>
+    <string name="errors_client_error">ຜິດພາດຂອງລູກຄ້າທີ່ບໍ່ຮູ້ຈັກກັບລະຫັດ:\u0020</string>
+    <string name="errors_client_portal_exist">ປະຕູທີ່ມີຊື່ດຽວກັນມີຢູ່ແລ້ວ</string>
+    <string name="errors_client_portal_sms">ທ່ານໄດ້ສົ່ງຂໍ້ຄວາມຫຼາຍເກີນໄປ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</string>
+    <string name="errors_client_host_not_found">ບໍ່ພົບທີ່ຢູ່ </string>
+    <string name="errors_client_forbidden">ການເຂົ້າເຖິງຖືກປະຕິເສດ</string>
+    <string name="errors_client_unauthorized">ການຮ້ອງຂໍທີ່ບໍ່ໄດ້ຮັບອະນຸຍາດ</string>
+    <string name="errors_client_payment_required"> ຕ້ອງການຊຳລະ</string>
+    <string name="errors_server_error">ຄວາມຜິດພາດຂອງເຊີບເວີທີ່ບໍ່ຮູ້ຈັກກັບລະຫັດ:\u0020</string>
+    <string name="errors_server_auth_error">ຜິດພາດໃນການກວດສອບຄວາມຖືກຕ້ອງ </string>
+    <string name="errors_email_syntax_error">ອີເມວທີ່ບໍ່ຖືກຕ້ອງ </string>
+    <string name="errors_viewer_download_name">ການດາວໂຫລດລົ້ມເຫລວ</string>
+    <string name="errors_email_already_registered">ຜູ້ໃຊ້ທີ່ມີອີເມວນີ້ແມ່ນລົງທະບຽນແລ້ວ</string>
+    <string name="errors_path_url">URL ທີ່ບໍ່ຖືກຕ້ອງ</string>
+    <string name="errors_create_local_file">ການສ້າງເອກະສານລົ້ມເຫລວ </string>
+
+    <!-- SignIn -->
+    <string name="errors_sign_in_splash_error">ການເຂົ້າເຖິງປະຕູລົ້ມເຫລວ</string>
+    <string name="errors_sign_in_account_error">ການເຂົ້າສູ່ລະບົບລົ້ມເຫລວ</string>
+    <string name="errors_sign_in_account_already_use">ທ່ານໄດ້ໃຊ້ບັນຊີນີ້ແລ້ວ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Login -->
+    <string name="login_api_init_error">ເຂົ້າລະບົບ</string>
+    <string name="login_api_init_portal_error">ຜິດພາດຊື່ປະຕູ  syntax</string>
+    <string name="login_api_portal_name">ຊື່ປະຕູທີ່ບໍ່ຖືກຕ້ອງ. ຕົວຢ່າງ   : example.onlyoffice.com</string>
+    <string name="login_api_portal_name_length">ຊື່ປະຕູຕ້ອງມີຢ່າງ ໜ້ອຍ 6 ຕົວອັກສອນ </string>
+    <string name="login_api_portal_name_content">ຊື່ປະຕູຕ້ອງມີ A-Z, a-z, 0-9</string>
+
+
+    <string name="login_retry">ລອງໃໝ່ເຊື່ອມຕໍ່ </string>
+
+    <!-- Accounts -->
+    <string name="login_accounts_select_title"> ເລືອກບັນຊີ</string>
+    <string name="login_accounts_select_add">ເພີ່ມບັນຊີຄລາວ</string>
+
+    <!-- Portal pager -->
+    <string name="login_pager_enterprise">ປ່ະຕູ</string>
+    <string name="login_pager_personal">ສ່ວນບຸກຄົນ </string>
+    <string name="login_pager_title">ເຊື່ອມຕໍ່cloud ONLYOFFICE</string>
+
+    <!-- Portal enterprise-->
+    <string name="login_enterprise_edit_hint">ທີ່ຢູ່ປະຕູ </string>
+    <string name="login_enterprise_button_next">ຕໍ່ໄປ</string>
+    <string name="login_enterprise_edit_error_hint">ໃສ່ທີ່ຢູ່ທີ່ຖືກຕ້ອງ</string>
+    <string name="login_enterprise_forgot_password">ລືມລະຫັດຜ່ານຫຼືອີເມວບໍ?</string>
+    <string name="login_enterprise_button_select">ບັນຊີ </string>
+    <string name="login_enterprise_email_hint">ອີເມວ </string>
+    <string name="login_enterprise_password_hint">ລະຫັດຜ່ານ</string>
+    <string name="login_enterprise_signin_button">ເຂົ້າສູ່ລະບົບ </string>
+    <string name="login_enterprise_single_sign_button">ເຂົ້າສູ່ລະບົບດຽວ</string>
+    <string name="login_enterprise_info">
+        ONLYOFFICE portal ຊ່ວຍໃຫ້ທ່ານສາມາດປະຫຍັດເອກະສານໃນຄລາວ, ແບ່ງປັນກັບເພື່ອນຮ່ວມງານ ແລະ ແກ້ໄຂຮ່ວມກັນໃນເວລາຈິງ.
+    </string>
+    <string name="login_not_authorization_info">ບໍ່ສາມາດລົງຊື່ເຂົ້າໃຊ້% 1 $ s ທີ່% 2 $ s </string>
+    <string name="login_not_authorization_button"> ລອງອີກຄັ້ງ </string>
+    <string name="errors_first_name">ຊື່ໃຫ້ຖືກຕ້ອງ. ຕ້ອງບໍ່ມີຕົວເລກ.</string>
+    <string name="errors_last_name">ນາມສະກຸນບໍ່ຖືກຕ້ອງ. ມັນຕ້ອງບໍ່ມີຕົວເລກ..</string>
+
+    <!-- Portal personal -->
+    <string name="login_personal_edit_email_hint">ອີເມວ</string>
+    <string name="login_personal_edit_password_hint">ລະຫັດຜ່ານ</string>
+    <string name="login_personal_signin_button">ເຂົ້າສູ່ລະບົບ </string>
+    <string name="login_personal_signup_button">ລົງຊື່ເຂົ້າໃຊ້ </string>
+    <string name="login_personal_signup_title">ລົງທະບຽນເຂົ້າປະຕູສ່ວນຕົວ</string>
+    <string name="login_personal_signup_edit_info">ລິ້ງຢືນຢັນຈະຖືກສົ່ງໄປຫາທີ່ຢູ່ນີ້ </string>
+    <string name="login_personal_signup_dialog_info">ລິ້ງຢືນຢັນທີ່ຖືກສົ່ງໄປຫາອີເມວ% 1 $ s \ n ການເຊື່ອມຕໍ່ຢູ່ໃນອີເມວກ່ອນທີ່ທ່ານຈະສືບຕໍ່ </string>
+    <string name="login_personal_info">
+         ເຊື່ອມຕໍ່ ONLYOFFICE ເປັນສ່ວນຕົວ ເພື່ອບັນທຶກເອກະສານໃນ cloud
+    </string>
+    <string name="login_web_dav_title">ເຊື່ອມຕໍ່ກັບ% 1 $ </string>
+
+    <!-- Portal create-->
+    <string name="login_create_portal_title">ສ້າງປະຕູສຳລັບອົງກອນ </string>
+    <string name="login_create_portal_address_hint">ທີ່ຢູ່ປະຕູ </string>
+    <string name="login_create_portal_email_hint"> ອີເມວ </string>
+    <string name="login_create_signin_first_name_hint">ຊື່</string>
+    <string name="login_create_signin_last_name_hint">ນາມສະກຸນ </string>
+    <string name="login_create_portal_next_button">ຕໍ່ໄປ</string>
+
+    <!-- Portal create sign in -->
+    <string name="login_create_signin_title"> ຕັ້ງລະຫັດຜ່ານ</string>
+    <string name="login_create_signin_password">ລະຫັດຜ່ານ</string>
+    <string name="login_create_signin_repeat"> ໃສ່ລະຫັດຜ່ານອີກ </string>
+    <string name="login_create_signin_create_button">ສ້າງ</string>
+    <string name="login_create_signin_passwords_mismatch">ລະຫັດຜ່ານບໍ່ກົງກັນ </string>
+    <string name="login_create_signin_info">
+        ໂດຍການກົດປຸ່ມນີ້ທ່ານຍອມຮັບເງື່ອນໄຂການໃຫ້ບໍລິການຂອງພວກເຮົາ
+    </string>
+
+    <!-- Portal SMS -->
+    <string name="login_sms_code_label">ພວກເຮົາໄດ້ສົ່ງຂໍ້ຄວາມທີ່ມີລະຫັດໄປຫາເບີ </string>
+    <string name="login_sms_send_again">ສົ່ງອີກຄັັ້ງ</string>
+    <string name="login_sms_send_again_after">ສົ່ງອີກຄັັ້ງພາຍຫຼັງ</string>
+    <string name="login_sms_change_number">ມີການປ່ຽນແປງຕົວເລກ</string>
+    <string name="login_sms_phone_number_verification">ການຢືນຢັນເບີໂທລະສັບ </string>
+    <string name="login_sms_phone_header">ໃສ່ໝາຍເລກໂທລະສັບ </string>
+    <string name="login_sms_phone_country_label">ປະເທດ </string>
+    <string name="login_sms_phone_number_label">ເບີໂທລະສັບ</string>
+    <string name="login_sms_phone_send_button"> ສົ່ງລະຫັດ</string>
+    <string name="login_sms_phone_error_format">ຮູບແບບທີ່ບໍ່ຖືກຕ້ອງ </string>
+    <string name="login_sms_phone_send_code"> ພວກເຮົາຈະສົ່ງລະຫັດຢືນຢັນຜ່ານທາງຂໍ້ຄວາມ </string>
+    <string name="login_sms_resend_ok">ລະຫັດຂໍ້ຄວາມຖືກສົ່ງ </string>
+
+    <!-- Countries codes -->
+    <string name="countries_codes_title">ເລືອກລະຫັດປະເທດ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Dialogs -->
+    <string name="bottom_sheet_portal_title">ປະຕຸ</string>
+    <string name="bottom_sheet_cloud_title">Clouds</string>
+    <!--Move copy dialog-->
+    <string name="dialog_move_copy_title_files">ອກະສານ% 1 $ d ທີ່ມີຊື່ດຽວກັນຢູ່ໃນໂຟນເດີ \ "% 2 $ s</string>
+    <string name="dialog_move_copy_title_one_file">ແຟ້ມທີ່ມີຊື່ \ "% 1 $ s \" ມີຢູ່ໃນແຟ້ມ \ "% 2 $ s \" ແລ້ວ</string>
+    <string name="dialog_move_copy_overwrite">ຂຽນທັບດ້ວຍການອັບເດດເວີຊັນ</string>
+    <string name="dialog_move_copy_copy"> ສ້າງສຳເນົາເອກະສານ</string>
+    <string name="dialog_move_copy_skip">ຂ້າມ</string>
+    <string name="dialog_move_copy_title">ແຟ້ມທີ່ມີຊື່ດຽວ </string>
+
+    <!-- Common -->
+    <string name="dialogs_common_ok_button">ຍອມຮັບ</string>
+    <string name="dialogs_common_cancel_button">ຍົກເລີກ</string>
+    <string name="dialogs_check_portal_header_text">ກວດເບິ່ງຄວາມສາມາດຂອງປະຕູ </string>
+    <string name="dialogs_sign_in_portal_header_text">ເຂົ້າສູ່ປະຕູ portal (portal) </string>
+    <string name="dialogs_sign_in_register_portal"> ລົງທະບຽນ portal </string>
+
+    <!-- Waiting -->
+    <string name="dialogs_wait_title">ການດຳເນີນງານກຳລັງດຳເນີນຢູ່...</string>
+    <string name="dialogs_wait_title_storage">ກໍາລັງເຊື່ອມຕໍ່ບ່ອນຈັດເກັບຂໍ້ມູນ...</string>
+
+    <!-- Question -->
+    <string name="dialogs_question_accept_yes">ແມ່ນແລ້ວ</string>
+    <string name="dialogs_question_accept_no"> ບໍ່</string>
+    <string name="dialogs_question_accept_delete">ລົບ</string>
+    <string name="dialogs_question_accept_remove">ຍ້າຍ</string>
+    <string name="dialogs_question_accept_not_really">ບໍ່ແມ່ນບໍ</string>
+    <string name="dialogs_question_accept_sure">ຕົກລົງ, ໝັ້ນໃຈ</string>
+    <string name="dialogs_question_accept_no_thanks">ບໍ່, ຂອບໃຈ</string>
+    <string name="dialogs_question_delete">ລຶບລາຍການທີ່ເລືອກ?</string>
+    <string name="dialogs_question_share_remove">ເອົາລາຍການທີ່ເລືອກອອກຈາກລາຍຊື່ບໍ?</string>
+    <string name="dialogs_question_http_title">ແຈ້ງເຕືອນກ່ຽວກັບຄວາມປອດໄພ</string>
+    <string name="dialogs_question_http_question">ການເຊື່ອມຕໍ່ HTTPS ບໍ່ສາມາດໃຊ້ໄດ້, ແຕ່ການເຊື່ອມຕໍ່ HTTP ສາມາດໃຊ້ໄດ້. ດຳເນີນການຕໍ່ບໍ?</string>
+    <string name="dialogs_question_facebook_title">ເຟສບຸກ</string>
+    <string name="dialogs_question_facebook_question">ດຳ ເນີນການຕໍ່ດ້ວຍບັນຊີ:\u0020</string>
+    <string name="dialogs_question_remove_account_title">ເອົາບັນຊີອອກບໍ?</string>
+    <string name="dialogs_question_remove_account_info">
+          ບັນຊີທີ່ມີອີເມວ% 1 $ s ຈາກປະຕູ% 2 $ s ຈະຖືກອອກຈາກລະບົບແລະຖືກລຶບອອກຈາກລາຍຊື່
+    </string>
+    <string name="dialogs_question_personal_confirm_link_title">ຢືນຢັນອີເມວ</string>
+    <string name="dialogs_question_personal_confirm_cancel">ລອງອີກ</string>
+    <string name="dialogs_question_personal_confirm_accept">ສືບຕໍ່</string>
+    <string name="dialogs_question_rate_first_info">ທ່ານມັກໃຊ້ເອກະສານ ONLYOFFICE ບໍ?</string>
+    <string name="dialogs_question_rate_second_info">ທ່ານຕ້ອງການໃຫ້ຄະແນນແອັບໃນ Google Playບໍ?</string>
+    <string name="dialog_question_delete_file">ແຟ້ມຂໍ້ມູນຈະຖືກລຶບອອກຢ່າງບໍ່ໜ້າເຊື່ອ. .</string>
+    <string name="dialog_question_delete_folder"> ໂຟນເດີຈະຖືກລຶບອອກຢ່າງບໍ່ໜ້າເຊື່ອ.</string>
+
+    <!-- Edit -->
+    <string name="dialogs_edit_rename_title">ປ່ຽນຊື່</string>
+    <string name="dialogs_edit_hint">ໃສ່ຫົວຂໍ້ </string>
+    <string name="dialogs_edit_create_sheet">ສະບັບໃໝ່ </string>
+    <string name="dialogs_edit_create_presentation">ການນຳສະເໜີໃໝ່</string>
+    <string name="dialogs_edit_create_docs">ເອກະສານໃໝ່ </string>
+    <string name="dialogs_edit_create_folder">ແຟ້ມໃໝ່ </string>
+    <string name="dialogs_edit_forbidden_symbols"> ຢ່າໃຊ້ສັນຍາລັກເຫຼົ່ານີ້\u0020</string>
+    <string name="dialogs_edit_accept_create">ສ້າງ</string>
+    <string name="dialogs_edit_accept_rename">ປ່ຽນຊື່</string>
+    <string name="dialogs_edit_feedback_title">ຄຳຕິຊົມ</string>
+    <string name="dialogs_edit_feedback_rate_title">ທ່ານຕ້ອງການສົ່ງຄຳຕິຊົມມາຫາພວກເຮົາບໍ?</string>
+    <string name="dialogs_edit_feedback_rate_hint">ບອກພວກເຮົາວ່າພວກເຮົາຄວນປັບປຸງຫຍັງແດ່ </string>
+    <string name="dialogs_edit_feedback_rate_accept">ສົ່ງ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Activity chooser -->
+    <string name="chooser_web_browser">ເລືອກ browser...</string>
+    <string name="chooser_email_client">ເລືອກລູກຄ້າທາງອີເມວ...</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Main -->
+    <!-- Title -->
+    <string name="actionbar_title_main">ເອກະສານຕ່າງໆ</string>
+    <string name="chooser_activity_not_found">ບໍ່ສາມາດຊອກຫາຄຳຮ້ອງສະໝັກໃດໆສຳລັບການກະທຳນີ້ .....</string>
+    <string name="fragment_clouds_title">ຄລາວ</string>
+    <string name="fragment_clouds_portal_title"> ເຊື່ອມຕໍ່ກັບ portal</string>
+    <string name="fragment_clouds_storage_title"> ເຊື່ອມຕໍ່ກັບບ່ອນເກັບຂໍ້ມູນ</string>
+    <string name="fragment_clouds_onlyoffice_item">ONLYOFFICE</string>
+    <string name="fragment_recent_title">ວ່າງບໍ່ດົນ</string>
+    <string name="fragment_on_device_title">ໃນອຸປະກອນ </string>
+    <string name="fragment_profile_title">ໜ້າປົກ</string>
+
+    <!-- Drawer -->
+    <string name="navigation_drawer_open">ເປີດແຜນທີ່ນຳທາງ </string>
+    <string name="navigation_drawer_close">ປິດແຜນທີ່ນຳທາງ </string>
+
+    <!-- Main drawer menu-->
+    <string name="navigation_drawer_menu_my">ເອກະສານຂອງຂ້ອຍ</string>
+    <string name="navigation_drawer_menu_shared">ແບ່ງປັນກັບຂ້ອຍ</string>
+    <string name="navigation_drawer_menu_common">ເອກະສານທົ່ວໄປ</string>
+    <string name="navigation_drawer_menu_projects">ໂຄງການ </string>
+    <string name="navigation_drawer_menu_trash">ກະຕ່າຂີ້ເຫຍື້ອ</string>
+    <string name="navigation_drawer_menu_about"> ກ່ຽວກັບ</string>
+    <string name="navigation_drawer_menu_help">ຊ່ວຍເຫຼືອ </string>
+    <string name="navigation_drawer_menu_logout">ລະບົບ</string>
+    <string name="navigation_drawer_menu_add_account">ເພີ່ມບັນຊີ</string>
+    <string name="navigation_drawer_menu_feedback">ຄຳຕິຊົມ</string>
+    <string name="settings_item_title">ການຕັ້ງຄ່າ</string>
+    <string name="settings_item_change_account">ປ່ຽນບັນຊີ </string>
+    <string name="settings_clear_cache">ເຊັດຖານຄວາມຈຳ </string>
+    <string name="settings_title_common">ທົ່ວໄປ </string>
+    <string name="setting_wifi">ອັບໂຫລດເອກະສານໂດຍໃຊ້ Wi-Fi ເທົ່ານັ້ນ</string>
+    <string name="setting_title_wifi">Wi-Fi</string>
+    <string name="setting_cache_cleared">ລ້າງເຊັດຖານຄວາມຈຳ</string>
+
+    <!-- Main toolbar menu -->
+    <string name="toolbar_menu_search_result">ຜົນການຊອກຫາ </string>
+    <string name="toolbar_menu_search_hint">ກຳລັງຄົ້ນຫາ ... </string>
+    <string name="toolbar_menu_main_options">ຕົວເລືອກ</string>
+    <string name="toolbar_menu_main_share">ແບ່ງປັນ</string>
+    <string name="toolbar_menu_main_move">ຍ້າຍ</string>
+    <string name="toolbar_menu_main_copy">ສຳເນົາ</string>
+    <string name="toolbar_menu_main_remove_from_list">ເອົາອອກຈາກລາຍຊື່ </string>
+    <string name="toolbar_menu_main_rename">ປ່ຽນຊື່ </string>
+    <string name="toolbar_menu_main_delete">ລຶບ </string>
+    <string name="toolbar_menu_main_select">ກໍາລັງເລືອກ ...</string>
+    <string name="toolbar_menu_main_select_all">ເລືອກທັງ ໝົດ </string>
+    <string name="toolbar_menu_main_deselect">ຍົກເລີກການເລືອກ </string>
+    <string name="toolbar_menu_sort_by">ຮຽງຕາມ</string>
+    <string name="toolbar_menu_sort_order">ຈັດລຽງລຳດັບ </string>
+    <string name="toolbar_menu_sort_date_modified">ດັດແກ້ຫຼ້າສຸດ</string>
+    <string name="toolbar_menu_sort_title">ຫົວຂໍ້</string>
+    <string name="toolbar_menu_sort_type">ພິມ </string>
+    <string name="toolbar_menu_sort_size">ຂະ ໜາດ</string>
+    <string name="toolbar_menu_sort_owner">ເຈົ້າຂອງ </string>
+    <string name="toolbar_menu_sort_asc">ຈາກໜ້ອຍໄປຫາຫຼາຍ</string>
+    <string name="toolbar_menu_sort_desc">ຈາກຫຼາຍໄປຫາໜ້ອຍ</string>
+    <string name="toolbar_menu_main_download">ດາວໂຫລດ </string>
+    <string name="toolbar_menu_main_open"> ເປີດ</string>
+
+    <!-- List context menu -->
+    <string name="list_context_folder_name">ຊື່ແຟ້ມ </string>
+    <string name="list_context_folder_title">ຫົວຂໍ້ແຟ້ມ</string>
+    <string name="list_context_edit">ແກ້ໄຂເອກະສານ</string>
+    <string name="list_context_share">ແບ່ງປັນ</string>
+    <string name="list_context_external_link">ການເຂົ້າເຖິງພາຍນອກໂດຍlink</string>
+    <string name="list_context_move">ຍ້າຍ</string>
+    <string name="list_context_create_copy">ສຳ ເນົາ </string>
+    <string name="list_context_create_download">ດາວໂຫລດ</string>
+    <string name="list_context_rename">ປ່ຽນຊື່</string>
+    <string name="list_context_rename_success">ປ່ຽນຊື່ສຳເລັດ</string>
+    <string name="list_context_delete">ລຶບ </string>
+    <string name="list_context_delete_storage">ຕັດການເຊື່ອມຕໍ່ບ່ອນຈັດເກັບຂໍ້ມູນ </string>
+    <string name="list_context_delete_success">ຖືກລຶບອອກສຳເລັດ</string>
+    <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
+    <string name="list_context_delete_recent">ເອົາອອກຈາກຫຼ້າສຸດ</string>
+    <string name="list_context_upload_to_portal">ອັບໂຫລດໃສ່ portal</string>
+
+    <!-- List action menu -->
+    <string name="list_action_sheet">ວ່າງຕາຕະລາງ</string>
+    <string name="list_action_presentation">ການນຳສະເໜີ</string>
+    <string name="list_action_doc">ຂໍ້ຄວາມເອກະສານ</string>
+    <string name="list_action_folder">ແຟ້ມ</string>
+    <string name="list_action_photo">ເຮັດຮູບພາບ</string>
+    <string name="list_action_upload"> ອັບໂຫລດເອກະສານ </string>
+    <string name="list_action_storage">ເຊື່ອມຕໍ່ບ່ອນເກັບຂໍ້ມູນຂອງພາກສ່ວນທີສາມ</string>
+
+    <!-- Dialog info -->
+
+    <!-- Pager -->
+    <string name="main_pager_docs_my">ຂອງຂ້ອຍ</string>
+    <string name="main_pager_docs_common">ທົ່ວໄປ</string>
+    <string name="main_pager_docs_share">ແບ່ງປັນກັບຂ້ອຍ</string>
+    <string name="main_pager_docs_projects">ໂຄງການ</string>
+    <string name="main_pager_docs_trash">ກະຕ່າຂີ້ເຫຍື້ອ</string>
+
+    <!-- Placeholder -->
+    <string name="placeholder_connection">ຜິດພາດໃນການເຊື່ອມຕໍ່</string>
+    <string name="placeholder_empty">ແຟ້ມຫວ່າງເປົ່າ </string>
+    <string name="placeholder_search">ບໍ່ພົບຫັຍງ</string>
+    <string name="placeholder_share">ບໍ່ໄດ້ແບ່ງປັນ</string>
+    <string name="placeholder_access_denied">ການເຂົ້າເຖິງຖືກປະຕິເສດ</string>
+    <string name="placeholder_no_subfolders">ບໍ່ມີແຟ້ມ</string>
+    <string name="placeholder_no_users">ບໍ່ມີຜູ້ໃຊ້</string>
+    <string name="placeholder_no_groups">ບໍ່ມີກຸ່ມ</string>
+    <string name="placeholder_no_users_groups">ບໍ່ມີຜູ້ໃຊ້ ແລະ ກຸ່ມ</string>
+    <string name="placeholder_media_error">ບໍ່ສາມາດໂຫລດສື່</string>
+    <string name="placeholder_try_again">ລອງໃໝ່ອີກ</string>
+    <string name="placeholder_loading_files">ກຳລັງໂຫລດໄຟລ໌ .....</string>
+
+    <!-- Time marks-->
+    <string name="list_headers_folder">ແຟ້ມ</string>
+    <string name="list_headers_files">ຟາຍ</string>
+    <string name="list_headers_created">ຫາກໍ່ສ້າງ</string>
+    <string name="list_headers_today">ມື້ນີ້</string>
+    <string name="list_headers_yesterday">ມື້ວານນີ້</string>
+    <string name="list_headers_week">ອາທິດນີ້ </string>
+    <string name="list_headers_month">ເດືອນນີ້ </string>
+    <string name="list_headers_year"> ປີນີ້</string>
+    <string name="list_headers_more_year">ຫຼາຍກວ່າໜຶ່ງປີ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Share -->
+    <string name="share_title_main">ຕັ້ງຄ່າແບ່ງປັນ</string>
+    <string name="share_title_add">ເພີ່ມຄົນ </string>
+    <string name="share_title_search">ຄົ້ນຫາຄົນ</string>
+
+    <string name="share_goal_user">ຜູ້ໃຊ້ </string>
+    <string name="share_goal_group">ກຸ່ມ</string>
+    <string name="share_main_external_access">ການເຂົ້າເຖິງພາຍນອກໂດຍ</string>
+    <string name="share_main_external_access_info">ໃຫ້ການເຂົ້າເຖິງ ສຳ ລັບທຸກຄົນທີ່ມີລິ້ງ </string>
+    <string name="share_main_external_copy_button">ສຳເນົາລິ້ງ</string>
+    <string name="list_context_get_external_link">ເອົາລິ້ງສຳລັບການເຂົ້າເຖິງພາຍນອກ </string>
+
+    <string name="share_popup_access_full"> ເຂົ້າເຖິງທັງໝົດ</string>
+    <string name="share_popup_access_review">ທົບທວນ </string>
+    <string name="share_popup_access_read_only">ອ່ານເທົ່ານັ້ນ </string>
+    <string name="share_popup_access_deny_access">ປະຕິເສດການເຂົ້າເຖິງ </string>
+    <string name="share_popup_access_deny_remove">ເອົາອອກ </string>
+    <string name="share_popup_access_fill_forms">ຕື່ມແບບຟອມ</string>
+    <string name="share_popup_access_comment"> ຄຳເຫັນ </string>
+
+    <!-- External link -->
+    <string name="share_access_success">ການເຊື່ອມຕໍ່ພາຍນອກ</string>
+    <string name="share_access_denied">ການເຂົ້າເຖິງພາຍນອກສົບຜົນສຳເລັດ</string>
+    <string name="share_clipboard_external_copied">ລິ້ງລັບສຳລັບຜູ້ໃຊ້ປະຕູທີ່ຖືກຄັດລອກໄປທີ່ </string>
+    <string name="share_clipboard_internal_copied">ລິ້ງສຳລັບຜູ້ໃຊ້ປະຕູທີ່ຖືກຄັດລອກໄປທີ່  </string>
+    <string name="share_clipboard_external_link_label">ລິ້ງພາຍນອກ </string>
+
+    <!-- Tabs -->
+    <string name="share_tab_users">ຜູ້ໃຊ້ </string>
+    <string name="share_tab_groups">ກຸ່ມ </string>
+
+    <!-- List headers -->
+    <string name="share_add_common_header_users">ຜູ້ໃຊ້</string>
+    <string name="share_add_common_header_groups">ກຸ່ມ</string>
+
+    <!-- Panel -->
+    <string name="share_panel_message_notification">ໃສ່ຂໍ້ຄວາມເພື່ອແຈ້ງເຕືອນ </string>
+    <string name="share_panel_button_add">ເພິ່ມ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Storage -->
+    <string name="storage_select_title">ເລືອກບໍລິການ</string>
+    <string name="storage_select_google_drive">ແອັບ Google Drive</string>
+    <string name="storage_select_drop_box">ແອັບDropbox</string>
+    <string name="storage_select_one_drive"> ແອັບOneDrive</string>
+    <string name="storage_select_next_cloud">ແອັບ Nextcloud</string>
+    <string name="storage_select_yandex">Yandex.Disk</string>
+    <string name="storage_select_box">ກ່ອງ</string>
+    <string name="storage_select_share_point">ຈຸດແບ່ງປັນ</string>
+    <string name="storage_select_own_cloud">ownCloud</string>
+    <string name="storage_select_web_dav">ຖານເກັບຂໍ້ມູນ WebDAV </string>
+
+    <string name="storage_connect_title">ການຕັ້ງຄ່າໂຟເດີ</string>
+    <string name="storage_connect_folder_name">ຊື່ແຟ້ມ </string>
+    <string name="storage_connect_save_button">ບັນທຶກ</string>
+    <string name="storage_connect_empty_title">ຫົວຂໍ້ບ່ອນຈັດເກັບຂໍ້ມູນເຂົ້າ</string>
+
+    <string name="storage_web_title">ບໍລິການເຊື່ອມຕໍ່ </string>
+    <string name="storage_connect_button">ເຊື່ອມຕໍ່</string>
+
+    <string name="storage_web_dav_settings_url">ເຊື່ອມຕໍ່ URL</string>
+    <string name="storage_web_dav_settings_login">ເຂົ້າລະບົບ</string>
+    <string name="storage_web_dav_settings_password">ລະຫັດຜ່ານ</string>
+    <string name="storage_web_dav_settings_title">ຫົວຂໍ້ການປ້ອນຂໍ້ມູນສຳລັບການບໍລິການ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Operations -->
+    <string name="operation_title">ລືອກໂຟນເດີ</string>
+    <string name="operation_choose_section">ເລືອກສ່ວນ</string>
+    <string name="operation_complete_message">ປະຕິບັດງານສຳເລັດ</string>
+    <string name="operation_delete_impossible">ບໍ່ສາມາດລຶບໄຟລ໌. ເອກະສານຖືກເປີດຢູ່ ໜ້າ ປະຕູ portal.</string>
+    <string name="operation_delete_multiple">. ໜຶ່ງ ຫຼືຫຼາຍໄຟລ໌ທີ່ບໍ່ໄດ້ຖືກລຶບອອກຍ້ອນການເປີດປະຕູ  portal</string>
+    <string name="operation_panel_move_button">ຍ້າຍທີ່ນີ້ </string>
+    <string name="operation_panel_copy_button">ສຳເນົາທີ່ນີ້</string>
+    <string name="operation_panel_cancel_button">ຍົກເລີກ</string>
+    <string name="operation_empty_lists_data">ເລືອກລາຍການສຳລັບການປະຕິບັດງານ</string>
+    <string name="operation_error_move_to_same">ບໍ່ສາມາດຍ້າຍໄປຢູ່ໃນໂຟນເດີດຽວ</string>
+    <string name="operation_error_move_to_same_subfolder">ບໍ່ສາມາດຍ້າຍໄປຍັງໂຟນເດີຍ່ອຍດຽວ</string>
+    <string name="operation_snackbar_send_link">ສົ່ງລິ້ງ</string>
+    <string name="operation_snackbar_return">ກັບຄືນ</string>
+    <string name="operation_share_send_link">ສົ່ງ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Trash -->
+    <string name="trash_dialog_empty_title">ລ້າງຖັງຂີ້ເຫຍື້ອບໍ?</string>
+    <string name="trash_snackbar_move_text">ທ່ານສາມາດຍ້າຍໄຟລ໌ຈາກ </string>
+    <string name="trash_snackbar_move_button">ຍ້າຍ</string>
+    <string name="trash_popup_move">ຍ້າຍໄປຫາ</string>
+    <string name="trash_popup_delete">ລືບອອກເລີຍ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Managers load -->
+    <string name="download_manager_title">ດາວໂຫລດ ONLYOFFICE ເທົ່ານັ້ນ</string>
+    <string name="download_manager_progress_title">ດາວໂຫລດກຳລັງດຳເນີນຢູ່ </string>
+    <string name="download_manager_complete">ດາວໂຫລດສຳເລັດ</string>
+    <string name="download_manager_error">ດາວໂຫລດຜິດພາດ</string>
+    <string name="download_manager_error_free_space">ບໍ່ມີພື້ນທີ່ຫວ່າງພຽງພໍ </string>
+    <string name="download_manager_error_url">URL syntax ຜິດພາດ</string>
+    <string name="download_manager_cancel">ດາວໂຫລດຖືກຍົກເລີກ</string>
+    <string name="download_manager_repeat">ແຟ້ມກຳລັງຖືກດາວໂຫລດແລ້ວ</string>
+    <string name="download_manager_open"> ເປີດ</string>
+    <string name="download_manager_notification_cancel_download">ຍົກເລີກການດາວໂຫລດ</string>
+    <string name="download_manager_folders_download">ບໍ່ສາມາດດາວໂຫລດໂຟນເດີໄດ້ </string>
+    <string name="download_manager_select_files">ເລືອກແຟ້ມ</string>
+
+    <string name="upload_manager_file_picker_title">ເລືອກແຟ້ມເອກະສານເພື່ອອັບໂຫລດ</string>
+    <string name="upload_manager_progress_title">ອັບໂຫລດຢູ່ໃນຂັ້ນຕອນ</string>
+    <string name="upload_manager_error">ຜິດພາດໃນການອັບໂຫລດ</string>
+    <string name="upload_manager_cancel">ຍົກເລີກການອັບໂຫລດ</string>
+    <string name="upload_manager_repeat">ຟາຍກຳລັງຖືກອັບໂຫລດແລ້ວ</string>
+    <string name="upload_manager_complete">ອັບໂຫລດສຳເລັດ</string>
+    <string name="upload_manager_error_url">URL syntax ຜິດພາດ</string>
+    <string name="upload_manager_error_number_files">ທ່ານບໍ່ສາມາດອັບໂຫລດຫຼາຍກ່ວາ 20 ແຟ້ມໃນເວລາດຽວ </string>
+    <string name="upload_manager_image_picker_title"> ເລືອກຮູບເພື່ອອັບໂຫລດ </string>
+    <string name="upload_manager_error_file_size">ຂະ ໜາດ ຂອງເອກະສານບໍ່ສາມາດເກີນ 100 ເມກະໄບ </string>
+    <string name="upload_manager_notification_cancel_upload">ຍົກເລີກການອັບໂຫລດ </string>
+    <string name="upload_manager_waiting_title">ລໍຖ້າອັບໂຫລດ</string>
+    <string name="upload_error_wifi">ທ່ານສາມາດອັບໂຫລດໄດ້ພຽງແຕ່ເມື່ອເປີດໃຊ້ Wi-Fi </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Socials -->
+    <string name="socials_twitter_failed_auth">ການເຂົ້າສູ່ລະບົບທະວິດເຕີລົ້ມເຫລວ</string>
+    <string name="socials_facebook_cancel_auth">ຍົກເລີກເຂົ້າລະບົບ Facebook</string>
+    <string name="socials_facebook_failed_auth">ເຂົ້າລະບົບ Facebook ບໍ່ສຳເລັດ </string>
+    <string name="socials_google_failed_auth">ເຂົ້າລະບົບ Google ບໍ່ສຳເລັດ </string>
+
+    <!-- ======================================================================================= -->
+    <!-- On boarding -->
+    <string name="on_boarding_skip_button">ຂ້າມໄປ</string>
+    <string name="on_boarding_next_button">ທັດໄປ</string>
+    <string name="on_boarding_finish_button">ສຳເລັດ</string>
+
+    <string name="on_boarding_welcome_header"> ຍິນດີຕ້ອນຮັບ ONLYOFFICE</string>
+    <string name="on_boarding_welcome_info">
+       ພວກເຮົາໄດ້ປັບປຸງເອກະສານ ONLYOFFICE ສຳ ລັບ Android ແລ້ວ. ປັດເພື່ອຮຽນຮູ້ເພີ່ມເຕີມ.
+    </string>
+
+    <string name="on_boarding_edit_header">ແກ້ໄຂເອກະສານອອັບລາຍ</string>
+    <string name="on_boarding_edit_info">
+        ສ້າງແລະແກ້ໄຂເອກະສານຂໍ້ຄວາມ, ຕາຕະລາງແລະການນຳສະເໜີກ່ຽວກັບປະຕູ ONLYOFFICE ເທົ່ານັ້ນ.
+    </string>
+
+    <string name="on_boarding_access_header">ການເຂົ້າເຖິງເອກະສານ</string>
+    <string name="on_boarding_access_info">
+        ແບ່ງປັນເອກະສານໃຫ້ທີມງານຂອງທ່ານໃຫ້ການເຂົ້າເຖິງ, ສິດກວດກາ ຫຼື ອ່ານພຽງແຕ່ທ່ານເທົ່ານັ້ນ. ການແລກປ່ຽນຜ່ານທາງເຊື່ອມຕໍ່ພາຍນອກທີ່ມີຢູ່ເຊັ່ນກັນ.
+    </string>
+
+    <string name="on_boarding_collaborate_header">ຮ່ວມມື</string>
+    <string name="on_boarding_collaborate_info">
+      ແກ້ໄຂເອກະສານຫ້ອງການກັບເພື່ອນຮ່ວມທີມຂອງທ່ານໃນເວລາຈິງ.
+    </string>
+
+    <string name="on_boarding_third_party_header">ເຊື່ອມຕໍ່ກັບເມຄຂອງພາກສ່ວນທີສາມ  clouds</string>
+    <string name="on_boarding_third_party_info">
+        ເຊື່ອມຕໍ່ແອັບກັບຟັງຊັ້ນອື່ນໆທີ່ທ່ານໃຊ້: Google Drive, Dropbox, Nextcloud, ແລະ ອື່ນໆ.
+    </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Media -->
+    <string name="media_image_share_chooser">ເລືອກແອັບສຳລັບແບ່ງປັນ</string>
+    <string name="media_image_list_info">ແຟ້ມເອກະສານ:% 1 $ s </string>
+    <string name="media_video_error">ເຄື່ອງຫຼີ້ນທີ່ບໍ່ຮູ້ຈັກຜິດພາດ:% 1 $ s </string>
+
+    <string name="auth_header_screen_1">ຕັ້ງຄ່າການກວດສອບສອງຢ່າງ</string>
+    <string name="auth_info_screen_1">ຕິດຕັ້ງແອັບ authentic ເຄື່ອງຮັບຮອງເພື່ອສ້າງລະຫັດການເຂົ້າເຖິງ (ເຊັ່ນ: Google Authenticator, Authy) ເພື່ອສືບຕໍ່ເຮັດວຽກກັບປະຕູຂອງທ່ານ </string>
+    <string name="auth_header_screen_2">ເປີດໂຕແອັບພິສູດຕົວຈິງ </string>
+    <string name="auth_info_screen_2">ດຳເນີນການແອັບ ແລະ ແຕະທີ່ໄອຄອນບັນຊີໃໝ່</string>
+    <string name="auth_header_screen_3">ເພີ່ມເຄັດລັບທີ່ສຳ</string>
+    <string name="auth_info_screen_3">ສຳເນົາກະແຈ ແລະ ວາງມັນໃສ່ແອັບ authentic ເຄື່ອງຮັບຮອງຂອງທ່ານ </string>
+    <string name="auth_header_screen_4">ສຳເນົາລະຫັດ</string>
+    <string name="auth_info_screen_4">ສຳເນົາລະຫັດຈາກໂປແກຼມກວດສອບຂອງທ່ານແລະໃສ່ມັນຢູ່ທາງລຸ່ມ</string>
+
+    <string name="rename_file_exist">ແຟ້ມທີ່ມີຊື່ດຽວກັນ.</string>
+    <string name="device_path_file_error">ບໍ່ມີເອກະສານນີ້.</string>
+    <string name="device_trash_files_restore">ກູູ້ຄືນ</string>
+    <string name="error_recent_account">ແຟ້ມໄດ້ຖືກລຶບອອກແລ້ວຫຼືບໍ່ສາມາດໃຊ້ໄດ້ຈາກບັນຊີນີ້.</string>
+    <string name="error_recent_enter_account">ກະລຸນາໃສ່ບັນຊີ.</string>
+    <string name="operation_move_file_existing">ແຟ້ມເອກະສານ % 1 $ s ມີຢູ່ໃນຖານຂໍ້ມູນປາຍທາງແລ້ວ..</string>
+    <string name="upload_to_portal"> ອັບໂຫລດໃສ່ປະຕູ</string>
+    <string name="this_device">ອຸປະກອນນີ້</string>
+    <string name="dialog_clear_cache">ລ້າງແຄດ?</string>
+
+    <string name="error_unsupported_path">ເສັ້ນທາງທີ່ບໍ່ໄດ້ຮັບການສະໜັບສະໜູນ </string>
+    <string name="error_unsupported_format">ຮູບແບບທີ່ບໍ່ຮອງຮັບ</string>
+
+    <string name="cloud_account_description">ຮ່ວມມືໃນສະພາບແວດລ້ອມທີ່ປອດໄພແລະເຊື່ອມຕໍ່ບັນດາເຄື່ອງຂອງຂອງພາກສ່ວນທີສາມ </string>
+    <string name="cloud_account_start_button">ເລີ່ມຕົ້ນ</string>
+    <string name="cloud_account_other_storages_button">ຖານເກັບຂໍ້ມູນອຶ່ນໆ</string>
+    <string name="cloud_only_office">ພຽງແຕ່ CloudONLYOFFICE </string>
+    <string name="cloud_only_office_description">ເກັບຮັກສາເອກະສານໄວ້ໃນເມຄແລະຮ່ວມມືກັບພວກມັນ</string>
+    <string name="cloud_accounts_title">ບັນຊີ</string>
+    <string name="error_long_file_name">ຊື່ແຟ້ມຍາວເກີນໄປ </string>
+    <string name="dialog_remove_account_title">ເອົາບັນຊີອອກ</string>
+    <string name="dialog_remove_account_description">
+        ຜູ້ໃຊ້ທີ່ມີ% 1 $ s ຈາກປະຕູ% 2 $ s ຈະຖືກອອກຈາກລະບົບແລະລຶບອອກຈາກບັນຊີບັນຊີ. \ n \ n ກະລຸນາສັງເກດ: ເພື່ອເຂົ້າສູ່ລະບົບ, ທ່ານຕ້ອງການໃສ່ທີ່ຢູ່ປະຕູ, ອີເມວແລະລະຫັດຜ່ານ. ໄຟລ໌ທັງໝົດຂອງທ່ານຈະປອດໄພ.
+    </string>
+    <string name="dialog_logout_account_title">ທ່ານແນ່ໃຈທີ່ຈະອອກຈາກລະບົບ?</string>
+    <string name="dialog_logout_account_description">
+        ຫຼັງຈາກທ່ານອອກຈາກລະບົບ, ທ່ານບໍ່ຈຳເປັນຕ້ອງໃສ່ທີ່ຢູ່ຫຼືອີເມວຂອງທ່ານ, ພຽງແຕ່ລະຫັດຜ່ານ. ຢ່າກັງວົນ, ເອກະສານທັງໝົດຈະປອດໄພໃນຄລາວ
+    </string>
+    <string name="profile_username_title">ຊື່ຜູ້ໃຊ້</string>
+    <string name="profile_type_account">ພິມ</string>
+    <string name="profile_portal_address">ທີ່ຢູ່Portal </string>
+    <string name="profile_type_admin">ບໍລິຫານ</string>
+    <string name="profile_type_visitor">ແຂກ</string>
+    <string name="profile_type_user">ຜູ້ໃຊ້</string>
+    <string name="profile_thirdparty_title">ບໍລິການເຊື່ອມຕໍ່</string>
+
+    <string name="app_settings_analytic_title">ຊ່ວຍປັບປຸງຜະລິດຕະພັນ</string>
+    <string name="app_settings_analytic">ແບ່ງປັນການວິເຄາະແອັບ</string>
+    <string name="app_manage_files_title">ການເຂົ້າເຖິງການຄຸ້ມຄອງເອກະສານ</string>
+    <string name="app_manage_files_description">ຕ້ອງການການອະນຸຍາດເຂົ້າເຖິງເອກະສານ. ຖ້າການເຂົ້າເຖິງຖືກປະຕິເສດທຸກເອກະສານຫຼັງຈາກການສູນເສຍໂປແກຼມຈະຖືກລຶບອອກ.</string>
+
+    <string name="app_internal_error">ພົບບັນຫາພາຍໃນ</string>
+    <string name="app_fragment_crash_error">ກະລຸນາປິດແອັບ ແລ້ວລອງໃໝ່</string>
+
+    <string name="operation_add_to_favorites">ໄດ້ເພີ່ມເຂົ້າໃນໝວດໃຊ້ປະຈຳ</string>
+    <string name="operation_remove_from_favorites">ໄດ້ເອົາອອກຈາກໝວດໃຊ້ປະຈຳ</string>
+
+    <string name="main_pager_docs_favorites">ໝວດໃຊ້ປະຈຳ</string>
+
+    <string name="list_context_add_to_favorite">ເພີ່ມເຂົ້າໃນໝວດໃຊ້ປະຈຳ</string>
+    <string name="list_context_delete_from_favorite">ລຶບອອກຈາກໝວດໃຊ້ປະຈຳ</string>
+
+</resources>

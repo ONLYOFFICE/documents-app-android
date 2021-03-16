@@ -22,6 +22,7 @@ import java.io.File;
 import app.editors.manager.R;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.receivers.DownloadReceiver;
+import app.editors.manager.managers.receivers.UploadReceiver;
 import app.editors.manager.ui.activities.main.MainActivity;
 import lib.toolkit.base.managers.utils.ActivitiesUtils;
 
@@ -31,6 +32,7 @@ public class NewNotificationUtils {
     private static final String ERROR_GROUP = "ERROR_GROUP";
     private static final String COMPLETE_GROUP = "COMPLETE_GROUP";
     private static final String CANCEL_GROUP = "CANCEL_GROUP";
+    private static final String UPLOAD_GROUP = "UPLOAD_GROUP";
 
     private String mServiceName;
     private Context mContext;
@@ -61,9 +63,23 @@ public class NewNotificationUtils {
                 .setSmallIcon(R.drawable.ic_notify)
                 .setContentText(mContext.getString(R.string.download_manager_progress_title))
                 .setTicker(mContext.getString(R.string.app_name))
-                .setOnlyAlertOnce(false)
+                .setOnlyAlertOnce(true)
                 .setChannelId(mServiceName)
                 .setGroup(DOWNLOAD_GROUP)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+    }
+
+    private NotificationCompat.Builder getUploadNotificationBuilder(@NonNull String title) {
+        return new NotificationCompat.Builder(App.getApp(), mServiceName)
+                .setPriority(Notification.PRIORITY_DEFAULT)
+                .setOngoing(true)
+                .setContentTitle(title)
+                .setSmallIcon(R.drawable.ic_notify)
+                .setContentText(mContext.getString(R.string.upload_manager_progress_title))
+                .setTicker(mContext.getString(R.string.app_name))
+                .setOnlyAlertOnce(true)
+                .setChannelId(mServiceName)
+                .setGroup(UPLOAD_GROUP)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
     }
 
@@ -89,17 +105,38 @@ public class NewNotificationUtils {
         mNotificationManager.notify(id, notification);
     }
 
+    public void showUploadProgressNotification(int id, @NonNull String tag, @NonNull String title, int progress) {
+        Notification notification = getUploadNotificationBuilder(title)
+                .addAction(R.drawable.drawable_ic_cancel_download_upload, mContext.getString(R.string.operation_panel_cancel_button), getUploadIntent(tag))
+                .setProgress(100, progress, false)
+                .build();
+        mNotificationManager.notify(id, notification);
+    }
+
     public void showErrorNotification(int id, @Nullable String title) {
         NotificationCompat.Builder builder = getNotification(title, ERROR_GROUP, mContext.getString(R.string.download_manager_error));
         mNotificationManager.notify(id, builder.build());
     }
 
-    public void showCompleteNotification(java.io.File file, int id, @Nullable String title) {
-        showDownloadedAction(file, id, title);
+    public void showUploadErrorNotification(int id, @Nullable String title) {
+        NotificationCompat.Builder builder = getNotification(title, ERROR_GROUP, mContext.getString(R.string.upload_manager_error));
+        mNotificationManager.notify(id, builder.build());
+    }
+
+    public void showCompleteNotification(int id, @Nullable String title) {
+        showDownloadedAction(id, title);
+    }
+
+    public void showUploadCompleteNotification(int id, @Nullable String title) {
+        showUploadedAction(id, title);
     }
 
     public void showCanceledNotification(int id, @Nullable String title) {
         NotificationCompat.Builder builder = getNotification(title, CANCEL_GROUP, mContext.getString(R.string.download_manager_cancel));
+        mNotificationManager.notify(id, builder.build());
+    }
+    public void showCanceledUploadNotification(int id, @Nullable String title) {
+        NotificationCompat.Builder builder = getNotification(title, CANCEL_GROUP, mContext.getString(R.string.upload_manager_cancel));
         mNotificationManager.notify(id, builder.build());
     }
 
@@ -107,12 +144,25 @@ public class NewNotificationUtils {
         mNotificationManager.cancel(id);
     }
 
-    private void showDownloadedAction(final File file, final int id, final String title) {
+    private void showDownloadedAction(final int id, final String title) {
         // Add file to default downloadFile manager
 
         final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, ActivitiesUtils.getDownloadsViewerIntent(), 0);
 
         NotificationCompat.Builder builder = getNotification(title, null, mContext.getString(R.string.download_manager_complete))
+                .setGroupSummary(false)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setContentIntent(contentIntent);
+        mNotificationManager.notify(id, builder.build());
+    }
+
+    private void showUploadedAction(final int id, final String title) {
+
+        Intent mainActivityIntent = new Intent(mContext, MainActivity.class);
+
+        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, mainActivityIntent, 0);
+
+        NotificationCompat.Builder builder = getNotification(title, null, mContext.getString(R.string.upload_manager_complete))
                 .setGroupSummary(false)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setContentIntent(contentIntent);
@@ -129,5 +179,13 @@ public class NewNotificationUtils {
         return PendingIntent.getActivity(App.getApp(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    private PendingIntent getUploadIntent(String id) {
+        final Bundle bundle = new Bundle();
+        bundle.putString(UploadReceiver.EXTRAS_KEY_ID, id);
 
+        final Intent intent = new Intent(App.getApp(), MainActivity.class);
+        intent.setAction(UploadReceiver.UPLOAD_ACTION_CANCELED);
+        intent.putExtras(bundle);
+        return PendingIntent.getActivity(App.getApp(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 }

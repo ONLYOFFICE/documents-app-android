@@ -148,6 +148,8 @@ public class DocsRecentPresenter extends DocsBasePresenter<DocsRecentView> {
                                 if (throwable instanceof HttpException) {
                                     if (((HttpException) throwable).code() == Api.HttpCodes.CLIENT_UNAUTHORIZED) {
                                         getViewState().onError(mContext.getString(R.string.errors_client_unauthorized));
+                                    } else if(((HttpException)throwable).code() == Api.HttpCodes.CLIENT_FORBIDDEN) {
+                                        onErrorHandle(((HttpException)throwable).response().errorBody(), ((HttpException)throwable).code());
                                     }
                                 } else {
                                     getViewState().onError(mContext.getString(R.string.error_recent_account));
@@ -181,7 +183,7 @@ public class DocsRecentPresenter extends DocsBasePresenter<DocsRecentView> {
         mAccountsSqlData.getRecent();
     }
 
-    public void sortBy(String parameters, boolean isAscending) {
+    public boolean sortBy(String parameters, boolean isAscending) {
         mPreferenceTool.setSortBy(parameters);
         setOrder(isAscending);
         switch (parameters) {
@@ -203,6 +205,14 @@ public class DocsRecentPresenter extends DocsBasePresenter<DocsRecentView> {
             case Api.Parameters.VAL_SORT_BY_SIZE:
                 sortBySize(isAscending);
                 break;
+        }
+        return false;
+    }
+
+    public void reverseSortOrder(List<Entity> itemList) {
+        if(!itemList.isEmpty()) {
+            Collections.reverse(itemList);
+            getViewState().onReverseSortOrder(itemList);
         }
     }
 

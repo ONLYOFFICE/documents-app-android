@@ -18,6 +18,7 @@ import app.editors.manager.ui.activities.main.OperationActivity;
 import app.editors.manager.ui.activities.main.ShareActivity;
 import app.editors.manager.ui.activities.main.StorageActivity;
 import app.editors.manager.ui.activities.main.WebViewerActivity;
+import app.editors.manager.ui.interfaces.ContextDialogInterface;
 import lib.toolkit.base.managers.utils.FragmentUtils;
 import lib.toolkit.base.ui.fragments.base.BaseFragment;
 
@@ -37,13 +38,13 @@ public abstract class BaseAppFragment extends BaseFragment {
     @Nullable
     protected MenuInflater mMenuInflater;
 
-    protected BaseAppActivity mBaseAppActivity;
+    public ContextDialogInterface mContextDialogListener;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mBaseAppActivity = (BaseAppActivity) context;
+            mContextDialogListener = (ContextDialogInterface) context;
             addOnDispatchTouchEvent();
         } catch (ClassCastException e) {
             throw new RuntimeException(BaseAppFragment.class.getSimpleName() + " - must implement - " +

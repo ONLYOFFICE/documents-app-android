@@ -30,12 +30,12 @@ public class Accounts {
     protected String avatarUrl;
 
     public Accounts(String portal, String login, String scheme, String name, String token, String provider, String avatarUrl) {
-        this.portal = portal != null? portal.toLowerCase() : null;
-        this.login = login != null? login.toLowerCase() : null;
+        this.portal = portal;
+        this.login = login;
         this.scheme = scheme;
         this.name = name;
         this.token = token;
-        this.provider = provider != null? provider.toLowerCase() : null;
+        this.provider = provider;
         this.avatarUrl = avatarUrl;
     }
 
@@ -51,7 +51,7 @@ public class Accounts {
     }
 
     public void setPortal(String portal) {
-        this.portal = portal != null? portal.toLowerCase() : null;
+        this.portal = portal;
     }
 
     public String getLogin() {
@@ -59,7 +59,7 @@ public class Accounts {
     }
 
     public void setLogin(String login) {
-        this.login = login != null? login.toLowerCase() : null;
+        this.login = login;
     }
 
     public String getScheme() {
@@ -91,7 +91,7 @@ public class Accounts {
     }
 
     public void setProvider(String provider) {
-        this.provider = provider != null? provider.toLowerCase() : null;
+        this.provider = provider;
     }
 
     public String getAvatarUrl() {

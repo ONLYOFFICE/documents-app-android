@@ -301,6 +301,8 @@
     <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Remove from recent</string>
     <string name="list_context_upload_to_portal">Upload to portal</string>
+    <string name="list_context_add_to_favorite">Add to Favorites</string>
+    <string name="list_context_delete_from_favorite">Delete from Favorites</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
@@ -319,6 +321,7 @@
     <string name="main_pager_docs_share">Shared with me</string>
     <string name="main_pager_docs_projects">Projects</string>
     <string name="main_pager_docs_trash">Trash</string>
+    <string name="main_pager_docs_favorites">Favorites</string>
 
     <!-- Placeholder -->
     <string name="placeholder_connection">Connection error</string>
@@ -416,6 +419,8 @@
     <string name="operation_title">Select folder</string>
     <string name="operation_choose_section">Choose section</string>
     <string name="operation_complete_message">Operation complete</string>
+    <string name="operation_delete_impossible">Cannot delete file. File is opened on the portal.</string>
+    <string name="operation_delete_multiple">. One or more files haven`t been deleted due to open on the portal</string>
     <string name="operation_panel_move_button">Move here</string>
     <string name="operation_panel_copy_button">Copy here</string>
     <string name="operation_panel_cancel_button">Cancel</string>
@@ -425,6 +430,8 @@
     <string name="operation_snackbar_send_link">SEND LINK</string>
     <string name="operation_snackbar_return">RETURN</string>
     <string name="operation_share_send_link">SEND</string>
+    <string name="operation_add_to_favorites">Added to Favorites</string>
+    <string name="operation_remove_from_favorites">Removed from Favorites</string>
 
     <!-- ======================================================================================= -->
     <!-- Trash -->
@@ -554,4 +561,9 @@
 
     <string name="app_settings_analytic_title">Help improve the product</string>
     <string name="app_settings_analytic">Share app analytics</string>
+    <string name="app_manage_files_title">Access manage files</string>
+    <string name="app_manage_files_description">Need to grant access to the files. If access is denied all files after lost applications will be deleted.</string>
+
+    <string name="app_internal_error">Internal error</string>
+    <string name="app_fragment_crash_error">Please close this app and try again</string>
 </resources>

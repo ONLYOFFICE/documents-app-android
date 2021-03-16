@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -18,18 +20,21 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.editors.manager.BuildConfig;
 import app.editors.manager.R;
 import app.editors.manager.app.Api;
+import app.editors.manager.app.App;
+import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter;
+import app.editors.manager.mvp.views.main.DocsBaseView;
 import app.editors.manager.mvp.views.main.DocsOnDeviceView;
 import app.editors.manager.ui.activities.main.MainActivity;
 import app.editors.manager.ui.activities.main.MediaActivity;
 import app.editors.manager.ui.dialogs.ActionBottomDialog;
 import app.editors.manager.ui.dialogs.ContextBottomDialog;
+import app.editors.manager.ui.views.custom.PlaceholderViews;
 import lib.toolkit.base.managers.tools.LocalContentTools;
 import lib.toolkit.base.managers.utils.ActivitiesUtils;
 import lib.toolkit.base.managers.utils.UiUtils;
@@ -40,6 +45,8 @@ import moxy.presenter.InjectPresenter;
 public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDeviceView {
 
     public static final String TAG = DocsOnDeviceFragment.class.getSimpleName();
+
+    private static final String TAG_STORAGE_ACCESS = "TAG_STORAGE_ACCESS";
 
     public static DocsOnDeviceFragment newInstance() {
         return new DocsOnDeviceFragment();
@@ -55,11 +62,14 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
         COPY, MOVE
     }
 
+    private PreferenceTool mPreferenceTool;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
             mMainActivity = (MainActivity) context;
+            mPreferenceTool = App.getApp().getAppComponent().getPreference();
         } catch (ClassCastException e) {
             throw new RuntimeException(MainPagerFragment.class.getSimpleName() + " - must implement - " +
                     MainActivity.class.getSimpleName());
@@ -93,8 +103,15 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
                 }
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
-            if (requestCode == BaseActivity.REQUEST_ACTIVITY_CAMERA) {
-                mOnDevicePresenter.deletePhoto();
+            switch (requestCode) {
+                case BaseActivity.REQUEST_ACTIVITY_CAMERA:
+                    mOnDevicePresenter.deletePhoto();
+                    break;
+                case REQUEST_STORAGE_ACCESS:
+                    mPreferenceTool.setShowStorageAccess(false);
+                    mOnDevicePresenter.recreateStack();
+                    mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
+                    break;
             }
         }
 
@@ -113,6 +130,7 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        checkStorage();
         init();
     }
 
@@ -134,19 +152,19 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_date_update:
-                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_UPDATED);
+                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_UPDATED, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_title:
-                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_TITLE);
+                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_TITLE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_type:
-                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_TYPE);
+                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_TYPE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_size:
-                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_SIZE);
+                mOnDevicePresenter.sortBy(Api.Parameters.VAL_SORT_BY_SIZE, item.isChecked());
                 item.setChecked(true);
                 break;
 
@@ -194,7 +212,7 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     @Override
     protected boolean onSwipeRefresh() {
         if (!super.onSwipeRefresh()) {
-            mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getONLYOFFICE_ROOT_DIR());
+            mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
             return true;
         }
 
@@ -227,7 +245,7 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
         if (mSwipeRefresh != null) {
             mSwipeRefresh.setRefreshing(true);
         }
-        mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getONLYOFFICE_ROOT_DIR());
+        mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
     }
 
     @Override
@@ -249,6 +267,11 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     }
 
     @Override
+    public void onRemoveItemFromFavorites() {
+
+    }
+
+    @Override
     public void onActionButtonClick(ActionBottomDialog.Buttons buttons) {
         super.onActionButtonClick(buttons);
         if (buttons == ActionBottomDialog.Buttons.PHOTO) {
@@ -265,6 +288,9 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
                 value = value.trim();
             }
             switch (tag) {
+                case TAG_STORAGE_ACCESS:
+                    requestManage();
+                    break;
                 case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED:
                     mOnDevicePresenter.deleteItems();
                     break;
@@ -296,6 +322,16 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     }
 
     @Override
+    public void onCancelClick(CommonDialog.Dialogs dialogs, @Nullable String tag) {
+        super.onCancelClick(dialogs, tag);
+        if (tag != null && tag.equals(TAG_STORAGE_ACCESS)) {
+            mPreferenceTool.setShowStorageAccess(false);
+            mOnDevicePresenter.recreateStack();
+            mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
+        }
+    }
+
+    @Override
     public void onContextButtonClick(ContextBottomDialog.Buttons buttons) {
         switch (buttons) {
             case DOWNLOAD:
@@ -306,11 +342,11 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
                 break;
             case COPY:
                 mOperation = Operation.COPY;
-                showFolderChooser();
+                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER);
                 break;
             case MOVE:
                 mOperation = Operation.MOVE;
-                showFolderChooser();
+                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER);
                 break;
             case RENAME:
                 showEditDialogRename(getString(R.string.dialogs_edit_rename_title), mOnDevicePresenter.getItemTitle(),
@@ -347,7 +383,7 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
 
     @Override
     public void onShowFolderChooser() {
-        showFolderChooser();
+        showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER);
     }
 
     @Override
@@ -388,7 +424,7 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
     }
 
     @Override
-    protected DocsBasePresenter getPresenter() {
+    protected DocsBasePresenter<? extends DocsBaseView> getPresenter() {
         return mOnDevicePresenter;
     }
 
@@ -412,6 +448,38 @@ public class DocsOnDeviceFragment extends DocsBaseFragment implements DocsOnDevi
             ActivitiesUtils.showSingleFilePicker(this, REQUEST_OPEN_FILE);
         } catch (ActivityNotFoundException e) {
             onError(e.getMessage());
+        }
+    }
+
+    private void checkStorage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                !Environment.isExternalStorageManager() &&
+                mPreferenceTool.isShowStorageAccess()) {
+
+            //TODO удалить когда будет доступно разрешение
+            mPreferenceTool.setShowStorageAccess(false);
+            mOnDevicePresenter.recreateStack();
+            mOnDevicePresenter.getItemsById(LocalContentTools.Companion.getDir(requireContext()));
+
+            //TODO раскоментировать когда будет доступно разрешение
+//            showQuestionDialog(getString(R.string.app_manage_files_title),
+//                    getString(R.string.app_manage_files_description),
+//                    getString(R.string.dialogs_common_ok_button),
+//                    getString(R.string.dialogs_common_cancel_button),
+//                    TAG_STORAGE_ACCESS);
+        }
+    }
+
+    private void requestManage() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            try {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                        Uri.parse("package:" + requireContext().getPackageName()));
+                startActivityForResult(intent, REQUEST_STORAGE_ACCESS);
+            } catch (ActivityNotFoundException e) {
+                showSnackBar("Not found");
+                mPlaceholderViews.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS);
+            }
         }
     }
 }
