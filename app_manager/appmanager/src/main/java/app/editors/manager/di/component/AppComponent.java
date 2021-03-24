@@ -24,6 +24,7 @@ import app.editors.manager.mvp.presenters.login.EnterpriseCreateValidatePresente
 import app.editors.manager.mvp.presenters.login.EnterpriseLoginPresenter;
 import app.editors.manager.mvp.presenters.login.EnterprisePhonePresenter;
 import app.editors.manager.mvp.presenters.login.EnterprisePortalPresenter;
+import app.editors.manager.mvp.presenters.login.EnterpriseSSOPresenter;
 import app.editors.manager.mvp.presenters.login.EnterpriseSmsPresenter;
 import app.editors.manager.mvp.presenters.login.PersonalLoginPresenter;
 import app.editors.manager.mvp.presenters.login.PersonalSignUpPresenter;
@@ -98,6 +99,7 @@ public interface AppComponent {
     void inject(EnterpriseCreateLoginPresenter enterpriseCreateSignInPresenter);
     void inject(PersonalLoginPresenter personalSignInPresenter);
     void inject(PersonalSignUpPresenter personalSignUpPresenter);
+    void inject(EnterpriseSSOPresenter enterpriseSSOPresenter);
 
     void inject(CountriesCodesFragment codesFragment);
     void inject(EnterprisePhoneFragment phoneFragment);
