@@ -651,6 +651,29 @@ object UiUtils {
         KeyboardUtils.showKeyboard(text)
     }
 
+    fun showQuestionDialog(
+        context: Context,
+        title: String,
+        description: String? = null,
+        acceptListener: () -> Unit,
+        cancelListener: (() -> Unit)? = null,
+        acceptTitle: String? = "Ok",
+        cancelTitle: String? = "Cancel"
+    ) {
+        AlertDialog.Builder(context)
+            .setTitle(title)
+            .setMessage(description)
+            .setPositiveButton(acceptTitle) { dialog, _ ->
+                acceptListener.invoke()
+                dialog.dismiss()
+            }
+            .setNegativeButton(cancelTitle) { dialog, _ ->
+                cancelListener?.invoke()
+                dialog.dismiss()
+            }
+            .show()
+    }
+
 }
 
 
