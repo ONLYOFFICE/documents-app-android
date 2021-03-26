@@ -22,6 +22,9 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -755,4 +758,25 @@ class ActivityLayoutListener : ViewTreeObserver.OnGlobalLayoutListener {
         mWeakListener = null
     }
 
+}
+
+class SlidesLinearLayoutManager(context: Context, orientation: Int, reverseLayout: Boolean) : LinearLayoutManager(context, orientation, reverseLayout) {
+
+    private val SCROLL_SPEED = 150f
+
+    override fun smoothScrollToPosition(recyclerView: RecyclerView, state: RecyclerView.State?, position: Int) {
+        val linearSmoothScroller = object : LinearSmoothScroller(recyclerView.context) {
+
+            override fun computeScrollVectorForPosition(targetPosition: Int): PointF? {
+                return this@SlidesLinearLayoutManager.computeScrollVectorForPosition(targetPosition)
+            }
+
+            override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                return SCROLL_SPEED / displayMetrics.densityDpi
+            }
+        }
+
+        linearSmoothScroller.targetPosition = position
+        startSmoothScroll(linearSmoothScroller)
+    }
 }
