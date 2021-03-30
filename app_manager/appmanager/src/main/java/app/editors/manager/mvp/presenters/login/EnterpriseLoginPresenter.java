@@ -2,15 +2,21 @@ package app.editors.manager.mvp.presenters.login;
 
 import android.content.Intent;
 
+import java.util.List;
+
 import app.editors.manager.R;
 import app.editors.manager.app.App;
+import app.editors.manager.managers.exceptions.UrlSyntaxMistake;
+import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.mvp.models.account.AccountsSqlData;
 import app.editors.manager.mvp.models.request.RequestSignIn;
+import app.editors.manager.mvp.models.response.ResponseCapabilities;
 import app.editors.manager.mvp.models.response.ResponseSignIn;
 import app.editors.manager.mvp.models.user.User;
 import app.editors.manager.mvp.views.login.CommonSignInView;
 import lib.toolkit.base.managers.utils.StringUtils;
 import moxy.InjectViewState;
+import retrofit2.Response;
 
 @InjectViewState
 public class EnterpriseLoginPresenter extends BaseLoginPresenter<CommonSignInView, ResponseSignIn> {
@@ -62,4 +68,28 @@ public class EnterpriseLoginPresenter extends BaseLoginPresenter<CommonSignInVie
         signIn(requestSignIn, portal);
     }
 
+    public void checkProviders() {
+        final String portal = mPreferenceTool.getPortalFullPath();
+        if (portal != null && !portal.isEmpty()) {
+            try {
+                new RetrofitTool(mContext)
+                        .setSslOn(mPreferenceTool.getSslState())
+                        .setCiphers(mPreferenceTool.getSslCiphers())
+                        .init(portal)
+                        .getApi("")
+                        .capabilities().enqueue(new CommonCallback<ResponseCapabilities>() {
+                    @Override
+                    public void onSuccessResponse(Response<ResponseCapabilities> response) {
+                        final List<String> providers = response.body().getResponse().getProviders();
+                        if (providers != null && !providers.isEmpty()) {
+                            getViewState().showGoogleLogin(providers.contains("google"));
+                            getViewState().showFacebookLogin(providers.contains("facebook"));
+                        }
+                    }
+                });
+            } catch (UrlSyntaxMistake urlSyntaxMistake) {
+                urlSyntaxMistake.printStackTrace();
+            }
+        }
+    }
 }

@@ -21,7 +21,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import javax.inject.Inject;
 
-import app.editors.manager.BuildConfig;
 import app.editors.manager.R;
 import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
@@ -238,6 +237,16 @@ public class PersonalPortalFragment extends BaseAppFragment implements CommonSig
     @Override
     public void onWaitingDialog(String message, String tag) {
         showWaitingDialog(message, getString(R.string.dialogs_common_cancel_button), tag);
+    }
+
+    @Override
+    public void showGoogleLogin(boolean isShow) {
+
+    }
+
+    @Override
+    public void showFacebookLogin(boolean isShow) {
+
     }
 
     @Override
