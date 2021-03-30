@@ -98,6 +98,8 @@
     <string name="login_enterprise_password_hint">Password</string>
     <string name="login_enterprise_signin_button">SIGN IN</string>
     <string name="login_enterprise_single_sign_button">Single Sign-on</string>
+    <string name="login_enterprise_single_sign_button_login">Login by %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">Single Sign-on</string>
     <string name="login_enterprise_info">
         ONLYOFFICE portal allows to save files in the cloud, share it with co-workers and co-edit in real time.
     </string>

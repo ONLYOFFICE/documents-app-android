@@ -215,7 +215,8 @@ public class EnterpriseSignInFragment extends BaseAppFragment implements CommonS
 
     @OnClick(R.id.login_enterprise_signon_button)
     protected void onSignOnButtonClick() {
-        showFragment(EnterpriseSmsFragment.newInstance(false, null), EnterpriseSmsFragment.TAG, false);
+        //showFragment(EnterpriseSmsFragment.newInstance(false, null), EnterpriseSmsFragment.TAG, false);
+        showFragment(SSOLoginFragment.newInstance(mPreferenceTool.getSsoUrl(), mPreferenceTool.getPortal()), SSOLoginFragment.TAG, true);
     }
 
     @OnClick(R.id.login_enterprise_forgot_pwd_button)
@@ -384,6 +385,7 @@ public class EnterpriseSignInFragment extends BaseAppFragment implements CommonS
         final String ssoUrl = mPreferenceTool.getSsoUrl();
         if (ssoUrl != null && !ssoUrl.isEmpty()) {
             mLoginPersonalSignonButton.setVisibility(View.VISIBLE);
+            setSSOButtonText();
             mLoginPersonalSignonButton.setEnabled(true);
         }
 
@@ -406,6 +408,15 @@ public class EnterpriseSignInFragment extends BaseAppFragment implements CommonS
             } else if (savedInstanceState.getBoolean(TAG_FOCUS_PWD)) {
                 showKeyboard(mLoginPersonalPortalPasswordEdit);
             }
+        }
+    }
+
+    private void setSSOButtonText() {
+        String ssoLabel = mPreferenceTool.getSsoLabel();
+        if(!ssoLabel.isEmpty()) {
+            mLoginPersonalSignonButton.setText(getString(R.string.login_enterprise_single_sign_button_login, ssoLabel));
+        } else {
+            mLoginPersonalSignonButton.setText(getString(R.string.login_enterprise_single_sign_button_login, getString(R.string.login_enterprise_single_sign_button_login_default)));
         }
     }
 
