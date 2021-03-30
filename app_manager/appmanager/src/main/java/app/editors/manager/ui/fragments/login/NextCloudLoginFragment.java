@@ -229,7 +229,7 @@ public class NextCloudLoginFragment extends BaseAppFragment {
                 account.setPassword(password);
                 account.setScheme(url.getProtocol() +"://");
                 if (url.getPath() != null && !url.getPath().isEmpty()) {
-                    account.setWebDavPath(url.getPath() + "/" + WebDavApi.Providers.NextCloud.getPath() + login + "/");
+                    account.setWebDavPath(url.getPath() + WebDavApi.Providers.NextCloud.getPath() + login + "/");
                 } else {
                     account.setWebDavPath(WebDavApi.Providers.NextCloud.getPath() + login + "/");
                 }
