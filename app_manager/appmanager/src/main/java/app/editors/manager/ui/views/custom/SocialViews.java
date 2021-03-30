@@ -33,7 +33,6 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
-import app.editors.manager.BuildConfig;
 import app.editors.manager.R;
 import app.editors.manager.managers.exceptions.ButterknifeInitException;
 import app.editors.manager.managers.utils.Constants;
@@ -90,6 +89,22 @@ public class SocialViews {
         mFacebookId = facebookId;
         initTwitter();
         initFacebook();
+    }
+
+    public void showGoogleLogin(boolean isShow) {
+        if (isShow) {
+            mLoginPersonalSocialGoogleButton.setVisibility(View.VISIBLE);
+        } else {
+            mLoginPersonalSocialGoogleButton.setVisibility(View.GONE);
+        }
+    }
+
+    public void showFacebookLogin(boolean isShow) {
+        if (isShow) {
+            mLoginPersonalSocialFacebookButton.setVisibility(View.VISIBLE);
+        } else {
+            mLoginPersonalSocialFacebookButton.setVisibility(View.GONE);
+        }
     }
 
     /*

@@ -18,4 +18,6 @@ public interface CommonSignInView extends BaseView {
     void onEmailNameError(final String message);
     void onTwoFactorAuthTfa(boolean isSecret, AccountsSqlData sqlData);
     void onWaitingDialog(@NonNull String message, @Nullable String tag);
+    void showGoogleLogin(boolean isShow);
+    void showFacebookLogin(boolean isShow);
 }

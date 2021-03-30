@@ -21,12 +21,10 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import javax.inject.Inject;
 
-import app.editors.manager.BuildConfig;
 import app.editors.manager.R;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.AccountSqlTool;
 import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.managers.utils.Constants;
 import app.editors.manager.mvp.models.account.AccountsSqlData;
 import app.editors.manager.mvp.presenters.login.EnterpriseLoginPresenter;
 import app.editors.manager.mvp.views.login.CommonSignInView;
@@ -344,6 +342,7 @@ public class EnterpriseSignInFragment extends BaseAppFragment implements CommonS
         getArgs();
         getIntent();
         restoreViews(savedInstanceState);
+        mEnterpriseSignInPresenter.checkProviders();
     }
 
     private void getArgs() {
@@ -407,6 +406,16 @@ public class EnterpriseSignInFragment extends BaseAppFragment implements CommonS
                 showKeyboard(mLoginPersonalPortalPasswordEdit);
             }
         }
+    }
+
+    @Override
+    public void showGoogleLogin(boolean isShow) {
+        mSocialViews.showGoogleLogin(isShow);
+    }
+
+    @Override
+    public void showFacebookLogin(boolean isShow) {
+        mSocialViews.showFacebookLogin(isShow);
     }
 
     /*
