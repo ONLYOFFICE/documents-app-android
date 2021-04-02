@@ -55,7 +55,7 @@ public class EnterpriseLoginPresenter extends BaseLoginPresenter<CommonSignInVie
     }
 
     public void signInPortal(final String login, final String password, final String portal) {
-//        mPreferenceTool.setLogin(login);
+        mPreferenceTool.setLogin(login);
         if (!StringUtils.isEmailValid(login)) {
             getViewState().onEmailNameError(mContext.getString(R.string.errors_email_syntax_error));
             return;

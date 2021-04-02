@@ -192,7 +192,6 @@ public class AccountsPresenter extends BaseLoginPresenter<AccountsView, Response
                 public void onErrorResponse(Response<ResponseUser> response) {
                     super.onErrorResponse(response);
                     if (response.code() == Api.HttpCodes.CLIENT_UNAUTHORIZED) {
-                        mPreferenceTool.setLogin(mAccountClickedItem.getLogin());
                         mAccountClickedItem.setToken("");
                         getViewState().onSignIn(portal, mAccountClickedItem.getLogin());
                     }
