@@ -365,6 +365,7 @@ public class CloudAccountsPresenter extends BaseLoginPresenter<CloudAccountsView
     public void restoreAccount() {
         final AccountsSqlData accountsSqlData = mAccountSqlTool.getAccountOnline();
         if (accountsSqlData != null) {
+            mPreferenceTool.setLogin(accountsSqlData.getLogin());
             mPreferenceTool.setScheme(accountsSqlData.getScheme());
             mPreferenceTool.setPortal(accountsSqlData.getPortal());
             mPreferenceTool.setToken(accountsSqlData.getToken());

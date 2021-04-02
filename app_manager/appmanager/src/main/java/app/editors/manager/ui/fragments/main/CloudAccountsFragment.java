@@ -254,6 +254,7 @@ public class CloudAccountsFragment extends BaseAppFragment implements CloudAccou
     @Override
     public void onSignIn(String portal, String login) {
         hideDialog();
+        mMainActivity.onContextDialogClose();
         SignInActivity.showPortalSignIn(this, portal, login);
     }
 
