@@ -4,7 +4,7 @@ buildscript {
 
     ext.NDK_VERSION = "21.3.6528147"
 
-    ext.kotlin_version = '1.4.21'
+    ext.kotlin_version = '1.4.30'
 
     repositories {
         google()
@@ -19,6 +19,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.google.gms:google-services:4.3.5"
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
     }
 }
 
