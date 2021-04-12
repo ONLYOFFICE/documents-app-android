@@ -142,7 +142,7 @@ class CommonDialog : BaseDialog() {
     }
 
     private fun initViews() {
-        view?.post {
+        view?.let {
             actionHolder { dialog, holder -> holder.init() }
             actionHolder { dialog, holder -> if (dialog != mDialogType) holder.hide() }
             mViewHolders[mDialogType]?.setClickListener(mOnClickListener)
