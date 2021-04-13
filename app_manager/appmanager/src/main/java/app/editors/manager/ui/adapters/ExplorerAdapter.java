@@ -251,7 +251,7 @@ public class ExplorerAdapter extends BaseAdapter<Entity> {
 
     public void setFolderIcon(final AppCompatImageView view, final Folder folder) {
         @DrawableRes int resId = R.drawable.ic_type_folder;
-        if (folder.getShared()) {
+        if (folder.getShared() && folder.getProviderKey().isEmpty()) {
             resId = R.drawable.ic_type_folder_shared;
         } else if (isRoot() && folder.getProviderItem() && !folder.getProviderKey().isEmpty()) {
             switch (folder.getProviderKey()) {
