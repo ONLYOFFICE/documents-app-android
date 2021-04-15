@@ -12,6 +12,7 @@ import app.editors.manager.mvp.models.request.RequestDownload;
 import app.editors.manager.mvp.models.request.RequestExternal;
 import app.editors.manager.mvp.models.request.RequestFavorites;
 import app.editors.manager.mvp.models.request.RequestNumber;
+import app.editors.manager.mvp.models.request.RequestPassword;
 import app.editors.manager.mvp.models.request.RequestRegister;
 import app.editors.manager.mvp.models.request.RequestRenameFile;
 import app.editors.manager.mvp.models.request.RequestShare;
@@ -33,6 +34,7 @@ import app.editors.manager.mvp.models.response.ResponseFolder;
 import app.editors.manager.mvp.models.response.ResponseGroups;
 import app.editors.manager.mvp.models.response.ResponseModules;
 import app.editors.manager.mvp.models.response.ResponseOperation;
+import app.editors.manager.mvp.models.response.ResponsePassword;
 import app.editors.manager.mvp.models.response.ResponsePortal;
 import app.editors.manager.mvp.models.response.ResponseRegisterPersonalPortal;
 import app.editors.manager.mvp.models.response.ResponseRegisterPortal;
@@ -636,5 +638,10 @@ public interface Api {
             HEADER_ACCEPT + ": " + VALUE_ACCEPT})
     @HTTP(method = "DELETE", path = "api/" + API_VERSION + "/files/favorites" + RESPONSE_FORMAT, hasBody = true)
     Call<Base> deleteFromFavorites(@Header(HEADER_AUTHORIZATION) String token, @Body RequestFavorites body);
+
+    @Headers({HEADER_CONTENT_TYPE + ": " + VALUE_CONTENT_TYPE,
+            HEADER_ACCEPT + ": " + VALUE_ACCEPT})
+    @POST("api/" + API_VERSION + "/people/password" + RESPONSE_FORMAT)
+    Call<ResponsePassword> forgotPassword(@Body RequestPassword body);
 
 }

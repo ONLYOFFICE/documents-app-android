@@ -88,6 +88,7 @@
     <string name="login_pager_title">Connect ONLYOFFICE cloud</string>
 
     <!-- Portal enterprise-->
+    <string name="login_enterprise_password_reminder">Password reminder</string>
     <string name="login_enterprise_edit_hint">Portal address</string>
     <string name="login_enterprise_button_next">NEXT</string>
     <string name="login_enterprise_edit_error_hint">Enter valid address</string>
@@ -219,6 +220,7 @@
     <string name="dialogs_edit_feedback_rate_title">Would you mind sending us feedback?</string>
     <string name="dialogs_edit_feedback_rate_hint">Tell us what to improve</string>
     <string name="dialogs_edit_feedback_rate_accept">SEND</string>
+    <string name="dialog_send_password_reminder">SEND</string>
 
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->

@@ -20,4 +20,5 @@ public interface CommonSignInView extends BaseView {
     void onWaitingDialog(@NonNull String message, @Nullable String tag);
     void showGoogleLogin(boolean isShow);
     void showFacebookLogin(boolean isShow);
+    void onSuccessSendEmail(String message);
 }

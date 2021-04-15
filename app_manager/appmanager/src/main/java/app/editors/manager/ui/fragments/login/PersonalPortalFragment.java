@@ -250,6 +250,11 @@ public class PersonalPortalFragment extends BaseAppFragment implements CommonSig
     }
 
     @Override
+    public void onSuccessSendEmail(String message) {
+
+    }
+
+    @Override
     public void onError(@Nullable String message) {
         hideDialog();
         showSnackBar(message);

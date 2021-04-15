@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.login;
 
 import android.content.Intent;
+import android.util.Patterns;
 
 import java.util.List;
 
@@ -9,13 +10,17 @@ import app.editors.manager.app.App;
 import app.editors.manager.managers.exceptions.UrlSyntaxMistake;
 import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.mvp.models.account.AccountsSqlData;
+import app.editors.manager.mvp.models.request.RequestPassword;
 import app.editors.manager.mvp.models.request.RequestSignIn;
 import app.editors.manager.mvp.models.response.ResponseCapabilities;
+import app.editors.manager.mvp.models.response.ResponsePassword;
 import app.editors.manager.mvp.models.response.ResponseSignIn;
 import app.editors.manager.mvp.models.user.User;
 import app.editors.manager.mvp.views.login.CommonSignInView;
 import lib.toolkit.base.managers.utils.StringUtils;
 import moxy.InjectViewState;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 @InjectViewState
@@ -25,6 +30,7 @@ public class EnterpriseLoginPresenter extends BaseLoginPresenter<CommonSignInVie
 
     public static final String TAG_DIALOG_WAITING = "TAG_DIALOG_WAITING";
     public static final String TAG_DIALOG_LOGIN_FACEBOOK = "TAG_DIALOG_LOGIN_FACEBOOK";
+    public static final String TAG_DIALOG_FORGOT_PASSWORD = "TAG_DIALOG_LOGIN_FORGOT_PASSWORD";
 
     public EnterpriseLoginPresenter() {
         App.getApp().getAppComponent().inject(this);
@@ -92,4 +98,39 @@ public class EnterpriseLoginPresenter extends BaseLoginPresenter<CommonSignInVie
             }
         }
     }
+
+    public void checkEmail(String email) {
+        if(!StringUtils.isEmailValid(email)) {
+            getViewState().onError(mContext.getString(R.string.errors_email_syntax_error));
+        } else {
+            sendEmailNotification(email);
+        }
+    }
+
+    private void sendEmailNotification(String email) {
+
+        RequestPassword requestPassword = new RequestPassword();
+        requestPassword.setPortal(mPreferenceTool.getPortal());
+        requestPassword.setEmail(email);
+
+        mRetrofitTool.getApiWithPreferences().forgotPassword(requestPassword).enqueue(
+                new Callback<ResponsePassword>() {
+                    @Override
+                    public void onResponse(Call<ResponsePassword> call, retrofit2.Response<ResponsePassword> response) {
+                        if(response.isSuccessful() && response.body() != null) {
+                            getViewState().onSuccessSendEmail(response.body().getResponse());
+                        } else {
+                            getViewState().onError(mContext.getString(R.string.errors_unknown_error));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponsePassword> call, Throwable t) {
+                        getViewState().onError(t.getMessage());
+                    }
+                }
+        );
+
+    }
+
 }

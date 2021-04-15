@@ -43,6 +43,7 @@ import butterknife.Unbinder;
 import lib.toolkit.base.ui.dialogs.common.CommonDialog;
 import moxy.presenter.InjectPresenter;
 
+import static app.editors.manager.mvp.presenters.login.EnterpriseLoginPresenter.TAG_DIALOG_FORGOT_PASSWORD;
 import static app.editors.manager.mvp.presenters.login.EnterpriseLoginPresenter.TAG_DIALOG_LOGIN_FACEBOOK;
 import static app.editors.manager.mvp.presenters.login.EnterpriseLoginPresenter.TAG_DIALOG_WAITING;
 import static app.editors.manager.ui.fragments.login.AuthPagerFragment.KEY_FOURTH_FRAGMENT;
@@ -185,6 +186,9 @@ public class EnterpriseSignInFragment extends BaseAppFragment implements CommonS
                 case TAG_DIALOG_LOGIN_FACEBOOK:
                     mSocialViews.onFacebookContinue();
                     break;
+                case TAG_DIALOG_FORGOT_PASSWORD:
+                    mEnterpriseSignInPresenter.checkEmail(value.trim());
+                    break;
             }
         }
     }
@@ -219,7 +223,13 @@ public class EnterpriseSignInFragment extends BaseAppFragment implements CommonS
 
     @OnClick(R.id.login_enterprise_forgot_pwd_button)
     protected void onForgotPwdClick() {
-        showUrlInBrowser(mPreferenceTool.getScheme() + mPreferenceTool.getPortal());
+        //showUrlInBrowser(mPreferenceTool.getScheme() + mPreferenceTool.getPortal());
+        showEditDialogCreate(getString(R.string.login_enterprise_password_reminder),
+                "",
+                getString(R.string.login_enterprise_email_hint),
+                "",
+                TAG_DIALOG_FORGOT_PASSWORD,
+                getString(R.string.dialog_send_password_reminder), getString(R.string.dialogs_common_cancel_button));
     }
 
     @OnEditorAction(R.id.login_enterprise_portal_password_edit)
@@ -427,6 +437,12 @@ public class EnterpriseSignInFragment extends BaseAppFragment implements CommonS
     @Override
     public void showFacebookLogin(boolean isShow) {
         mSocialViews.showFacebookLogin(isShow);
+    }
+
+    @Override
+    public void onSuccessSendEmail(String message) {
+        hideDialog();
+        showSnackBar(message);
     }
 
     /*
