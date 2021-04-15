@@ -642,6 +642,6 @@ public interface Api {
     @Headers({HEADER_CONTENT_TYPE + ": " + VALUE_CONTENT_TYPE,
             HEADER_ACCEPT + ": " + VALUE_ACCEPT})
     @POST("api/" + API_VERSION + "/people/password" + RESPONSE_FORMAT)
-    Call<ResponsePassword> forgotPassword(@Body RequestPassword body);
+    Single<ResponsePassword> forgotPassword(@Body RequestPassword body);
 
 }

@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.login;
 
 import android.content.Intent;
-import android.util.Patterns;
 
 import java.util.List;
 
@@ -17,10 +16,11 @@ import app.editors.manager.mvp.models.response.ResponsePassword;
 import app.editors.manager.mvp.models.response.ResponseSignIn;
 import app.editors.manager.mvp.models.user.User;
 import app.editors.manager.mvp.views.login.CommonSignInView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import lib.toolkit.base.managers.utils.StringUtils;
 import moxy.InjectViewState;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 @InjectViewState
@@ -32,8 +32,18 @@ public class EnterpriseLoginPresenter extends BaseLoginPresenter<CommonSignInVie
     public static final String TAG_DIALOG_LOGIN_FACEBOOK = "TAG_DIALOG_LOGIN_FACEBOOK";
     public static final String TAG_DIALOG_FORGOT_PASSWORD = "TAG_DIALOG_LOGIN_FORGOT_PASSWORD";
 
+    protected Disposable mDisposable;
+
     public EnterpriseLoginPresenter() {
         App.getApp().getAppComponent().inject(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mDisposable != null) {
+            mDisposable.dispose();
+        }
     }
 
     @Override
@@ -113,23 +123,15 @@ public class EnterpriseLoginPresenter extends BaseLoginPresenter<CommonSignInVie
         requestPassword.setPortal(mPreferenceTool.getPortal());
         requestPassword.setEmail(email);
 
-        mRetrofitTool.getApiWithPreferences().forgotPassword(requestPassword).enqueue(
-                new Callback<ResponsePassword>() {
-                    @Override
-                    public void onResponse(Call<ResponsePassword> call, retrofit2.Response<ResponsePassword> response) {
-                        if(response.isSuccessful() && response.body() != null) {
-                            getViewState().onSuccessSendEmail(response.body().getResponse());
-                        } else {
-                            getViewState().onError(mContext.getString(R.string.errors_unknown_error));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponsePassword> call, Throwable t) {
-                        getViewState().onError(t.getMessage());
-                    }
-                }
-        );
+        mDisposable = mRetrofitTool.getApiWithPreferences().forgotPassword(requestPassword)
+                .map(ResponsePassword::getResponse)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(message -> {
+                    getViewState().onSuccessSendEmail(message);
+                }, throwable -> {
+                    getViewState().onError(throwable.getMessage());
+                });
 
     }
 
