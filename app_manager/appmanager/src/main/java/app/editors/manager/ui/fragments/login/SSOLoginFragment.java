@@ -161,6 +161,7 @@ public class SSOLoginFragment extends BaseAppFragment implements EnterpriseSSOVi
                 handler.proceed();
             } else
             {
+                showSnackBar(getString(R.string.errors_ssl_error));
                 super.onReceivedSslError(view, handler, error);
             }
         }
