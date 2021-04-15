@@ -55,6 +55,7 @@ import app.editors.manager.ui.fragments.login.EnterprisePortalFragment;
 import app.editors.manager.ui.fragments.login.EnterpriseSignInFragment;
 import app.editors.manager.ui.fragments.login.EnterpriseSmsFragment;
 import app.editors.manager.ui.fragments.login.PersonalPortalFragment;
+import app.editors.manager.ui.fragments.login.SSOLoginFragment;
 import app.editors.manager.ui.fragments.main.DocsBaseFragment;
 import app.editors.manager.ui.fragments.main.MainPagerFragment;
 import app.editors.manager.ui.fragments.main.WebViewerFragment;
@@ -108,6 +109,7 @@ public interface AppComponent {
     void inject(EnterpriseSmsFragment enterpriseSmsFragment);
     void inject(PersonalPortalFragment personalPortalFragment);
     void inject(WebDavInterceptor webDavInterceptor);
+    void inject(SSOLoginFragment ssoLoginFragment);
 
     /*
     * Main

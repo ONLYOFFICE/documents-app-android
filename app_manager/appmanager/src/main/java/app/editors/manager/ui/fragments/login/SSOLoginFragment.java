@@ -3,6 +3,7 @@ package app.editors.manager.ui.fragments.login;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.http.SslError;
@@ -18,7 +19,12 @@ import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import javax.inject.Inject;
+
 import app.editors.manager.R;
+import app.editors.manager.app.App;
+import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.mvp.presenters.login.EnterpriseSSOPresenter;
 import app.editors.manager.mvp.views.login.EnterpriseSSOView;
 import app.editors.manager.ui.activities.main.MainActivity;
@@ -45,6 +51,9 @@ public class SSOLoginFragment extends BaseAppFragment implements EnterpriseSSOVi
         return fragment;
     }
 
+    @Inject
+    protected PreferenceTool mPreferenceTool;
+
     @Nullable
     private Unbinder mUnbinder;
     @Nullable
@@ -60,6 +69,13 @@ public class SSOLoginFragment extends BaseAppFragment implements EnterpriseSSOVi
     @BindView(R.id.webView)
     WebView mWebView;
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        App.getApp().getAppComponent().inject(this);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -67,7 +83,6 @@ public class SSOLoginFragment extends BaseAppFragment implements EnterpriseSSOVi
         mUnbinder = ButterKnife.bind(this, view);
         return view;
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -142,8 +157,12 @@ public class SSOLoginFragment extends BaseAppFragment implements EnterpriseSSOVi
         }
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-            handler.proceed();
-            //super.onReceivedSslError(view, handler, error);
+            if(!mPreferenceTool.getSslState()) {
+                handler.proceed();
+            } else
+            {
+                super.onReceivedSslError(view, handler, error);
+            }
         }
     }
 
