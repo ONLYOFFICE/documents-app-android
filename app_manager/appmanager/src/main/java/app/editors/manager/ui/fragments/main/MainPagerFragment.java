@@ -160,9 +160,9 @@ public class MainPagerFragment extends BaseAppFragment {
             pairs.addAll(getVisitorFragments());
         } else {
             pairs.addAll(getMyFragments());
-        }
-        if(StringUtils.convertServerVersion(mPreferenceTool.getServerVersion()) >= 11) {
-            pairs.add(new ViewPagerAdapter.Container(DocsFavoritesFragment.newInstance(), getString(R.string.main_pager_docs_favorites)));
+            if(StringUtils.convertServerVersion(mPreferenceTool.getServerVersion()) >= 11) {
+                pairs.add(new ViewPagerAdapter.Container(DocsFavoritesFragment.newInstance(), getString(R.string.main_pager_docs_favorites)));
+            }
         }
         pairs.add(new ViewPagerAdapter.Container(DocsTrashFragment.newInstance(), getString(R.string.main_pager_docs_trash)));
         return pairs;
@@ -172,6 +172,9 @@ public class MainPagerFragment extends BaseAppFragment {
         final List<ViewPagerAdapter.Container> pairs = new ArrayList<>();
         pairs.add(new ViewPagerAdapter.Container(DocsShareFragment.newInstance(),
                 getString(R.string.main_pager_docs_share)));
+        if(StringUtils.convertServerVersion(mPreferenceTool.getServerVersion()) >= 11) {
+            pairs.add(new ViewPagerAdapter.Container(DocsFavoritesFragment.newInstance(), getString(R.string.main_pager_docs_favorites)));
+        }
         pairs.add(new ViewPagerAdapter.Container(DocsCommonFragment.newInstance(),
                 getString(R.string.main_pager_docs_common)));
         if (!mPreferenceTool.isProjectDisable()) {
