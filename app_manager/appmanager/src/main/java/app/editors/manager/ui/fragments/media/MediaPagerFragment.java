@@ -20,8 +20,8 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import app.editors.manager.R;
+import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.File;
 import app.editors.manager.ui.activities.main.MediaActivity;
 import app.editors.manager.ui.fragments.base.BaseAppFragment;
 import app.editors.manager.ui.views.pager.PagingViewPager;
@@ -223,14 +223,14 @@ public class MediaPagerFragment extends BaseAppFragment {
         @Override
         public Fragment getItem(int position) {
             if (mMediaExplorer != null && mMediaExplorer.getFiles().size() > 0) {
-                final File file = mMediaExplorer.getFiles().get(position);
+                final CloudFile file = mMediaExplorer.getFiles().get(position);
                 final String ext = file.getFileExst();
                 switch (StringUtils.getExtension(ext)) {
                     case IMAGE:
                     case IMAGE_GIF:
-                        return MediaImageFragment.newInstance(file, getArguments().getBoolean(TAG_WEB_DAV));
+                        return MediaImageFragment.Companion.newInstance(file, getArguments().getBoolean(TAG_WEB_DAV));
                     case VIDEO_SUPPORT:
-                        return MediaVideoFragment.newInstance(file);
+                        return MediaVideoFragment.Companion.newInstance(file);
                 }
             }
 

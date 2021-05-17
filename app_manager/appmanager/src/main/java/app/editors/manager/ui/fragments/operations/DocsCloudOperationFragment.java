@@ -175,7 +175,7 @@ public class DocsCloudOperationFragment extends DocsCloudFragment implements Ope
                 mCloudPresenter.getItemsById(DocsCommonFragment.ID);
                 break;
             case Api.SectionType.CLOUD_PROJECTS:
-                mCloudPresenter.getItemsById(DocsProjectsFragment.ID);
+                mCloudPresenter.getItemsById(DocsProjectsFragment.Companion.getID());
                 break;
         }
     }

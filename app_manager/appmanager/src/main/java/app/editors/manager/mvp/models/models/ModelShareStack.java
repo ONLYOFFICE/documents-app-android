@@ -1,15 +1,17 @@
 package app.editors.manager.mvp.models.models;
 
 
+import androidx.annotation.Nullable;
+
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import app.editors.manager.app.Api;
-import app.editors.manager.mvp.models.user.Group;
-import app.editors.manager.mvp.models.user.User;
+import app.documents.core.network.ApiContract;
+import app.editors.manager.mvp.models.ui.GroupUi;
+import app.editors.manager.mvp.models.ui.UserUi;
 
 public class ModelShareStack {
 
@@ -27,14 +29,14 @@ public class ModelShareStack {
         return modelShareStack;
     }
 
-    private Set<User> mUserSet;
-    private Set<Group> mGroupSet;
+    private Set<UserUi> mUserSet;
+    private Set<GroupUi> mGroupSet;
     private int mAccessCode;
     private String mMessage;
     private boolean mIsRefresh;
 
     public ModelShareStack() {
-        mAccessCode = Api.ShareCode.READ;
+        mAccessCode = ApiContract.ShareCode.READ;
         mUserSet = new TreeSet<>();
         mGroupSet = new TreeSet<>();
         mIsRefresh = false;
@@ -42,13 +44,13 @@ public class ModelShareStack {
 
     public int getCountChecked() {
         int count = 0;
-        for (User item : mUserSet) {
+        for (UserUi item : mUserSet) {
             if (item.isSelected()) {
                 ++count;
             }
         }
 
-        for (Group item : mGroupSet) {
+        for (GroupUi item : mGroupSet) {
             if (item.isSelected()) {
                 ++count;
             }
@@ -58,11 +60,11 @@ public class ModelShareStack {
     }
 
     public void resetChecked() {
-        for (User item : mUserSet) {
+        for (UserUi item : mUserSet) {
             item.setSelected(false);
         }
 
-        for (Group item : mGroupSet) {
+        for (GroupUi item : mGroupSet) {
             item.setSelected(false);
         }
     }
@@ -73,23 +75,23 @@ public class ModelShareStack {
         mGroupSet.clear();
     }
 
-    public Set<User> getUserSet() {
+    public Set<UserUi> getUserSet() {
         return mUserSet;
     }
 
     public boolean removeById(final String id) {
-        final Iterator<User> userSet = getUserSet().iterator();
+        final Iterator<UserUi> userSet = getUserSet().iterator();
         while(userSet.hasNext()) {
-            final User user = userSet.next();
+            final UserUi user = userSet.next();
             if (user.getId().equalsIgnoreCase(id)) {
                 userSet.remove();
                 return true;
             }
         }
 
-        final Iterator<Group> groupSet = getGroupSet().iterator();
+        final Iterator<GroupUi> groupSet = getGroupSet().iterator();
         while(groupSet.hasNext()) {
-            final Group group = groupSet.next();
+            final GroupUi group = groupSet.next();
             if (group.getId().equalsIgnoreCase(id)) {
                 groupSet.remove();
                 return true;
@@ -99,7 +101,7 @@ public class ModelShareStack {
         return false;
     }
 
-    public Set<Group> getGroupSet() {
+    public Set<GroupUi> getGroupSet() {
         return mGroupSet;
     }
 
@@ -111,19 +113,19 @@ public class ModelShareStack {
         return mGroupSet.isEmpty();
     }
 
-    public void addUser(final User user) {
+    public void addUser(final UserUi user) {
         mUserSet.add(user);
     }
 
-    public void addUsers(final List<User> userList) {
+    public void addUsers(final List<UserUi> userList) {
         mUserSet.addAll(userList);
     }
 
-    public void addGroup(final Group group) {
+    public void addGroup(final GroupUi group) {
         mGroupSet.add(group);
     }
 
-    public void addGroups(final List<Group> groupList) {
+    public void addGroups(final List<GroupUi> groupList) {
         mGroupSet.addAll(groupList);
     }
 
@@ -135,6 +137,7 @@ public class ModelShareStack {
         mAccessCode = accessCode;
     }
 
+    @Nullable
     public String getMessage() {
         return mMessage;
     }

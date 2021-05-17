@@ -614,6 +614,14 @@ object UiUtils {
 
     }
 
+    fun setColorFilter(context: Context, drawable: Drawable?, color: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            drawable?.colorFilter = BlendModeColorFilter(color, BlendMode.SRC_ATOP)
+        } else {
+            drawable?.setColorFilter(ContextCompat.getColor(context, color), PorterDuff.Mode.SRC_ATOP)
+        }
+    }
+
     fun showEditDialog(
         context: Context,
         title: String,

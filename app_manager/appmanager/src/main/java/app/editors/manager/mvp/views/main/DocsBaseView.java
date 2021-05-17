@@ -8,9 +8,9 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import app.editors.manager.mvp.models.base.Entity;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.Folder;
+import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.views.base.BaseViewExt;
 import app.editors.manager.ui.dialogs.ContextBottomDialog;
@@ -66,9 +66,9 @@ public interface DocsBaseView extends BaseViewExt {
      * Change docs
      * */
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onCreateFolder(Folder folder);
+    void onCreateFolder(CloudFolder folder);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onCreateFile(File file);
+    void onCreateFile(CloudFile file);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDeleteBatch(List<Entity> list);
     @StateStrategyType(OneExecutionStateStrategy.class)
@@ -133,7 +133,7 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onAddUploadsFile(List<? extends Entity> uploadFiles);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onOpenLocalFile(File file);
+    void onOpenLocalFile(CloudFile file);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onNoProvider();
 

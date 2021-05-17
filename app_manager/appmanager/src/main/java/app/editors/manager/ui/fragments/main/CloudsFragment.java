@@ -15,7 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import app.editors.manager.R;
-import app.editors.manager.app.WebDavApi;
+import app.documents.core.webdav.WebDavApi;
 import app.editors.manager.ui.activities.login.PortalsActivity;
 import app.editors.manager.ui.activities.login.WebDavLoginActivity;
 import app.editors.manager.ui.activities.main.MainActivity;
@@ -106,7 +106,7 @@ public class CloudsFragment extends BaseAppFragment {
     void init() {
         setActionBarTitle(getString(R.string.fragment_clouds_title));
         if (mMainActivity != null) {
-            mMainActivity.setCloudsState(mIsBack);
+//            mMainActivity.setCloudsState(mIsBack);
         }
         if (getContext() != null) {
             Context context = getContext();

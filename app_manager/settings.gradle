@@ -1,5 +1,6 @@
 rootProject.name='app_manager'
 include ':appmanager'
+include ':core'
 
 settings.createProjectDescriptor(settings.rootProject, 'libtoolkit', file('../toolkit/libtoolkit'))
 include ':libtoolkit'

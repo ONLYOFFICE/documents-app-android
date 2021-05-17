@@ -16,13 +16,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
 import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.mvp.models.base.Entity;
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.Folder;
+import app.editors.manager.mvp.models.explorer.CloudFile;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.UploadFile;
 import app.editors.manager.mvp.models.list.Footer;
 import app.editors.manager.mvp.models.list.Header;
@@ -154,10 +155,10 @@ public class ExplorerAdapter extends BaseAdapter<Entity> {
     }
 
     private void setFileFavoriteStatus(int position) {
-        if(mList.get(position) instanceof File){
-            File file = ((File)mList.get(position));
+        if(mList.get(position) instanceof CloudFile){
+            CloudFile file = ((CloudFile)mList.get(position));
             if(!file.getFileStatus().isEmpty()) {
-                int favoriteMask = Integer.parseInt(file.getFileStatus()) & Api.FileStatus.FAVORITE;
+                int favoriteMask = Integer.parseInt(file.getFileStatus()) & ApiContract.FileStatus.FAVORITE;
                 if (favoriteMask != 0) {
                     file.setFavorite(true);
                 } else {
@@ -249,9 +250,9 @@ public class ExplorerAdapter extends BaseAdapter<Entity> {
         view.clearColorFilter();
     }
 
-    public void setFolderIcon(final AppCompatImageView view, final Folder folder) {
+    public void setFolderIcon(final AppCompatImageView view, final CloudFolder folder) {
         @DrawableRes int resId = R.drawable.ic_type_folder;
-        if (folder.getShared()) {
+        if (folder.getShared() && folder.getProviderKey().isEmpty()) {
             resId = R.drawable.ic_type_folder_shared;
         } else if (isRoot() && folder.getProviderItem() && !folder.getProviderKey().isEmpty()) {
             switch (folder.getProviderKey()) {

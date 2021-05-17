@@ -123,7 +123,7 @@ public class CountriesCodesFragment extends BaseAppFragment implements SearchVie
         final CountriesCodesTool.Codes codes = mCountriesCodesAdapter.getItem(position);
         getFragmentManager().popBackStack(EnterprisePhoneFragment.TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         getFragmentManager().popBackStack(CountriesCodesFragment.TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        showFragment(EnterprisePhoneFragment.newInstance(codes.mNumber, codes.mName, codes.mCode), EnterprisePhoneFragment.TAG, false);
+        showFragment(EnterprisePhoneFragment.Companion.newInstance(codes.mNumber, codes.mName, codes.mCode), EnterprisePhoneFragment.TAG, false);
     }
 
     private void init(final Bundle savedInstanceState) {

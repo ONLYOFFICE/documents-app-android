@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-import app.editors.manager.app.Api;
+import app.documents.core.network.ApiContract;
 
 public class Current implements Cloneable, Serializable {
 
@@ -35,7 +35,7 @@ public class Current implements Cloneable, Serializable {
 
     @SerializedName("access")
     @Expose
-    private int access = Api.ShareCode.NONE;
+    private int access = ApiContract.ShareCode.NONE;
 
     @SerializedName("shared")
     @Expose
@@ -43,7 +43,7 @@ public class Current implements Cloneable, Serializable {
 
     @SerializedName("rootFolderType")
     @Expose
-    private int rootFolderType = Api.SectionType.UNKNOWN;
+    private int rootFolderType = ApiContract.SectionType.UNKNOWN;
 
     @SerializedName("updatedBy")
     @Expose

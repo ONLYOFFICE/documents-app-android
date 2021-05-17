@@ -9,14 +9,13 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import app.editors.manager.R;
-import app.editors.manager.mvp.models.explorer.Folder;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.ui.adapters.ExplorerAdapter;
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import lib.toolkit.base.managers.utils.TimeUtils;
 
-public class FolderViewHolder extends BaseViewHolderExplorer<Folder> {
+public class FolderViewHolder extends BaseViewHolderExplorer<CloudFolder> {
 
     public static final int LAYOUT = R.layout.list_explorer_folder;
 
@@ -58,7 +57,7 @@ public class FolderViewHolder extends BaseViewHolderExplorer<Folder> {
         }
     }
 
-    public void bind(Folder folder) {
+    public void bind(CloudFolder folder) {
         // Get folder info
         final StringBuilder folderInfo = new StringBuilder(TimeUtils.getWeekDate(folder.getUpdated()));
         if (mAdapter.mPreferenceTool.getSelfId().equalsIgnoreCase(folder.getCreatedBy().getId())) {

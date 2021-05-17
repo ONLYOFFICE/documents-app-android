@@ -4,3 +4,4 @@
 
 /build
 /src/main/assets
+/src/main/res/values/auth_strings.xml

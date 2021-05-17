@@ -4,18 +4,20 @@ import android.content.Context;
 
 import javax.inject.Singleton;
 
+import app.documents.core.account.AccountDao;
+import app.documents.core.di.module.AccountModule;
+import app.documents.core.di.module.RecentModule;
+import app.documents.core.di.module.SettingsModule;
+import app.documents.core.settings.NetworkSettings;
+import app.documents.core.settings.WebDavInterceptor;
+import app.editors.manager.app.MigrateDb;
 import app.editors.manager.di.module.AppModule;
 import app.editors.manager.di.module.ToolModule;
 import app.editors.manager.managers.providers.AccountProvider;
-import app.editors.manager.managers.retrofit.WebDavInterceptor;
-import app.editors.manager.managers.services.DownloadService;
-import app.editors.manager.managers.services.UploadService;
 import app.editors.manager.managers.tools.AccountManagerTool;
-import app.editors.manager.managers.tools.AccountSqlTool;
 import app.editors.manager.managers.tools.CacheTool;
 import app.editors.manager.managers.tools.CountriesCodesTool;
 import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.presenters.login.AccountsPresenter;
 import app.editors.manager.mvp.presenters.login.EnterpriseAppAuthPresenter;
@@ -30,12 +32,13 @@ import app.editors.manager.mvp.presenters.login.PersonalLoginPresenter;
 import app.editors.manager.mvp.presenters.login.PersonalSignUpPresenter;
 import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter;
 import app.editors.manager.mvp.presenters.main.AppSettingsPresenter;
-import app.editors.manager.mvp.presenters.main.CloudAccountsPresenter;
+import app.editors.manager.mvp.presenters.main.CloudAccountPresenter;
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter;
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter;
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter;
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter;
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter;
+import app.editors.manager.mvp.presenters.main.MainPagerPresenter;
 import app.editors.manager.mvp.presenters.main.ProfilePresenter;
 import app.editors.manager.mvp.presenters.share.AddPresenter;
 import app.editors.manager.mvp.presenters.share.SettingsPresenter;
@@ -46,7 +49,6 @@ import app.editors.manager.ui.activities.main.OperationActivity;
 import app.editors.manager.ui.adapters.ExplorerAdapter;
 import app.editors.manager.ui.adapters.MediaAdapter;
 import app.editors.manager.ui.adapters.ShareAddAdapter;
-import app.editors.manager.ui.adapters.ShareSettingsAdapter;
 import app.editors.manager.ui.dialogs.AccountBottomDialog;
 import app.editors.manager.ui.fragments.login.AuthPagerFragment;
 import app.editors.manager.ui.fragments.login.CountriesCodesFragment;
@@ -56,7 +58,6 @@ import app.editors.manager.ui.fragments.login.EnterpriseSignInFragment;
 import app.editors.manager.ui.fragments.login.EnterpriseSmsFragment;
 import app.editors.manager.ui.fragments.login.PersonalPortalFragment;
 import app.editors.manager.ui.fragments.main.DocsBaseFragment;
-import app.editors.manager.ui.fragments.main.MainPagerFragment;
 import app.editors.manager.ui.fragments.main.WebViewerFragment;
 import app.editors.manager.ui.fragments.media.MediaImageFragment;
 import app.editors.manager.ui.fragments.media.MediaVideoFragment;
@@ -70,7 +71,7 @@ import dagger.Component;
 import lib.toolkit.base.managers.tools.GlideTool;
 import lib.toolkit.base.managers.tools.LocalContentTools;
 
-@Component(modules = {AppModule.class, ToolModule.class})
+@Component(modules = {AppModule.class, ToolModule.class, SettingsModule.class, AccountModule.class, RecentModule.class})
 @Singleton
 public interface AppComponent {
 
@@ -79,14 +80,14 @@ public interface AppComponent {
     * */
     Context getContext();
     PreferenceTool getPreference();
-    RetrofitTool getRetrofit();
     CountriesCodesTool getCountriesCodes();
     AccountManagerTool getAccountsManager();
-    AccountSqlTool getAccountsSql();
     CacheTool getCacheTool();
     OperationsState getSectionsState();
     LocalContentTools getContentTools();
     GlideTool getGlideTools();
+    NetworkSettings getNetworkSettings();
+    AccountDao getAccountsDao();
 
     /*
     * Login
@@ -100,6 +101,7 @@ public interface AppComponent {
     void inject(PersonalLoginPresenter personalSignInPresenter);
     void inject(PersonalSignUpPresenter personalSignUpPresenter);
     void inject(EnterpriseSSOPresenter enterpriseSSOPresenter);
+    void inject(MigrateDb migrateDb);
 
     void inject(CountriesCodesFragment codesFragment);
     void inject(EnterprisePhoneFragment phoneFragment);
@@ -124,12 +126,12 @@ public interface AppComponent {
     void inject(ExplorerAdapter explorerAdapter);
     void inject(MediaAdapter mediaAdapter);
     void inject(AppSettingsPresenter settingsPresenter);
-    void inject(CloudAccountsPresenter accountsPresenter);
+    void inject(CloudAccountPresenter accountsPresenter);
+    void inject(MainPagerPresenter mainPagerPresenter);
 
     /*
     * Media
     * */
-    void inject(MainPagerFragment mainPagerFragment);
     void inject(MediaVideoFragment mediaVideoFragment);
     void inject(MediaImageFragment mediaImageFragment);
 
@@ -139,7 +141,6 @@ public interface AppComponent {
     void inject(SettingsPresenter settingsPresenter);
     void inject(AddPresenter addPresenter);
     void inject(ShareAddAdapter shareAddAdapter);
-    void inject(ShareSettingsAdapter shareSettingsAdapter);
 
     /*
     * Storage
@@ -149,12 +150,6 @@ public interface AppComponent {
     void inject(ConnectFragment connectFragment);
     void inject(ConnectPresenter settingsFragment);
     void inject(WebDavFragment webDavFragment);
-
-    /*
-    * Services
-    * */
-    void inject(DownloadService downloadService);
-    void inject(UploadService uploadService);
 
     /*
     * On boarding

@@ -22,13 +22,14 @@ import androidx.recyclerview.widget.DiffUtil;
 import java.util.Collections;
 import java.util.List;
 
+import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
 import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.mvp.models.base.Entity;
+import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.Folder;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.explorer.UploadFile;
 import app.editors.manager.mvp.models.list.Header;
@@ -365,7 +366,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     }
 
     @Override
-    public void onOpenLocalFile(File file) {
+    public void onOpenLocalFile(CloudFile file) {
         Uri uri = Uri.parse(file.getWebUrl());
         switch (StringUtils.getExtension(file.getFileExst())) {
             case DOC:
@@ -387,7 +388,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
             case VIDEO_SUPPORT:
                 getPresenter().addRecent(file);
                 Explorer explorer = new Explorer();
-                File videoFile = file.clone();
+                CloudFile videoFile = file.clone();
                 videoFile.setWebUrl(uri.getPath());
                 videoFile.setId("");
                 explorer.setFiles(Collections.singletonList(videoFile));
@@ -416,7 +417,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
                 onFileDownloadPermission();
                 break;
             case RENAME:
-                if (getPresenter().getItemClicked() instanceof File) {
+                if (getPresenter().getItemClicked() instanceof CloudFile) {
                     showEditDialogRename(getString(R.string.dialogs_edit_rename_title),
                             StringUtils.getNameWithoutExtension(getPresenter().getItemTitle()),
                             getString(R.string.dialogs_edit_hint), DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
@@ -748,12 +749,12 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
      * Changes
      * */
     @Override
-    public void onCreateFolder(Folder folder) {
+    public void onCreateFolder(CloudFolder folder) {
         // Stub
     }
 
     @Override
-    public void onCreateFile(File file) {
+    public void onCreateFile(CloudFile file) {
         showViewerActivity(file);
     }
 
@@ -942,16 +943,16 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
     @Override
     public void continueClick(@NonNull String tag, String action) {
-        int operationType = Api.Operation.OVERWRITE;
+        int operationType = ApiContract.Operation.OVERWRITE;
         switch (tag) {
             case MoveCopyDialog.TAG_DUPLICATE:
-                operationType = Api.Operation.DUPLICATE;
+                operationType = ApiContract.Operation.DUPLICATE;
                 break;
             case MoveCopyDialog.TAG_OVERWRITE:
-                operationType = Api.Operation.OVERWRITE;
+                operationType = ApiContract.Operation.OVERWRITE;
                 break;
             case MoveCopyDialog.TAG_SKIP:
-                operationType = Api.Operation.SKIP;
+                operationType = ApiContract.Operation.SKIP;
                 break;
         }
         if (action.equals(MoveCopyDialog.ACTION_COPY)) {

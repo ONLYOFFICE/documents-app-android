@@ -23,7 +23,7 @@ import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.mvp.models.account.Storage;
-import app.editors.manager.mvp.models.explorer.Folder;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter;
 import app.editors.manager.mvp.views.storage.ConnectView;
 import app.editors.manager.ui.activities.main.MainActivity;
@@ -142,7 +142,7 @@ public class ConnectFragment extends BaseAppFragment implements ConnectView {
     }
 
     @Override
-    public void onConnect(Folder folder) {
+    public void onConnect(CloudFolder folder) {
         hideDialog();
         mStorageActivity.finishWithResult(folder);
     }

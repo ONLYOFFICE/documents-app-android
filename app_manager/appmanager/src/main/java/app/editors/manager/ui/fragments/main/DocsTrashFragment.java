@@ -135,7 +135,7 @@ public class DocsTrashFragment extends DocsCloudFragment implements View.OnClick
     }
 
     private void init() {
-        mMainActivity.setNavigationButton(true);
+//        mMainActivity.setNavigationButton(true);
     }
 
     private void showMenu(Menu menu) {

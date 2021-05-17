@@ -120,7 +120,7 @@ public class ActionBottomPopup extends BasePopup {
 //    }
 
     public void setViewState() {
-        mPopupWindow.setAnimationStyle(R.style.FabPopupAnimation);
+        popupWindow.setAnimationStyle(R.style.FabPopupAnimation);
 
         if (!mIsThirdParty) {
             mViewLineSeparatorStorage.setVisibility(View.GONE);
@@ -166,6 +166,6 @@ public class ActionBottomPopup extends BasePopup {
     }
 
     public boolean isVisible() {
-        return mPopupWindow.isShowing();
+        return popupWindow.isShowing();
     }
 }

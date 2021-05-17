@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.Collections;
+
 import javax.inject.Inject;
 
 import app.editors.manager.R;
@@ -81,7 +83,7 @@ public class PortalsActivity extends BaseAppActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        SignInActivity.showPortalSignIn(this, mPreferenceTool.getPortal(), mPreferenceTool.getLogin());
+        SignInActivity.showPortalSignIn(this, mPreferenceTool.getPortal(), mPreferenceTool.getLogin(), new String[] {});
     }
 
     private void init(@Nullable final Bundle savedInstanceState) {
@@ -125,7 +127,7 @@ public class PortalsActivity extends BaseAppActivity implements View.OnClickList
 
     private void showActivities(@Nullable final Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            showFragment(PortalsPagerFragment.newInstance(), null);
+            showFragment(PortalsPagerFragment.Companion.newInstance(), null);
         }
 
         if (!mPreferenceTool.getOnBoarding()) {
@@ -150,6 +152,12 @@ public class PortalsActivity extends BaseAppActivity implements View.OnClickList
         final Intent intent = new Intent(context, PortalsActivity.class);
         intent.putExtra(KEY_PORTALS, true);
         context.startActivityForResult(intent, REQUEST_ACTIVITY_PORTAL);
+    }
+
+    public static void showPortals(final Fragment fragment) {
+        final Intent intent = new Intent(fragment.requireContext(), PortalsActivity.class);
+        intent.putExtra(KEY_PORTALS, true);
+        fragment.startActivityForResult(intent, REQUEST_ACTIVITY_PORTAL);
     }
 
 }

@@ -2,6 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height"
     android:clickable="false"
@@ -9,8 +10,6 @@
     android:background="@color/colorWhite">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/share_add_item_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -38,7 +37,7 @@
             android:orientation="vertical"
             app:layout_constraintGuide_begin="@dimen/share_group_guideline" />
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             style="@style/CommonImageView"
             android:id="@+id/share_add_item_avatar_image"
             android:layout_width="@dimen/image_size"
@@ -47,7 +46,8 @@
             android:src="@drawable/drawable_list_share_image_item_user_placeholder"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/guideline1"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/ItemMediumBlackText"
