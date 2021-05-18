@@ -104,6 +104,7 @@
         ONLYOFFICE portal allows to save files in the cloud, share it with co-workers and co-edit in real time.
     </string>
     <string name="login_not_authorization_info">Could not sign in to %1$s at %2$s</string>
+    <string name="login_not_authorization_info_token">Session time is over</string>
     <string name="login_not_authorization_button">TRY AGAIN</string>
     <string name="errors_first_name">First name is not valid. It must not contain digits.</string>
     <string name="errors_last_name">Last name is not valid. It must not contain digits.</string>

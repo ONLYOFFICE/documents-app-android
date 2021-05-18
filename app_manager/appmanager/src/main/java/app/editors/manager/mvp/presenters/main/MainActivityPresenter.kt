@@ -254,7 +254,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
     fun clear() {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
-                accountDao.addAccount(
+                accountDao.updateAccount(
                     it.copy(
                         isOnline = false
                     )

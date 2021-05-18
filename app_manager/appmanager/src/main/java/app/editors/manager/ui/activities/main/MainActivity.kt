@@ -351,6 +351,8 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
 
     override fun onUnauthorized(message: String?) {
         message?.let { showSnackBar(it) }
+        setAppBarStates(false)
+        showNavigationButton(false)
         presenter.clear()
         viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
     }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
 import androidx.recyclerview.selection.SelectionPredicates
@@ -324,4 +325,12 @@ class CloudAccountFragment : BaseAppFragment(),
             showSnackBar(message)
         }
     }
+
+    override fun onUnauthorized(message: String?) {
+        message?.let {
+            showSnackBar(it)
+        }
+        Log.d(TAG, "onUnauthorized: ")
+    }
+
 }

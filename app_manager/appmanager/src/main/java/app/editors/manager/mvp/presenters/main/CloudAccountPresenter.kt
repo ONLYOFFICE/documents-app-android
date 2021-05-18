@@ -4,6 +4,7 @@ import android.accounts.Account
 import android.os.Bundle
 import app.documents.core.account.CloudAccount
 import app.documents.core.login.LoginResponse
+import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.response.ResponseUser
 import app.documents.core.settings.NetworkSettings
 import app.documents.core.webdav.WebDavApi
@@ -23,6 +24,7 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
 import okhttp3.Credentials
+import retrofit2.HttpException
 import java.util.*
 
 sealed class CloudAccountState {
@@ -151,10 +153,16 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     if (password.isNotEmpty()) {
                         webDavLogin(account, password)
                     } else {
-                        viewState.onWebDavLogin(Json.encodeToString(account), WebDavApi.Providers.valueOf(account.webDavProvider?: ""))
+                        viewState.onWebDavLogin(
+                            Json.encodeToString(account),
+                            WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                        )
                     }
                 } ?: run {
-                    viewState.onWebDavLogin(Json.encodeToString(account),  WebDavApi.Providers.valueOf(account.webDavProvider?: ""))
+                    viewState.onWebDavLogin(
+                        Json.encodeToString(account),
+                        WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                    )
                 }
             } else {
                 AccountUtils.getToken(context, account.getAccountName())?.let { token ->
@@ -194,8 +202,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             .subscribe({
                 loginSuccess(account)
             }, {
-                restoreSettings()
-                viewState.onError("Error login")
+                checkError(it, account)
             })
     }
 
@@ -210,11 +217,13 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     loginSuccess(account)
                 } else {
                     restoreSettings()
-                    viewState.onError("Error login")
+                    viewState.onWebDavLogin(
+                        Json.encodeToString(account),
+                        WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                    )
                 }
             }, {
-                restoreSettings()
-                viewState.onError("Error login")
+                checkError(it, account)
             })
     }
 
@@ -246,6 +255,15 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             networkSettings.setCipher(state.isCipher)
         }
         restoreState = null
+    }
+
+    fun checkError(throwable: Throwable, account: CloudAccount) {
+        restoreSettings()
+        if (throwable is HttpException && throwable.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
+            viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
+        } else {
+            fetchError(throwable)
+        }
     }
 
 }

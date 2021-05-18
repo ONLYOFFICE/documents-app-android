@@ -196,8 +196,7 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
         if (responseCode == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED && viewState is BaseViewExt) {
             (viewState as BaseViewExt).onUnauthorized(
                 context.getString(
-                    R.string.login_not_authorization_info,
-                    preferenceTool.login, preferenceTool.portal
+                    R.string.login_not_authorization_info_token
                 )
             )
         }
