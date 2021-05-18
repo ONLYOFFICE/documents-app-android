@@ -5,12 +5,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -57,9 +55,9 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     private var viewBinding: FragmentLoginEnterpriseSigninBinding? = null
 
-    private var mSignInActivity: SignInActivity? = null
-    private var mSocialViews: SocialViews? = null
-    private var mFieldsWatcher: FieldsWatcher? = null
+    private var signInActivity: SignInActivity? = null
+    private var socialViews: SocialViews? = null
+    private var fieldsWatcher: FieldsWatcher? = null
 
     private val portal: String?
         get() = arguments?.getString(SignInActivity.KEY_PORTAL)
@@ -71,7 +69,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     override fun onAttach(context: Context) {
         super.onAttach(context)
         App.getApp().appComponent.inject(this)
-        mSignInActivity = try {
+        signInActivity = try {
             context as SignInActivity
         } catch (e: ClassCastException) {
             throw RuntimeException(
@@ -93,7 +91,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mSignInActivity!!.setOnActivityResult(this)
+        signInActivity?.setOnActivityResult(this)
         init(savedInstanceState)
     }
 
@@ -116,8 +114,8 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mSocialViews!!.onDestroyView()
-        mSignInActivity!!.setOnActivityResult(null)
+        socialViews?.onDestroyView()
+        signInActivity?.setOnActivityResult(null)
         presenter.cancelRequest()
     }
 
@@ -136,8 +134,8 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         }
 
         viewBinding?.loginEnterprisePortalPasswordEdit?.apply {
-            setOnEditorActionListener { v, actionId, event ->
-                actionKeyPress(v, actionId, event)
+            setOnEditorActionListener { _, actionId, _ ->
+                actionKeyPress(actionId)
             }
             setOnTouchListener { _, _ ->
                 onEmailTouchListener()
@@ -159,7 +157,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         if (requestCode == SocialViews.GOOGLE_PERMISSION) {
             presenter.retrySignInWithGoogle()
         } else {
-            mSocialViews!!.onActivityResult(requestCode, resultCode, data)
+            socialViews?.onActivityResult(requestCode, resultCode, data)
         }
     }
 
@@ -167,7 +165,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         super.onAcceptClick(dialogs, value, tag)
         if (tag != null) {
             when (tag) {
-                EnterpriseLoginPresenter.TAG_DIALOG_LOGIN_FACEBOOK -> mSocialViews!!.onFacebookContinue()
+                EnterpriseLoginPresenter.TAG_DIALOG_LOGIN_FACEBOOK -> socialViews?.onFacebookContinue()
             }
         }
     }
@@ -177,7 +175,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         if (tag != null) {
             when (tag) {
                 EnterpriseLoginPresenter.TAG_DIALOG_WAITING -> presenter.cancelRequest()
-                EnterpriseLoginPresenter.TAG_DIALOG_LOGIN_FACEBOOK -> mSocialViews!!.onFacebookLogout()
+                EnterpriseLoginPresenter.TAG_DIALOG_LOGIN_FACEBOOK -> socialViews?.onFacebookLogout()
             }
         }
     }
@@ -185,12 +183,11 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     private fun signInButtonClick() {
         val email = viewBinding?.loginEnterprisePortalEmailEdit?.text.toString()
         val password = viewBinding?.loginEnterprisePortalPasswordEdit?.text.toString()
-        presenter.signInPortal(email.trim { it <= ' ' }, password, portal!!)
+        presenter.signInPortal(email.trim { it <= ' ' }, password, portal ?: "")
     }
 
 
     private fun onSignOnButtonClick() {
-        //showFragment(EnterpriseSmsFragment.newInstance(false, null), EnterpriseSmsFragment.TAG, false);
         showFragment(
             SSOLoginFragment.newInstance(networkSettings.ssoUrl),
             SSOLoginFragment.TAG,
@@ -203,7 +200,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
 
-    private fun actionKeyPress(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+    private fun actionKeyPress(actionId: Int): Boolean {
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             signInButtonClick()
             return true
@@ -265,7 +262,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     override fun onError(message: String?) {
         hideDialog()
-        showSnackBar(message!!)
+        message?.let { showSnackBar(it) }
     }
 
     override fun onTwitterSuccess(token: String) {
@@ -350,11 +347,11 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
             if (networkSettings.isPortalInfo) getString(R.string.facebook_app_id_info) else getString(
                 R.string.facebook_app_id
             )
-        mSocialViews = SocialViews(activity, viewBinding?.socialNetworkLayout?.socialNetworkLayout, facebookId)
-        mSocialViews!!.setOnSocialNetworkCallbacks(this)
-        mFieldsWatcher = FieldsWatcher()
-        viewBinding?.loginEnterprisePortalEmailEdit!!.addTextChangedListener(mFieldsWatcher)
-        viewBinding?.loginEnterprisePortalPasswordEdit!!.addTextChangedListener(mFieldsWatcher)
+        socialViews = SocialViews(activity, viewBinding?.socialNetworkLayout?.socialNetworkLayout, facebookId)
+        socialViews?.setOnSocialNetworkCallbacks(this)
+        fieldsWatcher = FieldsWatcher()
+        viewBinding?.loginEnterprisePortalEmailEdit?.addTextChangedListener(fieldsWatcher)
+        viewBinding?.loginEnterprisePortalPasswordEdit?.addTextChangedListener(fieldsWatcher)
         viewBinding?.loginEnterpriseSigninButton?.isEnabled = false
         viewBinding?.loginEnterpriseSignonButton?.isEnabled = false
 
@@ -366,7 +363,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     private val intent: Unit
         get() {
-            val intent = activity!!.intent
+            val intent = activity?.intent
             if (intent != null) {
 //                if (intent.hasExtra(SignInActivity.TAG_PORTAL_SIGN_IN_EMAIL) && mPreferenceTool!!.login != null) {
 //                    viewBinding?.loginEnterprisePortalEmailEdit!!.setText(mPreferenceTool!!.login)
@@ -383,16 +380,6 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
                 isEnabled = true
             }
         }
-
-//        final String login = mPreferenceTool.getLogin();
-//        if (login != null) {
-//            mLoginPersonalPortalEmailEdit.setText(login);
-//        }
-//
-////        final String password = mPreferenceTool.getPassword();
-////        if (password != null) {
-////            mLoginPersonalPortalPasswordEdit.setText(password);
-////        }
         if (savedInstanceState == null) {
             viewBinding?.loginEnterprisePortalEmailEdit?.isFocusable = false
             viewBinding?.loginEnterprisePortalPasswordEdit?.isFocusable = false
@@ -420,11 +407,11 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     private fun showGoogleLogin(isShow: Boolean) {
-        mSocialViews?.showGoogleLogin(isShow)
+        socialViews?.showGoogleLogin(isShow)
     }
 
     private fun showFacebookLogin(isShow: Boolean) {
-        mSocialViews?.showFacebookLogin(isShow)
+        socialViews?.showFacebookLogin(isShow)
     }
 
     /*

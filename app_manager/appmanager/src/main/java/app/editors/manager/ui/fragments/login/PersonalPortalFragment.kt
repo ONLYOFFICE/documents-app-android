@@ -4,16 +4,13 @@ import android.accounts.Account
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentLoginPersonalPortalBinding
-import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.presenters.login.PersonalLoginPresenter
 import app.editors.manager.mvp.views.login.CommonSignInView
 import app.editors.manager.ui.activities.login.AuthAppActivity
@@ -30,7 +27,6 @@ import app.editors.manager.ui.views.custom.SocialViews.OnSocialNetworkCallbacks
 import app.editors.manager.ui.views.edits.BaseWatcher
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
-import javax.inject.Inject
 
 class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetworkCallbacks {
 
@@ -47,28 +43,26 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         }
     }
 
-    @JvmField
-    @Inject
-    var mPreferenceTool: PreferenceTool? = null
-
     @InjectPresenter
-    lateinit var mPersonalSignInPresenter: PersonalLoginPresenter
+    lateinit var personalSignInPresenter: PersonalLoginPresenter
 
     private var viewBinding: FragmentLoginPersonalPortalBinding? = null
 
-    private var mPortalsActivity: PortalsActivity? = null
-    private var mFieldsWatcher: FieldsWatcher? = null
-    private var mSocialViews: SocialViews? = null
+    private var portalsActivity: PortalsActivity? = null
+    private var fieldsWatcher: FieldsWatcher? = null
+    private var socialViews: SocialViews? = null
 
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         App.getApp().appComponent.inject(this)
-        mPortalsActivity = try {
+        portalsActivity = try {
             context as PortalsActivity
         } catch (e: ClassCastException) {
-            throw RuntimeException(PersonalPortalFragment::class.java.simpleName + " - must implement - " +
-                    PortalsActivity::class.java.simpleName)
+            throw RuntimeException(
+                PersonalPortalFragment::class.java.simpleName + " - must implement - " +
+                        PortalsActivity::class.java.simpleName
+            )
         }
     }
 
@@ -86,14 +80,14 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mPortalsActivity!!.setOnActivityResult(this)
+        portalsActivity?.setOnActivityResult(this)
         init(savedInstanceState)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mSocialViews!!.onDestroyView()
-        mPortalsActivity!!.setOnActivityResult(null)
+        socialViews?.onDestroyView()
+        portalsActivity?.setOnActivityResult(null)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -105,9 +99,9 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SocialViews.GOOGLE_PERMISSION) {
-            mPersonalSignInPresenter.retrySignInWithGoogle()
+            personalSignInPresenter.retrySignInWithGoogle()
         } else {
-            mSocialViews!!.onActivityResult(requestCode, resultCode, data)
+            socialViews?.onActivityResult(requestCode, resultCode, data)
         }
     }
 
@@ -115,7 +109,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         super.onAcceptClick(dialogs, value, tag)
         if (tag != null) {
             when (tag) {
-                TAG_DIALOG_LOGIN_FACEBOOK -> mSocialViews!!.onFacebookContinue()
+                TAG_DIALOG_LOGIN_FACEBOOK -> socialViews?.onFacebookContinue()
             }
         }
     }
@@ -124,8 +118,8 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         super.onCancelClick(dialogs, tag)
         if (tag != null) {
             when (tag) {
-                TAG_DIALOG_WAITING -> mPersonalSignInPresenter.cancelRequest()
-                TAG_DIALOG_LOGIN_FACEBOOK -> mSocialViews!!.onFacebookLogout()
+                TAG_DIALOG_WAITING -> personalSignInPresenter.cancelRequest()
+                TAG_DIALOG_LOGIN_FACEBOOK -> socialViews?.onFacebookLogout()
             }
         }
     }
@@ -134,14 +128,14 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         hideKeyboard(viewBinding?.loginPersonalPortalEmailEdit)
         val email = viewBinding?.loginPersonalPortalEmailEdit?.text.toString()
         val password = viewBinding?.loginPersonalPortalPasswordEdit?.text.toString()
-        mPersonalSignInPresenter.signInPersonal(email, password)
+        personalSignInPresenter.signInPersonal(email, password)
     }
 
     private fun signUpClick() {
         showPersonalSignUp(context!!)
     }
 
-    private fun actionKeyPress(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+    private fun actionKeyPress(actionId: Int): Boolean {
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             onSignInClick()
             return true
@@ -152,15 +146,15 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     override fun onSuccessLogin() {
         hideDialog()
         context?.let { MainActivity.show(it) }
-        activity!!.finish()
+        requireActivity().finish()
     }
 
     override fun onTwoFactorAuth(phoneNoise: String?, request: String) {
         hideDialog()
         if (phoneNoise != null) {
-            context?.let { showPhone(it, request) };
+            context?.let { showPhone(it, request) }
         } else {
-            context?.let { showSms(it, request) };
+            context?.let { showSms(it, request) }
         }
     }
 
@@ -192,8 +186,12 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     }
 
     override fun onTwitterSuccess(token: String) {
-        showWaitingDialog(getString(R.string.dialogs_wait_title), getString(R.string.dialogs_common_cancel_button), TAG_DIALOG_WAITING)
-        mPersonalSignInPresenter.signInPersonalWithTwitter(token)
+        showWaitingDialog(
+            getString(R.string.dialogs_wait_title),
+            getString(R.string.dialogs_common_cancel_button),
+            TAG_DIALOG_WAITING
+        )
+        personalSignInPresenter.signInPersonalWithTwitter(token)
     }
 
     override fun onTwitterFailed() {
@@ -202,15 +200,21 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     }
 
     override fun onFacebookSuccess(token: String) {
-        showWaitingDialog(getString(R.string.dialogs_wait_title), getString(R.string.dialogs_common_cancel_button), TAG_DIALOG_WAITING)
-        mPersonalSignInPresenter.signInPersonalWithFacebook(token)
+        showWaitingDialog(
+            getString(R.string.dialogs_wait_title),
+            getString(R.string.dialogs_common_cancel_button),
+            TAG_DIALOG_WAITING
+        )
+        personalSignInPresenter.signInPersonalWithFacebook(token)
     }
 
     override fun onFacebookLogin(message: String) {
-        showQuestionDialog(getString(R.string.dialogs_question_facebook_title),
+        showQuestionDialog(
+            getString(R.string.dialogs_question_facebook_title),
             getString(R.string.dialogs_question_facebook_question) + message,
             getString(R.string.dialogs_question_accept_yes), getString(R.string.dialogs_question_accept_no),
-            TAG_DIALOG_LOGIN_FACEBOOK)
+            TAG_DIALOG_LOGIN_FACEBOOK
+        )
     }
 
     override fun onFacebookCancel() {
@@ -222,8 +226,12 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     }
 
     override fun onGoogleSuccess(account: Account) {
-        showWaitingDialog(getString(R.string.dialogs_wait_title), getString(R.string.dialogs_common_cancel_button), TAG_DIALOG_WAITING)
-        mPersonalSignInPresenter.signInPersonalWithGoogle(account)
+        showWaitingDialog(
+            getString(R.string.dialogs_wait_title),
+            getString(R.string.dialogs_common_cancel_button),
+            TAG_DIALOG_WAITING
+        )
+        personalSignInPresenter.signInPersonalWithGoogle(account)
     }
 
     override fun onGoogleFailed() {
@@ -231,11 +239,14 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        mFieldsWatcher = FieldsWatcher()
+        fieldsWatcher = FieldsWatcher()
         initListeners()
-        val facebookId = if (mPreferenceTool!!.isPortalInfo) getString(R.string.facebook_app_id_info) else getString(R.string.facebook_app_id)
-        mSocialViews = SocialViews(activity, viewBinding?.socialNetworkLayout?.socialNetworkLayout, facebookId)
-        mSocialViews!!.setOnSocialNetworkCallbacks(this)
+        socialViews = SocialViews(
+            requireActivity(),
+            viewBinding?.socialNetworkLayout?.socialNetworkLayout,
+            getString(R.string.facebook_app_id)
+        )
+        socialViews?.setOnSocialNetworkCallbacks(this)
         viewBinding?.loginPersonalPortalEmailEdit?.clearFocus()
         viewBinding?.loginPersonalSigninButton?.isEnabled = false
         restoreValues(savedInstanceState)
@@ -249,12 +260,12 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         viewBinding?.loginPersonalSignupButton?.setOnClickListener {
             signUpClick()
         }
-        viewBinding?.loginPersonalPortalEmailEdit?.addTextChangedListener(mFieldsWatcher)
+        viewBinding?.loginPersonalPortalEmailEdit?.addTextChangedListener(fieldsWatcher)
 
-        viewBinding?.loginPersonalPortalPasswordEdit?.addTextChangedListener(mFieldsWatcher)
+        viewBinding?.loginPersonalPortalPasswordEdit?.addTextChangedListener(fieldsWatcher)
 
-        viewBinding?.loginPersonalPortalPasswordEdit?.setOnEditorActionListener { v, actionId, event ->
-            actionKeyPress(v, actionId, event)
+        viewBinding?.loginPersonalPortalPasswordEdit?.setOnEditorActionListener { _, actionId, _ ->
+            actionKeyPress(actionId)
         }
     }
 

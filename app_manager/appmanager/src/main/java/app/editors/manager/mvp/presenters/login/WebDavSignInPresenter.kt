@@ -217,7 +217,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         val uri = Uri.parse(url)
         var path = uri.path
         val base = uri.authority
-        if (base != null && path!!.contains(base)) {
+        if (base != null && path?.contains(base) == true) {
             path = path.replace(base.toRegex(), "")
         }
         return if (path != null && path != "") {

@@ -36,7 +36,6 @@ import moxy.presenter.InjectPresenter
 class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
 
     companion object {
-        @JvmField
         val TAG: String = AuthPageFragment::class.java.simpleName
         var SECRET_LABEL = "SECRET_LABEL"
 
@@ -92,8 +91,8 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (supportActionBar != null && supportActionBar!!.title != null) {
-            outState.putString(KEY_TITLE, supportActionBar!!.title.toString())
+        if (supportActionBar != null && supportActionBar?.title != null) {
+            outState.putString(KEY_TITLE, supportActionBar?.title.toString())
         }
     }
 
@@ -260,40 +259,42 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
     }
 
     private inner class FieldsWatch : BaseWatcher() {
-        private var mSrcString: StringBuilder? = null
-        private var mSubString: String? = null
-        private var mSelectPosition = 0
+
+        private var srcString: StringBuilder? = null
+        private var subString: String? = null
+        private var selectPosition = 0
+
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            mSrcString = StringBuilder(s)
+            srcString = StringBuilder(s)
         }
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             if (start < SmsReceiver.SMS_CODE_LENGTH && count <= SmsReceiver.SMS_CODE_LENGTH) {
-                mSubString = s.subSequence(start, start + count).toString()
-                if ("" != mSubString) {
-                    mSelectPosition = if (count == 6) {
+                subString = s.subSequence(start, start + count).toString()
+                if ("" != subString) {
+                    selectPosition = if (count == 6) {
                         0
                     } else {
                         start + count
                     }
-                    mSrcString!!.replace(start, start + count, mSubString)
+                    srcString?.replace(start, start + count, subString ?: "")
                 } else {
                     val repeat = StringUtils.repeatString(CODE_PLACEHOLDER, before)
-                    mSelectPosition = start
-                    mSrcString!!.replace(start, start + before, repeat)
+                    selectPosition = start
+                    srcString?.replace(start, start + before, repeat)
                 }
             }
         }
 
         override fun afterTextChanged(s: Editable) {
-            var resultString = mSrcString.toString()
+            var resultString = srcString.toString()
             if (resultString.length > 6) {
                 resultString = KeyboardUtils.getTextFromClipboard(context!!)
             }
             viewBinding?.authCodeEdit?.apply {
                 removeTextChangedListener(codeListener)
                 setText(resultString)
-                setSelection(mSelectPosition)
+                setSelection(selectPosition)
                 addTextChangedListener(codeListener)
             }
             viewBinding?.confirmButton?.isEnabled = resultString.matches(PATTERN_CODE.toRegex())

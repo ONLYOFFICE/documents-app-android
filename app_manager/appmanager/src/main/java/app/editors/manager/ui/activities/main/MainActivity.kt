@@ -171,7 +171,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
                 }
             }
             if (data != null && data.extras != null) {
-                if (data.extras!!.containsKey("fragment_error")) {
+                if (data.extras?.containsKey("fragment_error") == true) {
                     val dialog = getInfoDialog(
                         getString(R.string.app_internal_error),
                         getString(R.string.app_fragment_crash_error),

@@ -22,7 +22,7 @@ class BottomAccountAdapter : BaseListAdapter<CloudAccount>() {
         fun onAddAccountClick()
     }
 
-    private var mOnAddAccountClick: OnAddAccountClick? = null
+    private var onAddAccountClick: OnAddAccountClick? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == 1) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.list_account_item, parent, false)
@@ -47,7 +47,7 @@ class BottomAccountAdapter : BaseListAdapter<CloudAccount>() {
     }
 
     fun setOnAddAccountClick(onAddAccountClick: OnAddAccountClick?) {
-        mOnAddAccountClick = onAddAccountClick
+        this.onAddAccountClick = onAddAccountClick
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -64,8 +64,8 @@ class BottomAccountAdapter : BaseListAdapter<CloudAccount>() {
 
         fun bind() {
             accountsAddLayout.setOnClickListener { v: View? ->
-                if (mOnAddAccountClick != null) {
-                    mOnAddAccountClick!!.onAddAccountClick()
+                if (onAddAccountClick != null) {
+                    onAddAccountClick!!.onAddAccountClick()
                 }
             }
         }

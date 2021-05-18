@@ -23,17 +23,17 @@ class EnterprisePhonePresenter : BasePresenter<EnterprisePhoneView>() {
         App.getApp().appComponent.inject(this)
     }
 
-    private var mDisposable: Disposable? = null
+    private var disposable: Disposable? = null
 
     override fun onDestroy() {
         super.onDestroy()
-        mDisposable?.dispose()
+        disposable?.dispose()
     }
 
     fun setPhone(newPhone: String?, request: String) {
         val service = App.getApp().loginComponent.loginService
         val requestNumber = Json.decodeFromString<RequestSignIn>(request)
-        mDisposable = newPhone?.let { (requestNumber as RequestNumber).copy(mobilePhone = it) }?.let {
+        disposable = newPhone?.let { (requestNumber as RequestNumber).copy(mobilePhone = it) }?.let {
             service.changeNumber(it)
                 .subscribe({response ->
                     if(response is LoginResponse.Success) {

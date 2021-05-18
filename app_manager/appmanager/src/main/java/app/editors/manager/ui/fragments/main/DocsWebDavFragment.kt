@@ -81,7 +81,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
                     webDavPresenter.upload(mCameraUri, null)
                 }
                 REQUEST_PRESENTATION, REQUEST_PDF, REQUEST_DOCS, REQUEST_SHEETS -> {
-                    if (data!!.data != null) {
+                    if (data?.data != null) {
                         if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
                             webDavPresenter.upload(data.data, null)
                         }

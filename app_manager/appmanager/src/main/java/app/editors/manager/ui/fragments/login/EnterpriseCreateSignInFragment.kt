@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
-import app.documents.core.network.models.login.request.RequestSignIn
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentLoginEnterpriseCreateSigninBinding
 import app.editors.manager.mvp.presenters.login.EnterpriseCreateLoginPresenter
@@ -27,20 +26,20 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         const val TAG_LAST = "TAG_LAST"
 
         fun newInstance(email: String?, first: String?, last: String?): EnterpriseCreateSignInFragment {
-            val enterpriseCreateSignInFragment = EnterpriseCreateSignInFragment()
-            val bundle = Bundle()
-            bundle.putString(TAG_EMAIL, email)
-            bundle.putString(TAG_FIRST, first)
-            bundle.putString(TAG_LAST, last)
-            enterpriseCreateSignInFragment.arguments = bundle
-            return enterpriseCreateSignInFragment
+            return EnterpriseCreateSignInFragment().apply {
+                arguments = Bundle().apply {
+                    putString(TAG_EMAIL, email)
+                    putString(TAG_FIRST, first)
+                    putString(TAG_LAST, last)
+                }
+            }
         }
     }
 
     @InjectPresenter
-    lateinit  var mSignInPortalPresenter: EnterpriseCreateLoginPresenter
+    lateinit  var signInPortalPresenter: EnterpriseCreateLoginPresenter
 
-    private var mFieldsWatcher: FieldsWatcher? = null
+    private var fieldsWatcher: FieldsWatcher? = null
     private var viewBinding: FragmentLoginEnterpriseCreateSigninBinding? = null
 
     private var email: String? = null
@@ -74,7 +73,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         showWaitingDialog(getString(R.string.dialogs_wait_title))
         email?.let { first?.let { it1 ->
             last?.let { it2 ->
-                mSignInPortalPresenter.createPortal(password, it,
+                signInPortalPresenter.createPortal(password, it,
                     it1, it2
                 )
             }
@@ -83,7 +82,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
 
     override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
         super.onCancelClick(dialogs, tag)
-        mSignInPortalPresenter.cancelRequest()
+        signInPortalPresenter.cancelRequest()
     }
 
 
@@ -125,14 +124,14 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        mFieldsWatcher = FieldsWatcher()
+        fieldsWatcher = FieldsWatcher()
         initListeners()
         setActionBarTitle(getString(R.string.login_create_signin_title))
         showKeyboard(viewBinding?.loginSigninPasswordEdit)
         viewBinding?.loginSigninCreatePortalButton?.isEnabled = false
         viewBinding?.loginSigninPasswordEdit?.apply {
             requestFocus()
-            addTextChangedListener(mFieldsWatcher)
+            addTextChangedListener(fieldsWatcher)
         }
         args
     }
@@ -150,7 +149,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
             actionKeyPress(v, actionId, event)
         }
 
-        viewBinding?.loginSigninRepeatEdit?.addTextChangedListener(mFieldsWatcher)
+        viewBinding?.loginSigninRepeatEdit?.addTextChangedListener(fieldsWatcher)
     }
 
     private val args: Unit

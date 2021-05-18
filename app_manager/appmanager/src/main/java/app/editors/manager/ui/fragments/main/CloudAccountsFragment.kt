@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -8,22 +9,26 @@ import android.view.*
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.documents.core.account.CloudAccount
+import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
 import app.editors.manager.mvp.presenters.main.CloudAccountState
 import app.editors.manager.mvp.presenters.main.CloudAccountsPresenter
 import app.editors.manager.mvp.views.main.CloudAccountsView
 import app.editors.manager.ui.activities.login.PortalsActivity
-import app.editors.manager.ui.activities.login.SignInActivity
+import app.editors.manager.ui.activities.login.SignInActivity.Companion.showPortalSignIn
+import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.activities.main.CloudsActivity.show
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.activities.main.ProfileActivity
 import app.editors.manager.ui.activities.main.SettingsActivity
 import app.editors.manager.ui.adapters.CloudAccountsAdapter
+import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.dialogs.AccountContextDialog.OnAccountContextClickListener
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -54,15 +59,27 @@ class CloudAccountsFragment : BaseAppFragment(), CloudAccountsView, OnAccountCon
     private var deselectAllItem: MenuItem? = null
     private var deleteItem: MenuItem? = null
 
+    private var clickedPosition: Int? = null
+
     private val accountClickListener: ((account: CloudAccount) -> Unit) = { account ->
-        presenter.accountClick(account)
+        if(!adapter?.isSelectionMode!!) {
+            presenter.accountClick(account)
+        } else {
+            adapter?.itemList?.indexOf(account)?.let { presenter.checkLogin(account, it) }
+        }
     }
     private val accountLongClickListener: ((account: CloudAccount) -> Unit) = { account ->
-        presenter.accountLongClick(account)
+        if(!adapter?.isSelectionMode!!) {
+            presenter.accountLongClick(account)
+        } else {
+            adapter?.itemList?.indexOf(account)?.let { presenter.checkLogin(account, it) }
+        }
+
     }
     private val accountContextClickListener: ((account: CloudAccount, position: Int, view: View) -> Unit) =
         { account, position, view ->
             presenter.contextClick(account, position)
+            clickedPosition = position
             if (isTablet) {
                 getActivity()?.let {
                     CloudAccountPopup(requireContext()).apply {
@@ -76,6 +93,22 @@ class CloudAccountsFragment : BaseAppFragment(), CloudAccountsView, OnAccountCon
         }
     private val addClickListener: (() -> Unit) = {
         PortalsActivity.showPortals(getActivity())
+    }
+
+    override fun onBackPressed(): Boolean {
+        return presenter.onBackPressed()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(resultCode) {
+            Activity.RESULT_CANCELED -> clickedPosition?.let { removeItem(it) }
+            Activity.RESULT_OK -> clickedPosition?.let {
+                onUpdateItem(Json.decodeFromString(data?.getStringExtra(ProfileFragment.KEY_ACCOUNT)!!),
+                    it
+                )
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -168,7 +201,12 @@ class CloudAccountsFragment : BaseAppFragment(), CloudAccountsView, OnAccountCon
             is CloudAccountState.AccountLoadedState -> {
                 adapter?.setItems(state.account.toMutableList())
             }
-
+//            is CloudAccountState.DefaultState -> {
+//
+//            }
+//            is CloudAccountState.SelectedState -> {
+//
+//            }
         }
     }
 
@@ -199,15 +237,21 @@ class CloudAccountsFragment : BaseAppFragment(), CloudAccountsView, OnAccountCon
     }
 
     override fun onWebDavLogin(account: CloudAccount) {
+        WebDavLoginActivity.show(requireActivity(), account.provider?.let { WebDavApi.Providers.valueOf(it) }, Json.encodeToString(account))
     }
 
     override fun onShowClouds() {
+        activity.getNavigationBottom().selectedItemId = R.id.menu_item_cloud
     }
 
     override fun onShowBottomDialog(account: CloudAccount?) {
     }
 
     override fun onShowWaitingDialog() {
+        showWaitingDialog(
+            getString(R.string.dialogs_wait_title),
+            getString(R.string.dialogs_common_cancel_button), AccountBottomDialog.TAG
+        )
     }
 
     override fun removeItem(position: Int) {
@@ -221,30 +265,43 @@ class CloudAccountsFragment : BaseAppFragment(), CloudAccountsView, OnAccountCon
     override fun onSuccessLogin() {
         hideDialog()
         requireActivity().finish()
-        show(context!!)
+        show(context)
     }
 
     override fun onSignIn(portal: String?, login: String) {
         hideDialog()
-        SignInActivity.showPortalSignIn(this, portal, login)
+        showPortalSignIn(this, portal, login)
     }
 
     override fun onEmptyList() {
+        activity.getNavigationBottom().selectedItemId = R.id.menu_item_setting
     }
 
     override fun onSelectionMode() {
+        adapter?.isSelectionMode = true
+        adapter?.notifyDataSetChanged()
+        activity.showNavigationButton(true)
+        setMenuState(false)
     }
 
     override fun onDefaultState() {
+        setActionBarTitle(getString(R.string.cloud_accounts_title))
+        activity.showNavigationButton(false)
+        adapter?.isSelectionMode = false
+        adapter?.notifyDataSetChanged()
+        setMenuState(true)
     }
 
     override fun onSelectedItem(position: Int) {
+        adapter?.notifyItemChanged(position)
     }
 
     override fun onActionBarTitle(title: String) {
+        setActionBarTitle(title)
     }
 
     override fun onNotifyItems() {
+        adapter?.notifyDataSetChanged()
     }
 
     override fun onError(message: String?) {
@@ -253,7 +310,9 @@ class CloudAccountsFragment : BaseAppFragment(), CloudAccountsView, OnAccountCon
     }
 
     override fun onProfileClick(account: CloudAccount?) {
-        ProfileActivity.show(requireActivity(), Json.encodeToString(account))
+        startActivityForResult(Intent(context, ProfileActivity::class.java).apply {
+            putExtra(ProfileFragment.KEY_ACCOUNT, Json.encodeToString(account))
+        }, ProfileActivity.REQUEST_PROFILE)
     }
 
     override fun onLogOutClick() {
@@ -261,252 +320,10 @@ class CloudAccountsFragment : BaseAppFragment(), CloudAccountsView, OnAccountCon
     }
 
     override fun onRemoveClick(account: CloudAccount?) {
-        val account = presenter.contextAccount
-        if (account != null) {
-            showQuestionDialog(
-                getString(R.string.dialog_remove_account_title),
-                getString(R.string.dialog_remove_account_description, account.login, account.portal),
-                getString(R.string.dialogs_question_accept_remove),
-                getString(R.string.dialogs_common_cancel_button),
-                TAG_REMOVE
-            )
-        } else {
-            showQuestionDialog(
-                getString(R.string.dialog_remove_account_title),
-                getString(R.string.dialog_remove_account_description, "", ""),
-                getString(R.string.dialogs_question_accept_remove),
-                getString(R.string.dialogs_common_cancel_button),
-                TAG_REMOVE
-            )
-        }
+        TODO("Not yet implemented")
     }
 
     override fun onSignInClick() {
         presenter.signIn()
     }
-
-
-//    @JvmField
-//    @BindView(R.id.accountsLayout)
-//    var mAccountsLayout: FrameLayout? = null
-//
-//    @JvmField
-//    @BindView(R.id.accountsRecyclerView)
-//    var mAccountsRecyclerView: RecyclerView? = null
-//    private var mUnbinder: Unbinder? = null
-//
-//    @JvmField
-//    @InjectPresenter
-//    var mCloudAccountsPresenter: CloudAccountsPresenter? = null
-//    private var mMainActivity: IMainActivity? = null
-//    private var mAdapter: CloudAccountsAdapter? = null
-//    private var mSettingItem: MenuItem? = null
-//    private var mSelectAll: MenuItem? = null
-//    private var mDeselect: MenuItem? = null
-//    private var mDeleteAll: MenuItem? = null
-//    private var mPopup: CloudAccountPopup? = null
-//    private var mDialog: AccountContextDialog? = null
-//    override fun onAttach(context: Context) {
-//        super.onAttach(context)
-//        mMainActivity = if (context is IMainActivity) {
-//            context
-//        } else {
-//            throw RuntimeException(
-//                CloudAccountsFragment::class.java.simpleName + " - must implement - " +
-//                        MainActivity::class.java.simpleName
-//            )
-//        }
-//    }
-//
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if (resultCode == Activity.RESULT_CANCELED && requestCode == SignInActivity.REQUEST_SIGN_IN) {
-//            mCloudAccountsPresenter!!.restoreAccount()
-//        }
-//    }
-//
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-//        val view = inflater.inflate(R.layout.clouds_accounts_layout, container, false)
-//        mUnbinder = ButterKnife.bind(this, view)
-//        return view
-//    }
-//
-//    override fun onBackPressed(): Boolean {
-//        return if (mPopup != null && mPopup!!.isVisible) {
-//            mPopup!!.hide()
-//            true
-//        } else {
-//            mCloudAccountsPresenter!!.onBackPressed()
-//        }
-//    }
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//        setHasOptionsMenu(true)
-//        setPadding()
-//        initViews(savedInstanceState)
-//        initRecyclerView()
-//        mCloudAccountsPresenter!!.getAccounts()
-//    }
-//
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.cloud_settings_menu, menu)
-//        mSettingItem = menu.findItem(R.id.settingsItem)
-//        mSelectAll = menu.findItem(R.id.selectAll)
-//        mDeselect = menu.findItem(R.id.deselect)
-//        mDeleteAll = menu.findItem(R.id.deleteSelected)
-//        setMenuState(!mAdapter!!.isSelectionMode)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.settingsItem -> SettingsActivity.show(requireContext())
-//            R.id.selectAll -> mCloudAccountsPresenter!!.selectAll(mAdapter!!.itemList)
-//            R.id.deselect -> mCloudAccountsPresenter!!.deselectAll()
-//            R.id.deleteSelected -> mCloudAccountsPresenter!!.deleteAll()
-//        }
-//        return true
-//    }
-//
-//    override fun onDestroyView() {
-//        super.onDestroyView()
-//        if (mDialog != null) {
-//            mDialog!!.dismiss()
-//        }
-//        if (mPopup != null && mPopup!!.isVisible) {
-//            mPopup!!.hide()
-//        }
-//        if (mUnbinder != null) {
-//            mUnbinder!!.unbind()
-//        }
-//        if (mAdapter != null) {
-//            mAdapter!!.setOnAccountClick(null)
-//            mAdapter!!.setOnAccountContextClick(null)
-//            mAdapter!!.setOnAccountLongClick(null)
-//            mAdapter!!.setOnAddAccountClick(null)
-//        }
-//    }
-//
-//
-//    fun onWebDavLogin(account: AccountsSqlData) {
-//        WebDavLoginActivity.show(activity, WebDavApi.Providers.valueOf(account.webDavProvider), account)
-//    }
-//
-//    override fun onShowClouds() {
-//        mMainActivity!!.getNavigationBottom().selectedItemId = R.id.menu_item_cloud
-//    }
-//
-//
-//    override fun onShowWaitingDialog() {
-//        showWaitingDialog(
-//            getString(R.string.dialogs_wait_title),
-//            getString(R.string.dialogs_common_cancel_button), TAG
-//        )
-//    }
-//
-//    override fun removeItem(position: Int) {
-//        mAdapter!!.removeItem(position)
-//    }
-//
-//    fun onUpdateItem(account: AccountsSqlData) {
-//        mAdapter!!.updateItem(account)
-//    }
-//
-//
-//    override fun onSignIn(portal: String, login: String) {
-//        hideDialog()
-//        //        mMainActivity.onContextDialogClose();
-//        showPortalSignIn(this, portal, login)
-//    }
-//
-//    override fun onEmptyList() {
-//        mMainActivity!!.getNavigationBottom().selectedItemId = R.id.menu_item_setting
-//    }
-//
-//    fun onSetAccounts(accounts: List<AccountsSqlData?>?) {
-//        mAdapter!!.setItems(accounts)
-//    }
-//
-//
-//    override fun onProfileClick(account: AccountsSqlData) {
-//        ProfileActivity.show(requireActivity(), account)
-//    }
-//
-//    override fun onLogOutClick() {
-//        mCloudAccountsPresenter!!.logout()
-//    }
-//
-//
-//    override fun onSignInClick() {
-//        mCloudAccountsPresenter!!.signIn()
-//    }
-//
-//    override fun onSelectionMode() {
-//        mAdapter!!.isSelectionMode = true
-//        mAdapter!!.notifyDataSetChanged()
-//        mMainActivity!!.showNavigationButton(true)
-//        setMenuState(false)
-//    }
-//
-//    override fun onDefaultState() {
-//        setActionBarTitle(getString(R.string.cloud_accounts_title))
-//        mAdapter!!.isSelectionMode = false
-//        mAdapter!!.notifyDataSetChanged()
-//        mMainActivity!!.showNavigationButton(false)
-//        setMenuState(true)
-//    }
-//
-//    override fun onSelectedItem(position: Int) {
-//        mAdapter!!.notifyItemChanged(position)
-//    }
-//
-//    override fun onActionBarTitle(title: String) {
-//        if (title == "0") {
-//            mDeleteAll!!.isEnabled = false
-//        } else {
-//            mDeleteAll!!.isEnabled = true
-//        }
-//        setActionBarTitle(title)
-//    }
-//
-//    override fun onNotifyItems() {
-//        mAdapter!!.notifyDataSetChanged()
-//    }
-//
-//    private fun setMenuState(isDefault: Boolean) {
-//        if (mMenu != null) {
-//            if (isDefault) {
-//                mSettingItem!!.isVisible = true
-//                mSelectAll!!.isVisible = false
-//                mDeselect!!.isVisible = false
-//                mDeleteAll!!.isVisible = false
-//            } else {
-//                mSettingItem!!.isVisible = false
-//                mSelectAll!!.isVisible = true
-//                mDeselect!!.isVisible = true
-//                mDeleteAll!!.isVisible = true
-//            }
-//        }
-//    }
-//
-//    private fun setPadding() {
-//        val params = mAccountsLayout!!.layoutParams as FrameLayout.LayoutParams
-//        params.setMargins(
-//            resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
-//            0,
-//            resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
-//            0
-//        )
-//    }
-//
-//    private fun initViews(state: Bundle?) {
-//        if (state == null) {
-//            setActionBarTitle(getString(R.string.cloud_accounts_title))
-//        }
-//        mMainActivity!!.showActionButton(false)
-//        mMainActivity!!.setAppBarStates(false)
-//        mMainActivity!!.showAccount(false)
-//        mMainActivity!!.showNavigationButton(false)
-//    }
 }

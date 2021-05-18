@@ -125,9 +125,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        if (mMenu != null) {
+        mMenu?.let {
             mOpenItem.isVisible = true
-            mMenu!!.findItem(R.id.toolbar_sort_item_owner).isVisible = false
+            it.findItem(R.id.toolbar_sort_item_owner).isVisible = false
         }
     }
 
@@ -185,19 +185,21 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun onStateUpdateRoot(isRoot: Boolean) {
-        activity?.setAppBarStates(false)
-        activity?.showNavigationButton(!isRoot)
-        activity?.showAccount(false)
+        activity?.apply {
+            setAppBarStates(false)
+            showNavigationButton(!isRoot)
+            showAccount(false)
+        }
     }
 
     override fun onStateMenuSelection() {
         if (mMenu != null && mMenuInflater != null && context != null) {
-            mMenuInflater!!.inflate(R.menu.docs_select, mMenu)
-            mDeleteItem = mMenu!!.findItem(R.id.toolbar_selection_delete).setVisible(true)
-            mMoveItem = mMenu!!.findItem(R.id.toolbar_selection_move).setVisible(true)
-            mCopyItem = mMenu!!.findItem(R.id.toolbar_selection_copy).setVisible(true)
-            mDownloadItem = mMenu!!.findItem(R.id.toolbar_selection_download).setVisible(false)
-            UiUtils.setMenuItemTint(context!!, mDeleteItem, R.color.colorWhite)
+            mMenuInflater?.inflate(R.menu.docs_select, mMenu)
+            mDeleteItem = mMenu?.findItem(R.id.toolbar_selection_delete)?.setVisible(true)
+            mMoveItem = mMenu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
+            mCopyItem = mMenu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
+            mDownloadItem = mMenu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
+            UiUtils.setMenuItemTint(requireContext(), mDeleteItem, R.color.colorWhite)
             activity?.showNavigationButton(true)
         }
     }
@@ -275,7 +277,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
         super.onCancelClick(dialogs, tag)
         if (tag != null && tag == TAG_STORAGE_ACCESS) {
-            preferenceTool!!.isShowStorageAccess = false
+            preferenceTool?.isShowStorageAccess = false
             presenter.recreateStack()
             presenter.getItemsById(LocalContentTools.getDir(requireContext()))
         }

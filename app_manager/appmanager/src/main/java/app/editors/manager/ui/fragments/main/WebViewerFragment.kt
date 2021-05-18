@@ -535,11 +535,11 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         }
         // Get name without extension
         val path = Uri.parse(url).path
-        val elements = path!!.split("/").toTypedArray()
-        val length = elements.size
-        val fileName = elements[if (length > 0) length - 1 else 0]
+        val elements = path?.split("/")?.toTypedArray()
+        val length = elements?.size ?: 0
+        val fileName = elements?.get(if (length > 0) length - 1 else 0) ?: ""
         val title = StringUtils.getNameWithoutExtension(cloudFile!!.title)
-        if (!fileName.startsWith(title)) {
+        if (fileName.isNotEmpty() && !fileName.startsWith(title)) {
             FirebaseUtils.addCrash(WebViewDownload::class.java.simpleName + " - wrong file name!")
             FirebaseUtils.addCrash("Url: $url")
             FirebaseUtils.addCrash("File name: $fileName")

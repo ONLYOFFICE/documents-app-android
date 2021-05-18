@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.login
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -47,15 +48,15 @@ class EnterpriseSmsFragment : BaseAppFragment(), EnterpriseSmsView, OnContextMen
     }
 
     @Inject
-    lateinit var mPreferenceTool: PreferenceTool
+    lateinit var preferenceTool: PreferenceTool
 
     @InjectPresenter
-    lateinit var mEnterpriseSmsPresenter: EnterpriseSmsPresenter
+    lateinit var enterpriseSmsPresenter: EnterpriseSmsPresenter
 
     private var viewBinding: FragmentLoginEnterpriseSmsBinding? = null
 
-    private var mSmsInputWatch: FieldsWatch? = null
-    private var mTimerViews: TimerViews? = null
+    private var smsInputWatch: FieldsWatch? = null
+    private var timerViews: TimerViews? = null
 
 
     override fun onAttach(context: Context) {
@@ -85,20 +86,20 @@ class EnterpriseSmsFragment : BaseAppFragment(), EnterpriseSmsView, OnContextMen
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mTimerViews?.removeFragment()
-        mTimerViews?.cancel(true)
-        mEnterpriseSmsPresenter.cancelRequest()
+        timerViews?.removeFragment()
+        timerViews?.cancel(true)
+        enterpriseSmsPresenter.cancelRequest()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(TAG_TIMER, mTimerViews!!.currentTimer)
+        outState.putInt(TAG_TIMER, timerViews!!.currentTimer)
     }
 
     private fun resendSmsClick() {
         hideKeyboard(viewBinding?.loginSmsCodeEdit)
         startTimer(RESEND_TIMER)
-        arguments?.getString(TAG_REQUEST)?.let { mEnterpriseSmsPresenter.resendSms(it) }
+        arguments?.getString(TAG_REQUEST)?.let { enterpriseSmsPresenter.resendSms(it) }
     }
 
     private fun changeNumberClick() {
@@ -137,9 +138,9 @@ class EnterpriseSmsFragment : BaseAppFragment(), EnterpriseSmsView, OnContextMen
 
     private fun init(savedInstanceState: Bundle?) {
         setActionBarTitle(getString(R.string.login_sms_phone_header))
-        mSmsInputWatch = FieldsWatch()
+        smsInputWatch = FieldsWatch()
         initListeners()
-        viewBinding?.loginSmsCodeNumberText?.text = mPreferenceTool.phoneNoise.toString()
+        viewBinding?.loginSmsCodeNumberText?.text = preferenceTool.phoneNoise.toString()
         viewBinding?.loginSmsCodeEdit?.apply {
             setTextColor(viewBinding?.loginSmsCodeEdit?.hintTextColors)
             isCursorVisible = false
@@ -162,7 +163,7 @@ class EnterpriseSmsFragment : BaseAppFragment(), EnterpriseSmsView, OnContextMen
             changeNumberClick()
         }
         viewBinding?.loginSmsCodeEdit?.apply {
-            addTextChangedListener(mSmsInputWatch)
+            addTextChangedListener(smsInputWatch)
             setOnClickListener(SetSelectionOnClick())
         }
     }
@@ -172,7 +173,7 @@ class EnterpriseSmsFragment : BaseAppFragment(), EnterpriseSmsView, OnContextMen
             val bundle = arguments
             if (bundle!!.getBoolean(TAG_SMS)) {
                 viewBinding?.loginSmsCodeChangeNumberButton?.visibility = View.VISIBLE
-                bundle.getString(TAG_REQUEST)?.let { mEnterpriseSmsPresenter.resendSms(it) }
+                bundle.getString(TAG_REQUEST)?.let { enterpriseSmsPresenter.resendSms(it) }
             }
         }
 
@@ -202,13 +203,14 @@ class EnterpriseSmsFragment : BaseAppFragment(), EnterpriseSmsView, OnContextMen
     }
 
     private fun startTimer(timer: Int) {
-        if (mTimerViews == null || mTimerViews!!.isCancelled || !mTimerViews!!.isActive) {
-            mTimerViews = TimerViews(timer)
-            mTimerViews?.setFragment(this)
-            mTimerViews?.execute()
+        if (timerViews == null || timerViews!!.isCancelled || !timerViews!!.isActive) {
+            timerViews = TimerViews(timer)
+            timerViews?.setFragment(this)
+            timerViews?.execute()
         }
     }
 
+    @SuppressLint("SetTextI18n")
     fun setTimerButton(timer: Int) {
         viewBinding?.loginSmsCodeSendAgainButton?.apply {
             isEnabled = false
@@ -244,49 +246,50 @@ class EnterpriseSmsFragment : BaseAppFragment(), EnterpriseSmsView, OnContextMen
      * Edit sms code controller
      * * */
     private inner class FieldsWatch : BaseWatcher() {
-        private var mSrcString: StringBuilder? = null
-        private var mSubString: String? = null
-        private var mSelectPosition = 0
+        private var srcString: StringBuilder? = null
+        private var subString: String? = null
+        private var selectPosition = 0
+
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            mSrcString = StringBuilder(s)
+            srcString = StringBuilder(s)
         }
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             if (start < SmsReceiver.SMS_CODE_LENGTH && count <= SmsReceiver.SMS_CODE_LENGTH) {
-                mSubString = s.subSequence(start, start + count).toString()
+                subString = s.subSequence(start, start + count).toString()
                 // Input symbol or delete
-                if ("" != mSubString) {
-                    mSelectPosition = start + count
-                    mSrcString!!.replace(start, start + count, mSubString)
+                if ("" != subString) {
+                    selectPosition = start + count
+                    srcString?.replace(start, start + count, subString ?: "")
                 } else {
                     val repeat = repeatString(SMS_CODE_PLACEHOLDER, before)
-                    mSelectPosition = start
-                    mSrcString!!.replace(start, start + before, repeat)
+                    selectPosition = start
+                    srcString?.replace(start, start + before, repeat)
                 }
             }
         }
 
         override fun afterTextChanged(s: Editable) {
             // Result text
-            val resultString = mSrcString.toString()
+            val resultString = srcString.toString()
             if (resultString.matches(PATTER_DIGITS.toRegex())) {
-                viewBinding?.loginSmsCodeEdit?.setTextColor(resources.getColor(android.R.color.black))
+                viewBinding?.loginSmsCodeEdit?.setTextColor(resources.getColor(android.R.color.black, null))
             } else {
                 viewBinding?.loginSmsCodeEdit?.setTextColor(viewBinding?.loginSmsCodeEdit?.hintTextColors)
             }
 
             // Remove listener, else will be recursion
             viewBinding?.loginSmsCodeEdit?.apply {
-                removeTextChangedListener(mSmsInputWatch)
+                removeTextChangedListener(smsInputWatch)
                 setText(resultString)
-                setSelection(mSelectPosition)
-                addTextChangedListener(mSmsInputWatch)
+                setSelection(selectPosition)
+                addTextChangedListener(smsInputWatch)
             }
 
             // Check length of sms code
             if (resultString.matches(PATTERN_NUMERIC.toRegex())) {
                 showWaitingDialog(getString(R.string.dialogs_wait_title))
-                mEnterpriseSmsPresenter.signInPortal(
+                enterpriseSmsPresenter.signInPortal(
                     resultString, arguments?.getString(
                         TAG_REQUEST
                     ) ?: ""

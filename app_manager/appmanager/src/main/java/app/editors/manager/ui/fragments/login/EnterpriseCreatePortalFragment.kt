@@ -3,10 +3,12 @@ package app.editors.manager.ui.fragments.login
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.annotation.StringRes
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentLoginEnterpriseCreatePortalBinding
@@ -31,15 +33,15 @@ class EnterpriseCreatePortalFragment : BaseAppFragment(), EnterpriseCreateValida
     }
 
     @InjectPresenter
-    lateinit var mCreatePortalPresenter: EnterpriseCreateValidatePresenter
+    lateinit var createPortalPresenter: EnterpriseCreateValidatePresenter
 
     private var viewBinding: FragmentLoginEnterpriseCreatePortalBinding? = null
 
-    private var mFieldsWatcher: FieldsWatcher? = null
-    private var mPaddingTop = 0
-    private var mPaddingLeft = 0
-    private var mPaddingRight = 0
-    private var mPaddingBottom = 0
+    private var fieldsWatcher: FieldsWatcher? = null
+    private var paddingTop = 0
+    private var paddingLeft = 0
+    private var paddingRight = 0
+    private var paddingBottom = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,7 +55,7 @@ class EnterpriseCreatePortalFragment : BaseAppFragment(), EnterpriseCreateValida
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        init()
+        init(savedInstanceState)
     }
 
 
@@ -63,11 +65,11 @@ class EnterpriseCreatePortalFragment : BaseAppFragment(), EnterpriseCreateValida
         val email = viewBinding?.loginCreatePortalEmailEdit?.text.toString()
         val first = viewBinding?.loginCreatePortalFirstNameEdit?.text.toString()
         val last = viewBinding?.loginCreatePortalLastNameEdit?.text.toString()
-        mCreatePortalPresenter.validatePortal(address, email, first, last)
+        createPortalPresenter.validatePortal(address, email, first, last)
     }
 
 
-    private fun actionKeyPress(actionId: Int): Boolean {
+    private fun actionKeyPress(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             onNextClick()
             return true
@@ -77,7 +79,7 @@ class EnterpriseCreatePortalFragment : BaseAppFragment(), EnterpriseCreateValida
 
     override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
         super.onCancelClick(dialogs, tag)
-        mCreatePortalPresenter.cancelRequest()
+        createPortalPresenter.cancelRequest()
     }
 
     override fun onError(message: String?) {
@@ -119,15 +121,15 @@ class EnterpriseCreatePortalFragment : BaseAppFragment(), EnterpriseCreateValida
             layoutParams.width = textWidth
             text = domain
         }
-        mPaddingRight = textWidth
+        paddingRight = textWidth
     }
 
     override fun onShowWaitingDialog(@StringRes title: Int) {
         showWaitingDialog(getString(title))
     }
 
-    private fun init() {
-        mFieldsWatcher = FieldsWatcher()
+    private fun init(savedInstanceState: Bundle?) {
+        fieldsWatcher = FieldsWatcher()
         initListeners()
         setActionBarTitle(getString(R.string.login_create_portal_title))
         showKeyboard(viewBinding?.loginCreatePortalAddressEdit)
@@ -136,7 +138,7 @@ class EnterpriseCreatePortalFragment : BaseAppFragment(), EnterpriseCreateValida
             requestFocus()
             filters = arrayOf<InputFilter>(FieldsFilter())
         }
-        mCreatePortalPresenter.domain
+        createPortalPresenter.domain
         setPadding()
     }
 
@@ -144,29 +146,39 @@ class EnterpriseCreatePortalFragment : BaseAppFragment(), EnterpriseCreateValida
         viewBinding?.loginSigninCreatePortalButton?.setOnClickListener {
             onNextClick()
         }
-        viewBinding?.loginCreatePortalLastNameEdit?.setOnEditorActionListener { _, actionId, _ ->
-            actionKeyPress(actionId)
+
+        viewBinding?.loginCreatePortalLastNameEdit?.setOnEditorActionListener { v, actionId, event ->
+            actionKeyPress(v, actionId, event)
         }
-        viewBinding?.loginCreatePortalAddressEdit?.addTextChangedListener(mFieldsWatcher)
-        viewBinding?.loginCreatePortalEmailEdit?.addTextChangedListener(mFieldsWatcher)
-        viewBinding?.loginCreatePortalFirstNameEdit?.addTextChangedListener(mFieldsWatcher)
-        viewBinding?.loginCreatePortalLastNameEdit?.addTextChangedListener(mFieldsWatcher)
+        viewBinding?.loginCreatePortalAddressEdit?.addTextChangedListener(fieldsWatcher)
+        viewBinding?.loginCreatePortalEmailEdit?.addTextChangedListener(fieldsWatcher)
+        viewBinding?.loginCreatePortalFirstNameEdit?.addTextChangedListener(fieldsWatcher)
+        viewBinding?.loginCreatePortalLastNameEdit?.addTextChangedListener(fieldsWatcher)
     }
 
     private fun setPadding() {
-        mPaddingTop = viewBinding?.loginCreatePortalAddressEdit?.paddingTop ?: 0
-        mPaddingLeft = viewBinding?.loginCreatePortalAddressEdit?.paddingLeft ?: 0
-        mPaddingRight = viewBinding?.loginCreatePortalAddressEdit?.paddingRight ?: 0
-        mPaddingBottom = viewBinding?.loginCreatePortalAddressEdit?.paddingBottom ?: 0
+        paddingTop = viewBinding?.loginCreatePortalAddressEdit?.paddingTop ?: 0
+        paddingLeft = viewBinding?.loginCreatePortalAddressEdit?.paddingLeft ?: 0
+        paddingRight = viewBinding?.loginCreatePortalAddressEdit?.paddingRight ?: 0
+        paddingBottom = viewBinding?.loginCreatePortalAddressEdit?.paddingBottom ?: 0
     }
 
     private fun setEditHintVisibility(isVisible: Boolean) {
         if (isVisible) {
-            viewBinding?.loginCreatePortalAddressHintEnd?.visibility = View.VISIBLE
-            viewBinding?.loginCreatePortalAddressEdit?.setPadding(mPaddingLeft, mPaddingTop, mPaddingRight, mPaddingBottom)
+            viewBinding?.loginCreatePortalAddressHintEnd?.apply {
+                visibility = View.VISIBLE
+                setPadding(
+                    paddingLeft,
+                    paddingTop,
+                    paddingRight,
+                    paddingBottom
+                )
+            }
         } else {
-            viewBinding?.loginCreatePortalAddressHintEnd?.visibility = View.GONE
-            viewBinding?.loginCreatePortalAddressEdit?.setPadding(mPaddingLeft, mPaddingTop, 0, mPaddingBottom)
+            viewBinding?.loginCreatePortalAddressHintEnd?.apply {
+                visibility = View.GONE
+                setPadding(paddingLeft, paddingTop, 0, paddingBottom)
+            }
         }
     }
 
@@ -212,18 +224,18 @@ class EnterpriseCreatePortalFragment : BaseAppFragment(), EnterpriseCreateValida
             dend: Int
         ): CharSequence? {
             super.filter(source, start, end, dest, dstart, dend)
-            if (mCreatePortalPresenter.checkPhrase(mResultString)) {
+            if (createPortalPresenter.checkPhrase(mResultString)) {
                 return null
             }
-
             return if (!isAlphaNumeric(mResultString)) {
-                viewBinding?.loginCreatePortalAddressEditLayout?.error = getString(R.string.login_api_portal_name_content)
+                viewBinding?.loginCreatePortalAddressEditLayout?.error =
+                    getString(R.string.login_api_portal_name_content)
                 source
-            } else {
+            } else ({
                 viewBinding?.loginCreatePortalAddressEditLayout?.isErrorEnabled = false
                 setEditHintVisibility(true)
                 null
-            }
+            }).toString()
         }
     }
 }

@@ -2,7 +2,6 @@ package app.editors.manager.ui.adapters
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
@@ -20,7 +19,7 @@ class CloudAccountsAdapter(
 
 
     var isSelectionMode = false
-    private var mClickedView: WeakReference<View>? = null
+    private var clickedView: WeakReference<View>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return CloudAccountsViewHolder(parent.inflate(R.layout.account_list_item_layout))
@@ -58,7 +57,7 @@ class CloudAccountsAdapter(
     }
 
     val clickedContextView: View?
-        get() = mClickedView?.get()
+        get() = clickedView?.get()
 
 }
 

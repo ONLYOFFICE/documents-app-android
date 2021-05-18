@@ -21,7 +21,6 @@ import moxy.presenter.InjectPresenter
 
 class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
 
-
     companion object {
         val TAG: String = SSOLoginFragment::class.java.simpleName
 
@@ -39,7 +38,7 @@ class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
     private var url: String? = null
 
     @InjectPresenter
-    lateinit var mEnterpriseSSOPresenter: EnterpriseSSOPresenter
+    lateinit var enterpriseSSOPresenter: EnterpriseSSOPresenter
 
     private var viewBinding: SsoLoginLayoutBinding? = null
 
@@ -112,7 +111,7 @@ class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             val args = url.split("=")
             if (url.contains("token")) {
-                mEnterpriseSSOPresenter.signInWithSSO(args[1])
+                enterpriseSSOPresenter.signInWithSSO(args[1])
             } else if (url.contains("error")) {
                 onError(args[1])
             }
