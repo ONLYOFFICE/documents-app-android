@@ -430,14 +430,19 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         } else if (mItemClicked != null) {
             if (mItemClicked instanceof File) {
                 mDisposable.add(
-                        mFileProvider.fileInfo(mItemClicked).subscribe(
+                        ((mFileProvider instanceof WebDavFileProvider) ? ((WebDavFileProvider) mFileProvider).fileInfo(mItemClicked, false): (mFileProvider.fileInfo(mItemClicked))).subscribe(
                                 response -> {
-                                    int statusMask = Integer.parseInt(response.getFileStatus()) & Api.FileStatus.IS_EDITING;
-                                    if (statusMask != 0) {
-                                        onFileDeleteProtected();
+                                    if(!response.getFileStatus().isEmpty()) {
+                                        int statusMask = Integer.parseInt(response.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                                        if (statusMask != 0) {
+                                            onFileDeleteProtected();
+                                        } else {
+                                            deleteItems();
+                                        }
                                     } else {
                                         deleteItems();
                                     }
+
                                 }, throwable -> fetchError(throwable))
                 );
             } else {

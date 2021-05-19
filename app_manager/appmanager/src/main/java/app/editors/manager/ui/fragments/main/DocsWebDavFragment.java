@@ -83,9 +83,7 @@ public class DocsWebDavFragment extends DocsBaseFragment implements DocsWebDavVi
                 case REQUEST_DOCS:
                 case REQUEST_SHEETS: {
                     if (data.getData() != null) {
-                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
-                            mWebDavPresenter.upload(data.getData(), null);
-                        }
+                        mWebDavPresenter.upload(data.getData(), null);
                     }
                     break;
                 }
