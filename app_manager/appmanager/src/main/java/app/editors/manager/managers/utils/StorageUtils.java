@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
-import app.editors.manager.app.Api;
+import app.documents.core.network.ApiContract;
 import lib.toolkit.base.managers.utils.StringUtils;
 
 public class StorageUtils {
@@ -53,16 +53,16 @@ public class StorageUtils {
     @Nullable
     public static String getStorageUrl(final String providerKey, final String clientId, final String redirectUrl) {
         switch (providerKey) {
-            case Api.Storage.BOXNET:
+            case ApiContract.Storage.BOXNET:
                 return box(providerKey, clientId, redirectUrl).getUrl();
 
-            case Api.Storage.DROPBOX:
+            case ApiContract.Storage.DROPBOX:
                 return dropBox(providerKey, clientId, redirectUrl).getUrl();
 
-            case Api.Storage.GOOGLEDRIVE:
+            case ApiContract.Storage.GOOGLEDRIVE:
                 return google(providerKey, clientId, redirectUrl).getUrl();
 
-            case Api.Storage.ONEDRIVE:
+            case ApiContract.Storage.ONEDRIVE:
                 return oneDrive(providerKey, clientId, redirectUrl).getUrl();
         }
 

@@ -30,7 +30,6 @@ import app.documents.core.account.AccountDao
 import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
@@ -356,9 +355,9 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             mUri = Uri.parse(cloudFile?.webUrl)
             val im = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             im.hideSoftInputFromWindow(webView.windowToken, 0)
-            if (mUri?.getQueryParameter(Api.Parameters.ARG_ACTION) == null) {
+            if (mUri?.getQueryParameter(ApiContract.Parameters.ARG_ACTION) == null) {
                 mUri = mUri?.buildUpon()
-                    ?.appendQueryParameter(Api.Parameters.ARG_ACTION, Api.Parameters.VAL_ACTION_VIEW)?.build()
+                    ?.appendQueryParameter(ApiContract.Parameters.ARG_ACTION, ApiContract.Parameters.VAL_ACTION_VIEW)?.build()
             }
         } else {
             mUri = Uri.parse(cloudFile?.webUrl)

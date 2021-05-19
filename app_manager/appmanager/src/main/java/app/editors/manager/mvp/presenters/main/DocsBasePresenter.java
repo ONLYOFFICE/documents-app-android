@@ -36,21 +36,16 @@ import app.documents.core.account.RecentDao;
 import app.documents.core.network.ApiContract;
 import app.documents.core.settings.NetworkSettings;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.managers.exceptions.NoConnectivityException;
 import app.editors.manager.managers.providers.BaseFileProvider;
 import app.editors.manager.managers.providers.ProviderError;
 import app.editors.manager.managers.providers.WebDavFileProvider;
 import app.editors.manager.managers.services.DownloadService;
 import app.editors.manager.managers.services.UploadService;
-import app.editors.manager.managers.tools.AccountManagerTool;
-import app.editors.manager.managers.tools.AccountSqlTool;
 import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.managers.works.DownloadWork;
 import app.editors.manager.managers.works.UploadWork;
-import app.editors.manager.mvp.models.account.AccountsSqlData;
-import app.editors.manager.mvp.models.account.Recent;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.CloudFolder;
@@ -202,11 +197,6 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     protected Context mContext;
     @Inject
     protected PreferenceTool mPreferenceTool;
-
-    @Inject
-    protected AccountManagerTool mAccountManagerTool;
-    @Inject
-    protected AccountSqlTool mAccountSqlTool;
     @Inject
     protected OperationsState mOperationsState;
     @Inject
@@ -257,12 +247,12 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     protected void reverseSortOrder() {
-        if(mPreferenceTool.getSortOrder().equals(Api.Parameters.VAL_SORT_ORDER_ASC)) {
-            mPreferenceTool.setSortOrder(Api.Parameters.VAL_SORT_ORDER_DESC);
-            getViewState().onReverseSortOrder(Api.Parameters.VAL_SORT_ORDER_DESC);
+        if(mPreferenceTool.getSortOrder().equals(ApiContract.Parameters.VAL_SORT_ORDER_ASC)) {
+            mPreferenceTool.setSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
+            getViewState().onReverseSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
         } else {
-            mPreferenceTool.setSortOrder(Api.Parameters.VAL_SORT_ORDER_ASC);
-            getViewState().onReverseSortOrder(Api.Parameters.VAL_SORT_ORDER_ASC);
+            mPreferenceTool.setSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_ASC);
+            getViewState().onReverseSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_ASC);
         }
     }
 
@@ -466,20 +456,20 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
 
     private void deleteRecent() {
-        List<CloudFile> files = mModelExplorerStack.getSelectedFiles();
-        List<Recent> recents = mAccountSqlTool.getRecent();
-        if (files != null) {
-            for (CloudFile file : files) {
-                for (Recent recent : recents) {
-                    if (recent.getIdFile() != null && recent.getIdFile().equals(file.getId())) {
-                        mAccountSqlTool.delete(recent);
-                    } else if (mItemClicked != null && recent.getIdFile() != null &&
-                            recent.getIdFile().equals(mItemClicked.getId())) {
-                        mAccountSqlTool.delete(recent);
-                    }
-                }
-            }
-        }
+//        List<CloudFile> files = mModelExplorerStack.getSelectedFiles();
+//        List<Recent> recents = mAccountSqlTool.getRecent();
+//        if (files != null) {
+//            for (CloudFile file : files) {
+//                for (Recent recent : recents) {
+//                    if (recent.getIdFile() != null && recent.getIdFile().equals(file.getId())) {
+//                        mAccountSqlTool.delete(recent);
+//                    } else if (mItemClicked != null && recent.getIdFile() != null &&
+//                            recent.getIdFile().equals(mItemClicked.getId())) {
+//                        mAccountSqlTool.delete(recent);
+//                    }
+//                }
+//            }
+//        }
     }
 
     public boolean move() {
@@ -517,7 +507,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                                 mOperationStack.setSelectionAll(false);
                                 Explorer explorer = mOperationStack.getExplorer();
                                 explorer.setDestFolderId(mDestFolderId);
-                                if (mModelExplorerStack.getRootFolderType() == Api.SectionType.CLOUD_USER) {
+                                if (mModelExplorerStack.getRootFolderType() == ApiContract.SectionType.CLOUD_USER) {
                                     explorer = setAccess(explorer);
                                 }
                                 mOperationsState.insert(mModelExplorerStack.getRootFolderType(), explorer);
@@ -737,26 +727,26 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     public void uploadToMy(final Uri uri) {
-        if (mAccountSqlTool.getAccountOnline() != null) {
-            if (mPreferenceTool.getUploadWifiState() && !NetworkUtils.isWifiEnable(mContext)) {
-                getViewState().onSnackBar(mContext.getString(R.string.upload_error_wifi));
-                return;
-            }
-            if (ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE) {
-                getViewState().onSnackBar(mContext.getString(R.string.upload_manager_error_file_size));
-                return;
-            }
-            if (mAccountSqlTool.getAccountOnline().isWebDav()) {
-                return;
-            }
-
-            final Data workData = new Data.Builder()
-                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
-                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
-                    .putString(UploadWork.TAG_FOLDER_ID, null)
-                    .build();
-            startUpload(workData);
-        }
+//        if (mAccountSqlTool.getAccountOnline() != null) {
+//            if (mPreferenceTool.getUploadWifiState() && !NetworkUtils.isWifiEnable(mContext)) {
+//                getViewState().onSnackBar(mContext.getString(R.string.upload_error_wifi));
+//                return;
+//            }
+//            if (ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE) {
+//                getViewState().onSnackBar(mContext.getString(R.string.upload_manager_error_file_size));
+//                return;
+//            }
+//            if (mAccountSqlTool.getAccountOnline().isWebDav()) {
+//                return;
+//            }
+//
+//            final Data workData = new Data.Builder()
+//                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+//                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
+//                    .putString(UploadWork.TAG_FOLDER_ID, null)
+//                    .build();
+//            startUpload(workData);
+//        }
     }
 
     private void addUploadFiles(ArrayList<Uri> uriList, String id) {
@@ -849,14 +839,14 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * */
     protected Map<String, String> getArgs(@Nullable final String filteringValue) {
         final Map<String, String> args = new TreeMap<>();
-        args.put(Api.Parameters.ARG_COUNT, String.valueOf(ITEMS_PER_PAGE));
-        args.put(Api.Parameters.ARG_SORT_BY, mPreferenceTool.getSortBy());
-        args.put(Api.Parameters.ARG_SORT_ORDER, mPreferenceTool.getSortOrder());
+        args.put(ApiContract.Parameters.ARG_COUNT, String.valueOf(ITEMS_PER_PAGE));
+        args.put(ApiContract.Parameters.ARG_SORT_BY, mPreferenceTool.getSortBy());
+        args.put(ApiContract.Parameters.ARG_SORT_ORDER, mPreferenceTool.getSortOrder());
 
         if (filteringValue != null) {
-            args.put(Api.Parameters.ARG_FILTER_BY, Api.Parameters.VAL_FILTER_BY);
-            args.put(Api.Parameters.ARG_FILTER_OP, Api.Parameters.VAL_FILTER_OP_CONTAINS);
-            args.put(Api.Parameters.ARG_FILTER_VALUE, filteringValue);
+            args.put(ApiContract.Parameters.ARG_FILTER_BY, ApiContract.Parameters.VAL_FILTER_BY);
+            args.put(ApiContract.Parameters.ARG_FILTER_OP, ApiContract.Parameters.VAL_FILTER_OP_CONTAINS);
+            args.put(ApiContract.Parameters.ARG_FILTER_VALUE, filteringValue);
         }
 
         return args;
@@ -983,7 +973,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 final String sortOrder = mPreferenceTool.getSortOrder();
                 final List<CloudFile> fileList = explorer.getFiles();
 
-                if (Api.Parameters.VAL_SORT_BY_UPDATED.equals(sortBy)) { // For date sort add times headers
+                if (ApiContract.Parameters.VAL_SORT_BY_UPDATED.equals(sortBy)) { // For date sort add times headers
                     final long todayMs = TimeUtils.getTodayMs();
                     final long yesterdayMs = TimeUtils.getYesterdayMs();
                     final long weekMs = TimeUtils.getWeekMs();
@@ -993,7 +983,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
                     // Set time headers
                     Collections.sort(fileList, (o1, o2) -> o1.getUpdated().compareTo(o2.getUpdated()));
-                    if(sortOrder.equals(Api.Parameters.VAL_SORT_ORDER_DESC)) {
+                    if(sortOrder.equals(ApiContract.Parameters.VAL_SORT_ORDER_DESC)) {
                         Collections.reverse(fileList);
                     }
 
@@ -1085,7 +1075,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             getViewState().onStateMenuSelection();
         } else {
             getViewState().onStateMenuDefault(mPreferenceTool.getSortBy(),
-                    mPreferenceTool.getSortOrder().equalsIgnoreCase(Api.Parameters.VAL_SORT_ORDER_ASC));
+                    mPreferenceTool.getSortOrder().equalsIgnoreCase(ApiContract.Parameters.VAL_SORT_ORDER_ASC));
         }
     }
 

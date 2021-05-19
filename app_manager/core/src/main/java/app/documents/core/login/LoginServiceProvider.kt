@@ -7,6 +7,7 @@ import app.documents.core.network.models.login.request.RequestValidatePortal
 import app.documents.core.network.models.login.response.ResponseSettings
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
@@ -17,7 +18,7 @@ class LoginServiceProvider(
     private val loginErrorHandler: BehaviorRelay<LoginResponse.Error>? = null
 ) : ILoginServiceProvider {
 
-    override fun serverVersion(): Observable<LoginResponse.Success> {
+    override fun serverVersion(): Single<LoginResponse.Success> {
         return loginService.getSettings()
             .map { fetchResponse(it) }
             .map { loginResponse ->
@@ -36,17 +37,18 @@ class LoginServiceProvider(
     override fun capabilities(): Observable<LoginResponse> {
         return loginService.capabilities().map { fetchResponse(it) }
             .mergeWith(loginService.getSettings().map { fetchResponse(it) })
+            .toObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun validatePortal(request: RequestValidatePortal): Observable<LoginResponse> {
+    override fun validatePortal(request: RequestValidatePortal): Single<LoginResponse> {
         return loginService.validatePortal(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun signIn(request: RequestSignIn, smsCode: String?): Observable<LoginResponse> {
+    override fun signIn(request: RequestSignIn, smsCode: String?): Single<LoginResponse> {
         smsCode?.let { sms ->
             return loginService.smsSignIn(request, sms).map { fetchResponse(it) }
                 .subscribeOn(Schedulers.io())
@@ -58,31 +60,31 @@ class LoginServiceProvider(
         }
     }
 
-    override fun registerPortal(request: RequestRegister): Observable<LoginResponse> {
+    override fun registerPortal(request: RequestRegister): Single<LoginResponse> {
         return loginService.registerPortal(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun registerPersonal(request: RequestRegister): Observable<LoginResponse> {
+    override fun registerPersonal(request: RequestRegister): Single<LoginResponse> {
         return loginService.registerPersonalPortal(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun sendSms(request: RequestSignIn): Observable<LoginResponse> {
+    override fun sendSms(request: RequestSignIn): Single<LoginResponse> {
         return loginService.sendSms(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun changeNumber(request: RequestNumber): Observable<LoginResponse> {
+    override fun changeNumber(request: RequestNumber): Single<LoginResponse> {
         return loginService.changeNumber(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getUserInfo(token: String): Observable<LoginResponse> {
+    override fun getUserInfo(token: String): Single<LoginResponse> {
         return loginService.getUserInfo(token).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

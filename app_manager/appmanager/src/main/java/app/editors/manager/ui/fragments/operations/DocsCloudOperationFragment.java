@@ -11,15 +11,15 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.ui.activities.main.OperationActivity;
+import app.editors.manager.ui.fragments.main.DocsCloudFragment;
 import app.editors.manager.ui.fragments.main.DocsCommonFragment;
 import app.editors.manager.ui.fragments.main.DocsMyFragment;
-import app.editors.manager.ui.fragments.main.DocsCloudFragment;
 import app.editors.manager.ui.fragments.main.DocsProjectsFragment;
 import app.editors.manager.ui.fragments.main.DocsShareFragment;
 
@@ -165,16 +165,16 @@ public class DocsCloudOperationFragment extends DocsCloudFragment implements Ope
     private void getDocs() {
         mCloudPresenter.setFoldersMode(true);
         switch (mSectionType) {
-            case Api.SectionType.CLOUD_USER:
+            case ApiContract.SectionType.CLOUD_USER:
                 mCloudPresenter.getItemsById(DocsMyFragment.ID);
                 break;
-            case Api.SectionType.CLOUD_SHARE:
+            case ApiContract.SectionType.CLOUD_SHARE:
                 mCloudPresenter.getItemsById(DocsShareFragment.ID);
                 break;
-            case Api.SectionType.CLOUD_COMMON:
+            case ApiContract.SectionType.CLOUD_COMMON:
                 mCloudPresenter.getItemsById(DocsCommonFragment.ID);
                 break;
-            case Api.SectionType.CLOUD_PROJECTS:
+            case ApiContract.SectionType.CLOUD_PROJECTS:
                 mCloudPresenter.getItemsById(DocsProjectsFragment.Companion.getID());
                 break;
         }

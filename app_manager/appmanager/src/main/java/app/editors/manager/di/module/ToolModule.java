@@ -39,12 +39,6 @@ public class ToolModule {
 
     @Provides
     @Singleton
-    public AccountManagerTool provideAccountsManager(Context context) {
-        return new AccountManagerTool(context);
-    }
-
-    @Provides
-    @Singleton
     public AccountSqlTool provideAccountsSql(Context context) {
         return new AccountSqlTool(context);
     }

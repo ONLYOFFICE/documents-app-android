@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import app.documents.core.network.ApiContract;
-import app.editors.manager.app.Api;
 
 
 public class PreferenceTool {
@@ -59,8 +58,8 @@ public class PreferenceTool {
     public void setDefaultUser() {
         setLogin(null);
         setPhoneNoise(null);
-        setSortBy(Api.Parameters.VAL_SORT_BY_UPDATED);
-        setSortOrder(Api.Parameters.VAL_SORT_ORDER_DESC);
+        setSortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED);
+        setSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
         setSocialProvider(null);
         setSelfId("");
         setProjectDisable(false);
@@ -107,7 +106,7 @@ public class PreferenceTool {
 
     @NonNull
     public String getSortBy() {
-        return mSharedPreferences.getString(KEY_9, Api.Parameters.VAL_SORT_BY_UPDATED);
+        return mSharedPreferences.getString(KEY_9, ApiContract.Parameters.VAL_SORT_BY_UPDATED);
     }
 
     public void setSortBy(final String value) {
@@ -116,7 +115,7 @@ public class PreferenceTool {
 
     @NonNull
     public String getSortOrder() {
-        return mSharedPreferences.getString(KEY_10, Api.Parameters.VAL_SORT_ORDER_DESC);
+        return mSharedPreferences.getString(KEY_10, ApiContract.Parameters.VAL_SORT_ORDER_DESC);
     }
 
     public void setSortOrder(final String value) {

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import app.documents.core.network.ApiContract;
-import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.mvp.models.base.Base;
 import app.editors.manager.mvp.models.explorer.CloudFile;
@@ -180,7 +179,7 @@ public class LocalFileProvider implements BaseFileProvider {
 
     @Override
     public Observable<Base> addToFavorites(RequestFavorites fileId) {
-         return null;//stub
+        return null;//stub
     }
 
     @Override
@@ -272,26 +271,26 @@ public class LocalFileProvider implements BaseFileProvider {
         List<CloudFile> files = explorer.getFiles();
 
         if (filter != null) {
-            final String sort = filter.get(Api.Parameters.ARG_SORT_BY);
-            final String order = filter.get(Api.Parameters.ARG_SORT_ORDER);
+            final String sort = filter.get(ApiContract.Parameters.ARG_SORT_BY);
+            final String order = filter.get(ApiContract.Parameters.ARG_SORT_ORDER);
             if (sort != null && order != null) {
                 switch (sort) {
-                    case Api.Parameters.VAL_SORT_BY_UPDATED:
+                    case ApiContract.Parameters.VAL_SORT_BY_UPDATED:
                         Collections.sort(folders, (o1, o2) -> o1.getUpdated().compareTo(o2.getUpdated()));
                         break;
-                    case Api.Parameters.VAL_SORT_BY_TITLE:
+                    case ApiContract.Parameters.VAL_SORT_BY_TITLE:
                         Collections.sort(folders, (o1, o2) -> o1.getTitle().toLowerCase().compareTo(o2.getTitle().toLowerCase()));
                         Collections.sort(files, (o1, o2) -> o1.getTitle().toLowerCase().compareTo(o2.getTitle().toLowerCase()));
                         break;
-                    case Api.Parameters.VAL_SORT_BY_SIZE:
+                    case ApiContract.Parameters.VAL_SORT_BY_SIZE:
                         Collections.sort(files, (o1, o2) -> Long.compare(o1.getPureContentLength(), o2.getPureContentLength()));
                         break;
-                    case Api.Parameters.VAL_SORT_BY_TYPE:
+                    case ApiContract.Parameters.VAL_SORT_BY_TYPE:
                         Collections.sort(files, (o1, o2) -> o1.getFileExst().compareTo(o2.getFileExst()));
                         break;
                 }
 
-                if (order.equals(Api.Parameters.VAL_SORT_ORDER_DESC)) {
+                if (order.equals(ApiContract.Parameters.VAL_SORT_ORDER_DESC)) {
                     Collections.reverse(folders);
                     Collections.reverse(files);
                 }

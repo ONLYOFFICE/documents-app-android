@@ -6,10 +6,9 @@ import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import app.documents.core.account.AccountDao
 import app.documents.core.network.ApiContract
-import app.editors.manager.R
-import app.editors.manager.app.Api
-import app.editors.manager.app.App
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityOperationBinding
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
@@ -109,7 +108,7 @@ class OperationActivity : BaseAppActivity(){
                         )
                     } else {
                         if (account.portal?.contains(ApiContract.PERSONAL_HOST) == true) {
-                            showFragment(DocsCloudOperationFragment.newInstance(Api.SectionType.CLOUD_USER), null)
+                            showFragment(DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER), null)
                         } else {
                             showFragment(DocsOperationSectionFragment.newInstance(), null)
                         }

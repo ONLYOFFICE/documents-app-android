@@ -24,12 +24,11 @@ import java.util.List;
 
 import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.CloudFile;
-import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.CloudFolder;
+import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.explorer.UploadFile;
 import app.editors.manager.mvp.models.list.Header;
@@ -191,7 +190,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
     @Override
     public void onReverseSortOrder(String order) {
-        if(order.equals(Api.Parameters.VAL_SORT_ORDER_ASC)) {
+        if(order.equals(ApiContract.Parameters.VAL_SORT_ORDER_ASC)) {
             mMenu.findItem(R.id.toolbar_sort_item_asc).setChecked(true);
         } else {
             mMenu.findItem(R.id.toolbar_sort_item_desc).setChecked(true);
@@ -207,7 +206,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_date_update:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_UPDATED, item.isChecked());
+                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, item.isChecked());
                 item.setChecked(true);
                 break;
 //            case R.id.toolbar_sort_item_date_create:
@@ -215,29 +214,29 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 //                item.setSelected(true);
 //                break;
             case R.id.toolbar_sort_item_title:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_TITLE, item.isChecked());
+                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_type:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_TYPE, item.isChecked());
+                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_size:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_SIZE, item.isChecked());
+                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_owner:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_OWNER, item.isChecked());
+                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, item.isChecked());
                 item.setChecked(true);
                 break;
 
             // Sort order
             case R.id.toolbar_sort_item_asc:
-                getPresenter().orderBy(Api.Parameters.VAL_SORT_ORDER_ASC);
+                getPresenter().orderBy(ApiContract.Parameters.VAL_SORT_ORDER_ASC);
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_desc:
-                getPresenter().orderBy(Api.Parameters.VAL_SORT_ORDER_DESC);
+                getPresenter().orderBy(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
                 item.setChecked(true);
                 break;
 
@@ -442,17 +441,17 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         switch (buttons) {
             case SHEET:
                 showEditDialogCreate(getString(R.string.dialogs_edit_create_sheet), getString(R.string.dialogs_edit_create_sheet),
-                        getString(R.string.dialogs_edit_hint), "." + Api.Extension.XLSX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_SHEET,
+                        getString(R.string.dialogs_edit_hint), "." + ApiContract.Extension.XLSX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_SHEET,
                         getString(R.string.dialogs_edit_accept_create), getString(R.string.dialogs_common_cancel_button));
                 break;
             case PRESENTATION:
                 showEditDialogCreate(getString(R.string.dialogs_edit_create_presentation), getString(R.string.dialogs_edit_create_presentation),
-                        getString(R.string.dialogs_edit_hint), "." + Api.Extension.PPTX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION,
+                        getString(R.string.dialogs_edit_hint), "." + ApiContract.Extension.PPTX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION,
                         getString(R.string.dialogs_edit_accept_create), getString(R.string.dialogs_common_cancel_button));
                 break;
             case DOC:
                 showEditDialogCreate(getString(R.string.dialogs_edit_create_docs), getString(R.string.dialogs_edit_create_docs),
-                        getString(R.string.dialogs_edit_hint), "." + Api.Extension.DOCX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_DOC,
+                        getString(R.string.dialogs_edit_hint), "." + ApiContract.Extension.DOCX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_DOC,
                         getString(R.string.dialogs_edit_accept_create), getString(R.string.dialogs_common_cancel_button));
                 break;
             case FOLDER:
@@ -479,13 +478,13 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
                     getPresenter().rename(value);
                     break;
                 case DocsBasePresenter.TAG_DIALOG_ACTION_SHEET:
-                    getPresenter().createDocs(value + "." + Api.Extension.XLSX.toLowerCase());
+                    getPresenter().createDocs(value + "." + ApiContract.Extension.XLSX.toLowerCase());
                     break;
                 case DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION:
-                    getPresenter().createDocs(value + "." + Api.Extension.PPTX.toLowerCase());
+                    getPresenter().createDocs(value + "." + ApiContract.Extension.PPTX.toLowerCase());
                     break;
                 case DocsBasePresenter.TAG_DIALOG_ACTION_DOC:
-                    getPresenter().createDocs(value + "." + Api.Extension.DOCX.toLowerCase());
+                    getPresenter().createDocs(value + "." + ApiContract.Extension.DOCX.toLowerCase());
                     break;
                 case DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER:
                     getPresenter().createFolder(value);
@@ -695,23 +694,23 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
             // Init sortBy by
             switch (sortBy) {
-                case Api.Parameters.VAL_SORT_BY_UPDATED:
+                case ApiContract.Parameters.VAL_SORT_BY_UPDATED:
                     mMenu.findItem(R.id.toolbar_sort_item_date_update)
                             .setEnabled(false).setChecked(true).setEnabled(true);
                     break;
-                case Api.Parameters.VAL_SORT_BY_TITLE:
+                case ApiContract.Parameters.VAL_SORT_BY_TITLE:
                     mMenu.findItem(R.id.toolbar_sort_item_title)
                             .setEnabled(false).setChecked(true).setEnabled(true);
                     break;
-                case Api.Parameters.VAL_SORT_BY_TYPE:
+                case ApiContract.Parameters.VAL_SORT_BY_TYPE:
                     mMenu.findItem(R.id.toolbar_sort_item_type)
                             .setEnabled(false).setChecked(true).setEnabled(true);
                     break;
-                case Api.Parameters.VAL_SORT_BY_SIZE:
+                case ApiContract.Parameters.VAL_SORT_BY_SIZE:
                     mMenu.findItem(R.id.toolbar_sort_item_size)
                             .setEnabled(false).setChecked(true).setEnabled(true);
                     break;
-                case Api.Parameters.VAL_SORT_BY_OWNER:
+                case ApiContract.Parameters.VAL_SORT_BY_OWNER:
                     mMenu.findItem(R.id.toolbar_sort_item_owner)
                             .setEnabled(false).setChecked(true).setEnabled(true);
                     break;

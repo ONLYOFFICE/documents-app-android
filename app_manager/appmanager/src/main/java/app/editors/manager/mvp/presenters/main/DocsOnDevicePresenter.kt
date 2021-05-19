@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import app.documents.core.account.Recent
+import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.providers.LocalFileProvider
@@ -21,6 +22,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
@@ -51,9 +53,20 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     private var mWebDavFileProvider: WebDavFileProvider? = null
 
     private fun checkWebDav() {
-        if (mAccountSqlTool.accountOnline != null && mAccountSqlTool.accountOnline.isWebDav) {
-            val account = mAccountSqlTool.accountOnline
-            mWebDavFileProvider = null
+        CoroutineScope(Dispatchers.Default).launch {
+            accountDao.getAccountOnline()?.let {
+                if (it.isWebDav) {
+                    AccountUtils.getPassword(
+                        mContext,
+                        it.getAccountName()
+                    )?.let { password ->
+                        mWebDavFileProvider = WebDavFileProvider(
+                            App.getApp().getWebDavApi(it.login, password),
+                            WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -193,8 +206,12 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     override fun uploadToMy(uri: Uri) {
         if (mWebDavFileProvider != null) {
-            val id = mAccountSqlTool.accountOnline.webDavPath
-            uploadWebDav(id, listOf(uri))
+            CoroutineScope(Dispatchers.Default).launch {
+                val id = accountDao.getAccountOnline()?.webDavPath
+                withContext(Dispatchers.Main) {
+                    uploadWebDav(id ?: "", listOf(uri))
+                }
+            }
         } else {
             super.uploadToMy(uri)
         }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import app.editors.manager.app.Api;
+import app.documents.core.network.ApiContract;
 import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.Explorer;
@@ -300,7 +300,7 @@ public class ModelExplorerStack {
             return explorerStack.getRootFolderType();
         }
 
-        return Api.SectionType.UNKNOWN;
+        return ApiContract.SectionType.UNKNOWN;
     }
 
     public int getCurrentFolderAccess() {
@@ -309,7 +309,7 @@ public class ModelExplorerStack {
             return explorerStack.getCurrentFolderAccess();
         }
 
-        return Api.SectionType.UNKNOWN;
+        return ApiContract.SectionType.UNKNOWN;
     }
 
     @Nullable

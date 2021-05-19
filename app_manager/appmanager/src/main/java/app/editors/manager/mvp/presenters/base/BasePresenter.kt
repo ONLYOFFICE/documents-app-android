@@ -42,9 +42,6 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
     lateinit var preferenceTool: PreferenceTool
 
     @Inject
-    lateinit var accountManagerTool: AccountManagerTool
-
-    @Inject
     lateinit var accountSqlTool: AccountSqlTool
 
     @Inject

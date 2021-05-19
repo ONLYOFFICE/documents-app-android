@@ -13,8 +13,8 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.base.Entity
@@ -135,27 +135,27 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         when (item.itemId) {
             R.id.toolbar_item_search, R.id.toolbar_item_sort -> item.isChecked = true
             R.id.toolbar_sort_item_date_update -> {
-                presenter.sortBy(Api.Parameters.VAL_SORT_BY_UPDATED, item.isChecked)
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, item.isChecked)
                 item.isChecked = true
             }
             R.id.toolbar_sort_item_title -> {
-                presenter.sortBy(Api.Parameters.VAL_SORT_BY_TITLE, item.isChecked)
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, item.isChecked)
                 item.isChecked = true
             }
             R.id.toolbar_sort_item_type -> {
-                presenter.sortBy(Api.Parameters.VAL_SORT_BY_TYPE, item.isChecked)
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, item.isChecked)
                 item.isChecked = true
             }
             R.id.toolbar_sort_item_size -> {
-                presenter.sortBy(Api.Parameters.VAL_SORT_BY_SIZE, item.isChecked)
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, item.isChecked)
                 item.isChecked = true
             }
             R.id.toolbar_sort_item_asc -> {
-                presenter.orderBy(Api.Parameters.VAL_SORT_ORDER_ASC)
+                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_ASC)
                 item.isChecked = true
             }
             R.id.toolbar_sort_item_desc -> {
-                presenter.orderBy(Api.Parameters.VAL_SORT_ORDER_DESC)
+                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_DESC)
                 item.isChecked = true
             }
             R.id.toolbar_main_item_select -> presenter.setSelection(true)
@@ -251,17 +251,17 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                     presenter.rename(string)
                 }
                 DocsBasePresenter.TAG_DIALOG_ACTION_SHEET -> presenter.createDocs(
-                    "$string." + Api.Extension.XLSX.toLowerCase(
+                    "$string." + ApiContract.Extension.XLSX.toLowerCase(
                         Locale.ROOT
                     )
                 )
                 DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION -> presenter.createDocs(
-                    "$string." + Api.Extension.PPTX.toLowerCase(
+                    "$string." + ApiContract.Extension.PPTX.toLowerCase(
                         Locale.ROOT
                     )
                 )
                 DocsBasePresenter.TAG_DIALOG_ACTION_DOC -> presenter.createDocs(
-                    "$string." + Api.Extension.DOCX.toLowerCase(
+                    "$string." + ApiContract.Extension.DOCX.toLowerCase(
                         Locale.ROOT
                     )
                 )

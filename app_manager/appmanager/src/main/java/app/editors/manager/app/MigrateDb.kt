@@ -108,7 +108,7 @@ class MigrateDb{
                 return getTokenWithId(account)
             }
             val response = App.getApp().loginComponent.loginService.getUserInfo(token = token)
-                .blockingSingle()
+                .blockingGet()
             return if (response is LoginResponse.Success) {
                 (response.response as ResponseUser).response.id
             } else {
@@ -127,7 +127,7 @@ class MigrateDb{
         )
 
         val response = App.getApp().loginComponent.loginService.signIn(requestSignIn)
-            .blockingSingle()
+            .blockingGet()
         if (response is LoginResponse.Success) {
             val responseSignIn = response.response as ResponseSignIn
             responseSignIn.response.token?.let {

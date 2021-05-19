@@ -6,8 +6,6 @@ import android.os.Environment;
 
 import androidx.annotation.Nullable;
 
-
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,10 +18,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import app.documents.core.webdav.WebDavModel;
-import app.editors.manager.app.Api;
-import app.editors.manager.app.App;
+import app.documents.core.network.ApiContract;
 import app.documents.core.webdav.WebDavApi;
+import app.documents.core.webdav.WebDavModel;
+import app.editors.manager.app.App;
 import app.editors.manager.managers.retrofit.ProgressRequestBody;
 import app.editors.manager.mvp.models.base.Base;
 import app.editors.manager.mvp.models.explorer.CloudFile;
@@ -472,7 +470,7 @@ class WebDavFileProvider implements BaseFileProvider {
 
     private Explorer getExplorer(List<WebDavModel.ResponseBean> responseBeans, @Nullable Map<String, String> filter) throws UnsupportedEncodingException {
         Explorer explorer = new Explorer();
-        String filteringValue = filter.get(Api.Parameters.ARG_FILTER_VALUE);
+        String filteringValue = filter.get(ApiContract.Parameters.ARG_FILTER_VALUE);
         List<CloudFile> files = new ArrayList<>();
         List<CloudFolder> folders = new ArrayList<>();
 

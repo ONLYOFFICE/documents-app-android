@@ -84,7 +84,7 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
                                 userName = cloudAccount.login ?: "",
                                 password = password ?: "",
                             )
-                        ).blockingFirst()
+                        ).blockingGet()
                     if (signInResponse is LoginResponse.Success) {
                         val token = (signInResponse.response as ResponseSignIn).response.token
                         AccountUtils.setToken(context, cloudAccount.getAccountName(), token)

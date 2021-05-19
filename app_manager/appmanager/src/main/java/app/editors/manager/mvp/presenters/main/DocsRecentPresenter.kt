@@ -9,7 +9,6 @@ import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.di.component.DaggerApiComponent
 import app.editors.manager.di.module.ApiModule
@@ -551,9 +550,9 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     private fun setOrder(isAsc: Boolean) {
         if (isAsc) {
-            mPreferenceTool.sortOrder = Api.Parameters.VAL_SORT_ORDER_ASC
+            mPreferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
         } else {
-            mPreferenceTool.sortOrder = Api.Parameters.VAL_SORT_ORDER_DESC
+            mPreferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
         }
     }
 

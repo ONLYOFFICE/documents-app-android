@@ -179,4 +179,10 @@ object ApiContract {
         const val FAVORITE = 0x20
     }
 
+    object Extension {
+        const val DOCX = "DOCX"
+        const val XLSX = "XLSX"
+        const val PPTX = "PPTX"
+    }
+
 }

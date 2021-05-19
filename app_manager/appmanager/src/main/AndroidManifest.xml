@@ -95,33 +95,33 @@
             android:supportsPictureInPicture="true"
             android:theme="@style/MainActivityTheme"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
-            <intent-filter android:label="@string/upload_to_portal">
-                <action android:name="android.intent.action.SEND" />
+<!--            <intent-filter android:label="@string/upload_to_portal">-->
+<!--                <action android:name="android.intent.action.SEND" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
 
-                <data
-                    android:host="*"
-                    android:mimeType="application/*" />
-            </intent-filter>
-            <intent-filter android:label="@string/upload_to_portal">
-                <action android:name="android.intent.action.SEND" />
+<!--                <data-->
+<!--                    android:host="*"-->
+<!--                    android:mimeType="application/*" />-->
+<!--            </intent-filter>-->
+<!--            <intent-filter android:label="@string/upload_to_portal">-->
+<!--                <action android:name="android.intent.action.SEND" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
 
-                <data
-                    android:host="*"
-                    android:mimeType="video/*" />
-            </intent-filter>
-            <intent-filter android:label="@string/upload_to_portal">
-                <action android:name="android.intent.action.SEND" />
+<!--                <data-->
+<!--                    android:host="*"-->
+<!--                    android:mimeType="video/*" />-->
+<!--            </intent-filter>-->
+<!--            <intent-filter android:label="@string/upload_to_portal">-->
+<!--                <action android:name="android.intent.action.SEND" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
 
-                <data
-                    android:host="*"
-                    android:mimeType="image/*" />
-            </intent-filter>
+<!--                <data-->
+<!--                    android:host="*"-->
+<!--                    android:mimeType="image/*" />-->
+<!--            </intent-filter>-->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>

@@ -63,7 +63,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         exportReceiver = ExportReceiver()
     }
 
-    fun getProvider()  {
+    fun getProvider() {
         mFileProvider?.let {
             CoroutineScope(Dispatchers.Default).launch {
                 accountDao.getAccountOnline()?.let {
@@ -155,16 +155,18 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     override fun addRecent(file: CloudFile) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
-                recentDao.addRecent(Recent(
-                    idFile = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
-                    path = file.webUrl,
-                    name = file.title,
-                    size = file.pureContentLength,
-                    isLocal = false,
-                    isWebDav = true,
-                    date = Date().time,
-                    ownerId = it.id
-                ))
+                recentDao.addRecent(
+                    Recent(
+                        idFile = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
+                        path = file.webUrl,
+                        name = file.title,
+                        size = file.pureContentLength,
+                        isLocal = false,
+                        isWebDav = true,
+                        date = Date().time,
+                        ownerId = it.id
+                    )
+                )
             }
         }
     }
@@ -275,9 +277,14 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 viewState.onSnackBar(mContext.getString(R.string.upload_manager_error_file_size))
                 return
             }
-            val sqlData = mAccountSqlTool.accountOnline
-            if (sqlData != null && sqlData.isWebDav) {
-                uploadWebDav(sqlData.webDavPath, listOf(uri))
+            CoroutineScope(Dispatchers.Default).launch {
+                accountDao?.getAccountOnline()?.let {
+                    if (it.isWebDav) {
+                        withContext(Dispatchers.Main) {
+                            uploadWebDav(it.webDavPath ?: "/", listOf(uri))
+                        }
+                    }
+                }
             }
         }
     }

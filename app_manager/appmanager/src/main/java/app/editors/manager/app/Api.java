@@ -54,64 +54,6 @@ import retrofit2.http.Url;
 
 public interface Api {
 
-    final class Parameters {
-        public static final String ARG_ACTION = "action";
-        public static final String ARG_COUNT = "count";
-        public static final String ARG_START_INDEX = "startIndex";
-        public static final String ARG_SORT_BY = "sortBy";
-        public static final String ARG_SORT_ORDER = "sortOrder";
-        public static final String ARG_FILTER_BY = "filterBy";
-        public static final String ARG_FILTER_OP = "filterOp";
-        public static final String ARG_FILTER_VALUE = "filterValue";
-        public static final String ARG_UPDATED_SINCE = "updatedSince";
-
-        public static final String VAL_ACTION_VIEW = "view";
-        public static final String VAL_SORT_ORDER_ASC = "ascending";
-        public static final String VAL_SORT_ORDER_DESC = "descending";
-        public static final String VAL_FILTER_OP_CONTAINS = "contains";
-        public static final String VAL_FILTER_OP_EQUALS = "equals";
-        public static final String VAL_FILTER_OP_STARTS_WITH = "startsWith";
-        public static final String VAL_FILTER_OP_PRESENT = "present";
-        public static final String VAL_FILTER_BY = "title";
-        public static final String VAL_SORT_BY_UPDATED = "DateAndTime";
-        public static final String VAL_SORT_BY_CREATED = "created";
-        public static final String VAL_SORT_BY_TITLE = "title";
-        public static final String VAL_SORT_BY_TYPE = "type";
-        public static final String VAL_SORT_BY_SIZE = "size";
-        public static final String VAL_SORT_BY_OWNER = "Author";
-    }
-
-    final class Extension {
-        public static final String DOCX = "DOCX";
-        public static final String XLSX = "XLSX";
-        public static final String PPTX = "PPTX";
-    }
-
-    final class SectionType {
-        public static final int UNKNOWN = 0;
-        public static final int CLOUD_COMMON = 1;
-        public static final int CLOUD_BUNCH = 2;
-        public static final int CLOUD_TRASH = 3;
-        public static final int CLOUD_USER = 5;
-        public static final int CLOUD_SHARE = 6;
-        public static final int CLOUD_PROJECTS = 8;
-        public static final int DEVICE_DOCUMENTS = 9;
-    }
-
-    final class Storage {
-        public static final String BOXNET = "Box";
-        public static final String DROPBOX = "DropboxV2";
-        public static final String GOOGLEDRIVE = "GoogleDrive";
-        public static final String ONEDRIVE = "OneDrive";
-        public static final String SKYDRIVE = "SkyDrive";
-        public static final String GOOGLE = "Google";
-        public static final String SHAREPOINT = "SharePoint";
-        public static final String YANDEX = "Yandex";
-        public static final String OWNCLOUD = "OwnCloud";
-        public static final String NEXTCLOUD = "Nextcloud";
-        public static final String WEBDAV = "WebDav";
-    }
-
     @Headers({ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
             ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT})
     @GET("api/" + ApiContract.API_VERSION + "/files/thirdparty/capabilities" + ApiContract.RESPONSE_FORMAT)
