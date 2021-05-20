@@ -9,9 +9,11 @@ class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     override fun show() {
         super.show()
         dialog.dialog!!.setCanceledOnTouchOutside(false)
-        mFrameLayout.visibility = View.GONE
-        mAcceptView.isEnabled = true
-        mCancelView.isEnabled = true
+        dialog.view?.post {
+            mFrameLayout.visibility = View.GONE
+            mAcceptView.isEnabled = true
+            mCancelView.isEnabled = true
+        }
     }
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.QUESTION
