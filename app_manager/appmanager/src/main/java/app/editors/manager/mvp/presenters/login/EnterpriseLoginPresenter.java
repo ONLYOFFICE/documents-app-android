@@ -30,7 +30,6 @@ public class EnterpriseLoginPresenter extends BaseLoginPresenter<CommonSignInVie
 
     public static final String TAG_DIALOG_WAITING = "TAG_DIALOG_WAITING";
     public static final String TAG_DIALOG_LOGIN_FACEBOOK = "TAG_DIALOG_LOGIN_FACEBOOK";
-    public static final String TAG_DIALOG_FORGOT_PASSWORD = "TAG_DIALOG_LOGIN_FORGOT_PASSWORD";
 
     protected Disposable mDisposable;
 
@@ -107,32 +106,6 @@ public class EnterpriseLoginPresenter extends BaseLoginPresenter<CommonSignInVie
                 urlSyntaxMistake.printStackTrace();
             }
         }
-    }
-
-    public void checkEmail(String email) {
-        if(!StringUtils.isEmailValid(email)) {
-            getViewState().onError(mContext.getString(R.string.errors_email_syntax_error));
-        } else {
-            sendEmailNotification(email);
-        }
-    }
-
-    private void sendEmailNotification(String email) {
-
-        RequestPassword requestPassword = new RequestPassword();
-        requestPassword.setPortal(mPreferenceTool.getPortal());
-        requestPassword.setEmail(email);
-
-        mDisposable = mRetrofitTool.getApiWithPreferences().forgotPassword(requestPassword)
-                .map(ResponsePassword::getResponse)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(message -> {
-                    getViewState().onSuccessSendEmail(message);
-                }, throwable -> {
-                    getViewState().onError(throwable.getMessage());
-                });
-
     }
 
 }

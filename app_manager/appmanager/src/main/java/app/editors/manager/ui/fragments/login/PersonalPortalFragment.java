@@ -196,6 +196,11 @@ public class PersonalPortalFragment extends BaseAppFragment implements CommonSig
         return false;
     }
 
+    @OnClick(R.id.login_enterprise_forgot_pwd_button)
+    protected void onForgotPassword() {
+        SignInActivity.showPasswordRecovery(getContext(), mLoginPersonalPortalEmailEdit.getText().toString());
+    }
+
     @Override
     public void onSuccessLogin() {
         hideDialog();
@@ -246,11 +251,6 @@ public class PersonalPortalFragment extends BaseAppFragment implements CommonSig
 
     @Override
     public void showFacebookLogin(boolean isShow) {
-
-    }
-
-    @Override
-    public void onSuccessSendEmail(String message) {
 
     }
 

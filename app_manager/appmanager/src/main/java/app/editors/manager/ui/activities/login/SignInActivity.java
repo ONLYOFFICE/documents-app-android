@@ -17,6 +17,7 @@ import app.editors.manager.ui.fragments.login.EnterpriseCreatePortalFragment;
 import app.editors.manager.ui.fragments.login.EnterprisePhoneFragment;
 import app.editors.manager.ui.fragments.login.EnterpriseSignInFragment;
 import app.editors.manager.ui.fragments.login.EnterpriseSmsFragment;
+import app.editors.manager.ui.fragments.login.PasswordRecoveryFragment;
 import app.editors.manager.ui.fragments.login.PersonalSignUpFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,6 +35,7 @@ public class SignInActivity extends BaseAppActivity {
     public static final String TAG_PERSONAL_SIGN_UP = "TAG_PERSONAL_SIGN_UP";
     public static final String TAG_SMS = "TAG_SMS";
     public static final String TAG_PHONE = "TAG_PHONE";
+    public static final String TAG_PASSWORD = "TAG_PASSWORD";
 
     public static final String KEY_PORTAL = "KEY_PORTAL";
     public static final String KEY_LOGIN = "KEY_LOGIN";
@@ -99,6 +101,9 @@ public class SignInActivity extends BaseAppActivity {
                     case TAG_PHONE:
                         showFragment(EnterprisePhoneFragment.newInstance(), null);
                         break;
+                    case TAG_PASSWORD:
+                        showFragment(PasswordRecoveryFragment.newInstance(intent.getStringExtra(TAG_PORTAL_SIGN_IN_EMAIL), true), null);
+                        break;
                 }
             }
         }
@@ -152,6 +157,13 @@ public class SignInActivity extends BaseAppActivity {
     public static void showPhone(final Context context) {
         final Intent intent = new Intent(context, SignInActivity.class);
         intent.putExtra(SignInActivity.TAG_ACTION, SignInActivity.TAG_PHONE);
+        context.startActivity(intent);
+    }
+
+    public static void showPasswordRecovery(final Context context, String email) {
+        final Intent intent = new Intent(context, SignInActivity.class);
+        intent.putExtra(SignInActivity.TAG_ACTION, SignInActivity.TAG_PASSWORD);
+        intent.putExtra(SignInActivity.TAG_PORTAL_SIGN_IN_EMAIL, email);
         context.startActivity(intent);
     }
 

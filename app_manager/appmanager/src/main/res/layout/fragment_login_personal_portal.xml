@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
@@ -58,11 +59,12 @@
             android:id="@+id/login_personal_signin_button"
             style="@style/FixedAccentButtons"
             android:layout_width="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/default_margin_medium"
             android:text="@string/login_personal_signin_button"
             app:layout_constraintEnd_toEndOf="@+id/login_personal_portal_email_layout"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/login_personal_portal_email_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_personal_portal_password_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_forgot_pwd_button" />
 
         <include
             android:id="@+id/social_network_layout"
@@ -105,6 +107,20 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintStart_toStartOf="@+id/login_personal_portal_email_layout"
             app:layout_constraintTop_toBottomOf="@+id/login_personal_info_text" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/login_enterprise_forgot_pwd_button"
+            style="@style/FixedTransparentAccentButtonsNoCaps"
+            android:layout_width="wrap_content"
+            android:layout_height="21dp"
+            android:layout_marginTop="4dp"
+            android:gravity="right|center"
+            android:text="Forgot?"
+            app:layout_constraintEnd_toEndOf="@+id/login_personal_portal_password_layout"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/login_personal_portal_password_layout"
+            app:layout_constraintVertical_chainStyle="packed" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

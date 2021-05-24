@@ -26,6 +26,7 @@ import app.editors.manager.mvp.presenters.login.EnterprisePhonePresenter;
 import app.editors.manager.mvp.presenters.login.EnterprisePortalPresenter;
 import app.editors.manager.mvp.presenters.login.EnterpriseSSOPresenter;
 import app.editors.manager.mvp.presenters.login.EnterpriseSmsPresenter;
+import app.editors.manager.mvp.presenters.login.PasswordRecoveryPresenter;
 import app.editors.manager.mvp.presenters.login.PersonalLoginPresenter;
 import app.editors.manager.mvp.presenters.login.PersonalSignUpPresenter;
 import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter;
@@ -100,6 +101,7 @@ public interface AppComponent {
     void inject(PersonalLoginPresenter personalSignInPresenter);
     void inject(PersonalSignUpPresenter personalSignUpPresenter);
     void inject(EnterpriseSSOPresenter enterpriseSSOPresenter);
+    void inject(PasswordRecoveryPresenter passwordRecoveryPresenter);
 
     void inject(CountriesCodesFragment codesFragment);
     void inject(EnterprisePhoneFragment phoneFragment);
