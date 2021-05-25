@@ -91,7 +91,7 @@
     <string name="login_enterprise_edit_hint">Portal address</string>
     <string name="login_enterprise_button_next">NEXT</string>
     <string name="login_enterprise_edit_error_hint">Enter valid address</string>
-    <string name="login_enterprise_forgot_password">Forgot password or email?</string>
+    <string name="login_enterprise_forgot_password">Forgot password?</string>
     <string name="login_enterprise_button_create">CREATE PORTAL</string>
     <string name="login_enterprise_button_select">ACCOUNTS</string>
     <string name="login_enterprise_email_hint">Email</string>

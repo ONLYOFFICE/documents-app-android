@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -60,6 +61,8 @@ public class PasswordRecoveryFragment extends BaseAppFragment implements Passwor
     protected TextInputLayout mPasswordRecoveryEmailLayout;
     @BindView(R.id.login_password_recovery_email_edit)
     protected AppCompatEditText mPasswordRecoveryEmailEdit;
+    @BindView(R.id.login_password_recovery_image)
+    protected AppCompatImageView mPasswordRecoveryImageView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -106,6 +109,7 @@ public class PasswordRecoveryFragment extends BaseAppFragment implements Passwor
         mLoginPasswordRecoveryHint.setText(getContext().getString(R.string.login_password_recovery_success_hint, email));
         mIsPasswordRecovered = true;
         mRecoverButton.setVisibility(View.VISIBLE);
+        mPasswordRecoveryImageView.setVisibility(View.VISIBLE);
         mRecoverButton.setText(getContext().getString(R.string.login_password_recovery_button_text));
     }
 

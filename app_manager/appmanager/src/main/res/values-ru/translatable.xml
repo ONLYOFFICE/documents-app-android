@@ -196,7 +196,7 @@
     <string name="login_enterprise_edit_error_hint">Введите действительный адрес</string>
     <string name="login_enterprise_edit_hint">Адрес облачного офиса</string>
     <string name="login_enterprise_email_hint">Email</string>
-    <string name="login_enterprise_forgot_password">Забыли пароль или email?</string>
+    <string name="login_enterprise_forgot_password">Забыли пароль?</string>
     <string name="login_enterprise_info">      Корпоративный облачный офис позволяет сохранять файлы в хранилище, делиться ими с коллегами и редактировать документы совместно в режиме реального времени
     </string>
     <string name="login_enterprise_password_hint">Пароль</string>
