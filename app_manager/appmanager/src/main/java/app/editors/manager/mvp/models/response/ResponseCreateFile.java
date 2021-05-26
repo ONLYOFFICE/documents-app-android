@@ -5,19 +5,19 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import app.editors.manager.mvp.models.base.Base;
-import app.editors.manager.mvp.models.explorer.File;
+import app.editors.manager.mvp.models.explorer.CloudFile;
 
 public class ResponseCreateFile extends Base {
 
     @SerializedName(KEY_RESPONSE)
     @Expose
-    private File response;
+    private CloudFile response;
 
-    public File getResponse() {
+    public CloudFile getResponse() {
         return response;
     }
 
-    public void setResponse(File response) {
+    public void setResponse(CloudFile response) {
         this.response = response;
     }
 

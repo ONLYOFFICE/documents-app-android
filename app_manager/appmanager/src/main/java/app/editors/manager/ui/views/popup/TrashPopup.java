@@ -33,7 +33,7 @@ public class TrashPopup extends BasePopup {
     }
 
     public boolean isShowing() {
-        return mPopupWindow.isShowing();
+        return popupWindow.isShowing();
     }
 
     public void setMoveTitle(String title) {

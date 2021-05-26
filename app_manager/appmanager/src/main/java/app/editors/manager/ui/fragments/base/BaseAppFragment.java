@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import app.editors.manager.R;
 import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.File;
+import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
 import app.editors.manager.ui.activities.main.MediaActivity;
@@ -98,7 +98,7 @@ public abstract class BaseAppFragment extends BaseFragment {
         OperationActivity.showCopy(this, explorer);
     }
 
-    protected void showViewerActivity(final File file) {
+    protected void showViewerActivity(final CloudFile file) {
         WebViewerActivity.show(requireActivity(), file);
     }
 

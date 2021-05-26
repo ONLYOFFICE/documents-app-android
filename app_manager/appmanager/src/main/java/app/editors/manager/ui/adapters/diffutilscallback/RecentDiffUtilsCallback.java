@@ -2,12 +2,12 @@ package app.editors.manager.ui.adapters.diffutilscallback;
 
 import java.util.List;
 
-import app.editors.manager.mvp.models.account.Recent;
-import app.editors.manager.mvp.models.base.Entity;
+import app.documents.core.account.Recent;
 
-public class RecentDiffUtilsCallback extends BaseDiffUtilsCallback<Entity> {
 
-    public RecentDiffUtilsCallback(List<Entity> mNewList, List<Entity> mOldList) {
+public class RecentDiffUtilsCallback extends BaseDiffUtilsCallback<Recent> {
+
+    public RecentDiffUtilsCallback(List<Recent> mNewList, List<Recent> mOldList) {
         super(mNewList, mOldList);
     }
 
@@ -16,7 +16,7 @@ public class RecentDiffUtilsCallback extends BaseDiffUtilsCallback<Entity> {
         if (mOldList.get(oldItemPosition) instanceof Recent && mNewList.get(newItemPosition) instanceof Recent) {
             Recent oldRecent = (Recent) mOldList.get(oldItemPosition);
             Recent newRecent = (Recent) mNewList.get(newItemPosition);
-            return oldRecent.getId().equals(newRecent.getId());
+            return oldRecent.getId() == newRecent.getId();
         }
         return false;
     }
@@ -26,7 +26,7 @@ public class RecentDiffUtilsCallback extends BaseDiffUtilsCallback<Entity> {
         if (mOldList.get(oldItemPosition) instanceof Recent && mNewList.get(newItemPosition) instanceof Recent) {
             Recent oldRecent = (Recent) mOldList.get(oldItemPosition);
             Recent newRecent = (Recent) mNewList.get(newItemPosition);
-            return oldRecent.getDate().equals(newRecent.getDate());
+            return oldRecent.getDate() == newRecent.getDate();
         }
         return false;
     }

@@ -101,7 +101,7 @@
     <string name="login_enterprise_info">
         ONLYOFFICE portal ຊ່ວຍໃຫ້ທ່ານສາມາດປະຫຍັດເອກະສານໃນຄລາວ, ແບ່ງປັນກັບເພື່ອນຮ່ວມງານ ແລະ ແກ້ໄຂຮ່ວມກັນໃນເວລາຈິງ.
     </string>
-    <string name="login_not_authorization_info">ບໍ່ສາມາດລົງຊື່ເຂົ້າໃຊ້% 1 $ s ທີ່% 2 $ s </string>
+    <string name="login_not_authorization_info">ບໍ່ສາມາດລົງຊື່ເຂົ້າໃຊ້%1$s ທີ່%2$s </string>
     <string name="login_not_authorization_button"> ລອງອີກຄັ້ງ </string>
     <string name="errors_first_name">ຊື່ໃຫ້ຖືກຕ້ອງ. ຕ້ອງບໍ່ມີຕົວເລກ.</string>
     <string name="errors_last_name">ນາມສະກຸນບໍ່ຖືກຕ້ອງ. ມັນຕ້ອງບໍ່ມີຕົວເລກ..</string>
@@ -117,7 +117,7 @@
     <string name="login_personal_info">
          ເຊື່ອມຕໍ່ ONLYOFFICE ເປັນສ່ວນຕົວ ເພື່ອບັນທຶກເອກະສານໃນ cloud
     </string>
-    <string name="login_web_dav_title">ເຊື່ອມຕໍ່ກັບ% 1 $ </string>
+    <string name="login_web_dav_title">ເຊື່ອມຕໍ່ກັບ%1$s </string>
 
     <!-- Portal create-->
     <string name="login_create_portal_title">ສ້າງປະຕູສຳລັບອົງກອນ </string>
@@ -506,8 +506,8 @@
     <!-- ======================================================================================= -->
     <!-- Media -->
     <string name="media_image_share_chooser">ເລືອກແອັບສຳລັບແບ່ງປັນ</string>
-    <string name="media_image_list_info">ແຟ້ມເອກະສານ:% 1 $ s </string>
-    <string name="media_video_error">ເຄື່ອງຫຼີ້ນທີ່ບໍ່ຮູ້ຈັກຜິດພາດ:% 1 $ s </string>
+    <string name="media_image_list_info">ແຟ້ມເອກະສານ:%1$s </string>
+    <string name="media_video_error">ເຄື່ອງຫຼີ້ນທີ່ບໍ່ຮູ້ຈັກຜິດພາດ:%1$s </string>
 
     <string name="auth_header_screen_1">ຕັ້ງຄ່າການກວດສອບສອງຢ່າງ</string>
     <string name="auth_info_screen_1">ຕິດຕັ້ງແອັບ authentic ເຄື່ອງຮັບຮອງເພື່ອສ້າງລະຫັດການເຂົ້າເຖິງ (ເຊັ່ນ: Google Authenticator, Authy) ເພື່ອສືບຕໍ່ເຮັດວຽກກັບປະຕູຂອງທ່ານ </string>
@@ -540,7 +540,7 @@
     <string name="error_long_file_name">ຊື່ແຟ້ມຍາວເກີນໄປ </string>
     <string name="dialog_remove_account_title">ເອົາບັນຊີອອກ</string>
     <string name="dialog_remove_account_description">
-        ຜູ້ໃຊ້ທີ່ມີ% 1 $ s ຈາກປະຕູ% 2 $ s ຈະຖືກອອກຈາກລະບົບແລະລຶບອອກຈາກບັນຊີບັນຊີ. \ n \ n ກະລຸນາສັງເກດ: ເພື່ອເຂົ້າສູ່ລະບົບ, ທ່ານຕ້ອງການໃສ່ທີ່ຢູ່ປະຕູ, ອີເມວແລະລະຫັດຜ່ານ. ໄຟລ໌ທັງໝົດຂອງທ່ານຈະປອດໄພ.
+        ຜູ້ໃຊ້ທີ່ມີ%1$s ຈາກປະຕູ%2$s ຈະຖືກອອກຈາກລະບົບແລະລຶບອອກຈາກບັນຊີບັນຊີ. \ n \ n ກະລຸນາສັງເກດ: ເພື່ອເຂົ້າສູ່ລະບົບ, ທ່ານຕ້ອງການໃສ່ທີ່ຢູ່ປະຕູ, ອີເມວແລະລະຫັດຜ່ານ. ໄຟລ໌ທັງໝົດຂອງທ່ານຈະປອດໄພ.
     </string>
     <string name="dialog_logout_account_title">ທ່ານແນ່ໃຈທີ່ຈະອອກຈາກລະບົບ?</string>
     <string name="dialog_logout_account_description">

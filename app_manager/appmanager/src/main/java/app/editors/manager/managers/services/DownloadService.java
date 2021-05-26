@@ -20,24 +20,18 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
-import app.editors.manager.app.WebDavApi;
 import app.editors.manager.managers.exceptions.UrlSyntaxMistake;
 import app.editors.manager.managers.receivers.DownloadReceiver;
-import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.NotificationUtils;
-import app.editors.manager.mvp.models.account.AccountsSqlData;
 import lib.toolkit.base.managers.utils.FileUtils;
 import lib.toolkit.base.managers.utils.StringUtils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@Deprecated
 public class DownloadService extends Service {
 
     public static final String TAG = DownloadService.class.getSimpleName();
@@ -62,10 +56,6 @@ public class DownloadService extends Service {
 
     private static Map<String, AsyncDownload> sDownloading;
 
-    @Inject
-    public PreferenceTool mPreferenceTool;
-    @Inject
-    public RetrofitTool mRetrofitTool;
 
     private NotificationUtils mNotificationUtils;
 
@@ -78,7 +68,6 @@ public class DownloadService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        App.getApp().getAppComponent().inject(this);
         init();
     }
 
@@ -109,7 +98,6 @@ public class DownloadService extends Service {
     }
 
     private void init() {
-        App.getApp().getAppComponent().inject(this);
         mNotificationUtils = new NotificationUtils(App.getApp(), TAG);
     }
 
@@ -179,12 +167,12 @@ public class DownloadService extends Service {
             mId = id;
             mTitle = title;
             mMimeType = StringUtils.getMimeTypeFromExtension(extension);
-            if (App.getApp().getAppComponent().getAccountsSql().getAccountOnline().isWebDav()) {
-                AccountsSqlData sqlData = App.getApp().getAppComponent().getAccountsSql().getAccountOnline();
-                mBodyCall = WebDavApi.getApi(sqlData.getScheme() + sqlData.getPortal()).download(id);
-            } else {
-                mBodyCall = mRetrofitTool.getApiWithPreferences().downloadFile(mPreferenceTool.getToken(), mUri, Api.COOKIE_HEADER + mPreferenceTool.getToken());
-            }
+//            if (App.getApp().getAppComponent()   .getAccountsSql().getAccountOnline().isWebDav()) {
+//                AccountsSqlData sqlData = App.getApp().getAppComponent().getAccountsSql().getAccountOnline();
+//                mBodyCall = WebDavApi.getApi(sqlData.getScheme() + sqlData.getPortal()).download(id);
+//            } else {
+//                mBodyCall = mRetrofitTool.getApiWithPreferences().downloadFile(mPreferenceTool.getToken(), mUri, Api.COOKIE_HEADER + mPreferenceTool.getToken());
+//            }
             this.service = service;
 
             if (mIsTemp) {

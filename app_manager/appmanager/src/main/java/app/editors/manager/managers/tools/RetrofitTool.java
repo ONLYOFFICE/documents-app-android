@@ -18,7 +18,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import app.editors.manager.BuildConfig;
+import app.documents.core.settings.NetworkSettings;
 import app.editors.manager.app.Api;
 import app.editors.manager.managers.exceptions.ApiInitException;
 import app.editors.manager.managers.exceptions.UrlSyntaxMistake;
@@ -35,6 +35,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+@Deprecated
 public class RetrofitTool {
 
     public static final String TAG = RetrofitTool.class.getSimpleName();
@@ -43,18 +44,16 @@ public class RetrofitTool {
     private static final int WRITE_TIMEOUT = 60;
     private static final int CONNECT_TIMEOUT = 60;
 
-    private final Context mContext;
     private Converter.Factory mConverterFactory;
     private OkHttpClient.Builder mOkHttpClient;
     private Retrofit.Builder mBuilder;
     private Retrofit mRetrofit;
-    private PreferenceTool mPreferenceTool;
     private Api mApi;
     private boolean mIsSslOn;
     private boolean mIsCiphers;
+    private NetworkSettings mNetworkSettings;
 
     public RetrofitTool(final Context context) {
-        mContext = context;
         mConverterFactory = getGsonConverterFactory();
         mOkHttpClient = getOkHttp();
         mBuilder = retrofitBuilder(mOkHttpClient);
@@ -87,7 +86,7 @@ public class RetrofitTool {
                 .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
                 .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
                 .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-                .addInterceptor(new BaseInterceptor());
+                .addInterceptor(new BaseInterceptor(""));
     }
 
     private OkHttpClient.Builder getCustomOkHttp() {
@@ -152,17 +151,17 @@ public class RetrofitTool {
         return getApi(getPreferenceUrl());
     }
 
-    public RetrofitTool setPreferenceTool(PreferenceTool preferenceTool) {
-        mPreferenceTool = preferenceTool;
+    public RetrofitTool setPreferenceTool(NetworkSettings preferenceTool) {
+        mNetworkSettings = preferenceTool;
         return this;
     }
 
     @NonNull
     private String getPreferenceUrl() {
-        if (mPreferenceTool != null) {
-            mIsCiphers = mPreferenceTool.getSslCiphers();
-            mIsSslOn = mPreferenceTool.getSslState();
-            return mPreferenceTool.getScheme() + StringUtils.getEncodedString(mPreferenceTool.getPortal());
+        if (mNetworkSettings != null) {
+            mIsCiphers = mNetworkSettings.getCipher();
+            mIsSslOn = mNetworkSettings.getSslState();
+            return mNetworkSettings.getScheme() + StringUtils.getEncodedString(mNetworkSettings.getPortal());
         } else {
             throw new ApiInitException("Use method setPreferenceTool(PreferenceTool) or use " +
                     PreferenceTool.class.getSimpleName() + " - setPortal(portal_name)");

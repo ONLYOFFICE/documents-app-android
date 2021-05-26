@@ -3,10 +3,10 @@ package app.editors.manager.managers.providers;
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,19 +18,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import app.editors.manager.app.Api;
+import app.documents.core.network.ApiContract;
+import app.documents.core.webdav.WebDavApi;
+import app.documents.core.webdav.WebDavModel;
 import app.editors.manager.app.App;
-import app.editors.manager.app.WebDavApi;
 import app.editors.manager.managers.retrofit.ProgressRequestBody;
-import app.editors.manager.managers.utils.NotificationUtils;
 import app.editors.manager.mvp.models.base.Base;
+import app.editors.manager.mvp.models.explorer.CloudFile;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.Current;
 import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.Folder;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.explorer.Operation;
-import app.editors.manager.mvp.models.explorer.WebDavModel;
 import app.editors.manager.mvp.models.request.RequestCreate;
 import app.editors.manager.mvp.models.request.RequestExternal;
 import app.editors.manager.mvp.models.request.RequestFavorites;
@@ -61,7 +60,7 @@ class WebDavFileProvider implements BaseFileProvider {
     private WebDavApi mApi;
     private WebDavApi.Providers mProvider;
     private List<Item> mBatchItems;
-    private List<File> mUploadsFile = Collections.synchronizedList(new ArrayList<>());
+    private List<CloudFile> mUploadsFile = Collections.synchronizedList(new ArrayList<>());
 
     public WebDavFileProvider(WebDavApi mApi, WebDavApi.Providers provider) {
         this.mApi = mApi;
@@ -83,15 +82,15 @@ class WebDavFileProvider implements BaseFileProvider {
     }
 
     @Override
-    public Observable<File> createFile(String folderId, RequestCreate body) {
+    public Observable<CloudFile> createFile(String folderId, RequestCreate body) {
         String title = body.getTitle();
         String path = PATH_TEMPLATES + FileUtils.getTemplates(App.getApp(), App.getLocale(),
                 StringUtils.getExtensionFromPath(body.getTitle().toLowerCase()));
 
-        java.io.File temp = FileUtils.createTempAssetsFile(App.getApp(), path, StringUtils.getNameWithoutExtension(title), StringUtils.getExtensionFromPath(title));
+        File temp = FileUtils.createTempAssetsFile(App.getApp(), path, StringUtils.getNameWithoutExtension(title), StringUtils.getExtensionFromPath(title));
 
         return Observable.fromCallable(() -> {
-            File file = new File();
+            CloudFile file = new CloudFile();
             file.setWebUrl(Uri.fromFile(temp).toString());
             file.setPureContentLength(temp != null ? temp.length() : 0);
             file.setId(folderId + body.getTitle());
@@ -103,13 +102,13 @@ class WebDavFileProvider implements BaseFileProvider {
     }
 
     @Override
-    public Observable<Folder> createFolder(String folderId, RequestCreate body) {
+    public Observable<CloudFolder> createFolder(String folderId, RequestCreate body) {
         return Observable.fromCallable(() -> mApi.createFolder(folderId + body.getTitle()).execute())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(responseBody -> {
                     if (responseBody.isSuccessful()) {
-                        Folder folder = new Folder();
+                        CloudFolder folder = new CloudFolder();
                         folder.setTitle(body.getTitle());
                         folder.setId(folderId + body.getTitle());
                         folder.setUpdated(new Date());
@@ -123,19 +122,19 @@ class WebDavFileProvider implements BaseFileProvider {
     @Override
     public Observable<Item> rename(Item item, String newName, @Nullable Integer version) {
         String correctPath;
-        if (item instanceof File && version != null) {
-            newName = StringUtils.getEncodedString(newName) + ((File) item).getFileExst();
+        if (item instanceof CloudFile && version != null) {
+            newName = StringUtils.getEncodedString(newName) + ((CloudFile) item).getFileExst();
             correctPath = filePath(item.getId(), newName);
-            return renameFile(correctPath, newName, (File) item);
-        } else if (item instanceof Folder) {
+            return renameFile(correctPath, newName, (CloudFile) item);
+        } else if (item instanceof CloudFolder) {
             correctPath = folderPath(item.getId(), newName);
-            return renameFolder(correctPath, newName, (Folder) item);
+            return renameFolder(correctPath, newName, (CloudFolder) item);
         } else {
             return Observable.just(new Item());
         }
     }
 
-    private Observable<Item> renameFolder(String correctPath, String newName, Folder folder) {
+    private Observable<Item> renameFolder(String correctPath, String newName, CloudFolder folder) {
         return Observable.fromCallable(() -> mApi.move(StringUtils.getEncodedString(correctPath), folder.getId(), "F").execute())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -151,7 +150,7 @@ class WebDavFileProvider implements BaseFileProvider {
                 });
     }
 
-    private Observable<Item> renameFile(String correctPath, String newName, File file) {
+    private Observable<Item> renameFile(String correctPath, String newName, CloudFile file) {
         return Observable.fromCallable(() -> mApi.move(correctPath, file.getId(), "F").execute())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -168,7 +167,7 @@ class WebDavFileProvider implements BaseFileProvider {
     }
 
     @Override
-    public Observable<List<Operation>> delete(List<Item> items, @Nullable Folder from) {
+    public Observable<List<Operation>> delete(List<Item> items, @Nullable CloudFolder from) {
         mBatchItems = items;
         return Observable.fromIterable(items).map(item -> mApi.delete(item.getId()).execute())
                 .subscribeOn(Schedulers.io())
@@ -190,7 +189,7 @@ class WebDavFileProvider implements BaseFileProvider {
     }
 
     @Override
-    public Observable<List<Operation>> transfer(List<Item> items, @Nullable Folder to, int conflict, boolean isMove, boolean isOverwrite) {
+    public Observable<List<Operation>> transfer(List<Item> items, @Nullable CloudFolder to, int conflict, boolean isMove, boolean isOverwrite) {
         if (isMove) {
             return moveItems(items, to, isOverwrite);
         } else {
@@ -198,7 +197,7 @@ class WebDavFileProvider implements BaseFileProvider {
         }
     }
 
-    private Observable<List<Operation>> copyItems(List<Item> items, Folder to, boolean overwrite) {
+    private Observable<List<Operation>> copyItems(List<Item> items, CloudFolder to, boolean overwrite) {
         String headerOverwrite = overwrite ? "T" : "F";
         return Observable.fromIterable(items)
                 .flatMap(item ->
@@ -220,7 +219,7 @@ class WebDavFileProvider implements BaseFileProvider {
                 });
     }
 
-    private Observable<List<Operation>> moveItems(List<Item> items, Folder to, boolean overwrite) {
+    private Observable<List<Operation>> moveItems(List<Item> items, CloudFolder to, boolean overwrite) {
         String headerOverwrite = overwrite ? "T" : "F";
         return Observable.fromIterable(items)
                 .flatMap(item -> Observable.fromCallable(() -> mApi
@@ -247,10 +246,10 @@ class WebDavFileProvider implements BaseFileProvider {
     }
 
     @Override
-    public Observable<File> fileInfo(Item item) {
+    public Observable<CloudFile> fileInfo(Item item) {
         return Observable.create(emitter -> {
 
-            java.io.File outputFile = checkDirectory(item);
+            File outputFile = checkDirectory(item);
 
 
             //TODO Возможно надо пределать
@@ -273,8 +272,8 @@ class WebDavFileProvider implements BaseFileProvider {
 //            }
 
             if (outputFile != null && outputFile.exists()) {
-                if (item instanceof File) {
-                    File file = (File) item;
+                if (item instanceof CloudFile) {
+                    CloudFile file = (CloudFile) item;
                     if (file.getPureContentLength() != outputFile.length()) {
                         download(emitter, item, outputFile);
                     } else  {
@@ -288,13 +287,13 @@ class WebDavFileProvider implements BaseFileProvider {
     }
 
 
-    public Observable<File> fileInfo(Item item, Boolean isDownload) {
+    public Observable<CloudFile> fileInfo(Item item, Boolean isDownload) {
         return Observable.create(emitter -> {
 
-            java.io.File outputFile = checkDirectory(item);
+            File outputFile = checkDirectory(item);
 
             if (outputFile != null && outputFile.exists()) {
-                if (item instanceof File) {
+                if (item instanceof CloudFile) {
                     if (isDownload) {
                         download(emitter, item, outputFile);
                     } else {
@@ -307,7 +306,7 @@ class WebDavFileProvider implements BaseFileProvider {
         });
     }
 
-    private void download(Emitter<File> emitter, Item item, java.io.File outputFile) throws IOException {
+    private void download(Emitter<CloudFile> emitter, Item item, File outputFile) throws IOException {
         Response<ResponseBody> response = mApi.download(item.getId()).execute();
         if (response.body() != null) {
             try (InputStream inputStream = response.body().byteStream(); OutputStream outputStream = new FileOutputStream(outputFile)) {
@@ -330,8 +329,8 @@ class WebDavFileProvider implements BaseFileProvider {
     }
 
     @SuppressLint("MissingPermission")
-    private java.io.File checkDirectory(Item item) {
-        File file = (File) item;
+    private File checkDirectory(Item item) {
+        CloudFile file = (CloudFile) item;
         StringUtils.Extension extension = StringUtils.getExtension(file.getFileExst());
         switch (extension) {
             case UNKNOWN:
@@ -339,10 +338,10 @@ class WebDavFileProvider implements BaseFileProvider {
             case ARCH:
             case VIDEO:
             case HTML:
-                java.io.File parent = new java.io.File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/OnlyOffice");
+                File parent = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/OnlyOffice");
                 return FileUtils.createFile(parent, file.getTitle());
         }
-        java.io.File local = new java.io.File(Uri.parse(file.getWebUrl()).getPath());
+        File local = new File(Uri.parse(file.getWebUrl()).getPath());
         if (local.exists()) {
             return local;
         } else  {
@@ -351,9 +350,9 @@ class WebDavFileProvider implements BaseFileProvider {
 
     }
 
-    private File setFile(Item item, java.io.File outputFile) {
-        File originFile = (File) item;
-        File file = new File();
+    private CloudFile setFile(Item item, File outputFile) {
+        CloudFile originFile = (CloudFile) item;
+        CloudFile file = new CloudFile();
         file.setFolderId(originFile.getFolderId());
         file.setTitle(originFile.getTitle());
         file.setPureContentLength(outputFile.length());
@@ -367,7 +366,7 @@ class WebDavFileProvider implements BaseFileProvider {
     @Override
     public Observable<Integer> download(List<Item> items) {
         return Observable.fromIterable(items)
-                .filter(item -> item instanceof File)
+                .filter(item -> item instanceof CloudFile)
                 .flatMap(this::startDownload)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -377,7 +376,7 @@ class WebDavFileProvider implements BaseFileProvider {
     private Observable<Integer> startDownload(Item item) {
         return Observable.create(emitter -> {
             Response<ResponseBody> response = mApi.download(item.getId()).execute();
-            java.io.File outputFile = new java.io.File(PATH_DOWNLOAD, item.getTitle());
+            File outputFile = new File(PATH_DOWNLOAD, item.getTitle());
             if (response.body() != null) {
                 try (InputStream inputStream = response.body().byteStream(); OutputStream outputStream = new FileOutputStream(outputFile)) {
                     byte[] buffer = new byte[4096];
@@ -415,7 +414,7 @@ class WebDavFileProvider implements BaseFileProvider {
 
     private Uri addUploadsFile(String id, Uri uri) {
         String fileName = ContentResolverUtils.getName(App.getApp(), uri);
-        File uploadFile = new File();
+        CloudFile uploadFile = new CloudFile();
         uploadFile.setId(id + fileName);
         uploadFile.setFolderId(id);
         uploadFile.setFileExst(StringUtils.getExtensionFromPath(fileName));
@@ -471,17 +470,17 @@ class WebDavFileProvider implements BaseFileProvider {
 
     private Explorer getExplorer(List<WebDavModel.ResponseBean> responseBeans, @Nullable Map<String, String> filter) throws UnsupportedEncodingException {
         Explorer explorer = new Explorer();
-        String filteringValue = filter.get(Api.Parameters.ARG_FILTER_VALUE);
-        List<File> files = new ArrayList<>();
-        List<Folder> folders = new ArrayList<>();
+        String filteringValue = filter.get(ApiContract.Parameters.ARG_FILTER_VALUE);
+        List<CloudFile> files = new ArrayList<>();
+        List<CloudFolder> folders = new ArrayList<>();
 
-        Folder parentFolder = getFolder(responseBeans.get(0));
+        CloudFolder parentFolder = getFolder(responseBeans.get(0));
 
         for (int i = 1; i < responseBeans.size(); i++) {
             WebDavModel.ResponseBean bean = responseBeans.get(i);
             if ((bean.getContentLength() == null && bean.getContentType() == null)
                     || (bean.getContentType() != null && bean.getContentType().equals("httpd/unix-directory"))) {
-                Folder folder = new Folder();
+                CloudFolder folder = new CloudFolder();
                 folder.setId(bean.getHref());
                 folder.setTitle(getTitle(bean.getHref()));
                 folder.setParentId(parentFolder.getId());
@@ -495,7 +494,7 @@ class WebDavFileProvider implements BaseFileProvider {
                     folders.add(folder);
                 }
             } else {
-                File file = new File();
+                CloudFile file = new CloudFile();
                 file.setId(bean.getHref());
                 file.setTitle(getTitle(bean.getHref()));
                 file.setFolderId(parentFolder.getId());
@@ -524,8 +523,8 @@ class WebDavFileProvider implements BaseFileProvider {
         return explorer;
     }
 
-    private Folder getFolder(WebDavModel.ResponseBean responseBean) throws UnsupportedEncodingException {
-        Folder folder = new Folder();
+    private CloudFolder getFolder(WebDavModel.ResponseBean responseBean) throws UnsupportedEncodingException {
+        CloudFolder folder = new CloudFolder();
         folder.setId(NetworkUtils.decodeUrl(responseBean.getHref()));
         folder.setTitle(NetworkUtils.decodeUrl(getFolderTitle(responseBean.getHref())));
         folder.setUpdated(responseBean.getLastModifiedDate());
@@ -557,7 +556,7 @@ class WebDavFileProvider implements BaseFileProvider {
                 newName;
     }
 
-    public List<File> getUploadFile() {
+    public List<CloudFile> getUploadFile() {
         return mUploadsFile;
     }
 
@@ -566,7 +565,7 @@ class WebDavFileProvider implements BaseFileProvider {
         if (mProvider == WebDavApi.Providers.NextCloud || mProvider == WebDavApi.Providers.OwnCloud) {
             id = item.getTitle();
         } else {
-            if (item instanceof Folder) {
+            if (item instanceof CloudFolder) {
                 id = item.getId().substring(0, item.getId().lastIndexOf('/'));
             } else {
                 id = item.getId();

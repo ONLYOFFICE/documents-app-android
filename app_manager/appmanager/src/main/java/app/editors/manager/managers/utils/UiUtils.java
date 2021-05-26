@@ -5,7 +5,7 @@ import android.widget.ImageView;
 import androidx.core.content.ContextCompat;
 
 import app.editors.manager.R;
-import app.editors.manager.app.WebDavApi;
+import app.documents.core.webdav.WebDavApi;
 
 
 public class UiUtils {

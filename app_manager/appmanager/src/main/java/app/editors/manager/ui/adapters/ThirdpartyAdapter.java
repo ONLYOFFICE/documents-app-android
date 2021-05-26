@@ -9,8 +9,8 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.mvp.models.user.Thirdparty;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,31 +47,31 @@ public class ThirdpartyAdapter extends BaseListAdapter<Thirdparty> {
         public void bind(Thirdparty item) {
             mTitle.setText(item.getTitle());
             switch (item.getProviderKey()) {
-                case Api.Storage.BOXNET:
+                case ApiContract.Storage.BOXNET:
                     mImage.setImageResource(R.drawable.ic_storage_box);
                     break;
-                case Api.Storage.DROPBOX:
+                case ApiContract.Storage.DROPBOX:
                     mImage.setImageResource(R.drawable.ic_storage_dropbox);
                     break;
-                case Api.Storage.SHAREPOINT:
+                case ApiContract.Storage.SHAREPOINT:
                     mImage.setImageResource(R.drawable.ic_storage_sharepoint);
                     break;
-                case Api.Storage.GOOGLEDRIVE:
+                case ApiContract.Storage.GOOGLEDRIVE:
                     mImage.setImageResource(R.drawable.ic_storage_google);
                     break;
-                case Api.Storage.ONEDRIVE:
+                case ApiContract.Storage.ONEDRIVE:
                     mImage.setImageResource(R.drawable.ic_storage_onedrive);
                     break;
-                case Api.Storage.YANDEX:
+                case ApiContract.Storage.YANDEX:
                     mImage.setImageResource(R.drawable.ic_storage_yandex);
                     break;
-                case Api.Storage.OWNCLOUD:
+                case ApiContract.Storage.OWNCLOUD:
                     mImage.setImageResource(R.drawable.ic_storage_owncloud);
                     break;
-                case Api.Storage.NEXTCLOUD:
+                case ApiContract.Storage.NEXTCLOUD:
                     mImage.setImageResource(R.drawable.ic_storage_nextcloud);
                     break;
-                case Api.Storage.WEBDAV:
+                case ApiContract.Storage.WEBDAV:
                     mImage.setImageResource(R.drawable.ic_storage_webdav);
                     break;
             }

@@ -110,6 +110,15 @@ public class ViewPagerAdapter extends FragmentPagerAdapter implements ViewPager.
         return mSelectedPage;
     }
 
+    public int getByTitle(String string) {
+        for (Container container : mFragmentList) {
+            if (container.mTitle.equals(string)) {
+                return mFragmentList.indexOf(container);
+            }
+        }
+        return 0;
+    }
+
     /*
      * Data container for fragments
      * */

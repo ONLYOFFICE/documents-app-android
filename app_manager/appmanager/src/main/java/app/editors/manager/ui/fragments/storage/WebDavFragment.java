@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import moxy.presenter.InjectPresenter;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -24,7 +25,6 @@ import javax.inject.Inject;
 import app.editors.manager.R;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.mvp.models.explorer.Folder;
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter;
 import app.editors.manager.mvp.views.storage.ConnectView;
 import app.editors.manager.ui.activities.main.MainActivity;
@@ -160,7 +160,7 @@ public class WebDavFragment extends BaseAppFragment implements ConnectView {
     }
 
     @Override
-    public void onConnect(Folder folder) {
+    public void onConnect(CloudFolder folder) {
         hideDialog();
         mStorageActivity.finishWithResult(folder);
     }

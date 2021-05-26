@@ -14,15 +14,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
 
-import moxy.presenter.InjectPresenter;
-
 import java.util.List;
 
 import app.editors.manager.R;
-import app.editors.manager.mvp.models.base.Entity;
-import app.editors.manager.mvp.models.base.ItemProperties;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.models.ModelShareStack;
+import app.editors.manager.mvp.models.ui.GroupUi;
+import app.editors.manager.mvp.models.ui.UserUi;
+import app.editors.manager.mvp.models.ui.ViewType;
 import app.editors.manager.mvp.presenters.share.AddPresenter;
 import app.editors.manager.mvp.views.share.AddView;
 import app.editors.manager.ui.activities.main.MainActivity;
@@ -33,6 +32,7 @@ import app.editors.manager.ui.views.custom.PlaceholderViews;
 import app.editors.manager.ui.views.custom.SharePanelViews;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import moxy.presenter.InjectPresenter;
 
 public class AddSearchFragment extends ListFragment implements AddView, SearchView.OnQueryTextListener,
         ShareAddAdapter.OnItemClickListener, SharePanelViews.OnEventListener {
@@ -149,12 +149,9 @@ public class AddSearchFragment extends ListFragment implements AddView, SearchVi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.toolbar_item_search:
-                item.setChecked(true);
-                break;
+        if (item.getItemId() == R.id.toolbar_item_search) {
+            item.setChecked(true);
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -178,8 +175,13 @@ public class AddSearchFragment extends ListFragment implements AddView, SearchVi
 
     @Override
     public void onItemClick(View view, int position) {
-        final ItemProperties itemProperties = (ItemProperties) mShareAddAdapter.getItem(position);
-        itemProperties.setSelected(!itemProperties.isSelected());
+        final ViewType item = mShareAddAdapter.getItem(position);
+        if (item instanceof UserUi) {
+            ((UserUi) item).setSelected(!((UserUi) item).isSelected());
+        }
+        if (item instanceof GroupUi) {
+            ((GroupUi) item).setSelected(!((GroupUi) item).isSelected());
+        }
         mShareAddAdapter.notifyItemChanged(position);
         setCountChecked();
     }
@@ -229,17 +231,17 @@ public class AddSearchFragment extends ListFragment implements AddView, SearchVi
     }
 
     @Override
-    public void onGetUsers(List<Entity> list) {
+    public void onGetUsers(List<ViewType> list) {
         // Stub
     }
 
     @Override
-    public void onGetGroups(List<Entity> list) {
+    public void onGetGroups(List<ViewType> list) {
         // Stub
     }
 
     @Override
-    public void onGetCommon(List<Entity> list) {
+    public void onGetCommon(List<ViewType> list) {
         setPlaceholder(list != null && !list.isEmpty());
         mSwipeRefresh.setRefreshing(false);
         mShareAddAdapter.setMode(ShareAddAdapter.Mode.COMMON);

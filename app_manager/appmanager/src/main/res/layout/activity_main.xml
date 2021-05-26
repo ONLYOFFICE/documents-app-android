@@ -12,11 +12,14 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <include
+        <app.editors.manager.ui.views.custom.MainToolbar
             android:id="@+id/app_bar_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            layout="@layout/include_toolbar"/>
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/app_bar_tabs"
@@ -27,9 +30,9 @@
             android:visibility="gone"
             app:tabIndicatorColor="@color/colorAccent"
             app:tabMaxWidth="0dp"
-            app:tabTextColor="@color/colorLight"
             app:tabSelectedTextColor="@color/colorWhite"
-            app:tabTextAppearance="@style/ViewPagerTabsText" />
+            app:tabTextAppearance="@style/ViewPagerTabsText"
+            app:tabTextColor="@color/colorLight" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

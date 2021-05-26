@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.Date;
 
-import app.editors.manager.app.Api;
+import app.documents.core.network.ApiContract;
 import app.editors.manager.mvp.models.base.Base;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.base.ItemProperties;
@@ -25,7 +25,7 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
 
     @SerializedName("access")
     @Expose
-    private int access = Api.ShareCode.NONE;
+    private int access = ApiContract.ShareCode.NONE;
 
     @SerializedName("shared")
     @Expose

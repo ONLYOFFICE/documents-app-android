@@ -356,7 +356,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
     }
 
     private void setLocalState() {
-        AccountsSqlData account = App.getApp().getAppComponent().getAccountsSql().getAccountOnline();
+        AccountsSqlData account = null;
         setUploadToPortal(account != null && account.isOnline() && !mState.mIsFolder);
         mListContextMove.setVisibility(View.VISIBLE);
         mListContextCopy.setVisibility(View.VISIBLE);

@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import app.editors.manager.R;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.mvp.models.account.AccountsSqlData;
 import app.editors.manager.ui.activities.login.AuthAppActivity;
 import app.editors.manager.ui.fragments.base.BaseAppFragment;
 import app.editors.manager.ui.views.pager.PagingViewPager;
@@ -62,11 +61,12 @@ public class AuthPagerFragment extends BaseAppFragment {
     PreferenceTool mPreferenceTool;
 
     private AuthAdapter mAuthAdapter;
-    private AccountsSqlData mSqlData;
+    private String mSqlData;
 
-    public static AuthPagerFragment newInstance(AccountsSqlData sqlData) {
+    public static AuthPagerFragment newInstance(String request, String key) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable(AuthAppActivity.ACCOUNT_KEY, sqlData);
+        bundle.putString(AuthAppActivity.REQUEST_KEY, request);
+        bundle.putString(AuthAppActivity.TFA_KEY, key);
         AuthPagerFragment fragment = new AuthPagerFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -76,8 +76,8 @@ public class AuthPagerFragment extends BaseAppFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            if (getArguments().containsKey(AuthAppActivity.ACCOUNT_KEY)) {
-                mSqlData = (AccountsSqlData) getArguments().getParcelable(AuthAppActivity.ACCOUNT_KEY);
+            if (getArguments().containsKey(AuthAppActivity.REQUEST_KEY)) {
+                mSqlData = getArguments().getString(AuthAppActivity.REQUEST_KEY);
             }
         }
     }
@@ -165,10 +165,10 @@ public class AuthPagerFragment extends BaseAppFragment {
 
     private List<ViewPagerAdapter.Container> getFragments() {
         final List<ViewPagerAdapter.Container> pairs = new ArrayList<>();
-        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_FIRST_FRAGMENT, mSqlData), null));
-        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_SECOND_FRAGMENT, mSqlData), null));
-        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_THIRD_FRAGMENT, mSqlData), null));
-        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_FOURTH_FRAGMENT, mSqlData), null));
+        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_FIRST_FRAGMENT, mSqlData, getArguments().getString(AuthAppActivity.TFA_KEY)), null));
+        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_SECOND_FRAGMENT, mSqlData, getArguments().getString(AuthAppActivity.TFA_KEY)), null));
+        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_THIRD_FRAGMENT, mSqlData, getArguments().getString(AuthAppActivity.TFA_KEY)), null));
+        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_FOURTH_FRAGMENT, mSqlData, getArguments().getString(AuthAppActivity.TFA_KEY)), null));
         return pairs;
     }
 
