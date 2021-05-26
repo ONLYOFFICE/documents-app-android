@@ -4,9 +4,7 @@ import app.documents.core.login.LoginResponse
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.request.RequestPassword
 import app.editors.manager.app.App
-import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.mvp.views.login.PasswordRecoveryView
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import lib.toolkit.base.managers.utils.StringUtils.isEmailValid
 import moxy.InjectViewState

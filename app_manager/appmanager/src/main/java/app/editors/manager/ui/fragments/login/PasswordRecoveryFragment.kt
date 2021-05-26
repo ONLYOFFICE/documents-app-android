@@ -4,23 +4,13 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.mvp.views.login.PasswordRecoveryView
 import moxy.presenter.InjectPresenter
 import app.editors.manager.mvp.presenters.login.PasswordRecoveryPresenter
-import butterknife.Unbinder
-import butterknife.BindView
 import app.editors.manager.R
-import android.widget.TextView
-import androidx.appcompat.widget.AppCompatButton
-import com.google.android.material.textfield.TextInputLayout
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatImageView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.View
-import butterknife.ButterKnife
-import butterknife.OnClick
-import butterknife.OnEditorAction
 import android.view.inputmethod.EditorInfo
+import app.editors.manager.databinding.FragmentLoginPasswordRecoveryBinding
 import app.editors.manager.ui.views.edits.BaseWatcher
 
 class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
@@ -42,28 +32,9 @@ class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
     @InjectPresenter
     lateinit var presenter: PasswordRecoveryPresenter
 
-    protected var mUnbinder: Unbinder? = null
+    private var viewBinding: FragmentLoginPasswordRecoveryBinding? = null
+
     private var isPasswordRecovered = false
-
-    @JvmField
-    @BindView(R.id.login_password_recovery_hint)
-    var loginPasswordRecoveryHint: TextView? = null
-
-    @JvmField
-    @BindView(R.id.login_password_recovery_button)
-    var recoverButton: AppCompatButton? = null
-
-    @JvmField
-    @BindView(R.id.login_password_recovery_email_layout)
-    var passwordRecoveryEmailLayout: TextInputLayout? = null
-
-    @JvmField
-    @BindView(R.id.login_password_recovery_email_edit)
-    var passwordRecoveryEmailEdit: AppCompatEditText? = null
-
-    @JvmField
-    @BindView(R.id.login_password_recovery_image)
-    var passwordRecoveryImageView: AppCompatImageView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,9 +42,8 @@ class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
         savedInstanceState: Bundle?
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        val view = inflater.inflate(R.layout.fragment_login_password_recovery, container, false)
-        mUnbinder = ButterKnife.bind(this, view)
-        return view
+        viewBinding = FragmentLoginPasswordRecoveryBinding.inflate(inflater)
+        return viewBinding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,28 +51,34 @@ class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
         init()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        mUnbinder?.unbind()
-    }
-
     private fun init() {
-        passwordRecoveryEmailEdit?.setText(arguments?.getString(KEY_EMAIL))
-        if (arguments?.getString(KEY_EMAIL)?.isEmpty() == true) {
-            recoverButton?.isEnabled = false
+        viewBinding?.apply {
+            loginPasswordRecoveryEmailEdit.apply {
+                setText(arguments?.getString(KEY_EMAIL))
+                addTextChangedListener(FieldsWatcher())
+                setOnEditorActionListener { _, actionId, _ ->
+                    actionKeyPress(actionId)
+                }
+            }
+            loginPasswordRecoveryButton.apply {
+                if (arguments?.getString(KEY_EMAIL)?.isEmpty() == true) {
+                    this.isEnabled = false
+                }
+                setOnClickListener {
+                    onRecoverButtonClick()
+                }
+            }
         }
-        passwordRecoveryEmailEdit?.addTextChangedListener(FieldsWatcher())
         setActionBarTitle(context?.getString(R.string.login_password_recovery_toolbar_title))
     }
 
-    @OnClick(R.id.login_password_recovery_button)
     fun onRecoverButtonClick() {
         if (!isPasswordRecovered) {
             arguments?.getBoolean(
                 KEY_PERSONAL
             )?.let {
                 presenter.recoverPassword(
-                    passwordRecoveryEmailEdit?.text.toString().trim { it <= ' ' },
+                    viewBinding?.loginPasswordRecoveryEmailEdit?.text.toString().trim { it <= ' ' },
                     it
                 )
             }
@@ -112,18 +88,21 @@ class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
     }
 
     override fun onPasswordRecoverySuccess(email: String) {
-        passwordRecoveryEmailLayout?.visibility = View.INVISIBLE
-        loginPasswordRecoveryHint?.text =
-            context!!.getString(R.string.login_password_recovery_success_hint, email)
         isPasswordRecovered = true
-        recoverButton?.visibility = View.VISIBLE
-        passwordRecoveryImageView?.visibility = View.VISIBLE
-        recoverButton?.text = context?.getString(R.string.login_password_recovery_button_text)
+        viewBinding?.apply {
+            loginPasswordRecoveryEmailLayout.visibility = View.INVISIBLE
+            loginPasswordRecoveryHint.text = context!!.getString(R.string.login_password_recovery_success_hint, email)
+            loginPasswordRecoveryImage.visibility = View.VISIBLE
+            loginPasswordRecoveryButton.apply {
+                visibility = View.VISIBLE
+                text = context?.getString(R.string.login_password_recovery_button_text)
+            }
+        }
     }
 
     override fun onEmailError() {
         hideDialog()
-        passwordRecoveryEmailLayout?.error =
+        viewBinding?.loginPasswordRecoveryEmailLayout?.error =
             context?.getString(R.string.errors_email_syntax_error)
     }
 
@@ -131,8 +110,7 @@ class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
         message?.let { showSnackBar(it)?.show() }
     }
 
-    @OnEditorAction(R.id.login_password_recovery_email_edit)
-    fun actionKeyPress(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+    fun actionKeyPress(actionId: Int): Boolean {
         if (actionId == EditorInfo.IME_ACTION_NEXT) {
             onRecoverButtonClick()
             hideKeyboard()
@@ -143,9 +121,9 @@ class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
 
     private inner class FieldsWatcher : BaseWatcher() {
         override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
-            passwordRecoveryEmailLayout?.isErrorEnabled = false
-            val email = passwordRecoveryEmailEdit?.text.toString()
-            recoverButton?.isEnabled = "" != email
+            viewBinding?.loginPasswordRecoveryEmailLayout?.isErrorEnabled = false
+            val email = viewBinding?.loginPasswordRecoveryEmailEdit?.text.toString()
+            viewBinding?.loginPasswordRecoveryButton?.isEnabled = "" != email
         }
     }
 }
