@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
@@ -58,17 +59,18 @@
             android:id="@+id/login_enterprise_signin_button"
             style="@style/FixedAccentButtons"
             android:layout_width="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/default_margin_large"
             android:text="@string/login_enterprise_signin_button"
             app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_email_layout"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/login_enterprise_portal_email_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_portal_password_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_forgot_pwd_button" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/login_enterprise_signon_button"
             style="@style/FixedAccentButtons"
             android:layout_width="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:text="@string/login_enterprise_single_sign_button"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_email_layout"
@@ -80,7 +82,7 @@
             layout="@layout/include_social_networks_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/default_margin_large"
             android:clickable="false"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
@@ -91,15 +93,14 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/login_enterprise_forgot_pwd_button"
             style="@style/FixedTransparentAccentButtonsNoCaps"
-            android:layout_width="@dimen/default_screen_width"
-            android:layout_marginBottom="8dp"
-            android:padding="8dp"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:gravity="center"
             android:text="@string/login_enterprise_forgot_password"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/social_network_layout"
-            app:layout_constraintVertical_bias="1.0"
+            android:layout_marginTop="@dimen/default_margin_large"
+            app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_password_layout"
+            app:layout_constraintStart_toStartOf="@+id/login_enterprise_portal_password_layout"
+            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_portal_password_layout"
             app:layout_constraintVertical_chainStyle="packed" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

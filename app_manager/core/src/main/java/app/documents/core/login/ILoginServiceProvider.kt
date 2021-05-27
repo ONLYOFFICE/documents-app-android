@@ -1,9 +1,7 @@
 package app.documents.core.login
 
-import app.documents.core.network.models.login.request.RequestNumber
-import app.documents.core.network.models.login.request.RequestRegister
-import app.documents.core.network.models.login.request.RequestSignIn
-import app.documents.core.network.models.login.request.RequestValidatePortal
+import app.documents.core.network.models.login.request.*
+import app.documents.core.network.models.login.response.ResponsePassword
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -33,4 +31,5 @@ interface ILoginServiceProvider {
 
     fun getUserInfo(token: String): Single<LoginResponse>
 
+    fun passwordRecovery(request: RequestPassword): Single<LoginResponse>
 }

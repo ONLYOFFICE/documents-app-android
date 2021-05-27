@@ -24,6 +24,8 @@ class SignInActivity : BaseAppActivity() {
         const val TAG_PORTAL_SIGN_IN_EMAIL = "TAG_PORTAL_SIGN_IN_EMAIL"
         const val TAG_PORTAL_CREATE = "TAG_PORTAL_CREATE"
         const val TAG_PERSONAL_SIGN_UP = "TAG_PERSONAL_SIGN_UP"
+        const val TAG_PASSWORD_RECOVERY = "TAG_PASSWORD_RECOVERY"
+        const val KEY_EMAIL_RECOVERY = "KEY_EMAIL_RECOVERY"
         const val TAG_SMS = "TAG_SMS"
         const val TAG_REQUEST = "TAG_REQUEST"
         const val TAG_PHONE = "TAG_PHONE"
@@ -102,6 +104,13 @@ class SignInActivity : BaseAppActivity() {
             intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
             return intent
         }
+        @JvmStatic
+        fun showPasswordRecovery(context: Context, email: String) {
+            val intent = Intent(context, SignInActivity::class.java)
+            intent.putExtra(TAG_ACTION, TAG_PASSWORD_RECOVERY)
+            intent.putExtra(KEY_EMAIL_RECOVERY, email)
+            context.startActivity(intent)
+        }
     }
 
     private var mAppBarToolbar: Toolbar? = null
@@ -152,6 +161,8 @@ class SignInActivity : BaseAppActivity() {
                     TAG_PERSONAL_SIGN_UP -> showFragment(PersonalSignUpFragment.newInstance(), null)
                     TAG_SMS -> showFragment(EnterpriseSmsFragment.newInstance(false, intent.getStringExtra(TAG_REQUEST)), null)
                     TAG_PHONE -> showFragment(EnterprisePhoneFragment.newInstance(intent.getStringExtra(TAG_REQUEST)), null)
+                    TAG_PASSWORD_RECOVERY -> showFragment(PasswordRecoveryFragment.newInstance(intent.getStringExtra(
+                        KEY_EMAIL_RECOVERY), true), null)
                 }
             }
         }

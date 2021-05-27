@@ -15,6 +15,7 @@ import app.editors.manager.mvp.presenters.login.PersonalLoginPresenter
 import app.editors.manager.mvp.views.login.CommonSignInView
 import app.editors.manager.ui.activities.login.AuthAppActivity
 import app.editors.manager.ui.activities.login.PortalsActivity
+import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.SignInActivity.Companion.showPersonalSignUp
 import app.editors.manager.ui.activities.login.SignInActivity.Companion.showPhone
 import app.editors.manager.ui.activities.login.SignInActivity.Companion.showSms
@@ -259,6 +260,9 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
 
         viewBinding?.loginPersonalSignupButton?.setOnClickListener {
             signUpClick()
+        }
+        viewBinding?.loginEnterpriseForgotPwdButton?.setOnClickListener {
+            context?.let { SignInActivity.showPasswordRecovery(it, viewBinding?.loginPersonalPortalEmailEdit?.text.toString()) }
         }
         viewBinding?.loginPersonalPortalEmailEdit?.addTextChangedListener(fieldsWatcher)
 

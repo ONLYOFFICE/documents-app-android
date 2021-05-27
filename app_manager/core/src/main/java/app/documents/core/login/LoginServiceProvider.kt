@@ -1,9 +1,7 @@
 package app.documents.core.login
 
-import app.documents.core.network.models.login.request.RequestNumber
-import app.documents.core.network.models.login.request.RequestRegister
-import app.documents.core.network.models.login.request.RequestSignIn
-import app.documents.core.network.models.login.request.RequestValidatePortal
+import app.documents.core.network.models.login.request.*
+import app.documents.core.network.models.login.response.ResponsePassword
 import app.documents.core.network.models.login.response.ResponseSettings
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Observable
@@ -86,6 +84,12 @@ class LoginServiceProvider(
 
     override fun getUserInfo(token: String): Single<LoginResponse> {
         return loginService.getUserInfo(token).map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun passwordRecovery(request: RequestPassword): Single<LoginResponse> {
+        return loginService.forgotPassword(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
