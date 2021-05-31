@@ -16,6 +16,7 @@ import app.editors.manager.mvp.models.request.RequestRenameFile;
 import app.editors.manager.mvp.models.request.RequestStorage;
 import app.editors.manager.mvp.models.request.RequestTitle;
 import app.editors.manager.mvp.models.request.RequestUser;
+import app.editors.manager.mvp.models.response.ResponseCloudTree;
 import app.editors.manager.mvp.models.response.ResponseCount;
 import app.editors.manager.mvp.models.response.ResponseCreateFile;
 import app.editors.manager.mvp.models.response.ResponseCreateFolder;
@@ -283,5 +284,10 @@ public interface Api {
             ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT})
     @HTTP(method = "DELETE", path = "api/" + ApiContract.API_VERSION + "/files/favorites" + ApiContract.RESPONSE_FORMAT, hasBody = true)
     Observable<Response<Base>> deleteFromFavorites(@Body RequestFavorites body);
+
+    @Headers({ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+            ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT})
+    @GET("api/" + ApiContract.API_VERSION + "/files/@root" + ApiContract.RESPONSE_FORMAT)
+    Observable<ResponseCloudTree> getRootFolder(@QueryMap Map<String, Integer> filter, @QueryMap Map<String, Boolean> opts);
 
 }
