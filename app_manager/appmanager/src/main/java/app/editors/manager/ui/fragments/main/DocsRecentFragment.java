@@ -90,6 +90,12 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
     }
 
     @Override
+    public boolean onBackPressed() {
+        getActivity().invalidateOptionsMenu();
+        return super.onBackPressed();
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         init();
