@@ -6,19 +6,20 @@ buildscript {
 
     ext.kotlin_version = '1.4.30'
 
+    ext.moxy_version = '2.2.1'
+
     repositories {
         google()
-        jcenter()
         maven { url 'https://jitpack.io' }
         mavenCentral()
         maven { url 'https://maven.google.com' }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.android.tools.build:gradle:4.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.google.gms:google-services:4.3.5"
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
+        classpath "com.google.gms:google-services:4.3.8"
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.6.1'
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
     }
 }
@@ -26,7 +27,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven { url "https://jitpack.io" }
     }
 }
