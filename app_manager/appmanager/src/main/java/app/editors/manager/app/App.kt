@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Process
-import android.util.Log
 import android.webkit.WebView
 import app.documents.core.di.module.AccountModule
 import app.documents.core.di.module.LoginModule
@@ -20,13 +19,8 @@ import app.editors.manager.di.module.ApiModule
 import app.editors.manager.di.module.AppModule
 import app.editors.manager.di.module.ShareModule
 import app.editors.manager.di.module.ToolModule
-import app.editors.manager.managers.utils.Constants
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.twitter.sdk.android.core.DefaultLogger
-import com.twitter.sdk.android.core.Twitter
-import com.twitter.sdk.android.core.TwitterAuthConfig
-import com.twitter.sdk.android.core.TwitterConfig
 import java.util.*
 
 class App : Application() {
@@ -115,7 +109,6 @@ class App : Application() {
                 WebView.setDataDirectorySuffix("cacheWebView")
             }
         }
-        initTwitter()
         isAnalyticEnable = _appComponent.preference.isAnalyticEnable
         initCrashlytics()
     }
@@ -137,15 +130,6 @@ class App : Application() {
             .toolModule(ToolModule())
             .recentModule(RecentModule())
             .build()
-    }
-
-    private fun initTwitter() {
-        val config = TwitterConfig.Builder(this)
-            .logger(DefaultLogger(Log.DEBUG))
-            .twitterAuthConfig(TwitterAuthConfig(Constants.TWITTER_CONSUMER_KEY, Constants.TWITTER_CONSUMER_SECRET))
-            .debug(true)
-            .build()
-        Twitter.initialize(config)
     }
 
     private fun initCrashlytics() {

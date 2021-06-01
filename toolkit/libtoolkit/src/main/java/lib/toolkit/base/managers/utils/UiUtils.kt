@@ -49,8 +49,8 @@ object UiUtils {
         val deviceInfo = TreeMap<String, String>()
         deviceInfo["OS version"] = System.getProperty("os.version")!!
         deviceInfo["Api level"] = Build.VERSION.SDK_INT.toString()
-        deviceInfo["App code"] = BuildConfig.VERSION_CODE.toString()
-        deviceInfo["App name"] = BuildConfig.VERSION_NAME
+        deviceInfo["App code"] = ""
+        deviceInfo["App name"] = ""
         deviceInfo["Device"] = Build.DEVICE
         deviceInfo["Model"] = Build.MODEL
         deviceInfo["Brand"] = Build.BRAND
