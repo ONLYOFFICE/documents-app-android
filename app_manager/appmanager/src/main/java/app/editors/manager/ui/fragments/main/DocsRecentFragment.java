@@ -91,7 +91,9 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
 
     @Override
     public boolean onBackPressed() {
-        getActivity().invalidateOptionsMenu();
+        if(!mSearchView.isIconified()) {
+            getActivity().invalidateOptionsMenu();
+        }
         return super.onBackPressed();
     }
 
