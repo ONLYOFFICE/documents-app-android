@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentMainPagerBinding
+import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerState
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -51,12 +53,15 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private var viewBinding: FragmentMainPagerBinding? = null
 
+    var preferenceTool: PreferenceTool? = null
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
             if (context is IMainActivity) {
                 activity = context
             }
+            preferenceTool = App.getApp().appComponent.preference
         } catch (e: ClassCastException) {
             throw RuntimeException(
                 MainPagerFragment::class.java.simpleName + " - must implement - " +
@@ -170,7 +175,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 getString(R.string.main_pager_docs_share)
             )
         )
-        if (serverVersion >= 11) {
+        if (serverVersion >= 11 && preferenceTool?.isFavoritesEnabled == true) {
             fragments.add(
                 ViewPagerAdapter.Container(
                     DocsFavoritesFragment.newInstance(),
@@ -225,7 +230,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private fun getPersonalFragments(serverVersion: Int) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
         fragments.add(ViewPagerAdapter.Container(DocsMyFragment.newInstance(), getString(R.string.main_pager_docs_my)))
-        if (serverVersion >= 11) {
+        if (serverVersion >= 11 && preferenceTool?.isFavoritesEnabled == true) {
             fragments.add(
                 ViewPagerAdapter.Container(
                     DocsFavoritesFragment.newInstance(),
