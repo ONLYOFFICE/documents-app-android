@@ -103,7 +103,7 @@ abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterfac
     }
 
     protected fun showWaitingDialog(title: String?, cancelButton: String?, tag: String?) {
-        mBaseActivity.setDialogListener(this)
+        mBaseActivity.addDialogListener(this)
         mBaseActivity.showWaitingDialog(title, cancelButton, WaitingHolder.ProgressType.HORIZONTAL, tag)
     }
 
@@ -180,7 +180,7 @@ abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterfac
         if (childFragmentManager.fragments.isEmpty()) {
             onShowContentFragment()
         }
-        mBaseActivity.setDialogListener(this)
+        mBaseActivity.addDialogListener(this)
     }
 
     /*
