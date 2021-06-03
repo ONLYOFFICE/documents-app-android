@@ -335,6 +335,7 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
     @Override
     public boolean onQueryTextChange(String newText) {
         mSearchCloseButton.setVisibility(newText.isEmpty() ? View.INVISIBLE : View.VISIBLE);
+        mSearchCloseButton.setEnabled(!newText.isEmpty());
         if (!newText.equals("")) {
             mDocsRecentPresenter.searchRecent(newText.toLowerCase());
         } else {
