@@ -35,7 +35,7 @@ tasks.register("clean", Delete::class) {
 
 tasks.create("buildAar") {
     childProjects.forEach { (projectKey, project) ->
-        if (projectKey == "libtoolkit" || projectKey == "appmanager") {
+        if (projectKey == "libtoolkit" || projectKey == "appmanager" || projectKey == "core") {
             return@forEach
         }
 
@@ -43,10 +43,9 @@ tasks.create("buildAar") {
 
         doLast {
             val lib = File("${project.projectDir.path}/build/outputs/aar/${projectKey}-release.aar")
-
             copy {
                 from(lib)
-                to("${rootDir.parent}/libs")
+                into("${rootDir.parent}/libs")
             }
         }
     }
