@@ -108,7 +108,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
         if (downloadRequest != null) {
             downloadFiles()
         }
-        val call: Call<ResponseBody?> = api.downloadFile(url, ApiContract.COOKIE_HEADER + token)
+        val call: Call<ResponseBody> = api.downloadFile(url ?: "", ApiContract.COOKIE_HEADER + token)
         try {
             val response = call.execute()
             if (response.isSuccessful && response.body() != null) {
@@ -167,7 +167,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
 
     private fun downloadFiles() {
         try {
-            val response = api.downloadFiles(downloadRequest).blockingGet()
+            val response = api.downloadFiles(downloadRequest ?: throw Exception("No download request")).blockingGet()
             val downloads = response.response
             for (download in downloads) {
                 do {

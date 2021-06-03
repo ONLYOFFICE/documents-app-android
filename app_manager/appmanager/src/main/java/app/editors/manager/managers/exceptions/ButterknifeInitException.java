@@ -5,6 +5,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+@Deprecated
 public class ButterknifeInitException extends RuntimeException {
 
     public ButterknifeInitException() {

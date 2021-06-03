@@ -96,7 +96,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         call = if (action == ACTION_UPLOAD_MY) {
             api.uploadFileToMy(createMultipartBody(from))
         } else {
-            api.uploadFile(folderId, createMultipartBody(from))
+            api.uploadFile(folderId ?: "", createMultipartBody(from))
         }
         try {
             val response = call.execute()
