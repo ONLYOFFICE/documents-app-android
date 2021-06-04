@@ -257,6 +257,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }
     }
 
+    fun isRoot(): Boolean {
+        return (activeFragment as DocsCloudFragment).isRoot
+    }
+
     val position: Int
         get() = adapter.selectedPage
 

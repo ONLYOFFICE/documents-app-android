@@ -1368,7 +1368,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return mModelExplorerStack.isStackEmpty();
     }
 
-    boolean isRoot() {
+   public boolean isRoot() {
         return mModelExplorerStack.isRoot();
     }
 

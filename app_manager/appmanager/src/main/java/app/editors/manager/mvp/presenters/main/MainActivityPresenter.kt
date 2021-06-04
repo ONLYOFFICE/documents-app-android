@@ -60,7 +60,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
     private var reviewInfo: ReviewInfo? = null
     private var isAppColdStart = true
 
-//    var isDialogOpen: Boolean = false
+    var isDialogOpen: Boolean = false
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()

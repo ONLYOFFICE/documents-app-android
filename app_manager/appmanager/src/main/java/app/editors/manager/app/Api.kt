@@ -82,7 +82,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}" + ApiContract.RESPONSE_FORMAT)
-    fun getFileInfo(@Path(value = "file_id") fileId: String): Observable<Response<ResponseFile>>
+    fun getFileInfo(@Path(value = "file_id") fileId: String?): Observable<Response<ResponseFile>>
 
     /*
      * Create folder
@@ -296,9 +296,9 @@ interface Api {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/fileops/move" + ApiContract.RESPONSE_FORMAT)
     fun checkFiles(
-        @Query("destFolderId") destFolderId: String,
-        @Query("folderIds") folderIds: List<String>,
-        @Query("fileIds") fileIds: List<String>
+        @Query("destFolderId") destFolderId: String?,
+        @Query("folderIds") folderIds: List<String>?,
+        @Query("fileIds") fileIds: List<String>?
     ): Single<ResponseFiles>
 
     @Headers(

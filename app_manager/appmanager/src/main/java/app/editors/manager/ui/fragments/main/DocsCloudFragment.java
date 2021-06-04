@@ -260,4 +260,8 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
     protected Boolean isWebDav() {
         return false;
     }
+
+    public boolean isRoot() {
+        return getPresenter().isRoot();
+    }
 }

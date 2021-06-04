@@ -492,7 +492,7 @@ class DocsCloudPresenter : DocsBasePresenter<DocsCloudView>(), OnDownloadListene
         val filesIds = mOperationStack?.selectedFilesIds
         val foldersIds = mOperationStack?.selectedFoldersIds
 
-        mDisposable.add((mFileProvider as CloudFileProvider).api.checkFiles(mDestFolderId, foldersIds, filesIds)
+        mDisposable.add((mFileProvider as CloudFileProvider).api.checkFiles(mDestFolderId ?: "", foldersIds, filesIds)
             .map { it.response }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
