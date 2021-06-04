@@ -64,22 +64,10 @@ class MainPagerPresenter : MvpPresenter<MainPagerView>() {
 
     fun getState() {
         CoroutineScope(Dispatchers.Default).launch {
-            api.getRootFolder(mapOf("filterType" to 2), mapOf("withsubfolders" to false, "withoutTrash" to true, "withoutAdditionalFolder" to false))
-                .subscribe({response ->
-                    if(response.response != null) {
-                        for (folder in response.response) {
-                            if(folder.current.title.equals("Favorites") || folder.current.title.equals("Избранное")) {
-                                preferenceTool.setFavoritesEnable(true)
-                                break
-                            } else
-                            {
-                                preferenceTool.setFavoritesEnable(false)
-                            }
-                        }
-                    } else {
-                        Log.d("GETROOT", "ERROR")
-                    }
-                }) {throwable: Throwable -> Log.d("GETROOT", "FAIL")}
+            launch {
+                isProjectDisable()
+            }
+            isFavoriteEnable()
             accountsDao.getAccountOnline()?.let {
                 when {
                     networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
@@ -112,6 +100,33 @@ class MainPagerPresenter : MvpPresenter<MainPagerView>() {
                 }
             }
         }
+    }
+
+    private suspend fun isProjectDisable() {
+        api.getModules(listOf("1e044602-43b5-4d79-82f3-fd6208a11960")).toObservable().subscribe({response ->
+            if(response.response != null) {
+                preferenceTool.isProjectDisable = !response.response.get(0).isEnable
+            }
+        }) {throwable: Throwable -> Log.d("PROJECTSTEST", "FAIL")}
+    }
+
+    private fun isFavoriteEnable() {
+        api.getRootFolder(mapOf("filterType" to 2), mapOf("withsubfolders" to false, "withoutTrash" to true, "withoutAdditionalFolder" to false))
+            .subscribe({response ->
+                if(response.response != null) {
+                    for (folder in response.response) {
+                        if(StringUtils.Favorites.contains(folder.current.title)) {
+                            preferenceTool.setFavoritesEnable(true)
+                            break
+                        } else
+                        {
+                            preferenceTool.setFavoritesEnable(false)
+                        }
+                    }
+                } else {
+                    Log.d("GETROOT", "ERROR")
+                }
+            }) {throwable: Throwable -> Log.d("GETROOT", "FAIL")}
     }
 
 }

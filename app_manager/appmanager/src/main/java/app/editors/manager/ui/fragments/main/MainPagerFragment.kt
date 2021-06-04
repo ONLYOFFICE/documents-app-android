@@ -189,12 +189,14 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 getString(R.string.main_pager_docs_common)
             )
         )
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsProjectsFragment.newInstance(arguments?.getString(KEY_FILE_DATA)),
-                getString(R.string.main_pager_docs_projects)
+        if(!preferenceTool?.isProjectDisable!!) {
+            fragments.add(
+                ViewPagerAdapter.Container(
+                    DocsProjectsFragment.newInstance(arguments?.getString(KEY_FILE_DATA)),
+                    getString(R.string.main_pager_docs_projects)
+                )
             )
-        )
+        }
         fragments.add(
             ViewPagerAdapter.Container(
                 DocsTrashFragment.newInstance(),
@@ -218,12 +220,14 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 getString(R.string.main_pager_docs_common)
             )
         )
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsProjectsFragment.newInstance(arguments?.getString(KEY_FILE_DATA)),
-                getString(R.string.main_pager_docs_projects)
+        if(!preferenceTool?.isProjectDisable!!) {
+            fragments.add(
+                ViewPagerAdapter.Container(
+                    DocsProjectsFragment.newInstance(arguments?.getString(KEY_FILE_DATA)),
+                    getString(R.string.main_pager_docs_projects)
+                )
             )
-        )
+        }
         setAdapter(fragments)
     }
 

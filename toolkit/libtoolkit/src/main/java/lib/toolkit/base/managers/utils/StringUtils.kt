@@ -24,6 +24,8 @@ import java.util.regex.Pattern
 
 object StringUtils {
 
+    val Favorites = listOf<String>("Favorites", "Избранное")
+
     @JvmField
     val TAG = StringUtils::class.java!!.simpleName
 
