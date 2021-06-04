@@ -5,6 +5,9 @@ import android.os.Bundle
 import app.documents.core.account.CloudAccount
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.ApiContract
+import app.documents.core.network.models.login.Capabilities
+import app.documents.core.network.models.login.response.ResponseCapabilities
+import app.documents.core.network.models.login.response.ResponseSettings
 import app.documents.core.network.models.login.response.ResponseUser
 import app.documents.core.settings.NetworkSettings
 import app.documents.core.webdav.WebDavApi
@@ -172,14 +175,28 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
                     }
                 } ?: run {
-                    viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
+                    networkSettings.setBaseUrl(account.portal ?: "")
+                    disposable = App.getApp().loginComponent.loginService.capabilities().subscribe({response ->
+                        if (response is LoginResponse.Success) {
+                            if (response.response is ResponseCapabilities) {
+                                val capability = (response.response as ResponseCapabilities).response
+                                setSettings(capability)
+                                viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
+                            } else {
+                                networkSettings.serverVersion =
+                                    (response.response as ResponseSettings).response.communityServer ?: ""
+                            }
+                        } else {
+                            fetchError((response as LoginResponse.Error).error)
+                        }
+                    }) {throwable: Throwable -> checkError(throwable, account)}
+
                 }
             }
         } else {
             viewState.onError("Account online")
         }
     }
-
     fun checkContextLogin() {
         contextAccount?.let {
             checkLogin(it)
@@ -245,6 +262,12 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         networkSettings.setScheme(account.scheme ?: "")
         networkSettings.setSslState(account.isSslState)
         networkSettings.setCipher(account.isSslCiphers)
+    }
+
+    private fun setSettings(capabilities: Capabilities) {
+        networkSettings.ldap = capabilities.ldapEnabled
+        networkSettings.ssoUrl = capabilities.ssoUrl
+        networkSettings.ssoLabel = capabilities.ssoLabel
     }
 
     private fun restoreSettings() {
