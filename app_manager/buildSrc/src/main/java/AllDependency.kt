@@ -17,7 +17,7 @@ object AndroidX {
     private const val androidxVersion = "1.3.0"
     private const val recyclerViewVersion = "1.2.0"
     private const val recyclerViewSelectionVersion = "1.1.0"
-    private const val kotlinKtxVersion = "1.3.2"
+    private const val kotlinKtxVersion = "1.5.0"
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
@@ -41,9 +41,10 @@ object Retrofit {
 }
 
 object Kotlin {
-    const val version = "1.4.30"
-    private const val coroutinesVersion = "1.4.3"
-    private const val serializationVersion = "1.1.0"
+    const val version = "1.5.0"
+    const val pluginVersion = "1.5.10"
+    private const val coroutinesVersion = "1.5.0"
+    private const val serializationVersion = "1.2.1"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
     const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
