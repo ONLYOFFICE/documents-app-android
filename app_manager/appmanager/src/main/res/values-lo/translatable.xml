@@ -34,7 +34,7 @@
     <!-- ======================================================================================= -->
     <!-- About -->
     <string name="about_title">ກ່ຽວກັບ</string>
-    <string name="about_app_version">ລູ້ນ % 1 $ s, ສ້າງ% 2 $ s, SDK% 3 $ s</string>
+    <string name="about_app_version">ລູ້ນ %1$s, ສ້າງ %2$s, SDK %3$s</string>
     <string name="about_terms">ເງື່ອນໄຂການນຳໃຊ້</string>
     <string name="about_policy">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</string>
     <string name="about_license">ການອະນຸຍາດ</string>
@@ -101,7 +101,7 @@
     <string name="login_enterprise_info">
         ONLYOFFICE portal ຊ່ວຍໃຫ້ທ່ານສາມາດປະຫຍັດເອກະສານໃນຄລາວ, ແບ່ງປັນກັບເພື່ອນຮ່ວມງານ ແລະ ແກ້ໄຂຮ່ວມກັນໃນເວລາຈິງ.
     </string>
-    <string name="login_not_authorization_info">ບໍ່ສາມາດລົງຊື່ເຂົ້າໃຊ້% 1 $ s ທີ່% 2 $ s </string>
+    <string name="login_not_authorization_info">ບໍ່ສາມາດລົງຊື່ເຂົ້າໃຊ້ %1$s ທີ່ %2$s</string>
     <string name="login_not_authorization_button"> ລອງອີກຄັ້ງ </string>
     <string name="errors_first_name">ຊື່ໃຫ້ຖືກຕ້ອງ. ຕ້ອງບໍ່ມີຕົວເລກ.</string>
     <string name="errors_last_name">ນາມສະກຸນບໍ່ຖືກຕ້ອງ. ມັນຕ້ອງບໍ່ມີຕົວເລກ..</string>
@@ -113,11 +113,11 @@
     <string name="login_personal_signup_button">ລົງຊື່ເຂົ້າໃຊ້ </string>
     <string name="login_personal_signup_title">ລົງທະບຽນເຂົ້າປະຕູສ່ວນຕົວ</string>
     <string name="login_personal_signup_edit_info">ລິ້ງຢືນຢັນຈະຖືກສົ່ງໄປຫາທີ່ຢູ່ນີ້ </string>
-    <string name="login_personal_signup_dialog_info">ລິ້ງຢືນຢັນທີ່ຖືກສົ່ງໄປຫາອີເມວ% 1 $ s \ n ການເຊື່ອມຕໍ່ຢູ່ໃນອີເມວກ່ອນທີ່ທ່ານຈະສືບຕໍ່ </string>
+    <string name="login_personal_signup_dialog_info">ລິ້ງຢືນຢັນທີ່ຖືກສົ່ງໄປຫາອີເມວ %1$s \ n ການເຊື່ອມຕໍ່ຢູ່ໃນອີເມວກ່ອນທີ່ທ່ານຈະສືບຕໍ່ </string>
     <string name="login_personal_info">
          ເຊື່ອມຕໍ່ ONLYOFFICE ເປັນສ່ວນຕົວ ເພື່ອບັນທຶກເອກະສານໃນ cloud
     </string>
-    <string name="login_web_dav_title">ເຊື່ອມຕໍ່ກັບ% 1 $ </string>
+    <string name="login_web_dav_title">ເຊື່ອມຕໍ່ກັບ %1$s </string>
 
     <!-- Portal create-->
     <string name="login_create_portal_title">ສ້າງປະຕູສຳລັບອົງກອນ </string>
@@ -159,8 +159,8 @@
     <string name="bottom_sheet_portal_title">ປະຕຸ</string>
     <string name="bottom_sheet_cloud_title">Clouds</string>
     <!--Move copy dialog-->
-    <string name="dialog_move_copy_title_files">ອກະສານ% 1 $ d ທີ່ມີຊື່ດຽວກັນຢູ່ໃນໂຟນເດີ \ "% 2 $ s</string>
-    <string name="dialog_move_copy_title_one_file">ແຟ້ມທີ່ມີຊື່ \ "% 1 $ s \" ມີຢູ່ໃນແຟ້ມ \ "% 2 $ s \" ແລ້ວ</string>
+    <string name="dialog_move_copy_title_files">ອກະສານ %1$d ທີ່ມີຊື່ດຽວກັນຢູ່ໃນໂຟນເດີ \ "%2$s</string>
+    <string name="dialog_move_copy_title_one_file">ແຟ້ມທີ່ມີຊື່ \ "%1$s \" ມີຢູ່ໃນແຟ້ມ \ "%2$s \" ແລ້ວ</string>
     <string name="dialog_move_copy_overwrite">ຂຽນທັບດ້ວຍການອັບເດດເວີຊັນ</string>
     <string name="dialog_move_copy_copy"> ສ້າງສຳເນົາເອກະສານ</string>
     <string name="dialog_move_copy_skip">ຂ້າມ</string>
@@ -193,7 +193,7 @@
     <string name="dialogs_question_facebook_question">ດຳ ເນີນການຕໍ່ດ້ວຍບັນຊີ:\u0020</string>
     <string name="dialogs_question_remove_account_title">ເອົາບັນຊີອອກບໍ?</string>
     <string name="dialogs_question_remove_account_info">
-          ບັນຊີທີ່ມີອີເມວ% 1 $ s ຈາກປະຕູ% 2 $ s ຈະຖືກອອກຈາກລະບົບແລະຖືກລຶບອອກຈາກລາຍຊື່
+          ບັນຊີທີ່ມີອີເມວ %1$s ຈາກປະຕູ %2$s ຈະຖືກອອກຈາກລະບົບແລະຖືກລຶບອອກຈາກລາຍຊື່
     </string>
     <string name="dialogs_question_personal_confirm_link_title">ຢືນຢັນອີເມວ</string>
     <string name="dialogs_question_personal_confirm_cancel">ລອງອີກ</string>
@@ -506,8 +506,8 @@
     <!-- ======================================================================================= -->
     <!-- Media -->
     <string name="media_image_share_chooser">ເລືອກແອັບສຳລັບແບ່ງປັນ</string>
-    <string name="media_image_list_info">ແຟ້ມເອກະສານ:% 1 $ s </string>
-    <string name="media_video_error">ເຄື່ອງຫຼີ້ນທີ່ບໍ່ຮູ້ຈັກຜິດພາດ:% 1 $ s </string>
+    <string name="media_image_list_info">ແຟ້ມເອກະສານ: %1$s </string>
+    <string name="media_video_error">ເຄື່ອງຫຼີ້ນທີ່ບໍ່ຮູ້ຈັກຜິດພາດ: %1$s </string>
 
     <string name="auth_header_screen_1">ຕັ້ງຄ່າການກວດສອບສອງຢ່າງ</string>
     <string name="auth_info_screen_1">ຕິດຕັ້ງແອັບ authentic ເຄື່ອງຮັບຮອງເພື່ອສ້າງລະຫັດການເຂົ້າເຖິງ (ເຊັ່ນ: Google Authenticator, Authy) ເພື່ອສືບຕໍ່ເຮັດວຽກກັບປະຕູຂອງທ່ານ </string>
@@ -523,7 +523,7 @@
     <string name="device_trash_files_restore">ກູູ້ຄືນ</string>
     <string name="error_recent_account">ແຟ້ມໄດ້ຖືກລຶບອອກແລ້ວຫຼືບໍ່ສາມາດໃຊ້ໄດ້ຈາກບັນຊີນີ້.</string>
     <string name="error_recent_enter_account">ກະລຸນາໃສ່ບັນຊີ.</string>
-    <string name="operation_move_file_existing">ແຟ້ມເອກະສານ % 1 $ s ມີຢູ່ໃນຖານຂໍ້ມູນປາຍທາງແລ້ວ..</string>
+    <string name="operation_move_file_existing">ແຟ້ມເອກະສານ %1$s ມີຢູ່ໃນຖານຂໍ້ມູນປາຍທາງແລ້ວ..</string>
     <string name="upload_to_portal"> ອັບໂຫລດໃສ່ປະຕູ</string>
     <string name="this_device">ອຸປະກອນນີ້</string>
     <string name="dialog_clear_cache">ລ້າງແຄດ?</string>
@@ -540,7 +540,7 @@
     <string name="error_long_file_name">ຊື່ແຟ້ມຍາວເກີນໄປ </string>
     <string name="dialog_remove_account_title">ເອົາບັນຊີອອກ</string>
     <string name="dialog_remove_account_description">
-        ຜູ້ໃຊ້ທີ່ມີ% 1 $ s ຈາກປະຕູ% 2 $ s ຈະຖືກອອກຈາກລະບົບແລະລຶບອອກຈາກບັນຊີບັນຊີ. \ n \ n ກະລຸນາສັງເກດ: ເພື່ອເຂົ້າສູ່ລະບົບ, ທ່ານຕ້ອງການໃສ່ທີ່ຢູ່ປະຕູ, ອີເມວແລະລະຫັດຜ່ານ. ໄຟລ໌ທັງໝົດຂອງທ່ານຈະປອດໄພ.
+        ຜູ້ໃຊ້ທີ່ມີ %1$s ຈາກປະຕູ %2$s ຈະຖືກອອກຈາກລະບົບແລະລຶບອອກຈາກບັນຊີບັນຊີ. \ n \ n ກະລຸນາສັງເກດ: ເພື່ອເຂົ້າສູ່ລະບົບ, ທ່ານຕ້ອງການໃສ່ທີ່ຢູ່ປະຕູ, ອີເມວແລະລະຫັດຜ່ານ. ໄຟລ໌ທັງໝົດຂອງທ່ານຈະປອດໄພ.
     </string>
     <string name="dialog_logout_account_title">ທ່ານແນ່ໃຈທີ່ຈະອອກຈາກລະບົບ?</string>
     <string name="dialog_logout_account_description">
