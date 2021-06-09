@@ -7,9 +7,9 @@ buildscript {
 
     repositories {
         google()
-        maven { url = uri("https://jitpack.io") }
+        maven { setUrl("https://jitpack.io") }
         mavenCentral()
-        maven { url = uri("https://maven.google.com") }
+        maven { setUrl("https://maven.google.com") }
     }
 
     dependencies {
@@ -25,7 +25,13 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
+        maven { setUrl("https://jitpack.io") }
+    }
+
+    configurations.configureEach {
+        resolutionStrategy {
+            force("org.xerial:sqlite-jdbc:3.34.0")
+        }
     }
 }
 
