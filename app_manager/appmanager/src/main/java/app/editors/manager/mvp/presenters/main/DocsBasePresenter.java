@@ -240,14 +240,14 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     public boolean sortBy(@NonNull String value, boolean isRepeatedTap) {
         mPreferenceTool.setSortBy(value);
 
-        if(isRepeatedTap) {
+        if (isRepeatedTap) {
             reverseSortOrder();
         }
         return refresh();
     }
 
     protected void reverseSortOrder() {
-        if(mPreferenceTool.getSortOrder().equals(ApiContract.Parameters.VAL_SORT_ORDER_ASC)) {
+        if (mPreferenceTool.getSortOrder().equals(ApiContract.Parameters.VAL_SORT_ORDER_ASC)) {
             mPreferenceTool.setSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
             getViewState().onReverseSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
         } else {
@@ -414,7 +414,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                                 mIsMultipleDelete = true;
                                 mModelExplorerStack.setSelectById(item, false);
                             }
-                        }, throwable -> fetchError(throwable))
+                        }, this::fetchError)
                 );
             }
             getViewState().onDialogQuestion(mContext.getString(R.string.dialogs_question_delete), null,
@@ -422,10 +422,11 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         } else if (mItemClicked != null) {
             if (mItemClicked instanceof CloudFile) {
                 mDisposable.add(
-                        ((mFileProvider instanceof WebDavFileProvider) ? ((WebDavFileProvider) mFileProvider).fileInfo(mItemClicked, false): (mFileProvider.fileInfo(mItemClicked))).subscribe(
+                        ((mFileProvider instanceof WebDavFileProvider) ? ((WebDavFileProvider) mFileProvider).fileInfo(mItemClicked, false) : (mFileProvider.fileInfo(mItemClicked))).subscribe(
                                 response -> {
-                                    if(!response.getFileStatus().isEmpty()) {
-                                        int statusMask = Integer.parseInt(response.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                                    if (!response.getFileStatus().isEmpty()) {
+                                        int statusMask =
+                                                Integer.parseInt(response.getFileStatus()) & ApiContract.FileStatus.IS_EDITING;
                                         if (statusMask != 0) {
                                             onFileDeleteProtected();
                                         } else {
@@ -434,7 +435,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                                     } else {
                                         deleteItems();
                                     }
-                                }, throwable -> fetchError(throwable))
+                                }, this::fetchError)
                 );
             } else {
                 deleteItems();
@@ -627,7 +628,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             return;
         }
 
-        if(mItemClicked instanceof CloudFolder) {
+        if (mItemClicked instanceof CloudFolder) {
             bulkDownload(null, new ArrayList<>(Collections.singleton((CloudFolder) mItemClicked)), downloadTo);
             return;
         }
@@ -772,7 +773,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         }
         if (!uploadFiles.isEmpty()) {
             UploadWork.putNewUploadFiles(id, uploadFiles);
-            for(Uri uri : uriList) {
+            for (Uri uri : uriList) {
                 final Data workData = new Data.Builder()
                         .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
                         .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
@@ -987,7 +988,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
                     // Set time headers
                     Collections.sort(fileList, (o1, o2) -> o1.getUpdated().compareTo(o2.getUpdated()));
-                    if(sortOrder.equals(ApiContract.Parameters.VAL_SORT_ORDER_DESC)) {
+                    if (sortOrder.equals(ApiContract.Parameters.VAL_SORT_ORDER_DESC)) {
                         Collections.reverse(fileList);
                     }
 
@@ -1372,7 +1373,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return mModelExplorerStack.isStackEmpty();
     }
 
-   public boolean isRoot() {
+    public boolean isRoot() {
         return mModelExplorerStack.isRoot();
     }
 
