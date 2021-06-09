@@ -272,7 +272,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
             accountDao.getAccountOnline()?.let { account ->
                 Json.decodeFromString<OpenDataModel>(decodeUri(fileData.query)).let { data ->
                     withContext(Dispatchers.Main) {
-                        viewState.openFile(Json.encodeToString(data))
+                        viewState.openFile(account, Json.encodeToString(data))
                     }
 //                    if (data.portal?.equals(account.portal) == true && data.email?.equals(account.login) == true) {
 //                        withContext(Dispatchers.Main) {

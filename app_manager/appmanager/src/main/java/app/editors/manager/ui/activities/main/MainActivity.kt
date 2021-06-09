@@ -290,8 +290,8 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         }
     }
 
-    override fun openFile(fileData: String) {
-        showCloudFragment(fileData)
+    override fun openFile(account: CloudAccount, fileData: String) {
+        showCloudFragment(account = account, fileData = fileData)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -458,7 +458,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
             if (it.isWebDav) {
                 showWebDavFragment(it)
             } else {
-                showCloudFragment()
+                showCloudFragment(account)
             }
         } ?: run {
             FragmentUtils.showFragment(
@@ -469,7 +469,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         }
     }
 
-    private fun showCloudFragment(fileData: String? = null) {
+    private fun showCloudFragment(account: CloudAccount?, fileData: String? = null) {
         supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)?.let { fragment ->
             (fragment as MainPagerFragment).let { pagerFragment ->
                 fileData?.let {
@@ -479,7 +479,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
                         supportFragmentManager.beginTransaction().remove(fragment).commit()
                         FragmentUtils.showFragment(
                             supportFragmentManager,
-                            MainPagerFragment.newInstance(fileData),
+                            MainPagerFragment.newInstance(Json.encodeToString(account), fileData),
                             R.id.frame_container
                         )
                     }
@@ -488,7 +488,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         } ?: run {
             FragmentUtils.showFragment(
                 supportFragmentManager,
-                MainPagerFragment.newInstance(fileData),
+                MainPagerFragment.newInstance(Json.encodeToString(account), fileData),
                 R.id.frame_container
             )
         }

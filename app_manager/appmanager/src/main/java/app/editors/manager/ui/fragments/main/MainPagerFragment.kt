@@ -31,10 +31,12 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val OFFSCREEN_COUNT = 5
 
         const val KEY_FILE_DATA = "KEY_FILE_DATA"
+        const val KEY_ACCOUNT = "KEY_ACCOUNT"
 
-        fun newInstance(fileData: String?): MainPagerFragment {
+        fun newInstance(accountData: String, fileData: String?): MainPagerFragment {
             return MainPagerFragment().apply {
-                arguments = Bundle().apply {
+                arguments = Bundle(2).apply {
+                    putString(KEY_ACCOUNT, accountData)
                     putString(KEY_FILE_DATA, fileData)
                 }
             }
@@ -91,7 +93,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private fun init(savedInstanceState: Bundle?) {
         restoreStates(savedInstanceState)
-        presenter.getState()
+        presenter.getState(arguments?.getString(KEY_ACCOUNT))
     }
 
     private fun restoreStates(savedInstanceState: Bundle?) {
