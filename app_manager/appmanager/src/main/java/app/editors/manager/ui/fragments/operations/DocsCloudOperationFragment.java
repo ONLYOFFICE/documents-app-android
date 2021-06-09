@@ -166,13 +166,13 @@ public class DocsCloudOperationFragment extends DocsCloudFragment implements Ope
         mCloudPresenter.setFoldersMode(true);
         switch (mSectionType) {
             case ApiContract.SectionType.CLOUD_USER:
-                mCloudPresenter.getItemsById(DocsMyFragment.ID);
+                mCloudPresenter.getItemsById(DocsMyFragment.Companion.getID());
                 break;
             case ApiContract.SectionType.CLOUD_SHARE:
-                mCloudPresenter.getItemsById(DocsShareFragment.ID);
+                mCloudPresenter.getItemsById(DocsShareFragment.Companion.getID());
                 break;
             case ApiContract.SectionType.CLOUD_COMMON:
-                mCloudPresenter.getItemsById(DocsCommonFragment.ID);
+                mCloudPresenter.getItemsById(DocsCommonFragment.Companion.getID());
                 break;
             case ApiContract.SectionType.CLOUD_PROJECTS:
                 mCloudPresenter.getItemsById(DocsProjectsFragment.Companion.getID());

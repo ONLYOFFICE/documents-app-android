@@ -12,7 +12,6 @@ import java.util.List;
 
 import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.CloudFile;
@@ -33,11 +32,18 @@ import lib.toolkit.base.managers.utils.TimeUtils;
 import lib.toolkit.base.managers.utils.UiUtils;
 import lib.toolkit.base.ui.dialogs.common.CommonDialog;
 import moxy.presenter.InjectPresenter;
+import moxy.presenter.ProvidePresenter;
 
 public abstract class DocsCloudFragment extends DocsBaseFragment implements DocsCloudView {
 
+    protected static String KEY_ACCOUNT = "key_account";
+
     @InjectPresenter
     public DocsCloudPresenter mCloudPresenter;
+    @ProvidePresenter
+    public DocsCloudPresenter providePresenter() {
+        return new DocsCloudPresenter(getArguments().getString(KEY_ACCOUNT));
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

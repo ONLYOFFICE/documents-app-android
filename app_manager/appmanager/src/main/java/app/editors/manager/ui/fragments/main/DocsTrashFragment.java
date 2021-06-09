@@ -28,8 +28,12 @@ public class DocsTrashFragment extends DocsCloudFragment implements View.OnClick
 
     private boolean isEmptyTrashVisible = false;
 
-    public static DocsTrashFragment newInstance() {
-        return new DocsTrashFragment();
+    public static DocsTrashFragment newInstance(String account) {
+        Bundle bundle = new Bundle(1);
+        bundle.putString(KEY_ACCOUNT, account);
+        DocsTrashFragment fragment = new DocsTrashFragment();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     public static final String ID = CloudFileProvider.Section.Trash.getPath();
@@ -61,7 +65,7 @@ public class DocsTrashFragment extends DocsCloudFragment implements View.OnClick
         super.onCreateOptionsMenu(menu, menuInflater);
         if (isVisible()) {
             mEmptyTrashItem = menu.findItem(R.id.toolbar_item_empty_trash);
-            if(mEmptyTrashItem != null) {
+            if (mEmptyTrashItem != null) {
                 mEmptyTrashItem.setVisible(isEmptyTrashVisible);
             }
             showMenu(menu);

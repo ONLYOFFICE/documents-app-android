@@ -13,9 +13,9 @@ import moxy.MvpPresenter
 import javax.inject.Inject
 
 sealed class MainPagerState {
-    class VisitorState(val version: Int) : MainPagerState()
-    class PersonalState(val version: Int) : MainPagerState()
-    class CloudState(val version: Int) : MainPagerState()
+    class VisitorState(val account: String, val version: Int) : MainPagerState()
+    class PersonalState(val account: String, val version: Int) : MainPagerState()
+    class CloudState(val account: String, val version: Int) : MainPagerState()
 }
 
 @InjectViewState

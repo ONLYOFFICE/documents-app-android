@@ -1,95 +1,84 @@
-package app.editors.manager.ui.fragments.main;
+package app.editors.manager.ui.fragments.main
 
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import app.editors.manager.R
+import app.editors.manager.managers.providers.CloudFileProvider
+import app.editors.manager.mvp.presenters.main.DocsBasePresenter
+import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class DocsShareFragment : DocsCloudFragment() {
 
-import app.editors.manager.R;
-import app.editors.manager.managers.providers.CloudFileProvider;
-import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
-import lib.toolkit.base.ui.dialogs.common.CommonDialog;
+    companion object {
+        val ID = CloudFileProvider.Section.Shared.path
 
-public class DocsShareFragment extends DocsCloudFragment {
-
-    public static DocsShareFragment newInstance() {
-        return new DocsShareFragment();
-    }
-
-    public static final String ID = CloudFileProvider.Section.Shared.getPath();
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        init();
-    }
-
-    @Override
-    protected boolean onSwipeRefresh() {
-        if (!super.onSwipeRefresh()) {
-            mCloudPresenter.getItemsById(ID);
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-        super.onCreateOptionsMenu(menu, menuInflater);
-        if (mCloudPresenter.isSelectionMode()) {
-            MenuItem mShareDeleteItem = menu.findItem(R.id.toolbar_selection_share_delete);
-            mShareDeleteItem.setVisible(true);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.toolbar_selection_share_delete) {
-            mCloudPresenter.removeShare();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onScrollPage() {
-        super.onScrollPage();
-        if (mCloudPresenter.getStack() == null) {
-            mCloudPresenter.getItemsById(ID);
-        }
-    }
-
-    @Override
-    public void onAcceptClick(CommonDialog.Dialogs dialogs, @Nullable String value, @Nullable String tag) {
-        super.onAcceptClick(dialogs, value, tag);
-        if (tag != null) {
-            if (DocsBasePresenter.TAG_DIALOG_ACTION_REMOVE_SHARE.equals(tag)) {
-                mCloudPresenter.removeShareSelected();
+        fun newInstance(account: String): DocsShareFragment {
+            return DocsShareFragment().apply {
+                arguments = Bundle(1).apply {
+                    putString(KEY_ACCOUNT, account)
+                }
             }
         }
     }
 
-    @Override
-    public void onStateEmptyBackStack() {
-        super.onStateEmptyBackStack();
-        if (mSwipeRefresh != null) {
-            mSwipeRefresh.setRefreshing(true);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init()
+    }
+
+    override fun onSwipeRefresh(): Boolean {
+        if (!super.onSwipeRefresh()) {
+            mCloudPresenter.getItemsById(ID)
+            return true
         }
-        mCloudPresenter.getItemsById(ID);
+        return false
     }
 
-    @Override
-    public void onRemoveItemFromFavorites() {
-
+    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater)
+        if (mCloudPresenter.isSelectionMode) {
+            val mShareDeleteItem = menu.findItem(R.id.toolbar_selection_share_delete)
+            mShareDeleteItem.isVisible = true
+        }
     }
 
-    private void init() {
-        mCloudPresenter.checkBackStack();
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.toolbar_selection_share_delete) {
+            mCloudPresenter.removeShare()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onScrollPage() {
+        super.onScrollPage()
+        if (mCloudPresenter.stack == null) {
+            mCloudPresenter.getItemsById(ID)
+        }
+    }
+
+    override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
+        super.onAcceptClick(dialogs, value, tag)
+        if (tag != null) {
+            if (DocsBasePresenter.TAG_DIALOG_ACTION_REMOVE_SHARE == tag) {
+                mCloudPresenter.removeShareSelected()
+            }
+        }
+    }
+
+    override fun onStateEmptyBackStack() {
+        super.onStateEmptyBackStack()
+        if (mSwipeRefresh != null) {
+            mSwipeRefresh.isRefreshing = true
+        }
+        mCloudPresenter.getItemsById(ID)
+    }
+
+    override fun onRemoveItemFromFavorites() {}
+    private fun init() {
+        mCloudPresenter.checkBackStack()
     }
 
 }

@@ -1,64 +1,57 @@
-package app.editors.manager.ui.fragments.main;
+package app.editors.manager.ui.fragments.main
 
-import android.os.Bundle;
-import android.view.View;
+import android.os.Bundle
+import android.view.View
+import app.editors.manager.managers.providers.CloudFileProvider
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class DocsMyFragment : DocsCloudFragment() {
 
-import app.editors.manager.managers.providers.CloudFileProvider;
-import app.editors.manager.ui.activities.main.MainActivity;
+    companion object {
+        val ID = CloudFileProvider.Section.My.path
 
-public class DocsMyFragment extends DocsCloudFragment {
-
-    public static DocsMyFragment newInstance() {
-        return new DocsMyFragment();
+        fun newInstance(stringAccount: String): DocsMyFragment {
+            return DocsMyFragment().apply {
+                arguments = Bundle(1).apply {
+                    putString(KEY_ACCOUNT, stringAccount)
+                }
+            }
+        }
     }
 
-    public static final String ID = CloudFileProvider.Section.My.getPath();
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        init();
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init()
     }
 
-    @Override
-    protected boolean onSwipeRefresh() {
+    override fun onSwipeRefresh(): Boolean {
         if (!super.onSwipeRefresh() && mCloudPresenter != null) {
-            mCloudPresenter.getItemsById(ID);
-            return true;
+            mCloudPresenter.getItemsById(ID)
+            return true
         }
-
-        return false;
+        return false
     }
 
-    @Override
-    public void onScrollPage() {
-        super.onScrollPage();
-        if (mCloudPresenter.getStack() == null) {
-            mCloudPresenter.getItemsById(ID);
+    override fun onScrollPage() {
+        super.onScrollPage()
+        if (mCloudPresenter.stack == null) {
+            mCloudPresenter.getItemsById(ID)
         }
     }
 
-
-    @Override
-    public void onStateEmptyBackStack() {
-        super.onStateEmptyBackStack();
+    override fun onStateEmptyBackStack() {
+        super.onStateEmptyBackStack()
         if (mSwipeRefresh != null) {
-            mSwipeRefresh.setRefreshing(true);
+            mSwipeRefresh.isRefreshing = true
         }
-        mCloudPresenter.getItemsById(ID);
+        mCloudPresenter.getItemsById(ID)
     }
 
-    @Override
-    public void onRemoveItemFromFavorites() {
-
+    override fun onRemoveItemFromFavorites() {}
+    private fun init() {
+        mExplorerAdapter.isSectionMy = true
+        mCloudPresenter.checkBackStack()
+        getArgs()
     }
 
-    private void init() {
-        mExplorerAdapter.setSectionMy(true);
-        mCloudPresenter.checkBackStack();
-        getArgs();
-    }
+
 }

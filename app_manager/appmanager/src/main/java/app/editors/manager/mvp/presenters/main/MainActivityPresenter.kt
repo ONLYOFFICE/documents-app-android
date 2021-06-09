@@ -301,7 +301,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
                 val buffer = Base64.decode(string, Base64.DEFAULT)
                 String(buffer, charset("utf-8"))
             }
-        }?: run {
+        } ?: run {
             return ""
         }
     }

@@ -145,99 +145,114 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     override fun onRender(state: MainPagerState) {
         when (state) {
             is MainPagerState.VisitorState -> {
-                getVisitorFragments()
+                getVisitorFragments(state.account)
             }
             is MainPagerState.PersonalState -> {
-                getPersonalFragments(state.version)
+                getPersonalFragments(state.account, state.version)
             }
             is MainPagerState.CloudState -> {
-                getCloudFragments(state.version)
+                getCloudFragments(state.account, state.version)
             }
         }
         arguments?.getString(KEY_FILE_DATA)?.let {
             childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
                 viewBinding?.mainViewPager?.post {
-                    viewBinding?.mainViewPager?.currentItem = adapter.getByTitle(getString(R.string.main_pager_docs_projects))
+                    viewBinding?.mainViewPager?.currentItem =
+                        adapter.getByTitle(getString(R.string.main_pager_docs_projects))
                 }
             }
         }
     }
 
-    private fun getCloudFragments(serverVersion: Int) {
+    private fun getCloudFragments(stringAccount: String, serverVersion: Int) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
-        fragments.add(ViewPagerAdapter.Container(DocsMyFragment.newInstance(), getString(R.string.main_pager_docs_my)))
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsShareFragment.newInstance(),
+                DocsMyFragment.newInstance(stringAccount), getString(
+                    R.string
+                        .main_pager_docs_my
+                )
+            )
+        )
+        fragments.add(
+            ViewPagerAdapter.Container(
+                DocsShareFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_share)
             )
         )
         if (serverVersion >= 11) {
             fragments.add(
                 ViewPagerAdapter.Container(
-                    DocsFavoritesFragment.newInstance(),
+                    DocsFavoritesFragment.newInstance(stringAccount),
                     getString(R.string.main_pager_docs_favorites)
                 )
             )
         }
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsCommonFragment.newInstance(),
+                DocsCommonFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_common)
             )
         )
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsProjectsFragment.newInstance(arguments?.getString(KEY_FILE_DATA)),
+                DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
                 getString(R.string.main_pager_docs_projects)
             )
         )
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsTrashFragment.newInstance(),
+                DocsTrashFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_trash)
             )
         )
         setAdapter(fragments)
     }
 
-    private fun getVisitorFragments() {
+    private fun getVisitorFragments(stringAccount: String) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsShareFragment.newInstance(),
+                DocsShareFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_share)
             )
         )
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsCommonFragment.newInstance(),
+                DocsCommonFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_common)
             )
         )
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsProjectsFragment.newInstance(arguments?.getString(KEY_FILE_DATA)),
+                DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
                 getString(R.string.main_pager_docs_projects)
             )
         )
         setAdapter(fragments)
     }
 
-    private fun getPersonalFragments(serverVersion: Int) {
+    private fun getPersonalFragments(stringAccount: String, serverVersion: Int) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
-        fragments.add(ViewPagerAdapter.Container(DocsMyFragment.newInstance(), getString(R.string.main_pager_docs_my)))
+        fragments.add(
+            ViewPagerAdapter.Container(
+                DocsMyFragment.newInstance(stringAccount), getString(
+                    R.string
+                        .main_pager_docs_my
+                )
+            )
+        )
         if (serverVersion >= 11) {
             fragments.add(
                 ViewPagerAdapter.Container(
-                    DocsFavoritesFragment.newInstance(),
+                    DocsFavoritesFragment.newInstance(stringAccount),
                     getString(R.string.main_pager_docs_favorites)
                 )
             )
         }
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsTrashFragment.newInstance(),
+                DocsTrashFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_trash)
             )
         )
