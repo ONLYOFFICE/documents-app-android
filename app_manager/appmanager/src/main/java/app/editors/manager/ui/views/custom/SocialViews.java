@@ -26,12 +26,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import app.editors.manager.R;
 import app.editors.manager.managers.exceptions.ButterknifeInitException;
@@ -76,7 +70,6 @@ public class SocialViews {
     private CallbackManager mFacebookCallbackManager;
 
     private LoginButton mLoginPersonalSocialFacebookNativeButton;
-    private TwitterLoginButton mLoginPersonalSocialTwitterNativeButton;
 
     public SocialViews(final Activity activity, final View view, @Nullable final String facebookId) {
         try {
@@ -87,7 +80,6 @@ public class SocialViews {
 
         mActivity = activity;
         mFacebookId = facebookId;
-        initTwitter();
         initFacebook();
     }
 
@@ -107,13 +99,6 @@ public class SocialViews {
         }
     }
 
-    /*
-    * Twitter initWithPreferences
-    * */
-    private void initTwitter() {
-        mLoginPersonalSocialTwitterNativeButton = new TwitterLoginButton(mActivity);
-        mLoginPersonalSocialTwitterNativeButton.setCallback(new TwitterAuthCallback());
-    }
 
     /*
     * Facebook initWithPreferences
@@ -138,9 +123,6 @@ public class SocialViews {
                      R.id.login_social_google_button })
     public void onButtonsClick(final View view) {
         switch (view.getId()) {
-            case R.id.login_social_twitter_button:
-                onTwitterClick();
-                break;
             case R.id.login_social_facebook_button:
                 onFacebookClick();
                 break;
@@ -208,14 +190,6 @@ public class SocialViews {
         mLoginPersonalSocialFacebookNativeButton.performClick();
     }
 
-    /*
-    * Twitter click. Get previous token or get new with button click.
-    * */
-    private void onTwitterClick() {
-//        final TwitterSession twitterSession = TwitterCore.getInstance().getSessionManager().getActiveSession();
-//        final TwitterAuthToken authToken = twitterSession.getAuthToken();
-        mLoginPersonalSocialTwitterNativeButton.performClick();
-    }
 
     /*
     * Lifecycle methods
@@ -232,7 +206,6 @@ public class SocialViews {
             getGoogleToken(GoogleSignIn.getSignedInAccountFromIntent(data));
         } else {
             mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
-            mLoginPersonalSocialTwitterNativeButton.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -267,27 +240,6 @@ public class SocialViews {
             LoginManager.getInstance().logOut();
             if (mOnSocialNetworkCallbacks != null) {
                 mOnSocialNetworkCallbacks.onFacebookFailed();
-            }
-        }
-    }
-
-    /*
-    * Twitter callback
-    * */
-    private class TwitterAuthCallback extends Callback<TwitterSession> {
-
-        @Override
-        public void success(Result<TwitterSession> result) {
-            if (mOnSocialNetworkCallbacks != null) {
-                mOnSocialNetworkCallbacks.onTwitterSuccess(result.data.getAuthToken().token);
-            }
-        }
-
-        @Override
-        public void failure(TwitterException exception) {
-            TwitterCore.getInstance().getSessionManager().clearActiveSession();
-            if (mOnSocialNetworkCallbacks != null) {
-                mOnSocialNetworkCallbacks.onTwitterFailed();
             }
         }
     }

@@ -8,9 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import app.editors.manager.mvp.models.explorer.CloudFile;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.Folder;
 import app.editors.manager.mvp.models.explorer.Item;
 
 
@@ -18,8 +18,8 @@ public class ExplorerStackMap implements ExplorerStack {
 
     private static final int INDEX_ROOT = 0;
 
-    private LinkedHashMap<String, Folder> mFolderMap;
-    private LinkedHashMap<String, File> mFileMap;
+    private LinkedHashMap<String, CloudFolder> mFolderMap;
+    private LinkedHashMap<String, CloudFile> mFileMap;
     private Explorer mExplorer;
     private int mListPosition;
     private int mLoadPosition;
@@ -59,8 +59,8 @@ public class ExplorerStackMap implements ExplorerStack {
     }
 
     @Override
-    public void addFile(final File newFile) {
-        final File oldFile = mFileMap.get(newFile.getId());
+    public void addFile(final CloudFile newFile) {
+        final CloudFile oldFile = mFileMap.get(newFile.getId());
         if (oldFile != null) {
             newFile.setSelected(oldFile.isSelected());
             newFile.setJustCreated(oldFile.isJustCreated());
@@ -73,11 +73,11 @@ public class ExplorerStackMap implements ExplorerStack {
     }
 
     @Override
-    public void addFileFirst(final File newFile) {
+    public void addFileFirst(final CloudFile newFile) {
         mSelectedItems += newFile.isSelected() ? 1 : 0;
         if (mFileMap.size() > 0) {
             mFileMap.remove(newFile.getId());
-            final LinkedHashMap<String, File> fileMap = new LinkedHashMap<>();
+            final LinkedHashMap<String, CloudFile> fileMap = new LinkedHashMap<>();
             fileMap.put(newFile.getId(), newFile);
             fileMap.putAll(mFileMap);
             mFileMap = fileMap;
@@ -87,22 +87,22 @@ public class ExplorerStackMap implements ExplorerStack {
     }
 
     @Override
-    public void addFiles(final List<File> files) {
-        for (File file : files) {
+    public void addFiles(final List<CloudFile> files) {
+        for (CloudFile file : files) {
             addFile(file);
         }
     }
 
     @Nullable
     @Override
-    public List<File> getFiles() {
+    public List<CloudFile> getFiles() {
         return new ArrayList<>(mFileMap.values());
     }
 
     @Override
     public List<String> getSelectedFilesIds() {
         final List<String> listId = new ArrayList<>();
-        for (File item : getFiles()) {
+        for (CloudFile item : getFiles()) {
             if (item.isSelected()) {
                 listId.add(item.getId());
             }
@@ -112,9 +112,9 @@ public class ExplorerStackMap implements ExplorerStack {
     }
 
     @Override
-    public List<File> getSelectedFiles() {
-        final List<File> files = new ArrayList<>();
-        for (File file : getFiles()) {
+    public List<CloudFile> getSelectedFiles() {
+        final List<CloudFile> files = new ArrayList<>();
+        for (CloudFile file : getFiles()) {
             if (file.isSelected()) {
                 files.add(file);
             }
@@ -123,9 +123,9 @@ public class ExplorerStackMap implements ExplorerStack {
     }
 
     @Override
-    public List<Folder> getSelectedFolders() {
-        final List<Folder> folders = new ArrayList<>();
-        for (Folder folder : getFolders()) {
+    public List<CloudFolder> getSelectedFolders() {
+        final List<CloudFolder> folders = new ArrayList<>();
+        for (CloudFolder folder : getFolders()) {
             if (folder.isSelected()) {
                 folders.add(folder);
             }
@@ -134,8 +134,8 @@ public class ExplorerStackMap implements ExplorerStack {
     }
 
     @Override
-    public void addFolder(final Folder newFolder) {
-        final Folder oldFolder = mFolderMap.get(newFolder.getId());
+    public void addFolder(final CloudFolder newFolder) {
+        final CloudFolder oldFolder = mFolderMap.get(newFolder.getId());
         if (oldFolder != null) {
             newFolder.setSelected(oldFolder.isSelected());
             newFolder.setJustCreated(oldFolder.isJustCreated());
@@ -148,11 +148,11 @@ public class ExplorerStackMap implements ExplorerStack {
     }
 
     @Override
-    public void addFolderFirst(final Folder newFolder) {
+    public void addFolderFirst(final CloudFolder newFolder) {
         mSelectedItems += newFolder.isSelected() ? 1 : 0;
         if (mFolderMap.size() > 0) {
             mFolderMap.remove(newFolder.getId());
-            final LinkedHashMap<String, Folder> fileMap = new LinkedHashMap<>();
+            final LinkedHashMap<String, CloudFolder> fileMap = new LinkedHashMap<>();
             fileMap.put(newFolder.getId(), newFolder);
             fileMap.putAll(mFolderMap);
             mFolderMap = fileMap;
@@ -162,21 +162,21 @@ public class ExplorerStackMap implements ExplorerStack {
     }
 
     @Override
-    public void addFolders(final List<Folder> folders) {
-        for (Folder folder : folders) {
+    public void addFolders(final List<CloudFolder> folders) {
+        for (CloudFolder folder : folders) {
             addFolder(folder);
         }
     }
 
     @Override
-    public List<Folder> getFolders() {
+    public List<CloudFolder> getFolders() {
         return new ArrayList<>(mFolderMap.values());
     }
 
     @Override
     public List<String> getSelectedFoldersIds() {
         final List<String> listId = new ArrayList<>();
-        for (Folder item : getFolders()) {
+        for (CloudFolder item : getFolders()) {
             if (item.isSelected()) {
                 listId.add(item.getId());
             }
@@ -187,14 +187,14 @@ public class ExplorerStackMap implements ExplorerStack {
 
     @Override
     public Item getItemById(Item item) {
-        if (item instanceof Folder) {
-            final Folder folder = mFolderMap.get(item.getId());
+        if (item instanceof CloudFolder) {
+            final CloudFolder folder = mFolderMap.get(item.getId());
             if (folder != null) {
                 return folder;
             }
 
-        } else if (item instanceof File) {
-            final File file = mFileMap.get(item.getId());
+        } else if (item instanceof CloudFile) {
+            final CloudFile file = mFileMap.get(item.getId());
             if (file != null) {
                 return file;
             }
@@ -254,13 +254,13 @@ public class ExplorerStackMap implements ExplorerStack {
 
     @Override
     public boolean removeItemById(final String id) {
-        final Folder folder = mFolderMap.remove(id);
+        final CloudFolder folder = mFolderMap.remove(id);
         if (folder != null) {
             mSelectedItems -= folder.isSelected() ? 1 : 0;
             return true;
         }
 
-        final File file = mFileMap.remove(id);
+        final CloudFile file = mFileMap.remove(id);
         if (file != null) {
             mSelectedItems -= file.isSelected() ? 1 : 0;
             return true;
@@ -272,12 +272,12 @@ public class ExplorerStackMap implements ExplorerStack {
     @Override
     public int setSelectionAll(boolean isSelect) {
         int count = 0;
-        for (File item : mFileMap.values()) {
+        for (CloudFile item : mFileMap.values()) {
             item.setSelected(isSelect);
             ++count;
         }
 
-        for (Folder folder : mFolderMap.values()) {
+        for (CloudFolder folder : mFolderMap.values()) {
             folder.setSelected(isSelect);
             ++count;
         }
@@ -288,13 +288,13 @@ public class ExplorerStackMap implements ExplorerStack {
     @Override
     public int countSelected() {
         int count = 0;
-        for (File item : mFileMap.values()) {
+        for (CloudFile item : mFileMap.values()) {
             if (item.isSelected()) {
                 ++count;
             }
         }
 
-        for (Folder folder : mFolderMap.values()) {
+        for (CloudFolder folder : mFolderMap.values()) {
             if (folder.isSelected()) {
                 ++count;
             }
@@ -306,7 +306,7 @@ public class ExplorerStackMap implements ExplorerStack {
     @Override
     public int removeSelected() {
         int count = 0;
-        final Iterator<Map.Entry<String, Folder>> folderIterator = mFolderMap.entrySet().iterator();
+        final Iterator<Map.Entry<String, CloudFolder>> folderIterator = mFolderMap.entrySet().iterator();
         while (folderIterator.hasNext()) {
             if (folderIterator.next().getValue().isSelected()) {
                 folderIterator.remove();
@@ -314,7 +314,7 @@ public class ExplorerStackMap implements ExplorerStack {
             }
         }
 
-        final Iterator<Map.Entry<String, File>> fileIterator = mFileMap.entrySet().iterator();
+        final Iterator<Map.Entry<String, CloudFile>> fileIterator = mFileMap.entrySet().iterator();
         while (fileIterator.hasNext()) {
             if (fileIterator.next().getValue().isSelected()) {
                 fileIterator.remove();
@@ -329,7 +329,7 @@ public class ExplorerStackMap implements ExplorerStack {
     @Override
     public int removeUnselected() {
         int count = 0;
-        final Iterator<Map.Entry<String, Folder>> folderIterator = mFolderMap.entrySet().iterator();
+        final Iterator<Map.Entry<String, CloudFolder>> folderIterator = mFolderMap.entrySet().iterator();
         while (folderIterator.hasNext()) {
             if (!folderIterator.next().getValue().isSelected()) {
                 folderIterator.remove();
@@ -337,7 +337,7 @@ public class ExplorerStackMap implements ExplorerStack {
             }
         }
 
-        final Iterator<Map.Entry<String, File>> fileIterator = mFileMap.entrySet().iterator();
+        final Iterator<Map.Entry<String, CloudFile>> fileIterator = mFileMap.entrySet().iterator();
         while (fileIterator.hasNext()) {
             if (!fileIterator.next().getValue().isSelected()) {
                 fileIterator.remove();

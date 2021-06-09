@@ -9,7 +9,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.documentfile.provider.DocumentFile;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
@@ -32,27 +31,25 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.net.ssl.SSLHandshakeException;
 
+import app.documents.core.account.AccountDao;
+import app.documents.core.account.RecentDao;
+import app.documents.core.network.ApiContract;
+import app.documents.core.settings.NetworkSettings;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.managers.exceptions.NoConnectivityException;
 import app.editors.manager.managers.providers.BaseFileProvider;
 import app.editors.manager.managers.providers.ProviderError;
 import app.editors.manager.managers.providers.WebDavFileProvider;
 import app.editors.manager.managers.services.DownloadService;
 import app.editors.manager.managers.services.UploadService;
-import app.editors.manager.managers.tools.AccountManagerTool;
-import app.editors.manager.managers.tools.AccountSqlTool;
 import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.managers.works.DownloadWork;
 import app.editors.manager.managers.works.UploadWork;
-import app.editors.manager.mvp.models.account.AccountsSqlData;
-import app.editors.manager.mvp.models.account.Recent;
 import app.editors.manager.mvp.models.base.Entity;
+import app.editors.manager.mvp.models.explorer.CloudFile;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.Folder;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.explorer.Operation;
 import app.editors.manager.mvp.models.explorer.UploadFile;
@@ -121,7 +118,6 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     private static final int ITEMS_PER_PAGE = 25;
     private static final int FILTERING_DELAY = 500;
 
-    protected String mToken;
     protected BaseFileProvider mFileProvider;
 
     /*
@@ -202,13 +198,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     @Inject
     protected PreferenceTool mPreferenceTool;
     @Inject
-    protected RetrofitTool mRetrofitTool;
-    @Inject
-    protected AccountManagerTool mAccountManagerTool;
-    @Inject
-    protected AccountSqlTool mAccountSqlTool;
-    @Inject
     protected OperationsState mOperationsState;
+    @Inject
+    protected AccountDao accountDao;
+    @Inject
+    protected NetworkSettings networkSettings;
+    @Inject
+    protected RecentDao recentDao;
 
     @Override
     public void onDestroy() {
@@ -251,12 +247,12 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     protected void reverseSortOrder() {
-        if(mPreferenceTool.getSortOrder().equals(Api.Parameters.VAL_SORT_ORDER_ASC)) {
-            mPreferenceTool.setSortOrder(Api.Parameters.VAL_SORT_ORDER_DESC);
-            getViewState().onReverseSortOrder(Api.Parameters.VAL_SORT_ORDER_DESC);
+        if(mPreferenceTool.getSortOrder().equals(ApiContract.Parameters.VAL_SORT_ORDER_ASC)) {
+            mPreferenceTool.setSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
+            getViewState().onReverseSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
         } else {
-            mPreferenceTool.setSortOrder(Api.Parameters.VAL_SORT_ORDER_ASC);
-            getViewState().onReverseSortOrder(Api.Parameters.VAL_SORT_ORDER_ASC);
+            mPreferenceTool.setSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_ASC);
+            getViewState().onReverseSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_ASC);
         }
     }
 
@@ -355,7 +351,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     abstract public void getFileInfo();
 
-    abstract public void addRecent(File file);
+    abstract public void addRecent(CloudFile file);
 
     abstract void updateViewsState();
 
@@ -364,13 +360,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     public abstract void onActionClick();
 
     private void loadSuccess(Explorer explorer) {
-        final AccountsSqlData account = mAccountSqlTool.getAccountOnline();
-        if (account != null && account.isWebDav()) {
-            mModelExplorerStack.addStack(explorer);
-        } else {
-            mModelExplorerStack.addStack(changeContent(explorer));
-        }
-
+        mModelExplorerStack.addStack(explorer);
         updateViewsState();
         setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
 
@@ -430,7 +420,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             getViewState().onDialogQuestion(mContext.getString(R.string.dialogs_question_delete), null,
                     TAG_DIALOG_BATCH_DELETE_SELECTED);
         } else if (mItemClicked != null) {
-            if (mItemClicked instanceof File) {
+            if (mItemClicked instanceof CloudFile) {
                 mDisposable.add(
                         ((mFileProvider instanceof WebDavFileProvider) ? ((WebDavFileProvider) mFileProvider).fileInfo(mItemClicked, false): (mFileProvider.fileInfo(mItemClicked))).subscribe(
                                 response -> {
@@ -444,7 +434,6 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                                     } else {
                                         deleteItems();
                                     }
-
                                 }, throwable -> fetchError(throwable))
                 );
             } else {
@@ -460,7 +449,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     private Observable<Boolean> isFileDeleteProtected(Item item) {
         return Observable.just(mFileProvider.fileInfo(item))
                 .flatMap(response -> response.flatMap(file -> {
-                    int statusMask = Integer.parseInt(file.getFileStatus()) & Api.FileStatus.IS_EDITING;
+                    int statusMask = Integer.parseInt(file.getFileStatus()) & ApiContract.FileStatus.IS_EDITING;
                     if (statusMask != 0) {
                         return Observable.just(Boolean.TRUE);
                     } else {
@@ -471,20 +460,20 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
 
     private void deleteRecent() {
-        List<File> files = mModelExplorerStack.getSelectedFiles();
-        List<Recent> recents = mAccountSqlTool.getRecent();
-        if (files != null) {
-            for (File file : files) {
-                for (Recent recent : recents) {
-                    if (recent.getIdFile() != null && recent.getIdFile().equals(file.getId())) {
-                        mAccountSqlTool.delete(recent);
-                    } else if (mItemClicked != null && recent.getIdFile() != null &&
-                            recent.getIdFile().equals(mItemClicked.getId())) {
-                        mAccountSqlTool.delete(recent);
-                    }
-                }
-            }
-        }
+//        List<CloudFile> files = mModelExplorerStack.getSelectedFiles();
+//        List<Recent> recents = mAccountSqlTool.getRecent();
+//        if (files != null) {
+//            for (CloudFile file : files) {
+//                for (Recent recent : recents) {
+//                    if (recent.getIdFile() != null && recent.getIdFile().equals(file.getId())) {
+//                        mAccountSqlTool.delete(recent);
+//                    } else if (mItemClicked != null && recent.getIdFile() != null &&
+//                            recent.getIdFile().equals(mItemClicked.getId())) {
+//                        mAccountSqlTool.delete(recent);
+//                    }
+//                }
+//            }
+//        }
     }
 
     public boolean move() {
@@ -508,7 +497,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     public void transfer(int conflict, boolean isMove) {
         List<Item> items = new ArrayList<>();
-        Folder destination = new Folder();
+        CloudFolder destination = new CloudFolder();
         destination.setId(mDestFolderId);
         items.addAll(mOperationStack.getSelectedFiles());
         items.addAll(mOperationStack.getSelectedFolders());
@@ -522,7 +511,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                                 mOperationStack.setSelectionAll(false);
                                 Explorer explorer = mOperationStack.getExplorer();
                                 explorer.setDestFolderId(mDestFolderId);
-                                if (mModelExplorerStack.getRootFolderType() == Api.SectionType.CLOUD_USER) {
+                                if (mModelExplorerStack.getRootFolderType() == ApiContract.SectionType.CLOUD_USER) {
                                     explorer = setAccess(explorer);
                                 }
                                 mOperationsState.insert(mModelExplorerStack.getRootFolderType(), explorer);
@@ -604,10 +593,10 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         if (title != null && !title.isEmpty() && mItemClicked != null) {
             final Item item = mModelExplorerStack.getItemById(mItemClicked);
             if (item != null) {
-                if (item instanceof Folder) {
+                if (item instanceof CloudFolder) {
                     renameFolder(item, title);
-                } else if (item instanceof File) {
-                    renameFile(item, title, ((File) item).getNextVersion());
+                } else if (item instanceof CloudFile) {
+                    renameFile(item, title, ((CloudFile) item).getNextVersion());
                 }
 
                 showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS);
@@ -620,9 +609,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * */
 
     public void createDownloadFile() {
-        if (!mModelExplorerStack.getSelectedFiles().isEmpty() || !mModelExplorerStack.getSelectedFolders().isEmpty() || (mItemClicked instanceof Folder)) {
-            getViewState().onCreateDownloadFile(Api.DOWNLOAD_ZIP_NAME);
-        } else if (mItemClicked instanceof File) {
+        if (!mModelExplorerStack.getSelectedFiles().isEmpty() || !mModelExplorerStack.getSelectedFolders().isEmpty() || (mItemClicked instanceof CloudFolder)) {
+            getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
+        } else if (mItemClicked instanceof CloudFile) {
             getViewState().onCreateDownloadFile(mItemClicked.getTitle());
         }
     }
@@ -638,19 +627,19 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             return;
         }
 
-        if(mItemClicked instanceof Folder) {
-            bulkDownload(null, new ArrayList<>(Collections.singleton((Folder) mItemClicked)), downloadTo);
+        if(mItemClicked instanceof CloudFolder) {
+            bulkDownload(null, new ArrayList<>(Collections.singleton((CloudFolder) mItemClicked)), downloadTo);
             return;
         }
 
-        if (mItemClicked != null && mItemClicked instanceof File) {
-            startDownloadWork(downloadTo, mItemClicked.getId(), ((File) mItemClicked).getViewUrl(), null);
+        if (mItemClicked != null && mItemClicked instanceof CloudFile) {
+            startDownloadWork(downloadTo, mItemClicked.getId(), ((CloudFile) mItemClicked).getViewUrl(), null);
         }
     }
 
     private void downloadSelected(@NonNull Uri downloadTo) {
-        final List<File> files = mModelExplorerStack.getSelectedFiles();
-        final List<Folder> folders = mModelExplorerStack.getSelectedFolders();
+        final List<CloudFile> files = mModelExplorerStack.getSelectedFiles();
+        final List<CloudFolder> folders = mModelExplorerStack.getSelectedFolders();
 
         if (mFileProvider instanceof WebDavFileProvider && !folders.isEmpty()) {
             getViewState().onError(mContext.getString(R.string.download_manager_folders_download));
@@ -665,16 +654,16 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     @SuppressLint("MissingPermission")
-    private void bulkDownload(@Nullable List<File> files, @Nullable List<Folder> folders, @NonNull Uri downloadTo) {
+    private void bulkDownload(@Nullable List<CloudFile> files, @Nullable List<CloudFolder> folders, @NonNull Uri downloadTo) {
         final List<String> filesIds = new ArrayList<>();
         final List<String> foldersIds = new ArrayList<>();
         if (files != null) {
-            for (File file : files) {
+            for (CloudFile file : files) {
                 filesIds.add(file.getId());
             }
         }
         if (folders != null) {
-            for (Folder folder : folders) {
+            for (CloudFolder folder : folders) {
                 foldersIds.add(folder.getId());
             }
         }
@@ -711,8 +700,8 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             mDownloadDisposable.dispose();
             return;
         }
-        if (mItemClicked instanceof File) {
-            final File file = (File) mItemClicked;
+        if (mItemClicked instanceof CloudFile) {
+            final CloudFile file = (CloudFile) mItemClicked;
             DownloadService.cancelDownload(file.getId());
         }
     }
@@ -742,26 +731,26 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     public void uploadToMy(final Uri uri) {
-        if (mAccountSqlTool.getAccountOnline() != null) {
-            if (mPreferenceTool.getUploadWifiState() && !NetworkUtils.isWifiEnable(mContext)) {
-                getViewState().onSnackBar(mContext.getString(R.string.upload_error_wifi));
-                return;
-            }
-            if (ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE) {
-                getViewState().onSnackBar(mContext.getString(R.string.upload_manager_error_file_size));
-                return;
-            }
-            if (mAccountSqlTool.getAccountOnline().isWebDav()) {
-                return;
-            }
-
-            final Data workData = new Data.Builder()
-                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
-                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
-                    .putString(UploadWork.TAG_FOLDER_ID, null)
-                    .build();
-            startUpload(workData);
-        }
+//        if (mAccountSqlTool.getAccountOnline() != null) {
+//            if (mPreferenceTool.getUploadWifiState() && !NetworkUtils.isWifiEnable(mContext)) {
+//                getViewState().onSnackBar(mContext.getString(R.string.upload_error_wifi));
+//                return;
+//            }
+//            if (ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE) {
+//                getViewState().onSnackBar(mContext.getString(R.string.upload_manager_error_file_size));
+//                return;
+//            }
+//            if (mAccountSqlTool.getAccountOnline().isWebDav()) {
+//                return;
+//            }
+//
+//            final Data workData = new Data.Builder()
+//                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+//                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
+//                    .putString(UploadWork.TAG_FOLDER_ID, null)
+//                    .build();
+//            startUpload(workData);
+//        }
     }
 
     private void addUploadFiles(ArrayList<Uri> uriList, String id) {
@@ -830,19 +819,19 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         }
     }
 
-    void addFile(final File file) {
+    void addFile(final CloudFile file) {
         file.setJustCreated(true);
         mModelExplorerStack.addFileFirst(file);
         getViewState().onDocsGet(getListWithHeaders(mModelExplorerStack.last(), true));
     }
 
-    private void addFolder(final Folder folder) {
+    private void addFolder(final CloudFolder folder) {
         folder.setJustCreated(true);
         mModelExplorerStack.addFolderFirst(folder);
         getViewState().onDocsGet(getListWithHeaders(mModelExplorerStack.last(), true));
     }
 
-    public void addFolderAndOpen(final Folder folder, final int position) {
+    public void addFolderAndOpen(final CloudFolder folder, final int position) {
         addFolder(folder);
         openFolder(folder.getId(), position);
     }
@@ -854,14 +843,14 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * */
     protected Map<String, String> getArgs(@Nullable final String filteringValue) {
         final Map<String, String> args = new TreeMap<>();
-        args.put(Api.Parameters.ARG_COUNT, String.valueOf(ITEMS_PER_PAGE));
-        args.put(Api.Parameters.ARG_SORT_BY, mPreferenceTool.getSortBy());
-        args.put(Api.Parameters.ARG_SORT_ORDER, mPreferenceTool.getSortOrder());
+        args.put(ApiContract.Parameters.ARG_COUNT, String.valueOf(ITEMS_PER_PAGE));
+        args.put(ApiContract.Parameters.ARG_SORT_BY, mPreferenceTool.getSortBy());
+        args.put(ApiContract.Parameters.ARG_SORT_ORDER, mPreferenceTool.getSortOrder());
 
         if (filteringValue != null) {
-            args.put(Api.Parameters.ARG_FILTER_BY, Api.Parameters.VAL_FILTER_BY);
-            args.put(Api.Parameters.ARG_FILTER_OP, Api.Parameters.VAL_FILTER_OP_CONTAINS);
-            args.put(Api.Parameters.ARG_FILTER_VALUE, filteringValue);
+            args.put(ApiContract.Parameters.ARG_FILTER_BY, ApiContract.Parameters.VAL_FILTER_BY);
+            args.put(ApiContract.Parameters.ARG_FILTER_OP, ApiContract.Parameters.VAL_FILTER_OP_CONTAINS);
+            args.put(ApiContract.Parameters.ARG_FILTER_VALUE, filteringValue);
         }
 
         return args;
@@ -909,13 +898,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         explorer.setCount(1);
         explorer.setTotal(1);
 
-        if (mItemClicked instanceof Folder) {
-            final Folder folder = ((Folder) mItemClicked).clone();
+        if (mItemClicked instanceof CloudFolder) {
+            final CloudFolder folder = ((CloudFolder) mItemClicked).clone();
             folder.setSelected(true);
             explorer.setFolders(new ArrayList<>(Collections.singletonList(folder)));
             explorer.getFiles().clear();
-        } else if (mItemClicked instanceof File) {
-            final File file = ((File) mItemClicked).clone();
+        } else if (mItemClicked instanceof CloudFile) {
+            final CloudFile file = ((CloudFile) mItemClicked).clone();
             file.setSelected(true);
             explorer.setFiles(new ArrayList<>(Collections.singletonList(file)));
             explorer.getFolders().clear();
@@ -939,13 +928,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         explorer.setCount(1);
         explorer.setTotal(1);
 
-        if (mItemClicked instanceof Folder) {
-            final Folder folder = ((Folder) mItemClicked).clone();
+        if (mItemClicked instanceof CloudFolder) {
+            final CloudFolder folder = ((CloudFolder) mItemClicked).clone();
             folder.setSelected(true);
             explorer.setFolders(new ArrayList<>(Collections.singletonList(folder)));
             explorer.getFiles().clear();
-        } else if (mItemClicked instanceof File) {
-            final File file = ((File) mItemClicked).clone();
+        } else if (mItemClicked instanceof CloudFile) {
+            final CloudFile file = ((CloudFile) mItemClicked).clone();
             file.setSelected(true);
             explorer.setFiles(new ArrayList<>(Collections.singletonList(file)));
             explorer.getFolders().clear();
@@ -986,9 +975,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             if (!explorer.getFiles().isEmpty() && !mIsFoldersMode) {
                 final String sortBy = mPreferenceTool.getSortBy();
                 final String sortOrder = mPreferenceTool.getSortOrder();
-                final List<File> fileList = explorer.getFiles();
+                final List<CloudFile> fileList = explorer.getFiles();
 
-                if (Api.Parameters.VAL_SORT_BY_UPDATED.equals(sortBy)) { // For date sort add times headers
+                if (ApiContract.Parameters.VAL_SORT_BY_UPDATED.equals(sortBy)) { // For date sort add times headers
                     final long todayMs = TimeUtils.getTodayMs();
                     final long yesterdayMs = TimeUtils.getYesterdayMs();
                     final long weekMs = TimeUtils.getWeekMs();
@@ -998,11 +987,11 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
                     // Set time headers
                     Collections.sort(fileList, (o1, o2) -> o1.getUpdated().compareTo(o2.getUpdated()));
-                    if(sortOrder.equals(Api.Parameters.VAL_SORT_ORDER_DESC)) {
+                    if(sortOrder.equals(ApiContract.Parameters.VAL_SORT_ORDER_DESC)) {
                         Collections.reverse(fileList);
                     }
 
-                    for (File item : fileList) {
+                    for (CloudFile item : fileList) {
                         itemMs = item.getUpdated().getTime();
 
                         // Check created property
@@ -1090,7 +1079,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             getViewState().onStateMenuSelection();
         } else {
             getViewState().onStateMenuDefault(mPreferenceTool.getSortBy(),
-                    mPreferenceTool.getSortOrder().equalsIgnoreCase(Api.Parameters.VAL_SORT_ORDER_ASC));
+                    mPreferenceTool.getSortOrder().equalsIgnoreCase(ApiContract.Parameters.VAL_SORT_ORDER_ASC));
         }
     }
 
@@ -1234,9 +1223,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 getViewState().onItemSelected(position, String.valueOf(mModelExplorerStack.getCountSelectedItems()));
             }
         } else {
-            if (mItemClicked instanceof Folder) {
+            if (mItemClicked instanceof CloudFolder) {
                 openFolder(mItemClicked.getId(), position);
-            } else if (mItemClicked instanceof File) {
+            } else if (mItemClicked instanceof CloudFile) {
                 getFileInfo();
             }
         }
@@ -1253,12 +1242,12 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     Explorer getListMedia(final String clickedId) {
         final Explorer explorer = mModelExplorerStack.last().clone();
-        final List<File> files = explorer.getFiles();
+        final List<CloudFile> files = explorer.getFiles();
         explorer.setFolders(new ArrayList<>());
         if (files != null && !files.isEmpty()) {
-            final ListIterator<File> listIterator = files.listIterator();
+            final ListIterator<CloudFile> listIterator = files.listIterator();
             while (listIterator.hasNext()) {
-                final File file = listIterator.next();
+                final CloudFile file = listIterator.next();
                 file.setClicked(file.getId().equalsIgnoreCase(clickedId));
 
                 // Check for extensions
@@ -1283,8 +1272,8 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
 
     boolean isPdf() {
-        if (mItemClicked instanceof File) {
-            File file = (File) mItemClicked;
+        if (mItemClicked instanceof CloudFile) {
+            CloudFile file = (CloudFile) mItemClicked;
             return StringUtils.getExtension(file.getFileExst()).equals(StringUtils.Extension.PDF);
         }
         return false;
@@ -1383,7 +1372,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return mModelExplorerStack.isStackEmpty();
     }
 
-    boolean isRoot() {
+   public boolean isRoot() {
         return mModelExplorerStack.isRoot();
     }
 
@@ -1397,11 +1386,11 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     boolean isClickedItemFile() {
-        return mItemClicked instanceof File;
+        return mItemClicked instanceof CloudFile;
     }
 
     boolean isClickedItemDocs() {
-        return isClickedItemFile() && StringUtils.isDocument(((File) mItemClicked).getFileExst());
+        return isClickedItemFile() && StringUtils.isDocument(((CloudFile) mItemClicked).getFileExst());
     }
 
     @Nullable
@@ -1422,10 +1411,10 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     private Explorer changeContent(final Explorer explorer) {
-        final ListIterator<File> fileList = explorer.getFiles().listIterator();
+        final ListIterator<CloudFile> fileList = explorer.getFiles().listIterator();
         while (fileList.hasNext()) {
-            final File file = fileList.next();
-            final Folder currentFolder = new Folder();
+            final CloudFile file = fileList.next();
+            final CloudFolder currentFolder = new CloudFolder();
             currentFolder.setId(mModelExplorerStack.getCurrentId());
             if (file.getFileType().isEmpty() && file.getFileExst().isEmpty()) {
                 fileList.remove();
@@ -1478,12 +1467,12 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             if (exception.response().code() == 412) {
                 getViewState().onError(mContext.getString(R.string.operation_move_file_existing, exception.getSuppressed()[0].getMessage()));
                 return;
-            } else if (exception.response().code() >= Api.HttpCodes.CLIENT_ERROR && exception.response().code() < Api.HttpCodes.SERVER_ERROR) {
+            } else if (exception.response().code() >= ApiContract.HttpCodes.CLIENT_ERROR && exception.response().code() < ApiContract.HttpCodes.SERVER_ERROR) {
                 if (!isRoot()) {
                     mModelExplorerStack.previous();
                     getItemsById(mModelExplorerStack.getCurrentId());
                 }
-            } else if (exception.response().code() >= Api.HttpCodes.SERVER_ERROR) {
+            } else if (exception.response().code() >= ApiContract.HttpCodes.SERVER_ERROR) {
                 setPlaceholderType(PlaceholderViews.Type.ACCESS);
                 getViewState().onError(throwable.getMessage());
                 return;
@@ -1529,17 +1518,17 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
         // Delete this block -- BEGIN --
         // Callback error
-        if (responseCode >= Api.HttpCodes.REDIRECTION && responseCode < Api.HttpCodes.CLIENT_ERROR) {
+        if (responseCode >= ApiContract.HttpCodes.REDIRECTION && responseCode < ApiContract.HttpCodes.CLIENT_ERROR) {
             getViewState().onError(mContext.getString(R.string.errors_redirect_error) + responseCode);
-        } else if (responseCode >= Api.HttpCodes.CLIENT_ERROR && responseCode < Api.HttpCodes.SERVER_ERROR) {
+        } else if (responseCode >= ApiContract.HttpCodes.CLIENT_ERROR && responseCode < ApiContract.HttpCodes.SERVER_ERROR) {
             // Add here new message for common errors
             switch (responseCode) {
-                case Api.HttpCodes.CLIENT_UNAUTHORIZED:
+                case ApiContract.HttpCodes.CLIENT_UNAUTHORIZED:
                     getViewState().onError(mContext.getString(R.string.errors_client_unauthorized));
                     return;
-                case Api.HttpCodes.CLIENT_FORBIDDEN:
+                case ApiContract.HttpCodes.CLIENT_FORBIDDEN:
                     if (errorMessage != null) {
-                        if (errorMessage.contains(Api.Errors.DISK_SPACE_QUOTA)) {
+                        if (errorMessage.contains(ApiContract.Errors.DISK_SPACE_QUOTA)) {
                             getViewState().onError(errorMessage);
                             return;
                         }
@@ -1547,20 +1536,20 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
                     getViewState().onError(mContext.getString(R.string.errors_client_forbidden));
                     return;
-                case Api.HttpCodes.CLIENT_NOT_FOUND:
+                case ApiContract.HttpCodes.CLIENT_NOT_FOUND:
                     getViewState().onError(mContext.getString(R.string.errors_client_host_not_found));
                     return;
-                case Api.HttpCodes.CLIENT_PAYMENT_REQUIRED:
+                case ApiContract.HttpCodes.CLIENT_PAYMENT_REQUIRED:
                     getViewState().onError(mContext.getString(R.string.errors_client_payment_required));
                     return;
             }
 
             getViewState().onError(mContext.getString(R.string.errors_client_error) + responseCode);
-        } else if (responseCode >= Api.HttpCodes.SERVER_ERROR) {
+        } else if (responseCode >= ApiContract.HttpCodes.SERVER_ERROR) {
 
             if (errorMessage != null) {
                 // Add here new message for common errors
-                if (errorMessage.contains(Api.Errors.AUTH)) {
+                if (errorMessage.contains(ApiContract.Errors.AUTH)) {
                     getViewState().onError(mContext.getString(R.string.errors_server_auth_error));
                     return;
                 }
@@ -1614,16 +1603,16 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     private Explorer setAccess(Explorer explorer) {
-        List<File> files = explorer.getFiles();
-        List<Folder> folders = explorer.getFolders();
+        List<CloudFile> files = explorer.getFiles();
+        List<CloudFolder> folders = explorer.getFolders();
         if (!files.isEmpty()) {
-            for (File file : files) {
+            for (CloudFile file : files) {
                 file.setAccess(0);
             }
             explorer.setFiles(files);
         }
         if (!folders.isEmpty()) {
-            for (Folder folder : folders) {
+            for (CloudFolder folder : folders) {
                 folder.setAccess(0);
             }
             explorer.setFolders(folders);

@@ -16,6 +16,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -24,24 +25,26 @@ import lib.toolkit.base.ui.dialogs.common.holders.*
 import moxy.MvpAppCompatFragment
 
 abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFragment,
-        BaseActivity.OnDispatchTouchEvent, CommonDialog.OnClickListener {
+    BaseActivity.OnDispatchTouchEvent, CommonDialog.OnClickListener {
 
     companion object {
+
+        private val TAG: String = BaseFragment::class.java.simpleName
+        private const val TAG_TITLE = "TAG_TITLE"
+        private const val TAG_CAMERA = "TAG_CAMERA"
+
         protected const val PERMISSION_SMS = 0
         protected const val PERMISSION_WRITE_STORAGE = 1
         protected const val PERMISSION_READ_STORAGE = 2
         protected const val PERMISSION_CAMERA = 3
     }
 
-    private val TAG = javaClass.simpleName
-    private val TAG_TITLE = "TAG_TITLE"
-    private val TAG_CAMERA = "TAG_CAMERA"
-
     protected lateinit var mBaseActivity: BaseActivity
     protected var mSnackBar: Snackbar? = null
     protected var mToast: Toast? = null
 
     protected var mToolbarTitle: String? = null
+
     @JvmField
     protected var mCameraUri: Uri? = null
 
@@ -64,7 +67,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     override fun onDestroyView() {
         super.onDestroyView()
         mBaseActivity.removeOnDispatchTouchEvent(this)
-        mBaseActivity.setDialogListener(null)
+        mBaseActivity.removeDialogListener(this)
         mToast = null
         mSnackBar = null
     }
@@ -79,10 +82,10 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected open fun init(view: View, savedInstanceState: Bundle?) {
-        if (userVisibleHint) {
-            mBaseActivity.setDialogListener(this)
+        if (lifecycle.currentState == Lifecycle.State.CREATED) {
+            mBaseActivity.addDialogListener(this)
         }
-        mToast = UiUtils.getToast(activity!!)
+        mToast = UiUtils.getToast(requireActivity())
         restoreStates(savedInstanceState)
     }
 
@@ -115,95 +118,135 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         mBaseActivity.hideDialog()
     }
 
-    protected fun getEditDialogDialog(title: String? = null,
-                                      bottomTitle: String? = null,
-                                      value: String? = null,
-                                      editHint: String? = null,
-                                      acceptTitle: String? = null,
-                                      cancelTitle: String? = null,
-                                      tag: String? = null): EditLineHolder.Builder? {
-        mBaseActivity.setDialogListener(this)
+    protected fun getEditDialogDialog(
+        title: String? = null,
+        bottomTitle: String? = null,
+        value: String? = null,
+        editHint: String? = null,
+        acceptTitle: String? = null,
+        cancelTitle: String? = null,
+        tag: String? = null
+    ): EditLineHolder.Builder? {
+        mBaseActivity.addDialogListener(this)
         return mBaseActivity.getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)
     }
 
-    protected fun getWaitingDialog(topTitle: String? = null,
-                                   cancelTitle: String? = null,
-                                   tag: String? = null): WaitingHolder.Builder? {
-        mBaseActivity.setDialogListener(this)
+    protected fun getWaitingDialog(
+        topTitle: String? = null,
+        cancelTitle: String? = null,
+        tag: String? = null
+    ): WaitingHolder.Builder? {
+        mBaseActivity.addDialogListener(this)
         return mBaseActivity.getWaitingDialog(topTitle, cancelTitle, tag)
     }
 
-    protected fun getQuestionDialog(title: String? = null,
-                                    acceptTitle: String? = null,
-                                    cancelTitle: String? = null,
-                                    question: String? = null,
-                                    tag: String? = null): QuestionHolder.Builder? {
-        mBaseActivity.setDialogListener(this)
+    protected fun getQuestionDialog(
+        title: String? = null,
+        acceptTitle: String? = null,
+        cancelTitle: String? = null,
+        question: String? = null,
+        tag: String? = null
+    ): QuestionHolder.Builder? {
+        mBaseActivity.addDialogListener(this)
         return mBaseActivity.getQuestionDialog(title, acceptTitle, cancelTitle, question, tag)
     }
 
-    protected fun getInfoDialog(title: String? = null,
-                                info: String? = null,
-                                cancelTitle: String? = null,
-                                tag: String? = null): InfoHolder.Builder? {
-        mBaseActivity.setDialogListener(this)
-        return getInfoDialog(title, info, cancelTitle, tag)
+    protected fun getInfoDialog(
+        title: String? = null,
+        info: String? = null,
+        cancelTitle: String? = null,
+        tag: String? = null
+    ): InfoHolder.Builder? {
+        mBaseActivity.addDialogListener(this)
+        return mBaseActivity.getInfoDialog(title, info, cancelTitle, tag)
     }
 
-    protected fun getEditMultilineDialog(title: String? = null,
-                                         hint: String? = null,
-                                         acceptTitle: String? = null,
-                                         cancelTitle: String? = null,
-                                         tag: String? = null): EditMultilineHolder.Builder? {
-        mBaseActivity.setDialogListener(this)
+    protected fun getEditMultilineDialog(
+        title: String? = null,
+        hint: String? = null,
+        acceptTitle: String? = null,
+        cancelTitle: String? = null,
+        tag: String? = null
+    ): EditMultilineHolder.Builder? {
+        mBaseActivity.addDialogListener(this)
         return mBaseActivity.getEditMultilineDialog(title, hint, acceptTitle, cancelTitle, tag)
     }
 
-    protected fun getProgressDialog(title: String? = null,
-                                    cancelTitle: String? = null,
-                                    tag: String? = null): ProgressHolder.Builder? {
-        mBaseActivity.setDialogListener(this)
+    protected fun getProgressDialog(
+        title: String? = null,
+        cancelTitle: String? = null,
+        tag: String? = null
+    ): ProgressHolder.Builder? {
+        mBaseActivity.addDialogListener(this)
         return mBaseActivity.getProgressDialog(title, cancelTitle, tag)
     }
 
     protected fun showWaitingDialog(title: String) {
-        mBaseActivity.setDialogListener(this)
+        mBaseActivity.addDialogListener(this)
         mBaseActivity.showWaitingDialog(title, null, WaitingHolder.ProgressType.HORIZONTAL, null)
     }
 
     protected fun showWaitingDialog(title: String?, tag: String?) {
-        mBaseActivity.setDialogListener(this)
+        mBaseActivity.addDialogListener(this)
         mBaseActivity.showWaitingDialog(title, null, WaitingHolder.ProgressType.HORIZONTAL, tag)
     }
 
     protected fun showWaitingDialog(title: String?, cancelButton: String?, tag: String?) {
-        mBaseActivity.setDialogListener(this)
+        mBaseActivity.addDialogListener(this)
         mBaseActivity.showWaitingDialog(title, cancelButton, WaitingHolder.ProgressType.HORIZONTAL, tag)
     }
 
-    protected fun showWaitingDialog(title: String?, tag: String?, type: WaitingHolder.ProgressType, cancelButton: String?, gravity: Int, color: Int) {
-        mBaseActivity.setDialogListener(this)
+    protected fun showWaitingDialog(
+        title: String?,
+        tag: String?,
+        type: WaitingHolder.ProgressType,
+        cancelButton: String?,
+        gravity: Int,
+        color: Int
+    ) {
+        mBaseActivity.addDialogListener(this)
         mBaseActivity.showWaitingDialog(title, cancelButton, type, tag, color, color, gravity)
     }
 
-    protected fun showQuestionDialog(title: String, string: String?, acceptButton: String, cancelButton: String?, tag: String) {
-        mBaseActivity.setDialogListener(this)
+    protected fun showQuestionDialog(
+        title: String,
+        string: String?,
+        acceptButton: String,
+        cancelButton: String?,
+        tag: String
+    ) {
+        mBaseActivity.addDialogListener(this)
         mBaseActivity.showQuestionDialog(title, tag, acceptButton, cancelButton, string)
     }
 
-    protected fun showEditDialogCreate(title: String, value: String?, hint: String?, endHint: String?, tag: String, acceptButton: String?, cancelButton: String?) {
-        mBaseActivity.setDialogListener(this)
+    protected fun showEditDialogCreate(
+        title: String,
+        value: String?,
+        hint: String?,
+        endHint: String?,
+        tag: String,
+        acceptButton: String?,
+        cancelButton: String?
+    ) {
+        mBaseActivity.addDialogListener(this)
         mBaseActivity.showEditDialog(title, null, value, hint, endHint, acceptButton, cancelButton, false, null, tag)
     }
 
-    protected fun showEditDialogRename(title: String, value: String?, hint: String?, tag: String, acceptButton: String?, cancelButton: String?) {
-        mBaseActivity.setDialogListener(this)
+    protected fun showEditDialogRename(
+        title: String,
+        value: String?,
+        hint: String?,
+        tag: String,
+        acceptButton: String?,
+        cancelButton: String?
+    ) {
+        mBaseActivity.addDialogListener(this)
         mBaseActivity.showEditDialog(title, null, value, hint, null, acceptButton, cancelButton, false, null, tag)
     }
 
 
     protected fun showProgressDialog(title: String?, isHideButton: Boolean, cancelTitle: String?, tag: String?) {
-        mBaseActivity.setDialogListener(this)
+        mBaseActivity.addDialogListener(this)
         mBaseActivity.showProgressDialog(title, isHideButton, cancelTitle, tag)
     }
 
@@ -219,12 +262,12 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         Fix SnackBar memory leak
         https://stackoverflow.com/questions/55697904/is-there-a-reason-for-why-accessibilitymanager-sinstance-would-cause-a-memory-leak?
      */
-    protected fun showSnackBar(@StringRes resource: Int): Snackbar? {
+    protected fun showSnackBar(@StringRes resource: Int): Snackbar {
         return showSnackBar(resources.getString(resource))
     }
 
-    protected fun showSnackBar(string: String): Snackbar? {
-        val snackbar: Snackbar = UiUtils.getSnackBar(view!!)
+    protected fun showSnackBar(string: String): Snackbar {
+        val snackbar: Snackbar = UiUtils.getSnackBar(requireView())
         snackbar.setText(string)
         snackbar.setAction(null, null)
         snackbar.show()
@@ -232,9 +275,11 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         return snackbar
     }
 
-    protected fun showSnackBarWithAction(text: String, button: String,
-                                         onClickListener: View.OnClickListener): Snackbar? {
-        val snackbar: Snackbar = UiUtils.getSnackBar(view!!)
+    protected fun showSnackBarWithAction(
+        text: String, button: String,
+        onClickListener: View.OnClickListener
+    ): Snackbar {
+        val snackbar: Snackbar = UiUtils.getSnackBar(requireView())
         snackbar.setText(text)
         snackbar.setAction(button, onClickListener)
         snackbar.show()
@@ -242,8 +287,10 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         return snackbar
     }
 
-    protected fun showSnackBarWithAction(@StringRes text: Int, @StringRes button: Int,
-                                         onClickListener: View.OnClickListener): Snackbar? {
+    protected fun showSnackBarWithAction(
+        @StringRes text: Int, @StringRes button: Int,
+        onClickListener: View.OnClickListener
+    ): Snackbar {
         return showSnackBarWithAction(getString(text), getString(button), onClickListener)
     }
 
@@ -263,18 +310,18 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     * Fragment operations
     * */
     protected fun showRootFragment() {
-        FragmentUtils.backToRoot(fragmentManager!!)
+        FragmentUtils.backToRoot(parentFragmentManager)
     }
 
     protected fun showParentRootFragment() {
-        FragmentUtils.backToRoot(parentFragment!!.fragmentManager!!)
+        FragmentUtils.backToRoot(requireParentFragment().parentFragmentManager)
     }
 
     /*
     * Action bar
     * */
     protected fun setSupportActionBar(toolbar: Toolbar) {
-        (activity!! as AppCompatActivity).setSupportActionBar(toolbar)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
     }
 
     protected fun setActionBarTitle(title: String?) {
@@ -305,7 +352,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         } catch (e: ClassCastException) {
             throw RuntimeException(
                 BaseFragment::class.java.simpleName + " - must implement - " +
-                    BaseActivity::class.java.simpleName)
+                        BaseActivity::class.java.simpleName
+            )
         }
     }
 
@@ -317,19 +365,19 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected fun copyToClipboard(label: String?, value: String?, message: String?) {
-        KeyboardUtils.setDataToClipboard(context!!, value ?: "", label ?: "Copied text")
+        KeyboardUtils.setDataToClipboard(requireContext(), value ?: "", label ?: "Copied text")
         if (message != null) {
             showSnackBar(message)
         }
     }
 
     protected fun clearClipboard() {
-        KeyboardUtils.clearDataFromClipboard(context!!)
+        KeyboardUtils.clearDataFromClipboard(requireContext())
     }
 
     protected val dataFromClipboard: String
         get() {
-            val data = KeyboardUtils.getTextFromClipboard(context!!)
+            val data = KeyboardUtils.getTextFromClipboard(requireContext())
             clearClipboard()
             return data
         }
@@ -358,26 +406,30 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     * Check permissions
     * */
     protected fun checkSmsPermission(): Boolean {
-        return PermissionUtils.requestSmsPermission(this,
+        return PermissionUtils.requestSmsPermission(
+            this,
             PERMISSION_SMS
         )
     }
 
     protected fun checkWritePermission(): Boolean {
-        return PermissionUtils.requestWritePermission(this,
+        return PermissionUtils.requestWritePermission(
+            this,
             PERMISSION_WRITE_STORAGE
         )
     }
 
     protected fun checkReadPermission(): Boolean {
-        return PermissionUtils.requestReadPermission(this,
+        return PermissionUtils.requestReadPermission(
+            this,
             PERMISSION_READ_STORAGE
         )
     }
 
     protected fun checkCameraPermission(): Boolean {
-        return PermissionUtils.requestPermission(this, PERMISSION_CAMERA, Manifest.permission.CAMERA
-                , Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        return PermissionUtils.requestPermission(
+            this, PERMISSION_CAMERA, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
     }
 
     /*
@@ -394,7 +446,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected fun showFileShareActivity(uri: Uri) {
-        ActivitiesUtils.showFileShare(context!!, null, uri)
+        ActivitiesUtils.showFileShare(requireContext(), null, uri)
     }
 
     protected fun showImagesPickerActivity() {
@@ -404,7 +456,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected fun showUrlInBrowser(url: String) {
-        ActivitiesUtils.showBrowser(activity!!, null, url)
+        ActivitiesUtils.showBrowser(requireActivity(), null, url)
     }
 
 
@@ -417,11 +469,11 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected fun setStatusBarColor(@ColorRes color: Int) {
-        UiUtils.setStatusBarColor(activity!!, color)
+        UiUtils.setStatusBarColor(requireActivity(), color)
     }
 
     protected fun minimizeApp() {
-        ActivitiesUtils.minimizeApp(activity!!)
+        ActivitiesUtils.minimizeApp(requireActivity())
     }
 
 }

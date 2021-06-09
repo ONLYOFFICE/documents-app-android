@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.appbar.AppBarLayout;
 
 import app.editors.manager.R;
-import app.editors.manager.mvp.models.explorer.Folder;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
 import app.editors.manager.ui.fragments.storage.SelectFragment;
 import butterknife.BindView;
@@ -75,7 +75,7 @@ public class StorageActivity extends BaseAppActivity {
         setFinishOnTouchOutside(true);
     }
 
-    public void finishWithResult(final Folder folder) {
+    public void finishWithResult(final CloudFolder folder) {
         final Intent intent = new Intent();
         intent.putExtra(TAG_RESULT, folder);
         setResult(Activity.RESULT_OK, intent);

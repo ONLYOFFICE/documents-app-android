@@ -18,12 +18,12 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import javax.inject.Inject;
 
+import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.mvp.models.account.Storage;
-import app.editors.manager.mvp.models.explorer.Folder;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter;
 import app.editors.manager.mvp.views.storage.ConnectView;
 import app.editors.manager.ui.activities.main.MainActivity;
@@ -142,7 +142,7 @@ public class ConnectFragment extends BaseAppFragment implements ConnectView {
     }
 
     @Override
-    public void onConnect(Folder folder) {
+    public void onConnect(CloudFolder folder) {
         hideDialog();
         mStorageActivity.finishWithResult(folder);
     }
@@ -167,31 +167,31 @@ public class ConnectFragment extends BaseAppFragment implements ConnectView {
         title = title.concat(" ");
         // Set default title
         switch (mStorage.getName()) {
-            case Api.Storage.BOXNET:
+            case ApiContract.Storage.BOXNET:
                 mTitleEdit.setText(R.string.storage_select_box);
                 title = title.concat(getString(R.string.storage_select_box));
                 break;
-            case Api.Storage.DROPBOX:
+            case ApiContract.Storage.DROPBOX:
                 mTitleEdit.setText(R.string.storage_select_drop_box);
                 title = title.concat(getString(R.string.storage_select_drop_box));
                 break;
-            case Api.Storage.SHAREPOINT:
+            case ApiContract.Storage.SHAREPOINT:
                 mTitleEdit.setText(R.string.storage_select_share_point);
                 title = title.concat(getString(R.string.storage_select_share_point));
                 break;
-            case Api.Storage.GOOGLEDRIVE:
+            case ApiContract.Storage.GOOGLEDRIVE:
                 mTitleEdit.setText(R.string.storage_select_google_drive);
                 title = title.concat(getString(R.string.storage_select_google_drive));
                 break;
-            case Api.Storage.ONEDRIVE:
+            case ApiContract.Storage.ONEDRIVE:
                 mTitleEdit.setText(R.string.storage_select_one_drive);
                 title = title.concat(getString(R.string.storage_select_one_drive));
                 break;
-            case Api.Storage.YANDEX:
+            case ApiContract.Storage.YANDEX:
                 mTitleEdit.setText(R.string.storage_select_yandex);
                 title = title.concat(getString(R.string.storage_select_yandex));
                 break;
-            case Api.Storage.WEBDAV:
+            case ApiContract.Storage.WEBDAV:
                 mTitleEdit.setText(R.string.storage_select_web_dav);
                 title = title.concat(getString(R.string.storage_select_web_dav));
                 break;

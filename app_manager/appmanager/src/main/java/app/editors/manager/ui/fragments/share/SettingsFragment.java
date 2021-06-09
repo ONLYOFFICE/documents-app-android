@@ -31,21 +31,23 @@ import androidx.transition.TransitionManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
+import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
-import app.editors.manager.mvp.models.base.Entity;
-import app.editors.manager.mvp.models.explorer.Folder;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.list.Header;
 import app.editors.manager.mvp.models.models.ModelShareStack;
-import app.editors.manager.mvp.models.share.Share;
+import app.editors.manager.mvp.models.ui.ShareUi;
+import app.editors.manager.mvp.models.ui.ViewType;
 import app.editors.manager.mvp.presenters.share.SettingsPresenter;
 import app.editors.manager.mvp.views.share.SettingsView;
 import app.editors.manager.ui.activities.main.MainActivity;
 import app.editors.manager.ui.activities.main.ShareActivity;
-import app.editors.manager.ui.adapters.ShareSettingsAdapter;
+import app.editors.manager.ui.adapters.share.ShareAdapter;
 import app.editors.manager.ui.fragments.base.BaseAppFragment;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import app.editors.manager.ui.views.popup.SharePopup;
@@ -53,13 +55,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import kotlin.Unit;
 import lib.toolkit.base.managers.utils.StringUtils;
-import lib.toolkit.base.ui.adapters.BaseAdapter;
 import moxy.presenter.InjectPresenter;
 
 
-public class SettingsFragment extends BaseAppFragment implements SettingsView, SwipeRefreshLayout.OnRefreshListener,
-        BaseAdapter.OnItemContextListener {
+public class SettingsFragment extends BaseAppFragment implements SettingsView, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = SettingsFragment.class.getSimpleName();
     public static final String TAG_ITEM = "TAG_ITEM";
@@ -112,7 +113,7 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
     private MenuItem mShareItem;
     private SharePopup mSharePopup;
     private ShareActivity mShareActivity;
-    private ShareSettingsAdapter mShareSettingsAdapter;
+    private ShareAdapter mShareSettingsAdapter;
     private PlaceholderViews mPlaceholderViews;
 
     public static SettingsFragment newInstance(@NonNull final Item item) {
@@ -239,21 +240,21 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
     }
 
     @Override
-    public void onGetShare(List<Entity> list, int accessCode) {
+    public void onGetShare(@NotNull List<? extends ViewType> list, int accessCode) {
         mSwipeRefresh.setRefreshing(false);
-        mShareSettingsAdapter.setItems(list);
+        mShareSettingsAdapter.setItems((List<ViewType>) list);
         setExternalViewState(accessCode, false);
     }
 
     @Override
-    public void onGetShareItem(Entity entity, int position, int accessCode) {
+    public void onGetShareItem(ViewType entity, int position, int accessCode) {
         mSwipeRefresh.setRefreshing(false);
         mShareSettingsAdapter.setItem(entity, position);
         setExternalViewState(accessCode, false);
     }
 
     @Override
-    public void onRemove(Share share, int sharePosition) {
+    public void onRemove(ShareUi share, int sharePosition) {
         mSwipeRefresh.setRefreshing(false);
         mShareSettingsAdapter.removeItem(share);
         if (mShareSettingsAdapter.getItemList().size() > 1
@@ -309,10 +310,9 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
         getSharedItems();
     }
 
-    @Override
     public void onItemContextClick(View view, int position) {
-        Share share = (Share) mShareSettingsAdapter.getItem(position);
-        if (share.getIsLocked()) {
+        ShareUi share = (ShareUi) mShareSettingsAdapter.getItem(position);
+        if (share.isLocked()) {
             return;
         }
         mSettingsPresenter.setShared(share, position);
@@ -324,7 +324,7 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
             if (getContext() != null && getActivity() != null) {
                 mSharePopup = new SharePopup(getContext(), R.layout.popup_share_menu);
                 mSharePopup.setContextListener(mListContextListener);
-                if (mSettingsPresenter.getItem() instanceof Folder) {
+                if (mSettingsPresenter.getItem() instanceof CloudFolder) {
                     mSharePopup.setIsFolder(true);
                 } else {
                     StringUtils.Extension extension = StringUtils.getExtension(StringUtils
@@ -361,8 +361,11 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
         mPlaceholderViews.setViewForHide(mRecyclerView);
         mSwipeRefresh.setOnRefreshListener(this);
         mSwipeRefresh.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.colorAccent));
-        mShareSettingsAdapter = new ShareSettingsAdapter();
-        mShareSettingsAdapter.setOnItemContextListener(this);
+        mShareSettingsAdapter = new ShareAdapter((view, integer) -> {
+            onItemContextClick(view, integer);
+            return Unit.INSTANCE;
+
+        });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mShareSettingsAdapter);
         ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
@@ -397,33 +400,33 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
         @StringRes int messageRes = R.string.share_access_denied;
         @DrawableRes int iconRes = R.drawable.ic_access_deny;
         switch (accessCode) {
-            case Api.ShareCode.NONE:
-            case Api.ShareCode.RESTRICT:
+            case ApiContract.ShareCode.NONE:
+            case ApiContract.ShareCode.RESTRICT:
                 iconRes = R.drawable.ic_access_deny;
                 messageRes = R.string.share_access_denied;
                 onButtonState(false);
                 break;
-            case Api.ShareCode.REVIEW:
+            case ApiContract.ShareCode.REVIEW:
                 iconRes = R.drawable.ic_access_review;
                 messageRes = R.string.share_access_success;
                 onButtonState(true);
                 break;
-            case Api.ShareCode.READ:
+            case ApiContract.ShareCode.READ:
                 iconRes = R.drawable.ic_access_read;
                 messageRes = R.string.share_access_success;
                 onButtonState(true);
                 break;
-            case Api.ShareCode.READ_WRITE:
+            case ApiContract.ShareCode.READ_WRITE:
                 iconRes = R.drawable.ic_access_full;
                 messageRes = R.string.share_access_success;
                 onButtonState(true);
                 break;
-            case Api.ShareCode.COMMENT:
+            case ApiContract.ShareCode.COMMENT:
                 iconRes = R.drawable.ic_access_comment;
                 messageRes = R.string.share_access_success;
                 onButtonState(true);
                 break;
-            case Api.ShareCode.FILL_FORMS:
+            case ApiContract.ShareCode.FILL_FORMS:
                 iconRes = R.drawable.ic_access_fill_form;
                 messageRes = R.string.share_access_success;
                 onButtonState(true);
@@ -470,7 +473,7 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
         mSharePopup = new SharePopup(requireContext(), R.layout.popup_share_menu);
         mSharePopup.setContextListener(mExternalContextListener);
         mSharePopup.setFullAccess(false);
-        if (mSettingsPresenter.getItem() instanceof Folder) {
+        if (mSettingsPresenter.getItem() instanceof CloudFolder) {
             mSharePopup.setIsFolder(true);
         } else {
             StringUtils.Extension extension = StringUtils.getExtension(StringUtils
@@ -491,25 +494,25 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
             sharePopup.hide();
             switch (v.getId()) {
                 case R.id.popup_share_access_full:
-                    mSettingsPresenter.setItemAccess(Api.ShareCode.READ_WRITE);
+                    mSettingsPresenter.setItemAccess(ApiContract.ShareCode.READ_WRITE);
                     break;
                 case R.id.popup_share_access_review:
-                    mSettingsPresenter.setItemAccess(Api.ShareCode.REVIEW);
+                    mSettingsPresenter.setItemAccess(ApiContract.ShareCode.REVIEW);
                     break;
                 case R.id.popup_share_access_read:
-                    mSettingsPresenter.setItemAccess(Api.ShareCode.READ);
+                    mSettingsPresenter.setItemAccess(ApiContract.ShareCode.READ);
                     break;
                 case R.id.popup_share_access_deny:
-                    mSettingsPresenter.setItemAccess(Api.ShareCode.RESTRICT);
+                    mSettingsPresenter.setItemAccess(ApiContract.ShareCode.RESTRICT);
                     break;
                 case R.id.popup_share_access_remove:
-                    mSettingsPresenter.setItemAccess(Api.ShareCode.NONE);
+                    mSettingsPresenter.setItemAccess(ApiContract.ShareCode.NONE);
                     break;
                 case R.id.popup_share_access_comment:
-                    mSettingsPresenter.setItemAccess(Api.ShareCode.COMMENT);
+                    mSettingsPresenter.setItemAccess(ApiContract.ShareCode.COMMENT);
                     break;
                 case R.id.popup_share_access_fill_forms:
-                    mSettingsPresenter.setItemAccess(Api.ShareCode.FILL_FORMS);
+                    mSettingsPresenter.setItemAccess(ApiContract.ShareCode.FILL_FORMS);
                     break;
             }
         }
@@ -522,22 +525,22 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
             sharePopup.hide();
             switch (v.getId()) {
                 case R.id.popup_share_access_full:
-                    mSettingsPresenter.getExternalLink(Api.ShareType.READ_WRITE);
+                    mSettingsPresenter.getExternalLink(ApiContract.ShareType.READ_WRITE);
                     break;
                 case R.id.popup_share_access_review:
-                    mSettingsPresenter.getExternalLink(Api.ShareType.REVIEW);
+                    mSettingsPresenter.getExternalLink(ApiContract.ShareType.REVIEW);
                     break;
                 case R.id.popup_share_access_read:
-                    mSettingsPresenter.getExternalLink(Api.ShareType.READ);
+                    mSettingsPresenter.getExternalLink(ApiContract.ShareType.READ);
                     break;
                 case R.id.popup_share_access_deny:
-                    mSettingsPresenter.getExternalLink(Api.ShareType.NONE);
+                    mSettingsPresenter.getExternalLink(ApiContract.ShareType.NONE);
                     break;
                 case R.id.popup_share_access_comment:
-                    mSettingsPresenter.getExternalLink(Api.ShareType.COMMENT);
+                    mSettingsPresenter.getExternalLink(ApiContract.ShareType.COMMENT);
                     break;
                 case R.id.popup_share_access_fill_forms:
-                    mSettingsPresenter.getExternalLink(Api.ShareType.FILL_FORMS);
+                    mSettingsPresenter.getExternalLink(ApiContract.ShareType.FILL_FORMS);
                     break;
             }
         }

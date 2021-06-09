@@ -19,6 +19,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
@@ -28,11 +29,14 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.holders.*
 import moxy.MvpAppCompatActivity
 import java.util.*
+import kotlin.collections.HashSet
 
 
 abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStackChangedListener {
 
     companion object {
+        protected val TAG: String = BaseActivity::class.java.simpleName
+
         const val REQUEST_ACTIVITY_ONBOARDING = 101
         const val REQUEST_ACTIVITY_ACCOUNTS = 102
         const val REQUEST_ACTIVITY_MEDIA = 103
@@ -84,14 +88,13 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     val isFragmentManagerEmpty: Boolean
         get() = supportFragmentManager.fragments.isEmpty()
 
-    protected val TAG = javaClass.simpleName
     protected var mOnDispatchTouchEvent: MutableMap<Int, OnDispatchTouchEvent>? = null
     protected var mToast: Toast? = null
     protected var mSnackBar: Snackbar? = null
     protected var mCommonDialog: CommonDialog? = null
     protected var mOnDialogClickListener: CommonDialog.OnClickListener? = OnCommonDialogClick()
 
-    protected var mOnFragmentDialogClickListener: CommonDialog.OnClickListener? = null
+    val dialogListeners: HashSet<CommonDialog.OnClickListener> = hashSetOf()
 
     interface OnBackPressFragment {
         fun onBackPressed(): Boolean
@@ -103,7 +106,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        init(savedInstanceState)
+        init()
     }
 
     override fun onDestroy() {
@@ -133,7 +136,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     * Check all child fragments
     * */
     protected fun isFragmentBackPress(): Boolean {
-        supportFragmentManager.fragments?.asReversed().forEach { parentFragment ->
+        supportFragmentManager.fragments.asReversed().forEach { parentFragment ->
             if (isFragmentBackPress(parentFragment)) {
                 return true
             }
@@ -143,21 +146,22 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     protected fun isFragmentBackPress(fragment: Fragment): Boolean {
-        fragment.childFragmentManager.fragments?.asReversed().forEach { childFragment ->
+        fragment.childFragmentManager.fragments.asReversed().forEach { childFragment ->
             if (isFragmentBackPress(childFragment)) {
                 return true
             }
         }
 
-        return fragment is OnBackPressFragment && fragment.onBackPressed() && fragment.userVisibleHint
+        return fragment is OnBackPressFragment && fragment.onBackPressed() &&
+                fragment.lifecycle.currentState == Lifecycle.State.RESUMED
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         onTouchAction(event)
 
         mOnDispatchTouchEvent?.let {
-            for ((key, value) in it) {
-                value?.dispatchTouchEvent(event)
+            for ((_, value) in it) {
+                value.dispatchTouchEvent(event)
             }
         }
 
@@ -188,7 +192,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         hideKeyboard(view)
     }
 
-    private fun init(savedInstanceState: Bundle?) {
+    private fun init() {
         initViews()
         setDialog()
     }
@@ -206,7 +210,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     fun removeOnDispatchTouchEvent(onDispatchTouchEvent: OnDispatchTouchEvent) {
-        if (!mOnDispatchTouchEvent.isNullOrEmpty()){
+        if (!mOnDispatchTouchEvent.isNullOrEmpty()) {
             mOnDispatchTouchEvent!!.remove(onDispatchTouchEvent.hashCode())
         }
     }
@@ -221,8 +225,12 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         mCommonDialog!!.setOnClickListener(mOnDialogClickListener!!)
     }
 
-    fun setDialogListener(onDialogClickListener: CommonDialog.OnClickListener?) {
-        mOnFragmentDialogClickListener = onDialogClickListener
+    fun addDialogListener(onDialogClickListener: CommonDialog.OnClickListener?) {
+        onDialogClickListener?.let { dialogListeners.add(it) }
+    }
+
+    fun removeDialogListener(onDialogClickListener: CommonDialog.OnClickListener?) {
+        onDialogClickListener?.let { dialogListeners.remove(it) }
     }
 
     fun hideDialog() {
@@ -234,16 +242,24 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
 
     open fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
         Log.d(TAG, "onAcceptClick() - $dialogs - value: $value - tag: $tag")
-        mOnFragmentDialogClickListener?.onAcceptClick(dialogs, value, tag)
+//        mOnFragmentDialogClickListener?.onAcceptClick(dialogs, value, tag)
+        dialogListeners.forEach {
+            it.onAcceptClick(dialogs, value, tag)
+        }
     }
 
     open fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
         Log.d(TAG, "onCancelClick() - $dialogs - tag: $tag")
-        mOnFragmentDialogClickListener?.onCancelClick(dialogs, tag)
+//        mOnFragmentDialogClickListener?.onCancelClick(dialogs, tag)
+        dialogListeners.forEach {
+            it.onCancelClick(dialogs, tag)
+        }
     }
 
     open fun onCloseCommonDialog() {
-        mOnFragmentDialogClickListener?.onCloseCommonDialog()
+        dialogListeners.forEach {
+            it.onCloseCommonDialog()
+        }
     }
 
     /*
@@ -256,12 +272,12 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     /*
     * Snackbar/Toast
     * */
-    protected fun showSnackBar(@StringRes resource: Int): Snackbar? {
+    protected fun showSnackBar(@StringRes resource: Int): Snackbar {
         return showSnackBar(resources.getString(resource))
     }
 
     @JvmOverloads
-    protected fun showSnackBar(string: String, button: String? = null, action: View.OnClickListener? = null): Snackbar? {
+    protected fun showSnackBar(string: String, button: String? = null, action: View.OnClickListener? = null): Snackbar {
         return UiUtils.getSnackBar(this).apply {
             setText(string)
             setAction(button, action)
@@ -286,13 +302,15 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     /*
     * Dialog builders
     * */
-    fun getEditDialog(title: String? = null,
-                      bottomTitle: String? = null,
-                      value: String? = null,
-                      editHint: String? = null,
-                      acceptTitle: String? = null,
-                      cancelTitle: String? = null,
-                      tag: String? = null): EditLineHolder.Builder? {
+    fun getEditDialog(
+        title: String? = null,
+        bottomTitle: String? = null,
+        value: String? = null,
+        editHint: String? = null,
+        acceptTitle: String? = null,
+        cancelTitle: String? = null,
+        tag: String? = null
+    ): EditLineHolder.Builder? {
         return mCommonDialog?.editLine()?.apply {
             setTopTitle(title)
             setBottomTitle(bottomTitle)
@@ -304,9 +322,11 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         }
     }
 
-    fun getWaitingDialog(topTitle: String? = null,
-                         cancelTitle: String? = null,
-                         tag: String? = null): WaitingHolder.Builder? {
+    fun getWaitingDialog(
+        topTitle: String? = null,
+        cancelTitle: String? = null,
+        tag: String? = null
+    ): WaitingHolder.Builder? {
         return mCommonDialog?.waiting()?.apply {
             setTopTitle(topTitle)
             setCancelTitle(cancelTitle)
@@ -314,11 +334,13 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         }
     }
 
-    fun getQuestionDialog(title: String? = null,
-                          acceptTitle: String? = null,
-                          cancelTitle: String? = null,
-                          question: String? = null,
-                          tag: String? = null): QuestionHolder.Builder? {
+    fun getQuestionDialog(
+        title: String? = null,
+        acceptTitle: String? = null,
+        cancelTitle: String? = null,
+        question: String? = null,
+        tag: String? = null
+    ): QuestionHolder.Builder? {
         return mCommonDialog?.question()?.apply {
             setTopTitle(title)
             setQuestion(question)
@@ -328,10 +350,12 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         }
     }
 
-    fun getInfoDialog(title: String? = null,
-                      info: String? = null,
-                      cancelTitle: String? = null,
-                      tag: String? = null): InfoHolder.Builder? {
+    fun getInfoDialog(
+        title: String? = null,
+        info: String? = null,
+        cancelTitle: String? = null,
+        tag: String? = null
+    ): InfoHolder.Builder? {
         return mCommonDialog?.info()?.apply {
             setTopTitle(title)
             setBottomTitle(info)
@@ -340,11 +364,13 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         }
     }
 
-    fun getEditMultilineDialog(title: String? = null,
-                               hint: String? = null,
-                               acceptTitle: String? = null,
-                               cancelTitle: String? = null,
-                               tag: String? = null): EditMultilineHolder.Builder? {
+    fun getEditMultilineDialog(
+        title: String? = null,
+        hint: String? = null,
+        acceptTitle: String? = null,
+        cancelTitle: String? = null,
+        tag: String? = null
+    ): EditMultilineHolder.Builder? {
         return mCommonDialog?.editMultiline()?.apply {
             setTopTitle(title)
             setEditHintValue(hint)
@@ -354,9 +380,11 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         }
     }
 
-    fun getProgressDialog(title: String? = null,
-                          cancelTitle: String? = null,
-                          tag: String? = null): ProgressHolder.Builder? {
+    fun getProgressDialog(
+        title: String? = null,
+        cancelTitle: String? = null,
+        tag: String? = null
+    ): ProgressHolder.Builder? {
         return mCommonDialog?.progress()?.apply {
             setTopTitle(title)
             setCancelTitle(cancelTitle)
@@ -371,13 +399,15 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     /*
     * Waiting
     * */
-    fun showWaitingDialog(topTitle: String?,
-                          cancelTitle: String?,
-                          type: WaitingHolder.ProgressType,
-                          tag: String? = null,
-                          progressColor: Int = R.color.colorPrimaryLight,
-                          textColor: Int = 0,
-                          textGravity: Int = 0) {
+    fun showWaitingDialog(
+        topTitle: String?,
+        cancelTitle: String?,
+        type: WaitingHolder.ProgressType,
+        tag: String? = null,
+        progressColor: Int = R.color.colorPrimaryLight,
+        textColor: Int = 0,
+        textGravity: Int = 0
+    ) {
         getWaitingDialog(topTitle, cancelTitle, tag)?.run {
             setProgressType(type)
             setTextColor(textColor)
@@ -387,30 +417,42 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         }
     }
 
-    fun showWaitingDialogCircle(topTitle: String,
-                                cancelTitle: String?,
-                                tag: String?,
-                                progressColor: Int = 0,
-                                textColor: Int = 0,
-                                textGravity: Int = Gravity.START) {
-        showWaitingDialog(topTitle, cancelTitle, WaitingHolder.ProgressType.CIRCLE, tag, progressColor, textColor, textGravity)
+    fun showWaitingDialogCircle(
+        topTitle: String,
+        cancelTitle: String?,
+        tag: String?,
+        progressColor: Int = 0,
+        textColor: Int = 0,
+        textGravity: Int = Gravity.START
+    ) {
+        showWaitingDialog(
+            topTitle,
+            cancelTitle,
+            WaitingHolder.ProgressType.CIRCLE,
+            tag,
+            progressColor,
+            textColor,
+            textGravity
+        )
     }
 
 
     /*
     * Edit line
     * */
-    fun showEditDialog(title: String,
-                       bottomTitle: String?,
-                       value: String?,
-                       editHint: String?,
-                       endHint: String?,
-                       acceptTitle: String?,
-                       cancelTitle: String?,
-                       isPassword: Boolean = false,
-                       error: String?,
-                       tag: String?,
-                       tintColor: Int = R.color.colorPrimaryLight) {
+    fun showEditDialog(
+        title: String,
+        bottomTitle: String?,
+        value: String?,
+        editHint: String?,
+        endHint: String?,
+        acceptTitle: String?,
+        cancelTitle: String?,
+        isPassword: Boolean = false,
+        error: String?,
+        tag: String?,
+        tintColor: Int = R.color.colorPrimaryLight
+    ) {
         getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)?.run {
             setHintValue(endHint)
             setIsPassword(isPassword)
@@ -437,7 +479,9 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
 
     fun showProgressDialog(title: String?, hideButton: Boolean, cancelTitle: String?, tag: String?) {
         getProgressDialog(title, cancelTitle, tag)?.run {
-            if (!hideButton) { setCancelTitle(cancelTitle) }
+            if (!hideButton) {
+                setCancelTitle(cancelTitle)
+            }
             setProgressColor(R.color.colorPrimaryLight)
             show()
         }
@@ -453,12 +497,14 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     * */
     protected fun setAppBarScroll(toolbar: Toolbar) {
         val params = toolbar.layoutParams as AppBarLayout.LayoutParams
-        params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+        params.scrollFlags =
+            AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
     }
 
     protected fun setAppBarFix(toolbar: Toolbar) {
         val params = toolbar.layoutParams as AppBarLayout.LayoutParams
-        params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+        params.scrollFlags =
+            AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
     }
 
     protected fun setAppBarLayoutElevation(appBarLayout: AppBarLayout) {
@@ -495,7 +541,8 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
 
     private fun setCollapsingToolbarScroll(collapsingToolbar: CollapsingToolbarLayout) {
         val params = collapsingToolbar.layoutParams as AppBarLayout.LayoutParams
-        params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+        params.scrollFlags =
+            AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
         collapsingToolbar.layoutParams = params
     }
 

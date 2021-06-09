@@ -118,6 +118,15 @@ public abstract class BaseListAdapter<D> extends BaseAdapter {
         }
     }
 
+    public void updateItem(D item, int position) {
+        if (mList != null && !mList.isEmpty()) {
+            if (position != -1) {
+                mList.set(position, item);
+                notifyItemChanged(position, item);
+            }
+        }
+    }
+
     public void set(List<D> list, DiffUtil.DiffResult result) {
         if (list != null) {
             mList.clear();

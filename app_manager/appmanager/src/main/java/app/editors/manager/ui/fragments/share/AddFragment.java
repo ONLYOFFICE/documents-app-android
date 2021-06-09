@@ -9,15 +9,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import moxy.presenter.InjectPresenter;
-
 import java.util.List;
 
 import app.editors.manager.R;
-import app.editors.manager.mvp.models.base.Entity;
-import app.editors.manager.mvp.models.base.ItemProperties;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.models.ModelShareStack;
+import app.editors.manager.mvp.models.ui.GroupUi;
+import app.editors.manager.mvp.models.ui.UserUi;
+import app.editors.manager.mvp.models.ui.ViewType;
 import app.editors.manager.mvp.presenters.share.AddPresenter;
 import app.editors.manager.mvp.views.share.AddView;
 import app.editors.manager.ui.activities.main.MainActivity;
@@ -25,6 +24,7 @@ import app.editors.manager.ui.adapters.ShareAddAdapter;
 import app.editors.manager.ui.fragments.base.ListFragment;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import butterknife.ButterKnife;
+import moxy.presenter.InjectPresenter;
 
 public class AddFragment extends ListFragment implements AddView, ShareAddAdapter.OnItemClickListener {
 
@@ -74,8 +74,13 @@ public class AddFragment extends ListFragment implements AddView, ShareAddAdapte
 
     @Override
     public void onItemClick(View view, int position) {
-        final ItemProperties itemProperties = (ItemProperties) mShareAddAdapter.getItem(position);
-        itemProperties.setSelected(!itemProperties.isSelected());
+        final ViewType item = mShareAddAdapter.getItem(position);
+        if (item instanceof UserUi) {
+            ((UserUi) item).setSelected(!((UserUi) item).isSelected());
+        }
+        if (item instanceof GroupUi) {
+            ((GroupUi) item).setSelected(!((GroupUi) item).isSelected());
+        }
         mShareAddAdapter.notifyItemChanged(position);
         setCountChecked();
     }
@@ -100,7 +105,7 @@ public class AddFragment extends ListFragment implements AddView, ShareAddAdapte
     }
 
     @Override
-    public void onGetUsers(List<Entity> list) {
+    public void onGetUsers(List<ViewType> list) {
         setPlaceholder(true, list != null && !list.isEmpty());
         mSwipeRefresh.setRefreshing(false);
         mShareAddAdapter.setMode(ShareAddAdapter.Mode.USERS);
@@ -108,7 +113,7 @@ public class AddFragment extends ListFragment implements AddView, ShareAddAdapte
     }
 
     @Override
-    public void onGetGroups(List<Entity> list) {
+    public void onGetGroups(List<ViewType> list) {
         setPlaceholder(false, list != null && !list.isEmpty());
         mSwipeRefresh.setRefreshing(false);
         mShareAddAdapter.setMode(ShareAddAdapter.Mode.GROUPS);
@@ -116,7 +121,7 @@ public class AddFragment extends ListFragment implements AddView, ShareAddAdapte
     }
 
     @Override
-    public void onGetCommon(List<Entity> list) {
+    public void onGetCommon(List<ViewType> list) {
         // Stub
     }
 

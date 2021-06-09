@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_one_line_height"
@@ -8,7 +9,7 @@
     android:clickable="true"
     android:focusable="true">
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <ImageView
         android:id="@+id/itemImage"
         android:layout_width="@dimen/image_default_size"
         android:layout_height="@dimen/image_default_size"
@@ -16,9 +17,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/colorGrey" />
+        app:tint="@color/colorGrey"
+        tools:ignore="ContentDescription" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/itemText"
         style="@style/ItemMediumBlackText"
         android:layout_width="0dp"

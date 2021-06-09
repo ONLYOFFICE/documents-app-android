@@ -9,14 +9,14 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import app.editors.manager.R;
-import app.editors.manager.mvp.models.explorer.File;
+import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.ui.adapters.ExplorerAdapter;
 import butterknife.BindView;
 import butterknife.OnClick;
 import lib.toolkit.base.managers.utils.StringUtils;
 import lib.toolkit.base.managers.utils.TimeUtils;
 
-public class FileViewHolder extends BaseViewHolderExplorer<File> {
+public class FileViewHolder extends BaseViewHolderExplorer<CloudFile> {
 
     public static final int LAYOUT = R.layout.list_explorer_files;
 
@@ -60,7 +60,7 @@ public class FileViewHolder extends BaseViewHolderExplorer<File> {
         }
     }
 
-    public void bind(File file) {
+    public void bind(CloudFile file) {
         // Get file info
         final StringBuilder filesInfo = new StringBuilder(TimeUtils.getWeekDate(file.getUpdated()));
         filesInfo.append(PLACEHOLDER_POINT).append(StringUtils.getFormattedSize(mAdapter.mContext, file.getPureContentLength()));

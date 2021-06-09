@@ -49,7 +49,7 @@ public class SharePopup extends BasePopup {
     }
 
     public boolean isShowing() {
-        return mPopupWindow.isShowing();
+        return popupWindow.isShowing();
     }
 
     public void setFullAccess(boolean mIsFullAccess) {

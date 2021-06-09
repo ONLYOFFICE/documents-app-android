@@ -10,7 +10,7 @@ import android.util.Log;
 import androidx.fragment.app.Fragment;
 
 import app.editors.manager.R;
-import app.editors.manager.mvp.models.explorer.File;
+import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
 import app.editors.manager.ui.fragments.main.WebViewerFragment;
 
@@ -44,7 +44,7 @@ public class WebViewerActivity extends BaseAppActivity {
     private void init(final Bundle savedInstanceState) {
         initException();
         if (savedInstanceState == null) {
-            final File file = (File) getIntent().getSerializableExtra(TAG_FILE);
+            final CloudFile file = (CloudFile) getIntent().getSerializableExtra(TAG_FILE);
             showFragment(WebViewerFragment.newInstance(file), null);
         }
     }
@@ -66,13 +66,13 @@ public class WebViewerActivity extends BaseAppActivity {
         return intent;
     }
 
-    public static void show(final Fragment fragment, final File file) {
+    public static void show(final Fragment fragment, final CloudFile file) {
         final Intent intent = getActivityIntent(fragment.getContext());
         intent.putExtra(WebViewerActivity.TAG_FILE, file);
         fragment.startActivityForResult(intent, REQUEST_ACTIVITY_WEB_VIEWER);
     }
 
-    public static void show(final Activity activity, final File file) {
+    public static void show(final Activity activity, final CloudFile file) {
         final Intent intent = getActivityIntent(activity);
         intent.putExtra(WebViewerActivity.TAG_FILE, file);
         activity.startActivityForResult(intent, REQUEST_ACTIVITY_WEB_VIEWER);

@@ -13,16 +13,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import app.editors.manager.R;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.receivers.UploadReceiver;
 import app.editors.manager.managers.retrofit.ProgressRequestBody;
-import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.managers.tools.RetrofitTool;
 import app.editors.manager.managers.utils.NotificationUtils;
-import app.editors.manager.mvp.models.explorer.File;
+import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.UploadFile;
 import app.editors.manager.mvp.models.response.ResponseFile;
 import io.reactivex.BackpressureStrategy;
@@ -37,6 +33,7 @@ import okhttp3.Headers;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
+@Deprecated
 public class UploadService extends Service {
 
     public static final String TAG = UploadService.class.getSimpleName();
@@ -61,10 +58,6 @@ public class UploadService extends Service {
 
     private long mTimeMark;
 
-    @Inject
-    public RetrofitTool mRetrofitTool;
-    @Inject
-    public PreferenceTool mPreferenceTool;
 
     private NotificationUtils mNotificationUtils;
 
@@ -100,7 +93,6 @@ public class UploadService extends Service {
 
     @Override
     public void onCreate() {
-        App.getApp().getAppComponent().inject(this);
         mNotificationUtils = new NotificationUtils(App.getApp(), TAG);
         super.onCreate();
     }
@@ -348,7 +340,7 @@ public class UploadService extends Service {
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent);
     }
 
-    private void sendBroadcastUploadComplete(final String path, final String title, final File file, final String id) {
+    private void sendBroadcastUploadComplete(final String path, final String title, final CloudFile file, final String id) {
         Intent intent = new Intent(UploadReceiver.UPLOAD_ACTION_COMPLETE);
         intent.putExtra(UploadReceiver.EXTRAS_KEY_PATH, path);
         intent.putExtra(UploadReceiver.EXTRAS_KEY_ID, id);
@@ -357,7 +349,7 @@ public class UploadService extends Service {
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent);
     }
 
-    private void sendBroadcastUploadMyComplete(final String path, final String title, final File file, final String id) {
+    private void sendBroadcastUploadMyComplete(final String path, final String title, final CloudFile file, final String id) {
         Intent intent = new Intent(UploadReceiver.UPLOAD_ACTION_COMPLETE);
         intent.putExtra(UploadReceiver.EXTRAS_KEY_PATH, path);
         intent.putExtra(UploadReceiver.EXTRAS_KEY_ID, id);

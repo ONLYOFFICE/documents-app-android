@@ -16,7 +16,7 @@ import lib.toolkit.base.managers.utils.UiUtils
 abstract class BasePopup(protected val context: Context, @LayoutRes protected var layoutId: Int) {
 
     companion object {
-        val TAG = BasePopup::class.java.simpleName
+        val TAG: String = BasePopup::class.java.simpleName
     }
 
     var margin: Int = context.resources.getDimensionPixelSize(R.dimen.elevation_height_micro)
@@ -26,31 +26,31 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
     var isDropDown: Boolean = true
     var isDropCentered: Boolean = false
 
-    protected lateinit var mPopupView: View
-    protected lateinit var mPopupWindow: PopupWindow
+    protected lateinit var popupView: View
+    protected lateinit var popupWindow: PopupWindow
 
     init {
         setPopup(context, layoutId)
-        bind(mPopupView)
+        bind(popupView)
     }
 
     protected fun setPopup(context: Context, @LayoutRes resId: Int) {
         val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        mPopupView = layoutInflater.inflate(resId, null)
-        mPopupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        popupView = layoutInflater.inflate(resId, null)
+        popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
-        mPopupWindow = PopupWindow(mPopupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        mPopupWindow.isOutsideTouchable = true
-        mPopupWindow.isClippingEnabled = true
-        mPopupWindow.elevation = elevation
+        popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        popupWindow.isOutsideTouchable = true
+        popupWindow.isClippingEnabled = true
+        popupWindow.elevation = elevation
     }
 
     protected fun getPopupDefaultRect(): Rect {
         return Rect().apply {
             left = 0
             top = 0
-            right = mPopupView.measuredWidth
-            bottom = mPopupView.measuredHeight
+            right = popupView.measuredWidth
+            bottom = popupView.measuredHeight
         }
     }
 
@@ -81,9 +81,8 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
     protected fun getPopupPosition(restrictRect: Rect, anchorRect: Rect, isOverlap: Boolean = true): Point {
         val offset = Point(margin, margin + bottomMargin)
         val popupRect = getPopupDefaultRect()
-        var position: Rect
 
-        position = if (isOverlap) {
+        val position: Rect = if (isOverlap) {
             UiUtils.getOverlapViewRect(anchorRect, popupRect, restrictRect, offset)
         } else {
             UiUtils.getDropViewRect(anchorRect, popupRect, restrictRect, offset, isDropDown, isDropCentered)
@@ -94,8 +93,8 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
 
     @JvmOverloads
     open fun hide() {
-        if (mPopupWindow.isShowing) {
-            mPopupWindow.dismiss()
+        if (popupWindow.isShowing) {
+            popupWindow.dismiss()
         }
     }
 
@@ -105,7 +104,7 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
         val viewRect = UiUtils.getViewRectOnScreen(view)
         positionRect.offset(viewRect.left, viewRect.top)
         val offset = getPopupPosition(viewRect, positionRect, false)
-        mPopupWindow.showAtLocation(view, Gravity.START or Gravity.TOP, offset.x, offset.y)
+        popupWindow.showAtLocation(view, Gravity.START or Gravity.TOP, offset.x, offset.y)
     }
 
     @JvmOverloads
@@ -116,7 +115,7 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
             offset(-restrict.left, -restrict.top)
         }
 
-        mPopupWindow.showAtLocation(view, Gravity.START or Gravity.TOP, offset.x, offset.y)
+        popupWindow.showAtLocation(view, Gravity.START or Gravity.TOP, offset.x, offset.y)
     }
 
     @JvmOverloads
@@ -133,7 +132,7 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
             offset(-restrict.left, -restrict.top)
         }
 
-        mPopupWindow.showAtLocation(view, Gravity.START or Gravity.TOP, offset.x, offset.y)
+        popupWindow.showAtLocation(view, Gravity.START or Gravity.TOP, offset.x, offset.y)
     }
 
     @JvmOverloads

@@ -91,7 +91,7 @@
     <string name="login_enterprise_edit_hint">Portal address</string>
     <string name="login_enterprise_button_next">NEXT</string>
     <string name="login_enterprise_edit_error_hint">Enter valid address</string>
-    <string name="login_enterprise_forgot_password">Forgot password or email?</string>
+    <string name="login_enterprise_forgot_password">Forgot password?</string>
     <string name="login_enterprise_button_create">CREATE PORTAL</string>
     <string name="login_enterprise_button_select">ACCOUNTS</string>
     <string name="login_enterprise_email_hint">Email</string>
@@ -104,10 +104,14 @@
         ONLYOFFICE portal allows to save files in the cloud, share it with co-workers and co-edit in real time.
     </string>
     <string name="login_not_authorization_info">Could not sign in to %1$s at %2$s</string>
+    <string name="login_not_authorization_info_token">Session time is over</string>
     <string name="login_not_authorization_button">TRY AGAIN</string>
     <string name="errors_first_name">First name is not valid. It must not contain digits.</string>
     <string name="errors_last_name">Last name is not valid. It must not contain digits.</string>
-
+    <string name="login_password_recovery_hint">Enter email which you use for registration on portal. Instructions to password`s recovery will be sent on that email.</string>
+    <string name="login_password_recovery_button_text">RETURN TO ENTER SCREEN</string>
+    <string name="login_password_recovery_success_hint">If user with email %1$s is exist instruction of change password was sent on that email.</string>
+    <string name="login_password_recovery_toolbar_title">Password recovery</string>
     <!-- Portal personal -->
     <string name="login_personal_edit_email_hint">Email</string>
     <string name="login_personal_edit_password_hint">Password</string>
@@ -219,6 +223,7 @@
     <string name="dialogs_edit_feedback_rate_title">Would you mind sending us feedback?</string>
     <string name="dialogs_edit_feedback_rate_hint">Tell us what to improve</string>
     <string name="dialogs_edit_feedback_rate_accept">SEND</string>
+    <string name="dialog_send_password_reminder">SEND</string>
 
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->

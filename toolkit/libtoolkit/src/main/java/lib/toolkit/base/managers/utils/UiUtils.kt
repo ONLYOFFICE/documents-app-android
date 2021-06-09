@@ -49,8 +49,8 @@ object UiUtils {
         val deviceInfo = TreeMap<String, String>()
         deviceInfo["OS version"] = System.getProperty("os.version")!!
         deviceInfo["Api level"] = Build.VERSION.SDK_INT.toString()
-        deviceInfo["App code"] = BuildConfig.VERSION_CODE.toString()
-        deviceInfo["App name"] = BuildConfig.VERSION_NAME
+        deviceInfo["App code"] = ""
+        deviceInfo["App name"] = ""
         deviceInfo["Device"] = Build.DEVICE
         deviceInfo["Model"] = Build.MODEL
         deviceInfo["Brand"] = Build.BRAND
@@ -612,6 +612,14 @@ object UiUtils {
             else -> delta
         }
 
+    }
+
+    fun setColorFilter(context: Context, drawable: Drawable?, color: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            drawable?.colorFilter = BlendModeColorFilter(color, BlendMode.SRC_ATOP)
+        } else {
+            drawable?.setColorFilter(ContextCompat.getColor(context, color), PorterDuff.Mode.SRC_ATOP)
+        }
     }
 
     fun showEditDialog(

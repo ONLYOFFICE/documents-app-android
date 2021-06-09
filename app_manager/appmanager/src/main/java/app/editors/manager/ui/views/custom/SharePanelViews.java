@@ -15,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
 import app.editors.manager.app.Api;
 import app.editors.manager.managers.exceptions.ButterknifeInitException;
@@ -192,22 +193,22 @@ public class SharePanelViews implements HeightValueAnimator.OnAnimationListener 
 
     public void setAccessIcon(final int accessCode) {
         switch (accessCode) {
-            case Api.ShareCode.NONE:
+            case ApiContract.ShareCode.NONE:
                 mShareAccessButtonView.setImageResource(R.drawable.ic_access_deny);
                 break;
-            case Api.ShareCode.READ:
+            case ApiContract.ShareCode.READ:
                 mShareAccessButtonView.setImageResource(R.drawable.ic_access_read);
                 break;
-            case Api.ShareCode.READ_WRITE:
+            case ApiContract.ShareCode.READ_WRITE:
                 mShareAccessButtonView.setImageResource(R.drawable.ic_access_full);
                 break;
-            case Api.ShareCode.REVIEW:
+            case ApiContract.ShareCode.REVIEW:
                 mShareAccessButtonView.setImageResource(R.drawable.ic_access_review);
                 break;
-            case Api.ShareCode.COMMENT:
+            case ApiContract.ShareCode.COMMENT:
                 mShareAccessButtonView.setImageResource(R.drawable.ic_access_comment);
                 break;
-            case Api.ShareCode.FILL_FORMS:
+            case ApiContract.ShareCode.FILL_FORMS:
                 mShareAccessButtonView.setImageResource(R.drawable.ic_access_fill_form);
                 break;
         }
@@ -237,22 +238,22 @@ public class SharePanelViews implements HeightValueAnimator.OnAnimationListener 
             sharePopup.hide();
             switch (v.getId()) {
                 case R.id.popup_share_access_full:
-                    onPopupAccess(Api.ShareCode.READ_WRITE);
+                    onPopupAccess(ApiContract.ShareCode.READ_WRITE);
                     break;
                 case R.id.popup_share_access_review:
-                    onPopupAccess(Api.ShareCode.REVIEW);
+                    onPopupAccess(ApiContract.ShareCode.REVIEW);
                     break;
                 case R.id.popup_share_access_read:
-                    onPopupAccess(Api.ShareCode.READ);
+                    onPopupAccess(ApiContract.ShareCode.READ);
                     break;
                 case R.id.popup_share_access_deny:
-                    onPopupAccess(Api.ShareCode.NONE);
+                    onPopupAccess(ApiContract.ShareCode.NONE);
                     break;
                 case R.id.popup_share_access_comment:
-                    onPopupAccess(Api.ShareCode.COMMENT);
+                    onPopupAccess(ApiContract.ShareCode.COMMENT);
                     break;
                 case R.id.popup_share_access_fill_forms:
-                    onPopupAccess(Api.ShareCode.FILL_FORMS);
+                    onPopupAccess(ApiContract.ShareCode.FILL_FORMS);
                     break;
             }
         }
