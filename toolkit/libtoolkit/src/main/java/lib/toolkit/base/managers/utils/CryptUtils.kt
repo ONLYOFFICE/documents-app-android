@@ -12,10 +12,10 @@ import javax.crypto.spec.SecretKeySpec
 object CryptUtils {
 
     @JvmField
-    val TAG = CryptUtils::class.java!!.simpleName
+    val TAG: String = CryptUtils::class.java.simpleName
 
-    private val ALGORITHM_AES = "AES"
-    private val KEY_LENGTH = 16
+    private const val ALGORITHM_AES = "AES"
+    private const val KEY_LENGTH = 16
 
 
     @JvmStatic
@@ -84,6 +84,20 @@ object CryptUtils {
         return SecretKeySpec(key.toByteArray(),
             ALGORITHM_AES
         )
+    }
+
+    fun decodeUri(uri: String?): String {
+        uri?.let { string ->
+            return if (string.contains("data=")) {
+                val buffer = Base64.decode(string.replace("data=", ""), Base64.DEFAULT)
+                String(buffer, charset("utf-8"))
+            } else {
+                val buffer = Base64.decode(string, Base64.DEFAULT)
+                String(buffer, charset("utf-8"))
+            }
+        } ?: run {
+            return ""
+        }
     }
 
 }
