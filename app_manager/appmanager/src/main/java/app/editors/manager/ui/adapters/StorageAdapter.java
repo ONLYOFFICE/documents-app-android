@@ -46,12 +46,6 @@ public class StorageAdapter extends BaseAdapter<String> {
         mViewHolder.mStorageImage.setAlpha(1.0f);
         mViewHolder.mStorageImage.setPadding(0, 0, 0, 0);
 
-        if (!UiUtils.isTablet(mContext)) {
-            final ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) mViewHolder.mGuideline.getLayoutParams();
-            params.guidePercent= 0.0f;
-            mViewHolder.mGuideline.setLayoutParams(params);
-        }
-
         final int padding = (int) mContext.getResources().getDimension(R.dimen.image_padding_icon);
 
         switch (id) {
@@ -104,8 +98,6 @@ public class StorageAdapter extends BaseAdapter<String> {
 
     protected class ViewHolderItem extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.guideline)
-        Guideline mGuideline;
         @BindView(R.id.storage_item_layout)
         ConstraintLayout mStorageLayout;
         @BindView(R.id.storage_item_image)
