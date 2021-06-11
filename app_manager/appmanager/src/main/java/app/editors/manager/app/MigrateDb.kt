@@ -66,7 +66,7 @@ class MigrateDb{
                         isSslState = it.isSslState,
                         isSslCiphers = it.isSslCiphers,
                         avatarUrl = it.avatarUrl,
-                        isOnline = it.isOnline,
+                        isOnline = false,
                         provider = it.provider,
                         name = it.name
                     )

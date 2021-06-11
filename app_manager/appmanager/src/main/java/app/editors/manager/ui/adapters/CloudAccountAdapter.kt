@@ -45,14 +45,22 @@ class CloudAccountAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             1 -> CloudAccountViewHolder(parent.inflate(R.layout.account_list_item_layout))
-            else -> AddViewHolder(addClickListener, parent.inflate(R.layout.add_account_item_layout))
+            else -> AddViewHolder(
+                addClickListener,
+                parent.inflate(R.layout.add_account_item_layout)
+            )
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is CloudAccountViewHolder) {
             selectedTracker?.let { tracker ->
-                holder.bind(mList[position], tracker.hasSelection(), accountClickListener, accountContextClickListener)
+                holder.bind(
+                    mList[position],
+                    tracker.hasSelection(),
+                    accountClickListener,
+                    accountContextClickListener
+                )
                 holder.setSelection(tracker.isSelected(mList[position].id))
                 holder.setMode(tracker.hasSelection())
             }
@@ -83,7 +91,8 @@ class CloudAccountAdapter(
 class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     private val accountLayout: ConstraintLayout = view.findViewById(R.id.accountItemLayout)
-    private val iconSelectableImage: AppCompatImageView = view.findViewById(R.id.view_icon_selectable_image)
+    private val iconSelectableImage: AppCompatImageView =
+        view.findViewById(R.id.view_icon_selectable_image)
     private val checkImage: AppCompatImageView = view.findViewById(R.id.imageCheck)
     private val iconSelectableMask: FrameLayout = view.findViewById(R.id.view_icon_selectable_mask)
     private val iconSelectableLayout: FrameLayout = view.findViewById(R.id.selectableLayout)
@@ -120,17 +129,15 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             UiUtils.setWebDavImage(account.webDavProvider, iconSelectableImage)
         } else {
             accountName.visibility = View.VISIBLE
-            account.token?.let { token ->
-                val url: String = if (account.avatarUrl?.contains("static") == true) {
-                    account.avatarUrl ?: ""
-                } else {
-                    account.scheme + account.portal + account.avatarUrl
-                }
-                Glide.with(iconSelectableImage)
-                    .load(GlideUtils.getCorrectLoad(url, token))
-                    .apply(GlideUtils.getAvatarOptions())
-                    .into(iconSelectableImage)
+            val url: String = if (account.avatarUrl?.contains("static") == true) {
+                account.avatarUrl ?: ""
+            } else {
+                account.scheme + account.portal + account.avatarUrl
             }
+            Glide.with(iconSelectableImage)
+                .load(GlideUtils.getCorrectLoad(url, account.token ?: ""))
+                .apply(GlideUtils.getAvatarOptions())
+                .into(iconSelectableImage)
 
         }
         iconSelectableLayout.background = null
@@ -170,7 +177,8 @@ internal class AddViewHolder(
     view: View
 ) : RecyclerView.ViewHolder(view) {
 
-    private val addLayout: LinearLayoutCompat = view.findViewById(R.id.fragment_accounts_add_account)
+    private val addLayout: LinearLayoutCompat =
+        view.findViewById(R.id.fragment_accounts_add_account)
 
     fun bind(isSelection: Boolean?) {
         if (isSelection == true) {
@@ -184,7 +192,8 @@ internal class AddViewHolder(
     }
 }
 
-internal class AccountKeyProvider(private val recycler: RecyclerView?) : ItemKeyProvider<String>(SCOPE_CACHED) {
+internal class AccountKeyProvider(private val recycler: RecyclerView?) :
+    ItemKeyProvider<String>(SCOPE_CACHED) {
 
     override fun getKey(position: Int): String? {
         return if (recycler?.adapter is CloudAccountAdapter) {
@@ -204,7 +213,8 @@ internal class AccountKeyProvider(private val recycler: RecyclerView?) : ItemKey
 
 }
 
-internal class AccountDetailsLookup(private val recyclerView: RecyclerView?) : ItemDetailsLookup<String>() {
+internal class AccountDetailsLookup(private val recyclerView: RecyclerView?) :
+    ItemDetailsLookup<String>() {
     override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
         recyclerView?.findChildViewUnder(e.x, e.y)?.let {
             val holder = recyclerView.getChildViewHolder(it)
