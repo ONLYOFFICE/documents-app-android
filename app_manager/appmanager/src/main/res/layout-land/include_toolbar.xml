@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_margin_medium"
-            android:layout_marginEnd="@dimen/fonts_size_medium"
+            android:layout_marginEnd="@dimen/default_margin_medium"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/toolbarIcon"

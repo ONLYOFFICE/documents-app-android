@@ -62,10 +62,10 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
 
     protected val screenSize: Size
         get() {
-            return if (activity != null){
+            return if (activity != null) {
                 Size(resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
-            } else{
-                Size(0,0)
+            } else {
+                Size(0, 0)
             }
         }
 
@@ -156,22 +156,25 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
 
     override fun show(manager: FragmentManager, tag: String?) {
         mCloseHandler.removeCallbacksAndMessages(null)
-        val fragment = manager.findFragmentByTag(tag)
-        if (fragment == null && !isStateSaved) {
+        manager.findFragmentByTag(tag)?.let { dialog ->
             try {
-                super.show(manager, tag)
+                if (dialog.isAdded) {
+                    onDialogAdded()
+                } else {
+                    super.show(manager, tag)
+                }
             } catch (e: IllegalStateException) {
                 e.printStackTrace()
                 //TODO already added?? Возможно интсанс фрагмента остаётся в стеке.
             }
-        } else {
-            onDialogAdded()
+        } ?: run {
+            super.show(manager, tag)
         }
     }
 
     protected fun setDialogAnchorPosition() {
         if (mAnchorView != null && dialog != null) {
-            val offset = Point(mMarginOffset,  mMarginOffset)
+            val offset = Point(mMarginOffset, mMarginOffset)
             val restrict = UiUtils.getWindowVisibleRect(activity!!.window.decorView)
             val position = UiUtils.getOverlapViewRect(anchorSize!!, dialogSize!!, restrict, offset)
 

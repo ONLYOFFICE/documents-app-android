@@ -226,9 +226,10 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     fun hideDialog() {
-        supportFragmentManager.executePendingTransactions()
-        if (mCommonDialog?.isAdded == true) {
-            mCommonDialog?.dismiss()
+        mCommonDialog?.view?.post {
+            if (mCommonDialog?.isAdded == true) {
+                mCommonDialog?.dismiss()
+            }
         }
     }
 
@@ -575,8 +576,8 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         KeyboardUtils.hideKeyboard(view)
     }
 
-    protected open fun hideKeyboard(token: IBinder?) {
-        KeyboardUtils.hideKeyboard(this, token)
+    protected open fun hideKeyboard(token: IBinder? = null) {
+        KeyboardUtils.hideKeyboard(this, token ?: window.decorView.windowToken)
     }
 
 }

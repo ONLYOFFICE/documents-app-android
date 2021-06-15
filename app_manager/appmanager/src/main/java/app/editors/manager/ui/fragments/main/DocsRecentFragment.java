@@ -90,6 +90,14 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
     }
 
     @Override
+    public boolean onBackPressed() {
+        if(!mSearchView.isIconified()) {
+            getActivity().invalidateOptionsMenu();
+        }
+        return super.onBackPressed();
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         init();
@@ -327,6 +335,7 @@ public class DocsRecentFragment extends DocsBaseFragment implements DocsRecentVi
     @Override
     public boolean onQueryTextChange(String newText) {
         mSearchCloseButton.setVisibility(newText.isEmpty() ? View.INVISIBLE : View.VISIBLE);
+        mSearchCloseButton.setEnabled(!newText.isEmpty());
         if (!newText.equals("")) {
             mDocsRecentPresenter.searchRecent(newText.toLowerCase());
         } else {
