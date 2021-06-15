@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
-import android.util.Base64
 import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
@@ -27,6 +26,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.CryptUtils
 import moxy.InjectViewState
 import java.util.concurrent.TimeUnit
 
@@ -54,13 +54,13 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         App.getApp().appComponent.inject(this)
     }
 
-    private val mDisposable = CompositeDisposable()
+    private val disposable = CompositeDisposable()
 
     private var cloudAccount: CloudAccount? = null
     private var reviewInfo: ReviewInfo? = null
     private var isAppColdStart = true
 
-//    var isDialogOpen: Boolean = false
+    var isDialogOpen: Boolean = false
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -72,7 +72,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
 
     override fun onDestroy() {
         super.onDestroy()
-        mDisposable.dispose()
+        disposable.dispose()
     }
 
     fun init() {
@@ -124,7 +124,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
 
     fun getRemoteConfigRate() {
         if (!BuildConfig.DEBUG) {
-            mDisposable.add(
+            disposable.add(
                 Observable.just(1)
                     .delay(500, TimeUnit.MILLISECONDS)
                     .subscribeOn(Schedulers.io())
@@ -270,9 +270,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
     fun checkFileData(fileData: Uri) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let { account ->
-                Json.decodeFromString<OpenDataModel>(decodeUri(fileData.query)).let { data ->
+                Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query)).let { data ->
                     withContext(Dispatchers.Main) {
-                        viewState.openFile(Json.encodeToString(data))
+                        viewState.openFile(account, Json.encodeToString(data))
                     }
 //                    if (data.portal?.equals(account.portal) == true && data.email?.equals(account.login) == true) {
 //                        withContext(Dispatchers.Main) {
@@ -289,20 +289,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
                     viewState.onError(context.getString(R.string.error_recent_enter_account))
                 }
             }
-        }
-    }
-
-    private fun decodeUri(path: String?): String {
-        path?.let { string ->
-            return if (string.contains("data=")) {
-                val buffer = Base64.decode(string.replace("data=", ""), Base64.DEFAULT)
-                String(buffer, charset("utf-8"))
-            } else {
-                val buffer = Base64.decode(string, Base64.DEFAULT)
-                String(buffer, charset("utf-8"))
-            }
-        }?: run {
-            return ""
         }
     }
 

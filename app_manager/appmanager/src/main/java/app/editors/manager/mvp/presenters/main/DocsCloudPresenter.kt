@@ -15,7 +15,10 @@ import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.base.Base
-import app.editors.manager.mvp.models.explorer.*
+import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.request.RequestCreate
@@ -34,7 +37,6 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FileUtils
@@ -45,7 +47,8 @@ import moxy.InjectViewState
 import java.util.*
 
 @InjectViewState
-class DocsCloudPresenter : DocsBasePresenter<DocsCloudView>(), OnDownloadListener, OnUploadListener {
+class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudView>(), OnDownloadListener,
+    OnUploadListener {
 
     private val mGetDisposable = HashMap<String, Disposable>()
     private var mExternalAccessType: String? = null
@@ -53,6 +56,8 @@ class DocsCloudPresenter : DocsBasePresenter<DocsCloudView>(), OnDownloadListene
 
     private val downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver
+
+    private val account = Json.decodeFromString<CloudAccount>(stringAccount)
 
     init {
         App.getApp().appComponent.inject(this)
@@ -69,15 +74,6 @@ class DocsCloudPresenter : DocsBasePresenter<DocsCloudView>(), OnDownloadListene
         mFileProvider = CloudFileProvider()
     }
 
-    private val account: CloudAccount = getAccount()
-
-    private fun getAccount(): CloudAccount = runBlocking(Dispatchers.Default) {
-        accountDao.getAccountOnline()?.let {
-            return@runBlocking it
-        } ?: run {
-            throw Error("No account")
-        }
-    }
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -492,7 +488,7 @@ class DocsCloudPresenter : DocsBasePresenter<DocsCloudView>(), OnDownloadListene
         val filesIds = mOperationStack?.selectedFilesIds
         val foldersIds = mOperationStack?.selectedFoldersIds
 
-        mDisposable.add((mFileProvider as CloudFileProvider).api.checkFiles(mDestFolderId, foldersIds, filesIds)
+        mDisposable.add((mFileProvider as CloudFileProvider).api.checkFiles(mDestFolderId ?: "", foldersIds, filesIds)
             .map { it.response }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

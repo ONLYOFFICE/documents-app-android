@@ -246,7 +246,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         supportFragmentManager.fragments.forEach {
             if (it is ActionButtonFragment && it.isVisible) {
                 it.showActionDialog()
-//                presenter.isDialogOpen = true
+                presenter.isDialogOpen = true
             }
         }
     }
@@ -290,17 +290,17 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         }
     }
 
-    override fun openFile(fileData: String) {
-        showCloudFragment(fileData)
+    override fun openFile(account: CloudAccount, fileData: String) {
+        showCloudFragment(account = account, fileData = fileData)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-//        return if (!presenter.isDialogOpen) {
-//            false
-//        } else {
-        presenter.navigationItemClick(item.itemId)
-        return true
-//        }
+        return if (presenter.isDialogOpen) {
+            false
+        } else {
+            presenter.navigationItemClick(item.itemId)
+            true
+        }
     }
 
     override fun showActionButton(isShow: Boolean) {
@@ -318,24 +318,23 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
     }
 
     override fun onContextDialogOpen() {
-        super.onContextDialogOpen()
-//        presenter.isDialogOpen = true
+        presenter.isDialogOpen = true
     }
 
     override fun onBottomDialogClose() {
-//        presenter.isDialogOpen = false
+        presenter.isDialogOpen = false
     }
 
     override fun onCommonClose() {
-//        presenter.isDialogOpen = false
+        presenter.isDialogOpen = false
     }
 
     override fun onDialogClose() {
-//        presenter.isDialogOpen = false
+        presenter.isDialogOpen = false
     }
 
     override fun onCloseActionDialog() {
-//        presenter.isDialogOpen = false
+        presenter.isDialogOpen = false
     }
 
     override fun onError(message: String?) {
@@ -373,9 +372,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         ReviewManagerFactory.create(this).launchReviewFlow(this, reviewInfo)
             .addOnCompleteListener { task: Task<Void?> ->
                 if (task.isSuccessful) {
-                    Log.d(MainActivity.TAG, "onShowInAppReview: success")
+                    Log.d(TAG, "onShowInAppReview: success")
                 } else {
-                    Log.d(MainActivity.TAG, "onShowInAppReview: error")
+                    Log.d(TAG, "onShowInAppReview: error")
                 }
             }
     }
@@ -459,7 +458,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
             if (it.isWebDav) {
                 showWebDavFragment(it)
             } else {
-                showCloudFragment()
+                showCloudFragment(account)
             }
         } ?: run {
             FragmentUtils.showFragment(
@@ -470,16 +469,26 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         }
     }
 
-    private fun showCloudFragment(fileData: String? = null) {
+    private fun showCloudFragment(account: CloudAccount?, fileData: String? = null) {
         supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)?.let { fragment ->
-            FragmentUtils.showFragment(supportFragmentManager, fragment, R.id.frame_container)
-            fileData?.let {
-                (fragment as MainPagerFragment).setFileData(fileData)
+            (fragment as MainPagerFragment).let { pagerFragment ->
+                fileData?.let {
+                    pagerFragment.setFileData(it)
+                } ?: run {
+                    if (!pagerFragment.isRoot()) {
+                        supportFragmentManager.beginTransaction().remove(fragment).commit()
+                        FragmentUtils.showFragment(
+                            supportFragmentManager,
+                            MainPagerFragment.newInstance(Json.encodeToString(account), fileData),
+                            R.id.frame_container
+                        )
+                    }
+                }
             }
         } ?: run {
             FragmentUtils.showFragment(
                 supportFragmentManager,
-                MainPagerFragment.newInstance(fileData),
+                MainPagerFragment.newInstance(Json.encodeToString(account), fileData),
                 R.id.frame_container
             )
         }

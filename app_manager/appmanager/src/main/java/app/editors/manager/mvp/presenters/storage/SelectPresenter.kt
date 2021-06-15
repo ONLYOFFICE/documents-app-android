@@ -67,7 +67,7 @@ class SelectPresenter : MvpPresenter<SelectView>() {
 
     fun getStorages() {
         viewState.showProgress(true)
-        disposable = api.thirdpartyCapabilities
+        disposable = api.thirdpartyCapabilities()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseBody: ResponseBody -> JSONObject(responseBody.string()) }

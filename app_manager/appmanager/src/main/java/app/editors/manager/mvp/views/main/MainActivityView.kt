@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.views.main
 
 import androidx.annotation.StringRes
+import app.documents.core.account.CloudAccount
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.base.BaseViewExt
 import com.google.android.play.core.review.ReviewInfo
@@ -22,5 +23,5 @@ interface MainActivityView : BaseViewExt {
     fun onShowOnBoarding()
     fun onCloseActionDialog()
     fun onRender(state: MainActivityState)
-    fun openFile(fileData: String)
+    fun openFile(account: CloudAccount, fileData: String)
 }

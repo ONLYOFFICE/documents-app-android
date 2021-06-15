@@ -1,21 +1,27 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
-import android.content.Context
-import android.util.Log
-import app.documents.core.account.AccountDao
+import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.Api
+import app.editors.manager.R
+import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.di.component.DaggerApiComponent
+import app.editors.manager.di.module.ApiModule
+import app.editors.manager.managers.utils.Constants
 import app.editors.manager.di.component.DaggerApiComponent
 import app.editors.manager.di.module.ApiModule
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainPagerView
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
@@ -29,7 +35,7 @@ sealed class MainPagerState {
 }
 
 @InjectViewState
-class MainPagerPresenter : BasePresenter<MainPagerView>() {
+class MainPagerPresenter : MvpPresenter<MainPagerView>() {
 
     @Inject
     lateinit var networkSetting: NetworkSettings
@@ -58,43 +64,42 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
         }
     }
 
-    fun getState() {
-        CoroutineScope(Dispatchers.Default).launch {
-            launch {
-                isProjectDisable()
-            }
-            isFavoriteEnable()
-            accountsDao.getAccountOnline()?.let {
+    fun getState(account: String?) {
+        account?.let { jsonAccount ->
+            Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
                 when {
                     networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(
-                                MainPagerState.PersonalState(
-                                    StringUtils.convertServerVersion(
-                                        networkSetting.serverVersion
-                                    )
+                        viewState.onRender(
+                            MainPagerState.PersonalState(
+                                jsonAccount,
+                                StringUtils.convertServerVersion(
+                                    networkSetting.serverVersion
                                 )
                             )
-                        }
+                        )
                     }
-                    it.isVisitor -> {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(
-                                MainPagerState.VisitorState(
-                                    StringUtils.convertServerVersion(
-                                        networkSetting.serverVersion
-                                    )
+                    cloudAccount.isVisitor -> {
+                        viewState.onRender(
+                            MainPagerState.VisitorState(
+                                jsonAccount,
+                                StringUtils.convertServerVersion(
+                                    networkSetting.serverVersion
                                 )
                             )
-                        }
+                        )
                     }
                     else -> {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(MainPagerState.CloudState(StringUtils.convertServerVersion(networkSetting.serverVersion)))
-                        }
+                        viewState.onRender(
+                            MainPagerState.CloudState(
+                                jsonAccount,
+                                StringUtils.convertServerVersion(networkSetting.serverVersion)
+                            )
+                        )
                     }
                 }
             }
+        } ?: run {
+            throw Exception("Need account")
         }
     }
 
@@ -125,5 +130,4 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
                 }
             }) {throwable: Throwable -> fetchError(throwable)}
     }
-
 }

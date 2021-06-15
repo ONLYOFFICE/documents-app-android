@@ -79,6 +79,7 @@ interface AppComponent {
     fun inject(enterpriseSmsFragment: EnterpriseSmsFragment?)
     fun inject(personalPortalFragment: PersonalPortalFragment?)
     fun inject(webDavInterceptor: WebDavInterceptor?)
+    fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
 
     /*
     * Main

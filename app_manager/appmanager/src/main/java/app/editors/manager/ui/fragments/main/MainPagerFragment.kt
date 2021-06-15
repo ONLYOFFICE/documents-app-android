@@ -33,10 +33,12 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val OFFSCREEN_COUNT = 5
 
         const val KEY_FILE_DATA = "KEY_FILE_DATA"
+        const val KEY_ACCOUNT = "KEY_ACCOUNT"
 
-        fun newInstance(fileData: String?): MainPagerFragment {
+        fun newInstance(accountData: String, fileData: String?): MainPagerFragment {
             return MainPagerFragment().apply {
-                arguments = Bundle().apply {
+                arguments = Bundle(2).apply {
+                    putString(KEY_ACCOUNT, accountData)
                     putString(KEY_FILE_DATA, fileData)
                 }
             }
@@ -96,7 +98,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private fun init(savedInstanceState: Bundle?) {
         restoreStates(savedInstanceState)
-        presenter.getState()
+        presenter.getState(arguments?.getString(KEY_ACCOUNT))
     }
 
     private fun restoreStates(savedInstanceState: Bundle?) {
@@ -148,19 +150,20 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     override fun onRender(state: MainPagerState) {
         when (state) {
             is MainPagerState.VisitorState -> {
-                getVisitorFragments()
+                getVisitorFragments(state.account)
             }
             is MainPagerState.PersonalState -> {
-                getPersonalFragments(state.version)
+                getPersonalFragments(state.account, state.version)
             }
             is MainPagerState.CloudState -> {
-                getCloudFragments(state.version)
+                getCloudFragments(state.account, state.version)
             }
         }
         arguments?.getString(KEY_FILE_DATA)?.let {
             childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
                 viewBinding?.mainViewPager?.post {
-                    viewBinding?.mainViewPager?.currentItem = adapter.getByTitle(getString(R.string.main_pager_docs_projects))
+                    viewBinding?.mainViewPager?.currentItem =
+                        adapter.getByTitle(getString(R.string.main_pager_docs_projects))
                 }
             }
         }
@@ -170,26 +173,33 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         message?.let { showSnackBar(it)?.show() }
     }
 
-    private fun getCloudFragments(serverVersion: Int) {
+    private fun getCloudFragments(stringAccount: String, serverVersion: Int) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
-        fragments.add(ViewPagerAdapter.Container(DocsMyFragment.newInstance(), getString(R.string.main_pager_docs_my)))
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsShareFragment.newInstance(),
+                DocsMyFragment.newInstance(stringAccount), getString(
+                    R.string
+                        .main_pager_docs_my
+                )
+            )
+        )
+        fragments.add(
+            ViewPagerAdapter.Container(
+                DocsShareFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_share)
             )
         )
         if (serverVersion >= 11 && preferenceTool?.isFavoritesEnabled == true) {
             fragments.add(
                 ViewPagerAdapter.Container(
-                    DocsFavoritesFragment.newInstance(),
+                    DocsFavoritesFragment.newInstance(stringAccount),
                     getString(R.string.main_pager_docs_favorites)
                 )
             )
         }
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsCommonFragment.newInstance(),
+                DocsCommonFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_common)
             )
         )
@@ -203,24 +213,24 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsTrashFragment.newInstance(),
+                DocsTrashFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_trash)
             )
         )
         setAdapter(fragments)
     }
 
-    private fun getVisitorFragments() {
+    private fun getVisitorFragments(stringAccount: String) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsShareFragment.newInstance(),
+                DocsShareFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_share)
             )
         )
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsCommonFragment.newInstance(),
+                DocsCommonFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_common)
             )
         )
@@ -235,20 +245,27 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         setAdapter(fragments)
     }
 
-    private fun getPersonalFragments(serverVersion: Int) {
+    private fun getPersonalFragments(stringAccount: String, serverVersion: Int) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
-        fragments.add(ViewPagerAdapter.Container(DocsMyFragment.newInstance(), getString(R.string.main_pager_docs_my)))
+        fragments.add(
+            ViewPagerAdapter.Container(
+                DocsMyFragment.newInstance(stringAccount), getString(
+                    R.string
+                        .main_pager_docs_my
+                )
+            )
+        )
         if (serverVersion >= 11 && preferenceTool?.isFavoritesEnabled == true) {
             fragments.add(
                 ViewPagerAdapter.Container(
-                    DocsFavoritesFragment.newInstance(),
+                    DocsFavoritesFragment.newInstance(stringAccount),
                     getString(R.string.main_pager_docs_favorites)
                 )
             )
         }
         fragments.add(
             ViewPagerAdapter.Container(
-                DocsTrashFragment.newInstance(),
+                DocsTrashFragment.newInstance(stringAccount),
                 getString(R.string.main_pager_docs_trash)
             )
         )
@@ -268,6 +285,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             (it as DocsProjectsFragment).setFileData(fileData)
             viewBinding?.mainViewPager?.setCurrentItem(adapter.getByTitle(getString(R.string.main_pager_docs_projects)))
         }
+    }
+
+    fun isRoot(): Boolean {
+        return (activeFragment as DocsCloudFragment).isRoot
     }
 
     val position: Int

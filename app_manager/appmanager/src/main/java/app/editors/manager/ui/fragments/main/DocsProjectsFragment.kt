@@ -9,9 +9,10 @@ class DocsProjectsFragment : DocsCloudFragment() {
 
     companion object {
 
-        fun newInstance(fileData: String? = null): DocsProjectsFragment {
+        fun newInstance(account: String, fileData: String? = null): DocsProjectsFragment {
             return DocsProjectsFragment().apply {
-                arguments = Bundle().apply {
+                arguments = Bundle(2).apply {
+                    putString(KEY_ACCOUNT, account)
                     putString(MainPagerFragment.KEY_FILE_DATA, fileData)
                 }
             }

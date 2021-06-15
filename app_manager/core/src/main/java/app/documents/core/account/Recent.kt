@@ -4,7 +4,14 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(
+    foreignKeys = [ForeignKey(
+        entity = CloudAccount::class,
+        parentColumns = ["id"],
+        childColumns = ["ownerId"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
 data class Recent(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -15,6 +22,5 @@ data class Recent(
     val isLocal: Boolean,
     val isWebDav: Boolean,
     val size: Long,
-    @ForeignKey(entity = CloudAccount::class, parentColumns = ["id"], childColumns = ["ownerId"], onDelete = ForeignKey.CASCADE)
     val ownerId: String? = null
 )

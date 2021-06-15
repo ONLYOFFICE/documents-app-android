@@ -48,7 +48,7 @@ class CloudFileProvider : BaseFileProvider {
         return api.getItemById(id, filter)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { responseExplorerResponse: Response<ResponseExplorer?> ->
+            .map { responseExplorerResponse: Response<ResponseExplorer> ->
                 if (responseExplorerResponse.isSuccessful && responseExplorerResponse.body() != null) {
                     return@map responseExplorerResponse.body()!!.response
                 } else {
@@ -61,7 +61,7 @@ class CloudFileProvider : BaseFileProvider {
         return api.createDocs(folderId, body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { responseCreateFile: Response<ResponseCreateFile?> ->
+            .map { responseCreateFile: Response<ResponseCreateFile> ->
                 if (responseCreateFile.isSuccessful && responseCreateFile.body() != null) {
                     return@map responseCreateFile.body()!!.response
                 } else {
@@ -74,7 +74,7 @@ class CloudFileProvider : BaseFileProvider {
         return api.createFolder(folderId, body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { responseCreateFolder: Response<ResponseCreateFolder?> ->
+            .map { responseCreateFolder: Response<ResponseCreateFolder> ->
                 if (responseCreateFolder.isSuccessful && responseCreateFolder.body() != null) {
                     return@map responseCreateFolder.body()!!.response
                 } else {
@@ -98,7 +98,7 @@ class CloudFileProvider : BaseFileProvider {
         return api.renameFile(id, requestRenameFile)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { responseFile: Response<ResponseFile?> ->
+            .map { responseFile: Response<ResponseFile> ->
                 if (responseFile.isSuccessful && responseFile.body() != null) {
                     return@map responseFile.body()!!.response
                 } else if (responseFile.code() == 400) {
@@ -115,7 +115,7 @@ class CloudFileProvider : BaseFileProvider {
         return api.renameFolder(id, requestTitle)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { responseFolder: Response<ResponseFolder?> ->
+            .map { responseFolder: Response<ResponseFolder> ->
                 if (responseFolder.isSuccessful && responseFolder.body() != null) {
                     return@map responseFolder.body()!!.response
                 } else if (responseFolder.code() == 400) {
@@ -216,7 +216,7 @@ class CloudFileProvider : BaseFileProvider {
         return api.move(body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { responseOperation: Response<ResponseOperation?> ->
+            .map { responseOperation: Response<ResponseOperation> ->
                 if (responseOperation.isSuccessful && responseOperation.body() != null) {
                     return@map responseOperation.body()!!.response
                 } else {
@@ -229,7 +229,7 @@ class CloudFileProvider : BaseFileProvider {
         return api.copy(body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { responseOperation: Response<ResponseOperation?> ->
+            .map { responseOperation: Response<ResponseOperation> ->
                 if (responseOperation.isSuccessful && responseOperation.body() != null) {
                     return@map responseOperation.body()!!.response
                 } else {
@@ -242,7 +242,7 @@ class CloudFileProvider : BaseFileProvider {
         return api.getFileInfo(item.id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { responseFile: Response<ResponseFile?> ->
+            .map { responseFile: Response<ResponseFile> ->
                 if (responseFile.isSuccessful && responseFile.body() != null) {
                     return@map responseFile.body()!!.response
                 } else {
@@ -302,7 +302,7 @@ class CloudFileProvider : BaseFileProvider {
         return api.emptyTrash()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { operationResponse: Response<ResponseOperation?> ->
+            .map { operationResponse: Response<ResponseOperation> ->
                 if (operationResponse.isSuccessful && operationResponse.body() != null) {
                     return@map operationResponse.body()!!.response
                 } else {

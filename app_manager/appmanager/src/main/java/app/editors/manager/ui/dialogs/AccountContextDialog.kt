@@ -147,7 +147,7 @@ class AccountContextDialog : BaseBottomDialog() {
             mAccountPortal!!.text = mAccount!!.portal
             if (mAccount!!.isWebDav) {
                 mAccountName!!.visibility = View.GONE
-                UiUtils.setWebDavImage(mAccount!!.webDavProvider, mAvatarImage)
+                UiUtils.setWebDavImage(mAccount?.webDavProvider, mAvatarImage!!)
             } else {
                 loadAvatar()
             }

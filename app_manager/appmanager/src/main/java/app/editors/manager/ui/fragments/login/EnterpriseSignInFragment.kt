@@ -196,7 +196,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     private fun onForgotPwdClick() {
-        showUrlInBrowser(networkSettings.getScheme() + networkSettings.getPortal())
+        showFragment(PasswordRecoveryFragment.newInstance(viewBinding?.loginEnterprisePortalEmailEdit?.text.toString(), false), PasswordRecoveryFragment.TAG, false)
     }
 
 

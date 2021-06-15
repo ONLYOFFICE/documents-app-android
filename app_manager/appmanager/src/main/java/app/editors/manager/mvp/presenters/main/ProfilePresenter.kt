@@ -82,7 +82,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
     private fun getThirdparty(account: CloudAccount) {
         service?.let { api ->
             disposable.add(api
-                .thirdPartyList
+                .thirdPartyList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.response }
@@ -94,7 +94,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
 
     private fun updateAccountInfo(account: CloudAccount) {
         service?.let { api ->
-            disposable.add(api.userInfo
+            disposable.add(api.userInfo()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.response }

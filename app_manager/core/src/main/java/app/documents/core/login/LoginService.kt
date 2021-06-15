@@ -1,14 +1,13 @@
 package app.documents.core.login
 
 import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.request.RequestNumber
-import app.documents.core.network.models.login.request.RequestRegister
-import app.documents.core.network.models.login.request.RequestSignIn
-import app.documents.core.network.models.login.request.RequestValidatePortal
+import app.documents.core.network.models.login.request.*
 import app.documents.core.network.models.login.response.*
 import io.reactivex.Single
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
+
 
 interface LoginService {
 
@@ -97,5 +96,16 @@ interface LoginService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/people/@self" + ApiContract.RESPONSE_FORMAT)
     fun getUserInfo(@Header(ApiContract.HEADER_AUTHORIZATION) token: String): Single<Response<ResponseUser>>
+
+    /*
+     * Password recovery
+     * */
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/people/password" + ApiContract.RESPONSE_FORMAT)
+    fun forgotPassword(@Body body: RequestPassword?): Single<Response<ResponsePassword>>
 
 }

@@ -1,6 +1,7 @@
 package lib.toolkit.base.managers.tools
 
 import android.content.Context
+import android.os.Build
 import com.bumptech.glide.disklrucache.DiskLruCache
 import com.bumptech.glide.util.LruCache
 import lib.toolkit.base.BuildConfig
@@ -26,7 +27,15 @@ open class CacheTool(private val context: Context) {
 
     init {
         mMemoryLruCache = LruCache(CACHE_SIZE)
-        mStorageLruCache = DiskLruCache.open(storageCacheDir, BuildConfig.VERSION_CODE,
+
+        val version = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode.toInt()
+        } else {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionCode
+        }
+
+        mStorageLruCache = DiskLruCache.open(storageCacheDir,
+            version,
             CACHE_STORE_COUNT,
             CACHE_STORE_SIZE
         )

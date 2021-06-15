@@ -68,49 +68,50 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     override fun show() {
         super.show()
         mLayout.visibility = View.VISIBLE
-
-        if (!mEditValue.isNullOrEmpty()) {
-            mEditValueView.setText(mEditValue)
-            if (!mEditValueView.text.isNullOrEmpty()) {
-                mEditValueView.setSelection(0, mEditValue!!.length)
+        dialog.view?.post {
+            if (!mEditValue.isNullOrEmpty()) {
+                mEditValueView.setText(mEditValue)
+                if (!mEditValueView.text.isNullOrEmpty()) {
+                    mEditValueView.setSelection(0, mEditValue!!.length)
+                }
+                mAcceptView.isEnabled = mEditValue!!.trim { it <= ' ' }.isNotEmpty()
+            } else {
+                mEditValueView.setText("")
             }
-            mAcceptView.isEnabled = mEditValue!!.trim { it <= ' ' }.isNotEmpty()
-        } else {
-            mEditValueView.setText("")
-        }
 
-        if (!mEditHintValue.isNullOrEmpty()) {
-            mEditValueView.hint = mEditHintValue
-        }
+            if (!mEditHintValue.isNullOrEmpty()) {
+                mEditValueView.hint = mEditHintValue
+            }
 
-        if (mHintValue != null) {
-            mEditHintView.visibility = View.VISIBLE
-            mEditHintView.setText(mHintValue)
-        } else {
-            mEditHintView.visibility = View.GONE
-        }
+            if (mHintValue != null) {
+                mEditHintView.visibility = View.VISIBLE
+                mEditHintView.setText(mHintValue)
+            } else {
+                mEditHintView.visibility = View.GONE
+            }
 
-        if (mIsPassword) {
-            mEditValueView.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        } else {
-            mEditValueView.inputType = InputType.TYPE_CLASS_TEXT
-        }
+            if (mIsPassword) {
+                mEditValueView.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            } else {
+                mEditValueView.inputType = InputType.TYPE_CLASS_TEXT
+            }
 
-        if (!mErrorValue.isNullOrBlank()) {
-            mEditInputLayout.isErrorEnabled = true
-            mEditInputLayout.error = mErrorValue
-        }
+            if (!mErrorValue.isNullOrBlank()) {
+                mEditInputLayout.isErrorEnabled = true
+                mEditInputLayout.error = mErrorValue
+            }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mEditValueView.background.colorFilter =
-                BlendModeColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), BlendMode.SRC_ATOP)
-        } else {
-            mEditValueView.background.colorFilter =
-                PorterDuffColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), PorterDuff.Mode.SRC_ATOP)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                mEditValueView.background.colorFilter =
+                    BlendModeColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), BlendMode.SRC_ATOP)
+            } else {
+                mEditValueView.background.colorFilter =
+                    PorterDuffColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), PorterDuff.Mode.SRC_ATOP)
+            }
+            mEditValueView.postDelayed({
+                KeyboardUtils.showKeyboard(mEditValueView)
+            }, 100)
         }
-        mEditValueView.postDelayed({
-            KeyboardUtils.showKeyboard(mEditValueView)
-        }, 100)
     }
 
     override fun hide() {
@@ -143,7 +144,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.EDIT_LINE
 
-    override fun getValue(): String? = mEditValueView.text.toString()
+    override fun getValue(): String = mEditValueView.text.toString()
 
     private inner class EditFilter : BaseInputFilter() {
 
