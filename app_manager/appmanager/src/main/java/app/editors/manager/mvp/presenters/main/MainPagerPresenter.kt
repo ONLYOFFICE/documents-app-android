@@ -12,6 +12,8 @@ import app.editors.manager.app.App
 import app.editors.manager.di.component.DaggerApiComponent
 import app.editors.manager.di.module.ApiModule
 import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainPagerView
 import kotlinx.coroutines.*
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -27,19 +29,13 @@ sealed class MainPagerState {
 }
 
 @InjectViewState
-class MainPagerPresenter : MvpPresenter<MainPagerView>() {
+class MainPagerPresenter : BasePresenter<MainPagerView>() {
 
     @Inject
     lateinit var networkSetting: NetworkSettings
 
     @Inject
     lateinit var accountsDao: AccountDao
-
-    @Inject
-    lateinit var context: Context
-
-    @Inject
-    lateinit var preferenceTool: PreferenceTool
 
     init {
         App.getApp().appComponent.inject(this)
@@ -102,12 +98,14 @@ class MainPagerPresenter : MvpPresenter<MainPagerView>() {
         }
     }
 
-    private suspend fun isProjectDisable() {
-        api.getModules(listOf("1e044602-43b5-4d79-82f3-fd6208a11960")).toObservable().subscribe({response ->
+    private fun isProjectDisable() {
+        api.getModules(listOf(Constants.Modules.PROJECT_ID)).toObservable().subscribe({ response ->
             if(response.response != null) {
                 preferenceTool.isProjectDisable = !response.response.get(0).isEnable
+            } else {
+                viewState.onError(response?.error?.message)
             }
-        }) {throwable: Throwable -> Log.d("PROJECTSTEST", "FAIL")}
+        }) {throwable: Throwable -> fetchError(throwable)}
     }
 
     private fun isFavoriteEnable() {
@@ -118,15 +116,14 @@ class MainPagerPresenter : MvpPresenter<MainPagerView>() {
                         if(StringUtils.Favorites.contains(folder.current.title)) {
                             preferenceTool.setFavoritesEnable(true)
                             break
-                        } else
-                        {
+                        } else {
                             preferenceTool.setFavoritesEnable(false)
                         }
                     }
                 } else {
-                    Log.d("GETROOT", "ERROR")
+                    viewState.onError(response?.error?.message)
                 }
-            }) {throwable: Throwable -> Log.d("GETROOT", "FAIL")}
+            }) {throwable: Throwable -> fetchError(throwable)}
     }
 
 }

@@ -166,6 +166,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }
     }
 
+    override fun onError(message: String?) {
+        message?.let { showSnackBar(it)?.show() }
+    }
+
     private fun getCloudFragments(serverVersion: Int) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
         fragments.add(ViewPagerAdapter.Container(DocsMyFragment.newInstance(), getString(R.string.main_pager_docs_my)))
