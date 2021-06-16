@@ -34,7 +34,7 @@ sealed class MainPagerState {
 }
 
 @InjectViewState
-class MainPagerPresenter : BasePresenter<MainPagerView>() {
+class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainPagerView>() {
 
     @Inject
     lateinit var networkSetting: NetworkSettings
@@ -53,13 +53,12 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
             AccountUtils.getToken(
                 context,
                 Account(account.getAccountName(), context.getString(R.string.account_type))
-            )
-                ?.let {
-                    return@runBlocking DaggerApiComponent.builder().apiModule(ApiModule(it))
-                        .appComponent(App.getApp().appComponent)
-                        .build()
-                        .getApi()
-                }
+            )?.let {
+                return@runBlocking DaggerApiComponent.builder().apiModule(ApiModule(it))
+                    .appComponent(App.getApp().appComponent)
+                    .build()
+                    .getApi()
+            }
         } ?: run {
             throw Error("No account")
         }
@@ -70,14 +69,14 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
         disposable?.dispose()
     }
 
-    fun getState(account: String?) {
+    fun getState() {
         disposable = isFavoriteEnable()?.subscribe({ response ->
             if (response.response != null) {
-                preferenceTool.isProjectDisable = !response.response.get(0).isEnable
+                preferenceTool.isProjectDisable = !response.response[0].isEnable
             } else {
                 viewState.onError(response?.error?.message)
             }
-            account?.let { jsonAccount ->
+            accountJson?.let { jsonAccount ->
                 Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
                     when {
                         networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
@@ -124,13 +123,16 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
     }
 
     private fun isFavoriteEnable(): Observable<ResponseModules>? {
-        return api.getRootFolder(mapOf("filterType" to 2), mapOf("withsubfolders" to false, "withoutTrash" to true, "withoutAdditionalFolder" to false))
+        return api.getRootFolder(
+            mapOf("filterType" to 2),
+            mapOf("withsubfolders" to false, "withoutTrash" to true, "withoutAdditionalFolder" to false)
+        )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .flatMap{response ->
-                if(response.response != null) {
+            .flatMap { response ->
+                if (response.response != null) {
                     for (folder in response.response) {
-                        if(StringUtils.Favorites.contains(folder.current.title)) {
+                        if (StringUtils.Favorites.contains(folder.current.title)) {
                             preferenceTool.setFavoritesEnable(true)
                             break
                         } else {

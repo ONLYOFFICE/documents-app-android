@@ -20,6 +20,7 @@ import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import java.util.*
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView {
@@ -47,6 +48,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     @InjectPresenter
     lateinit var presenter: MainPagerPresenter
+
+    @ProvidePresenter
+    fun provideMainPagerPresenter(): MainPagerPresenter {
+        return MainPagerPresenter(arguments?.getString(KEY_ACCOUNT))
+    }
 
     private lateinit var adapter: ViewPagerAdapter
     private var activity: IMainActivity? = null
@@ -98,7 +104,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private fun init(savedInstanceState: Bundle?) {
         restoreStates(savedInstanceState)
-        presenter.getState(arguments?.getString(KEY_ACCOUNT))
+        presenter.getState()
     }
 
     private fun restoreStates(savedInstanceState: Bundle?) {
@@ -170,7 +176,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun onError(message: String?) {
-        message?.let { showSnackBar(it)?.show() }
+        message?.let { showSnackBar(it).show() }
     }
 
     private fun getCloudFragments(stringAccount: String, serverVersion: Int) {
@@ -203,7 +209,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 getString(R.string.main_pager_docs_common)
             )
         )
-        if(!preferenceTool?.isProjectDisable!!) {
+        if (!preferenceTool?.isProjectDisable!!) {
             fragments.add(
                 ViewPagerAdapter.Container(
                     DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
@@ -234,7 +240,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 getString(R.string.main_pager_docs_common)
             )
         )
-        if(!preferenceTool?.isProjectDisable!!) {
+        if (!preferenceTool?.isProjectDisable!!) {
             fragments.add(
                 ViewPagerAdapter.Container(
                     DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
