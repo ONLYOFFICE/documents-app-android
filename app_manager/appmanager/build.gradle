@@ -57,7 +57,7 @@ android {
         minSdkVersion AppDependency.MIN_SDK_VERSION
         targetSdkVersion AppDependency.TARGET_SDK_VERSION
         versionCode 263
-        versionName "5.1.1"
+        versionName "5.2.0"
         multiDexEnabled true
         applicationId "com.onlyoffice.documents"
         buildConfigField "boolean", "IS_BETA", "false"
