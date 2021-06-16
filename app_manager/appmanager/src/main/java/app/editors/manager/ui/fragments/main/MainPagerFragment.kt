@@ -206,7 +206,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         if(!preferenceTool?.isProjectDisable!!) {
             fragments.add(
                 ViewPagerAdapter.Container(
-                    DocsProjectsFragment.newInstance(arguments?.getString(KEY_FILE_DATA)),
+                    DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
                     getString(R.string.main_pager_docs_projects)
                 )
             )
@@ -237,7 +237,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         if(!preferenceTool?.isProjectDisable!!) {
             fragments.add(
                 ViewPagerAdapter.Container(
-                    DocsProjectsFragment.newInstance(arguments?.getString(KEY_FILE_DATA)),
+                    DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
                     getString(R.string.main_pager_docs_projects)
                 )
             )

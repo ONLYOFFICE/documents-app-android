@@ -325,4 +325,12 @@ interface Api {
         hasBody = true
     )
     fun deleteFromFavorites(@Body body: RequestFavorites): Observable<Response<Base>>
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/@root" + ApiContract.RESPONSE_FORMAT)
+    fun getRootFolder(@QueryMap filterMap: Map<String, Int>, @QueryMap flagMap: Map<String, Boolean>): Observable<ResponseCloudTree>
+
 }
