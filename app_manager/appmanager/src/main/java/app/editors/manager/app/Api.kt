@@ -306,7 +306,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/settings/security" + ApiContract.RESPONSE_FORMAT)
-    fun getModules(@Query("ids") modulesIds: List<String>): Single<ResponseModules>
+    fun getModules(@Query("ids") modulesIds: List<String>): Observable<ResponseModules>
 
     @Headers(
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -331,6 +331,6 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/@root" + ApiContract.RESPONSE_FORMAT)
-    fun getRootFolder(@QueryMap filterMap: Map<String, Int>, @QueryMap flagMap: Map<String, Boolean>): Single<ResponseCloudTree>
+    fun getRootFolder(@QueryMap filterMap: Map<String, Int>, @QueryMap flagMap: Map<String, Boolean>): Observable<ResponseCloudTree>
 
 }

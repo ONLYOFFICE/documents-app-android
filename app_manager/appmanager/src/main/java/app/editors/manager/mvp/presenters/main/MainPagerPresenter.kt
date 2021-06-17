@@ -13,13 +13,17 @@ import app.editors.manager.di.module.ApiModule
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainPagerView
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
+import java.util.*
 import javax.inject.Inject
 
 sealed class MainPagerState {
@@ -59,11 +63,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     fun getState() {
-        GlobalScope.launch(Dispatchers.Main) {
-            withContext(Dispatchers.Default) {
-                isProjectDisable()
-                isFavoriteEnable()
-            }
+        disposable = getPortalModules().subscribe({
             viewState.onFinishRequest()
             accountJson?.let { jsonAccount ->
                 Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
@@ -101,38 +101,33 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             } ?: run {
                 throw Exception("Need account")
             }
-        }
+        }) {throwable: Throwable -> fetchError(throwable)}
     }
 
-    private fun isProjectDisable() {
-        val response = api?.getModules(listOf(Constants.Modules.PROJECT_ID))?.blockingGet()
-        if (response?.response != null) {
-            preferenceTool.isProjectDisable = !response.response[0].isEnable
-        } else {
-            viewState.onError(response?.error?.message)
-        }
-    }
-
-    private fun isFavoriteEnable() {
-        val response = api?.getRootFolder(
+    private fun getPortalModules() : Observable<Boolean> {
+        return Observable.zip(api?.getRootFolder(
             mapOf("filterType" to 2),
             mapOf(
                 "withsubfolders" to false,
                 "withoutTrash" to true,
                 "withoutAdditionalFolder" to false
             )
-        )?.blockingGet()
-        if (response?.response != null) {
-            for (folder in response.response) {
-                if (StringUtils.Favorites.contains(folder.current.title)) {
-                    preferenceTool.setFavoritesEnable(true)
-                    break
-                } else {
-                    preferenceTool.setFavoritesEnable(false)
+        ), api?.getModules(listOf(Constants.Modules.PROJECT_ID)), { cloudTree, modules ->
+            if(cloudTree.response != null && modules.response != null) {
+                preferenceTool.isProjectDisable = !modules.response[0].isEnable
+                for (folder in cloudTree.response) {
+                    if (StringUtils.Favorites.contains(folder.current.title)) {
+                        preferenceTool.setFavoritesEnable(true)
+                        break
+                    } else {
+                        preferenceTool.setFavoritesEnable(false)
+                    }
                 }
             }
-        } else {
-            viewState.onError(response?.error?.message)
-        }
+            return@zip true
+        })
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
     }
+
 }
