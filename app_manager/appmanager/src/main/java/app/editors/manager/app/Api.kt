@@ -331,6 +331,6 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/@root" + ApiContract.RESPONSE_FORMAT)
-    fun getRootFolder(@QueryMap filterMap: Map<String, Int>, @QueryMap flagMap: Map<String, Boolean>): Observable<ResponseCloudTree>
+    fun getRootFolder(@QueryMap filterMap: Map<String, Int>, @QueryMap flagMap: Map<String, Boolean>): Single<ResponseCloudTree>
 
 }

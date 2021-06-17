@@ -11,15 +11,10 @@ import app.editors.manager.app.App
 import app.editors.manager.di.component.DaggerApiComponent
 import app.editors.manager.di.module.ApiModule
 import app.editors.manager.managers.utils.Constants
-import app.editors.manager.mvp.models.response.ResponseModules
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainPagerView
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -39,30 +34,24 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     @Inject
     lateinit var networkSetting: NetworkSettings
 
-    @Inject
-    lateinit var accountsDao: AccountDao
-
     init {
         App.getApp().appComponent.inject(this)
     }
 
     private var disposable: Disposable? = null
 
-    private val api: Api = runBlocking(Dispatchers.Default) {
-        accountsDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(
+    private val api: Api?
+        get() {
+          AccountUtils.getToken(
                 context,
-                Account(account.getAccountName(), context.getString(R.string.account_type))
+                Account(accountJson?.let { Json.decodeFromString<CloudAccount>(it).getAccountName() }, context.getString(R.string.account_type))
             )?.let {
-                return@runBlocking DaggerApiComponent.builder().apiModule(ApiModule(it))
+                return DaggerApiComponent.builder().apiModule(ApiModule(it))
                     .appComponent(App.getApp().appComponent)
                     .build()
                     .getApi()
-            }
-        } ?: run {
-            throw Error("No account")
+            } ?: return null
         }
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -70,12 +59,12 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     fun getState() {
-        disposable = isFavoriteEnable()?.subscribe({ response ->
-            if (response.response != null) {
-                preferenceTool.isProjectDisable = !response.response[0].isEnable
-            } else {
-                viewState.onError(response?.error?.message)
+        GlobalScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Default) {
+                isProjectDisable()
+                isFavoriteEnable()
             }
+            viewState.onFinishRequest()
             accountJson?.let { jsonAccount ->
                 Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
                     when {
@@ -112,38 +101,38 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             } ?: run {
                 throw Exception("Need account")
             }
-        }) { throwable: Throwable -> fetchError(throwable) }
+        }
     }
 
-    private fun isProjectDisable(): Observable<ResponseModules> {
-        return api.getModules(listOf(Constants.Modules.PROJECT_ID))
-            .toObservable()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    private fun isProjectDisable() {
+        val response = api?.getModules(listOf(Constants.Modules.PROJECT_ID))?.blockingGet()
+        if (response?.response != null) {
+            preferenceTool.isProjectDisable = !response.response[0].isEnable
+        } else {
+            viewState.onError(response?.error?.message)
+        }
     }
 
-    private fun isFavoriteEnable(): Observable<ResponseModules>? {
-        return api.getRootFolder(
+    private fun isFavoriteEnable() {
+        val response = api?.getRootFolder(
             mapOf("filterType" to 2),
-            mapOf("withsubfolders" to false, "withoutTrash" to true, "withoutAdditionalFolder" to false)
-        )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .flatMap { response ->
-                if (response.response != null) {
-                    for (folder in response.response) {
-                        if (StringUtils.Favorites.contains(folder.current.title)) {
-                            preferenceTool.setFavoritesEnable(true)
-                            break
-                        } else {
-                            preferenceTool.setFavoritesEnable(false)
-                        }
-                    }
-                    return@flatMap isProjectDisable()
+            mapOf(
+                "withsubfolders" to false,
+                "withoutTrash" to true,
+                "withoutAdditionalFolder" to false
+            )
+        )?.blockingGet()
+        if (response?.response != null) {
+            for (folder in response.response) {
+                if (StringUtils.Favorites.contains(folder.current.title)) {
+                    preferenceTool.setFavoritesEnable(true)
+                    break
                 } else {
-                    viewState.onError(response.error?.message)
-                    return@flatMap null
+                    preferenceTool.setFavoritesEnable(false)
                 }
             }
+        } else {
+            viewState.onError(response?.error?.message)
+        }
     }
 }

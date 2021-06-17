@@ -18,6 +18,7 @@ import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -60,6 +61,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private var isVisibleRoot = true
 
     private var viewBinding: FragmentMainPagerBinding? = null
+    private var placeholderView: PlaceholderViews? = null
 
     var preferenceTool: PreferenceTool? = null
 
@@ -104,6 +106,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private fun init(savedInstanceState: Bundle?) {
         restoreStates(savedInstanceState)
+        placeholderView = PlaceholderViews(viewBinding?.placeholderLayout?.placeholderLayout)
+        placeholderView?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
         presenter.getState()
     }
 
@@ -173,6 +177,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 }
             }
         }
+    }
+
+    override fun onFinishRequest() {
+        placeholderView?.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
     }
 
     override fun onError(message: String?) {
