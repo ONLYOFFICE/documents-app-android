@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.databinding.SsoLoginLayoutBinding
 import app.editors.manager.mvp.presenters.login.EnterpriseSSOPresenter
 import app.editors.manager.mvp.views.login.EnterpriseSSOView
@@ -41,6 +42,8 @@ class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
     lateinit var enterpriseSSOPresenter: EnterpriseSSOPresenter
 
     private var viewBinding: SsoLoginLayoutBinding? = null
+
+    private val networkSettings = App.getApp().appComponent.networkSettings
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,8 +80,6 @@ class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
         }
     }
 
-
-
     override fun onSuccessLogin() {
         hideDialog()
         MainActivity.show(requireContext())
@@ -86,7 +87,9 @@ class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
     }
 
     override fun onError(message: String?) {
-        showSnackBar(message!!)
+        message?.let {
+            showSnackBar(it)
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -118,8 +121,11 @@ class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
         }
 
         override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
-            handler.proceed()
-            //super.onReceivedSslError(view, handler, error);
+            if (!networkSettings.getSslState()) {
+                handler.proceed()
+            } else {
+                super.onReceivedSslError(view, handler, error)
+            }
         }
     }
 
