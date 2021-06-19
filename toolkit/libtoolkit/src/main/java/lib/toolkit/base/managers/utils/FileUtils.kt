@@ -240,8 +240,8 @@ object FileUtils {
 
     @JvmStatic
     fun addExtension(extension: String, path: String): String {
-        if(extension.isNotEmpty()) {
-           return "$path.$extension"
+        if (extension.isNotEmpty()) {
+            return "$path.$extension"
         }
 
         return path
@@ -267,8 +267,8 @@ object FileUtils {
                 File(file.parent, file.name + "($number)")
             } else {
                 val newFileName = StringBuilder(file.name)
-                        .insert(file.name.indexOf('.'), "($number)")
-                        .toString()
+                    .insert(file.name.indexOf('.'), "($number)")
+                    .toString()
                 File(file.parent, newFileName)
             }
         }
@@ -323,7 +323,13 @@ object FileUtils {
     @RequiresPermission(allOf = [WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE])
     @JvmStatic
     @JvmOverloads
-    fun copyFile(context: Context, uri: Uri, dstFileName: String? = null, dstFolderName: String? = null, isExternal: Boolean = true): Cache? {
+    fun copyFile(
+        context: Context,
+        uri: Uri,
+        dstFileName: String? = null,
+        dstFolderName: String? = null,
+        isExternal: Boolean = true
+    ): Cache? {
         return getCache(context, dstFileName, dstFolderName, isExternal)?.apply {
             to = addExtension(getExtension(StringUtils.getExtensionFromPath(uri.path ?: "")), to!!)
             copyFile(context, uri, to!!)
@@ -358,7 +364,12 @@ object FileUtils {
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
     @JvmOverloads
-    fun createImageFile(context: Context, name: String?, extension: String = "png", isExternal: Boolean = true): File? {
+    fun createImageFile(
+        context: Context,
+        name: String?,
+        extension: String = "png",
+        isExternal: Boolean = true
+    ): File? {
         val dir = if (name == null) {
             getCacheDir(context, isExternal)
         } else {
@@ -371,7 +382,13 @@ object FileUtils {
     @SuppressLint("MissingPermission")
     @JvmStatic
     @JvmOverloads
-    fun createTempAssetsFile(context: Context, from: String, name: String, ext: String, isExternal: Boolean = true): File? {
+    fun createTempAssetsFile(
+        context: Context,
+        from: String,
+        name: String,
+        ext: String,
+        isExternal: Boolean = true
+    ): File? {
         return createCacheFile(context, name + ext, isExternal).also { file ->
             context.assets.open(from).use { input ->
                 FileOutputStream(file).use { output ->
@@ -418,7 +435,12 @@ object FileUtils {
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
     @JvmOverloads
-    fun createCachedBitmap(context: Context, bitmap: Bitmap, name: String, isExternal: Boolean = true): File? {
+    fun createCachedBitmap(
+        context: Context,
+        bitmap: Bitmap,
+        name: String,
+        isExternal: Boolean = true
+    ): File? {
         return createCacheFile(context, name, isExternal)?.let {
             writeBitmapToFile(it, bitmap)
         }
@@ -486,7 +508,11 @@ object FileUtils {
         val bitmap = if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {
             Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
         } else {
-            Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            Bitmap.createBitmap(
+                drawable.intrinsicWidth,
+                drawable.intrinsicHeight,
+                Bitmap.Config.ARGB_8888
+            )
         }
 
         val canvas = Canvas(bitmap)
@@ -553,7 +579,13 @@ object FileUtils {
     }
 
     @JvmStatic
-    fun downloadFromUrl(context: Context, to: Uri, from: String, finish: Finish? = null, error: Error? = null) {
+    fun downloadFromUrl(
+        context: Context,
+        to: Uri,
+        from: String,
+        finish: Finish? = null,
+        error: Error? = null
+    ) {
         AsyncRoutines().run({ _, _ ->
             context.contentResolver.openOutputStream(to)?.use { out ->
                 URL(from).openStream()?.use {
@@ -570,27 +602,41 @@ object FileUtils {
     }
 
     @JvmStatic
-    fun writeToUri(context: Context, to: Uri, from: String): Boolean {
-        BufferedInputStream(FileInputStream(from)).use { input ->
-            BufferedOutputStream(context.contentResolver.openOutputStream(to, "rwt")).use { output ->
-                output.write(input.readBytes())
-                output.flush()
-                return true
+    fun writeToUri(
+        context: Context,
+        to: Uri,
+        from: String,
+        notFound: ((error: Throwable) -> Unit)? = null
+    ): Boolean {
+        try {
+            BufferedInputStream(FileInputStream(from)).use { input ->
+                BufferedOutputStream(
+                    context.contentResolver.openOutputStream(
+                        to,
+                        "rwt"
+                    )
+                ).use { output ->
+                    output.write(input.readBytes())
+                    output.flush()
+                    return true
+                }
             }
+        } catch (error: Throwable) {
+            notFound?.invoke(error)
+            return false
         }
 
-        return false
     }
 
     @JvmStatic
     fun writeFromResponseBody(
-            response: ResponseBody?,
-            to: Uri,
-            context: Context,
-            progress: Progress?,
-            finish: Finish?,
-            error: Error?)
-    {
+        response: ResponseBody?,
+        to: Uri,
+        context: Context,
+        progress: Progress?,
+        finish: Finish?,
+        error: Error?
+    ) {
         var inputStream: InputStream? = null
         var outputStream: OutputStream? = null
         try {
