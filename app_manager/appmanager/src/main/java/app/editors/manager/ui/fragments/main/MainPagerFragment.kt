@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import app.editors.manager.R
@@ -93,7 +94,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private fun init(savedInstanceState: Bundle?) {
         restoreStates(savedInstanceState)
-        presenter.getState(arguments?.getString(KEY_ACCOUNT))
+        presenter.getState(arguments?.getString(KEY_ACCOUNT), requireActivity().intent.data)
     }
 
     private fun restoreStates(savedInstanceState: Bundle?) {
@@ -162,6 +163,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 }
             }
         }
+    }
+
+    override fun onError(@StringRes res: Int) {
+        showSnackBar(getString(res))
     }
 
     private fun getCloudFragments(stringAccount: String, serverVersion: Int) {
@@ -267,10 +272,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
     }
 
-    fun setFileData(fileData: String) {
+    override fun setFileData(fileData: String) {
         childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
+            viewBinding?.mainViewPager?.currentItem = adapter.getByTitle(getString(R.string.main_pager_docs_projects))
             (it as DocsProjectsFragment).setFileData(fileData)
-            viewBinding?.mainViewPager?.setCurrentItem(adapter.getByTitle(getString(R.string.main_pager_docs_projects)))
         }
     }
 
