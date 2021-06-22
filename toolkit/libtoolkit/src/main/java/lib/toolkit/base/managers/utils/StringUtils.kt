@@ -23,11 +23,8 @@ import java.util.*
 import java.util.regex.Pattern
 
 object StringUtils {
-
-    val Favorites = listOf<String>("Favorites", "Избранное", "收藏夹", " Favorieten", " Favoris", "Favoriten", "Αγαπημένα", "Preferiti", "お気に入り", "Favoritos")
-
     @JvmField
-    val TAG = StringUtils::class.java!!.simpleName
+    val TAG = StringUtils::class.java.simpleName
 
     val MD5 = "MD5"
     val COMMON_MIME_TYPE = "*/*"

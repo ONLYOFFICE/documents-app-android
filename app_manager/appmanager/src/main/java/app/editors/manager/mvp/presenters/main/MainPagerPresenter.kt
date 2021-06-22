@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
-import app.documents.core.account.AccountDao
 import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
@@ -11,6 +10,7 @@ import app.editors.manager.app.App
 import app.editors.manager.di.component.DaggerApiComponent
 import app.editors.manager.di.module.ApiModule
 import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainPagerView
 import io.reactivex.Observable
@@ -22,6 +22,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.TabFragmentDictionary
 import moxy.InjectViewState
 import java.util.*
 import javax.inject.Inject
@@ -43,6 +44,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     private var disposable: Disposable? = null
+    private var sections: List<Explorer> = listOf()
 
     private val api: Api?
         get() {
@@ -65,41 +67,45 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     fun getState() {
         disposable = getPortalModules().subscribe({
             viewState.onFinishRequest()
-            accountJson?.let { jsonAccount ->
-                Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
-                    when {
-                        networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
-                            viewState.onRender(
-                                MainPagerState.PersonalState(
-                                    jsonAccount,
-                                    StringUtils.convertServerVersion(
-                                        networkSetting.serverVersion
+            if(StringUtils.convertServerVersion(networkSetting.serverVersion) < 11) {
+                accountJson?.let { jsonAccount ->
+                    Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
+                        when {
+                            networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
+                                viewState.onRender(
+                                    MainPagerState.PersonalState(
+                                        jsonAccount,
+                                        StringUtils.convertServerVersion(
+                                            networkSetting.serverVersion
+                                        )
                                     )
                                 )
-                            )
-                        }
-                        cloudAccount.isVisitor -> {
-                            viewState.onRender(
-                                MainPagerState.VisitorState(
-                                    jsonAccount,
-                                    StringUtils.convertServerVersion(
-                                        networkSetting.serverVersion
+                            }
+                            cloudAccount.isVisitor -> {
+                                viewState.onRender(
+                                    MainPagerState.VisitorState(
+                                        jsonAccount,
+                                        StringUtils.convertServerVersion(
+                                            networkSetting.serverVersion
+                                        )
                                     )
                                 )
-                            )
-                        }
-                        else -> {
-                            viewState.onRender(
-                                MainPagerState.CloudState(
-                                    jsonAccount,
-                                    StringUtils.convertServerVersion(networkSetting.serverVersion)
+                            }
+                            else -> {
+                                viewState.onRender(
+                                    MainPagerState.CloudState(
+                                        jsonAccount,
+                                        StringUtils.convertServerVersion(networkSetting.serverVersion)
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
+                } ?: run {
+                    throw Exception("Need account")
                 }
-            } ?: run {
-                throw Exception("Need account")
+            } else {
+                accountJson?.let { it1 -> viewState.onRender(it1, sections) }
             }
         }) {throwable: Throwable -> fetchError(throwable)}
     }
@@ -109,14 +115,15 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             mapOf("filterType" to 2),
             mapOf(
                 "withsubfolders" to false,
-                "withoutTrash" to true,
+                "withoutTrash" to false,
                 "withoutAdditionalFolder" to false
             )
         ), api?.getModules(listOf(Constants.Modules.PROJECT_ID)), { cloudTree, modules ->
             if(cloudTree.response != null && modules.response != null) {
                 preferenceTool.isProjectDisable = !modules.response[0].isEnable
+                sections = cloudTree.response
                 for (folder in cloudTree.response) {
-                    if (StringUtils.Favorites.contains(folder.current.title)) {
+                    if (TabFragmentDictionary.Favorites.contains(folder.current.title)) {
                         preferenceTool.setFavoritesEnable(true)
                         break
                     } else {

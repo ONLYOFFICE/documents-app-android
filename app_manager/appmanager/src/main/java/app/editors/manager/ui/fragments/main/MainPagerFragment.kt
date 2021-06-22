@@ -11,6 +11,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerState
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -18,8 +19,11 @@ import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.fragments.factory.TabFragmentFactory
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.TabFragmentDictionary
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import java.util.*
@@ -169,6 +173,38 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 getCloudFragments(state.account, state.version)
             }
         }
+        arguments?.getString(KEY_FILE_DATA)?.let {
+            childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
+                viewBinding?.mainViewPager?.post {
+                    viewBinding?.mainViewPager?.currentItem =
+                        adapter.getByTitle(getString(R.string.main_pager_docs_projects))
+                }
+            }
+        }
+    }
+
+    override fun onRender(stringAccount: String, sections: List<Explorer>) {
+        val fragments = arrayListOf<ViewPagerAdapter.Container>()
+        for(section in sections) {
+            if(TabFragmentDictionary.Recent.contains(section.current.title)) {
+                continue
+            }
+            fragments.add(
+                ViewPagerAdapter.Container(
+                    TabFragmentFactory.getSectionFragment(section.current.title, stringAccount),
+                    context?.let { TabFragmentFactory(it).getTabTitle(section.current.title) }
+                )
+            )
+        }
+        if (!preferenceTool?.isProjectDisable!!) {
+            fragments.add(
+                ViewPagerAdapter.Container(
+                    DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
+                    getString(R.string.main_pager_docs_projects)
+                )
+            )
+        }
+        setAdapter(fragments)
         arguments?.getString(KEY_FILE_DATA)?.let {
             childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
                 viewBinding?.mainViewPager?.post {
