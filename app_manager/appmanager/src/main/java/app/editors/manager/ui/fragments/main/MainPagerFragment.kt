@@ -22,7 +22,6 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.factory.TabFragmentFactory
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
-import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TabFragmentDictionary
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -186,13 +185,17 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     override fun onRender(stringAccount: String, sections: List<Explorer>) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
         for(section in sections) {
-            if(TabFragmentDictionary.Recent.contains(section.current.title)) {
+            if(TabFragmentDictionary.Recent.contains(section?.current?.title)) {
                 continue
             }
             fragments.add(
                 ViewPagerAdapter.Container(
-                    TabFragmentFactory.getSectionFragment(section.current.title, stringAccount),
-                    context?.let { TabFragmentFactory(it).getTabTitle(section.current.title) }
+                    section?.current?.title?.let { TabFragmentFactory.getSectionFragment(it, stringAccount) },
+                    context?.let { section?.current?.title?.let { it1 ->
+                        TabFragmentFactory(it).getTabTitle(
+                            it1
+                        )
+                    } }
                 )
             )
         }
@@ -204,7 +207,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 )
             )
         }
-        setAdapter(fragments)
+        val correctOrderTabs = setCorrectOrder(fragments)
+        setAdapter(correctOrderTabs)
         arguments?.getString(KEY_FILE_DATA)?.let {
             childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
                 viewBinding?.mainViewPager?.post {
@@ -213,6 +217,21 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 }
             }
         }
+    }
+
+    private fun setCorrectOrder(tabs: ArrayList<ViewPagerAdapter.Container>): ArrayList<ViewPagerAdapter.Container?> {
+        var tabOrder = arrayListOf<ViewPagerAdapter.Container?>(null, null, null, null, null, null)
+        for(tab in tabs) {
+            when {
+                TabFragmentDictionary.My.contains(tab.mTitle) -> tabOrder.set(0, tab)
+                TabFragmentDictionary.Shared.contains(tab.mTitle) -> tabOrder.set(1, tab)
+                TabFragmentDictionary.Favorites.contains(tab.mTitle) -> tabOrder.set(2, tab)
+                TabFragmentDictionary.Common.contains(tab.mTitle) -> tabOrder.set(3, tab)
+                TabFragmentDictionary.Trash.contains(tab.mTitle) -> tabOrder.set(5, tab)
+                else -> tabOrder.set(4, tab)
+            }
+        }
+        return tabOrder
     }
 
     override fun onFinishRequest() {
@@ -224,7 +243,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     private fun getCloudFragments(stringAccount: String, serverVersion: Int) {
-        val fragments = arrayListOf<ViewPagerAdapter.Container>()
+        val fragments = arrayListOf<ViewPagerAdapter.Container?>()
         fragments.add(
             ViewPagerAdapter.Container(
                 DocsMyFragment.newInstance(stringAccount), getString(
@@ -271,7 +290,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     private fun getVisitorFragments(stringAccount: String) {
-        val fragments = arrayListOf<ViewPagerAdapter.Container>()
+        val fragments = arrayListOf<ViewPagerAdapter.Container?>()
         fragments.add(
             ViewPagerAdapter.Container(
                 DocsShareFragment.newInstance(stringAccount),
@@ -296,7 +315,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     private fun getPersonalFragments(stringAccount: String, serverVersion: Int) {
-        val fragments = arrayListOf<ViewPagerAdapter.Container>()
+        val fragments = arrayListOf<ViewPagerAdapter.Container?>()
         fragments.add(
             ViewPagerAdapter.Container(
                 DocsMyFragment.newInstance(stringAccount), getString(
@@ -322,7 +341,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         setAdapter(fragments)
     }
 
-    private fun setAdapter(fragments: ArrayList<ViewPagerAdapter.Container>) {
+    private fun setAdapter(fragments: ArrayList<ViewPagerAdapter.Container?>) {
         adapter = AdapterForPages(childFragmentManager, fragments)
         viewBinding?.mainViewPager?.offscreenPageLimit = OFFSCREEN_COUNT
         viewBinding?.mainViewPager?.adapter = adapter
