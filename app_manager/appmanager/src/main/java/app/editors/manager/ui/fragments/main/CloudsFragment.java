@@ -41,6 +41,8 @@ public class CloudsFragment extends BaseAppFragment {
     FrameLayout mOwnCloudItem;
     @BindView(R.id.cloudsItemWebDav)
     FrameLayout mWebDavItem;
+    @BindView(R.id.cloudsItemOneDrive)
+    FrameLayout mOneDriveItem;
     @BindView(R.id.settingIcon)
     AppCompatImageView mOnlyOfficeIcon;
     @BindView(R.id.settingText)
@@ -116,6 +118,7 @@ public class CloudsFragment extends BaseAppFragment {
             initYandexItem(context, size);
             initOwnCloudItem(context, size);
             initWebDavItem(context, size);
+            initOneDriveItem(context, size);
         }
     }
 
@@ -149,6 +152,13 @@ public class CloudsFragment extends BaseAppFragment {
 //        ((AppCompatTextView) mYandexItem.findViewById(R.id.settingText)).setText(R.string.storage_select_yandex);
     }
 
+    private void initOneDriveItem(Context context, float size) {
+        AppCompatImageView image = mOneDriveItem.findViewById(R.id.settingIcon);
+        setImageSize(image, size);
+        image.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_storage_onedrive));
+        ((AppCompatTextView) mOneDriveItem.findViewById(R.id.settingText)).setText(R.string.storage_select_one_drive);
+    }
+
     private void setImageSize(AppCompatImageView image, float size) {
         ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) image.getLayoutParams();
         params.height = (int) size;
@@ -157,7 +167,7 @@ public class CloudsFragment extends BaseAppFragment {
     }
 
     @OnClick({R.id.cloudsItemOnlyOffice, R.id.cloudsItemNextCloud,
-            R.id.cloudsItemYandex, R.id.cloudsItemOwnCloud, R.id.cloudsItemWebDav})
+            R.id.cloudsItemYandex, R.id.cloudsItemOwnCloud, R.id.cloudsItemWebDav, R.id.cloudsItemOneDrive})
     public void onClick(View view) {
         if (getContext() != null && NetworkUtils.isOnline(getContext())) {
             switch (view.getId()) {
@@ -175,6 +185,9 @@ public class CloudsFragment extends BaseAppFragment {
                     break;
                 case R.id.cloudsItemWebDav:
                     WebDavLoginActivity.show(getActivity(), WebDavApi.Providers.WebDav, null);
+                    break;
+                case R.id.cloudsItemOneDrive:
+                    showSnackBar("Click on OneDrive").show();
                     break;
             }
         } else {
