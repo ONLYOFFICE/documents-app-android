@@ -528,7 +528,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         showAccount(isVisible)
         showNavigationButton(!isVisible)
         if (isVisible) {
-            viewBinding.appBarTabs.expand(50)
+            if (viewBinding.appBarTabs.visibility != View.VISIBLE) {
+                viewBinding.appBarTabs.expand(50)
+            }
         } else {
             viewBinding.appBarTabs.collapse()
         }

@@ -299,7 +299,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
-            activity?.showActionButton(true)
+            activity?.showActionButton(false)
             (getActiveFragment(viewBinding?.mainViewPager) as DocsCloudFragment).onScrollPage()
         }
     }
