@@ -167,6 +167,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     override fun onError(@StringRes res: Int) {
         showSnackBar(getString(res))
+        requireActivity().intent.data = null
     }
 
     private fun getCloudFragments(stringAccount: String, serverVersion: Int) {
@@ -276,6 +277,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
             viewBinding?.mainViewPager?.currentItem = adapter.getByTitle(getString(R.string.main_pager_docs_projects))
             (it as DocsProjectsFragment).setFileData(fileData)
+            requireActivity().intent.data = null
         }
     }
 
