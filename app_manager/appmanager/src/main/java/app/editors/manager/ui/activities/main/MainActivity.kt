@@ -21,6 +21,7 @@ import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
+import app.editors.manager.onedrive.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.main.*
@@ -457,6 +458,8 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         account?.let {
             if (it.isWebDav) {
                 showWebDavFragment(it)
+            } else if(it.isOneDrive) {
+                showOneDriveFragment(account)
             } else {
                 showCloudFragment(account)
             }
@@ -489,6 +492,18 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
             FragmentUtils.showFragment(
                 supportFragmentManager,
                 MainPagerFragment.newInstance(Json.encodeToString(account), fileData),
+                R.id.frame_container
+            )
+        }
+    }
+
+    private fun showOneDriveFragment(account: CloudAccount) {
+        supportFragmentManager.findFragmentByTag(DocsOneDriveFragment.TAG)?.let {
+            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
+        } ?: run {
+            FragmentUtils.showFragment(
+                supportFragmentManager,
+                DocsOneDriveFragment.newInstance(Json.encodeToString(account)),
                 R.id.frame_container
             )
         }

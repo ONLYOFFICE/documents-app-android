@@ -353,7 +353,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     abstract public void addRecent(CloudFile file);
 
-    abstract void updateViewsState();
+    abstract protected void updateViewsState();
 
     public abstract void onContextClick(final Item item, final int position, final boolean isTrash);
 
@@ -1377,7 +1377,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return mModelExplorerStack.isRoot();
     }
 
-    String getCurrentTitle() {
+    protected String getCurrentTitle() {
         final String title = mModelExplorerStack.getCurrentTitle();
         return title != null ? title : "";
     }

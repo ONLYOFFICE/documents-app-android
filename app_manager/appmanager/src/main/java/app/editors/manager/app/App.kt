@@ -15,10 +15,9 @@ import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
-import app.editors.manager.di.module.ApiModule
-import app.editors.manager.di.module.AppModule
-import app.editors.manager.di.module.ShareModule
-import app.editors.manager.di.module.ToolModule
+import app.editors.manager.di.module.*
+import app.editors.manager.onedrive.DaggerOneDriveComponent
+import app.editors.manager.onedrive.OneDriveComponent
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.util.*
@@ -167,4 +166,9 @@ class App : Application() {
             .getWebDavApi()
     }
 
+    fun getOneDriveComponent(token: String): OneDriveComponent {
+        return DaggerOneDriveComponent.builder().appComponent(_appComponent)
+            .oneDriveModule(OneDriveModule(token))
+            .build()
+    }
 }
