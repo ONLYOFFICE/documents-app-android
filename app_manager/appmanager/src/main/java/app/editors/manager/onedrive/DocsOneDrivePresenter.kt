@@ -46,7 +46,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                     withContext(Dispatchers.Main) {
-                        getItemsById("")
+                        getItemsById(null)
                     }
 
                 }
@@ -57,7 +57,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
                     AccountUtils.getAccount(mContext, cloudAccount.getAccountName())?.let { account ->
                         mFileProvider = OneDriveFileProvider()
                         withContext(Dispatchers.Main) {
-                            getItemsById("")
+                            getItemsById(null)
                         }
                     }
                 } ?: run {

@@ -56,7 +56,7 @@ class OneDriveFileProvider : BaseFileProvider {
 
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer>? {
         return Observable.fromCallable {
-            api.oneDriveService.getFiles().blockingGet() }
+            id?.let { api.oneDriveService.getChildren(id).blockingGet() } ?: api.oneDriveService.getFiles().blockingGet() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->

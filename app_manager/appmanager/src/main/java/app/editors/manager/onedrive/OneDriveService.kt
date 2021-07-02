@@ -38,6 +38,13 @@ interface OneDriveService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @GET("$API_VERSION" + "me/drive/items/{item_id}/children")
+    fun getChildren(@Path(value = "item_id") id: String): Single<Response<DriveItemCloudTree>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @GET("$API_VERSION" + "me/drive/root")
     fun getRoot(): Single<Response<ResponseBody>>
 
