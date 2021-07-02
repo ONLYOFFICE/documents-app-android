@@ -41,4 +41,11 @@ interface OneDriveService {
     @GET("$API_VERSION" + "me/drive/root")
     fun getRoot(): Single<Response<ResponseBody>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("$API_VERSION" + "me/drive/items/{item-id}/content")
+    fun download(@Path(value = "item-id") itemId: String): Single<Response<ResponseBody>>
+
 }

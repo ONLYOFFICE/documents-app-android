@@ -152,7 +152,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * Clicked/Checked and etc...
      * */
     @Nullable
-    Item mItemClicked;
+    protected Item mItemClicked;
     private int mItemClickedPosition;
     protected boolean mIsContextClick;
 
@@ -1342,7 +1342,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     /*
      * Dialogs templates
      * */
-    void showDialogWaiting(@Nullable String tag) {
+    protected void showDialogWaiting(@Nullable String tag) {
         getViewState().onDialogWaiting(mContext.getString(R.string.dialogs_wait_title), tag);
     }
 

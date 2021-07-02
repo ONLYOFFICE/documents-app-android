@@ -14,4 +14,5 @@ interface IOneDriveServiceProvider {
     fun userInfo(): Single<OneDriveResponse>
     fun getFiles(): Single<OneDriveResponse>
     fun getRoot(): Single<OneDriveResponse>
+    fun download(itemId: String): Single<OneDriveResponse>
 }
