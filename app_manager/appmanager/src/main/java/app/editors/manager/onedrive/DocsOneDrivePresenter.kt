@@ -1,14 +1,14 @@
 package app.editors.manager.onedrive
 
 import app.documents.core.account.Recent
-import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
+import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -17,9 +17,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import lib.toolkit.base.managers.receivers.ExportReceiver
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import java.util.*
 
@@ -123,7 +123,31 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
     }
 
     override fun onContextClick(item: Item?, position: Int, isTrash: Boolean) {
-        TODO("Not yet implemented")
+        onClickEvent(item, position)
+        mIsContextClick = true
+        val state = ContextBottomDialog.State()
+        state.mTitle = itemClickedTitle
+        state.mInfo = TimeUtils.formatDate(itemClickedDate)
+        state.mIsFolder = !isClickedItemFile
+        state.mIsDocs = isClickedItemDocs
+        state.mIsWebDav = false
+        state.mIsTrash = isTrash
+        state.mIsItemEditable = true
+        state.mIsContextEditable = true
+        if (!isClickedItemFile) {
+            state.mIconResId = R.drawable.ic_type_folder
+        } else {
+            state.mIconResId = getIconContext(
+                StringUtils.getExtensionFromPath(
+                    itemClickedTitle
+                )
+            )
+        }
+        state.mIsPdf = isPdf
+        if (state.mIsShared && state.mIsFolder) {
+            state.mIconResId = R.drawable.ic_type_folder_shared
+        }
+        viewState.onItemContext(state)
     }
 
     override fun onActionClick() {

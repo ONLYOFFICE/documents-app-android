@@ -1,12 +1,12 @@
 package app.editors.manager.onedrive
 
-import android.util.Log
 import app.editors.manager.managers.providers.IOneDriveServiceProvider
 import app.editors.manager.managers.providers.OneDriveResponse
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
 
@@ -57,6 +57,17 @@ class OneDriveServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun deleteItem(itemId: String): Single<Response<ResponseBody>> {
+        return oneDriveService.deleteItem(itemId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun renameItem(itemId: String, request: RenameRequest): Single<Response<ResponseBody>> {
+        return oneDriveService.renameItem(itemId, request)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
 
     private fun <T> fetchResponse(response: Response<T>): OneDriveResponse {
         return if (response.isSuccessful && response.body() != null) {
@@ -67,6 +78,5 @@ class OneDriveServiceProvider(
             return error
         }
     }
-
 
 }

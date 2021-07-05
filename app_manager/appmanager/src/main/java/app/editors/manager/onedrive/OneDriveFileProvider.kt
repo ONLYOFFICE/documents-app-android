@@ -18,6 +18,7 @@ import app.editors.manager.mvp.models.response.ResponseOperation
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
+import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.runBlocking
@@ -32,7 +33,6 @@ import retrofit2.HttpException
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Error
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -134,14 +134,45 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     override fun rename(item: Item?, newName: String?, version: Int?): Observable<Item> {
-        TODO("Not yet implemented")
+        val correctName = StringUtils.getEncodedString(newName) + (item as CloudFile).fileExst
+        val request = RenameRequest(correctName)
+        return Observable.fromCallable{ api.oneDriveService.renameItem(item.id, request).blockingGet() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                if(response.isSuccessful) {
+                    item?.updated = Date()
+                    item?.title = newName
+                    return@map item
+                } else {
+                    throw HttpException(response)
+                }
+            }
     }
 
     override fun delete(
         items: MutableList<Item>?,
         from: CloudFolder?
-    ): Observable<MutableList<Operation>> {
-        TODO("Not yet implemented")
+    ): Observable<List<Operation>> {
+        return items?.size?.let {
+            Observable.fromIterable(items).map { item -> api.oneDriveService.deleteItem(item.id).blockingGet() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { response ->
+                    if(response.isSuccessful && response.code() == 204) {
+                        return@map response
+                    } else {
+                        throw HttpException(response)
+                    }
+                }.buffer(it)
+                .map { response ->
+                    val operations: MutableList<Operation> = ArrayList()
+                    val operation = Operation()
+                    operation.progress = 100
+                    operations.add(operation)
+                    return@map operations
+                }
+        }!!
     }
 
     override fun transfer(
@@ -171,8 +202,27 @@ class OneDriveFileProvider : BaseFileProvider {
         }
     }
 
+    fun fileInfo(item: Item, isDownload: Boolean): Observable <CloudFile?> {
+        return Observable.create(ObservableOnSubscribe { emitter: ObservableEmitter<CloudFile?> ->
+            val outputFile = checkDirectory(item)
+            if (outputFile != null && outputFile.exists()) {
+                if (item is CloudFile) {
+                    if (isDownload) {
+                        download(emitter, item, outputFile)
+                    } else {
+                        emitter.onNext(setFile(item, outputFile)!!)
+                        emitter.onComplete()
+                    }
+                }
+            }
+        })
+    }
+
+
     override fun getStatusOperation(): ResponseOperation {
-        TODO("Not yet implemented")
+        val responseOperation = ResponseOperation()
+        responseOperation.response = ArrayList()
+        return responseOperation
     }
 
     override fun download(items: MutableList<Item>?): Observable<Int> {

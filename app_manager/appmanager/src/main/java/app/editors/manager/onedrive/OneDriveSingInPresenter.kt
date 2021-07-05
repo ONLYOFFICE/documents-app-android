@@ -3,12 +3,9 @@ package app.editors.manager.onedrive
 import android.accounts.Account
 import android.util.Log
 import app.documents.core.account.CloudAccount
-import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.providers.OneDriveResponse
-import app.editors.manager.managers.utils.Constants
-import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
@@ -18,8 +15,6 @@ import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
-import java.net.URL
-
 
 @InjectViewState
 class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
@@ -37,7 +32,6 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
 
 
     fun checkOneDrive(token: String) {
-        Log.d("ONEDRIVE", "$token")
         disposable = App.getApp().getOneDriveComponent(token).oneDriveService.userInfo()
             .subscribe({oneDriveResponse ->
                 when(oneDriveResponse) {

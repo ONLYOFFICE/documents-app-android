@@ -55,4 +55,17 @@ interface OneDriveService {
     @GET("$API_VERSION" + "me/drive/items/{item-id}/content")
     fun download(@Path(value = "item-id") itemId: String): Single<Response<ResponseBody>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @DELETE(API_VERSION + "me/drive/items/{item_id}")
+    fun deleteItem(@Path(value = "item_id")item_id: String): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PATCH( API_VERSION + "me/drive/items/{item_id}")
+    fun renameItem(@Path(value = "item_id") itemId: String, @Body request: RenameRequest):Single<Response<ResponseBody>>
 }

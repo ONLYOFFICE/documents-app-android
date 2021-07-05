@@ -62,6 +62,7 @@ import app.editors.manager.mvp.models.request.RequestDownload;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.presenters.base.BasePresenter;
 import app.editors.manager.mvp.views.main.DocsBaseView;
+import app.editors.manager.onedrive.OneDriveFileProvider;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -422,7 +423,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         } else if (mItemClicked != null) {
             if (mItemClicked instanceof CloudFile) {
                 mDisposable.add(
-                        ((mFileProvider instanceof WebDavFileProvider) ? ((WebDavFileProvider) mFileProvider).fileInfo(mItemClicked, false) : (mFileProvider.fileInfo(mItemClicked))).subscribe(
+                        ((mFileProvider instanceof OneDriveFileProvider) ? ((OneDriveFileProvider)mFileProvider).fileInfo(mItemClicked, false) : (mFileProvider.fileInfo(mItemClicked))).subscribe(
                                 response -> {
                                     if (!response.getFileStatus().isEmpty()) {
                                         int statusMask =
@@ -1207,7 +1208,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     /*
      * Get clicked item and do action with current state
      * */
-    void onClickEvent(final Item item, final int position) {
+    protected void onClickEvent(final Item item, final int position) {
         mItemClickedPosition = position;
         mItemClicked = mModelExplorerStack.getItemById(item);
     }
@@ -1272,7 +1273,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * */
 
 
-    boolean isPdf() {
+    protected boolean isPdf() {
         if (mItemClicked instanceof CloudFile) {
             CloudFile file = (CloudFile) mItemClicked;
             return StringUtils.getExtension(file.getFileExst()).equals(StringUtils.Extension.PDF);
@@ -1280,7 +1281,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return false;
     }
 
-    int getIconContext(String ext) {
+    protected int getIconContext(String ext) {
         final StringUtils.Extension extension = StringUtils.getExtension(ext);
         switch (extension) {
             case DOC:
@@ -1382,20 +1383,20 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return title != null ? title : "";
     }
 
-    String getItemClickedTitle() {
+    protected String getItemClickedTitle() {
         return mItemClicked != null ? mItemClicked.getTitle() : "";
     }
 
-    boolean isClickedItemFile() {
+    protected boolean isClickedItemFile() {
         return mItemClicked instanceof CloudFile;
     }
 
-    boolean isClickedItemDocs() {
+    protected boolean isClickedItemDocs() {
         return isClickedItemFile() && StringUtils.isDocument(((CloudFile) mItemClicked).getFileExst());
     }
 
     @Nullable
-    Date getItemClickedDate() {
+    protected Date getItemClickedDate() {
         return mItemClicked != null ? mItemClicked.getUpdated() : null;
     }
 
