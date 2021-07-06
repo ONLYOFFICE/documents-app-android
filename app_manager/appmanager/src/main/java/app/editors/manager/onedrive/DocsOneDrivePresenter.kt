@@ -104,10 +104,10 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
             accountDao.getAccountOnline()?.let {
                 file?.title?.let { it1 ->
                     Recent(
-                        idFile = if (file?.fileExst?.let { it1 -> StringUtils.isImage(it1) } == true) file?.id else file?.viewUrl,
-                        path = file?.webUrl,
+                        idFile = if (file.fileExst?.let { it1 -> StringUtils.isImage(it1) } == true) file.id else file.viewUrl,
+                        path = file.webUrl,
                         name = it1,
-                        size = file?.pureContentLength,
+                        size = file.pureContentLength,
                         isLocal = false,
                         isWebDav = true,
                         date = Date().time,
@@ -151,7 +151,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
     }
 
     override fun onActionClick() {
-        TODO("Not yet implemented")
+        viewState.onActionDialog(false, true)
     }
 
     override fun updateViewsState() {

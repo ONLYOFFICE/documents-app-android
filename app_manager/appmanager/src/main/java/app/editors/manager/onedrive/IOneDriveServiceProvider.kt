@@ -1,5 +1,6 @@
 package app.editors.manager.managers.providers
 
+import app.editors.manager.onedrive.CreateFolderRequest
 import app.editors.manager.onedrive.RenameRequest
 import io.reactivex.Single
 import okhttp3.ResponseBody
@@ -21,4 +22,5 @@ interface IOneDriveServiceProvider {
     fun download(itemId: String): Single<OneDriveResponse>
     fun deleteItem(itemId: String): Single<Response<ResponseBody>>
     fun renameItem(itemId: String, request: RenameRequest): Single<Response<ResponseBody>>
+    fun createFolder(itemId: String, request: CreateFolderRequest): Single<OneDriveResponse>
 }

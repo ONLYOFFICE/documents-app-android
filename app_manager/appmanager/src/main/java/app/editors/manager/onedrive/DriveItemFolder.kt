@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DriveItemFolder(
     val childCount: String = "",
-    val view: DriveItemView
+    val view: DriveItemView? = null
 )

@@ -423,7 +423,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         } else if (mItemClicked != null) {
             if (mItemClicked instanceof CloudFile) {
                 mDisposable.add(
-                        ((mFileProvider instanceof OneDriveFileProvider) ? ((OneDriveFileProvider)mFileProvider).fileInfo(mItemClicked, false) : (mFileProvider.fileInfo(mItemClicked))).subscribe(
+                        ((mFileProvider instanceof WebDavFileProvider || mFileProvider instanceof OneDriveFileProvider) ? ((OneDriveFileProvider) mFileProvider).fileInfo(mItemClicked, false) : (mFileProvider.fileInfo(mItemClicked))).subscribe(
                                 response -> {
                                     if (!response.getFileStatus().isEmpty()) {
                                         int statusMask =

@@ -1,10 +1,12 @@
 package app.editors.manager.onedrive
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
 @Serializable
 data class DriveItemValue(
+    @SerialName("@odata.context") val context: String = "",
     val createdDateTime: String = "",
     val cTag: String = "",
     val eTag: String = "",
@@ -13,7 +15,7 @@ data class DriveItemValue(
     val name: String = "",
     val size: String ="",
     val webUrl: String = "",
-    val reactions: DriveItemReactions,
+    val reactions: DriveItemReactions? = null,
     val createdBy: DriveItemOperation,
     val lastModifiedBy: DriveItemOperation,
     val parentReference: DriveItemParentReference,

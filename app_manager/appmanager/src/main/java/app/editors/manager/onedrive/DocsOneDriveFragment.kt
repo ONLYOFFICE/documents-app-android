@@ -1,5 +1,6 @@
 package app.editors.manager.onedrive
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import app.documents.core.account.CloudAccount
@@ -7,7 +8,9 @@ import app.editors.manager.app.App
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
+import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
+import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
 import moxy.presenter.InjectPresenter
 
 class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, DocsOneDriveView {
@@ -31,6 +34,19 @@ class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, DocsOneDr
 
     @InjectPresenter
     lateinit var presenter: DocsOneDrivePresenter
+    private var activity: IMainActivity? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            activity = context as IMainActivity
+        } catch (e: ClassCastException) {
+            throw RuntimeException(
+                DocsOnDeviceFragment::class.java.simpleName + " - must implement - " +
+                        IMainActivity::class.java.simpleName
+            )
+        }
+    }
 
     init {
         App.getApp().appComponent.inject(this)
@@ -53,9 +69,14 @@ class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, DocsOneDr
         TODO("Not yet implemented")
     }
 
+    override fun setVisibilityActionButton(isShow: Boolean) {
+        activity?.showActionButton(isShow)
+    }
+
     override fun getPresenter(): DocsBasePresenter<out DocsBaseView> {
         return presenter
     }
+
 
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()

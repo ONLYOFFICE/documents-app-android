@@ -68,4 +68,11 @@ interface OneDriveService {
     )
     @PATCH( API_VERSION + "me/drive/items/{item_id}")
     fun renameItem(@Path(value = "item_id") itemId: String, @Body request: RenameRequest):Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST(API_VERSION + "me/drive/items/{parent_item_id}/children")
+    fun createFolder(@Path(value = "parent_item_id") itemId: String, @Body request: CreateFolderRequest): Single<Response<DriveItemValue>>
 }

@@ -32,6 +32,7 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
 
 
     fun checkOneDrive(token: String) {
+        Log.d("ONEDRIVE", "$token")
         disposable = App.getApp().getOneDriveComponent(token).oneDriveService.userInfo()
             .subscribe({oneDriveResponse ->
                 when(oneDriveResponse) {

@@ -78,50 +78,55 @@ class OneDriveFileProvider : BaseFileProvider {
         val files: MutableList<CloudFile> = mutableListOf()
         val folders: MutableList<CloudFolder> = mutableListOf()
 
+        if(!response.value.isEmpty()) {
 
-        val nameParentFolder = response.value.get(0).parentReference.path.split("/")
-        val name = nameParentFolder.get(2)
-        val correctName = name.removeRange(name.length - 1, name.length)
+            val nameParentFolder = response.value.get(0).parentReference.path.split("/")
+            val name = nameParentFolder.get(2)
+            val correctName = name.removeRange(name.length - 1, name.length)
 
-        val parentFolder = CloudFolder().apply {
-            this.id = response.value.get(0).id
-            this.title = correctName
-            this.etag = response.value.get(0).eTag
-            this.updated = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(response.value.get(0).lastModifiedDateTime)
-        }
-
-        for(item in response.value) {
-            if(item.folder != null) {
-                val folder = CloudFolder()
-                folder.id = item.id
-                folder.title = item.name
-                folder.parentId = item.parentReference.id
-                folder.updated = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(item.lastModifiedDateTime)
-                folder.etag = item.eTag
-                folders.add(folder)
-            } else if(item.file != null) {
-                val file = CloudFile()
-                file.id = item.id
-                file.title = item.name
-                file.folderId = item.parentReference.id
-                file.pureContentLength = item.size.toLong()
-                file.fileExst = getExtensionFromPath(file.title.toLowerCase())
-                file.created = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(item.createdDateTime)
-                file.updated = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(item.lastModifiedDateTime)
-                files.add(file)
+            val parentFolder = CloudFolder().apply {
+                this.id = response.value.get(0).parentReference.id
+                this.title = correctName
+                this.etag = response.value.get(0).eTag
+                this.updated =
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(response.value.get(0).lastModifiedDateTime)
             }
+
+            for (item in response.value) {
+                if (item.folder != null) {
+                    val folder = CloudFolder()
+                    folder.id = item.id
+                    folder.title = item.name
+                    folder.parentId = item.parentReference.id
+                    folder.updated =
+                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(item.lastModifiedDateTime)
+                    folder.etag = item.eTag
+                    folders.add(folder)
+                } else if (item.file != null) {
+                    val file = CloudFile()
+                    file.id = item.id
+                    file.title = item.name
+                    file.folderId = item.parentReference.id
+                    file.pureContentLength = item.size.toLong()
+                    file.fileExst = getExtensionFromPath(file.title.toLowerCase())
+                    file.created =
+                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(item.createdDateTime)
+                    file.updated =
+                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(item.lastModifiedDateTime)
+                    files.add(file)
+                }
+            }
+
+            val current = Current()
+            current.id = parentFolder.id
+            current.filesCount = files.size.toString()
+            current.foldersCount = files.size.toString()
+            current.title = parentFolder.title
+
+            explorer.current = current
+            explorer.files = files
+            explorer.folders = folders
         }
-
-        val current = Current()
-        current.id = parentFolder.id
-        current.filesCount = files.size.toString()
-        current.foldersCount = files.size.toString()
-        current.title = parentFolder.title
-
-        explorer.current = current
-        explorer.files = files
-        explorer.folders = folders
-
         return explorer
     }
 
@@ -129,8 +134,27 @@ class OneDriveFileProvider : BaseFileProvider {
         TODO("Not yet implemented")
     }
 
-    override fun createFolder(folderId: String?, body: RequestCreate?): Observable<CloudFolder> {
-        TODO("Not yet implemented")
+    override fun createFolder(folderId: String?, body: RequestCreate?): Observable<CloudFolder>? {
+        val request = CreateFolderRequest(
+            name = body?.title!!,
+            folder = DriveItemFolder(),
+            conflictBehavior = "rename"
+        )
+        return Observable.fromCallable { api.oneDriveService.createFolder(folderId!!, request).blockingGet() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                if(response is OneDriveResponse.Success) {
+                    val folder = CloudFolder()
+                    folder.id = (response.response as DriveItemValue).id
+                    folder.title = response.response.name
+                    folder.updated = Date()
+                    return@map folder
+                } else {
+                    Log.d("ONEDRIVE", "${(response as OneDriveResponse.Error).error.message}")
+                    return@map null
+                }
+            }
     }
 
     override fun rename(item: Item?, newName: String?, version: Int?): Observable<Item> {
