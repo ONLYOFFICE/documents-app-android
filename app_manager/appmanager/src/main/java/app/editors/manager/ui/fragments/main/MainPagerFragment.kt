@@ -47,7 +47,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     @InjectPresenter
     lateinit var presenter: MainPagerPresenter
 
-    private lateinit var adapter: ViewPagerAdapter
+    private var adapter: ViewPagerAdapter? = null
     private var activity: IMainActivity? = null
     private var isScroll = true
     private var isVisibleRoot = true
@@ -109,7 +109,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     fun isActivePage(fragment: Fragment?): Boolean {
-        return adapter.isActiveFragment(viewBinding?.mainViewPager, fragment)
+        return adapter?.isActiveFragment(viewBinding?.mainViewPager, fragment) == true
     }
 
     fun setScrollViewPager(isScroll: Boolean) {
@@ -158,8 +158,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         arguments?.getString(KEY_FILE_DATA)?.let {
             childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
                 viewBinding?.mainViewPager?.post {
-                    viewBinding?.mainViewPager?.currentItem =
-                        adapter.getByTitle(getString(R.string.main_pager_docs_projects))
+                    adapter?.let {
+                        viewBinding?.mainViewPager?.currentItem =
+                            it.getByTitle(getString(R.string.main_pager_docs_projects))
+                    }
                 }
             }
         }
@@ -269,13 +271,17 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         adapter = AdapterForPages(childFragmentManager, fragments)
         viewBinding?.mainViewPager?.offscreenPageLimit = OFFSCREEN_COUNT
         viewBinding?.mainViewPager?.adapter = adapter
-        viewBinding?.mainViewPager?.addOnPageChangeListener(adapter)
+        adapter?.let {
+            viewBinding?.mainViewPager?.addOnPageChangeListener(it)
+        }
         activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
     }
 
     override fun setFileData(fileData: String) {
-        childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
-            viewBinding?.mainViewPager?.currentItem = adapter.getByTitle(getString(R.string.main_pager_docs_projects))
+        childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let { it ->
+            adapter?.let {
+                viewBinding?.mainViewPager?.currentItem = it.getByTitle(getString(R.string.main_pager_docs_projects))
+            }
             (it as DocsProjectsFragment).setFileData(fileData)
             requireActivity().intent.data = null
         }
@@ -285,11 +291,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         return (activeFragment as DocsCloudFragment).isRoot
     }
 
-    val position: Int
-        get() = adapter.selectedPage
+    val position: Int?
+        get() = adapter?.selectedPage
 
     private val activeFragment: Fragment?
-        get() = adapter.getActiveFragment(viewBinding?.mainViewPager)
+        get() = adapter?.getActiveFragment(viewBinding?.mainViewPager)
 
     /*
      * Adapter and page change listener
