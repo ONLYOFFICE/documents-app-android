@@ -8,6 +8,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.managers.providers.OneDriveResponse
+import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.request.RequestCreate
@@ -15,11 +16,10 @@ import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
-import io.reactivex.Emitter
+import io.reactivex.*
 import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -39,6 +39,9 @@ import java.util.*
 class OneDriveFileProvider : BaseFileProvider {
 
     var api = getOneDriveApi()
+    private val PATH_DOWNLOAD =
+        Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice"
+
 
     @JvmName("getApiAsync")
     private fun getOneDriveApi(): OneDriveComponent = runBlocking {
@@ -249,8 +252,50 @@ class OneDriveFileProvider : BaseFileProvider {
         return responseOperation
     }
 
-    override fun download(items: MutableList<Item>?): Observable<Int> {
-        TODO("Not yet implemented")
+    override fun download(items: MutableList<Item>?): Observable<Int?> {
+        return Observable.fromIterable(items)
+            .filter { item: Item? -> item is CloudFile }
+            .flatMap({ item: Item ->
+                startDownload(item)
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+
+    @SuppressLint("MissingPermission")
+    private fun startDownload(item: Item): Observable<Int?> {
+        return Observable.create { emitter: ObservableEmitter<Int?> ->
+            val response = api.oneDriveService.download(item.id).blockingGet()
+            val outputFile =
+                File(PATH_DOWNLOAD, item.title)
+            if (response is OneDriveResponse.Success) {
+                try {
+                    (response.response as ResponseBody)
+                        .byteStream().use { inputStream ->
+                            FileOutputStream(outputFile).use { outputStream ->
+                                val buffer = ByteArray(4096)
+                                var count: Int
+                                var progress = 0
+                                val fileSize = response.response.contentLength()
+                                while (inputStream.read(buffer).also { count = it } != -1) {
+                                    outputStream.write(buffer, 0, count)
+                                    progress += count
+                                    emitter.onNext((progress as Double / fileSize as Double * 100) as Int)
+                                }
+                                outputStream.flush()
+                                emitter.onNext(100)
+                                emitter.onComplete()
+                            }
+                        }
+                } catch (error: IOException) {
+                    emitter.onNext(0)
+                    emitter.onError(error)
+                }
+            } else {
+                Log.d("ONEDRIVE", "${(response as OneDriveResponse.Error).error.message}")
+            }
+        }
     }
 
     @Throws(IOException::class)

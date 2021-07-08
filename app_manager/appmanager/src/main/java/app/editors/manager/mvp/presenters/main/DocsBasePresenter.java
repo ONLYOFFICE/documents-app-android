@@ -821,7 +821,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         }
     }
 
-    void addFile(final CloudFile file) {
+    protected void addFile(final CloudFile file) {
         file.setJustCreated(true);
         mModelExplorerStack.addFileFirst(file);
         getViewState().onDocsGet(getListWithHeaders(mModelExplorerStack.last(), true));

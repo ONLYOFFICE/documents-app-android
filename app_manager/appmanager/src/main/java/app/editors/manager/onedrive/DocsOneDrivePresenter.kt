@@ -1,12 +1,15 @@
 package app.editors.manager.onedrive
 
 import app.documents.core.account.Recent
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
+import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -69,11 +72,34 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
 
 
     override fun getNextList() {
-        TODO("Not yet implemented")
+        val id = mModelExplorerStack.currentId
+        val loadPosition = mModelExplorerStack.loadPosition
+        if (id != null && loadPosition > 0) {
+            val args = getArgs(mFilteringValue)
+            args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
+            mDisposable.add(mFileProvider.getFiles(id, args).subscribe({ explorer: Explorer? ->
+                mModelExplorerStack.addOnNext(explorer)
+                val last = mModelExplorerStack.last()
+                if (last != null) {
+                    viewState.onDocsNext(getListWithHeaders(last, true))
+                }
+            }) { throwable: Throwable? -> fetchError(throwable) })
+        }
     }
 
     override fun createDocs(title: String) {
-        TODO("Not yet implemented")
+        val id = mModelExplorerStack.currentId
+        if (id != null) {
+            val requestCreate = RequestCreate()
+            requestCreate.title = title
+            mDisposable.add(mFileProvider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
+                addFile(file)
+                setPlaceholderType(PlaceholderViews.Type.NONE)
+                viewState.onDialogClose()
+                viewState.onOpenLocalFile(file)
+            }) { throwable: Throwable? -> fetchError(throwable) })
+            showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+        }
     }
 
     override fun getFileInfo() {
