@@ -138,7 +138,7 @@ class EnterprisePortalFragment : BaseAppFragment(), EnterprisePortalView,
 
     private fun nextClick() {
         hideKeyboard(viewBinding?.loginEnterprisePortalEdit)
-        presenter.checkPortal(viewBinding?.loginEnterprisePortalEdit?.text?.toString() ?: "")
+        presenter.checkPortal(viewBinding?.loginEnterprisePortalEdit?.text?.trim().toString() ?: "")
     }
 
     private inner class FieldsWatcher : BaseWatcher() {
