@@ -17,7 +17,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter implements ViewPager.
     protected int mSelectedPage;
 
     public ViewPagerAdapter(FragmentManager manager) {
-        super(manager);
+        super(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         mManager = manager;
         mFragmentList = new ArrayList<>();
     }
