@@ -10,11 +10,12 @@ import retrofit2.http.*
 
 interface WebDavApi {
 
-    enum class Providers(var path: String) {
-        NextCloud("/remote.php/dav/files/"),
-        OwnCloud("/remote.php/dav/files/"),
-        Yandex("/"),
-        WebDav("/");
+    enum class Providers(val path: String) {
+        NextCloud(path = "/remote.php/dav/files/"),
+        OwnCloud(path = "/remote.php/dav/files/"),
+        KDrive(path = "/"),
+        Yandex(path = "/"),
+        WebDav(path = "/");
     }
 
     companion object {

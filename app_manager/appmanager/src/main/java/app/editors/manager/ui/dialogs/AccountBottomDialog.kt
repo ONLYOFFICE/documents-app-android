@@ -78,7 +78,7 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
         recyclerView.adapter = adapter
         recyclerView.isNestedScrollingEnabled = true
         adapter.setOnItemClickListener(this)
-        adapter.setOnAddAccountClick { PortalsActivity.showPortals(activity) }
+        adapter.setOnAddAccountClick { PortalsActivity.showPortals(requireActivity()) }
         presenter.accounts
     }
 
@@ -91,7 +91,7 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
         hideDialog()
         if (context != null && activity != null) {
             val intent = Intent(context, MainActivity::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && activity!!.isInMultiWindowMode) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && requireActivity().isInMultiWindowMode) {
                 intent.flags =
                     Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT
             }

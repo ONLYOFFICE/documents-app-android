@@ -54,6 +54,9 @@ public class WebDavModel {
         @Element(required = false, name = "getetag")
         private String etag;
 
+        @Path("propstat/prop")
+        @Element(required = false, name = "resourcetype")
+        private String resourceType;
 
         public Date getLastModifiedDate() {
             if (lastModified == null) {
@@ -63,6 +66,14 @@ public class WebDavModel {
             }
         }
 
+
+        public String getResourceType() {
+            return resourceType;
+        }
+
+        public void setResourceType(String resourceType) {
+            this.resourceType = resourceType;
+        }
 
         public String getHref() {
             return href;
@@ -129,7 +140,7 @@ public class WebDavModel {
         }
 
         public boolean isDir() {
-            return "httpd/unix-directory".equals(contentType);
+            return "httpd/unix-directory".equals(contentType) || contentType == null;
         }
     }
 }
