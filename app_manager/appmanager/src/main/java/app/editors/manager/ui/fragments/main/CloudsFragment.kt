@@ -73,9 +73,8 @@ class CloudsFragment : BaseAppFragment() {
             WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.OwnCloud, null)
         }
 
-        //TODO need KDrive icon
         viewBinding?.cloudsItemKDrive?.bind(
-            R.drawable.ic_storage_webdav,
+            R.drawable.ic_storage_kdrive,
             R.string.storage_select_kdrive
         ) {
             WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.KDrive, null)

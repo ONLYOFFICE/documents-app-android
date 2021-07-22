@@ -122,6 +122,11 @@ class AccountViewHolder(view: View, listener: BaseAdapter.OnItemClickListener?) 
                         itemView.context, R.drawable.ic_storage_yandex
                     )
                 )
+                WebDavApi.Providers.KDrive -> portalIcon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        itemView.context, R.drawable.ic_storage_kdrive
+                    )
+                )
                 WebDavApi.Providers.WebDav -> portalIcon.setImageDrawable(
                     ContextCompat.getDrawable(
                         itemView.context, R.drawable.ic_storage_webdav

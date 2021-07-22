@@ -90,8 +90,8 @@ class PortalsActivity : BaseAppActivity(), View.OnClickListener {
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        viewBinding?.appBarToolbar?.setNavigationOnClickListener { onBackPressed() }
         setSupportActionBar(viewBinding?.appBarToolbar)
+        viewBinding?.appBarToolbar?.setNavigationOnClickListener { onBackPressed() }
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeButtonEnabled(true)

@@ -1,6 +1,5 @@
 package app.editors.manager.ui.views.custom
 
-import android.accounts.Account
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
@@ -100,6 +99,12 @@ class MainToolbar @JvmOverloads constructor(
                 ContextCompat.getDrawable(
                     context,
                     R.drawable.ic_storage_owncloud
+                )
+            )
+            WebDavApi.Providers.KDrive -> toolbarIcon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    context,
+                    R.drawable.ic_storage_kdrive
                 )
             )
             else -> {

@@ -28,6 +28,12 @@ object UiUtils {
                     R.drawable.ic_storage_yandex
                 )
             )
+            WebDavApi.Providers.KDrive -> image.setImageDrawable(
+                ContextCompat.getDrawable(
+                    image.context,
+                    R.drawable.ic_storage_kdrive
+                )
+            )
             WebDavApi.Providers.WebDav -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
