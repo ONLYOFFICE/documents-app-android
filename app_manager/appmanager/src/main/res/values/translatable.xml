@@ -406,6 +406,7 @@
     <string name="storage_select_box">Box</string>
     <string name="storage_select_share_point">SharePoint</string>
     <string name="storage_select_own_cloud">ownCloud</string>
+    <string name="storage_select_kdrive">KDrive</string>
     <string name="storage_select_web_dav">Other WebDAV storage</string>
 
     <string name="storage_connect_title">Folder settings</string>
