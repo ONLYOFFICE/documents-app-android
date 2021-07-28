@@ -486,6 +486,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
                     }
                 }
             }
+            showActionButton(true)
         } ?: run {
             FragmentUtils.showFragment(
                 supportFragmentManager,
@@ -514,7 +515,6 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
                 CloudAccountFragment.newInstance(),
                 R.id.frame_container
             )
-
         } else {
             FragmentUtils.showFragment(
                 supportFragmentManager,
