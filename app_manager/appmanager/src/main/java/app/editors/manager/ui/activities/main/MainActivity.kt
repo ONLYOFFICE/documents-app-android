@@ -332,6 +332,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
 
     override fun onDialogClose() {
         presenter.isDialogOpen = false
+        hideDialog()
     }
 
     override fun onCloseActionDialog() {
@@ -373,9 +374,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         ReviewManagerFactory.create(this).launchReviewFlow(this, reviewInfo)
             .addOnCompleteListener { task: Task<Void?> ->
                 if (task.isSuccessful) {
-                    Log.d(TAG, "onShowInAppReview: success")
+                    presenter.onRateOff()
                 } else {
-                    Log.d(TAG, "onShowInAppReview: error")
+                    presenter.onRateOff()
                 }
             }
     }
@@ -530,7 +531,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         showNavigationButton(!isVisible)
         if (isVisible) {
             if (viewBinding.appBarTabs.visibility != View.VISIBLE) {
-                viewBinding.appBarTabs.expand(50)
+                viewBinding.appBarLayout.postDelayed({
+                    viewBinding.appBarTabs.expand(100)
+                }, 10)
             }
         } else {
             viewBinding.appBarTabs.collapse()
