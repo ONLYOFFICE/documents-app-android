@@ -194,7 +194,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 }
             }
         } else {
-            viewState.onError("Account online")
+            viewState.onError(context.getString(R.string.errors_sign_in_account_already_use))
         }
     }
     fun checkContextLogin() {
