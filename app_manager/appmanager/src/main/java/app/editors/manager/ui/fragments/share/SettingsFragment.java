@@ -34,6 +34,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
@@ -324,14 +325,17 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
             if (getContext() != null && getActivity() != null) {
                 mSharePopup = new SharePopup(getContext(), R.layout.popup_share_menu);
                 mSharePopup.setContextListener(mListContextListener);
-                if (mSettingsPresenter.getItem() instanceof CloudFolder) {
-                    mSharePopup.setIsFolder(true);
+                if(!Objects.requireNonNull(mSettingsPresenter.getShareItem()).component5()) {
+                    if (mSettingsPresenter.getItem() instanceof CloudFolder) {
+                        mSharePopup.setIsFolder(true);
+                    } else {
+                        StringUtils.Extension extension = StringUtils.getExtension(StringUtils
+                                .getExtensionFromPath(mSettingsPresenter.getItem().getTitle()));
+                        mSharePopup.setIsDoc(extension == StringUtils.Extension.DOC);
+                    }
                 } else {
-                    StringUtils.Extension extension = StringUtils.getExtension(StringUtils
-                            .getExtensionFromPath(mSettingsPresenter.getItem().getTitle()));
-                    mSharePopup.setIsDoc(extension == StringUtils.Extension.DOC);
+                    mSharePopup.setIsVisitor();
                 }
-                mSharePopup.setFullAccess(true);
                 mSharePopup.showDropAt(view, getActivity());
             }
         });

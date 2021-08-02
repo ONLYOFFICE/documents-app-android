@@ -46,7 +46,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     var item: Item? = null
     var externalLink: String? = null
 
-    private var shareItem: ShareUi? = null
+    public var shareItem: ShareUi? = null
     var sharePosition = 0
         private set
 
@@ -193,7 +193,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         if (item != null && shareItem?.access != accessCode) {
             if (accessCode == ApiContract.ShareCode.NONE) {
                 shareItem?.let {
-                    viewState.onRemove(ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner), sharePosition)
+                    viewState.onRemove(ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor), sharePosition)
                 }
 
                 isRemove = true
@@ -280,10 +280,10 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         isAccessDenied = false
         val userList = shareList.filter {
             it.sharedTo.userName.isNotEmpty() && !it.isOwner
-        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked) }
+        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
         val groupList = shareList.filter {
             it.sharedTo.name.isNotEmpty()
-        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked) }
+        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
 
         shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {
             item?.access = it.access
