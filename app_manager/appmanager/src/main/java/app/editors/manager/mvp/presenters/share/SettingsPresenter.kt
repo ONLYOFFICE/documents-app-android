@@ -46,7 +46,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     var item: Item? = null
     var externalLink: String? = null
 
-    public var shareItem: ShareUi? = null
+    private var shareItem: ShareUi? = null
     var sharePosition = 0
         private set
 
@@ -223,7 +223,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         viewState.onGetShare(commonList, item!!.access)
         if (isPopupShow) {
             isPopupShow = false
-            viewState.onShowPopup(sharePosition)
+            shareItem?.isGuest?.let { viewState.onShowPopup(sharePosition, it) }
         }
     }
 
