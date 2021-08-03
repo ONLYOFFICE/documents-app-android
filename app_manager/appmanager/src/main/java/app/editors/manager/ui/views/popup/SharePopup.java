@@ -16,6 +16,7 @@ public class SharePopup extends BasePopup {
     private View mCommentView;
     private View mReviewView;
     private View mFillFormsView;
+    private View mRemoveUser;
 
     public SharePopup(@NonNull Context mContext, int mLayoutId) {
         super(mContext, mLayoutId);
@@ -36,14 +37,14 @@ public class SharePopup extends BasePopup {
         viewRead.setOnClickListener(v -> mContextListener.onContextClick(v, this));
         final View viewDeny = view.findViewById(R.id.popup_share_access_deny);
         viewDeny.setOnClickListener(v -> mContextListener.onContextClick(v, this));
-        final View viewRemove = view.findViewById(R.id.popup_share_access_remove);
-        viewRemove.setOnClickListener(v -> mContextListener.onContextClick(v, this));
+        mRemoveUser = view.findViewById(R.id.popup_share_access_remove);
+        mRemoveUser.setOnClickListener(v -> mContextListener.onContextClick(v, this));
         final View viewSeparatorDeny = view.findViewById(R.id.popup_share_access_separator_deny);
         final View viewSeparatorRemove = view.findViewById(R.id.popup_share_access_separator_remove);
 
         if (mIsFullAccess) {
             viewSeparatorDeny.setVisibility(View.GONE);
-            viewRemove.setVisibility(View.VISIBLE);
+            mRemoveUser.setVisibility(View.VISIBLE);
             viewSeparatorRemove.setVisibility(View.VISIBLE);
         }
     }
@@ -54,6 +55,10 @@ public class SharePopup extends BasePopup {
 
     public void setFullAccess(boolean mIsFullAccess) {
         this.mIsFullAccess = mIsFullAccess;
+    }
+
+    public void setExternalLink() {
+        mRemoveUser.setVisibility(View.GONE);
     }
 
     public void setIsFolder(boolean mIsFolder) {
