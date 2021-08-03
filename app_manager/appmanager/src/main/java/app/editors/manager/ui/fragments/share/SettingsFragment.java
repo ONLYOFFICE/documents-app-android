@@ -34,6 +34,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
@@ -316,22 +317,25 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
             return;
         }
         mSettingsPresenter.setShared(share, position);
-        setPopup(view);
+        setPopup(view, share.isGuest());
     }
 
-    private void setPopup(View view) {
+    private void setPopup(View view, boolean isVisitor) {
         view.post(() -> {
             if (getContext() != null && getActivity() != null) {
                 mSharePopup = new SharePopup(getContext(), R.layout.popup_share_menu);
                 mSharePopup.setContextListener(mListContextListener);
-                if (mSettingsPresenter.getItem() instanceof CloudFolder) {
-                    mSharePopup.setIsFolder(true);
+                if(!isVisitor) {
+                    if (mSettingsPresenter.getItem() instanceof CloudFolder) {
+                        mSharePopup.setIsFolder(true);
+                    } else {
+                        StringUtils.Extension extension = StringUtils.getExtension(StringUtils
+                                .getExtensionFromPath(mSettingsPresenter.getItem().getTitle()));
+                        mSharePopup.setIsDoc(extension == StringUtils.Extension.DOC);
+                    }
                 } else {
-                    StringUtils.Extension extension = StringUtils.getExtension(StringUtils
-                            .getExtensionFromPath(mSettingsPresenter.getItem().getTitle()));
-                    mSharePopup.setIsDoc(extension == StringUtils.Extension.DOC);
+                    mSharePopup.setIsVisitor();
                 }
-                mSharePopup.setFullAccess(true);
                 mSharePopup.showDropAt(view, getActivity());
             }
         });
@@ -453,11 +457,11 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
     }
 
     @Override
-    public void onShowPopup(int sharePosition) {
+    public void onShowPopup(int sharePosition, boolean isVisitor) {
         if (mRecyclerView != null) {
             mRecyclerView.post(() -> {
                 if (sharePosition != 0) {
-                    setPopup(mRecyclerView.getLayoutManager().findViewByPosition(sharePosition).findViewById(R.id.button_popup_arrow));
+                    setPopup(mRecyclerView.getLayoutManager().findViewByPosition(sharePosition).findViewById(R.id.button_popup_arrow), isVisitor);
                 } else {
                     if (getView() != null) {
                         showAccessPopup(getView());
@@ -465,7 +469,7 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
                 }
             });
         } else {
-            setPopup(mContentLayout);
+            setPopup(mContentLayout, isVisitor);
         }
     }
 

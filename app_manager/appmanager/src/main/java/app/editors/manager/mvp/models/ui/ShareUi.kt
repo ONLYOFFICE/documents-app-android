@@ -7,7 +7,8 @@ data class ShareUi(
     val access: Int,
     val sharedTo: SharedTo,
     val isLocked: Boolean,
-    val isOwner: Boolean
+    val isOwner: Boolean,
+    val isGuest: Boolean
 ) : ViewType {
     override val type: Int
         get() = R.layout.list_share_settings_item
