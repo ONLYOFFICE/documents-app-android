@@ -29,6 +29,7 @@
     <!-- ======================================================================================= -->
     <!-- Snackbar common -->
     <string name="snackbar_copied">Copied</string>
+    <string name="snackbar_undo">UNDO</string>
 
     <!-- ======================================================================================= -->
     <!-- About -->
@@ -372,9 +373,11 @@
     <string name="share_popup_access_review">Review</string>
     <string name="share_popup_access_read_only">Read only</string>
     <string name="share_popup_access_deny_access">Deny access</string>
-    <string name="share_popup_access_deny_remove">Remove</string>
+    <string name="share_popup_access_deny_remove">Remove user</string>
     <string name="share_popup_access_fill_forms">Fill forms</string>
     <string name="share_popup_access_comment">Comment</string>
+
+    <string name="share_snackbar_remove_user">User is removed</string>
 
     <!-- External link -->
     <string name="share_access_success">External access successful</string>

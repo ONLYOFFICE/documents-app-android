@@ -190,7 +190,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     }
 
     fun setItemAccess(accessCode: Int) {
-        if (item != null && shareItem?.access != accessCode) {
+        if (item != null) {
             if (accessCode == ApiContract.ShareCode.NONE) {
                 shareItem?.let {
                     viewState.onRemove(ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner), sharePosition)
