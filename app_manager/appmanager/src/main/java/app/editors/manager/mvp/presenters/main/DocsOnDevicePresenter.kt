@@ -195,7 +195,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         items.addAll(folders)
         items.addAll(files)
         mDisposable.add(mFileProvider.delete(items, null)
-            .subscribe({ operations: List<Operation?>? -> }, { throwable: Throwable? -> }) {
+            .subscribe({ }, { fetchError(it)}) {
                 mModelExplorerStack.removeSelected()
                 backStack
                 setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
@@ -225,14 +225,14 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         mUploadDisposable = mWebDavFileProvider!!.upload(id, uriList)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ integer: Int? -> }, { throwable: Throwable -> fetchError(throwable) }
+            .subscribe({ }, { throwable: Throwable -> fetchError(throwable) }
             ) {
                 viewState.onDialogClose()
                 viewState.onSnackBar(mContext.getString(R.string.upload_manager_complete))
-                for (file in (mFileProvider as WebDavFileProvider).uploadFile) {
+                for (file in (mFileProvider as WebDavFileProvider).uploadsFile) {
                     addFile(file)
                 }
-                (mFileProvider as WebDavFileProvider).uploadFile.clear()
+                (mFileProvider as WebDavFileProvider).uploadsFile.clear()
             }
     }
 
@@ -291,7 +291,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     fun openFromChooser(uri: Uri) {
         val fileName = ContentResolverUtils.getName(mContext, uri)
-        val ext = StringUtils.getExtensionFromPath(fileName.toLowerCase())
+        val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
         addRecent(uri)
         openFile(uri, ext)
     }
@@ -299,7 +299,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     private fun openFile(file: CloudFile) {
         val path = file.id
         val uri = Uri.fromFile(File(path))
-        val ext = StringUtils.getExtensionFromPath(file.id.toLowerCase())
+        val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
         openFile(uri, ext)
     }
 
@@ -365,7 +365,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             val items: MutableList<Item> = ArrayList()
             items.add(mItemClicked!!)
             mDisposable.add(mFileProvider.delete(items, null)
-                .subscribe({ operations: List<Operation?>? -> }, { throwable: Throwable? -> }) {
+                .subscribe({ }, { }) {
                     mModelExplorerStack.removeItemById(mItemClicked!!.id)
                     viewState.onRemoveItem(mItemClicked)
                     viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
