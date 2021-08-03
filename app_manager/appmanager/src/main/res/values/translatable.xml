@@ -542,7 +542,8 @@
     <string name="operation_move_file_existing">%1$s file already exists in the destination directory.</string>
     <string name="upload_to_portal">Upload to portal</string>
     <string name="this_device">This device</string>
-    <string name="dialog_clear_cache">Clear cache?</string>
+    <string name="dialog_clear_cache">Clear cache?\nThis operation will free up space on your device by deleting temporary files. Your offline files and personal data won\'t be removed.
+    </string>
 
     <string name="error_unsupported_path">Unsupported path</string>
     <string name="error_unsupported_format">Unsupported format</string>
