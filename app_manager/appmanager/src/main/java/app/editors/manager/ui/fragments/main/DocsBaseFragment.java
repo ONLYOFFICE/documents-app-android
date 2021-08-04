@@ -469,29 +469,31 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     @Override
     public void onAcceptClick(CommonDialog.Dialogs dialogs, @Nullable String value, @Nullable String tag) {
         super.onAcceptClick(dialogs, value, tag);
-        if (tag != null) {
-            switch (tag) {
-                case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT:
-                    getPresenter().delete();
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME:
-                    getPresenter().rename(value);
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_ACTION_SHEET:
-                    getPresenter().createDocs(value + "." + ApiContract.Extension.XLSX.toLowerCase());
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION:
-                    getPresenter().createDocs(value + "." + ApiContract.Extension.PPTX.toLowerCase());
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_ACTION_DOC:
-                    getPresenter().createDocs(value + "." + ApiContract.Extension.DOCX.toLowerCase());
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER:
-                    getPresenter().createFolder(value);
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED:
-                    getPresenter().deleteItems();
-                    break;
+        if (isResumed()) {
+            if (tag != null) {
+                switch (tag) {
+                    case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT:
+                        getPresenter().delete();
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME:
+                        getPresenter().rename(value);
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_ACTION_SHEET:
+                        getPresenter().createDocs(value + "." + ApiContract.Extension.XLSX.toLowerCase());
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION:
+                        getPresenter().createDocs(value + "." + ApiContract.Extension.PPTX.toLowerCase());
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_ACTION_DOC:
+                        getPresenter().createDocs(value + "." + ApiContract.Extension.DOCX.toLowerCase());
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER:
+                        getPresenter().createFolder(value);
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED:
+                        getPresenter().deleteItems();
+                        break;
+                }
             }
         }
     }

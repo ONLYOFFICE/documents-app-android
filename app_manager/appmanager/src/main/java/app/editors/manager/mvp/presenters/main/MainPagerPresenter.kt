@@ -1,30 +1,21 @@
 package app.editors.manager.mvp.presenters.main
 
-import android.accounts.Account
+import android.net.Uri
 import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
-import app.editors.manager.di.component.DaggerApiComponent
-import app.editors.manager.di.module.ApiModule
-import app.editors.manager.managers.utils.Constants
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.presenters.base.BasePresenter
+import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.views.main.MainPagerView
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TabFragmentDictionary
 import moxy.InjectViewState
-import java.util.*
+import moxy.MvpPresenter
 import javax.inject.Inject
 
 sealed class MainPagerState {
@@ -34,7 +25,7 @@ sealed class MainPagerState {
 }
 
 @InjectViewState
-class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainPagerView>() {
+class MainPagerPresenter : MvpPresenter<MainPagerView>() {
 
     @Inject
     lateinit var networkSetting: NetworkSettings
@@ -43,98 +34,77 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         App.getApp().appComponent.inject(this)
     }
 
-    private var disposable: Disposable? = null
-    private var sections: List<Explorer> = listOf()
-
-    private val api: Api?
-        get() {
-          AccountUtils.getToken(
-                context,
-                Account(accountJson?.let { Json.decodeFromString<CloudAccount>(it).getAccountName() }, context.getString(R.string.account_type))
-            )?.let {
-                return DaggerApiComponent.builder().apiModule(ApiModule(it))
-                    .appComponent(App.getApp().appComponent)
-                    .build()
-                    .getApi()
-            } ?: return null
+    fun getState(account: String?, fileData: Uri? = null) {
+        account?.let { jsonAccount ->
+            Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
+                CoroutineScope(Dispatchers.Main).launch {
+                    val render = async {
+                        render(cloudAccount, jsonAccount)
+                    }
+                    render.await()
+                    checkFileData(cloudAccount, fileData)
+                }
+            }
+        } ?: run {
+            throw Exception("Need account")
         }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable?.dispose()
     }
 
-    fun getState() {
-        disposable = getPortalModules().subscribe({
-            viewState.onFinishRequest()
-            if(StringUtils.convertServerVersion(networkSetting.serverVersion) < 11) {
-                accountJson?.let { jsonAccount ->
-                    Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
-                        when {
-                            networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
-                                viewState.onRender(
-                                    MainPagerState.PersonalState(
-                                        jsonAccount,
-                                        StringUtils.convertServerVersion(
-                                            networkSetting.serverVersion
-                                        )
-                                    )
-                                )
-                            }
-                            cloudAccount.isVisitor -> {
-                                viewState.onRender(
-                                    MainPagerState.VisitorState(
-                                        jsonAccount,
-                                        StringUtils.convertServerVersion(
-                                            networkSetting.serverVersion
-                                        )
-                                    )
-                                )
-                            }
-                            else -> {
-                                viewState.onRender(
-                                    MainPagerState.CloudState(
-                                        jsonAccount,
-                                        StringUtils.convertServerVersion(networkSetting.serverVersion)
-                                    )
-                                )
-                            }
-                        }
-                    }
-                } ?: run {
-                    throw Exception("Need account")
+    private suspend fun render(cloudAccount: CloudAccount, jsonAccount: String) {
+        when {
+            networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
+                withContext(Dispatchers.Main) {
+                    viewState.onRender(
+                        MainPagerState.PersonalState(
+                            jsonAccount,
+                            StringUtils.convertServerVersion(
+                                networkSetting.serverVersion
+                            )
+                        )
+                    )
                 }
-            } else {
-                accountJson?.let { it1 -> viewState.onRender(it1, sections) }
+
             }
-        }) {throwable: Throwable -> fetchError(throwable)}
+            cloudAccount.isVisitor -> {
+                withContext(Dispatchers.Main) {
+                    viewState.onRender(
+                        MainPagerState.VisitorState(
+                            jsonAccount,
+                            StringUtils.convertServerVersion(
+                                networkSetting.serverVersion
+                            )
+                        )
+                    )
+                }
+
+            }
+            else -> {
+                withContext(Dispatchers.Main) {
+                    viewState.onRender(
+                        MainPagerState.CloudState(
+                            jsonAccount,
+                            StringUtils.convertServerVersion(networkSetting.serverVersion)
+                        )
+                    )
+                }
+            }
+        }
     }
 
-    private fun getPortalModules() : Observable<Boolean> {
-        return Observable.zip(api?.getRootFolder(
-            mapOf("filterType" to 2),
-            mapOf(
-                "withsubfolders" to false,
-                "withoutTrash" to false,
-                "withoutAdditionalFolder" to false
-            )
-        ), api?.getModules(listOf(Constants.Modules.PROJECT_ID)), { cloudTree, modules ->
-            if(cloudTree.response != null && modules.response != null) {
-                preferenceTool.isProjectDisable = !modules.response[0].isEnable
-                sections = cloudTree.response
-                for (folder in cloudTree.response) {
-                    if (TabFragmentDictionary.Favorites.contains(folder.current.title)) {
-                        preferenceTool.setFavoritesEnable(true)
-                        break
-                    } else {
-                        preferenceTool.setFavoritesEnable(false)
+    private suspend fun checkFileData(account: CloudAccount, fileData: Uri?) {
+        fileData?.let { data ->
+            if (data.scheme?.equals("oodocuments") == true && data.host.equals("openfile")) {
+                val dataModel = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(data.query))
+                if (dataModel.portal?.equals(account.portal) == true && dataModel.email?.equals(account.login) == true) {
+                    withContext(Dispatchers.Main) {
+                        viewState.setFileData(Json.encodeToString(dataModel))
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        viewState.onError(R.string.error_recent_enter_account)
                     }
                 }
             }
-            return@zip true
-        })
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
+        }
     }
-
 }

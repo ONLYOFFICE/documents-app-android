@@ -4,14 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -48,7 +46,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     @InjectPresenter
     lateinit var presenter: DocsRecentPresenter
 
-    private var activityctivity: IMainActivity? = null
+    private var activity: IMainActivity? = null
     private var adapter: RecentAdapter? = null
     private var filterValue: CharSequence? = null
 
@@ -72,7 +70,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        activityctivity = if (context is IMainActivity) {
+        activity = if (context is IMainActivity) {
             context
         } else {
             throw RuntimeException(
@@ -134,19 +132,19 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
         super.onStateUpdateFilter(isFilter, value)
         if (isFilter) {
-            activityctivity?.setAppBarStates(false)
+            activity?.setAppBarStates(false)
             mSearchView?.setQuery(filterValue, true)
         } else {
-            activityctivity?.setAppBarStates(false)
-            activityctivity?.showNavigationButton(false)
+            activity?.setAppBarStates(false)
+            activity?.showNavigationButton(false)
         }
     }
 
     private fun init() {
-        activityctivity?.setAppBarStates(false)
-        activityctivity?.showNavigationButton(false)
-        activityctivity?.showActionButton(false)
-        activityctivity?.showAccount(false)
+        activity?.setAppBarStates(false)
+        activity?.showNavigationButton(false)
+        activity?.showActionButton(false)
+        activity?.showAccount(false)
         adapter = RecentAdapter(requireContext(), recentListener, contextListener)
 
         if (mRecyclerView != null) {
@@ -180,8 +178,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             val isAscending = mMenu!!.findItem(R.id.toolbar_sort_item_asc).isChecked
             when (item.itemId) {
                 R.id.toolbar_item_sort -> {
-                    activityctivity?.setAppBarStates(false)
-                    activityctivity?.showNavigationButton(false)
+                    activity?.setAppBarStates(false)
+                    activity?.showNavigationButton(false)
                 }
                 R.id.toolbar_sort_item_title -> {
                     if (item.isChecked) {
@@ -308,7 +306,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     override fun onContextShow(state: ContextBottomDialog.State) {
-        fragmentManager?.let {
+        parentFragmentManager.let {
             mContextBottomDialog.setState(state)
             mContextBottomDialog.show(it, ContextBottomDialog.TAG)
         }
@@ -343,14 +341,12 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     private fun setRecents(recents: List<Recent>) {
         setMenuVisibility(true)
-        mPlaceholderViews.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
         adapter?.setItems(recents)
     }
 
     private fun setEmpty() {
         setMenuVisibility(false)
         mPlaceholderViews.setTemplatePlaceholder(PlaceholderViews.Type.EMPTY)
-        mPlaceholderViews.setVisibility(true)
     }
 
     override fun onOpenFile(state: OpenState) {

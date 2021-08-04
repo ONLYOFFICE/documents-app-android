@@ -47,7 +47,8 @@ import moxy.InjectViewState
 import java.util.*
 
 @InjectViewState
-class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudView>(), OnDownloadListener,
+class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudView>(),
+    OnDownloadListener,
     OnUploadListener {
 
     private val mGetDisposable = HashMap<String, Disposable>()
@@ -79,8 +80,10 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         super.onFirstViewAttach()
         downloadReceiver.setOnDownloadListener(this)
         uploadReceiver.setOnUploadListener(this)
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(uploadReceiver, uploadReceiver.filter)
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(downloadReceiver, downloadReceiver.filter)
+        LocalBroadcastManager.getInstance(mContext)
+            .registerReceiver(uploadReceiver, uploadReceiver.filter)
+        LocalBroadcastManager.getInstance(mContext)
+            .registerReceiver(downloadReceiver, downloadReceiver.filter)
     }
 
     override fun onDestroy() {
@@ -99,7 +102,10 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             mModelExplorerStack.setSelectById(item, isChecked)
             if (!isSelectedItemsEmpty) {
                 viewState.onStateUpdateSelection(true)
-                viewState.onItemSelected(position, mModelExplorerStack.countSelectedItems.toString())
+                viewState.onItemSelected(
+                    position,
+                    mModelExplorerStack.countSelectedItems.toString()
+                )
             }
         } else if (!mIsTrashMode) {
             if (mItemClicked is CloudFolder) {
@@ -160,12 +166,13 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         if (id != null) {
             val requestCreate = RequestCreate()
             requestCreate.title = title
-            mDisposable.add(mFileProvider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
-                addFile(file)
-                setPlaceholderType(PlaceholderViews.Type.NONE)
-                viewState.onDialogClose()
-                viewState.onCreateFile(file)
-            }) { throwable: Throwable? -> fetchError(throwable) })
+            mDisposable.add(
+                mFileProvider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
+                    addFile(file)
+                    setPlaceholderType(PlaceholderViews.Type.NONE)
+                    viewState.onDialogClose()
+                    viewState.onCreateFile(file)
+                }) { throwable: Throwable? -> fetchError(throwable) })
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
     }
@@ -215,15 +222,19 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             viewState.onStateActionButton(isContextEditable)
             viewState.onActionBarTitle(currentTitle)
         } else {
-            if (mIsTrashMode) {
-                viewState.onStateActionButton(false)
-                viewState.onActionBarTitle("")
-            } else if (mIsFoldersMode) {
-                viewState.onActionBarTitle(mContext.getString(R.string.operation_title))
-                viewState.onStateActionButton(false)
-            } else {
-                viewState.onActionBarTitle("")
-                viewState.onStateActionButton(isContextEditable)
+            when {
+                mIsTrashMode -> {
+                    viewState.onStateActionButton(false)
+                    viewState.onActionBarTitle("")
+                }
+                mIsFoldersMode -> {
+                    viewState.onActionBarTitle(mContext.getString(R.string.operation_title))
+                    viewState.onStateActionButton(false)
+                }
+                else -> {
+                    viewState.onActionBarTitle("")
+                    viewState.onStateActionButton(isContextEditable)
+                }
             }
             viewState.onStateAdapterRoot(true)
             viewState.onStateUpdateRoot(true)
@@ -264,7 +275,10 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     }
 
     override fun onActionClick() {
-        viewState.onActionDialog(isRoot && (isUserSection || isCommonSection && isAdmin), !isVisitor)
+        viewState.onActionDialog(
+            isRoot && (isUserSection || isCommonSection && isAdmin),
+            !isVisitor
+        )
     }
 
     /*
@@ -279,7 +293,14 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         viewState.onDialogProgress(total, progress)
     }
 
-    override fun onDownloadComplete(id: String, url: String, title: String, info: String, path: String, mime: String) {
+    override fun onDownloadComplete(
+        id: String,
+        url: String,
+        title: String,
+        info: String,
+        path: String,
+        mime: String
+    ) {
         viewState.onDialogClose()
         viewState.onSnackBarWithAction(
             """
@@ -304,7 +325,13 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         //getViewState().onDeleteUploadFile(file);
     }
 
-    override fun onUploadComplete(path: String, info: String, title: String?, file: CloudFile, id: String) {
+    override fun onUploadComplete(
+        path: String,
+        info: String,
+        title: String?,
+        file: CloudFile,
+        id: String
+    ) {
         viewState.onSnackBar(info)
         if (mModelExplorerStack.currentId == file.folderId) {
             addFile(file)
@@ -475,7 +502,12 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             mBatchDisposable = provider.clearTrash()
                 .switchMap { status }
                 .subscribe(
-                    { progress: Int? -> viewState.onDialogProgress(FileUtils.LOAD_MAX_PROGRESS, progress!!) },
+                    { progress: Int? ->
+                        viewState.onDialogProgress(
+                            FileUtils.LOAD_MAX_PROGRESS,
+                            progress!!
+                        )
+                    },
                     { throwable: Throwable? -> fetchError(throwable) }
                 ) {
                     onBatchOperations()
@@ -488,7 +520,11 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         val filesIds = mOperationStack?.selectedFilesIds
         val foldersIds = mOperationStack?.selectedFoldersIds
 
-        mDisposable.add((mFileProvider as CloudFileProvider).api.checkFiles(mDestFolderId ?: "", foldersIds, filesIds)
+        mDisposable.add((mFileProvider as CloudFileProvider).api.checkFiles(
+            mDestFolderId ?: "",
+            foldersIds,
+            filesIds
+        )
             .map { it.response }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -505,8 +541,9 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
                     }
                 }
             }, {
-               fetchError(it)
-            }))
+                fetchError(it)
+            })
+        )
     }
 
     private fun showMoveCopyDialog(files: List<CloudFile>, action: String, titleFolder: String?) {
@@ -539,20 +576,28 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
 
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
-        getItemsById(model.folder?.id.toString())
-        mDisposable.add(mFileProvider.fileInfo(CloudFile().apply {
-            id = model.file?.id?.toString()
-        }).subscribe({
-            when (StringUtils.getExtension(it.fileExst)) {
-                StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF -> {
-                    viewState.onFileWebView(it)
-                }
-                else -> {
-                    viewState.onError("Error")
+        mDisposable.add(mFileProvider.getFiles(model.folder?.id.toString(), getArgs(null))
+            .map { loadSuccess(it) }
+            .flatMap {
+                mFileProvider.fileInfo(CloudFile().apply {
+                    id = model.file?.id?.toString()
+                })
+            }
+            .subscribe({ file: CloudFile ->
+                when (StringUtils.getExtension(file.fileExst)) {
+                    StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF -> {
+                        viewState.onFileWebView(file)
+                    }
+                    else -> {
+                        viewState.onError("Error")
+                    }
                 }
             }
-
-        }, { fetchError(it) }))
+            ) { throwable: Throwable? ->
+                fetchError(
+                    throwable
+                )
+            })
     }
 
     private fun cancelRequest(id: String) {

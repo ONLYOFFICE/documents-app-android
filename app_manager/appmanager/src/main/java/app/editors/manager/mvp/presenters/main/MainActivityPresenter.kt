@@ -271,18 +271,15 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let { account ->
                 Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query)).let { data ->
-                    withContext(Dispatchers.Main) {
-                        viewState.openFile(account, Json.encodeToString(data))
+                    if (data.portal?.equals(account.portal) == true && data.email?.equals(account.login) == true) {
+                        withContext(Dispatchers.Main) {
+                            viewState.openFile(account, Json.encodeToString(data))
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            viewState.onError(context.getString(R.string.error_recent_enter_account))
+                        }
                     }
-//                    if (data.portal?.equals(account.portal) == true && data.email?.equals(account.login) == true) {
-//                        withContext(Dispatchers.Main) {
-//                            viewState.openFile(Json.encodeToString(data))
-//                        }
-//                    } else {
-//                        withContext(Dispatchers.Main) {
-//                            viewState.onError(context.getString(R.string.error_recent_enter_account))
-//                        }
-//                    }
                 }
             } ?: run {
                 withContext(Dispatchers.Main) {

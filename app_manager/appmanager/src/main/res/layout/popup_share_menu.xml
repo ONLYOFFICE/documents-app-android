@@ -112,14 +112,16 @@
         <LinearLayout
             android:id="@+id/popup_share_access_remove"
             style="@style/PopupLayout"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <androidx.appcompat.widget.AppCompatImageView
                 style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_remove" />
+                android:tint="@color/colorLightRed"
+                app:srcCompat="@drawable/ic_trash" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/PopupText"
+                android:textColor="@color/colorLightRed"
                 android:text="@string/share_popup_access_deny_remove" />
         </LinearLayout>
 

@@ -359,7 +359,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     public abstract void onActionClick();
 
-    private void loadSuccess(Explorer explorer) {
+    protected void loadSuccess(Explorer explorer) {
         mModelExplorerStack.addStack(explorer);
         updateViewsState();
         setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.EMPTY : PlaceholderViews.Type.NONE);
@@ -1451,8 +1451,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     @SuppressLint({"StringFormatInvalid", "StringFormatMatches"})
-    protected void fetchError(Throwable throwable) {
-        if (throwable.getMessage().equals(ProviderError.INTERRUPT)) {
+    protected void fetchError(Throwable throwable) { if (throwable.getMessage().equals(ProviderError.INTERRUPT)) {
             checkStatusOperation();
             return;
         } else if (throwable.getMessage().equals(ProviderError.FORBIDDEN)) {

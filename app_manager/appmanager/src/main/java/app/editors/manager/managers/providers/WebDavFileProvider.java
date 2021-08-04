@@ -478,8 +478,7 @@ class WebDavFileProvider implements BaseFileProvider {
 
         for (int i = 1; i < responseBeans.size(); i++) {
             WebDavModel.ResponseBean bean = responseBeans.get(i);
-            if ((bean.getContentLength() == null && bean.getContentType() == null)
-                    || (bean.getContentType() != null && bean.getContentType().equals("httpd/unix-directory"))) {
+            if (bean.isDir()) {
                 CloudFolder folder = new CloudFolder();
                 folder.setId(bean.getHref());
                 folder.setTitle(getTitle(bean.getHref()));

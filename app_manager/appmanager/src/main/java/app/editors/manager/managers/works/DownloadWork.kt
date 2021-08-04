@@ -83,6 +83,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
     private val notificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)
     private var url: String? = null
     private var file: DocumentFile? = null
+    private var fileName: String? = null
     private var id: String? = null
     private var to: Uri? = null
     private var timeMark = 0L
@@ -112,7 +113,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
         try {
             val response = call.execute()
             if (response.isSuccessful && response.body() != null) {
-                FileUtils.writeFromResponseBody(response.body(), to!!, applicationContext, object : Progress {
+                FileUtils.writeFromResponseBody(response.body(), to ?: Uri.EMPTY, applicationContext, object : Progress {
                     override fun onProgress(total: Long, progress: Long): Boolean {
                         showProgress(total, progress, false)
                         return isStopped
@@ -120,10 +121,10 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                 }, object : Finish {
                     override fun onFinish() {
                         notificationUtils.removeNotification(id.hashCode())
-                        notificationUtils.showCompleteNotification(id.hashCode(), file!!.name)
+                        notificationUtils.showCompleteNotification(id.hashCode(), fileName)
                         sendBroadcastDownloadComplete(
-                            id, url, file?.name, PathUtils.getPath(applicationContext, to ?: Uri.EMPTY), StringUtils.getMimeTypeFromPath(
-                                file?.name ?: ""
+                            id, url, fileName, PathUtils.getPath(applicationContext, to ?: Uri.EMPTY), StringUtils.getMimeTypeFromPath(
+                                fileName ?: ""
                             )
                         )
                     }
@@ -131,17 +132,17 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                     override fun onError(message: String) {
                         notificationUtils.removeNotification(id.hashCode())
                         if (isStopped) {
-                            notificationUtils.showCanceledNotification(id.hashCode(), file?.name)
+                            notificationUtils.showCanceledNotification(id.hashCode(), fileName)
                         } else {
-                            notificationUtils.showErrorNotification(id.hashCode(), file?.name)
-                            sendBroadcastUnknownError(id, url, file?.name)
+                            notificationUtils.showErrorNotification(id.hashCode(), fileName)
+                            sendBroadcastUnknownError(id, url, fileName)
                         }
                         file?.delete()
                     }
                 })
             } else {
-                notificationUtils.showErrorNotification(id.hashCode(), file!!.name)
-                sendBroadcastUnknownError(id, url, file?.name)
+                notificationUtils.showErrorNotification(id.hashCode(), fileName)
+                sendBroadcastUnknownError(id, url, fileName)
                 file?.delete()
             }
         } catch (e: IOException) {
@@ -158,9 +159,9 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
             val id = id.hashCode()
             val tag = getId().toString()
             if (!isArchiving) {
-                notificationUtils.showProgressNotification(id, tag, file!!.name!!, percent)
+                notificationUtils.showProgressNotification(id, tag, fileName ?: "", percent)
             } else {
-                notificationUtils.showArchivingProgressNotification(id, tag, file!!.name!!, percent)
+                notificationUtils.showArchivingProgressNotification(id, tag, fileName ?: "", percent)
             }
         }
     }
@@ -185,7 +186,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                                     break
                                 }
                             } else {
-                                notificationUtils.showErrorNotification(id.hashCode(), file?.name)
+                                notificationUtils.showErrorNotification(id.hashCode(), fileName)
                                 onError(operations[0].error)
                                 file?.delete()
                                 break
@@ -194,7 +195,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                             break
                         }
                     } else {
-                        notificationUtils.showCanceledNotification(id.hashCode(), file?.name)
+                        notificationUtils.showCanceledNotification(id.hashCode(), fileName)
                         file?.delete()
                         break
                     }
@@ -213,7 +214,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
         responseMessage = try {
             responseBody?.string()
         } catch (e: Exception) {
-            sendBroadcastUnknownError(id, url, file!!.name)
+            sendBroadcastUnknownError(id, url, fileName)
             file?.delete()
             return
         }
@@ -222,13 +223,13 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
             if (jsonObject != null) {
                 try {
                     errorMessage = jsonObject.getJSONObject(KEY_ERROR_INFO).getString(KEY_ERROR_INFO_MESSAGE)
-                    sendBroadcastError(id, url, file?.name, errorMessage)
+                    sendBroadcastError(id, url, fileName, errorMessage)
                 } catch (e: JSONException) {
                     Log.e(TAG, "onErrorHandle()", e)
                     FirebaseUtils.addCrash(e)
                 }
             } else {
-                sendBroadcastUnknownError(id, url, file?.name)
+                sendBroadcastUnknownError(id, url, fileName)
                 file?.delete()
                 return
             }
@@ -240,16 +241,16 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
             ApiContract.Errors.EXCEED_FILE_SIZE_100 -> sendBroadcastError(
                 id,
                 url,
-                file?.name,
+                fileName,
                 applicationContext.getString(R.string.download_manager_exceed_size_100)
             )
             ApiContract.Errors.EXCEED_FILE_SIZE_25 -> sendBroadcastError(
                 id,
                 url,
-                file?.name,
+                fileName,
                 applicationContext.getString(R.string.download_manager_exceed_size_25)
             )
-            else -> sendBroadcastError(id, url, file?.name, errorMessage)
+            else -> sendBroadcastError(id, url, fileName, errorMessage)
         }
     }
 
@@ -261,6 +262,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
         downloadRequest = gson.fromJson(data.getString(REQUEST_DOWNLOAD), RequestDownload::class.java)
         to = Uri.parse(data.getString(FILE_URI_KEY))
         file = DocumentFile.fromSingleUri(applicationContext, to!!)
+        fileName = file?.name
     }
 
 }

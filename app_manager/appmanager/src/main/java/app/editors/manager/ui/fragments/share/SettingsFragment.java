@@ -262,6 +262,13 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
                 && mShareSettingsAdapter.getItem(1) instanceof Header) {
             mShareSettingsAdapter.removeHeader(getString(R.string.share_goal_user));
         }
+        showSnackBarWithAction(
+                getString(R.string.share_snackbar_remove_user),
+                getString(R.string.snackbar_undo),
+                (View v) -> {
+                    mSettingsPresenter.setItemAccess(share.getAccess());
+                    mShareSettingsAdapter.addItem(share);
+                });
     }
 
     @Override
@@ -472,6 +479,7 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
     private void showAccessPopup(View view) {
         mSharePopup = new SharePopup(requireContext(), R.layout.popup_share_menu);
         mSharePopup.setContextListener(mExternalContextListener);
+        mSharePopup.setExternalLink();
         mSharePopup.setFullAccess(false);
         if (mSettingsPresenter.getItem() instanceof CloudFolder) {
             mSharePopup.setIsFolder(true);

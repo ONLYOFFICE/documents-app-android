@@ -8,9 +8,6 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.transition.AutoTransition
-import androidx.transition.Transition
-import androidx.transition.TransitionManager
 import androidx.work.WorkManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
@@ -37,8 +34,11 @@ import lib.toolkit.base.managers.utils.PermissionUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
+import lib.toolkit.base.ui.views.animation.collapse
+import lib.toolkit.base.ui.views.animation.expand
 import moxy.presenter.InjectPresenter
 import java.util.*
+
 
 interface ActionButtonFragment {
     fun showActionDialog()
@@ -273,6 +273,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
                 checkPermission()
             }
             is MainActivityState.CloudState -> {
+                showActionButton(false)
                 state.account?.let {
                     showOnCloudFragment(state.account)
                 } ?: run {
@@ -524,21 +525,16 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
     }
 
     override fun setAppBarStates(isVisible: Boolean) {
-        setAnimation()
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
-        viewBinding.appBarTabs.visibility = if (isVisible) View.VISIBLE else View.GONE
-    }
-
-    private fun setAnimation() {
-        val transition: Transition = AutoTransition()
-        transition.duration = 200
-        transition.excludeChildren(R.id.list_swipe_refresh, true)
-        transition.excludeChildren(viewBinding.bottomNavigation, true)
-        transition.excludeChildren(viewBinding.appBarToolbar, true)
-        transition.excludeChildren(viewBinding.appBarTabs, true)
-        TransitionManager.beginDelayedTransition(viewBinding.root, transition)
+        if (isVisible) {
+            if (viewBinding.appBarTabs.visibility != View.VISIBLE) {
+                viewBinding.appBarTabs.expand(50)
+            }
+        } else {
+            viewBinding.appBarTabs.collapse()
+        }
     }
 
 }
