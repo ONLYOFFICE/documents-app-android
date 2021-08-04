@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
 import app.documents.core.network.ApiContract
+import app.documents.core.webdav.ResponseBean
 import app.documents.core.webdav.WebDavApi
 import app.documents.core.webdav.WebDavModel
 import app.editors.manager.app.App.Companion.getApp
@@ -65,7 +66,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
                 } else {
                     throw HttpException(modelResponse)
                 }
-            }.map { webDavModel: WebDavModel -> getExplorer(webDavModel.list, filter) }
+            }.map { webDavModel: WebDavModel -> getExplorer(webDavModel.list ?: emptyList(), filter) }
     }
 
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
@@ -463,7 +464,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     @Throws(UnsupportedEncodingException::class)
-    private fun getExplorer(responseBeans: List<WebDavModel.ResponseBean>, filter: Map<String, String>?): Explorer {
+    private fun getExplorer(responseBeans: List<ResponseBean>, filter: Map<String, String>?): Explorer {
         val explorer = Explorer()
         val filteringValue = filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE)
         val files: MutableList<CloudFile> = ArrayList()
@@ -490,7 +491,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
                 file.id = bean.href
                 file.title = getTitle(bean.href)
                 file.folderId = parentFolder.id
-                file.pureContentLength = bean.contentLength.toLong()
+                file.pureContentLength = bean.contentLength?.toLong() ?: 0L
                 file.fileExst = getExtensionFromPath(file.title.lowercase())
                 file.created = bean.lastModifiedDate
                 file.updated = bean.lastModifiedDate
@@ -515,7 +516,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     @Throws(UnsupportedEncodingException::class)
-    private fun getFolder(responseBean: WebDavModel.ResponseBean): CloudFolder {
+    private fun getFolder(responseBean: ResponseBean): CloudFolder {
         val folder = CloudFolder()
         folder.id = decodeUrl(responseBean.href)
         folder.title = decodeUrl(getFolderTitle(responseBean.href))
