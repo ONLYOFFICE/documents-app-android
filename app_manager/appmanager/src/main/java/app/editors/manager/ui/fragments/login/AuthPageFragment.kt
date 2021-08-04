@@ -192,12 +192,11 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
         viewBinding?.authCodeEdit?.apply {
             visibility = View.VISIBLE
             addTextChangedListener(codeListener)
-            setOnEditorActionListener { _: TextView, actionId: Int, _: KeyEvent ->
+            setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE && viewBinding?.confirmButton?.isEnabled == true) {
                     viewBinding?.confirmButton?.callOnClick()
-                    return@setOnEditorActionListener true
                 }
-                false
+                return@setOnEditorActionListener true
             }
         }
 

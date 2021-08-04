@@ -23,9 +23,8 @@ import java.util.*
 import java.util.regex.Pattern
 
 object StringUtils {
-
     @JvmField
-    val TAG = StringUtils::class.java!!.simpleName
+    val TAG = StringUtils::class.java.simpleName
 
     val MD5 = "MD5"
     val COMMON_MIME_TYPE = "*/*"

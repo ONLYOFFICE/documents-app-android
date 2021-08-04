@@ -40,6 +40,7 @@ public class PreferenceTool {
     private final String KEY_29 = "KEY_29";
     private final String KEY_30 = "KEY_30";
     private final String KEY_31 = "KEY_31";
+    private final String KEY_32 = "KEY_32";
     private final String KEY_WIFI_STATE = "KEY_WIFI_STATE";
     private final String KEY_ANALYTIC = "KEY_ANALYTIC";
     private final String KEY_STORAGE_ACCESS = "KEY_STORAGE_ACCESS";
@@ -209,6 +210,14 @@ public class PreferenceTool {
 
     public boolean isProjectDisable() {
         return mSharedPreferences.getBoolean(KEY_28, false);
+    }
+
+    public void setFavoritesEnable(boolean value) {
+        mSharedPreferences.edit().putBoolean(KEY_32, value).apply();
+    }
+
+    public boolean isFavoritesEnabled() {
+        return mSharedPreferences.getBoolean(KEY_32, true);
     }
 
     public void setServerVersion(String value) {
