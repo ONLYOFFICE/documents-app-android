@@ -42,6 +42,8 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: BottomAccountAdapter
 
+    private var toast: Toast? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.ContextMenuDialog)
@@ -50,6 +52,11 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     override fun onDestroyView() {
         super.onDestroyView()
         adapter.setOnAddAccountClick(null)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        toast?.cancel()
     }
 
     @SuppressLint("InflateParams")
@@ -127,7 +134,9 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     override fun onError(message: String?) {
         hideDialog()
         if (message != null) {
-            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+            toast?.cancel()
+            toast = Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
+            toast?.show()
         }
     }
 }
