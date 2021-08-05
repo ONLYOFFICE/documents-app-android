@@ -42,12 +42,12 @@ public class CountriesCodesAdapter extends BaseAdapter<CountriesCodesTool.Codes>
         final CountriesCodesTool.Codes codesBefore = getItem(position - 1);
         final CountriesCodesTool.Codes codesCurrent = getItem(position);
 
-        mViewHolder.mCountriesCodesCodeText.setText("+" + codesCurrent.mNumber);
-        mViewHolder.mCountriesCodesNameText.setText(codesCurrent.mName);
+        mViewHolder.mCountriesCodesCodeText.setText("+" + codesCurrent.getNumber());
+        mViewHolder.mCountriesCodesNameText.setText(codesCurrent.getName());
 
-        if (codesBefore == null || (codesBefore != null && codesCurrent.mName.charAt(0) != codesBefore.mName.charAt(0))) {
+        if (codesBefore == null || (codesBefore != null && codesCurrent.getName().charAt(0) != codesBefore.getName().charAt(0))) {
             mViewHolder.mCountriesCodesAlphaText.setVisibility(View.VISIBLE);
-            mViewHolder.mCountriesCodesAlphaText.setText(String.valueOf(codesCurrent.mName.charAt(0)));
+            mViewHolder.mCountriesCodesAlphaText.setText(String.valueOf(codesCurrent.getName().charAt(0)));
         } else {
             mViewHolder.mCountriesCodesAlphaText.setVisibility(View.GONE);
         }
@@ -108,7 +108,7 @@ public class CountriesCodesAdapter extends BaseAdapter<CountriesCodesTool.Codes>
             final String upperSymbols = constraint.toString().toUpperCase();
             for (int i = 0; i < mList.size(); i++) {
                 final CountriesCodesTool.Codes codes = mList.get(i);
-                if (codes.mName.toUpperCase().startsWith(upperSymbols))  {
+                if (codes.getName().toUpperCase().startsWith(upperSymbols))  {
                     mFilteredList.add(codes);
                 }
             }

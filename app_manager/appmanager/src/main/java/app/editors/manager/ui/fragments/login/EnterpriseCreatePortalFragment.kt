@@ -231,11 +231,11 @@ class EnterpriseCreatePortalFragment : BaseAppFragment(), EnterpriseCreateValida
                 viewBinding?.loginCreatePortalAddressEditLayout?.error =
                     getString(R.string.login_api_portal_name_content)
                 source
-            } else ({
+            } else {
                 viewBinding?.loginCreatePortalAddressEditLayout?.isErrorEnabled = false
                 setEditHintVisibility(true)
                 null
-            }).toString()
+            }
         }
     }
 }
