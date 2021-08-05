@@ -1,66 +1,45 @@
-package app.editors.manager.mvp.models.states;
+package app.editors.manager.mvp.models.states
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeMap;
-
-import app.editors.manager.mvp.models.explorer.Explorer;
+import app.editors.manager.mvp.models.explorer.Explorer
+import java.util.*
+import javax.inject.Inject
 
 /*
 * TODO replace with mapping to SQLite in perspective
  * */
-public class OperationsState {
+class OperationsState @Inject constructor() {
 
-    public enum OperationType {
+    enum class OperationType {
         NONE, MOVE, COPY, INSERT
     }
 
-    public static class Operation {
-        public final OperationType mOperationType;
-        public final Explorer mExplorer;
+    class Operation(val operationType: OperationType, val explorer: Explorer)
 
-        public Operation(OperationType operationType, Explorer explorer) {
-            mOperationType = operationType;
-            mExplorer = explorer;
-        }
-    }
+    private val operations: TreeMap<Int, LinkedList<Operation>> = TreeMap()
 
-    protected final TreeMap<Integer, LinkedList<Operation>> mOperations;
-
-    public OperationsState() {
-        mOperations = new TreeMap<>();
-    }
-
-    public List<Operation> getOperations(final int section) {
-        LinkedList<Operation> operations = mOperations.get(section);
+    private fun getOperations(section: Int): MutableList<Operation> {
+        var operations = operations[section]
         if (operations == null) {
-            operations = new LinkedList<>();
-            mOperations.put(section, operations);
+            operations = LinkedList()
+            this.operations[section] = operations
         }
-
-        return operations;
+        return operations
     }
 
-    public List<Operation> getOperations(final int section, @Nullable final String folderId) {
-        final List<Operation> operations = getOperations(section);
-        final List<Operation> sectionOperations = new ArrayList<>();
-
-        for (Operation item : operations) {
-            if (item.mExplorer.getDestFolderId().equalsIgnoreCase(folderId)) {
-                sectionOperations.add(item);
+    fun getOperations(section: Int, folderId: String?): List<Operation> {
+        val operations = getOperations(section)
+        val sectionOperations: MutableList<Operation> = ArrayList()
+        for (item in operations) {
+            if (item.explorer.destFolderId.equals(folderId, ignoreCase = true)) {
+                sectionOperations.add(item)
             }
         }
-
-        operations.removeAll(sectionOperations);
-        return sectionOperations;
+        operations.removeAll(sectionOperations)
+        return sectionOperations
     }
 
-    public void insert(final int section, @NonNull Explorer explorer) {
-        getOperations(section).add(new Operation(OperationType.INSERT, explorer));
+    fun insert(section: Int, explorer: Explorer) {
+        getOperations(section).add(Operation(OperationType.INSERT, explorer))
     }
 
 }

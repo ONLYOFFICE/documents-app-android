@@ -1,255 +1,189 @@
-package app.editors.manager.managers.tools;
+package app.editors.manager.managers.tools
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Context
+import android.content.SharedPreferences
+import app.documents.core.network.ApiContract
+import java.util.*
+import javax.inject.Inject
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class PreferenceTool @Inject constructor(val context: Context) {
 
-import java.util.Set;
-import java.util.TreeSet;
+    companion object {
+        const val TAG = "PreferenceUtil"
+        const val RATING_DEFAULT = 0
+        const val RATING_THRESHOLD = 4
+        private const val TAG_SUFFIX_INFO = "info"
 
-import app.documents.core.network.ApiContract;
+        private const val KEY_1 = "KEY_1"
+        private const val KEY_2 = "KEY_2"
+        private const val KEY_8 = "KEY_8"
+        private const val KEY_9 = "KEY_9"
+        private const val KEY_10 = "KEY_10"
+        private const val KEY_16 = "KEY_16"
+        private const val KEY_17 = "KEY_17"
+        private const val KEY_19 = "KEY_19"
+        private const val KEY_20 = "KEY_20"
+        private const val KEY_24 = "KEY_24"
+        private const val KEY_27 = "KEY_27"
+        private const val KEY_28 = "KEY_28"
+        private const val KEY_29 = "KEY_29"
+        private const val KEY_30 = "KEY_30"
+        private const val KEY_31 = "KEY_31"
+        private const val KEY_32 = "KEY_32"
+        private const val KEY_WIFI_STATE = "KEY_WIFI_STATE"
+        private const val KEY_ANALYTIC = "KEY_ANALYTIC"
+        private const val KEY_STORAGE_ACCESS = "KEY_STORAGE_ACCESS"
 
-
-public class PreferenceTool {
-
-    public static final String TAG = "PreferenceUtil";
-    public static final int RATING_DEFAULT = 0;
-    public static final int RATING_THRESHOLD = 4;
-    private static final String TAG_SUFFIX_INFO = "info";
-
-
-    private static Set<String> PERSONAL_ADDRESSES = new TreeSet<String>() {{
-        add(ApiContract.PERSONAL_SUBDOMAIN + ".");
-    }};
-
-
-    private final String KEY_1 = "KEY_1";
-    private final String KEY_2 = "KEY_2";
-    private final String KEY_8 = "KEY_8";
-    private final String KEY_9 = "KEY_9";
-    private final String KEY_10 = "KEY_10";
-    private final String KEY_16 = "KEY_16";
-    private final String KEY_17 = "KEY_17";
-    private final String KEY_19 = "KEY_19";
-    private final String KEY_20 = "KEY_20";
-    private final String KEY_24 = "KEY_24";
-    private final String KEY_27 = "KEY_27";
-    private final String KEY_28 = "KEY_28";
-    private final String KEY_29 = "KEY_29";
-    private final String KEY_30 = "KEY_30";
-    private final String KEY_31 = "KEY_31";
-    private final String KEY_32 = "KEY_32";
-    private final String KEY_WIFI_STATE = "KEY_WIFI_STATE";
-    private final String KEY_ANALYTIC = "KEY_ANALYTIC";
-    private final String KEY_STORAGE_ACCESS = "KEY_STORAGE_ACCESS";
-
-    private SharedPreferences mSharedPreferences;
-
-    public PreferenceTool(@NonNull Context context) {
-        mSharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE);
-    }
-
-    public void setDefault() {
-        setDefaultPortal();
-        setDefaultUser();
-    }
-
-    public void setDefaultUser() {
-        setLogin(null);
-        setPhoneNoise(null);
-        setSortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED);
-        setSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
-        setSocialProvider(null);
-        setSelfId("");
-        setProjectDisable(false);
-        setNoPortal(true);
-        setShowStorageAccess(true);
-    }
-
-    public void setDefaultPortal() {
-        setPortal(null);
-        setScheme(ApiContract.SCHEME_HTTPS);
-        setNoPortal(true);
-    }
-
-    @Nullable
-    public String getPortal() {
-        return mSharedPreferences.getString(KEY_1, null);
-    }
-
-    public void setPortal(final String value) {
-        mSharedPreferences.edit().putString(KEY_1, value).commit();
-    }
-
-    public boolean isPortalInfo() {
-        return getPortal() != null && getPortal().endsWith(TAG_SUFFIX_INFO);
-    }
-
-    @Nullable
-    public String getLogin() {
-        return mSharedPreferences.getString(KEY_2, null);
-    }
-
-    public void setLogin(final String value) {
-        mSharedPreferences.edit().putString(KEY_2, value).commit();
-    }
-
-    @Nullable
-    public String getPhoneNoise() {
-        return mSharedPreferences.getString(KEY_8, null);
-    }
-
-    public void setPhoneNoise(final String value) {
-        mSharedPreferences.edit().putString(KEY_8, value).commit();
-    }
-
-    @NonNull
-    public String getSortBy() {
-        return mSharedPreferences.getString(KEY_9, ApiContract.Parameters.VAL_SORT_BY_UPDATED);
-    }
-
-    public void setSortBy(final String value) {
-        mSharedPreferences.edit().putString(KEY_9, value).commit();
-    }
-
-    @NonNull
-    public String getSortOrder() {
-        return mSharedPreferences.getString(KEY_10, ApiContract.Parameters.VAL_SORT_ORDER_DESC);
-    }
-
-    public void setSortOrder(final String value) {
-        mSharedPreferences.edit().putString(KEY_10, value).commit();
-    }
-
-
-    public boolean isPersonalPortal() {
-        final String portal = getPortal();
-        if (portal != null) {
-            for (String address : PERSONAL_ADDRESSES) {
-                if (portal.contains(address)) {
-                    return true;
-                }
+        private val PERSONAL_ADDRESSES: Set<String> = object : TreeSet<String>() {
+            init {
+                add(ApiContract.PERSONAL_SUBDOMAIN + ".")
             }
         }
-        return false;
     }
 
-    public String getScheme() {
-        return mSharedPreferences.getString(KEY_16, ApiContract.SCHEME_HTTPS);
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
+
+    fun setDefault() {
+        setDefaultPortal()
+        setDefaultUser()
     }
 
-    public void setScheme(final String value) {
-        mSharedPreferences.edit().putString(KEY_16, value).commit();
+    private fun setDefaultUser() {
+        login = null
+        phoneNoise = null
+        sortBy = ApiContract.Parameters.VAL_SORT_BY_UPDATED
+        sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
+        socialProvider = null
+        selfId = ""
+        isProjectDisable = false
+        isNoPortal = true
+        isShowStorageAccess = true
     }
 
-    public String getSocialProvider() {
-        return mSharedPreferences.getString(KEY_17, null);
+    fun setDefaultPortal() {
+        portal = null
+        scheme = ApiContract.SCHEME_HTTPS
+        isNoPortal = true
     }
 
-    public void setSocialProvider(final String value) {
-        mSharedPreferences.edit().putString(KEY_17, value).commit();
+    var portal: String?
+        get() = sharedPreferences.getString(KEY_1, null)
+        set(value) {
+            sharedPreferences.edit().putString(KEY_1, value).apply()
+        }
+    val isPortalInfo: Boolean
+        get() = portal?.endsWith(TAG_SUFFIX_INFO) == true
+    var login: String?
+        get() = sharedPreferences.getString(KEY_2, null)
+        set(value) {
+            sharedPreferences.edit().putString(KEY_2, value).apply()
+        }
+    var phoneNoise: String?
+        get() = sharedPreferences.getString(KEY_8, null)
+        set(value) {
+            sharedPreferences.edit().putString(KEY_8, value).apply()
+        }
+    var sortBy: String?
+        get() = sharedPreferences.getString(KEY_9, ApiContract.Parameters.VAL_SORT_BY_UPDATED)
+        set(value) {
+            sharedPreferences.edit().putString(KEY_9, value).apply()
+        }
+    var sortOrder: String?
+        get() = sharedPreferences.getString(KEY_10, ApiContract.Parameters.VAL_SORT_ORDER_DESC)
+        set(value) {
+            sharedPreferences.edit().putString(KEY_10, value).apply()
+        }
+    val isPersonalPortal: Boolean
+        get() {
+            val portal = portal
+            if (portal != null) {
+                for (address in PERSONAL_ADDRESSES) {
+                    if (portal.contains(address)) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+
+    var scheme: String?
+        get() = sharedPreferences.getString(KEY_16, ApiContract.SCHEME_HTTPS)
+        set(value) {
+            sharedPreferences.edit().putString(KEY_16, value).apply()
+        }
+    var socialProvider: String?
+        get() = sharedPreferences.getString(KEY_17, null)
+        set(value) {
+            sharedPreferences.edit().putString(KEY_17, value).apply()
+        }
+    var selfId: String?
+        get() = sharedPreferences.getString(KEY_19, "")
+        set(value) {
+            sharedPreferences.edit().putString(KEY_19, value).apply()
+        }
+    var onBoarding: Boolean
+        get() = sharedPreferences.getBoolean(KEY_20, false)
+        set(value) {
+            sharedPreferences.edit().putBoolean(KEY_20, value).apply()
+        }
+    var isRateOn: Boolean
+        get() = sharedPreferences.getBoolean(KEY_24, true)
+        set(value) {
+            sharedPreferences.edit().putBoolean(KEY_24, value).apply()
+        }
+    var userSession: Long
+        get() = sharedPreferences.getLong(KEY_27, 0L)
+        set(value) {
+            sharedPreferences.edit().putLong(KEY_27, value).apply()
+        }
+
+    fun setUserSession() {
+        userSession = userSession + 1
     }
 
-    public String getSelfId() {
-        return mSharedPreferences.getString(KEY_19, "");
+    var isNoPortal: Boolean
+        get() = sharedPreferences.getBoolean(KEY_31, true)
+        set(isNoPortal) {
+            sharedPreferences.edit().putBoolean(KEY_31, isNoPortal).apply()
+        }
+    var secretKey: String?
+        get() = sharedPreferences.getString(KEY_30, "")
+        set(secretKey) {
+            sharedPreferences.edit().putString(KEY_30, secretKey).apply()
+        }
+    var isProjectDisable: Boolean
+        get() = sharedPreferences.getBoolean(KEY_28, false)
+        set(value) {
+            sharedPreferences.edit().putBoolean(KEY_28, value).apply()
+        }
+
+    fun setFavoritesEnable(value: Boolean) {
+        sharedPreferences.edit().putBoolean(KEY_32, value).apply()
     }
 
-    public void setSelfId(final String value) {
-        mSharedPreferences.edit().putString(KEY_19, value).commit();
+    val isFavoritesEnabled: Boolean
+        get() = sharedPreferences.getBoolean(KEY_32, true)
+    var serverVersion: String?
+        get() = sharedPreferences.getString(KEY_29, "")
+        set(value) {
+            sharedPreferences.edit().putString(KEY_29, value).apply()
+        }
+
+    fun setWifiState(wifiState: Boolean) {
+        sharedPreferences.edit().putBoolean(KEY_WIFI_STATE, wifiState).apply()
     }
 
-    public boolean getOnBoarding() {
-        return mSharedPreferences.getBoolean(KEY_20, false);
-    }
-
-    public void setOnBoarding(final boolean value) {
-        mSharedPreferences.edit().putBoolean(KEY_20, value).commit();
-    }
-
-    public boolean getIsRateOn() {
-        return mSharedPreferences.getBoolean(KEY_24, true);
-    }
-
-    public void setIsRateOn(final boolean value) {
-        mSharedPreferences.edit().putBoolean(KEY_24, value).commit();
-    }
-
-    public long getUserSession() {
-        return mSharedPreferences.getLong(KEY_27, 0L);
-    }
-
-    public void setUserSession(final long value) {
-        mSharedPreferences.edit().putLong(KEY_27, value).commit();
-    }
-
-    public void setUserSession() {
-        setUserSession(getUserSession() + 1);
-    }
-
-    public void setNoPortal(final boolean isNoPortal) {
-        mSharedPreferences.edit().putBoolean(KEY_31, isNoPortal).commit();
-    }
-
-    public boolean isNoPortal() {
-        return mSharedPreferences.getBoolean(KEY_31, true);
-    }
-
-    public void setSecretKey(String secretKey) {
-        mSharedPreferences.edit().putString(KEY_30, secretKey).apply();
-    }
-
-    public String getSecretKey() {
-        return mSharedPreferences.getString(KEY_30, "");
-    }
-
-    public void setProjectDisable(boolean value) {
-        mSharedPreferences.edit().putBoolean(KEY_28, value).apply();
-    }
-
-    public boolean isProjectDisable() {
-        return mSharedPreferences.getBoolean(KEY_28, false);
-    }
-
-    public void setFavoritesEnable(boolean value) {
-        mSharedPreferences.edit().putBoolean(KEY_32, value).apply();
-    }
-
-    public boolean isFavoritesEnabled() {
-        return mSharedPreferences.getBoolean(KEY_32, true);
-    }
-
-    public void setServerVersion(String value) {
-        mSharedPreferences.edit().putString(KEY_29, value).apply();
-    }
-
-    public String getServerVersion() {
-        return mSharedPreferences.getString(KEY_29, "");
-    }
-
-    public void setWifiState(boolean wifiState){
-        mSharedPreferences.edit().putBoolean(KEY_WIFI_STATE, wifiState).apply();
-    }
-
-    public boolean getUploadWifiState(){
-        return mSharedPreferences.getBoolean(KEY_WIFI_STATE, false);
-    }
-
-    public void setAnalyticEnable(boolean isEnable) {
-        mSharedPreferences.edit().putBoolean(KEY_ANALYTIC, isEnable).apply();
-    }
-
-    public boolean isAnalyticEnable() {
-        return mSharedPreferences.getBoolean(KEY_ANALYTIC, true);
-    }
-
-    public void setShowStorageAccess(boolean isShow) {
-        mSharedPreferences.edit().putBoolean(KEY_STORAGE_ACCESS, isShow).apply();
-    }
-
-    public boolean isShowStorageAccess() {
-        return mSharedPreferences.getBoolean(KEY_STORAGE_ACCESS, true);
-    }
+    val uploadWifiState: Boolean
+        get() = sharedPreferences.getBoolean(KEY_WIFI_STATE, false)
+    var isAnalyticEnable: Boolean
+        get() = sharedPreferences.getBoolean(KEY_ANALYTIC, true)
+        set(isEnable) {
+            sharedPreferences.edit().putBoolean(KEY_ANALYTIC, isEnable).apply()
+        }
+    var isShowStorageAccess: Boolean
+        get() = sharedPreferences.getBoolean(KEY_STORAGE_ACCESS, true)
+        set(isShow) {
+            sharedPreferences.edit().putBoolean(KEY_STORAGE_ACCESS, isShow).apply()
+        }
 
 }

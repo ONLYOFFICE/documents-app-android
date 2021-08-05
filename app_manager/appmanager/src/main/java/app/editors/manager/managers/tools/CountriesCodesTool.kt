@@ -1,113 +1,82 @@
-package app.editors.manager.managers.tools;
+package app.editors.manager.managers.tools
 
-import android.content.Context;
+import android.content.Context
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
+import java.util.*
+import javax.inject.Inject
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
+class CountriesCodesTool @Inject constructor(
+    private val context: Context,
+    private val phoneNumberUtil: PhoneNumberUtil
+) {
 
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
-import io.michaelrocks.libphonenumber.android.Phonenumber;
+    class Codes(val name: String, val code: String, val number: Int)
 
-public class CountriesCodesTool {
+    private val codesList: MutableList<Codes> = ArrayList()
 
-    public static class Codes {
+    private val codesComparator: Comparator<Codes> =
+        Comparator { o1, o2 -> o1?.name?.compareTo(o2?.name ?: "") ?: -1 }
 
-        public final String mName;
-        public final String mCode;
-        public final int mNumber;
-
-        public Codes(final String name, final String code, final int number) {
-            mName = name;
-            mCode = code;
-            mNumber = number;
-        }
-    }
-
-    private final PhoneNumberUtil mPhoneNumberUtil;
-    private final List<Codes> mCodesList;
-    private final CodesComparator mCodesComparator;
-
-    public CountriesCodesTool(final Context context) {
-        mPhoneNumberUtil = PhoneNumberUtil.createInstance(context);
-        mCodesList = new ArrayList<>();
-        mCodesComparator = new CodesComparator();
-        initCodes();
+    init {
+        initCodes()
     }
 
     /*
     * Match for region/code/country
     * */
-    private void initCodes() {
-        final Set<String> supportedRegions = new TreeSet<>(mPhoneNumberUtil.getSupportedRegions());
-        final Set<String> countries = new TreeSet<>(Arrays.asList(Locale.getISOCountries()));
-        final String defaultLanguage = Locale.getDefault().getLanguage();
-
-        for (String region : supportedRegions) {
+    private fun initCodes() {
+        val supportedRegions: Set<String> = TreeSet(phoneNumberUtil.supportedRegions)
+        val countries: Set<String> = TreeSet(listOf(*Locale.getISOCountries()))
+        val defaultLanguage = Locale.getDefault().language
+        for (region in supportedRegions) {
             if (countries.contains(region)) {
-                final Locale locale = new Locale(defaultLanguage, region);
-                final String name = locale.getDisplayCountry();
-                final int code = mPhoneNumberUtil.getCountryCodeForRegion(region);
-                final Codes codes = new Codes(name, region, code);
-                mCodesList.add(codes);
+                val locale = Locale(defaultLanguage, region)
+                val name = locale.displayCountry
+                val code = phoneNumberUtil.getCountryCodeForRegion(region)
+                val codes = Codes(name, region, code)
+                codesList.add(codes)
             }
         }
-
-        Collections.sort(mCodesList, mCodesComparator);
+        Collections.sort(codesList, codesComparator)
     }
 
     /*
     * Check number for valid format for region
     * */
-    public String getPhoneE164(final String phone, final String region) {
-        String phoneE164 = null;
+    fun getPhoneE164(phone: String?, region: String?): String? {
+        var phoneE164: String? = null
         try {
-            final Phonenumber.PhoneNumber phoneNumber = mPhoneNumberUtil.parse(phone, region);
-            if (phoneNumber != null && mPhoneNumberUtil.isValidNumber(phoneNumber)) {
-                phoneE164 = mPhoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+            val phoneNumber = phoneNumberUtil.parse(phone, region)
+            if (phoneNumber != null && phoneNumberUtil.isValidNumber(phoneNumber)) {
+                phoneE164 = phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164)
             }
-        } catch (Exception e) {
+        } catch (e: Exception) {
             // No need handle
         }
-
-        return phoneE164;
+        return phoneE164
     }
 
-    public CountriesCodesTool.Codes getCodeByRegion(final String region) {
-        for (int i = 0; i < mCodesList.size(); i++) {
-            if (mCodesList.get(i).mCode.equalsIgnoreCase(region)) {
-                return mCodesList.get(i);
+    fun getCodeByRegion(region: String?): Codes? {
+        for (i in codesList.indices) {
+            if (codesList[i].code.equals(region, ignoreCase = true)) {
+                return codesList[i]
             }
         }
-
-        return null;
+        return null
     }
 
-    public CountriesCodesTool.Codes getCountryByCode(final int number) {
-        for (int i = 0; i < mCodesList.size(); i++) {
-            if (mCodesList.get(i).mNumber == number) {
-                return mCodesList.get(i);
+    fun getCountryByCode(number: Int): Codes? {
+        for (i in codesList.indices) {
+            if (codesList[i].number == number) {
+                return codesList[i]
             }
         }
-
-        return null;
+        return null
     }
 
-    public List<Codes> getCodes() {
-        return mCodesList;
-    }
-
-    private class CodesComparator implements Comparator<Codes> {
-
-        @Override
-        public int compare(Codes o1, Codes o2) {
-            return o1.mName.compareTo(o2.mName);
-        }
-    }
+    val codes: List<Codes>
+        get() = codesList
 
 }

@@ -103,7 +103,7 @@ class CountriesCodesFragment : BaseAppFragment(), SearchView.OnQueryTextListener
             FragmentManager.POP_BACK_STACK_INCLUSIVE
         )
         fragmentManager?.popBackStack(TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        codes?.let { EnterprisePhoneFragment.newInstance(it.mNumber, it.mName, it.mCode) }?.let {
+        codes?.let { EnterprisePhoneFragment.newInstance(it.number, it.name, it.code) }?.let {
             showFragment(
                 it,
                 EnterprisePhoneFragment.TAG,

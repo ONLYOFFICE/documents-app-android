@@ -129,9 +129,9 @@ class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
         initListeners()
         val codes = countriesCodesTool.getCodeByRegion(Locale.getDefault().country)
         if (codes != null) {
-            countryCode = codes.mNumber
-            countryName = codes.mName
-            countryRegion = codes.mCode
+            countryCode = codes.number
+            countryName = codes.name
+            countryRegion = codes.code
         }
         showKeyboard(viewBinding?.loginPhoneNumberEdit)
         viewBinding?.loginPhoneNumberEdit?.setText("+$countryCode")
