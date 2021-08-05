@@ -21,8 +21,8 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
-import app.editors.manager.onedrive.DocsOneDrivePresenter
-import app.editors.manager.onedrive.OneDriveSingInPresenter
+import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
+import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter

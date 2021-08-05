@@ -22,7 +22,7 @@ import app.editors.manager.ui.activities.login.PortalsActivity;
 import app.editors.manager.ui.activities.login.WebDavLoginActivity;
 import app.editors.manager.ui.activities.main.MainActivity;
 import app.editors.manager.ui.fragments.base.BaseAppFragment;
-import app.editors.manager.onedrive.OneDriveSignInFragment;
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

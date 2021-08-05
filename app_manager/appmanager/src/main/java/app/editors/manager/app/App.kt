@@ -16,8 +16,8 @@ import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
 import app.editors.manager.di.module.*
-import app.editors.manager.onedrive.DaggerOneDriveComponent
-import app.editors.manager.onedrive.OneDriveComponent
+import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
+import app.editors.manager.onedrive.di.component.OneDriveComponent
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.util.*
