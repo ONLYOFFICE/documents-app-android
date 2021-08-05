@@ -71,37 +71,8 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             accountJson?.let { jsonAccount ->
                 viewState.onFinishRequest()
                 Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
-                    when {
-                        networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
-                            viewState.onRender(
-                                MainPagerState.PersonalState(
-                                    jsonAccount,
-                                    StringUtils.convertServerVersion(
-                                        networkSetting.serverVersion
-                                    )
-                                )
-                            )
-                        }
-                        cloudAccount.isVisitor -> {
-                            viewState.onRender(
-                                MainPagerState.VisitorState(
-                                    jsonAccount,
-                                    StringUtils.convertServerVersion(
-                                        networkSetting.serverVersion
-                                    )
-                                )
-                            )
-                        }
-                        else -> {
-                            viewState.onRender(
-                                MainPagerState.CloudState(
-                                    jsonAccount,
-                                    StringUtils.convertServerVersion(networkSetting.serverVersion)
-                                )
-                            )
-                        }
-                    }
-                    checkFileData(Json.decodeFromString(accountJson), fileData)
+                    render(cloudAccount, jsonAccount)
+                    checkFileData(cloudAccount, fileData)
                 }
             } ?: run {
                 throw Exception("Need account")
@@ -114,43 +85,39 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         }
     }
 
-    private suspend fun render(cloudAccount: CloudAccount, jsonAccount: String) {
+    private fun render(cloudAccount: CloudAccount, jsonAccount: String) {
         when {
             networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
-                withContext(Dispatchers.Main) {
-                    viewState.onRender(
-                        MainPagerState.PersonalState(
-                            jsonAccount,
-                            StringUtils.convertServerVersion(
-                                networkSetting.serverVersion
-                            )
+                viewState.onRender(
+                    MainPagerState.PersonalState(
+                        jsonAccount,
+                        StringUtils.convertServerVersion(
+                            networkSetting.serverVersion
                         )
                     )
-                }
+                )
+
 
             }
             cloudAccount.isVisitor -> {
-                withContext(Dispatchers.Main) {
-                    viewState.onRender(
-                        MainPagerState.VisitorState(
-                            jsonAccount,
-                            StringUtils.convertServerVersion(
-                                networkSetting.serverVersion
-                            )
+                viewState.onRender(
+                    MainPagerState.VisitorState(
+                        jsonAccount,
+                        StringUtils.convertServerVersion(
+                            networkSetting.serverVersion
                         )
                     )
-                }
+                )
+
 
             }
             else -> {
-                withContext(Dispatchers.Main) {
-                    viewState.onRender(
-                        MainPagerState.CloudState(
-                            jsonAccount,
-                            StringUtils.convertServerVersion(networkSetting.serverVersion)
-                        )
+                viewState.onRender(
+                    MainPagerState.CloudState(
+                        jsonAccount,
+                        StringUtils.convertServerVersion(networkSetting.serverVersion)
                     )
-                }
+                )
             }
         }
     }
