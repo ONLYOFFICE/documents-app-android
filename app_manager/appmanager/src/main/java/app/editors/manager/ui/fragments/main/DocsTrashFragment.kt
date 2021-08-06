@@ -1,6 +1,5 @@
 package app.editors.manager.ui.fragments.main
 
-import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -11,8 +10,6 @@ import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
-import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 
@@ -23,6 +20,11 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         showMenu()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initViews()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
