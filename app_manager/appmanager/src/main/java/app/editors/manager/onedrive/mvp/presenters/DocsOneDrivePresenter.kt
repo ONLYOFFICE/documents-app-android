@@ -97,7 +97,6 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
                 addFile(file)
                 setPlaceholderType(PlaceholderViews.Type.NONE)
                 viewState.onDialogClose()
-                viewState.onOpenLocalFile(file)
             }) { throwable: Throwable? -> fetchError(throwable) })
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }

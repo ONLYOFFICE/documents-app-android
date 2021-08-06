@@ -40,6 +40,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 
 class OneDriveFileProvider : BaseFileProvider {
 
@@ -86,7 +87,7 @@ class OneDriveFileProvider : BaseFileProvider {
         val files: MutableList<CloudFile> = mutableListOf()
         val folders: MutableList<CloudFolder> = mutableListOf()
 
-        if(!response.value.isEmpty()) {
+        if(response.value.isNotEmpty()) {
 
             val nameParentFolder = response.value.get(0).parentReference.path.split("/")
             val name = nameParentFolder.get(2)
@@ -134,12 +135,41 @@ class OneDriveFileProvider : BaseFileProvider {
             explorer.current = current
             explorer.files = files
             explorer.folders = folders
+        } else {
+            val current = Current()
+
+            val context = response.context.split("/")
+
+            current.id = context[6].split("'")[1].replace("%21", "!")
+            current.filesCount = 0.toString()
+            current.foldersCount = 0.toString()
+
+            explorer.current = current
+            explorer.files = emptyList()
+            explorer.folders = emptyList()
         }
         return explorer
     }
 
     override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
-        TODO("Not yet implemented")
+        return Observable.fromCallable { body?.title?.let {
+            api.oneDriveService.createFile(folderId!!,
+                it, mapOf("@microsoft.graph.conflictBehavior" to "rename")).blockingGet()
+        } }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map {response ->
+                if(response is OneDriveResponse.Success) {
+                    val file = CloudFile()
+                    file.id = (response.response as DriveItemValue).id
+                    file.title = response.response.name
+                    file.updated = Date()
+                    return@map file
+                } else {
+                    Log.d("ONEDRIVE", "${(response as OneDriveResponse.Error).error.message}")
+                    return@map null
+                }
+            }
     }
 
     override fun createFolder(folderId: String?, body: RequestCreate?): Observable<CloudFolder>? {
@@ -173,8 +203,8 @@ class OneDriveFileProvider : BaseFileProvider {
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
                 if(response.isSuccessful) {
-                    item?.updated = Date()
-                    item?.title = newName
+                    item.updated = Date()
+                    item.title = newName
                     return@map item
                 } else {
                     throw HttpException(response)

@@ -80,4 +80,11 @@ interface OneDriveService {
     )
     @POST(API_VERSION + "me/drive/items/{parent_item_id}/children")
     fun createFolder(@Path(value = "parent_item_id") itemId: String, @Body request: CreateFolderRequest): Single<Response<DriveItemValue>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT( API_VERSION + "me/drive/items/{parent_item_id}:/{file_ext}:/content" )
+    fun createFile(@Path(value = "parent_item_id") itemId: String, @Path(value = "file_ext") ext: String, @QueryMap map: Map<String, String> ): Single<Response<DriveItemValue>>
 }

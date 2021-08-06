@@ -196,7 +196,7 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
 
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
-            mSwipeRefreshLayout?.setRefreshing(false)
+            mSwipeRefreshLayout?.isRefreshing = false
             mIsPageLoad = true
         }
 
