@@ -168,3 +168,15 @@ class App : Application() {
     }
 
 }
+
+val Context.appComponent: AppComponent
+    get() = when (this) {
+        is App -> this.appComponent
+        else -> this.applicationContext.appComponent
+    }
+
+val Context.loginComponent: LoginComponent
+    get() = when (this) {
+        is App -> this.loginComponent
+        else -> this.applicationContext.loginComponent
+    }
