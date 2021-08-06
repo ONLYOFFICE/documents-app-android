@@ -13,6 +13,7 @@ import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListene
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.CloudFile
@@ -259,7 +260,11 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         state.mIsTrash = isTrash
         state.mIsFavorite = isClickedItemFavorite
         if (!isClickedItemFile) {
-            state.mIconResId = R.drawable.ic_type_folder
+            if((itemClicked as CloudFolder).providerKey.isEmpty()) {
+                state.mIconResId = R.drawable.ic_type_folder
+            } else {
+                state.mIconResId = StorageUtils.getStorageIcon((itemClicked as CloudFolder).providerKey)
+            }
         } else {
             state.mIconResId = getIconContext(
                 StringUtils.getExtensionFromPath(

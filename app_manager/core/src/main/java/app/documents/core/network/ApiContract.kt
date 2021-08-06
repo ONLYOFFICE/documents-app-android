@@ -166,6 +166,7 @@ object ApiContract {
         const val YANDEX = "Yandex"
         const val OWNCLOUD = "OwnCloud"
         const val NEXTCLOUD = "Nextcloud"
+        const val KDRIVE = "KDrive"
         const val WEBDAV = "WebDav"
     }
 
