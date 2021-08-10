@@ -2,8 +2,10 @@ package app.editors.manager.onedrive.onedrive
 
 import app.editors.manager.managers.providers.IOneDriveServiceProvider
 import app.editors.manager.managers.providers.OneDriveResponse
+import app.editors.manager.onedrive.mvp.models.request.ChangeFileRequest
 import app.editors.manager.onedrive.mvp.models.request.CreateFolderRequest
 import app.editors.manager.onedrive.mvp.models.request.RenameRequest
+import app.editors.manager.onedrive.mvp.models.request.UploadRequest
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -92,6 +94,19 @@ class OneDriveServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun updateFile(itemId: String, body: ChangeFileRequest): Single<Response<ResponseBody>> {
+        return oneDriveService.updateFile(itemId, body)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun uploadFile(folderId: String, fileName: String, request: UploadRequest): Single<OneDriveResponse> {
+        return oneDriveService.uploadFile(folderId, fileName, request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+    }
 
     private fun <T> fetchResponse(response: Response<T>): OneDriveResponse {
         return if (response.isSuccessful && response.body() != null) {

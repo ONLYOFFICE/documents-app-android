@@ -3,8 +3,11 @@ package app.editors.manager.onedrive.onedrive
 import app.documents.core.network.ApiContract
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemCloudTree
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
+import app.editors.manager.onedrive.mvp.models.request.ChangeFileRequest
 import app.editors.manager.onedrive.mvp.models.request.CreateFolderRequest
 import app.editors.manager.onedrive.mvp.models.request.RenameRequest
+import app.editors.manager.onedrive.mvp.models.request.UploadRequest
+import app.editors.manager.onedrive.mvp.models.response.UploadResponse
 import app.editors.manager.onedrive.mvp.models.user.User
 import io.reactivex.Single
 import okhttp3.ResponseBody
@@ -87,4 +90,18 @@ interface OneDriveService {
     )
     @PUT( API_VERSION + "me/drive/items/{parent_item_id}:/{file_ext}:/content" )
     fun createFile(@Path(value = "parent_item_id") itemId: String, @Path(value = "file_ext") ext: String, @QueryMap map: Map<String, String> ): Single<Response<DriveItemValue>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": text/plain",
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT(API_VERSION + "me/drive/items/{item_id}/content")
+    fun updateFile(@Path(value = "item_id") itemId: String, @Body body: ChangeFileRequest):Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST(API_VERSION + "me/drive/items/{folder_id}:/{file_name}:/createUploadSession")
+    fun uploadFile(@Path(value = "folder_id") folderId: String, @Path(value = "file_name") fileName:String, @Body request: UploadRequest): Single<Response<UploadResponse>>
 }

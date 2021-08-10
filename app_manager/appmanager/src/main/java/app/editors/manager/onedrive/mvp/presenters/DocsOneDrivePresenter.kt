@@ -1,5 +1,7 @@
 package app.editors.manager.onedrive.mvp.presenters
 
+import android.net.Uri
+import android.util.Log
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
@@ -58,7 +60,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
         } ?: run {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
-                    AccountUtils.getAccount(mContext, cloudAccount.getAccountName())?.let { account ->
+                    AccountUtils.getAccount(mContext, cloudAccount.getAccountName())?.let {
                         mFileProvider = OneDriveFileProvider()
                         withContext(Dispatchers.Main) {
                             getItemsById(null)
@@ -123,6 +125,14 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
                 }
             ) { throwable: Throwable? -> fetchError(throwable) }
 
+    }
+
+    fun upload(uri: Uri, tag: String) {
+        mDisposable.add(mutableListOf(uri)?.let {
+            (mFileProvider as OneDriveFileProvider).upload(mModelExplorerStack.currentId, it, tag)
+                .subscribe()
+        }
+        )
     }
 
     override fun addRecent(file: CloudFile?) {

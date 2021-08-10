@@ -20,12 +20,19 @@ import app.editors.manager.onedrive.di.component.OneDriveComponent
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemCloudTree
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemFolder
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
+import app.editors.manager.onedrive.mvp.models.request.ChangeFileRequest
 import app.editors.manager.onedrive.mvp.models.request.CreateFolderRequest
 import app.editors.manager.onedrive.mvp.models.request.RenameRequest
+import app.editors.manager.onedrive.mvp.models.request.UploadRequest
+import app.editors.manager.onedrive.mvp.models.response.UploadResponse
+import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
@@ -35,12 +42,12 @@ import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import okhttp3.ResponseBody
 import retrofit2.HttpException
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.regex.Pattern
+import kotlin.math.min
 
 class OneDriveFileProvider : BaseFileProvider {
 
@@ -48,6 +55,7 @@ class OneDriveFileProvider : BaseFileProvider {
     private val PATH_DOWNLOAD =
         Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice"
 
+    private var tag: String = ""
 
     @JvmName("getApiAsync")
     private fun getOneDriveApi(): OneDriveComponent = runBlocking {
@@ -80,6 +88,89 @@ class OneDriveFileProvider : BaseFileProvider {
                     else -> return@map null
                 }
             }
+    }
+
+    override fun upload(folderId: String?, uris: MutableList<Uri>?): Observable<Int> {
+        val request = UploadRequest()
+        val fileName =
+            uris?.get(0)?.path?.let { lib.toolkit.base.managers.utils.FileUtils.getFileName(it, true) }
+        return Observable.fromCallable {
+            folderId?.let {
+                fileName?.let { it1 ->
+                    api.oneDriveService.uploadFile(
+                        it, it1, when (tag) {
+                            DocsOneDriveFragment.KEY_UPLOAD -> request.copy(
+                                item = app.editors.manager.onedrive.mvp.models.other.Item(
+                                    "rename"
+                                )
+                            )
+                            DocsOneDriveFragment.KEY_UPDATE -> request.copy(
+                                item = app.editors.manager.onedrive.mvp.models.other.Item(
+                                    "replace"
+                                )
+                            )
+                            else -> request.copy(
+                                item = app.editors.manager.onedrive.mvp.models.other.Item(
+                                    "fail"
+                                )
+                            )
+                        }
+                    ).blockingGet()
+                }
+            }
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                if (response is OneDriveResponse.Success) {
+                    uris?.get(0)?.let {
+                        uploadSession(
+                            (response.response as UploadResponse).uploadUrl,
+                            it
+                        )
+                    }
+                    return@map 10
+                } else {
+                    return@map 12
+                }
+            }
+    }
+
+    fun upload(folderId: String?, uris: MutableList<Uri>?, tag: String): Observable<Int> {
+        this.tag = tag
+        return upload(folderId, uris)
+    }
+
+    private fun uploadSession(url: String, uri: Uri) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val connection = URL(url).openConnection() as HttpURLConnection
+            val fileInputStream = getApp().contentResolver.openInputStream(uri)
+            val maxBufferSize = 62914560
+            val boundary = "*****"
+            var outputStream: OutputStream? = null
+            var bytesAvailable = fileInputStream?.available()
+            connection.doInput = true
+            connection.doOutput = true
+            connection.useCaches = false
+            connection.requestMethod = "PUT"
+            connection.setRequestProperty("Connection", "Keep-Alive")
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+            try {
+                outputStream = DataOutputStream(connection.outputStream)
+                var bufferSize = min(bytesAvailable!!, maxBufferSize)
+                val buffer = ByteArray(bufferSize)
+                var bytesRead = fileInputStream?.read(buffer, 0, bufferSize)
+                while (bytesRead!! > 0) {
+                    outputStream.write(buffer, 0, bufferSize)
+                    bytesAvailable = fileInputStream?.available()
+                    bufferSize = min(bytesAvailable!!, maxBufferSize)
+                    bytesRead = fileInputStream?.read(buffer, 0, bufferSize)
+                }
+                Log.d("ONEDRIVE", "${connection.responseCode}, ${connection.responseMessage}")
+            } catch (e: Exception) {
+                Log.d("ONEDRIVE", "Exception, ${e.localizedMessage}, ${e.cause?.message}")
+            }
+        }
     }
 
     private fun getExplorer(response: DriveItemCloudTree): Explorer {
@@ -227,7 +318,7 @@ class OneDriveFileProvider : BaseFileProvider {
                         throw HttpException(response)
                     }
                 }.buffer(it)
-                .map { response ->
+                .map {
                     val operations: MutableList<Operation> = ArrayList()
                     val operation = Operation()
                     operation.progress = 100
@@ -252,8 +343,7 @@ class OneDriveFileProvider : BaseFileProvider {
             val outputFile = item?.let { checkDirectory(it) }
             if (outputFile != null && outputFile.exists()) {
                 if (item is CloudFile) {
-                    val file = item
-                    if (file.pureContentLength != outputFile.length()) {
+                    if (item.pureContentLength != outputFile.length()) {
                         download(emitter, item, outputFile)
                     } else {
                         setFile(item, outputFile)?.let { emitter.onNext(it) }
@@ -280,7 +370,6 @@ class OneDriveFileProvider : BaseFileProvider {
         })
     }
 
-
     override fun getStatusOperation(): ResponseOperation {
         val responseOperation = ResponseOperation()
         responseOperation.response = ArrayList()
@@ -290,13 +379,12 @@ class OneDriveFileProvider : BaseFileProvider {
     override fun download(items: MutableList<Item>?): Observable<Int?> {
         return Observable.fromIterable(items)
             .filter { item: Item? -> item is CloudFile }
-            .flatMap({ item: Item ->
+            .flatMap { item: Item ->
                 startDownload(item)
-            })
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
-
 
     @SuppressLint("MissingPermission")
     private fun startDownload(item: Item): Observable<Int?> {
@@ -358,8 +446,41 @@ class OneDriveFileProvider : BaseFileProvider {
         }
     }
 
-    override fun upload(folderId: String?, uris: MutableList<Uri>?): Observable<Int> {
-        TODO("Not yet implemented")
+    fun updateFile(folderId: String?, uri: Uri): Observable<Int> {
+        val iStream = uri.let { App.getApp().contentResolver.openInputStream(it) }
+        val data = iStream?.let { getBytes(it) }?.let { ChangeFileRequest(it) }
+        return Observable.fromCallable { folderId?.let { data?.let { it1 ->
+            api.oneDriveService.updateFile(it,
+                it1
+            ).blockingGet()
+        } } }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                if(response.isSuccessful) {
+                    Log.d("ONEDRIVE", "${response.body()?.string()}")
+                    return@map 10
+                } else {
+                    Log.d("ONEDRIVE", "${response.errorBody()?.string()}")
+                    return@map 12
+                }
+            }
+    }
+
+    private fun getBytes(inputStream: InputStream): ByteArray {
+        val stream = ByteArrayOutputStream()
+        var bytesAvailable = inputStream.available()
+        var bufferSize = min(bytesAvailable, 1024)
+        val buffer = ByteArray(bufferSize)
+        var len = 0
+        len = inputStream.read(buffer, 0, bufferSize)
+        while (len > 0) {
+            stream.write(buffer, 0, bufferSize)
+            bytesAvailable = inputStream.available()
+            bufferSize = min(bytesAvailable, 1024)
+            len = inputStream.read(buffer, 0, bufferSize)
+        }
+        return stream.toByteArray()
     }
 
     override fun share(
@@ -384,8 +505,7 @@ class OneDriveFileProvider : BaseFileProvider {
     @SuppressLint("MissingPermission")
     private fun checkDirectory(item: Item): File? {
         val file = item as CloudFile
-        val extension = getExtension(file.fileExst)
-        when (extension) {
+        when (getExtension(file.fileExst)) {
             StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH, StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
                 val parent =
                     File(Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice")
