@@ -21,6 +21,7 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
+import app.editors.manager.viewModels.main.AppSettingsViewModel
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -38,6 +39,7 @@ import app.editors.manager.ui.fragments.storage.ConnectFragment
 import app.editors.manager.ui.fragments.storage.SelectFragment
 import app.editors.manager.ui.fragments.storage.WebDavFragment
 import app.editors.manager.ui.fragments.storage.WebTokenFragment
+import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
 import lib.toolkit.base.managers.tools.LocalContentTools
@@ -65,7 +67,6 @@ interface AppComponent {
     fun inject(enterprisePortalPresenter: EnterprisePortalPresenter?)
     fun inject(enterpriseSignInPresenter: EnterpriseLoginPresenter?)
     fun inject(enterpriseSmsPresenter: EnterpriseSmsPresenter?)
-    fun inject(enterprisePhonePresenter: EnterprisePhonePresenter?)
     fun inject(enterpriseCreateValidatePresenter: EnterpriseCreateValidatePresenter?)
     fun inject(enterpriseCreateSignInPresenter: EnterpriseCreateLoginPresenter?)
     fun inject(personalSignInPresenter: PersonalLoginPresenter?)
@@ -95,7 +96,6 @@ interface AppComponent {
     fun inject(docsOperationSectionFragment: DocsOperationSectionFragment?)
     fun inject(explorerAdapter: ExplorerAdapter?)
     fun inject(mediaAdapter: MediaAdapter?)
-    fun inject(settingsPresenter: AppSettingsPresenter?)
     fun inject(accountsPresenter: CloudAccountPresenter?)
     fun inject(mainPagerPresenter: MainPagerPresenter?)
 
@@ -138,4 +138,7 @@ interface AppComponent {
     fun inject(selectPresenter: SelectPresenter?)
     fun inject(accountsBottomFragment: AccountBottomDialog?)
     fun inject(webDavSignInPresenter: WebDavSignInPresenter?)
+
+    fun inject(viewModel: AppSettingsViewModel)
+    fun inject(viewModel: EnterprisePhoneViewModel)
 }

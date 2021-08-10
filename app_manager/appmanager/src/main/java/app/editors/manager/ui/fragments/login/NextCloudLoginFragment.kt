@@ -12,9 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import app.documents.core.account.CloudAccount
+import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.documents.core.webdav.WebDavApi
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.NextCloudLoginLayoutBinding
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -27,7 +28,6 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.NetworkUtils.clearCookies
 import java.net.MalformedURLException
 import java.net.URL
-import kotlin.math.log
 
 class NextCloudLoginFragment : BaseAppFragment() {
 
@@ -244,9 +244,9 @@ class NextCloudLoginFragment : BaseAppFragment() {
     )
 
     private fun addAccount(cloudAccount: CloudAccount) {
-        val accountDao = App.getApp().appComponent.accountsDao
+        val accountDao = requireContext().appComponent.accountsDao
         CoroutineScope(Dispatchers.Default).launch {
-            accountDao?.getAccountOnline()?.let {
+            accountDao.getAccountOnline()?.let {
                 accountDao.addAccount(it.copy(isOnline = false))
             }
             accountDao.addAccount(cloudAccount.copy(isOnline = true))

@@ -44,7 +44,7 @@ object Kotlin {
     const val version = "1.5.21"
     const val pluginVersion = "1.5.21"
     private const val coroutinesVersion = "1.5.0"
-    private const val serializationVersion = "1.2.1"
+    private const val serializationVersion = "1.2.2"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
     const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
