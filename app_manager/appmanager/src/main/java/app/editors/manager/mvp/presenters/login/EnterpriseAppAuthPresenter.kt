@@ -31,7 +31,7 @@ class EnterpriseAppAuthPresenter : BaseLoginPresenter<EnterpriseAppView>() {
 
     fun signInPortal(smsCode: String, request: String?) {
         val requestSignIn = Json.decodeFromString<RequestSignIn>(request ?: "")
-        disposable = App.getApp().loginComponent.loginService.signIn(requestSignIn, smsCode).subscribe({ response ->
+        disposable = App.getApp().appComponent.loginService.signIn(requestSignIn, smsCode).subscribe({ response ->
             when (response) {
                 is LoginResponse.Success -> {
                     getUserInfo(requestSignIn, (response.response as ResponseSignIn).response)

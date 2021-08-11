@@ -11,7 +11,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
-import app.editors.manager.app.loginComponent
+import app.editors.manager.app.loginService
 import app.editors.manager.databinding.FragmentLoginEnterprisePhoneBinding
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -52,7 +52,7 @@ class EnterprisePhoneFragment : BaseAppFragment() {
     }
 
     private val viewModel by viewModels<EnterprisePhoneViewModel> {
-        EnterprisePhoneViewModelFactory(requireContext().loginComponent.loginService)
+        EnterprisePhoneViewModelFactory(requireContext().loginService)
     }
 
     @Inject

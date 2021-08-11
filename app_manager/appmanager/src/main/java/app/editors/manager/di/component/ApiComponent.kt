@@ -9,6 +9,15 @@ import dagger.Component
 @ApiScope
 interface ApiComponent {
 
-    fun getApi(): Api
+    @Component.Builder
+    interface Builder {
+
+        fun appComponent(appComponent: AppComponent): Builder
+
+        fun build(): ApiComponent
+
+    }
+
+    val api: Api
 
 }

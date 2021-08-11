@@ -1,16 +1,21 @@
 package app.documents.core.di.module
 
+import android.content.Context
+import app.documents.core.account.AccountDao
 import app.documents.core.settings.NetworkSettings
 import app.documents.core.settings.WebDavInterceptor
 import app.documents.core.webdav.ConverterFactory
 import app.documents.core.webdav.WebDavApi
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.http.NetworkClient
+import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Scope
 
 @Scope
@@ -18,7 +23,7 @@ import javax.inject.Scope
 annotation class WebDavScope
 
 @Module
-class WebDavApiModule(val login: String? = null, val password: String? = null) {
+class WebDavApiModule {
 
     @Provides
     @WebDavScope
@@ -34,7 +39,11 @@ class WebDavApiModule(val login: String? = null, val password: String? = null) {
 
     @Provides
     @WebDavScope
-    fun provideClient(settings: NetworkSettings) : OkHttpClient {
+    fun provideClient(
+        @Named("login") login: String?,
+        @Named("password") password: String?,
+        settings: NetworkSettings
+    ): OkHttpClient {
         val builder = NetworkClient.getOkHttpBuilder(settings.getSslState(), settings.getCipher())
         return builder
             .readTimeout(NetworkClient.ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
@@ -42,6 +51,24 @@ class WebDavApiModule(val login: String? = null, val password: String? = null) {
             .connectTimeout(NetworkClient.ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(WebDavInterceptor(login, password))
             .build()
+    }
+
+    @Provides
+    @WebDavScope
+    @Named("password")
+    fun providePassword(context: Context, accountDao: AccountDao): String? = runBlocking {
+        accountDao.getAccountOnline()?.let { cloudAccount ->
+            return@runBlocking AccountUtils.getPassword(context, cloudAccount.getAccountName())
+        } ?: return@runBlocking null
+    }
+
+    @Provides
+    @WebDavScope
+    @Named("login")
+    fun provideLogin(accountDao: AccountDao): String? = runBlocking {
+        accountDao.getAccountOnline()?.let { cloudAccount ->
+            return@runBlocking cloudAccount.login
+        } ?: return@runBlocking null
     }
 
 }

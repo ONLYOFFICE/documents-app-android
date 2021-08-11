@@ -38,7 +38,7 @@ class CloudAccountsPresenter : BaseLoginPresenter<CloudAccountsView>() {
 //        App.getApp().appComponent.inject(this)
     }
 
-    private val service = App.getApp().loginComponent.loginService
+    private val service = App.getApp().appComponent.loginService
 
     var contextAccount: CloudAccount? = null
     private var mClickedAccount: CloudAccount? = null
@@ -172,7 +172,8 @@ class CloudAccountsPresenter : BaseLoginPresenter<CloudAccountsView>() {
     }
 
     private fun login(account: CloudAccount?) {
-        val token = AccountUtils.getToken(context, Account(account?.getAccountName(), context.getString(R.string.account_type)))
+        val token =
+            AccountUtils.getToken(context, Account(account?.getAccountName(), context.getString(R.string.account_type)))
         if (token != null && token.isNotEmpty()) {
             viewState.onShowWaitingDialog()
             //onGetToken(account.token, account)
@@ -221,7 +222,7 @@ class CloudAccountsPresenter : BaseLoginPresenter<CloudAccountsView>() {
                 if (accountDao.getAccounts().isEmpty()) {
                     viewState.onEmptyList()
                 } else {
-                    withContext(Dispatchers.Main){
+                    withContext(Dispatchers.Main) {
                         viewState.removeItem(mContextPosition)
                     }
                 }
@@ -232,14 +233,23 @@ class CloudAccountsPresenter : BaseLoginPresenter<CloudAccountsView>() {
     fun logout() {
         if (contextAccount != null) {
             CoroutineScope(Dispatchers.Main).launch {
-                AccountUtils.setPassword(context, Account(contextAccount?.getAccountName(), context.getString(R.string.account_type)), "")
-                AccountUtils.setToken(context, Account(contextAccount?.getAccountName(), context.getString(R.string.account_type)), "")
+                AccountUtils.setPassword(
+                    context,
+                    Account(contextAccount?.getAccountName(), context.getString(R.string.account_type)),
+                    ""
+                )
+                AccountUtils.setToken(
+                    context,
+                    Account(contextAccount?.getAccountName(), context.getString(R.string.account_type)),
+                    ""
+                )
                 val logoutAccount = contextAccount?.copy(isOnline = false)
                 logoutAccount?.let { accountDao.updateAccount(it) }
                 logoutAccount?.let { viewState.onUpdateItem(it, mContextPosition) }
             }
         }
     }
+
     fun signIn() {
         if (contextAccount != null) {
             login(contextAccount!!)
@@ -374,7 +384,8 @@ class CloudAccountsPresenter : BaseLoginPresenter<CloudAccountsView>() {
     //    }
 
     fun accountClick(account: CloudAccount) {
-        val token = AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(R.string.account_type)))
+        val token =
+            AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(R.string.account_type)))
         val portal = account.portal
         if (token != null && token.isNotEmpty() && portal != null && portal.isNotEmpty()) {
             disposable =

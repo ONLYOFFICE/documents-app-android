@@ -37,7 +37,7 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
 
     fun signInPortal(smsCode: String?, request: String) {
         val requestSignIn = Json.decodeFromString<RequestSignIn>(request)
-        disposable = App.getApp().loginComponent.loginService.signIn(requestSignIn, smsCode)
+        disposable = App.getApp().appComponent.loginService.signIn(requestSignIn, smsCode)
             .subscribe({ response ->
                 when (response) {
                     is LoginResponse.Success -> {
@@ -53,7 +53,7 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
     }
 
     fun resendSms(request: String) {
-        val service = App.getApp().loginComponent.loginService
+        val service = App.getApp().appComponent.loginService
         val requestSignIn = Json.decodeFromString<RequestNumber>(request)
         disposable = service.sendSms(requestSignIn)
             .subscribe({ response ->

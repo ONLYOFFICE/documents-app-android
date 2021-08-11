@@ -1,12 +1,16 @@
 package app.editors.manager.di.module
 
+import android.content.Context
+import app.documents.core.account.CloudAccount
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.app.Api
 import app.editors.manager.managers.retrofit.BaseInterceptor
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.http.NetworkClient
+import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -14,6 +18,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Scope
 
 
@@ -22,7 +27,7 @@ import javax.inject.Scope
 annotation class ApiScope
 
 @Module
-class ApiModule(val token: String) {
+class ApiModule {
 
     companion object {
         private const val READ_TIMEOUT = 60L
@@ -32,7 +37,7 @@ class ApiModule(val token: String) {
 
     @Provides
     @ApiScope
-    fun provideApi(factory: GsonConverterFactory, client: OkHttpClient, settings: NetworkSettings): Api  {
+    fun provideApi(factory: GsonConverterFactory, client: OkHttpClient, settings: NetworkSettings): Api {
         return Retrofit.Builder()
             .baseUrl(settings.getBaseUrl())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -56,7 +61,7 @@ class ApiModule(val token: String) {
 
     @Provides
     @ApiScope
-    fun provideOkHttpClient(settings: NetworkSettings): OkHttpClient {
+    fun provideOkHttpClient(@Named("token") token: String, settings: NetworkSettings): OkHttpClient {
         val builder = NetworkClient.getOkHttpBuilder(settings.getSslState(), settings.getCipher())
         builder.protocols(listOf(Protocol.HTTP_1_1))
             .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
@@ -64,6 +69,16 @@ class ApiModule(val token: String) {
             .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(BaseInterceptor(token))
         return builder.build()
+    }
+
+    @Provides
+    @ApiScope
+    @Named("token")
+    fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
+        account?.let { cloudAccount ->
+            return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
+                ?: throw RuntimeException("Token cant be null")
+        } ?: throw RuntimeException("Token cant be null")
     }
 
 }

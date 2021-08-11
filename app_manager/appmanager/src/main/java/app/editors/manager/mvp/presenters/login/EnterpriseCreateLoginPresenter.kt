@@ -65,7 +65,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         // Create api
         val domain = partsPortal[PORTAL_PART_HOST] + "." + partsPortal[PORTAL_PART_DOMAIN]
         networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + "." + domain)
-        val loginService = App.getApp().loginComponent.loginService
+        val loginService = App.getApp().appComponent.loginService
 
         // Validate portal
         val requestRegister = RequestRegister(

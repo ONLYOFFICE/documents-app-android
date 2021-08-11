@@ -8,10 +8,14 @@ import app.documents.core.account.Recent
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.webDavApi
 import app.editors.manager.managers.providers.LocalFileProvider
 import app.editors.manager.managers.providers.ProviderError
 import app.editors.manager.managers.providers.WebDavFileProvider
-import app.editors.manager.mvp.models.explorer.*
+import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
@@ -50,21 +54,16 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     private var mPhotoUri: Uri? = null
-    private var mWebDavFileProvider: WebDavFileProvider? = null
+    private var webDavFileProvider: WebDavFileProvider? = null
 
     private fun checkWebDav() {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
                 if (it.isWebDav) {
-                    AccountUtils.getPassword(
-                        mContext,
-                        it.getAccountName()
-                    )?.let { password ->
-                        mWebDavFileProvider = WebDavFileProvider(
-                            App.getApp().getWebDavApi(it.login, password),
-                            WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
-                        )
-                    }
+                    webDavFileProvider = WebDavFileProvider(
+                        mContext.webDavApi(),
+                        WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
+                    )
                 }
             }
         }
@@ -195,7 +194,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         items.addAll(folders)
         items.addAll(files)
         mDisposable.add(mFileProvider.delete(items, null)
-            .subscribe({ }, { fetchError(it)}) {
+            .subscribe({ }, { fetchError(it) }) {
                 mModelExplorerStack.removeSelected()
                 backStack
                 setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
@@ -205,7 +204,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun uploadToMy(uri: Uri) {
-        if (mWebDavFileProvider != null) {
+        if (webDavFileProvider != null) {
             CoroutineScope(Dispatchers.Default).launch {
                 val id = accountDao.getAccountOnline()?.webDavPath
                 withContext(Dispatchers.Main) {
@@ -222,7 +221,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         if (id[id.length - 1] != '/') {
             id = "$id/"
         }
-        mUploadDisposable = mWebDavFileProvider!!.upload(id, uriList)
+        mUploadDisposable = webDavFileProvider!!.upload(id, uriList)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ }, { throwable: Throwable -> fetchError(throwable) }

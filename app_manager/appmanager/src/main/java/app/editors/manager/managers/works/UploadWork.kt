@@ -1,25 +1,22 @@
 package app.editors.manager.managers.works
 
-import android.accounts.Account
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.di.component.DaggerApiComponent
-import app.editors.manager.di.module.ApiModule
+import app.editors.manager.app.api
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.retrofit.ProgressRequestBody
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.UploadFile
 import app.editors.manager.mvp.models.response.ResponseFile
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.FileUtils
+import lib.toolkit.base.managers.utils.NetworkUtils
 import okhttp3.Headers
 import okhttp3.MultipartBody
 import retrofit2.Call
@@ -73,18 +70,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
     }
     private lateinit var call: Call<ResponseFile>
 
-    private val api = runBlocking(Dispatchers.Default) {
-        App.getApp().appComponent.accountsDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(applicationContext, Account(account.getAccountName(), applicationContext.getString(R.string.account_type)))?.let {
-                return@runBlocking DaggerApiComponent.builder().apiModule(ApiModule(it))
-                    .appComponent(App.getApp().appComponent)
-                    .build()
-                    .getApi()
-            }
-        } ?: run {
-            throw Error("No account")
-        }
-    }
+    private val api = applicationContext.api()
 
     override fun doWork(): Result {
         getArgs()

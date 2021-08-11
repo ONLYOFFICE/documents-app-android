@@ -9,8 +9,8 @@ import app.documents.core.network.models.share.request.RequestShare
 import app.documents.core.network.models.share.request.RequestShareItem
 import app.documents.core.share.ShareService
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.getShareApi
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
@@ -69,18 +69,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         disposable?.dispose()
     }
 
-    private fun getApi(): ShareService = runBlocking {
-        accountDao.getAccountOnline()?.let { cloudAccount ->
-            AccountUtils.getToken(
-                context,
-                Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
-            )?.let {
-                return@runBlocking App.getApp().getShareService(it)
-            }
-        } ?: run {
-            throw Error("No account")
-        }
-    }
+    private fun getApi(): ShareService = context.getShareApi()
 
     /*
      * Requests

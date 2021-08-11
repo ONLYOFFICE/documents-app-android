@@ -13,6 +13,8 @@ import app.documents.core.settings.NetworkSettings
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
+import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.presenters.login.BaseLoginPresenter
 import app.editors.manager.mvp.views.main.CloudAccountView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -176,7 +178,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     }
                 } ?: run {
                     networkSettings.setBaseUrl(account.portal ?: "")
-                    disposable = App.getApp().loginComponent.loginService.capabilities().subscribe({response ->
+                    disposable = context.loginService.capabilities().subscribe({ response ->
                         if (response is LoginResponse.Success) {
                             if (response.response is ResponseCapabilities) {
                                 val capability = (response.response as ResponseCapabilities).response
@@ -189,7 +191,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         } else {
                             fetchError((response as LoginResponse.Error).error)
                         }
-                    }) {throwable: Throwable -> checkError(throwable, account)}
+                    }) { throwable: Throwable -> checkError(throwable, account) }
 
                 }
             }
@@ -197,6 +199,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             viewState.onError(context.getString(R.string.errors_sign_in_account_already_use))
         }
     }
+
     fun checkContextLogin() {
         contextAccount?.let {
             checkLogin(it)
@@ -207,8 +210,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun login(account: CloudAccount, token: String) {
         setSettings(account)
-        disposable = App.getApp().loginComponent
-            .loginService
+        disposable = context.loginService
             .getUserInfo(token)
             .map {
                 when (it) {
@@ -225,7 +227,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun webDavLogin(account: CloudAccount, password: String) {
         setSettings(account)
-        disposable = App.getApp().getWebDavApi(account.login, password)
+        disposable = context.webDavApi()
             .capabilities(Credentials.basic(account.login ?: "", password), account.webDavPath)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
