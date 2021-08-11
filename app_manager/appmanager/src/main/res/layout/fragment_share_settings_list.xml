@@ -25,6 +25,7 @@
                 android:paddingRight="0dp">
 
                 <include
+                    android:id="@+id/include_share_settings_header"
                     layout="@layout/include_share_settings_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -44,6 +45,7 @@
                         android:scrollbars="none" />
 
                     <include
+                        android:id="@+id/placeholder_layout"
                         layout="@layout/include_placeholders_text"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
