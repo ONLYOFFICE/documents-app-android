@@ -23,6 +23,7 @@ import app.editors.manager.R;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.mvp.models.account.AccountsSqlData;
+import app.editors.manager.ui.adapters.ExplorerAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -224,6 +225,11 @@ public class ContextBottomDialog extends BaseBottomDialog {
         mListContextHeaderInfo.setText(mState.mInfo);
         mListContextHeaderImage.setImageResource(mState.mIconResId);
         UiUtils.setImageTint(mListContextHeaderImage, R.color.colorGrey);
+        if(!mState.mIsFolder) {
+            ExplorerAdapter explorerAdapter = new ExplorerAdapter();
+            explorerAdapter.setFileIcon(mListContextHeaderImage,
+                    StringUtils.getExtensionFromPath(mState.mTitle));
+        }
         setViewState();
     }
 

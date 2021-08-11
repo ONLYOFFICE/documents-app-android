@@ -62,6 +62,10 @@ public class ExplorerAdapter extends BaseAdapter<Entity> {
         mFooter = new Footer();
     }
 
+    public ExplorerAdapter() {
+        App.getApp().getAppComponent().inject(this);
+    }
+
     @NonNull
     @Override
     public BaseViewHolderExplorer onCreateViewHolder(ViewGroup viewGroup, int typeHolder) {
