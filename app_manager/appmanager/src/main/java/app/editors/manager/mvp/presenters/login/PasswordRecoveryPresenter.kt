@@ -4,6 +4,7 @@ import app.documents.core.login.LoginResponse
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.request.RequestPassword
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.PasswordRecoveryView
 import io.reactivex.disposables.Disposable
 import lib.toolkit.base.managers.utils.StringUtils.isEmailValid
@@ -39,10 +40,11 @@ class PasswordRecoveryPresenter : BaseLoginPresenter<PasswordRecoveryView>() {
     }
 
     private fun sendEmailNotification(email: String, isPersonal: Boolean) {
-        val requestPassword = RequestPassword( if(isPersonal) ApiContract.PERSONAL_HOST else networkSettings.getPortal(), email)
-        mDisposable = App.getApp().loginComponent.loginService.passwordRecovery(requestPassword)
+        val requestPassword =
+            RequestPassword(if (isPersonal) ApiContract.PERSONAL_HOST else networkSettings.getPortal(), email)
+        mDisposable = context.loginService.passwordRecovery(requestPassword)
             .map {
-                when(it){
+                when (it) {
                     is LoginResponse.Success -> viewState.onPasswordRecoverySuccess(email)
                     is LoginResponse.Error -> viewState.onError(it.error.message)
                 }

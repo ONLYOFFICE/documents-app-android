@@ -8,24 +8,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.fragment.app.viewModels
 import app.editors.manager.R
-import app.editors.manager.app.App
+import app.editors.manager.app.appComponent
+import app.editors.manager.app.loginService
 import app.editors.manager.databinding.FragmentLoginEnterprisePhoneBinding
 import app.editors.manager.managers.tools.CountriesCodesTool
-import app.editors.manager.mvp.presenters.login.EnterprisePhonePresenter
-import app.editors.manager.mvp.views.login.EnterprisePhoneView
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
-import moxy.presenter.InjectPresenter
-import java.util.*
+import app.editors.manager.viewModels.login.EnterprisePhoneState
+import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
+import app.editors.manager.viewModels.login.EnterprisePhoneViewModelFactory
 import javax.inject.Inject
 
-class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
-
+class EnterprisePhoneFragment : BaseAppFragment() {
 
     companion object {
         @JvmField
         val TAG: String = EnterprisePhoneFragment::class.java.simpleName
+
         private const val TAG_CODE = "TAG_CODE"
         private const val TAG_NAME = "TAG_NAME"
         private const val TAG_REGION = "TAG_REGION"
@@ -33,7 +34,7 @@ class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
 
         fun newInstance(request: String?): EnterprisePhoneFragment {
             return EnterprisePhoneFragment().apply {
-                arguments = Bundle().apply {
+                arguments = Bundle(1).apply {
                     putString(TAG_REQUEST, request)
                 }
             }
@@ -41,7 +42,7 @@ class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
 
         fun newInstance(code: Int, name: String?, region: String?): EnterprisePhoneFragment {
             return EnterprisePhoneFragment().apply {
-                arguments = Bundle().apply {
+                arguments = Bundle(3).apply {
                     putInt(TAG_CODE, code)
                     putString(TAG_NAME, name)
                     putString(TAG_REGION, region)
@@ -50,11 +51,12 @@ class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
         }
     }
 
+    private val viewModel by viewModels<EnterprisePhoneViewModel> {
+        EnterprisePhoneViewModelFactory(requireContext().loginService)
+    }
+
     @Inject
     lateinit var countriesCodesTool: CountriesCodesTool
-
-    @InjectPresenter
-    lateinit var enterprisePhonePresenter: EnterprisePhonePresenter
 
     private var countryCode = 0
     private var countryName: String? = null
@@ -62,9 +64,15 @@ class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
 
     private var viewBinding: FragmentLoginEnterprisePhoneBinding? = null
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewBinding = null
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        App.getApp().appComponent.inject(this)
+        requireContext().appComponent.inject(viewModel)
+        requireContext().appComponent.inject(this)
     }
 
     override fun onCreateView(
@@ -82,18 +90,12 @@ class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
         init()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        enterprisePhonePresenter.cancelRequest()
-    }
-
-
     private fun sendSmsClick() {
         val phoneNumber = viewBinding?.loginPhoneNumberEdit?.text.toString().trim { it <= ' ' }.replace(" ", "")
         val validNumber = countriesCodesTool.getPhoneE164(phoneNumber, countryRegion)
         if (validNumber != null) {
             showWaitingDialog(getString(R.string.dialogs_wait_title))
-            arguments?.getString(TAG_REQUEST)?.let { enterprisePhonePresenter.setPhone(validNumber, it) }
+            arguments?.getString(TAG_REQUEST)?.let { viewModel.setPhone(validNumber, it) }
         } else {
             val message = getString(R.string.login_sms_phone_error_format)
             viewBinding?.loginPhoneNumberLayout?.error = message
@@ -109,12 +111,12 @@ class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
         return false
     }
 
-    override fun onError(message: String?) {
+    private fun onError(message: String?) {
         hideDialog()
         message?.let { showSnackBar(it) }
     }
 
-    override fun onSuccessChange(request: String) {
+    private fun onSuccessChange(request: String) {
         hideDialog()
         showFragment(
             EnterpriseSmsFragment.newInstance(false, request),
@@ -127,31 +129,44 @@ class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
     private fun init() {
         setActionBarTitle(getString(R.string.login_sms_phone_number_verification))
         initListeners()
-        val codes = countriesCodesTool.getCodeByRegion(Locale.getDefault().country)
-        if (codes != null) {
-            countryCode = codes.number
-            countryName = codes.name
-            countryRegion = codes.code
-        }
-        showKeyboard(viewBinding?.loginPhoneNumberEdit)
-        viewBinding?.loginPhoneNumberEdit?.setText("+$countryCode")
-        viewBinding?.loginPhoneCountryEdit?.apply {
-            setText(countryName)
-            keyListener = null
-        }
-        val bundle = arguments
-        if (bundle != null) {
-            if (bundle.containsKey(TAG_CODE) && bundle.containsKey(TAG_NAME) && bundle.containsKey(
-                    TAG_REGION
-                )
-            ) {
-                countryCode = bundle.getInt(TAG_CODE)
-                countryName = bundle.getString(TAG_NAME)
-                countryRegion = bundle.getString(TAG_REGION)
-                viewBinding?.loginPhoneCountryEdit?.setText(countryName)
+        viewModel.countiesCodes.observe(viewLifecycleOwner) { codes: CountriesCodesTool.Codes? ->
+            codes?.let {
+                countryCode = codes.number
+                countryName = codes.name
+                countryRegion = codes.code
+                showKeyboard(viewBinding?.loginPhoneNumberEdit)
                 viewBinding?.loginPhoneNumberEdit?.setText("+$countryCode")
+                viewBinding?.loginPhoneCountryEdit?.apply {
+                    setText(countryName)
+                    keyListener = null
+                }
             }
         }
+//        val codes = countriesCodesTool.getCodeByRegion(Locale.getDefault().country)
+//        if (codes != null) {
+//            countryCode = codes.number
+//            countryName = codes.name
+//            countryRegion = codes.code
+//        }
+//        showKeyboard(viewBinding?.loginPhoneNumberEdit)
+//        viewBinding?.loginPhoneNumberEdit?.setText("+$countryCode")
+//        viewBinding?.loginPhoneCountryEdit?.apply {
+//            setText(countryName)
+//            keyListener = null
+//        }
+//        val bundle = arguments
+//        if (bundle != null) {
+//            if (bundle.containsKey(TAG_CODE) && bundle.containsKey(TAG_NAME) && bundle.containsKey(
+//                    TAG_REGION
+//                )
+//            ) {
+//                countryCode = bundle.getInt(TAG_CODE)
+//                countryName = bundle.getString(TAG_NAME)
+//                countryRegion = bundle.getString(TAG_REGION)
+//                viewBinding?.loginPhoneCountryEdit?.setText(countryName)
+//                viewBinding?.loginPhoneNumberEdit?.setText("+$countryCode")
+//            }
+//        }
         val position = viewBinding?.loginPhoneNumberEdit?.text.toString().length
         viewBinding?.loginPhoneNumberEdit?.setSelection(position)
     }
@@ -177,6 +192,17 @@ class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
             addTextChangedListener(PhoneNumberFormattingTextWatcher())
             addTextChangedListener(FieldsWatcher())
         }
+
+        viewModel.stateLiveData.observe(viewLifecycleOwner) { state: EnterprisePhoneState? ->
+            when (state) {
+                is EnterprisePhoneState.Success -> {
+                    onSuccessChange(state.request)
+                }
+                is EnterprisePhoneState.Error -> {
+                    onError(state.message)
+                }
+            }
+        }
     }
 
     /*
@@ -184,7 +210,7 @@ class EnterprisePhoneFragment : BaseAppFragment(), EnterprisePhoneView {
      * */
     private inner class FieldsWatcher : BaseWatcher() {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            viewBinding?.loginPhoneNumberLayout!!.isErrorEnabled = false
+            viewBinding?.loginPhoneNumberLayout?.isErrorEnabled = false
         }
     }
 }

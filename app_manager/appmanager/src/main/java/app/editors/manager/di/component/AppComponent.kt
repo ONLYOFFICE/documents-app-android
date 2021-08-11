@@ -1,15 +1,14 @@
 package app.editors.manager.di.component
 
 import android.content.Context
+import androidx.room.RoomDatabase
 import app.documents.core.account.AccountDao
-import app.documents.core.di.module.AccountModule
-import app.documents.core.di.module.RecentModule
-import app.documents.core.di.module.SettingsModule
+import app.documents.core.account.CloudAccount
+import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.settings.NetworkSettings
 import app.documents.core.settings.WebDavInterceptor
 import app.editors.manager.app.MigrateDb
 import app.editors.manager.di.module.AppModule
-import app.editors.manager.di.module.ToolModule
 import app.editors.manager.managers.providers.AccountProvider
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
@@ -38,14 +37,30 @@ import app.editors.manager.ui.fragments.storage.ConnectFragment
 import app.editors.manager.ui.fragments.storage.SelectFragment
 import app.editors.manager.ui.fragments.storage.WebDavFragment
 import app.editors.manager.ui.fragments.storage.WebTokenFragment
+import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
+import app.editors.manager.viewModels.main.AppSettingsViewModel
+import dagger.BindsInstance
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
 import lib.toolkit.base.managers.tools.LocalContentTools
 import javax.inject.Singleton
 
-@Component(modules = [AppModule::class, ToolModule::class, SettingsModule::class, AccountModule::class, RecentModule::class])
+@Component(modules = [AppModule::class])
 @Singleton
 interface AppComponent {
+
+    @Component.Builder
+    interface Builder{
+
+        @BindsInstance
+        fun context(context: Context): Builder
+
+        @BindsInstance
+        fun roomCallback(callback: RoomDatabase.Callback): Builder
+
+        fun build(): AppComponent
+
+    }
     /*
     * TODO scopes!
     * */
@@ -58,6 +73,8 @@ interface AppComponent {
     val glideTools: GlideTool
     val networkSettings: NetworkSettings
     val accountsDao: AccountDao
+    val loginService: ILoginServiceProvider
+    val accountOnline: CloudAccount?
 
     /*
    * Login
@@ -65,7 +82,6 @@ interface AppComponent {
     fun inject(enterprisePortalPresenter: EnterprisePortalPresenter?)
     fun inject(enterpriseSignInPresenter: EnterpriseLoginPresenter?)
     fun inject(enterpriseSmsPresenter: EnterpriseSmsPresenter?)
-    fun inject(enterprisePhonePresenter: EnterprisePhonePresenter?)
     fun inject(enterpriseCreateValidatePresenter: EnterpriseCreateValidatePresenter?)
     fun inject(enterpriseCreateSignInPresenter: EnterpriseCreateLoginPresenter?)
     fun inject(personalSignInPresenter: PersonalLoginPresenter?)
@@ -95,7 +111,6 @@ interface AppComponent {
     fun inject(docsOperationSectionFragment: DocsOperationSectionFragment?)
     fun inject(explorerAdapter: ExplorerAdapter?)
     fun inject(mediaAdapter: MediaAdapter?)
-    fun inject(settingsPresenter: AppSettingsPresenter?)
     fun inject(accountsPresenter: CloudAccountPresenter?)
     fun inject(mainPagerPresenter: MainPagerPresenter?)
 
@@ -138,4 +153,7 @@ interface AppComponent {
     fun inject(selectPresenter: SelectPresenter?)
     fun inject(accountsBottomFragment: AccountBottomDialog?)
     fun inject(webDavSignInPresenter: WebDavSignInPresenter?)
+
+    fun inject(viewModel: AppSettingsViewModel)
+    fun inject(viewModel: EnterprisePhoneViewModel)
 }

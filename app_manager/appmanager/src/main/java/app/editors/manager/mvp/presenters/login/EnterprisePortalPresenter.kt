@@ -79,7 +79,7 @@ class EnterprisePortalPresenter : BaseLoginPresenter<EnterprisePortalView>() {
     }
 
     private fun portalCapabilities() {
-        val service = App.getApp().loginComponent.loginService
+        val service = App.getApp().appComponent.loginService
         mDisposable = service.capabilities()
             .subscribe({ response ->
                 if (response is LoginResponse.Success) {

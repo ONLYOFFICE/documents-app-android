@@ -10,8 +10,6 @@ import app.editors.manager.mvp.models.response.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
@@ -28,21 +26,7 @@ class CloudFileProvider : BaseFileProvider {
         Favorites("@favorites")
     }
 
-    var api: Api = getApi()
-
-    @JvmName("getApiAsync")
-    private fun getApi(): Api = runBlocking {
-        App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
-            AccountUtils.getToken(
-                context = App.getApp().applicationContext,
-                accountName = cloudAccount.getAccountName()
-            )?.let { token ->
-                return@runBlocking App.getApp().getApi(token)
-            }
-        } ?: run {
-            throw Exception("No account")
-        }
-    }
+    var api: Api = App.getApp().getApi()
 
     override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
         return api.getItemById(id, filter)

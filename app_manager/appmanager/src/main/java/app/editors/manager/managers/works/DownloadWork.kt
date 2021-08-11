@@ -15,7 +15,6 @@ import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.di.component.DaggerApiComponent
-import app.editors.manager.di.module.ApiModule
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.NewNotificationUtils
@@ -92,11 +91,14 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
 
     private val api: Api = runBlocking(Dispatchers.Default) {
         App.getApp().appComponent.accountsDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(applicationContext, Account(account.getAccountName(), applicationContext.getString(R.string.account_type)))?.let {
+            AccountUtils.getToken(
+                applicationContext,
+                Account(account.getAccountName(), applicationContext.getString(R.string.account_type))
+            )?.let {
                 token = it
-                return@runBlocking DaggerApiComponent.builder().apiModule(ApiModule(it))
+                return@runBlocking DaggerApiComponent.builder()
                     .appComponent(App.getApp().appComponent)
-                    .build().getApi()
+                    .build().api
             }
         } ?: run {
             throw Error("No account")
@@ -113,33 +115,43 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
         try {
             val response = call.execute()
             if (response.isSuccessful && response.body() != null) {
-                FileUtils.writeFromResponseBody(response.body(), to ?: Uri.EMPTY, applicationContext, object : Progress {
-                    override fun onProgress(total: Long, progress: Long): Boolean {
-                        showProgress(total, progress, false)
-                        return isStopped
-                    }
-                }, object : Finish {
-                    override fun onFinish() {
-                        notificationUtils.removeNotification(id.hashCode())
-                        notificationUtils.showCompleteNotification(id.hashCode(), fileName)
-                        sendBroadcastDownloadComplete(
-                            id, url, fileName, PathUtils.getPath(applicationContext, to ?: Uri.EMPTY), StringUtils.getMimeTypeFromPath(
-                                fileName ?: ""
-                            )
-                        )
-                    }
-                }, object : FileUtils.Error {
-                    override fun onError(message: String) {
-                        notificationUtils.removeNotification(id.hashCode())
-                        if (isStopped) {
-                            notificationUtils.showCanceledNotification(id.hashCode(), fileName)
-                        } else {
-                            notificationUtils.showErrorNotification(id.hashCode(), fileName)
-                            sendBroadcastUnknownError(id, url, fileName)
+                FileUtils.writeFromResponseBody(
+                    response.body(),
+                    to ?: Uri.EMPTY,
+                    applicationContext,
+                    object : Progress {
+                        override fun onProgress(total: Long, progress: Long): Boolean {
+                            showProgress(total, progress, false)
+                            return isStopped
                         }
-                        file?.delete()
-                    }
-                })
+                    },
+                    object : Finish {
+                        override fun onFinish() {
+                            notificationUtils.removeNotification(id.hashCode())
+                            notificationUtils.showCompleteNotification(id.hashCode(), fileName)
+                            sendBroadcastDownloadComplete(
+                                id,
+                                url,
+                                fileName,
+                                PathUtils.getPath(applicationContext, to ?: Uri.EMPTY),
+                                StringUtils.getMimeTypeFromPath(
+                                    fileName ?: ""
+                                )
+                            )
+                        }
+                    },
+                    object : FileUtils.Error {
+                        override fun onError(message: String) {
+                            notificationUtils.removeNotification(id.hashCode())
+                            if (isStopped) {
+                                notificationUtils.showCanceledNotification(id.hashCode(), fileName)
+                            } else {
+                                notificationUtils.showErrorNotification(id.hashCode(), fileName)
+                                sendBroadcastUnknownError(id, url, fileName)
+                            }
+                            file?.delete()
+                        }
+                    })
             } else {
                 notificationUtils.showErrorNotification(id.hashCode(), fileName)
                 sendBroadcastUnknownError(id, url, fileName)

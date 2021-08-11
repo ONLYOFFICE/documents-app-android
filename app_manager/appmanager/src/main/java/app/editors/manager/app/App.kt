@@ -7,18 +7,12 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Process
 import android.webkit.WebView
-import app.documents.core.di.module.AccountModule
-import app.documents.core.di.module.LoginModule
-import app.documents.core.di.module.RecentModule
-import app.documents.core.di.module.WebDavApiModule
+import app.documents.core.account.CloudAccount
+import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
-import app.editors.manager.di.module.ApiModule
-import app.editors.manager.di.module.AppModule
-import app.editors.manager.di.module.ShareModule
-import app.editors.manager.di.module.ToolModule
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.util.*
@@ -125,10 +119,8 @@ class App : Application() {
 
     private fun initDagger() {
         _appComponent = DaggerAppComponent.builder()
-            .appModule(AppModule(this))
-            .accountModule(AccountModule(RoomCallback()))
-            .toolModule(ToolModule())
-            .recentModule(RecentModule())
+            .context(context = this)
+            .roomCallback(RoomCallback())
             .build()
     }
 
@@ -139,35 +131,33 @@ class App : Application() {
         }
     }
 
-    fun getApi(token: String): Api {
+    fun getApi(): Api {
         return DaggerApiComponent.builder()
             .appComponent(_appComponent)
-            .apiModule(ApiModule(token))
             .build()
-            .getApi()
+            .api
     }
 
-    val loginComponent: LoginComponent
-        get() = DaggerLoginComponent.builder().appComponent(_appComponent)
-            .loginModule(LoginModule())
-            .build()
-
-
-    fun getShareService(token: String): ShareService {
+    fun getShareService(): ShareService {
         return DaggerShareComponent.builder().appComponent(_appComponent)
-            .shareModule(ShareModule(token))
             .build()
             .shareService
     }
 
-    fun getWebDavApi(login: String?, password: String?): WebDavApi {
+    fun getWebDavApi(): WebDavApi {
         return DaggerWebDavComponent.builder().appComponent(_appComponent)
-            .webDavApiModule(WebDavApiModule(login, password))
             .build()
-            .getWebDavApi()
+            .webDavApi
     }
 
 }
+
+val Context.accountOnline: CloudAccount?
+    get() = when (this) {
+        is App -> this.appComponent.accountOnline
+        else -> this.applicationContext.appComponent.accountOnline
+    }
+
 
 val Context.appComponent: AppComponent
     get() = when (this) {
@@ -175,8 +165,29 @@ val Context.appComponent: AppComponent
         else -> this.applicationContext.appComponent
     }
 
-val Context.loginComponent: LoginComponent
+val Context.loginService: ILoginServiceProvider
     get() = when (this) {
-        is App -> this.loginComponent
-        else -> this.applicationContext.loginComponent
+        is App -> this.appComponent.loginService
+        else -> this.applicationContext.appComponent.loginService
     }
+
+fun Context.api(): Api {
+    return when (this) {
+        is App -> this.getApi()
+        else -> this.applicationContext.api()
+    }
+}
+
+fun Context.webDavApi(): WebDavApi {
+    return when (this) {
+        is App -> this.getWebDavApi()
+        else -> this.applicationContext.webDavApi()
+    }
+}
+
+fun Context.getShareApi(): ShareService {
+    return when (this) {
+        is App -> this.getShareService()
+        else -> this.applicationContext.getShareApi()
+    }
+}

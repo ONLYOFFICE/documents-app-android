@@ -8,8 +8,7 @@ import app.documents.core.account.RecentDao
 import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
-import app.editors.manager.di.component.DaggerApiComponent
-import app.editors.manager.di.module.ApiModule
+import app.editors.manager.app.api
 import app.editors.manager.mvp.models.user.Thirdparty
 import app.editors.manager.mvp.views.main.ProfileView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -44,13 +43,14 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
     @Inject
     lateinit var recentDao: RecentDao
 
-    private lateinit var account: CloudAccount
-    private var disposable = CompositeDisposable()
-    private var service: Api? = null
-
     init {
         App.getApp().appComponent.inject(this)
     }
+
+    private lateinit var account: CloudAccount
+    private var disposable = CompositeDisposable()
+    private val service: Api = context.api()
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -63,57 +63,42 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             viewState.onRender(ProfileState.WebDavState(account))
         } else {
             viewState.onRender(ProfileState.CloudState(account))
-            getService(account)
             getThirdparty(account)
             updateAccountInfo(account)
         }
     }
 
-    private fun getService(account: CloudAccount) {
-        AccountUtils.getToken(context, Account(account.name, context.getString(R.string.account_type)))?.let {
-            service = DaggerApiComponent.builder().appComponent(App.getApp().appComponent)
-                .apiModule(ApiModule(it))
-                .build()
-                .getApi()
-        }
-
-    }
-
     private fun getThirdparty(account: CloudAccount) {
-        service?.let { api ->
-            disposable.add(api
-                .thirdPartyList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.response }
-                .subscribe({ list: List<Thirdparty> ->
-                    viewState.onRender(ProfileState.ProvidersState(list, account))
-                }) { throwable: Throwable -> viewState.onError(throwable.message) })
-        }
+        disposable.add(service
+            .thirdPartyList()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { it.response }
+            .subscribe({ list: List<Thirdparty> ->
+                viewState.onRender(ProfileState.ProvidersState(list, account))
+            }) { throwable: Throwable -> viewState.onError(throwable.message) })
     }
 
     private fun updateAccountInfo(account: CloudAccount) {
-        service?.let { api ->
-            disposable.add(api.userInfo()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.response }
-                .subscribe({
-                    CoroutineScope(Dispatchers.Default).launch {
-                        accountDao.updateAccount(
-                            account.copy(
-                                avatarUrl = it.avatarMedium,
-                                name = it.displayName,
-                                isAdmin = it.isAdmin,
-                                isVisitor = it.isVisitor
-                            )
+        disposable.add(service.userInfo()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { it.response }
+            .subscribe({
+                CoroutineScope(Dispatchers.Default).launch {
+                    accountDao.updateAccount(
+                        account.copy(
+                            avatarUrl = it.avatarMedium,
+                            name = it.displayName,
+                            isAdmin = it.isAdmin,
+                            isVisitor = it.isVisitor
                         )
-                    }
-                }, {
-                    // Nothing
-                })
-            )
-        }
+                    )
+                }
+            }, {
+                // Nothing
+            })
+        )
     }
 
     fun removeAccount() {

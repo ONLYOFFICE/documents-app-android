@@ -78,7 +78,7 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
                     response?.onError(1, "need provider token")
                     return@async Bundle.EMPTY
                 } else {
-                    val signInResponse = App.getApp().loginComponent.loginService
+                    val signInResponse = App.getApp().appComponent.loginService
                         .signIn(
                             RequestSignIn(
                                 userName = cloudAccount.login ?: "",

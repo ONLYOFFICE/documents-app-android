@@ -25,14 +25,17 @@ class RoomCallback : RoomDatabase.Callback() {
     }
 }
 
-class MigrateDb{
+class MigrateDb {
 
     @Inject
     lateinit var accountDao: AccountDao
+
     @Inject
     lateinit var recentDao: RecentDao
+
     @Inject
     lateinit var accountSqlTool: AccountSqlTool
+
     @Inject
     lateinit var networkSettings: NetworkSettings
 
@@ -80,7 +83,7 @@ class MigrateDb{
     private suspend fun recentMigrate(recents: List<Recent>) {
         recents.filter { it.accountsSqlData == null }.forEach { oldRecent ->
             val newRecent = app.documents.core.account.Recent(
-                id =  oldRecent.id.toInt(),
+                id = oldRecent.id.toInt(),
                 date = oldRecent.date.time,
                 isWebDav = oldRecent.isWebDav,
                 isLocal = oldRecent.isLocal,
@@ -107,7 +110,7 @@ class MigrateDb{
             if (token.isNullOrEmpty()) {
                 return getTokenWithId(account)
             }
-            val response = App.getApp().loginComponent.loginService.getUserInfo(token = token)
+            val response = App.getApp().appComponent.loginService.getUserInfo(token = token)
                 .blockingGet()
             return if (response is LoginResponse.Success) {
                 (response.response as ResponseUser).response.id
@@ -126,7 +129,7 @@ class MigrateDb{
             provider = account.provider
         )
 
-        val response = App.getApp().loginComponent.loginService.signIn(requestSignIn)
+        val response = App.getApp().appComponent.loginService.signIn(requestSignIn)
             .blockingGet()
         if (response is LoginResponse.Success) {
             val responseSignIn = response.response as ResponseSignIn

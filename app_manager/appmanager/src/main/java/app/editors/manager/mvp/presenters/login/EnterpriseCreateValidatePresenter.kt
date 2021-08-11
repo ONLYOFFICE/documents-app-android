@@ -94,7 +94,7 @@ class EnterpriseCreateValidatePresenter : BaseLoginPresenter<EnterpriseCreateVal
         networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + mDomain)
 
         viewState.onShowWaitingDialog(R.string.dialogs_wait_title)
-        disposable = App.getApp().loginComponent.loginService.validatePortal(RequestValidatePortal(portalName))
+        disposable = App.getApp().appComponent.loginService.validatePortal(RequestValidatePortal(portalName))
             .subscribe({ loginResponse ->
                 when (loginResponse) {
                     is LoginResponse.Success -> {

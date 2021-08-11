@@ -1,20 +1,14 @@
 package app.editors.manager.mvp.presenters.storage
 
-import android.accounts.Account
-import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
-import app.editors.manager.di.component.DaggerApiComponent
-import app.editors.manager.di.module.ApiModule
+import app.editors.manager.app.api
 import app.editors.manager.mvp.models.request.RequestStorage
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.storage.ConnectView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
 
 @InjectViewState
@@ -30,19 +24,7 @@ class ConnectPresenter : BasePresenter<ConnectView>() {
 
     private var disposable: Disposable? = null
 
-    private val api: Api = runBlocking(Dispatchers.Default) {
-        accountDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(R.string.account_type)))
-                ?.let {
-                    return@runBlocking DaggerApiComponent.builder().apiModule(ApiModule(it))
-                        .appComponent(App.getApp().appComponent)
-                        .build()
-                        .getApi()
-                }
-        } ?: run {
-            throw Error("No account")
-        }
-    }
+    private val api: Api = context.api()
 
     override fun onDestroy() {
         super.onDestroy()

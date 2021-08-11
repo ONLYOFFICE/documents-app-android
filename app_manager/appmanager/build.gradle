@@ -243,6 +243,12 @@ dependencies {
     implementation(Libs.photoView)
     implementation(Libs.androidWork)
 
+    //TODO add to base module
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
+
+    implementation("androidx.fragment:fragment-ktx:1.3.6")
+
     //TODO feature remove
     implementation("com.jakewharton:butterknife:10.2.1")
     kapt("com.jakewharton:butterknife-compiler:10.2.1")

@@ -1,12 +1,13 @@
 package app.editors.manager.mvp.presenters.share
 
-import android.accounts.Account
 import app.documents.core.account.CloudAccount
 import app.documents.core.network.models.share.request.RequestShare
 import app.documents.core.network.models.share.request.RequestShareItem
 import app.documents.core.share.ShareService
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.appComponent
+import app.editors.manager.app.getShareApi
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
@@ -22,9 +23,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
 import java.util.*
 
@@ -49,31 +47,19 @@ class AddPresenter : BasePresenter<AddView>() {
         isCommon = false
     }
 
-    private val shareService: ShareService = getApi()
-    private lateinit var account: CloudAccount
+    private val account: CloudAccount =
+        context.appComponent.accountOnline ?: throw RuntimeException("Account can't be null")
+    private val shareApi: ShareService = context.getShareApi()
 
     override fun onDestroy() {
         super.onDestroy()
         disposable = null
     }
 
-    private fun getApi(): ShareService = runBlocking(Dispatchers.Default) {
-        accountDao.getAccountOnline()?.let { cloudAccount ->
-            this@AddPresenter.account = cloudAccount
-            AccountUtils.getToken(
-                context,
-                Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
-            )?.let {
-                return@runBlocking App.getApp().getShareService(it)
-            }
-        } ?: run {
-            throw Error("No account")
-        }
-    }
 
     private fun getUsers() {
         isCommon = false
-        disposable = shareService.getUsers()
+        disposable = shareApi.getUsers()
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.response.filter { it.id != account.id }.map {
@@ -91,7 +77,7 @@ class AddPresenter : BasePresenter<AddView>() {
 
     private fun getGroups() {
         isCommon = false
-        disposable = shareService.getGroups()
+        disposable = shareApi.getGroups()
             .subscribeOn(Schedulers.io())
             .map { response -> response.response.map { GroupUi(it.id, it.name, it.manager) } }
             .observeOn(AndroidSchedulers.mainThread())
@@ -105,7 +91,7 @@ class AddPresenter : BasePresenter<AddView>() {
 
     fun getCommons() {
         isCommon = true
-        disposable = Observable.zip(shareService.getUsers(), shareService.getGroups(), { users, groups ->
+        disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups(), { users, groups ->
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager) })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
                 UserUi(it.id, it.department, it.displayName, it.avatarMedium)
@@ -122,7 +108,7 @@ class AddPresenter : BasePresenter<AddView>() {
 
     private fun shareFileTo(id: String) {
         requestShare?.let { request ->
-            disposable = shareService.setFileAccess(id, request)
+            disposable = shareApi.setFileAccess(id, request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
@@ -135,7 +121,7 @@ class AddPresenter : BasePresenter<AddView>() {
 
     private fun shareFolderTo(id: String) {
         requestShare?.let { request ->
-            disposable = shareService.setFolderAccess(id, request)
+            disposable = shareApi.setFolderAccess(id, request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
