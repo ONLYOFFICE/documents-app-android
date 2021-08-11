@@ -81,9 +81,7 @@ class OneDriveFileProvider : BaseFileProvider {
                         return@map getExplorer(response.response as DriveItemCloudTree)
                     }
                     is OneDriveResponse.Error -> {
-                        Log.d("ONEDRIVE","${response.error.message}")
                         throw response.error
-                        return@map null
                     }
                     else -> return@map null
                 }
@@ -166,9 +164,8 @@ class OneDriveFileProvider : BaseFileProvider {
                     bufferSize = min(bytesAvailable!!, maxBufferSize)
                     bytesRead = fileInputStream?.read(buffer, 0, bufferSize)
                 }
-                Log.d("ONEDRIVE", "${connection.responseCode}, ${connection.responseMessage}")
             } catch (e: Exception) {
-                Log.d("ONEDRIVE", "Exception, ${e.localizedMessage}, ${e.cause?.message}")
+                throw e
             }
         }
     }
@@ -250,15 +247,20 @@ class OneDriveFileProvider : BaseFileProvider {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map {response ->
-                if(response is OneDriveResponse.Success) {
-                    val file = CloudFile()
-                    file.id = (response.response as DriveItemValue).id
-                    file.title = response.response.name
-                    file.updated = Date()
-                    return@map file
-                } else {
-                    Log.d("ONEDRIVE", "${(response as OneDriveResponse.Error).error.message}")
-                    return@map null
+                when (response) {
+                    is OneDriveResponse.Success -> {
+                        val file = CloudFile()
+                        file.id = (response.response as DriveItemValue).id
+                        file.title = response.response.name
+                        file.updated = Date()
+                        return@map file
+                    }
+                    is OneDriveResponse.Error -> {
+                        throw response.error
+                    }
+                    else -> {
+                        return@map null
+                    }
                 }
             }
     }
@@ -273,15 +275,20 @@ class OneDriveFileProvider : BaseFileProvider {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
-                if(response is OneDriveResponse.Success) {
-                    val folder = CloudFolder()
-                    folder.id = (response.response as DriveItemValue).id
-                    folder.title = response.response.name
-                    folder.updated = Date()
-                    return@map folder
-                } else {
-                    Log.d("ONEDRIVE", "${(response as OneDriveResponse.Error).error.message}")
-                    return@map null
+                when (response) {
+                    is OneDriveResponse.Success -> {
+                        val folder = CloudFolder()
+                        folder.id = (response.response as DriveItemValue).id
+                        folder.title = response.response.name
+                        folder.updated = Date()
+                        return@map folder
+                    }
+                    is OneDriveResponse.Error -> {
+                        throw response.error
+                    }
+                    else -> {
+                        return@map null
+                    }
                 }
             }
     }
@@ -408,8 +415,8 @@ class OneDriveFileProvider : BaseFileProvider {
                     emitter.onNext(0)
                     emitter.onError(error)
                 }
-            } else {
-                Log.d("ONEDRIVE", "${(response as OneDriveResponse.Error).error.message}")
+            } else if(response is OneDriveResponse.Error){
+                throw response.error
             }
         }
     }
@@ -454,8 +461,7 @@ class OneDriveFileProvider : BaseFileProvider {
                     Log.d("ONEDRIVE", "${response.body()?.string()}")
                     return@map 10
                 } else {
-                    Log.d("ONEDRIVE", "${response.errorBody()?.string()}")
-                    return@map 12
+                    throw HttpException(response)
                 }
             }
     }

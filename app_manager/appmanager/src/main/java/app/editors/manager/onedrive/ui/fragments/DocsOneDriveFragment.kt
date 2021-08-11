@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import app.documents.core.account.CloudAccount
+import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
@@ -120,13 +121,17 @@ class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, DocsOneDr
     }
 
     override fun onError(message: String?) {
-        super.onError(message)
-        val storage = Storage(
-            "OneDrive",
-            Constants.OneDrive.COM_CLIENT_ID,
-            Constants.OneDrive.COM_REDIRECT_URL
-        )
-        showFragment(newInstance(storage), OneDriveSignInFragment.TAG, false)
+        when(message) {
+            context?.getString(R.string.errors_client_unauthorized) -> {
+                val storage = Storage(
+                    "OneDrive",
+                    Constants.OneDrive.COM_CLIENT_ID,
+                    Constants.OneDrive.COM_REDIRECT_URL
+                )
+                showFragment(newInstance(storage), OneDriveSignInFragment.TAG, false)
+            }
+        }
+
     }
 
 }
