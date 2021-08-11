@@ -291,7 +291,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        mSearchCloseButton.visibility = if (newText.isEmpty()) View.INVISIBLE else View.VISIBLE
+        mSearchCloseButton.isEnabled = newText.isNotEmpty()
         presenter.searchRecent(newText)
         return false
     }
