@@ -27,6 +27,9 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
+import okhttp3.ResponseBody
+import retrofit2.HttpException
+import java.lang.Exception
 import java.util.*
 
 
@@ -73,6 +76,26 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
         }
     }
 
+    override fun download(downloadTo: Uri) {
+        mItemClicked?.id?.let {
+            (mFileProvider as OneDriveFileProvider).download(it, downloadTo)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({progress ->
+                    Log.d("ONEDRIVE", "$progress")
+                },
+                    {
+                        throwable: Throwable -> fetchError(throwable)
+                    },
+                    {
+                        viewState.onSnackBar("Downloading is finished")
+                    })
+        }?.let {
+            mDisposable.add(
+                it
+            )
+        }
+    }
 
     override fun getNextList() {
         val id = mModelExplorerStack.currentId

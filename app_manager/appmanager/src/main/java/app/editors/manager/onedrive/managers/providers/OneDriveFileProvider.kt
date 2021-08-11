@@ -37,6 +37,7 @@ import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
 import lib.toolkit.base.managers.utils.FileUtils.createFile
+import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
@@ -52,14 +53,12 @@ import kotlin.math.min
 class OneDriveFileProvider : BaseFileProvider {
 
     var api = getOneDriveApi()
-    private val PATH_DOWNLOAD =
-        Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice"
 
     private var tag: String = ""
 
     @JvmName("getApiAsync")
     private fun getOneDriveApi(): OneDriveComponent = runBlocking {
-        App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
+        getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
             AccountUtils.getToken(
                 context = App.getApp().applicationContext,
                 accountName = cloudAccount.getAccountName()
@@ -83,6 +82,7 @@ class OneDriveFileProvider : BaseFileProvider {
                     }
                     is OneDriveResponse.Error -> {
                         Log.d("ONEDRIVE","${response.error.message}")
+                        throw response.error
                         return@map null
                     }
                     else -> return@map null
@@ -376,22 +376,15 @@ class OneDriveFileProvider : BaseFileProvider {
         return responseOperation
     }
 
-    override fun download(items: MutableList<Item>?): Observable<Int?> {
-        return Observable.fromIterable(items)
-            .filter { item: Item? -> item is CloudFile }
-            .flatMap { item: Item ->
-                startDownload(item)
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    override fun download(items: MutableList<Item>?): Observable<Int> {
+        TODO("Not yet implemented")
     }
 
     @SuppressLint("MissingPermission")
-    private fun startDownload(item: Item): Observable<Int?> {
+    fun download(id: String, uri: Uri): Observable<Int?> {
         return Observable.create { emitter: ObservableEmitter<Int?> ->
-            val response = api.oneDriveService.download(item.id).blockingGet()
-            val outputFile =
-                File(PATH_DOWNLOAD, item.title)
+            val response = api.oneDriveService.download(id).blockingGet()
+            val outputFile = File(PathUtils.getPath(getApp().applicationContext, uri))
             if (response is OneDriveResponse.Success) {
                 try {
                     (response.response as ResponseBody)
@@ -404,7 +397,7 @@ class OneDriveFileProvider : BaseFileProvider {
                                 while (inputStream.read(buffer).also { count = it } != -1) {
                                     outputStream.write(buffer, 0, count)
                                     progress += count
-                                    emitter.onNext((progress as Double / fileSize as Double * 100) as Int)
+                                    emitter.onNext((progress.toDouble() / fileSize.toDouble() * 100).toInt())
                                 }
                                 outputStream.flush()
                                 emitter.onNext(100)

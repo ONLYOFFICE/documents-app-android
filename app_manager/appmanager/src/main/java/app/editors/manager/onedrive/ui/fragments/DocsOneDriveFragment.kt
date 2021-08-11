@@ -7,10 +7,14 @@ import android.os.Bundle
 import android.view.View
 import app.documents.core.account.CloudAccount
 import app.editors.manager.app.App
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companion.TAG
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companion.newInstance
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
@@ -113,6 +117,16 @@ class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, DocsOneDr
 
     private fun loadFiles() {
         presenter.getProvider()
+    }
+
+    override fun onError(message: String?) {
+        super.onError(message)
+        val storage = Storage(
+            "OneDrive",
+            Constants.OneDrive.COM_CLIENT_ID,
+            Constants.OneDrive.COM_REDIRECT_URL
+        )
+        showFragment(newInstance(storage), OneDriveSignInFragment.TAG, false)
     }
 
 }
