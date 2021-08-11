@@ -180,7 +180,7 @@ public class AppSettingsFragment extends BaseAppFragment implements AppSettingsV
                 break;
             }
             case R.id.settingAboutItem: {
-                AboutActivity.show(getContext());
+                AboutActivity.Companion.show(getContext());
                 break;
             }
             case R.id.settingHelpItem: {
