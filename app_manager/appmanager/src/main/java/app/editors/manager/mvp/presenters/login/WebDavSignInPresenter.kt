@@ -114,10 +114,10 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
 
     fun checkNextCloud(provider: WebDavApi.Providers, url: String) {
         val builder = StringBuilder()
-        if (!url.contains(ApiContract.SCHEME_HTTPS) || !url.contains(ApiContract.SCHEME_HTTP)) {
-            builder.append(ApiContract.SCHEME_HTTPS).append(url)
-        } else {
+        if (url.contains(ApiContract.SCHEME_HTTPS) || url.contains(ApiContract.SCHEME_HTTP)) {
             builder.append(url)
+        } else {
+            builder.append(ApiContract.SCHEME_HTTPS).append(url)
         }
         try {
             val correctUrl = URL(builder.toString())

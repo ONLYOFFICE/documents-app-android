@@ -17,6 +17,7 @@ public class SharePopup extends BasePopup {
     private View mReviewView;
     private View mFillFormsView;
     private View mRemoveUser;
+    private View mFullView;
 
     public SharePopup(@NonNull Context mContext, int mLayoutId) {
         super(mContext, mLayoutId);
@@ -24,9 +25,8 @@ public class SharePopup extends BasePopup {
 
     @Override
     protected void bind(@NonNull View view) {
-
-        final View viewFull = view.findViewById(R.id.popup_share_access_full);
-        viewFull.setOnClickListener(v -> mContextListener.onContextClick(v, this));
+        mFullView = view.findViewById(R.id.popup_share_access_full);
+        mFullView.setOnClickListener(v -> mContextListener.onContextClick(v, this));
         mCommentView = view.findViewById(R.id.popup_share_access_comment);
         mCommentView.setOnClickListener(v -> mContextListener.onContextClick(v, this));
         mFillFormsView = view.findViewById(R.id.popup_share_access_fill_forms);
@@ -66,6 +66,7 @@ public class SharePopup extends BasePopup {
             mReviewView.setVisibility(View.GONE);
             mFillFormsView.setVisibility(View.GONE);
             mCommentView.setVisibility(View.GONE);
+            mFullView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -73,7 +74,15 @@ public class SharePopup extends BasePopup {
         if (!mIsDoc) {
             mReviewView.setVisibility(View.GONE);
             mFillFormsView.setVisibility(View.GONE);
+            mFullView.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void setIsVisitor() {
+        mCommentView.setVisibility(View.GONE);
+        mReviewView.setVisibility(View.GONE);
+        mFillFormsView.setVisibility(View.GONE);
+        mFullView.setVisibility(View.GONE);
     }
 
     public void setContextListener(PopupContextListener mContextListener) {

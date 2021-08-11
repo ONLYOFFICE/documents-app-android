@@ -51,12 +51,12 @@ object NetworkUtils {
     }
 
     @JvmStatic
-    fun decodeUrl(string: String): String {
+    fun decodeUrl(string: String?): String {
         return URLDecoder.decode(string, "UTF-8")
     }
 
     @JvmStatic
-    fun encodeUrl(string: String): String {
+    fun encodeUrl(string: String?): String {
         return URLEncoder.encode(string, "UTF-8")
     }
 }

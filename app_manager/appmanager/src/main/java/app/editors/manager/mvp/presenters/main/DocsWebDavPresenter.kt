@@ -309,7 +309,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 deleteTempFile()
                 viewState.onDialogClose()
                 viewState.onSnackBar(mContext.getString(R.string.upload_manager_complete))
-                (mFileProvider as WebDavFileProvider).uploadFile.clear()
+                (mFileProvider as WebDavFileProvider).uploadsFile.clear()
             }
     }
 
