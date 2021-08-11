@@ -7,9 +7,7 @@ import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
-import app.editors.manager.app.appComponent
-import app.editors.manager.di.component.DaggerApiComponent
-import app.editors.manager.di.module.ApiModule
+import app.editors.manager.app.api
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.models.OpenDataModel
@@ -23,7 +21,6 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TabFragmentDictionary
@@ -50,16 +47,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     private var disposable: Disposable? = null
     private var sections: List<Explorer>? = null
 
-    private val api: Api? by lazy {
-        AccountUtils.getToken(context, Json.decodeFromString<CloudAccount>(accountJson ?: "").getAccountName())
-            ?.let { token ->
-                return@lazy DaggerApiComponent.builder()
-                    .apiModule(ApiModule(token))
-                    .appComponent(context.appComponent)
-                    .build()
-                    .getApi()
-            } ?: return@lazy null
-    }
+    private val api: Api = context.api()
 
     override fun onDestroy() {
         super.onDestroy()
@@ -123,14 +111,14 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     private fun getPortalModules(): Observable<Boolean> {
-        return Observable.zip(api?.getRootFolder(
+        return Observable.zip(api.getRootFolder(
             mapOf("filterType" to 2),
             mapOf(
                 "withsubfolders" to false,
                 "withoutTrash" to false,
                 "withoutAdditionalFolder" to false
             )
-        ), api?.getModules(listOf(Constants.Modules.PROJECT_ID)), { cloudTree, modules ->
+        ), api.getModules(listOf(Constants.Modules.PROJECT_ID)), { cloudTree, modules ->
             if (cloudTree.response != null && modules.response != null) {
                 preferenceTool.isProjectDisable = !modules.response[0].isEnable
                 sections = cloudTree.response

@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.presenters.share
 
-import android.accounts.Account
 import android.content.Intent
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.share.Share
@@ -23,12 +22,8 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
 import retrofit2.HttpException
-import java.util.*
-import kotlin.collections.ArrayList
 
 @InjectViewState
 class SettingsPresenter : BasePresenter<SettingsView>() {
