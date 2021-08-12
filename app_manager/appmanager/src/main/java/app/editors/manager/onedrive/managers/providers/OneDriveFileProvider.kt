@@ -88,88 +88,6 @@ class OneDriveFileProvider : BaseFileProvider {
             }
     }
 
-    override fun upload(folderId: String?, uris: MutableList<Uri>?): Observable<Int> {
-        val request = UploadRequest()
-        val fileName =
-            uris?.get(0)?.path?.let { lib.toolkit.base.managers.utils.FileUtils.getFileName(it, true) }
-        return Observable.fromCallable {
-            folderId?.let {
-                fileName?.let { it1 ->
-                    api.oneDriveService.uploadFile(
-                        it, it1, when (tag) {
-                            DocsOneDriveFragment.KEY_UPLOAD -> request.copy(
-                                item = app.editors.manager.onedrive.mvp.models.other.Item(
-                                    "rename"
-                                )
-                            )
-                            DocsOneDriveFragment.KEY_UPDATE -> request.copy(
-                                item = app.editors.manager.onedrive.mvp.models.other.Item(
-                                    "replace"
-                                )
-                            )
-                            else -> request.copy(
-                                item = app.editors.manager.onedrive.mvp.models.other.Item(
-                                    "fail"
-                                )
-                            )
-                        }
-                    ).blockingGet()
-                }
-            }
-        }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { response ->
-                if (response is OneDriveResponse.Success) {
-                    uris?.get(0)?.let {
-                        uploadSession(
-                            (response.response as UploadResponse).uploadUrl,
-                            it
-                        )
-                    }
-                    return@map 10
-                } else {
-                    return@map 12
-                }
-            }
-    }
-
-    fun upload(folderId: String?, uris: MutableList<Uri>?, tag: String): Observable<Int> {
-        this.tag = tag
-        return upload(folderId, uris)
-    }
-
-    private fun uploadSession(url: String, uri: Uri) {
-        CoroutineScope(Dispatchers.Default).launch {
-            val connection = URL(url).openConnection() as HttpURLConnection
-            val fileInputStream = getApp().contentResolver.openInputStream(uri)
-            val maxBufferSize = 62914560
-            val boundary = "*****"
-            var outputStream: OutputStream? = null
-            var bytesAvailable = fileInputStream?.available()
-            connection.doInput = true
-            connection.doOutput = true
-            connection.useCaches = false
-            connection.requestMethod = "PUT"
-            connection.setRequestProperty("Connection", "Keep-Alive")
-            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
-            try {
-                outputStream = DataOutputStream(connection.outputStream)
-                var bufferSize = min(bytesAvailable!!, maxBufferSize)
-                val buffer = ByteArray(bufferSize)
-                var bytesRead = fileInputStream?.read(buffer, 0, bufferSize)
-                while (bytesRead!! > 0) {
-                    outputStream.write(buffer, 0, bufferSize)
-                    bytesAvailable = fileInputStream?.available()
-                    bufferSize = min(bytesAvailable!!, maxBufferSize)
-                    bytesRead = fileInputStream?.read(buffer, 0, bufferSize)
-                }
-            } catch (e: Exception) {
-                throw e
-            }
-        }
-    }
-
     private fun getExplorer(response: DriveItemCloudTree): Explorer {
         val explorer = Explorer()
         val files: MutableList<CloudFile> = mutableListOf()
@@ -387,6 +305,10 @@ class OneDriveFileProvider : BaseFileProvider {
         TODO("Not yet implemented")
     }
 
+    override fun upload(folderId: String?, uris: MutableList<Uri>?): Observable<Int> {
+        TODO("Not yet implemented")
+    }
+
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
         val result = api.oneDriveService.download((item as CloudFile).id).blockingGet()
@@ -410,42 +332,6 @@ class OneDriveFileProvider : BaseFileProvider {
         } else if(result is OneDriveResponse.Error) {
             throw result.error
         }
-    }
-
-    fun updateFile(folderId: String?, uri: Uri): Observable<Int> {
-        val iStream = uri.let { App.getApp().contentResolver.openInputStream(it) }
-        val data = iStream?.let { getBytes(it) }?.let { ChangeFileRequest(it) }
-        return Observable.fromCallable { folderId?.let { data?.let { it1 ->
-            api.oneDriveService.updateFile(it,
-                it1
-            ).blockingGet()
-        } } }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { response ->
-                if(response.isSuccessful) {
-                    Log.d("ONEDRIVE", "${response.body()?.string()}")
-                    return@map 10
-                } else {
-                    throw HttpException(response)
-                }
-            }
-    }
-
-    private fun getBytes(inputStream: InputStream): ByteArray {
-        val stream = ByteArrayOutputStream()
-        var bytesAvailable = inputStream.available()
-        var bufferSize = min(bytesAvailable, 1024)
-        val buffer = ByteArray(bufferSize)
-        var len = 0
-        len = inputStream.read(buffer, 0, bufferSize)
-        while (len > 0) {
-            stream.write(buffer, 0, bufferSize)
-            bytesAvailable = inputStream.available()
-            bufferSize = min(bytesAvailable, 1024)
-            len = inputStream.read(buffer, 0, bufferSize)
-        }
-        return stream.toByteArray()
     }
 
     override fun share(

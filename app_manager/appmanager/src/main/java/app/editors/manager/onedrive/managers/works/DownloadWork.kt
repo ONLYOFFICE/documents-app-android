@@ -27,6 +27,7 @@ import okhttp3.ResponseBody
 import org.json.JSONException
 
 class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker(context, workerParameters) {
+
     companion object {
         private val TAG = DownloadWork::class.java.simpleName
 

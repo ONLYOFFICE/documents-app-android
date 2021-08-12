@@ -18,6 +18,7 @@ import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.onedrive.managers.works.DownloadWork
+import app.editors.manager.onedrive.managers.works.UploadWork
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -39,6 +40,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
 
     private var downloadDisposable: Disposable? = null
     private var tempFile: CloudFile? = null
+    private val workManager = WorkManager.getInstance()
 
     init {
         App.getApp().appComponent.inject(this)
@@ -78,8 +80,6 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
     }
 
     override fun download(downloadTo: Uri) {
-        val workManager = WorkManager.getInstance()
-
         val data = Data.Builder()
             .putString(DownloadWork.FILE_ID_KEY, mItemClicked?.id)
             .putString(DownloadWork.FILE_URI_KEY, downloadTo.toString())
@@ -146,11 +146,18 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
     }
 
     fun upload(uri: Uri, tag: String) {
-        mDisposable.add(mutableListOf(uri)?.let {
-            (mFileProvider as OneDriveFileProvider).upload(mModelExplorerStack.currentId, it, tag)
-                .subscribe()
-        }
-        )
+        val data = Data.Builder()
+            .putString(UploadWork.KEY_FOLDER_ID, mModelExplorerStack.currentId)
+            .putString(UploadWork.KEY_FROM, uri.toString())
+            .putString(UploadWork.KEY_TAG, tag)
+            .build()
+
+        val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
+            .setInputData(data)
+            .build()
+
+        workManager.enqueue(request)
+
     }
 
     override fun addRecent(file: CloudFile?) {
