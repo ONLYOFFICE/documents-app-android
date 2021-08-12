@@ -1,23 +1,24 @@
 package app.editors.manager.ui.fragments.login
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.fragment.app.viewModels
 import app.editors.manager.R
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginEnterprisePortalBinding
-import app.editors.manager.mvp.presenters.login.EnterprisePortalPresenter
-import app.editors.manager.mvp.views.login.EnterprisePortalView
-import app.editors.manager.ui.activities.login.SignInActivity.Companion.showPortalCreate
-import app.editors.manager.ui.activities.login.SignInActivity.Companion.showPortalSignIn
+import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
+import app.editors.manager.viewModels.login.EnterprisePortalState
+import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
-import moxy.presenter.InjectPresenter
 
-class EnterprisePortalFragment : BaseAppFragment(), EnterprisePortalView,
+class EnterprisePortalFragment : BaseAppFragment(),
     CommonDialog.OnClickListener {
 
     companion object {
@@ -30,14 +31,17 @@ class EnterprisePortalFragment : BaseAppFragment(), EnterprisePortalView,
         fun newInstance() = EnterprisePortalFragment()
     }
 
-
-    @InjectPresenter
-    lateinit var presenter: EnterprisePortalPresenter
+    private val viewModel: EnterprisePortalViewModel by viewModels()
 
     private var viewBinding: FragmentLoginEnterprisePortalBinding? = null
 
     private var httpUrl = ""
     private var providers: Array<String>? = emptyArray()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        requireContext().appComponent.inject(viewModel)
+    }
 
     override fun onBackPressed(): Boolean {
         hideKeyboard()
@@ -70,17 +74,26 @@ class EnterprisePortalFragment : BaseAppFragment(), EnterprisePortalView,
         }
     }
 
-    override fun onError(message: String?) {
-        hideDialog()
-        showSnackBar(message ?: "")
+    override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
+        super.onCancelClick(dialogs, tag)
+        tag?.let { dialogTag ->
+            if (dialogTag == TAG_DIALOG_WAITING) {
+                viewModel.cancel()
+            }
+        }
     }
 
-    override fun onSuccessPortal(portal: String, providers: Array<String>) {
+    private fun onError(message: String?) {
         hideDialog()
-        showPortalSignIn(requireContext(), portal, "", providers)
+        message?.let { showSnackBar(it) }
     }
 
-    override fun onHttpPortal(portal: String, providers: Array<String>) {
+    private fun onSuccessPortal(portal: String, providers: Array<String>) {
+        hideDialog()
+        SignInActivity.showPortalSignIn(requireContext(), portal, "", providers)
+    }
+
+    private fun onHttpPortal(portal: String, providers: Array<String>) {
         this.providers = providers
         httpUrl = portal
         showQuestionDialog(
@@ -90,11 +103,11 @@ class EnterprisePortalFragment : BaseAppFragment(), EnterprisePortalView,
         )
     }
 
-    override fun onPortalSyntax(message: String) {
+    private fun onPortalSyntax(message: String) {
         viewBinding?.loginEnterprisePortalLayout?.error = message
     }
 
-    override fun onShowDialog() {
+    private fun onShowDialog() {
         showWaitingDialog(
             getString(R.string.dialogs_check_portal_header_text),
             getString(R.string.dialogs_common_cancel_button),
@@ -102,7 +115,7 @@ class EnterprisePortalFragment : BaseAppFragment(), EnterprisePortalView,
         )
     }
 
-    override fun onLoginPortal(portal: String) {
+    private fun onLoginPortal(portal: String) {
         viewBinding?.loginEnterprisePortalEdit?.setText(portal)
     }
 
@@ -111,6 +124,31 @@ class EnterprisePortalFragment : BaseAppFragment(), EnterprisePortalView,
         viewBinding?.loginEnterprisePortalEdit?.addTextChangedListener(FieldsWatcher())
         restoreValue(savedInstanceState)
         initListeners()
+
+        viewModel.errorLiveData.observe(viewLifecycleOwner) { error ->
+            onError(error.message)
+        }
+        viewModel.portalStateLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is EnterprisePortalState.Progress -> {
+                    onShowDialog()
+                }
+                is EnterprisePortalState.Success -> {
+                    if (state.isHttp) {
+                        onHttpPortal(state.portal, state.providers)
+                    } else {
+                        onSuccessPortal(state.portal, state.providers)
+                    }
+                }
+                is EnterprisePortalState.Error -> {
+                    if (state.message == getString(R.string.login_enterprise_edit_error_hint)) {
+                        onPortalSyntax(state.message)
+                    } else {
+                        onError(state.message)
+                    }
+                }
+            }
+        }
     }
 
     private fun restoreValue(savedInstanceState: Bundle?) {
@@ -121,8 +159,7 @@ class EnterprisePortalFragment : BaseAppFragment(), EnterprisePortalView,
 
     private fun initListeners() {
         viewBinding?.loginEnterpriseCreateButton?.setOnClickListener {
-            showPortalCreate(requireContext())
-
+            SignInActivity.showPortalCreate(requireContext())
         }
         viewBinding?.loginEnterpriseNextButton?.setOnClickListener {
             nextClick()
@@ -138,7 +175,7 @@ class EnterprisePortalFragment : BaseAppFragment(), EnterprisePortalView,
 
     private fun nextClick() {
         hideKeyboard(viewBinding?.loginEnterprisePortalEdit)
-        presenter.checkPortal(viewBinding?.loginEnterprisePortalEdit?.text?.trim().toString() ?: "")
+        viewModel.checkPortal(viewBinding?.loginEnterprisePortalEdit?.text?.trim().toString())
     }
 
     private inner class FieldsWatcher : BaseWatcher() {

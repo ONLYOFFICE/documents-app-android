@@ -37,7 +37,9 @@ import app.editors.manager.ui.fragments.storage.ConnectFragment
 import app.editors.manager.ui.fragments.storage.SelectFragment
 import app.editors.manager.ui.fragments.storage.WebDavFragment
 import app.editors.manager.ui.fragments.storage.WebTokenFragment
+import app.editors.manager.viewModels.login.EnterpriseCreateValidateViewModel
 import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
+import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import dagger.BindsInstance
 import dagger.Component
@@ -79,10 +81,8 @@ interface AppComponent {
     /*
    * Login
    * */
-    fun inject(enterprisePortalPresenter: EnterprisePortalPresenter?)
     fun inject(enterpriseSignInPresenter: EnterpriseLoginPresenter?)
     fun inject(enterpriseSmsPresenter: EnterpriseSmsPresenter?)
-    fun inject(enterpriseCreateValidatePresenter: EnterpriseCreateValidatePresenter?)
     fun inject(enterpriseCreateSignInPresenter: EnterpriseCreateLoginPresenter?)
     fun inject(personalSignInPresenter: PersonalLoginPresenter?)
     fun inject(personalSignUpPresenter: PersonalSignUpPresenter?)
@@ -156,4 +156,6 @@ interface AppComponent {
 
     fun inject(viewModel: AppSettingsViewModel)
     fun inject(viewModel: EnterprisePhoneViewModel)
+    fun inject(viewModel: EnterprisePortalViewModel)
+    fun inject(viewModel: EnterpriseCreateValidateViewModel)
 }

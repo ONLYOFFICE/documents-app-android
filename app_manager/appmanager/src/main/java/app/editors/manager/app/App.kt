@@ -50,10 +50,11 @@ class App : Application() {
             initCrashlytics()
         }
 
-    private lateinit var _appComponent: AppComponent
-
+    private var _appComponent: AppComponent? = null
     val appComponent: AppComponent
-        get() = _appComponent
+        get() = checkNotNull(_appComponent) {
+            "App component can't be null"
+        }
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
@@ -103,7 +104,7 @@ class App : Application() {
                 WebView.setDataDirectorySuffix("cacheWebView")
             }
         }
-        isAnalyticEnable = _appComponent.preference.isAnalyticEnable
+        isAnalyticEnable = appComponent.preference.isAnalyticEnable
         initCrashlytics()
     }
 
@@ -133,19 +134,19 @@ class App : Application() {
 
     fun getApi(): Api {
         return DaggerApiComponent.builder()
-            .appComponent(_appComponent)
+            .appComponent(appComponent)
             .build()
             .api
     }
 
     fun getShareService(): ShareService {
-        return DaggerShareComponent.builder().appComponent(_appComponent)
+        return DaggerShareComponent.builder().appComponent(appComponent)
             .build()
             .shareService
     }
 
     fun getWebDavApi(): WebDavApi {
-        return DaggerWebDavComponent.builder().appComponent(_appComponent)
+        return DaggerWebDavComponent.builder().appComponent(appComponent)
             .build()
             .webDavApi
     }

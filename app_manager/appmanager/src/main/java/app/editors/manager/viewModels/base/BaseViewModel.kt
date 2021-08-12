@@ -6,17 +6,19 @@ import androidx.lifecycle.ViewModel
 import app.editors.manager.managers.tools.ErrorHandler
 import app.editors.manager.mvp.models.error.AppErrors
 import lib.toolkit.base.managers.tools.ResourcesProvider
+import lib.toolkit.base.managers.utils.SingleLiveEvent
 import javax.inject.Inject
 
 abstract class BaseViewModel : ViewModel() {
 
     @Inject
-    lateinit var errorHandler: ErrorHandler
+    protected lateinit var errorHandler: ErrorHandler
 
     @Inject
-    lateinit var resourcesProvider: ResourcesProvider
+    protected lateinit var resourcesProvider: ResourcesProvider
 
-    private val _errorLiveData: MutableLiveData<AppErrors> = MutableLiveData()
+
+    private val _errorLiveData: SingleLiveEvent<AppErrors> = SingleLiveEvent()
     val errorLiveData: LiveData<AppErrors> = _errorLiveData
 
     protected fun fetchError(throwable: Throwable) {

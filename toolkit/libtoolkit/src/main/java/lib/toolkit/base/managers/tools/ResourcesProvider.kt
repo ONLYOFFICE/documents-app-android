@@ -1,13 +1,14 @@
 package lib.toolkit.base.managers.tools
 
 import android.content.Context
+import android.telephony.TelephonyManager
 import androidx.annotation.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import java.io.File
 import javax.inject.Inject
 
-class ResourcesProvider @Inject constructor(val context: Context) {
+class ResourcesProvider @Inject constructor(private val context: Context) {
 
     fun getString(@StringRes res: Int) = context.getString(res)
 
@@ -26,6 +27,14 @@ class ResourcesProvider @Inject constructor(val context: Context) {
             context.cacheDir
         } else {
             context.externalCacheDir
+        }
+    }
+
+    fun getLocale(): String? {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            context.resources.configuration.locales[0].country
+        } else {
+            context.resources.configuration.locale.country
         }
     }
 

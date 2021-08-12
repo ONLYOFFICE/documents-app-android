@@ -1,5 +1,7 @@
-package app.editors.manager.mvp.presenters.login
+package app.editors.manager.viewModels.login
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.Capabilities
@@ -8,16 +10,20 @@ import app.documents.core.network.models.login.response.ResponseSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.mvp.views.login.EnterprisePortalView
+import app.editors.manager.viewModels.base.BaseLoginViewModel
 import io.reactivex.disposables.Disposable
-import moxy.InjectViewState
 import java.util.*
 
-@InjectViewState
-class EnterprisePortalPresenter : BaseLoginPresenter<EnterprisePortalView>() {
+sealed class EnterprisePortalState {
+    object Progress : EnterprisePortalState()
+    class Success(val portal: String, val providers: Array<String>, val isHttp: Boolean) : EnterprisePortalState()
+    class Error(val message: String? = null) : EnterprisePortalState()
+}
+
+class EnterprisePortalViewModel: BaseLoginViewModel() {
 
     companion object {
-        val TAG: String = EnterprisePortalPresenter::class.java.simpleName
+        val TAG: String = EnterprisePortalViewModel::class.java.simpleName
         private val BANNED_ADDRESSES: Set<String> = object : TreeSet<String>() {
             init {
                 add(".r7-")
@@ -26,19 +32,19 @@ class EnterprisePortalPresenter : BaseLoginPresenter<EnterprisePortalView>() {
         private const val TAG_SSH = "/#ssloff"
     }
 
-    init {
-        App.getApp().appComponent.inject(this)
+    private val _portalStateLiveData = MutableLiveData<EnterprisePortalState>()
+    val portalStateLiveData: LiveData<EnterprisePortalState> = _portalStateLiveData
+
+    private var disposable: Disposable? = null
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose()
     }
 
-    private var mDisposable: Disposable? = null
-
-    override fun onDestroy() {
-        mDisposable?.dispose()
-    }
-
-    override fun cancelRequest() {
-        super.cancelRequest()
-        mDisposable?.dispose()
+    fun cancel() {
+        disposable?.dispose()
+        _portalStateLiveData.value = EnterprisePortalState.Error(null)
     }
 
     fun checkPortal(portal: String) {
@@ -47,7 +53,8 @@ class EnterprisePortalPresenter : BaseLoginPresenter<EnterprisePortalView>() {
         val builder = StringBuilder()
 
         if (checkBannedAddress(portal)) {
-            viewState.onError(context.getString(R.string.errors_client_host_not_found))
+            _portalStateLiveData.value =
+                EnterprisePortalState.Error(resourcesProvider.getString(R.string.errors_client_host_not_found))
             return
         }
 
@@ -59,11 +66,13 @@ class EnterprisePortalPresenter : BaseLoginPresenter<EnterprisePortalView>() {
         }
 
         if (builder.isEmpty()) {
-            viewState.onPortalSyntax(context.getString(R.string.login_enterprise_edit_error_hint))
+            _portalStateLiveData.value =
+                EnterprisePortalState.Error(resourcesProvider.getString(R.string.login_enterprise_edit_error_hint))
             return
         }
 
-        viewState.onShowDialog()
+        _portalStateLiveData.value =
+            EnterprisePortalState.Progress
         networkSettings.setBaseUrl(builder.toString())
         portalCapabilities()
 
@@ -80,16 +89,24 @@ class EnterprisePortalPresenter : BaseLoginPresenter<EnterprisePortalView>() {
 
     private fun portalCapabilities() {
         val service = App.getApp().appComponent.loginService
-        mDisposable = service.capabilities()
+        disposable = service.capabilities()
             .subscribe({ response ->
                 if (response is LoginResponse.Success) {
                     if (response.response is ResponseCapabilities) {
                         val capability = (response.response as ResponseCapabilities).response
                         setSettings(capability)
                         if (networkSettings.getScheme() == ApiContract.SCHEME_HTTPS) {
-                            viewState.onSuccessPortal(networkSettings.getPortal(), capability.providers.toTypedArray())
+                            _portalStateLiveData.value = EnterprisePortalState.Success(
+                                networkSettings.getPortal(),
+                                capability.providers.toTypedArray(),
+                                false
+                            )
                         } else {
-                            viewState.onHttpPortal(networkSettings.getPortal(), capability.providers.toTypedArray())
+                            _portalStateLiveData.value = EnterprisePortalState.Success(
+                                networkSettings.getPortal(),
+                                capability.providers.toTypedArray(),
+                                true
+                            )
                         }
                     } else {
                         networkSettings.serverVersion =
@@ -116,7 +133,7 @@ class EnterprisePortalPresenter : BaseLoginPresenter<EnterprisePortalView>() {
                 FirebaseUtils.AnalyticsKeys.FAILED,
                 "Error: " + throwable.message
             )
-            onFailureHandle(throwable)
+            fetchError(throwable)
         }
     }
 

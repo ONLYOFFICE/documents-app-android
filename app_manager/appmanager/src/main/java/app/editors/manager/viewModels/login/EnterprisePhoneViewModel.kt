@@ -31,10 +31,10 @@ class EnterprisePhoneViewModelFactory(private val loginService: ILoginServicePro
 class EnterprisePhoneViewModel(private val loginService: ILoginServiceProvider) : BaseViewModel() {
 
     @Inject
-    lateinit var preferenceTool: PreferenceTool
+    internal lateinit var countriesCodesTool: CountriesCodesTool
 
     @Inject
-    lateinit var countriesCodesTool: CountriesCodesTool
+    internal lateinit var preferenceTool: PreferenceTool
 
 
     private var disposable: Disposable? = null
