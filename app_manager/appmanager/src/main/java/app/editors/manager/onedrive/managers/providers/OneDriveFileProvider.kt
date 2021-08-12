@@ -387,40 +387,6 @@ class OneDriveFileProvider : BaseFileProvider {
         TODO("Not yet implemented")
     }
 
-    @SuppressLint("MissingPermission")
-    fun download(id: String, uri: Uri): Observable<Int?> {
-        return Observable.create { emitter: ObservableEmitter<Int?> ->
-            val response = api.oneDriveService.download(id).blockingGet()
-            val outputFile = File(PathUtils.getPath(getApp().applicationContext, uri))
-            if (response is OneDriveResponse.Success) {
-                try {
-                    (response.response as ResponseBody)
-                        .byteStream().use { inputStream ->
-                            FileOutputStream(outputFile).use { outputStream ->
-                                val buffer = ByteArray(4096)
-                                var count: Int
-                                var progress = 0
-                                val fileSize = response.response.contentLength()
-                                while (inputStream.read(buffer).also { count = it } != -1) {
-                                    outputStream.write(buffer, 0, count)
-                                    progress += count
-                                    emitter.onNext((progress.toDouble() / fileSize.toDouble() * 100).toInt())
-                                }
-                                outputStream.flush()
-                                emitter.onNext(100)
-                                emitter.onComplete()
-                            }
-                        }
-                } catch (error: IOException) {
-                    emitter.onNext(0)
-                    emitter.onError(error)
-                }
-            } else if(response is OneDriveResponse.Error){
-                throw response.error
-            }
-        }
-    }
-
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
         val result = api.oneDriveService.download((item as CloudFile).id).blockingGet()
@@ -441,8 +407,8 @@ class OneDriveFileProvider : BaseFileProvider {
             } catch (error: IOException) {
                 emitter.onError(error)
             }
-        } else {
-            Log.d("ONEDRIVE", "${(result as OneDriveResponse.Error).error.message}")
+        } else if(result is OneDriveResponse.Error) {
+            throw result.error
         }
     }
 

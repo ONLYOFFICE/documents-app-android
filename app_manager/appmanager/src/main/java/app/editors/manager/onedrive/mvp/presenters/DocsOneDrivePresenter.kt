@@ -2,6 +2,9 @@ package app.editors.manager.onedrive.mvp.presenters
 
 import android.net.Uri
 import android.util.Log
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
@@ -14,6 +17,7 @@ import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
+import app.editors.manager.onedrive.managers.works.DownloadWork
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -27,9 +31,6 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
-import okhttp3.ResponseBody
-import retrofit2.HttpException
-import java.lang.Exception
 import java.util.*
 
 
@@ -77,24 +78,18 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
     }
 
     override fun download(downloadTo: Uri) {
-        mItemClicked?.id?.let {
-            (mFileProvider as OneDriveFileProvider).download(it, downloadTo)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({progress ->
-                    Log.d("ONEDRIVE", "$progress")
-                },
-                    {
-                        throwable: Throwable -> fetchError(throwable)
-                    },
-                    {
-                        viewState.onSnackBar("Downloading is finished")
-                    })
-        }?.let {
-            mDisposable.add(
-                it
-            )
-        }
+        val workManager = WorkManager.getInstance()
+
+        val data = Data.Builder()
+            .putString(DownloadWork.FILE_ID_KEY, mItemClicked?.id)
+            .putString(DownloadWork.FILE_URI_KEY, downloadTo.toString())
+            .build()
+
+        val request = OneTimeWorkRequest.Builder(DownloadWork::class.java)
+            .setInputData(data)
+            .build()
+
+        workManager.enqueue(request)
     }
 
     override fun getNextList() {
