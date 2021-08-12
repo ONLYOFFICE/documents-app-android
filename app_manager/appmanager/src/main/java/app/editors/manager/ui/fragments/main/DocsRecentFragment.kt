@@ -313,7 +313,10 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     override fun onDeleteItem(position: Int) {
-        adapter?.removeItem(position)
+        adapter?.apply {
+            removeItem(position)
+            if (itemCount == 0) setEmpty()
+        }
     }
 
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons) {
