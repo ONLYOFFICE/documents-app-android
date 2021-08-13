@@ -100,6 +100,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             contextAccount?.let { account ->
                 if (account.isWebDav) {
                     AccountUtils.setToken(context, account.getAccountName(), null)
+                } else if(account.isOneDrive) {
+                    AccountUtils.setToken(context, account.getAccountName(), "")
                 } else {
                     AccountUtils.setPassword(context, account.getAccountName(), null)
                 }
@@ -166,6 +168,14 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         Json.encodeToString(account),
                         WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
                     )
+                }
+            } else if(account.isOneDrive) {
+                AccountUtils.getToken(context, account.getAccountName())?.let {token ->
+                    if(token.isNotEmpty()) {
+                        loginSuccess(account)
+                    } else {
+                        viewState.onOneDriveLogin()
+                    }
                 }
             } else {
                 AccountUtils.getToken(context, account.getAccountName())?.let { token ->
