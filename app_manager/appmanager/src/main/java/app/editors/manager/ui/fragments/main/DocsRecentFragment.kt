@@ -313,9 +313,9 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     override fun onDeleteItem(position: Int) {
-        adapter?.apply {
-            removeItem(position)
-            if (itemCount == 0) setEmpty()
+        adapter?.let { recentAdapter ->
+            recentAdapter.removeItem(position)
+            if (recentAdapter.itemCount == 0) setEmpty()
         }
     }
 
