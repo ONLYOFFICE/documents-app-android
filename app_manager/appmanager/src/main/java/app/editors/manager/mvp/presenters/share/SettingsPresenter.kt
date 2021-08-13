@@ -289,7 +289,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
 
         if (isRemove) {
             if (commonList.isEmpty()) {
-                viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
+                viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
             }
             isRemove = false
             isShare = false
@@ -303,6 +303,12 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         } else {
             viewState.onGetShare(commonList, item?.access ?: -1)
         }
+
+        if (commonList.isEmpty()) {
+            viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
+            return
+        }
+
         viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
     }
 
