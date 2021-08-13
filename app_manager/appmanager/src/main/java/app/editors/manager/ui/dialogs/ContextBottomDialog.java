@@ -224,6 +224,10 @@ public class ContextBottomDialog extends BaseBottomDialog {
         mListContextHeaderInfo.setText(mState.mInfo);
         mListContextHeaderImage.setImageResource(mState.mIconResId);
         UiUtils.setImageTint(mListContextHeaderImage, R.color.colorGrey);
+        if (!mState.mIsFolder) {
+            app.editors.manager.managers.utils.UiUtils.setFileIcon(mListContextHeaderImage,
+                    StringUtils.getExtensionFromPath(mState.mTitle));
+        }
         setViewState();
     }
 
