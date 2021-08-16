@@ -23,23 +23,30 @@ class AppSettingsViewModel : ViewModel() {
     private val _cacheLiveData: MutableLiveData<Long> = MutableLiveData()
     val cacheLiveData: LiveData<Long> = _cacheLiveData
 
-    val analyticState = liveData { emit(preferencesTool.isAnalyticEnable) }
-    val wifiState = liveData { emit(preferencesTool.uploadWifiState) }
+    private val _analyticState = MutableLiveData<Boolean>()
+    val analyticState: LiveData<Boolean> = _analyticState
+    private val _wifiState = MutableLiveData<Boolean>()
+    val wifiState: LiveData<Boolean> = _wifiState
 
     val message = SingleLiveEvent<String>()
 
-    fun getCache() {
-        _cacheLiveData.value = FileUtils.getSize(resourcesProvider.getCacheDir(true)) + FileUtils.getSize(
-            resourcesProvider.getCacheDir(false)
-        )
+    fun getData() {
+        _analyticState.value = preferencesTool.isAnalyticEnable
+        _wifiState.value = preferencesTool.uploadWifiState
+        _cacheLiveData.value =
+            FileUtils.getSize(resourcesProvider.getCacheDir(true)) + FileUtils.getSize(
+                resourcesProvider.getCacheDir(false)
+            )
     }
 
     fun setAnalytic(isEnable: Boolean) {
         preferencesTool.isAnalyticEnable = isEnable
+        _analyticState.value = preferencesTool.isAnalyticEnable
     }
 
     fun setWifiState(isEnable: Boolean) {
         preferencesTool.setWifiState(isEnable)
+        _wifiState.value = preferencesTool.uploadWifiState
     }
 
     @SuppressLint("MissingPermission")
@@ -47,7 +54,7 @@ class AppSettingsViewModel : ViewModel() {
         viewModelScope.launch {
             FileUtils.deletePath(resourcesProvider.getCacheDir(true) ?: File(""))
             FileUtils.deletePath(resourcesProvider.getCacheDir(false) ?: File(""))
-            getCache()
+            getData()
             message.value = resourcesProvider.getString(R.string.setting_cache_cleared)
         }
     }

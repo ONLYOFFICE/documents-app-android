@@ -227,7 +227,6 @@
     <string name="navigation_drawer_menu_about">Sobre</string>
     <string name="navigation_drawer_menu_add_account">Adicionar conta</string>
     <string name="navigation_drawer_menu_common">Documentos comuns</string>
-    <string name="navigation_drawer_menu_feedback">Feedback</string>
     <string name="navigation_drawer_menu_help">Ajuda</string>
     <string name="navigation_drawer_menu_logout">Sair</string>
     <string name="navigation_drawer_menu_my">Meus documentos</string>

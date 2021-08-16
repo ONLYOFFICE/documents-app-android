@@ -250,7 +250,6 @@
     <string name="navigation_drawer_menu_help">ຊ່ວຍເຫຼືອ </string>
     <string name="navigation_drawer_menu_logout">ລະບົບ</string>
     <string name="navigation_drawer_menu_add_account">ເພີ່ມບັນຊີ</string>
-    <string name="navigation_drawer_menu_feedback">ຄຳຕິຊົມ</string>
     <string name="settings_item_title">ການຕັ້ງຄ່າ</string>
     <string name="settings_item_change_account">ປ່ຽນບັນຊີ </string>
     <string name="settings_clear_cache">ເຊັດຖານຄວາມຈຳ </string>
