@@ -116,4 +116,12 @@ interface OneDriveService {
     @PATCH(API_VERSION + "me/drive/items/{item_id}")
     fun moveItem(@Path(value = "item_id") itemId: String, @Body request: CopyItemRequest): Single<Response<ResponseBody>>
 
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET(API_VERSION + "me/photo")
+    fun getPhoto():Single<Response<ResponseBody>>
+
 }

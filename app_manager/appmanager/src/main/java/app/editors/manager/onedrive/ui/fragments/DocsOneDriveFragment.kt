@@ -84,6 +84,26 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         }
     }
 
+    override fun setToolbarState(isVisible: Boolean) {
+        activity?.showAccount(isVisible)
+    }
+
+
+    override fun onActionBarTitle(title: String) {
+        if (isActivePage) {
+            setActionBarTitle(title)
+            if (title == "0") {
+                disableMenu()
+            }
+        }
+    }
+
+    private fun disableMenu() {
+        if (mMenu != null) {
+            mDeleteItem.isEnabled = false
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()

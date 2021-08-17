@@ -71,6 +71,15 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
         if (clickedAccount.isWebDav) {
             loginWebDav()
             return
+        } else if(clickedAccount.isOneDrive) {
+            AccountUtils.getToken(context, clickedAccount.getAccountName())?.let {token ->
+                if(token.isNotEmpty()) {
+                    setAccount()
+                } else {
+                    viewState.onOneDriveLogin()
+                }
+            }
+            return
         }
 
         login()

@@ -55,7 +55,7 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
             id = "${user.userPrincipalName}",
             isWebDav = false,
             isOneDrive = true,
-            portal = "",
+            portal = App.getApp().applicationContext.getString(R.string.storage_one_drive_portal_title),
             webDavPath = "",
             webDavProvider = "",
             login = "${user.userPrincipalName}",

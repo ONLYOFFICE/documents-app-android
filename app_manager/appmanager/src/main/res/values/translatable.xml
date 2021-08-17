@@ -420,6 +420,7 @@
     <string name="storage_web_dav_settings_login">Login</string>
     <string name="storage_web_dav_settings_password">Password</string>
     <string name="storage_web_dav_settings_title">Input title for service</string>
+    <string name="storage_one_drive_portal_title">onedrive.live.com</string>
 
     <!-- ======================================================================================= -->
     <!-- Operations -->

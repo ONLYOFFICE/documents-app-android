@@ -27,4 +27,5 @@ interface IOneDriveServiceProvider {
     fun uploadFile(folderId: String, fileName: String, request: UploadRequest): Single<OneDriveResponse>
     fun copyItem(itemId: String, request: CopyItemRequest): Single<Response<ResponseBody>>
     fun moveItem(itemId: String, request: CopyItemRequest): Single<Response<ResponseBody>>
+    fun getPhoto(): Single<Response<ResponseBody>>
 }

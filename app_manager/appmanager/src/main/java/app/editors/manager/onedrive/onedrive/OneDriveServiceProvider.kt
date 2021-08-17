@@ -121,6 +121,12 @@ class OneDriveServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun getPhoto(): Single<Response<ResponseBody>> {
+        return oneDriveService.getPhoto()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     private fun <T> fetchResponse(response: Response<T>): OneDriveResponse {
         return if (response.isSuccessful && response.body() != null) {
             OneDriveResponse.Success(response.body()!!)
