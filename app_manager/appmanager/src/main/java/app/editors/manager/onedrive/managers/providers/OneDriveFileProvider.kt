@@ -3,11 +3,10 @@ package app.editors.manager.onedrive.managers.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 import app.editors.manager.app.App
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.managers.providers.BaseFileProvider
-import app.editors.manager.managers.providers.OneDriveResponse
+import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.request.RequestCreate
@@ -19,36 +18,25 @@ import app.editors.manager.onedrive.*
 import app.editors.manager.onedrive.di.component.OneDriveComponent
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemCloudTree
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemFolder
+import app.editors.manager.onedrive.mvp.models.explorer.DriveItemParentReference
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
-import app.editors.manager.onedrive.mvp.models.request.ChangeFileRequest
-import app.editors.manager.onedrive.mvp.models.request.CreateFolderRequest
-import app.editors.manager.onedrive.mvp.models.request.RenameRequest
-import app.editors.manager.onedrive.mvp.models.request.UploadRequest
-import app.editors.manager.onedrive.mvp.models.response.UploadResponse
-import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.onedrive.mvp.models.request.*
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
 import lib.toolkit.base.managers.utils.FileUtils.createFile
-import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.min
 
 class OneDriveFileProvider : BaseFileProvider {
 
@@ -260,7 +248,49 @@ class OneDriveFileProvider : BaseFileProvider {
         isMove: Boolean,
         isOverwrite: Boolean
     ): Observable<MutableList<Operation>> {
-        TODO("Not yet implemented")
+        return if(isMove) {
+            to?.id?.let { moveItem(items, it, isOverwrite) }!!
+        } else {
+            to?.id?.let { copyItem(items, it, isOverwrite) }!!
+        }
+    }
+
+    private fun copyItem(items: MutableList<Item>?, to: String, isOverwrite: Boolean): Observable<MutableList<Operation>> {
+        return Observable.fromIterable(items)
+            .flatMap { item ->
+                val request = CopyItemRequest(parentReference = DriveItemParentReference(driveId = "", driveType = "", id = to, name = item.title, path = ""), name = item.title)
+                Observable.fromCallable { api.oneDriveService.copyItem(item.id, request).blockingGet() }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+            }.map { responseBody ->
+                if(responseBody.isSuccessful) {
+                    val operation = Operation()
+                    operation.progress = 100
+                    return@map mutableListOf(operation)
+                } else {
+                    val httpException = HttpException(responseBody)
+                    throw httpException
+                }
+            }
+    }
+
+    private fun moveItem(items: MutableList<Item>?, to: String, isOverwrite: Boolean): Observable<MutableList<Operation>> {
+        return Observable.fromIterable(items)
+            .flatMap { item ->
+                val request = CopyItemRequest(parentReference = DriveItemParentReference(driveId = "", driveType = "", id = to, name = item.title, path = ""), name = item.title)
+                Observable.fromCallable { api.oneDriveService.moveItem(item.id, request).blockingGet() }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+            }.map { responseBody ->
+                if(responseBody.isSuccessful) {
+                    val operation = Operation()
+                    operation.progress = 100
+                    return@map mutableListOf(operation)
+                } else {
+                    val httpException = HttpException(responseBody)
+                    throw httpException
+                }
+            }
     }
 
     override fun fileInfo(item: Item?): Observable<CloudFile?> {

@@ -1,11 +1,6 @@
 package app.editors.manager.onedrive.onedrive
 
-import app.editors.manager.managers.providers.IOneDriveServiceProvider
-import app.editors.manager.managers.providers.OneDriveResponse
-import app.editors.manager.onedrive.mvp.models.request.ChangeFileRequest
-import app.editors.manager.onedrive.mvp.models.request.CreateFolderRequest
-import app.editors.manager.onedrive.mvp.models.request.RenameRequest
-import app.editors.manager.onedrive.mvp.models.request.UploadRequest
+import app.editors.manager.onedrive.mvp.models.request.*
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -106,6 +101,24 @@ class OneDriveServiceProvider(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
+    }
+
+    override fun copyItem(
+        itemId: String,
+        request: CopyItemRequest
+    ): Single<Response<ResponseBody>> {
+        return oneDriveService.copyItem(itemId, request)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun moveItem(
+        itemId: String,
+        request: CopyItemRequest
+    ): Single<Response<ResponseBody>> {
+        return oneDriveService.moveItem(itemId, request)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     private fun <T> fetchResponse(response: Response<T>): OneDriveResponse {

@@ -11,12 +11,11 @@ import androidx.work.WorkerParameters
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.managers.providers.OneDriveResponse
+import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.managers.works.DownloadWork
-import app.editors.manager.mvp.models.request.RequestDownload
 import app.editors.manager.onedrive.di.component.OneDriveComponent
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils

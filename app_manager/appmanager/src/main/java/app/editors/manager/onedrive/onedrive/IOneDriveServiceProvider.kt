@@ -1,9 +1,6 @@
-package app.editors.manager.managers.providers
+package app.editors.manager.onedrive.onedrive
 
-import app.editors.manager.onedrive.mvp.models.request.ChangeFileRequest
-import app.editors.manager.onedrive.mvp.models.request.CreateFolderRequest
-import app.editors.manager.onedrive.mvp.models.request.RenameRequest
-import app.editors.manager.onedrive.mvp.models.request.UploadRequest
+import app.editors.manager.onedrive.mvp.models.request.*
 import io.reactivex.Single
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -28,4 +25,6 @@ interface IOneDriveServiceProvider {
     fun createFile(itemId: String, ext: String, opts: Map<String, String>): Single<OneDriveResponse>
     fun updateFile(itemId: String, body:ChangeFileRequest):Single<Response<ResponseBody>>
     fun uploadFile(folderId: String, fileName: String, request: UploadRequest): Single<OneDriveResponse>
+    fun copyItem(itemId: String, request: CopyItemRequest): Single<Response<ResponseBody>>
+    fun moveItem(itemId: String, request: CopyItemRequest): Single<Response<ResponseBody>>
 }

@@ -1,7 +1,7 @@
 package app.editors.manager.di.module
 
 import app.editors.manager.onedrive.onedrive.OneDriveService
-import app.editors.manager.managers.providers.IOneDriveServiceProvider
+import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
 import app.editors.manager.managers.retrofit.BaseInterceptor
 import app.editors.manager.onedrive.onedrive.OneDriveServiceProvider
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory

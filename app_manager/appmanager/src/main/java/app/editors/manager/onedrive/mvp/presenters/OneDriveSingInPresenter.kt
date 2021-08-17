@@ -5,7 +5,7 @@ import android.util.Log
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.managers.providers.OneDriveResponse
+import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.onedrive.mvp.views.OneDriveSignInView
 import app.editors.manager.onedrive.mvp.models.user.User

@@ -243,4 +243,20 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
             viewState.onStateUpdateRoot(true)
         }
     }
+    override fun move(): Boolean {
+        return if (super.move()) {
+            transfer(ApiContract.Operation.DUPLICATE, true)
+            true
+        } else {
+            false
+        }
+    }
+    override fun copy(): Boolean {
+        return if (super.move()) {
+            transfer(ApiContract.Operation.DUPLICATE, false)
+            true
+        } else {
+            false
+        }
+    }
 }

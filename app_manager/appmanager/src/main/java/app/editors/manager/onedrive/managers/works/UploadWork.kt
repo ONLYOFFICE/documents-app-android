@@ -9,7 +9,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
-import app.editors.manager.managers.providers.OneDriveResponse
+import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.managers.works.UploadWork
