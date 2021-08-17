@@ -175,13 +175,6 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             ) {
                 adapter.removeHeader(getString(R.string.share_goal_user))
             }
-            showSnackBarWithAction(
-                getString(R.string.share_snackbar_remove_user),
-                getString(R.string.snackbar_undo)
-            ) {
-                settingsPresenter.setItemAccess(share.access)
-                adapter.addItem(share)
-            }
         }
     }
 
@@ -232,23 +225,25 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             return
         }
         settingsPresenter.setShared(share, position)
-        setPopup(view)
+        setPopup(view, share.isGuest)
     }
 
-    private fun setPopup(view: View?) {
+    private fun setPopup(view: View?, isVisitor: Boolean) {
         view?.post {
             sharePopup = SharePopup(requireContext(), R.layout.popup_share_menu)
             sharePopup?.let { popup ->
                 popup.setContextListener(mListContextListener)
-                if (settingsPresenter.item is CloudFolder) {
-                    popup.setIsFolder(true)
-                } else {
-                    val extension = settingsPresenter.item?.let { item ->
-                        getExtension(getExtensionFromPath(item.title))
+                if (!isVisitor) {
+                    if (settingsPresenter.item is CloudFolder) {
+                        popup.setIsFolder(true)
+                    } else {
+                        val extension = getExtension(
+                            getExtensionFromPath(settingsPresenter.item?.title!!))
+                        popup.setIsDoc(extension == StringUtils.Extension.DOC)
                     }
-                    popup.setIsDoc(extension === StringUtils.Extension.DOC)
+                } else {
+                    popup.setIsVisitor()
                 }
-                popup.setFullAccess(true)
                 popup.showDropAt(view, requireActivity())
             }
         }
@@ -375,35 +370,32 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         }
     }
 
-
-    override fun onShowPopup(sharePosition: Int) {
+    override fun onShowPopup(sharePosition: Int, isVisitor: Boolean) {
         viewBinding?.shareMainListOfItems.let { recyclerView: RecyclerView? ->
             recyclerView?.post {
                 if (sharePosition != 0) {
                     setPopup(
                         recyclerView.layoutManager?.findViewByPosition(sharePosition)
-                            ?.findViewById(R.id.button_popup_arrow)
-                    )
+                            ?.findViewById(R.id.button_popup_arrow), isVisitor)
                 } else {
                     showAccessPopup()
                 }
-            } ?: setPopup(viewBinding?.shareSettingsListContentLayout)
+            } ?: setPopup(viewBinding?.shareSettingsListContentLayout, isVisitor)
         }
     }
 
     private fun showAccessPopup() {
         sharePopup = SharePopup(requireContext(), R.layout.popup_share_menu)
-        sharePopup?.let {
-            it.setContextListener(mExternalContextListener)
-            it.setExternalLink()
-            it.setFullAccess(false)
+        sharePopup?.let { popup ->
+            popup.setContextListener(mExternalContextListener)
+            popup.setFullAccess(false)
             if (settingsPresenter.item is CloudFolder) {
-                it.setIsFolder(true)
+                popup.setIsFolder(true)
             } else {
                 val extension = getExtension(getExtensionFromPath(settingsPresenter.item?.title!!))
-                it.setIsDoc(extension === StringUtils.Extension.DOC)
+                popup.setIsDoc(extension === StringUtils.Extension.DOC)
             }
-            it.showDropAt(
+            popup.showDropAt(
                 headerBinding?.shareSettingsAccessButtonLayout?.root!!,
                 requireActivity()
             )
