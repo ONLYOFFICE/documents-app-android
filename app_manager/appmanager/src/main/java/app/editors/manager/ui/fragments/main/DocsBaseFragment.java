@@ -1229,7 +1229,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
                     break;
                 case PDF:
                     intent.setClassName(requireContext(), EditorsContract.PDF);
-                    startActivityForResult(intent, REQUEST_PDF);
+                    startActivity(intent);
                     break;
             }
         } catch (ActivityNotFoundException e) {
