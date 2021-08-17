@@ -306,10 +306,9 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
 
         if (commonList.isEmpty()) {
             viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
-            return
+        } else {
+            viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
         }
-
-        viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
     }
 
     override fun fetchError(throwable: Throwable) {
