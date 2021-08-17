@@ -10,14 +10,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-
-import java.io.File;
 
 import app.editors.manager.R;
 import app.editors.manager.app.App;
@@ -144,8 +143,8 @@ public class NewNotificationUtils {
         mNotificationManager.notify(id, builder.build());
     }
 
-    public void showCompleteNotification(int id, @Nullable String title) {
-        showDownloadedAction(id, title);
+    public void showCompleteNotification(int id, @Nullable String title, Uri uri) {
+        showDownloadedAction(id, title, uri);
     }
 
     public void showUploadCompleteNotification(int id, @Nullable String title) {
@@ -165,15 +164,16 @@ public class NewNotificationUtils {
         mNotificationManager.cancel(id);
     }
 
-    private void showDownloadedAction(final int id, final String title) {
+    private void showDownloadedAction(final int id, final String title, final Uri uri) {
         // Add file to default downloadFile manager
 
-        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, ActivitiesUtils.getDownloadsViewerIntent(), 0);
+        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, ActivitiesUtils.getDownloadsViewerIntent(uri), 0);
 
         NotificationCompat.Builder builder = getNotification(title, null, mContext.getString(R.string.download_manager_complete))
                 .setGroupSummary(false)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                .setContentIntent(contentIntent);
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true);
         mNotificationManager.notify(id, builder.build());
     }
 

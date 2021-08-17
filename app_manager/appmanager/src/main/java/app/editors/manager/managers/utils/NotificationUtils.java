@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
@@ -157,7 +158,7 @@ public class NotificationUtils {
 
 
         // On click notification - open downloadFile manager
-        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, ActivitiesUtils.getDownloadsViewerIntent(), 0);
+        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, ActivitiesUtils.getDownloadsViewerIntent(Uri.EMPTY), 0);
 
         // Add action
         final NotificationCompat.Builder builder = getNotificationBuilder(title, info, false, false);
