@@ -3,6 +3,7 @@ package app.editors.manager.onedrive.managers.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
+import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.managers.providers.BaseFileProvider
@@ -16,6 +17,7 @@ import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.onedrive.*
 import app.editors.manager.onedrive.di.component.OneDriveComponent
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemCloudTree
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemFolder
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemParentReference
@@ -60,11 +62,22 @@ class OneDriveFileProvider : BaseFileProvider {
 
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer>? {
         return Observable.fromCallable {
-            id?.let { api.oneDriveService.getChildren(id).blockingGet() } ?: api.oneDriveService.getFiles().blockingGet() }
+            if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
+                id?.let {
+                    api.oneDriveService.getChildren(id, OneDriveUtils.getSortBy(filter))
+                        .blockingGet()
+                } ?: api.oneDriveService.getFiles(OneDriveUtils.getSortBy(filter)).blockingGet()
+            } else {
+                api.oneDriveService.filter(
+                    filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!,
+                    OneDriveUtils.getSortBy(filter)
+                ).blockingGet()
+            }
+        }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
-                when(response) {
+                when (response) {
                     is OneDriveResponse.Success -> {
                         return@map getExplorer(response.response as DriveItemCloudTree)
                     }

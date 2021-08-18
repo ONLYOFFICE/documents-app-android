@@ -15,8 +15,8 @@ interface IOneDriveServiceProvider {
 
     fun authorization(parameters: Map<String, String>): Single<OneDriveResponse>
     fun userInfo(): Single<OneDriveResponse>
-    fun getFiles(): Single<OneDriveResponse>
-    fun getChildren(itemId: String): Single<OneDriveResponse>
+    fun getFiles(map: Map<String, String>): Single<OneDriveResponse>
+    fun getChildren(itemId: String, map:  Map<String, String>): Single<OneDriveResponse>
     fun getRoot(): Single<OneDriveResponse>
     fun download(itemId: String): Single<OneDriveResponse>
     fun deleteItem(itemId: String): Single<Response<ResponseBody>>
@@ -28,4 +28,5 @@ interface IOneDriveServiceProvider {
     fun copyItem(itemId: String, request: CopyItemRequest): Single<Response<ResponseBody>>
     fun moveItem(itemId: String, request: CopyItemRequest): Single<Response<ResponseBody>>
     fun getPhoto(): Single<Response<ResponseBody>>
+    fun filter(value: String, map: Map<String, String>): Single<OneDriveResponse>
 }

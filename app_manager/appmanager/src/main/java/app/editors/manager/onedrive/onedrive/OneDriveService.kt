@@ -15,6 +15,7 @@ interface OneDriveService {
 
     companion object {
         const val API_VERSION = "beta/"
+        const val ONEDRIVE_BASE_URL = "https://graph.microsoft.com/"
     }
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + "application/x-www-form-urlencoded",
@@ -37,14 +38,14 @@ interface OneDriveService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("$API_VERSION" + "me/drive/root/children")
-    fun getFiles(): Single<Response<DriveItemCloudTree>>
+    fun getFiles(@QueryMap map: Map<String, String>): Single<Response<DriveItemCloudTree>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("$API_VERSION" + "me/drive/items/{item_id}/children")
-    fun getChildren(@Path(value = "item_id") id: String): Single<Response<DriveItemCloudTree>>
+    fun getChildren(@Path(value = "item_id") id: String, @QueryMap map: Map<String, String>): Single<Response<DriveItemCloudTree>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -123,5 +124,12 @@ interface OneDriveService {
     )
     @GET(API_VERSION + "me/photo")
     fun getPhoto():Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET(API_VERSION + "me/drive/root/search(q='{search_text}')")
+    fun filter(@Path(value = "search_text") value: String, @QueryMap map: Map<String, String>): Single<Response<DriveItemCloudTree>>
 
 }

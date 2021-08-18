@@ -7,8 +7,10 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.mvp.presenters.base.BasePresenter
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.mvp.views.OneDriveSignInView
 import app.editors.manager.onedrive.mvp.models.user.User
+import app.editors.manager.onedrive.onedrive.OneDriveService
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +36,6 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
 
 
     fun checkOneDrive(token: String) {
-        Log.d("ONEDRIVE", "$token")
         disposable = App.getApp().getOneDriveComponent(token).oneDriveService.userInfo()
             .subscribe({oneDriveResponse ->
                 when(oneDriveResponse) {
@@ -50,12 +51,12 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
 
 
     private fun createUser(user: User, token: String) {
-        networkSettings.setBaseUrl("https://graph.microsoft.com/")
+        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_BASE_URL)
         val cloudAccount = CloudAccount(
             id = "${user.userPrincipalName}",
             isWebDav = false,
             isOneDrive = true,
-            portal = App.getApp().applicationContext.getString(R.string.storage_one_drive_portal_title),
+            portal = OneDriveUtils.ONEDRIVE_PORTAL,
             webDavPath = "",
             webDavProvider = "",
             login = "${user.userPrincipalName}",

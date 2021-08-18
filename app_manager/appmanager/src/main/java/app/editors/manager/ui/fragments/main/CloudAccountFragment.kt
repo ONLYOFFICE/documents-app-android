@@ -19,8 +19,8 @@ import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.presenters.main.CloudAccountState
 import app.editors.manager.mvp.views.main.CloudAccountView
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
-import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companion.TAG
 import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companion.newInstance
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
@@ -319,7 +319,7 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onOneDriveLogin() {
         val storage = Storage(
-            "OneDrive",
+            OneDriveUtils.ONEDRIVE_STORAGE,
             Constants.OneDrive.COM_CLIENT_ID,
             Constants.OneDrive.COM_REDIRECT_URL
         )

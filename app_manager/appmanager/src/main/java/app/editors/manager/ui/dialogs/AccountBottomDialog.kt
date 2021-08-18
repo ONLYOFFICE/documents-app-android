@@ -17,6 +17,7 @@ import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.login.AccountsPresenter
 import app.editors.manager.mvp.views.login.AccountsView
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
@@ -130,7 +131,7 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
 
     override fun onOneDriveLogin() {
         val storage = Storage(
-            "OneDrive",
+            OneDriveUtils.ONEDRIVE_STORAGE,
             Constants.OneDrive.COM_CLIENT_ID,
             Constants.OneDrive.COM_REDIRECT_URL
         )

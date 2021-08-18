@@ -12,6 +12,7 @@ import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companion.TAG
@@ -86,6 +87,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
 
     override fun setToolbarState(isVisible: Boolean) {
         activity?.showAccount(isVisible)
+        activity?.showNavigationButton(!isVisible)
     }
 
 
@@ -130,6 +132,15 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
     }
 
 
+    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
+        super.onStateMenuDefault(sortBy, isAsc)
+        mMenu!!.findItem(R.id.toolbar_sort_item_type).isVisible = false
+        mMenu!!.findItem(R.id.toolbar_sort_item_owner).isVisible = false
+        mSearchCloseButton.setOnClickListener { v: View? ->
+            onBackPressed()
+        }
+    }
+
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
         loadFiles()
@@ -144,7 +155,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         when(message) {
             context?.getString(R.string.errors_client_unauthorized) -> {
                 val storage = Storage(
-                    "OneDrive",
+                    OneDriveUtils.ONEDRIVE_STORAGE,
                     Constants.OneDrive.COM_CLIENT_ID,
                     Constants.OneDrive.COM_REDIRECT_URL
                 )

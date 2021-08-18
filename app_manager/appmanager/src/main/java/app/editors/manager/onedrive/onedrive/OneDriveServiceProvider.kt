@@ -28,15 +28,15 @@ class OneDriveServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getFiles(): Single<OneDriveResponse> {
-        return oneDriveService.getFiles()
+    override fun getFiles(map: Map<String, String>): Single<OneDriveResponse> {
+        return oneDriveService.getFiles(map)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getChildren(itemId: String): Single<OneDriveResponse> {
-        return oneDriveService.getChildren(itemId)
+    override fun getChildren(itemId: String, map: Map<String, String>): Single<OneDriveResponse> {
+        return oneDriveService.getChildren(itemId, map)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -123,6 +123,13 @@ class OneDriveServiceProvider(
 
     override fun getPhoto(): Single<Response<ResponseBody>> {
         return oneDriveService.getPhoto()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun filter(value: String, map: Map<String, String>): Single<OneDriveResponse> {
+        return oneDriveService.filter(value, map)
+            .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

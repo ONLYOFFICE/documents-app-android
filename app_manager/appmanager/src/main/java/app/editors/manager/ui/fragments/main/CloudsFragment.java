@@ -18,6 +18,7 @@ import app.editors.manager.R;
 import app.documents.core.webdav.WebDavApi;
 import app.editors.manager.managers.utils.Constants;
 import app.editors.manager.mvp.models.account.Storage;
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils;
 import app.editors.manager.ui.activities.login.PortalsActivity;
 import app.editors.manager.ui.activities.login.WebDavLoginActivity;
 import app.editors.manager.ui.activities.main.MainActivity;
@@ -190,7 +191,7 @@ public class CloudsFragment extends BaseAppFragment {
                     WebDavLoginActivity.show(getActivity(), WebDavApi.Providers.WebDav, null);
                     break;
                 case R.id.cloudsItemOneDrive:
-                    Storage storage = new Storage("OneDrive", Constants.OneDrive.COM_CLIENT_ID, Constants.OneDrive.COM_REDIRECT_URL);
+                    Storage storage = new Storage(OneDriveUtils.ONEDRIVE_STORAGE, Constants.OneDrive.COM_CLIENT_ID, Constants.OneDrive.COM_REDIRECT_URL);
                     showFragment(OneDriveSignInFragment.Companion.newInstance(storage), OneDriveSignInFragment.Companion.getTAG(), false);
                     break;
             }

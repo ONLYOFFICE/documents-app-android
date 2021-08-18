@@ -230,7 +230,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(currentTitle)
+            viewState.onActionBarTitle(mItemClicked?.title)
         } else {
             if (mIsFoldersMode) {
                 viewState.onActionBarTitle(mContext.getString(R.string.operation_title))

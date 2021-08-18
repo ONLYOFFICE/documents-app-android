@@ -1,6 +1,7 @@
 package app.editors.manager.onedrive.ui.fragments
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -17,8 +18,10 @@ import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
 import app.editors.manager.onedrive.mvp.views.OneDriveSignInView
+import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
@@ -64,6 +67,19 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
 
     @InjectPresenter
     lateinit var presenter: OneDriveSingInPresenter
+    lateinit var activity: IMainActivity
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            activity = context as IMainActivity
+        } catch (e: ClassCastException) {
+            throw RuntimeException(
+                DocsOnDeviceFragment::class.java.simpleName + " - must implement - " +
+                        IMainActivity::class.java.simpleName
+            )
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,6 +88,7 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         val view: View = inflater.inflate(R.layout.fragment_storage_web, container, false)
+        activity.showAccount(false)
         mUnbinder = ButterKnife.bind(this, view)
         return view
     }
