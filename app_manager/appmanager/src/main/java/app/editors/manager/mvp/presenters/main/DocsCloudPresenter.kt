@@ -6,6 +6,7 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
+import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.managers.receivers.DownloadReceiver
@@ -60,6 +61,8 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     private val uploadReceiver: UploadReceiver
 
     private val account = Json.decodeFromString<CloudAccount>(stringAccount)
+
+    private val api: Api = App.getApp().getApi()
 
     init {
         App.getApp().appComponent.inject(this)
@@ -388,19 +391,17 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             deleteShare.folderIds = mModelExplorerStack.selectedFoldersIds
             deleteShare.fileIds = mModelExplorerStack.selectedFilesIds
             mDisposable.add(Observable.fromCallable {
-//                mRetrofitTool.apiWithPreferences
-//                    .deleteShare(mToken, deleteShare).execute()
+                api.deleteShare(deleteShare).execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-//                        baseResponse: Response<Base>? ->
-//                    mModelExplorerStack.removeSelected()
-//                    resetDatesHeaders()
-//                    setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-//                    viewState.onActionBarTitle("0")
-//                    viewState.onDeleteBatch(getListWithHeaders(mModelExplorerStack.last(), true))
-//                    onBatchOperations()
+                    mModelExplorerStack.removeSelected()
+                    resetDatesHeaders()
+                    setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    viewState.onActionBarTitle("0")
+                    viewState.onDeleteBatch(getListWithHeaders(mModelExplorerStack.last(), true))
+                    onBatchOperations()
                 }) { throwable: Throwable? -> fetchError(throwable) })
         }
     }
@@ -483,8 +484,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
                 deleteShare.fileIds = ArrayList(listOf(mItemClicked!!.id))
             }
             mDisposable.add(Observable.fromCallable {
-//                mRetrofitTool.apiWithPreferences
-//                    .deleteShare(mToken, deleteShare).execute()
+                api.deleteShare(deleteShare).execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
