@@ -96,14 +96,14 @@ class OneDriveFileProvider : BaseFileProvider {
 
         if(response.value.isNotEmpty()) {
 
-            val nameParentFolder = response.value.get(0).parentReference.path.split("/")
-            val name = nameParentFolder.get(2)
+            val nameParentFolder = response.value[0].parentReference.path.split("/")
+            val name = nameParentFolder[2]
             val correctName = name.removeRange(name.length - 1, name.length)
 
             val parentFolder = CloudFolder().apply {
-                this.id = response.value.get(0).parentReference.id
+                this.id = response.value[0].parentReference.id
                 this.title = correctName
-                this.etag = response.value.get(0).eTag
+                this.etag = response.value[0].eTag
                 this.updated =
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(response.value.get(0).lastModifiedDateTime)
             }

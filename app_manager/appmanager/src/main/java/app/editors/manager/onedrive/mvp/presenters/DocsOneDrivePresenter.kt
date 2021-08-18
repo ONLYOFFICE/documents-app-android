@@ -32,6 +32,7 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
+import retrofit2.HttpException
 import java.util.*
 
 
@@ -257,6 +258,27 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
             true
         } else {
             false
+        }
+    }
+
+    override fun delete(): Boolean {
+        if (mModelExplorerStack.countSelectedItems > 0) {
+            viewState.onDialogQuestion(
+                mContext.getString(R.string.dialogs_question_delete), null,
+                TAG_DIALOG_BATCH_DELETE_SELECTED
+            )
+        } else if (mItemClicked is CloudFile) {
+            deleteItems()
+        }
+        return true
+    }
+
+    override fun fetchError(throwable: Throwable?) {
+        super.fetchError(throwable)
+        if(throwable is HttpException) {
+            if(throwable.code() == 423) {
+                viewState.onError("Locked")
+            }
         }
     }
 }

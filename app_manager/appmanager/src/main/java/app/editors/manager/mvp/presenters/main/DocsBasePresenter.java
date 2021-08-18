@@ -192,7 +192,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      */
     WorkManager mDownloadManager = WorkManager.getInstance();
 
-    private boolean mIsMultipleDelete = false;
+    protected boolean mIsMultipleDelete = false;
 
     @Inject
     protected Context mContext;
@@ -423,7 +423,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         } else if (mItemClicked != null) {
             if (mItemClicked instanceof CloudFile) {
                 mDisposable.add(
-                        ((mFileProvider instanceof WebDavFileProvider || mFileProvider instanceof OneDriveFileProvider) ? ((OneDriveFileProvider) mFileProvider).fileInfo(mItemClicked, false) : (mFileProvider.fileInfo(mItemClicked))).subscribe(
+                        ((mFileProvider instanceof WebDavFileProvider) ? ((WebDavFileProvider) mFileProvider).fileInfo(mItemClicked, false) : (mFileProvider.fileInfo(mItemClicked))).subscribe(
                                 response -> {
                                     if (!response.getFileStatus().isEmpty()) {
                                         int statusMask =
@@ -1354,7 +1354,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     /*
      * On batch operation
      * */
-    void onBatchOperations() {
+    protected void onBatchOperations() {
         getViewState().onDialogClose();
         getViewState().onSnackBar(mContext.getString(R.string.operation_complete_message));
         getViewState().onDocsBatchOperation();

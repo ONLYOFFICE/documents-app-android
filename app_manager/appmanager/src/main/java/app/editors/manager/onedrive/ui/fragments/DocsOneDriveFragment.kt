@@ -21,6 +21,7 @@ import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
+import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
@@ -141,6 +142,19 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         }
     }
 
+    override fun onStateMenuSelection() {
+        super.onStateMenuSelection()
+        if (mMenu != null && mMenuInflater != null) {
+            mMenuInflater!!.inflate(R.menu.docs_select, mMenu)
+            mDeleteItem = mMenu!!.findItem(R.id.toolbar_selection_delete).setVisible(true)
+            mMoveItem = mMenu!!.findItem(R.id.toolbar_selection_move).setVisible(false)
+            mCopyItem = mMenu!!.findItem(R.id.toolbar_selection_copy).setVisible(false)
+            mDownloadItem = mMenu!!.findItem(R.id.toolbar_selection_download).setVisible(true)
+            setMenuItemTint(requireContext(), mDeleteItem, R.color.colorWhite)
+            setAccountEnable(false)
+        }
+    }
+
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
         loadFiles()
@@ -160,6 +174,9 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
                     Constants.OneDrive.COM_REDIRECT_URL
                 )
                 showFragment(newInstance(storage), OneDriveSignInFragment.TAG, false)
+            }
+            "Locked" -> {
+                showSnackBar("File is locked to delete")
             }
         }
 
