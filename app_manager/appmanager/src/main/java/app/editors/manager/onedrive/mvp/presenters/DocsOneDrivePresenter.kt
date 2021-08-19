@@ -1,7 +1,7 @@
 package app.editors.manager.onedrive.mvp.presenters
 
+import android.content.ClipData
 import android.net.Uri
-import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -146,18 +146,32 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
 
     }
 
-    fun upload(uri: Uri, tag: String) {
-        val data = Data.Builder()
-            .putString(UploadWork.KEY_FOLDER_ID, mModelExplorerStack.currentId)
-            .putString(UploadWork.KEY_FROM, uri.toString())
-            .putString(UploadWork.KEY_TAG, tag)
-            .build()
+    fun upload(uri: Uri?, uris: ClipData?, tag: String) {
+        val uploadUris = mutableListOf<Uri>()
+        var index = 0
 
-        val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
-            .setInputData(data)
-            .build()
+        if(uri != null) {
+            uploadUris.add(uri)
+        } else if(uris != null) {
+            while(index != uris.itemCount) {
+                uploadUris.add(uris.getItemAt(index).uri)
+                index++
+            }
+        }
 
-        workManager.enqueue(request)
+        for (uri in uploadUris) {
+            val data = Data.Builder()
+                .putString(UploadWork.KEY_FOLDER_ID, mModelExplorerStack.currentId)
+                .putString(UploadWork.KEY_FROM, uri.toString())
+                .putString(UploadWork.KEY_TAG, tag)
+                .build()
+
+            val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
+                .setInputData(data)
+                .build()
+
+            workManager.enqueue(request)
+        }
 
     }
 

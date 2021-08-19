@@ -75,12 +75,16 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let {
                     presenter.upload(
                         it,
+                        null,
                         KEY_UPDATE)
                 }
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.data?.let {
+                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let {
                     presenter.upload(
+                        null,
                         it,
                         KEY_UPLOAD)
+                }.run {
+                    presenter.upload(data?.data, null, KEY_UPLOAD)
                 }
             }
         }
