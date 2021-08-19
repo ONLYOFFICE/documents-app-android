@@ -36,6 +36,8 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
         private const val KEY_ERROR_INFO = "error"
         private const val KEY_ERROR_INFO_MESSAGE = "message"
 
+        const val DOWNLOAD_ZIP_NAME = "download.zip"
+
         fun sendBroadcastDownloadComplete(
             id: String?, url: String?, title: String?,
             path: String?, mime: String?

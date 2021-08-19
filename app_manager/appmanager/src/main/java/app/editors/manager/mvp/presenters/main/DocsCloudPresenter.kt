@@ -245,6 +245,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         state.mIsStorage = isClickedItemStorage && isRoot
         state.mIsDeleteShare = isShareSection
         state.mIsWebDav = false
+        state.mIsOneDrive = false
         state.mIsTrash = isTrash
         state.mIsFavorite = isClickedItemFavorite
         if (!isClickedItemFile) {

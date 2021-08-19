@@ -213,15 +213,19 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     override fun rename(item: Item?, newName: String?, version: Int?): Observable<Item> {
-        val correctName = StringUtils.getEncodedString(newName) + (item as CloudFile).fileExst
-        val request = RenameRequest(correctName)
-        return Observable.fromCallable{ api.oneDriveService.renameItem(item.id, request).blockingGet() }
+        val correctName = if(item is CloudFile) {StringUtils.getEncodedString(newName) + item.fileExst} else { newName }
+        val request = correctName?.let { RenameRequest(it) }
+        return Observable.fromCallable{ item?.id?.let { request?.let { it1 ->
+            api.oneDriveService.renameItem(it,
+                it1
+            ).blockingGet()
+        } } }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
                 if(response.isSuccessful) {
-                    item.updated = Date()
-                    item.title = newName
+                    item?.updated = Date()
+                    item?.title = newName
                     return@map item
                 } else {
                     throw HttpException(response)

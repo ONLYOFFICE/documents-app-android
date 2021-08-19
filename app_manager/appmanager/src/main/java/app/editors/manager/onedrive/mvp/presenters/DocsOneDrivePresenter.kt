@@ -10,6 +10,7 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
@@ -91,6 +92,14 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
             .build()
 
         workManager.enqueue(request)
+    }
+
+    override fun createDownloadFile() {
+        if (mModelExplorerStack.selectedFiles.isNotEmpty() || mModelExplorerStack.selectedFolders.isNotEmpty() || mItemClicked is CloudFolder) {
+            viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
+        } else if (mItemClicked is CloudFile) {
+            viewState.onCreateDownloadFile((mItemClicked as CloudFile).title)
+        }
     }
 
     override fun getNextList() {
@@ -207,6 +216,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
         state.mIsFolder = !isClickedItemFile
         state.mIsDocs = isClickedItemDocs
         state.mIsWebDav = false
+        state.mIsOneDrive = true
         state.mIsTrash = isTrash
         state.mIsItemEditable = true
         state.mIsContextEditable = true
@@ -281,7 +291,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
                 mContext.getString(R.string.dialogs_question_delete), null,
                 TAG_DIALOG_BATCH_DELETE_SELECTED
             )
-        } else if (mItemClicked is CloudFile) {
+        } else {
             deleteItems()
         }
         return true

@@ -208,6 +208,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         state.mInfo = formatDate(itemClickedDate)
         state.mIsFolder = item is CloudFolder
         state.mIsWebDav = true
+        state.mIsOneDrive = false
         state.mIsTrash = isTrash
         if (!isClickedItemFile) {
             state.mIconResId = R.drawable.ic_type_folder
