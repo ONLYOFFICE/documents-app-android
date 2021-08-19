@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             android:max="100"
-            android:progressTint="@color/colorAccent"
+            android:progressTint="@color/colorSecondary"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

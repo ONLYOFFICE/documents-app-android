@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_three_line_height"
-    android:background="@color/colorWhite"
+    android:background="@color/colorSurface"
     android:clickable="false"
     android:focusable="false">
 
@@ -27,7 +27,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             android:id="@+id/imageCheck"
             android:layout_width="@dimen/default_margin_large"
             android:layout_height="@dimen/default_margin_large"
@@ -35,9 +35,10 @@
             android:src="@drawable/ic_check"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@id/selectableLayout"
-            app:layout_constraintEnd_toEndOf="@id/selectableLayout" />
+            app:layout_constraintEnd_toEndOf="@id/selectableLayout"
+            tools:ignore="ContentDescription" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/accountItemName"
             style="@style/ItemMediumBlackText"
             android:layout_width="0dp"
@@ -51,7 +52,7 @@
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="Name" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/accountItemPortal"
             style="@style/ItemSmallGreyText"
             android:layout_width="0dp"
@@ -66,7 +67,7 @@
             app:layout_constraintTop_toBottomOf="@+id/accountItemName"
             tools:text="Portal" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/accountItemEmail"
             style="@style/ItemSmallGreyText"
             android:layout_width="0dp"
@@ -84,6 +85,7 @@
             android:layout_height="match_parent"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:padding="@dimen/screen_margin_large"
+            android:tint="@color/colorOnSurface"
             android:src="@drawable/ic_list_context_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"

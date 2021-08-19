@@ -3,14 +3,14 @@ package app.editors.manager.ui.views.custom
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.appcompat.widget.AppCompatImageView
+import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import app.documents.core.account.CloudAccount
-import app.editors.manager.R
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -27,8 +27,8 @@ class MainToolbar @JvmOverloads constructor(
     val toolbar: Toolbar = findViewById(R.id.toolbar)
 
     private val accountContainer = findViewById<ConstraintLayout>(R.id.accountContainer)
-    private val arrowIcon = findViewById<AppCompatImageView>(R.id.toolbarArrowIcon)
-    private val toolbarIcon = findViewById<AppCompatImageView>(R.id.toolbarIcon)
+    private val arrowIcon = findViewById<ImageView>(R.id.toolbarArrowIcon)
+    private val toolbarIcon = findViewById<ImageView>(R.id.toolbarIcon)
     private val title = findViewById<AppCompatTextView>(R.id.toolbarTitle)
     private val subtitle = findViewById<AppCompatTextView>(R.id.toolbarSubTitle)
 

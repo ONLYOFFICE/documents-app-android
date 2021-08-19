@@ -4,9 +4,9 @@
     xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/drawable_on_boarding_background">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/on_boarding_page_header"
         style="@style/OnBoardingTextView"
         android:layout_width="match_parent"
@@ -16,6 +16,7 @@
         android:layout_marginRight="@dimen/screen_on_boarding_image_horizontal_margin"
         android:layout_marginBottom="16dp"
         android:textSize="@dimen/screen_on_boarding_header_text_size"
+        tools:text="Title"
         app:layout_constraintBottom_toTopOf="@+id/on_boarding_page_info"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -24,9 +25,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/on_boarding_page_info"
         style="@style/OnBoardingTextView"
+        tools:text="Description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -67,13 +69,14 @@
                 android:layout_height="wrap_content"
                 card_view:cardCornerRadius="4dp">
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <ImageView
                     android:id="@+id/on_boarding_page_image"
                     style="@style/CommonImageView"
                     android:layout_width="@dimen/screen_on_boarding_image_width"
                     android:layout_height="@dimen/screen_on_boarding_image_height"
                     android:layout_gravity="bottom"
-                    android:scaleType="fitXY" />
+                    android:scaleType="fitXY"
+                    card_view:ignore="ContentDescription" />
             </androidx.cardview.widget.CardView>
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>

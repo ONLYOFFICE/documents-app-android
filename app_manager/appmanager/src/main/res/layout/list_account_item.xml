@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height"
-    android:background="@color/colorWhite"
     android:clickable="false"
     android:focusable="false">
 
@@ -18,7 +17,7 @@
         android:paddingBottom="@dimen/line_separator_height">
 
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             android:id="@+id/view_portal_icon"
             style="@style/CommonImageView"
             android:layout_width="@dimen/image_size"
@@ -28,9 +27,10 @@
             android:clickable="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/list_account_portal"
             style="@style/ItemMediumBlackText"
             android:layout_width="0dp"
@@ -44,7 +44,7 @@
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="Portal name" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/list_account_email"
             style="@style/ItemSmallGreyText"
             android:layout_width="0dp"
@@ -56,7 +56,7 @@
             app:layout_constraintTop_toBottomOf="@+id/list_account_portal"
             tools:text="Email" />
 
-        <RadioButton
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/list_account_radio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

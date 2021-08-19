@@ -144,7 +144,7 @@ public class PlaceholderViews {
                 setImageTint(R.color.colorLightWhite);
                 setTitle(R.string.placeholder_media_error);
                 setTitleColor(R.color.colorLightWhite);
-                setRetryTint(R.color.colorAccent);
+                setRetryTint(R.color.colorSecondary);
                 break;
         }
 

@@ -18,4 +18,18 @@
         <item name="android:splitMotionEvents">false</item>
     </style>
 
+    <style name="CommonImageView" parent="AppTheme">
+        <item name="android:alpha">@dimen/alpha_medium</item>
+    </style>
+
+    <style name="MainAppBar" parent="Widget.MaterialComponents.AppBarLayout.Surface">
+        <item name="android:background">@color/colorAppBar</item>
+    </style>
+
+    <style name="MainBottomBar" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/colorBottomBar</item>
+    </style>
+
+    <style name="AlphaImageView" parent="CommonImageView"/>
+
 </resources>

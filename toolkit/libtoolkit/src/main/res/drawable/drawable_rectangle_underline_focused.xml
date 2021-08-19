@@ -9,7 +9,7 @@
             <solid android:color="@android:color/transparent" />
             <stroke
                 android:width="2dp"
-                android:color="@color/colorPrimaryLight" />
+                android:color="@color/colorPrimary" />
             <padding
                 android:bottom="4dp"
                 android:left="4dp"

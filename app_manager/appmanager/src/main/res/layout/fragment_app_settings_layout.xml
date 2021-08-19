@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             style="@style/ItemMediumGreyText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,10 +24,10 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/item_one_line_height"
             android:background="@color/colorWhite"
-            android:backgroundTint="@color/colorWhite"
+            android:backgroundTint="@color/colorSurface"
             android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/analyticTextView"
                 style="@style/ItemMediumBlackText"
                 android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
                 android:layout_marginStart="@dimen/screen_margin_large"
                 android:text="@string/app_settings_analytic" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/analyticSwitch"
                 style="@style/CommonSwitchView"
                 android:layout_width="wrap_content"
@@ -51,7 +51,7 @@
 
         </RelativeLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             style="@style/ItemMediumGreyText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -63,10 +63,10 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/item_one_line_height"
             android:background="@color/colorWhite"
-            android:backgroundTint="@color/colorWhite"
+            android:backgroundTint="@color/colorSurface"
             android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/wifiTextView"
                 style="@style/ItemMediumBlackText"
                 android:layout_width="wrap_content"
@@ -78,7 +78,7 @@
                 android:layout_marginStart="@dimen/screen_margin_large"
                 android:text="@string/setting_wifi" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/wifiSwitch"
                 style="@style/CommonSwitchView"
                 android:layout_width="wrap_content"
@@ -90,7 +90,7 @@
 
         </RelativeLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             style="@style/ItemMediumGreyText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/item_one_line_height"
-            android:background="@color/colorWhite">
+            android:background="@color/colorSurface">
 
             <RelativeLayout
                 android:id="@+id/clearCacheLayout"
@@ -111,7 +111,7 @@
                 android:focusable="true"
                 tools:ignore="UselessParent">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <com.google.android.material.textview.MaterialTextView
                     style="@style/ItemMediumBlackText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -121,7 +121,7 @@
                     android:text="@string/settings_clear_cache"
                     tools:text="Clear cache" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/cacheSizeTextView"
                     style="@style/ItemMediumGreyText"
                     android:layout_width="wrap_content"

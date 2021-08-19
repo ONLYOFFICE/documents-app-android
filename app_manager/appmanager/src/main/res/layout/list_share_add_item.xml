@@ -24,7 +24,7 @@
             android:layout_marginLeft="@dimen/screen_margin_large"
             android:gravity="center"
             android:text="R"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

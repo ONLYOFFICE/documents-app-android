@@ -199,7 +199,6 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
     }
 
     private fun initViews() {
-        UiUtils.removePaddingFromNavigationItem(viewBinding.bottomNavigation)
         viewBinding.appFloatingActionButton.visibility = View.GONE
         viewBinding.appFloatingActionButton.setOnClickListener { onFloatingButtonClick() }
     }

@@ -34,7 +34,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 
 import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
@@ -371,7 +370,7 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
         mPlaceholderViews = new PlaceholderViews(mPlaceholderLayout);
         mPlaceholderViews.setViewForHide(mRecyclerView);
         mSwipeRefresh.setOnRefreshListener(this);
-        mSwipeRefresh.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.colorAccent));
+        mSwipeRefresh.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.colorSecondary));
         mShareSettingsAdapter = new ShareAdapter((view, integer) -> {
             onItemContextClick(view, integer);
             return Unit.INSTANCE;

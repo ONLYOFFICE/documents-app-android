@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
     android:fillViewport="true">
 
     <RelativeLayout
@@ -17,7 +16,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/auth_page_header"
                 style="@style/AuthTextView"
                 android:layout_width="match_parent"
@@ -29,7 +28,7 @@
                 android:textSize="@dimen/screen_on_boarding_header_text_size"
                 tools:text="Header" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/auth_page_info"
                 style="@style/AuthTextView"
                 android:layout_width="match_parent"
@@ -52,7 +51,7 @@
                     android:layout_height="wrap_content"
                     card_view:cardCornerRadius="4dp">
 
-                    <androidx.appcompat.widget.AppCompatImageView
+                    <ImageView
                         android:id="@+id/auth_page_image"
                         style="@style/CommonImageView"
                         android:layout_width="match_parent"
@@ -61,7 +60,6 @@
                         android:scaleType="fitXY" />
                 </androidx.cardview.widget.CardView>
             </FrameLayout>
-
 
             <app.editors.manager.ui.views.edits.BaseEditText
                 android:id="@+id/auth_code_edit"
@@ -84,7 +82,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/login_sms_code_number_text"
                 app:layout_constraintVertical_bias="0.0" />
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:id="@+id/auth_secret_key_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -97,7 +95,7 @@
                     android:layout_marginTop="@dimen/screen_top_bottom_padding"
                     android:textAlignment="center">
 
-                    <androidx.appcompat.widget.AppCompatEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/auth_secret_key_edit_text"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -113,7 +111,7 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <androidx.appcompat.widget.AppCompatImageButton
+                <ImageButton
                     android:id="@+id/auth_copy_button"
                     android:layout_width="40dp"
                     android:layout_height="match_parent"
@@ -121,13 +119,14 @@
                     android:layout_marginStart="16dp"
                     android:background="?attr/selectableItemBackground"
                     android:src="@drawable/ic_list_context_copy"
-                    android:tint="@color/colorAccent" />
+                    android:tint="@color/colorPrimary"
+                    card_view:ignore="ContentDescription" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
-            <androidx.appcompat.widget.AppCompatButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/confirm_button"
-                style="@style/FixedAccentButtons"
+                style="@style/AccentButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

@@ -155,10 +155,10 @@ public class AuthPagerFragment extends BaseAppFragment {
             mFragmentLayout.setBackground(ContextCompat.getDrawable(getContext(), R.color.colorWhite));
             mPageIndicatorLayout.setBackground(ContextCompat.getDrawable(getContext(), R.color.colorWhite));
 
-            mAuthPanelNextButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-            mAuthPanelSkipButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+            mAuthPanelNextButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorSecondary));
+            mAuthPanelSkipButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorSecondary));
 
-            mAuthPanelIndicator.setSelectedColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+            mAuthPanelIndicator.setSelectedColor(ContextCompat.getColor(getContext(), R.color.colorSecondary));
             mAuthPanelIndicator.setUnselectedColor(ContextCompat.getColor(getContext(), R.color.colorGrey));
         }
     }

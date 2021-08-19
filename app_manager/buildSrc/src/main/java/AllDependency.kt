@@ -55,7 +55,7 @@ object Kotlin {
 object Google {
     private const val playServicesAuthVersion = "19.0.0"
     private const val playCoreVersion = "1.10.0"
-    private const val materialVersion = "1.3.0"
+    private const val materialVersion = "1.4.0"
     private const val gsonVersion = "2.8.6"
 
     const val playServiceAuth = "com.google.android.gms:play-services-auth:$playServicesAuthVersion"

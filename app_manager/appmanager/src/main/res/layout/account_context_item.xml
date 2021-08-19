@@ -20,7 +20,7 @@
         app:tint="@color/colorGrey"
         tools:ignore="ContentDescription" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/itemText"
         style="@style/ItemMediumBlackText"
         android:layout_width="0dp"
@@ -30,6 +30,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/itemImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/itemImage"
-        app:layout_constraintTop_toTopOf="@id/itemImage" />
+        app:layout_constraintTop_toTopOf="@id/itemImage"
+        tools:text="Test text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

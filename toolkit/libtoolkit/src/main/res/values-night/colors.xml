@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Primary -->
     <color name="colorPrimary">#3E9CF0</color>
@@ -18,5 +18,10 @@
     <color name="colorOutline">#3F3F3F</color>
     <color name="colorBgDescription">#363636</color>
 
+    <color name="colorAppBar" tools:ignore="MissingDefaultResource">#151515</color>
+    <color name="colorBottomBar">#191919</color>
+
+    <!--    Clouds-->
+    <color name="colorCloudItem">@color/colorOutline</color>
 
 </resources>
