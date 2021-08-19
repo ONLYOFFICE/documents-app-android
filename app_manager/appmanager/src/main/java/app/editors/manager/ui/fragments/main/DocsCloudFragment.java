@@ -270,4 +270,34 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
     public boolean isRoot() {
         return getPresenter().isRoot();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setSection();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        setSection();
+    }
+
+    private void setSection() {
+        int section;
+        if (this instanceof DocsMyFragment) {
+            section = ApiContract.SectionType.CLOUD_USER;
+        } else if (this instanceof DocsCommonFragment) {
+            section = ApiContract.SectionType.CLOUD_COMMON;
+        } else if (this instanceof DocsProjectsFragment){
+            section = ApiContract.SectionType.CLOUD_PROJECTS;
+        } else if (this instanceof DocsShareFragment){
+            section = ApiContract.SectionType.CLOUD_SHARE;
+        } else if (this instanceof DocsTrashFragment){
+            section = ApiContract.SectionType.CLOUD_TRASH;
+        } else {
+            section = ApiContract.SectionType.CLOUD_USER;
+        }
+        mCloudPresenter.setSectionType(section);
+    }
 }

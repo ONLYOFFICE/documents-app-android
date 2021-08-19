@@ -123,7 +123,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     fun isActivePage(fragment: Fragment?): Boolean {
-        return adapter?.isActiveFragment(viewBinding?.mainViewPager, fragment) == true
+        return childFragmentManager.findFragmentByTag("android:switcher:"
+                + viewBinding?.mainViewPager?.id + ":"
+                + viewBinding?.mainViewPager?.currentItem)?.equals(fragment) == true
     }
 
     fun setScrollViewPager(isScroll: Boolean) {

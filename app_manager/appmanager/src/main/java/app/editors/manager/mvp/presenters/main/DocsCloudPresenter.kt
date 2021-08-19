@@ -61,6 +61,8 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
 
     private val account = Json.decodeFromString<CloudAccount>(stringAccount)
 
+    private var currentSectionType = ApiContract.SectionType.UNKNOWN
+
     init {
         App.getApp().appComponent.inject(this)
         downloadReceiver = DownloadReceiver()
@@ -216,7 +218,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             viewState.onActionBarTitle(mContext.getString(R.string.toolbar_menu_search_result))
             viewState.onStateUpdateFilter(true, mFilteringValue)
             viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
-            viewState.onStateActionButton(isContextEditable)
+            viewState.onStateActionButton(false)
         } else if (!mModelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
@@ -633,32 +635,46 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
      * */
     val isContextItemEditable: Boolean
         get() = isContextEditable && (!isVisitor && !isShareSection || isCommonSection || isItemOwner)
+
     private val isContextOwner: Boolean
         get() = StringUtils.equals(mModelExplorerStack.currentFolderOwnerId, account.id)
+
     private val isContextReadWrite: Boolean
         get() = isContextOwner || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
+
     val isUserSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_USER
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
+
     private val isShareSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_SHARE
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_SHARE
+
     private val isCommonSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_COMMON
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_COMMON
+
     private val isProjectsSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_PROJECTS
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_PROJECTS
+
     private val isBunchSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_BUNCH
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_BUNCH
+
     private val isClickedItemShared: Boolean
         get() = mItemClicked != null && mItemClicked!!.shared
+
     private val isClickedItemFavorite: Boolean
         get() = mItemClicked != null && mItemClicked!!.favorite
+
     private val isItemOwner: Boolean
         get() = mItemClicked != null && StringUtils.equals(mItemClicked!!.createdBy.id, account.id)
+
     private val isItemReadWrite: Boolean
         get() = mItemClicked != null && (mItemClicked!!.access == ApiContract.ShareCode.READ_WRITE || mItemClicked!!.access == ApiContract.ShareCode.NONE || mItemClicked!!.access == ApiContract.ShareCode.REVIEW)
+
     private val isItemEditable: Boolean
         get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite)
+
     private val isItemShareable: Boolean
         get() = isItemEditable && (!isCommonSection || isAdmin) && !account.isPersonal() && !isProjectsSection && !isBunchSection
+
     private val isClickedItemStorage: Boolean
         get() = mItemClicked != null && mItemClicked!!.providerItem
 
@@ -675,4 +691,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         viewState.onDownloadActivity()
     }
 
+    fun setSectionType(sectionType: Int) {
+        currentSectionType = sectionType
+    }
 }
