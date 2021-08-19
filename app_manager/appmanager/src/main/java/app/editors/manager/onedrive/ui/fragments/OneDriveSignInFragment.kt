@@ -67,19 +67,6 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
 
     @InjectPresenter
     lateinit var presenter: OneDriveSingInPresenter
-    lateinit var activity: IMainActivity
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            activity = context as IMainActivity
-        } catch (e: ClassCastException) {
-            throw RuntimeException(
-                DocsOnDeviceFragment::class.java.simpleName + " - must implement - " +
-                        IMainActivity::class.java.simpleName
-            )
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,7 +75,6 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         val view: View = inflater.inflate(R.layout.fragment_storage_web, container, false)
-        activity.showAccount(false)
         mUnbinder = ButterKnife.bind(this, view)
         return view
     }

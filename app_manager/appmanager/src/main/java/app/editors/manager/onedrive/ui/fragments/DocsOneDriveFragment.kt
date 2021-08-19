@@ -86,6 +86,12 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        activity?.showAccount(false)
+        activity?.showNavigationButton(false)
+    }
+
     override fun setToolbarState(isVisible: Boolean) {
         activity?.showAccount(isVisible)
         activity?.showNavigationButton(!isVisible)
@@ -147,8 +153,8 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         if (mMenu != null && mMenuInflater != null) {
             mMenuInflater!!.inflate(R.menu.docs_select, mMenu)
             mDeleteItem = mMenu!!.findItem(R.id.toolbar_selection_delete).setVisible(true)
-            mMoveItem = mMenu!!.findItem(R.id.toolbar_selection_move).setVisible(false)
-            mCopyItem = mMenu!!.findItem(R.id.toolbar_selection_copy).setVisible(false)
+            mMoveItem = mMenu!!.findItem(R.id.toolbar_selection_move).setVisible(true)
+            mCopyItem = mMenu!!.findItem(R.id.toolbar_selection_copy).setVisible(true)
             mDownloadItem = mMenu!!.findItem(R.id.toolbar_selection_download).setVisible(true)
             setMenuItemTint(requireContext(), mDeleteItem, R.color.colorWhite)
             setAccountEnable(false)
