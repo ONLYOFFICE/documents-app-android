@@ -120,7 +120,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
 
     override fun createDocs(title: String) {
         val id = mModelExplorerStack.currentId
-        if (id != null) {
+        id?.let {
             val requestCreate = RequestCreate()
             requestCreate.title = title
             mDisposable.add(mFileProvider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->

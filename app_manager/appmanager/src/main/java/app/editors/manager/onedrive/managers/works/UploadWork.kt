@@ -15,6 +15,7 @@ import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.onedrive.di.component.OneDriveComponent
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.mvp.models.request.UploadRequest
 import app.editors.manager.onedrive.mvp.models.response.UploadResponse
 import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
@@ -86,17 +87,17 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
                 when (tag) {
                     DocsOneDriveFragment.KEY_UPLOAD -> request.copy(
                         item = app.editors.manager.onedrive.mvp.models.other.Item(
-                            "rename"
+                            OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME
                         )
                     )
                     DocsOneDriveFragment.KEY_UPDATE -> request.copy(
                         item = app.editors.manager.onedrive.mvp.models.other.Item(
-                            "replace"
+                            OneDriveUtils.VAL_CONFLICT_BEHAVIOR_REPLACE
                         )
                     )
                     else -> request.copy(
                         item = app.editors.manager.onedrive.mvp.models.other.Item(
-                            "fail"
+                            OneDriveUtils.VAL_CONFLICT_BEHAVIOR_FAIL
                         )
                     )
                 }
@@ -139,7 +140,9 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
             while (fileInputStream?.read(buffer).also { bytesRead = it!! } != -1) {
                 outputStream.write(buffer, 0, bytesRead)
                 count += bytesRead
-                count.toLong().let { file?.length()?.let { it1 -> showProgress(it1, it) } }
+                if(tag == DocsOneDriveFragment.KEY_UPLOAD) {
+                    count.toLong().let { file?.length()?.let { it1 -> showProgress(it1, it) } }
+                }
             }
             if(connection.responseCode == 200 || connection.responseCode == 201) {
                 mNotificationUtils.removeNotification(id.hashCode())
@@ -168,7 +171,6 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
             val id = id.hashCode()
             val tag = getId().toString()
             mNotificationUtils.showUploadProgressNotification(id, tag, fileName, percent)
-            Log.d("ONEDRIVE", "percents = $percent")
             sendBroadcastProgress(percent, path, folderId)
         }
     }

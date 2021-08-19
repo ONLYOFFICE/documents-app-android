@@ -14,6 +14,11 @@ object OneDriveUtils {
     private const val VAL_SORT_ASC = "asc"
     private const val VAL_SORT_DESC = "desc"
 
+    const val KEY_CONFLICT_BEHAVIOR = "@microsoft.graph.conflictBehavior"
+    const val VAL_CONFLICT_BEHAVIOR_RENAME = "rename"
+    const val VAL_CONFLICT_BEHAVIOR_REPLACE = "replace"
+    const val VAL_CONFLICT_BEHAVIOR_FAIL = "fail"
+
     fun getSortBy(filter: MutableMap<String, String>?): Map<String, String> {
         val resultMap = mutableMapOf(KEY_SORT to "")
         when(filter?.get(ApiContract.Parameters.ARG_SORT_BY)) {

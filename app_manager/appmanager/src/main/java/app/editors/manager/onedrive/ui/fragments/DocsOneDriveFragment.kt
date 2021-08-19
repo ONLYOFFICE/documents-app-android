@@ -127,7 +127,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
     }
 
     override fun onRemoveItemFromFavorites() {
-
+        //stub
     }
 
     override fun isWebDav(): Boolean {

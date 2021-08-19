@@ -22,8 +22,8 @@ interface IOneDriveServiceProvider {
     fun deleteItem(itemId: String): Single<Response<ResponseBody>>
     fun renameItem(itemId: String, request: RenameRequest): Single<Response<ResponseBody>>
     fun createFolder(itemId: String, request: CreateFolderRequest): Single<OneDriveResponse>
-    fun createFile(itemId: String, ext: String, opts: Map<String, String>): Single<OneDriveResponse>
-    fun updateFile(itemId: String, body:ChangeFileRequest):Single<Response<ResponseBody>>
+    fun createFile(itemId: String, fileName: String, opts: Map<String, String>): Single<OneDriveResponse>
+    fun updateFile(itemId: String, request: ChangeFileRequest):Single<Response<ResponseBody>>
     fun uploadFile(folderId: String, fileName: String, request: UploadRequest): Single<OneDriveResponse>
     fun copyItem(itemId: String, request: CopyItemRequest): Single<Response<ResponseBody>>
     fun moveItem(itemId: String, request: CopyItemRequest): Single<Response<ResponseBody>>

@@ -160,8 +160,11 @@ class OneDriveFileProvider : BaseFileProvider {
 
     override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
         return Observable.fromCallable { body?.title?.let {
-            api.oneDriveService.createFile(folderId!!,
-                it, mapOf("@microsoft.graph.conflictBehavior" to "rename")).blockingGet()
+            folderId?.let { it1 ->
+                api.oneDriveService.createFile(
+                    it1,
+                    it, mapOf(OneDriveUtils.KEY_CONFLICT_BEHAVIOR to OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME)).blockingGet()
+            }
         } }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -188,7 +191,7 @@ class OneDriveFileProvider : BaseFileProvider {
         val request = CreateFolderRequest(
             name = body?.title!!,
             folder = DriveItemFolder(),
-            conflictBehavior = "rename"
+            conflictBehavior = OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME
         )
         return Observable.fromCallable { api.oneDriveService.createFolder(folderId!!, request).blockingGet() }
             .subscribeOn(Schedulers.io())

@@ -80,17 +80,17 @@ class OneDriveServiceProvider(
 
     override fun createFile(
         itemId: String,
-        ext: String,
+        fileName: String,
         opts: Map<String, String>
     ): Single<OneDriveResponse> {
-        return oneDriveService.createFile(itemId, ext, opts)
+        return oneDriveService.createFile(itemId, fileName, opts)
             .map{fetchResponse(it)}
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun updateFile(itemId: String, body: ChangeFileRequest): Single<Response<ResponseBody>> {
-        return oneDriveService.updateFile(itemId, body)
+    override fun updateFile(itemId: String, request: ChangeFileRequest): Single<Response<ResponseBody>> {
+        return oneDriveService.updateFile(itemId, request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

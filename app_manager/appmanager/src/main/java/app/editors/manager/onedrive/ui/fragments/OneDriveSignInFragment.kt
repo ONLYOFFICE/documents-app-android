@@ -99,8 +99,7 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
     override fun onDestroyView() {
         super.onDestroyView()
         CookieManager.getInstance().removeAllCookies(null)
-        //mWebView!!.setWebViewClient(null)
-        mUnbinder!!.unbind()
+        mUnbinder?.unbind()
     }
 
     override fun onRefresh() {
@@ -110,24 +109,34 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
     @SuppressLint("SetJavaScriptEnabled")
     private fun init(savedInstanceState: Bundle?) {
         setActionBarTitle(getString(R.string.storage_web_title))
-        if (supportActionBar != null) {
-            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-            supportActionBar!!.setHomeButtonEnabled(true)
+
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeButtonEnabled(true)
         }
+
         mIsPageLoad = false
-        mSwipeRefreshLayout!!.setOnRefreshListener(this)
-        mSwipeRefreshLayout!!.setColorSchemeColors(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.colorAccent
+        mSwipeRefreshLayout?.apply {
+            setOnRefreshListener(this@OneDriveSignInFragment)
+            setColorSchemeColors(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.colorAccent
+                )
             )
-        )
-        mWebView!!.settings.javaScriptEnabled = true
-        mWebView!!.settings.setAppCacheEnabled(false)
-        mWebView!!.settings.cacheMode = WebSettings.LOAD_NO_CACHE
-        mWebView!!.settings.setUserAgentString(getString(R.string.google_user_agent))
-        mWebView!!.webViewClient = WebViewCallbacks()
-        mWebView!!.clearHistory()
+        }
+
+        mWebView?.apply {
+            settings.apply {
+                javaScriptEnabled = true
+                setAppCacheEnabled(false)
+                cacheMode = WebSettings.LOAD_NO_CACHE
+                userAgentString = getString(R.string.google_user_agent)
+            }
+            webViewClient = WebViewCallbacks()
+            clearHistory()
+        }
+
         getArgs()
         restoreStates(savedInstanceState)
     }
@@ -136,13 +145,13 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
         val bundle = arguments
         if (bundle != null) {
             mStorage = bundle.getParcelable(TAG_STORAGE)
-            if (mStorage != null) {
+            mStorage?.let {
                 mUrl = StorageUtils.getStorageUrl(
-                    mStorage!!.name,
-                    mStorage!!.clientId,
-                    mStorage!!.redirectUrl
+                    it.name,
+                    it.clientId,
+                    it.redirectUrl
                 )
-                mRedirectUrl = mStorage!!.redirectUrl
+                mRedirectUrl = it.redirectUrl
             }
         }
     }
@@ -151,29 +160,33 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(TAG_WEB_VIEW)) {
                 val bundle = savedInstanceState.getBundle(TAG_WEB_VIEW)
-                mSwipeRefreshLayout!!.isRefreshing = true
+                mSwipeRefreshLayout?.isRefreshing = true
                 if (bundle != null) {
-                    mWebView!!.restoreState(bundle)
+                    mWebView?.restoreState(bundle)
                 }
             }
             if (savedInstanceState.containsKey(TAG_PAGE_LOAD)) {
                 mIsPageLoad = savedInstanceState.getBoolean(TAG_PAGE_LOAD)
             }
         } else {
-            val test = mapOf("response-type" to Constants.OneDrive.VALUE_RESPONSE_TYPE, "scope" to Constants.OneDrive.VALUE_SCOPE, "client_id" to Constants.OneDrive.COM_CLIENT_ID, "redirect_uri" to Constants.OneDrive.COM_REDIRECT_URL)
             loadWebView(mUrl)
         }
     }
 
     private fun pairsToUrlQueryString(pairs: Map<String, String>): String {
-        return pairs.entries
-            .map { "${it.key}=${URLEncoder.encode(it.value, "UTF-8")}" }
-            .joinToString("&")
+        return pairs.entries.joinToString("&") {
+            "${it.key}=${
+                URLEncoder.encode(
+                    it.value,
+                    "UTF-8"
+                )
+            }"
+        }
     }
 
     private fun loadWebView(url: String?) {
         mSwipeRefreshLayout!!.isRefreshing = true
-        mWebView!!.loadUrl(url!!)
+        mWebView?.loadUrl(url!!)
     }
 
     /*
@@ -209,7 +222,7 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
             error: WebResourceError
         ) {
             super.onReceivedError(view, request, error)
-            mSwipeRefreshLayout?.setRefreshing(false)
+            mSwipeRefreshLayout?.isRefreshing = false
             if (!isOnline(requireContext())) {
                 showSnackBar(R.string.errors_connection_error)
             }

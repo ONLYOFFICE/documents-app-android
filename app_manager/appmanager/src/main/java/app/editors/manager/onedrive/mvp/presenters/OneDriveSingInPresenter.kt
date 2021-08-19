@@ -37,16 +37,16 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
 
     fun checkOneDrive(token: String) {
         disposable = App.getApp().getOneDriveComponent(token).oneDriveService.userInfo()
-            .subscribe({oneDriveResponse ->
-                when(oneDriveResponse) {
+            .subscribe { oneDriveResponse ->
+                when (oneDriveResponse) {
                     is OneDriveResponse.Success -> {
                         createUser(oneDriveResponse.response as User, token)
                     }
-                    is OneDriveResponse.Error -> {Log.d("ONEDRIVE", "${oneDriveResponse.error}")}
+                    is OneDriveResponse.Error -> {
+                        throw oneDriveResponse.error
+                    }
                 }
-            }, {error ->
-                Log.d("ONEDRIVE", "error = ${error.message}")
-            })
+            }
     }
 
 
