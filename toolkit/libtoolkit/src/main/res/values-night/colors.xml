@@ -14,7 +14,7 @@
     <color name="colorOnSurface">#FFFFFFDE</color>
     <color name="colorOnSecondary">@color/colorBlack</color>
     <color name="colorOnError">@color/colorBlack</color>
-    <color name="colorBackgroundSecond">#080808</color>
+    <color name="colorBackgroundSecond">@null</color>
     <color name="colorOutline">#3F3F3F</color>
     <color name="colorBgDescription">#363636</color>
 

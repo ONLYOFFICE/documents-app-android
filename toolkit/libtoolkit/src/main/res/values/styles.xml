@@ -25,8 +25,13 @@
 
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="floatingActionButtonStyle">@style/Widget.Design.FloatingActionButton</item>
-        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
-        </item>
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.FilledBox</item>
+    </style>
+
+    <style name="CommonEditText" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:maxLines">1</item>
+        <item name="android:lines">1</item>
+        <item name="boxBackgroundColor">@color/colorBackgroundSecond</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark">
@@ -149,11 +154,6 @@
 
     <style name="CommonImageView" parent="AppTheme">
         <item name="android:background">@android:color/transparent</item>
-    </style>
-
-    <style name="CommonEditText" parent="AppTheme">
-        <item name="android:maxLines">1</item>
-        <item name="android:lines">1</item>
     </style>
 
     <style name="CommonImageButton" parent="AppTheme" />

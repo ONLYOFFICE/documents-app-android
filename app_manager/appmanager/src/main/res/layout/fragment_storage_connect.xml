@@ -12,6 +12,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/storage_connect_title_layout"
+            style="@style/CommonEditText"
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_top_bottom_padding"

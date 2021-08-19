@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height"
-    android:background="@color/colorWhite"
+    android:background="@color/colorSurface"
     android:clickable="false"
     android:focusable="false">
 
@@ -27,7 +27,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/list_explorer_upload_file_name"
             style="@style/ItemMediumBlackText"
             android:layout_width="0dp"
@@ -41,7 +41,7 @@
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="File name" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/list_explorer_upload_file_progress"
             style="@style/ItemSmallGreyText"
             android:layout_width="0dp"
@@ -52,21 +52,23 @@
             app:layout_constraintRight_toRightOf="@+id/list_explorer_upload_file_name"
             app:layout_constraintTop_toBottomOf="@+id/list_explorer_upload_file_name" />
 
-        <androidx.appcompat.widget.AppCompatImageButton
+        <ImageButton
             android:id="@+id/list_explorer_upload_file_cancel"
             style="@style/AlphaImageButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:padding="@dimen/screen_margin_large"
+            android:tint="@color/colorOnSurface"
             android:src="@drawable/drawable_ic_cancel_download_upload"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/upload_file_progress_bar"
-            style="?android:attr/progressBarStyleHorizontal"
+            style="@style/Widget.MaterialComponents.LinearProgressIndicator"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"

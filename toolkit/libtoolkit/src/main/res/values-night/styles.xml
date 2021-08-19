@@ -30,6 +30,6 @@
         <item name="android:background">@color/colorBottomBar</item>
     </style>
 
-    <style name="AlphaImageView" parent="CommonImageView"/>
+    <style name="AlphaImageView" parent="AppTheme"/>
 
 </resources>

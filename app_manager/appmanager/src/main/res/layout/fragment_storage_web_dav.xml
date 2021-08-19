@@ -18,6 +18,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/storage_web_dav_url_layout"
+                style="@style/CommonEditText"
                 android:layout_width="@dimen/default_screen_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -37,6 +38,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/storage_web_dav_login_layout"
+                style="@style/CommonEditText"
                 android:layout_width="@dimen/default_screen_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -55,6 +57,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/storage_web_dav_password_layout"
+                style="@style/CommonEditText"
                 android:layout_width="@dimen/default_screen_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -74,6 +77,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/storage_web_dav_title_layout"
+                style="@style/CommonEditText"
                 android:layout_width="@dimen/default_screen_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
