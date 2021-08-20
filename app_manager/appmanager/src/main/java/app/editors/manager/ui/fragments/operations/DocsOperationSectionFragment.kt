@@ -41,8 +41,8 @@ class DocsOperationSectionFragment : BaseAppFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = FragmentOperationSectionBinding.inflate(inflater, container, false)
-        return view.root
+        viewBinding = FragmentOperationSectionBinding.inflate(inflater, container, false)
+        return viewBinding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

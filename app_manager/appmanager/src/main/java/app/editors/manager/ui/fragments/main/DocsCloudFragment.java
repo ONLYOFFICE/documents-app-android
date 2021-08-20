@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.documents.core.account.CloudAccount;
 import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
 import app.editors.manager.app.App;
@@ -40,9 +41,13 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
 
     @InjectPresenter
     public DocsCloudPresenter mCloudPresenter;
+
     @ProvidePresenter
     public DocsCloudPresenter providePresenter() {
-        return new DocsCloudPresenter(getArguments().getString(KEY_ACCOUNT));
+        CloudAccount account = App.getApp().getAppComponent().getAccountOnline();
+        if (account != null) {
+            return new DocsCloudPresenter(account);
+        } else throw new RuntimeException("Cloud account can't be null");
     }
 
     @Override

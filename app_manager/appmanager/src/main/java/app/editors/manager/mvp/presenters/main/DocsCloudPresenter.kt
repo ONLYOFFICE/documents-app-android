@@ -48,7 +48,7 @@ import moxy.InjectViewState
 import java.util.*
 
 @InjectViewState
-class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudView>(),
+class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
     OnDownloadListener,
     OnUploadListener {
 
@@ -58,8 +58,6 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
 
     private val downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver
-
-    private val account = Json.decodeFromString<CloudAccount>(stringAccount)
 
     init {
         App.getApp().appComponent.inject(this)
