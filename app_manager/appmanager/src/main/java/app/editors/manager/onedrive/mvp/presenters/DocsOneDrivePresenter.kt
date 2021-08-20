@@ -2,6 +2,7 @@ package app.editors.manager.onedrive.mvp.presenters
 
 import android.content.ClipData
 import android.net.Uri
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -9,6 +10,8 @@ import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
@@ -38,11 +41,16 @@ import java.util.*
 
 
 @InjectViewState
-class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
+class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
+    UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
 
     private var downloadDisposable: Disposable? = null
     private var tempFile: CloudFile? = null
     private val workManager = WorkManager.getInstance()
+
+    private val uploadReceiver: UploadReceiver
+    private val downloadReceiver: DownloadReceiver
+
 
     init {
         App.getApp().appComponent.inject(this)
@@ -53,6 +61,22 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
         mIsFilteringMode = false
         mIsSelectionMode = false
         mIsFoldersMode = false
+        uploadReceiver = UploadReceiver()
+        downloadReceiver = DownloadReceiver()
+    }
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        uploadReceiver.setOnUploadListener(this)
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(uploadReceiver, uploadReceiver.filter)
+        downloadReceiver.setOnDownloadListener(this)
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(downloadReceiver, downloadReceiver.filter)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(uploadReceiver)
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(downloadReceiver)
     }
 
     fun getProvider() {
@@ -307,5 +331,84 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
                 viewState.onError(App.getApp().applicationContext.getString(R.string.storage_onedrive_error_exist))
             }
         }
+    }
+
+    override fun onUploadError(path: String?, info: String?, file: String?) {
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onUploadComplete(
+        path: String?,
+        info: String?,
+        title: String?,
+        file: CloudFile?,
+        id: String?
+    ) {
+        info?.let { viewState.onSnackBar(it) }
+        refresh()
+        viewState.onDeleteUploadFile(id)
+    }
+
+    override fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?) {
+        //viewState.onFileWebView(file)
+    }
+
+    override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
+        if (mModelExplorerStack.currentId == folderId) {
+            viewState.onUploadFileProgress(progress, id)
+        }
+    }
+
+    override fun onUploadCanceled(path: String?, info: String?, id: String?) {
+        info?.let { viewState.onSnackBar(it) }
+        viewState.onDeleteUploadFile(id)
+        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(mModelExplorerStack.currentId)?.isEmpty() == true) {
+            viewState.onRemoveUploadHead()
+            getListWithHeaders(mModelExplorerStack.last(), true)
+        }
+    }
+
+    override fun onUploadRepeat(path: String?, info: String?) {
+        viewState.onDialogClose()
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?) {
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onDownloadProgress(id: String?, total: Int, progress: Int) {
+        viewState.onDialogProgress(total, progress)
+    }
+
+    override fun onDownloadComplete(
+        id: String?,
+        url: String?,
+        title: String?,
+        info: String?,
+        path: String?,
+        mime: String?
+    ) {
+        viewState.onDialogClose()
+        viewState.onSnackBarWithAction(
+            """
+    $info
+    $title
+    """.trimIndent(), mContext.getString(R.string.download_manager_open)
+        ) { showDownloadFolderActivity() }
+    }
+
+    override fun onDownloadCanceled(id: String?, info: String?) {
+        viewState.onDialogClose()
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onDownloadRepeat(id: String?, title: String?, info: String?) {
+        viewState.onDialogClose()
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    private fun showDownloadFolderActivity() {
+        viewState.onDownloadActivity()
     }
 }
