@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title_text_view"
             style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="0dp"
@@ -23,7 +23,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/descriptionTitle"
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="0dp"
@@ -44,7 +44,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/descriptionTitle">
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/overwrite_radio_button"
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
@@ -53,7 +53,7 @@
                 android:layout_weight="1"
                 android:text="@string/dialog_move_copy_overwrite" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/copy_radio_button"
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
@@ -61,7 +61,7 @@
                 android:layout_weight="1"
                 android:text="@string/dialog_move_copy_copy" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/skip_radio_button"
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
@@ -70,9 +70,9 @@
                 android:text="@string/dialog_move_copy_skip" />
         </RadioGroup>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/continue_button"
-            style="@style/TransparentAccentButtons"
+            style="@style/AccentTextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -86,9 +86,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/options_radio_group" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/cancel_button"
-            style="@style/TransparentAccentButtons"
+            style="@style/AccentTextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"

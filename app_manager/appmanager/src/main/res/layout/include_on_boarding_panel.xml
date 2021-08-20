@@ -4,13 +4,12 @@
     android:id="@+id/page_indicator_layout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/default_on_boarding_panel_height"
-    android:background="@drawable/drawable_on_boarding_background"
-    android:translationZ="12dp"
-    android:elevation="12dp">
+    android:elevation="12dp"
+    android:translationZ="12dp">
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/on_boarding_panel_skip_button"
-        style="@style/TransparentBlackButtons"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/screen_margin_large"
@@ -21,9 +20,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/on_boarding_panel_next_button"
-        style="@style/TransparentBlackButtons"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginEnd="@dimen/screen_margin_large"
@@ -49,8 +48,8 @@
         app:piv_dynamicCount="true"
         app:piv_interactiveAnimation="true"
         app:piv_radius="4dp"
-        app:piv_selectedColor="@color/colorBlack"
-        app:piv_unselectedColor="@color/colorPagerOnBoarding" />
+        app:piv_selectedColor="@color/colorPrimary"
+        app:piv_unselectedColor="@color/colorBgDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

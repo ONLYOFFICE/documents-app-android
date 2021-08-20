@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingBottom="@dimen/screen_top_bottom_padding">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             android:id="@+id/about_logo_image"
             style="@style/CommonImageView"
             android:layout_width="wrap_content"
@@ -22,7 +23,7 @@
             android:layout_marginEnd="@dimen/screen_margin_large"
             app:srcCompat="@drawable/image_onlyoffice_text" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/about_app_version"
             style="@style/SmallTextView"
             android:layout_width="wrap_content"
@@ -40,7 +41,7 @@
             android:layout_marginStart="@dimen/screen_left_right_padding"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="@dimen/screen_left_right_padding"
-            android:background="@color/colorWhite"
+            android:background="@color/colorSurface"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -50,7 +51,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <com.google.android.material.textview.MaterialTextView
                     style="@style/ItemMediumBlackText"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/item_one_line_height"
@@ -61,14 +62,16 @@
                     android:paddingRight="@dimen/screen_margin_large"
                     android:text="@string/about_terms" />
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <ImageView
                     android:id="@+id/terms_link"
+                    style="@style/ContextListImage"
                     android:layout_width="@dimen/image_default_size"
                     android:layout_height="@dimen/image_default_size"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/default_margin_medium"
-                    android:src="@drawable/ic_open_in_new" />
+                    android:src="@drawable/ic_open_in_new"
+                    tools:ignore="ContentDescription" />
             </RelativeLayout>
 
 
@@ -81,7 +84,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <com.google.android.material.textview.MaterialTextView
                     style="@style/ItemMediumBlackText"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/item_one_line_height"
@@ -91,15 +94,16 @@
                     android:paddingRight="@dimen/screen_margin_large"
                     android:text="@string/about_policy" />
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <ImageView
                     android:id="@+id/policy_link"
-                    style="@style/CommonImageView"
+                    style="@style/ContextListImage"
                     android:layout_width="@dimen/image_default_size"
                     android:layout_height="@dimen/image_default_size"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/default_margin_medium"
-                    app:srcCompat="@drawable/ic_open_in_new" />
+                    app:srcCompat="@drawable/ic_open_in_new"
+                    tools:ignore="ContentDescription" />
 
             </RelativeLayout>
 
@@ -112,7 +116,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <com.google.android.material.textview.MaterialTextView
                     style="@style/ItemMediumBlackText"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/item_one_line_height"
@@ -122,14 +126,16 @@
                     android:paddingRight="@dimen/screen_margin_large"
                     android:text="@string/about_license" />
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <ImageView
                     android:id="@+id/license_link"
+                    style="@style/ContextListImage"
                     android:layout_width="@dimen/image_default_size"
                     android:layout_height="@dimen/image_default_size"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/default_margin_medium"
-                    android:src="@drawable/ic_open_in_new" />
+                    android:src="@drawable/ic_open_in_new"
+                    tools:ignore="ContentDescription" />
             </RelativeLayout>
 
             <include layout="@layout/view_line_separator" />
@@ -141,7 +147,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <com.google.android.material.textview.MaterialTextView
                     style="@style/ItemMediumBlackText"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/item_one_line_height"
@@ -151,18 +157,20 @@
                     android:paddingRight="@dimen/screen_margin_large"
                     android:text="@string/about_website" />
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <ImageView
                     android:id="@+id/site_link"
+                    style="@style/ContextListImage"
                     android:layout_width="@dimen/image_default_size"
                     android:layout_height="@dimen/image_default_size"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/default_margin_medium"
-                    android:src="@drawable/ic_open_in_new" />
+                    android:src="@drawable/ic_open_in_new"
+                    tools:ignore="ContentDescription" />
             </RelativeLayout>
 
             <include layout="@layout/view_line_separator" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@color/colorWhite"
+    android:background="@color/colorSurface"
     android:orientation="vertical"
     android:paddingTop="@dimen/popup_margins_top_bottom"
     android:paddingBottom="@dimen/popup_margins_top_bottom">
@@ -13,11 +14,12 @@
         android:id="@+id/popup_trash_move"
         style="@style/PopupLayout">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             style="@style/ContextListImage"
-            app:srcCompat="@drawable/ic_trash_move" />
+            app:srcCompat="@drawable/ic_trash_move"
+            tools:ignore="ContentDescription" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/popup_move_title"
             style="@style/PopupText" />
     </LinearLayout>
@@ -26,11 +28,12 @@
         android:id="@+id/popup_trash_delete"
         style="@style/PopupLayout">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             style="@style/ContextListImage"
-            app:srcCompat="@drawable/ic_trash_delete" />
+            app:srcCompat="@drawable/ic_trash_delete"
+            tools:ignore="ContentDescription" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             style="@style/PopupText"
             android:text="@string/trash_popup_delete" />
     </LinearLayout>

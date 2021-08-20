@@ -3,10 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cloudLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorWhite">
+    android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <ImageView
         android:id="@+id/bannerImage"
         android:layout_width="414dp"
         android:layout_height="209dp"
@@ -15,7 +14,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline5"
         app:layout_constraintTop_toTopOf="@+id/descriptionTextView" />
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <ImageView
         android:id="@+id/onlyOfficeLogoImage"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -24,7 +23,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline5"
         app:layout_constraintTop_toTopOf="@+id/vertical" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/descriptionTextView"
         style="@style/CloudStorageText"
         android:layout_width="0dp"
@@ -35,7 +34,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline5"
         app:layout_constraintTop_toBottomOf="@+id/onlyOfficeLogoImage" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/startButton"
         style="@style/FixedAccentButtons"
         android:layout_width="@dimen/default_screen_width"
@@ -45,10 +44,11 @@
         app:layout_constraintStart_toStartOf="@id/descriptionTextView"
         app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/otherStorageButton"
-        style="@style/FixedTransparentAccentButtonsNoCaps"
+        style="@style/AccentTextButtonSmall"
         android:layout_width="@dimen/default_screen_width"
+        android:layout_height="@dimen/default_login_accent_button_height"
         android:layout_marginTop="@dimen/default_margin_xlarge"
         android:text="@string/cloud_account_other_storages_button"
         app:layout_constraintEnd_toEndOf="@id/startButton"

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
-    android:scrollbars="vertical">
+    android:scrollbars="vertical"
+    android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -27,7 +28,7 @@
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground">
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <ImageView
                     android:id="@+id/onlyOfficeIcon"
                     style="@style/CommonImageView"
                     android:layout_width="@dimen/image_size"
@@ -37,10 +38,11 @@
                     android:layout_marginTop="16dp"
                     android:src="@drawable/ic_storage_onlyoffice"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
 
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/onlyOfficeTitle"
                     style="@style/ItemMediumBlackText"
                     android:layout_width="0dp"
@@ -53,7 +55,7 @@
                     app:layout_constraintStart_toEndOf="@+id/onlyOfficeIcon"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/onlyOfficeDescription"
                     style="@style/ItemSmallGreyText"
                     android:layout_width="0dp"

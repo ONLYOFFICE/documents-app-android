@@ -6,13 +6,12 @@
     android:fillViewport="true"
     android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/screen_padding_medium_left_right">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_sms_code_title_text"
             style="@style/MediumTextView"
             android:layout_width="@dimen/default_screen_width"
@@ -28,7 +27,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.050000012" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_sms_code_number_text"
             style="@style/MediumTextView"
             android:layout_width="wrap_content"
@@ -61,22 +60,28 @@
             app:layout_constraintTop_toBottomOf="@+id/login_sms_code_number_text"
             app:layout_constraintVertical_bias="0.0" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_sms_code_send_again_button"
-            style="@style/FixedTransparentButtons"
+            style="@style/AccentTextButton"
             android:layout_width="wrap_content"
+            android:layout_height="@dimen/default_login_accent_button_height"
             android:layout_marginTop="16dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:padding="10dp"
             android:text="@string/login_sms_send_again"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/login_sms_code_edit" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_sms_code_change_number_button"
-            style="@style/FixedTransparentButtons"
+            style="@style/AccentTextButton"
             android:layout_width="wrap_content"
+            android:layout_height="@dimen/default_login_accent_button_height"
             android:layout_marginTop="16dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:padding="10dp"
             android:text="@string/login_sms_change_number"
             app:layout_constraintEnd_toEndOf="parent"
