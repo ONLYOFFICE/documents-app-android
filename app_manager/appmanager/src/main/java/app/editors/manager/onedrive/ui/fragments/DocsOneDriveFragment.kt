@@ -185,8 +185,8 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
                 )
                 showFragment(newInstance(storage), OneDriveSignInFragment.TAG, false)
             }
-            "Locked" -> {
-                showSnackBar("File is locked to delete")
+            else -> {
+                message?.let { showSnackBar(it) }
             }
         }
 

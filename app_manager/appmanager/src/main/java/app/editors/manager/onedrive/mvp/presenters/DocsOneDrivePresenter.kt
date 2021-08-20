@@ -255,7 +255,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(mItemClicked?.title)
+            viewState.onActionBarTitle(if(currentTitle.isEmpty()) { mItemClicked?.title } else { currentTitle } )
         } else {
             if (mIsFoldersMode) {
                 viewState.onActionBarTitle(mContext.getString(R.string.operation_title))
@@ -301,7 +301,10 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>() {
         super.fetchError(throwable)
         if(throwable is HttpException) {
             if(throwable.code() == 423) {
-                viewState.onError("Locked")
+                viewState.onError(App.getApp().applicationContext.getString(R.string.storage_onedrive_error_opened))
+            }
+            if(throwable.code() == 409) {
+                viewState.onError(App.getApp().applicationContext.getString(R.string.storage_onedrive_error_exist))
             }
         }
     }

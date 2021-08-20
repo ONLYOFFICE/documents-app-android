@@ -9,6 +9,7 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.models.base.Entity
+import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -63,6 +64,10 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
         setHasOptionsMenu(false)
     }
 
+    override fun onDocsRefresh(list: MutableList<Entity>?) {
+        super.onDocsRefresh(list?.filter { it is CloudFolder })
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(savedInstanceState)
@@ -70,7 +75,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
 
     override fun onItemClick(view: View?, position: Int) {
         super.onItemClick(view, position)
-        mOperationActivity!!.setEnabledActionButton(false)
+        mOperationActivity?.setEnabledActionButton(false)
     }
 
     override fun onDestroyView() {
@@ -93,12 +98,12 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
 
     override fun onError(message: String?) {
         super.onError(message)
-        mOperationActivity!!.setEnabledActionButton(false)
+        mOperationActivity?.setEnabledActionButton(false)
     }
 
     override fun onDocsGet(list: List<Entity?>?) {
-        super.onDocsGet(list)
-        mOperationActivity!!.setEnabledActionButton(true)
+        super.onDocsGet(list?.filter { it is CloudFolder})
+        mOperationActivity?.setEnabledActionButton(true)
     }
 
     override fun onDocsBatchOperation() {
@@ -151,7 +156,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
     }
 
     private fun initViews() {
-        mOperationActivity!!.setEnabledActionButton(false)
+        mOperationActivity?.setEnabledActionButton(false)
         mExplorerAdapter.isFoldersMode = true
         mRecyclerView.setPadding(0, 0, 0, 0)
     }

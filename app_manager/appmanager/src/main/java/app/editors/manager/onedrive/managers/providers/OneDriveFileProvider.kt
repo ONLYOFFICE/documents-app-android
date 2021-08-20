@@ -96,16 +96,13 @@ class OneDriveFileProvider : BaseFileProvider {
 
         if(response.value.isNotEmpty()) {
 
-            val nameParentFolder = response.value[0].parentReference.path.split("/")
-            val name = nameParentFolder[2]
-            val correctName = name.removeRange(name.length - 1, name.length)
 
             val parentFolder = CloudFolder().apply {
                 this.id = response.value[0].parentReference.id
-                this.title = correctName
+                this.title = response.value[0].parentReference.path.split("/").last()
                 this.etag = response.value[0].eTag
                 this.updated =
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(response.value.get(0).lastModifiedDateTime)
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(response.value[0].lastModifiedDateTime)
             }
 
             for (item in response.value) {
@@ -175,6 +172,7 @@ class OneDriveFileProvider : BaseFileProvider {
                         file.id = (response.response as DriveItemValue).id
                         file.title = response.response.name
                         file.updated = Date()
+                        file.fileExst = response.response.name.split(".")[1]
                         return@map file
                     }
                     is OneDriveResponse.Error -> {
