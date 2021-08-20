@@ -3,6 +3,7 @@ package app.editors.manager.managers.receivers;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 
 import app.editors.manager.R;
 import app.editors.manager.managers.utils.FirebaseUtils;
@@ -27,14 +28,16 @@ public class DownloadReceiver extends BaseReceiver<Intent> {
     public static final String EXTRAS_KEY_PROGRESS = "EXTRAS_KEY_PROGRESS";
     public static final String EXTRAS_KEY_CANCELED = "EXTRAS_KEY_CANCELED";
     public static final String EXTRAS_KEY_ERROR = "EXTRAS_KEY_ERROR";
+    public static final String EXTRAS_KEY_URI = "EXTRAS_KEY_URI";
 
     public static final int EXTRAS_VALUE_CANCELED = 0;
     public static final int EXTRAS_VALUE_CANCELED_NOT_FOUND = 1;
 
+
     public interface OnDownloadListener {
         void onDownloadError(String id, String url, String title, String info);
         void onDownloadProgress(String id, int total, int progress);
-        void onDownloadComplete(String id, String url, String title, String info, String path, String mime);
+        void onDownloadComplete(String id, String url, String title, String info, String path, String mime, Uri uri);
         void onDownloadCanceled(String id, String info);
         void onDownloadRepeat(String id, String title, String info);
     }
@@ -94,7 +97,8 @@ public class DownloadReceiver extends BaseReceiver<Intent> {
                         final String path = intent.getStringExtra(EXTRAS_KEY_PATH);
                         final String mime = intent.getStringExtra(EXTRAS_KEY_MIME_TYPE);
                         final String info = context.getString(R.string.download_manager_complete);
-                        mOnDownloadListener.onDownloadComplete(id, url, title, info, path, mime);
+                        final Uri uri = Uri.parse(intent.getStringExtra(EXTRAS_KEY_URI));
+                        mOnDownloadListener.onDownloadComplete(id, url, title, info, path, mime, uri);
                         break;
                     }
 

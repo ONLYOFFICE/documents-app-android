@@ -1,12 +1,16 @@
 package app.editors.manager.mvp.presenters.main
 
+import android.net.Uri
 import android.view.View
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
+import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.api
+import app.editors.manager.app.appComponent
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
@@ -60,6 +64,8 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     private val uploadReceiver: UploadReceiver
 
     private val account = Json.decodeFromString<CloudAccount>(stringAccount)
+
+    private val api: Api = mContext.api()
 
     private var currentSectionType = ApiContract.SectionType.UNKNOWN
 
@@ -306,7 +312,8 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         title: String,
         info: String,
         path: String,
-        mime: String
+        mime: String,
+        uri: Uri
     ) {
         viewState.onDialogClose()
         viewState.onSnackBarWithAction(
@@ -314,7 +321,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     $info
     $title
     """.trimIndent(), mContext.getString(R.string.download_manager_open)
-        ) { showDownloadFolderActivity() }
+        ) { showDownloadFolderActivity(uri) }
     }
 
     override fun onDownloadCanceled(id: String, info: String) {
@@ -390,19 +397,17 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             deleteShare.folderIds = mModelExplorerStack.selectedFoldersIds
             deleteShare.fileIds = mModelExplorerStack.selectedFilesIds
             mDisposable.add(Observable.fromCallable {
-//                mRetrofitTool.apiWithPreferences
-//                    .deleteShare(mToken, deleteShare).execute()
+                api.deleteShare(deleteShare).execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-//                        baseResponse: Response<Base>? ->
-//                    mModelExplorerStack.removeSelected()
-//                    resetDatesHeaders()
-//                    setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-//                    viewState.onActionBarTitle("0")
-//                    viewState.onDeleteBatch(getListWithHeaders(mModelExplorerStack.last(), true))
-//                    onBatchOperations()
+                    mModelExplorerStack.removeSelected()
+                    resetDatesHeaders()
+                    setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    viewState.onActionBarTitle("0")
+                    viewState.onDeleteBatch(getListWithHeaders(mModelExplorerStack.last(), true))
+                    onBatchOperations()
                 }) { throwable: Throwable? -> fetchError(throwable) })
         }
     }
@@ -485,8 +490,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
                 deleteShare.fileIds = ArrayList(listOf(mItemClicked!!.id))
             }
             mDisposable.add(Observable.fromCallable {
-//                mRetrofitTool.apiWithPreferences
-//                    .deleteShare(mToken, deleteShare).execute()
+                api.deleteShare(deleteShare).execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -687,8 +691,8 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             }
         }
 
-    private fun showDownloadFolderActivity() {
-        viewState.onDownloadActivity()
+    private fun showDownloadFolderActivity(uri: Uri) {
+        viewState.onDownloadActivity(uri)
     }
 
     fun setSectionType(sectionType: Int) {
