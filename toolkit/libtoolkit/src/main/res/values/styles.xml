@@ -288,6 +288,7 @@
 
     <style name="ItemSmallLightText" parent="SmallTextView">
         <item name="android:textColor">@color/colorOnSurface</item>
+        <item name="android:alpha">@dimen/alpha_small</item>
     </style>
 
     <style name="CloudStorageText" parent="ItemMediumGreyText">

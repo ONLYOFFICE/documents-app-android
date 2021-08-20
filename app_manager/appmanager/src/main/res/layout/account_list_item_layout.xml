@@ -19,7 +19,7 @@
 
         <include
             android:id="@+id/selectableLayout"
-            layout="@layout/view_icon_selectable"
+            layout="@layout/account_view_icon_selectable"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
             android:layout_marginStart="@dimen/screen_margin_large"

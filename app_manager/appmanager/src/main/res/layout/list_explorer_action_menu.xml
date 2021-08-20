@@ -27,7 +27,8 @@
                     style="@style/ContextListImage"
                     android:alpha="1.0"
                     android:tint="@color/colorDocTint"
-                    app:srcCompat="@drawable/ic_type_text_document" />
+                    app:srcCompat="@drawable/ic_type_text_document"
+                    tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
                     style="@style/ContextListMediumText"

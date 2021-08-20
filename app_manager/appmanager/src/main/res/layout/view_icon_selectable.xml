@@ -13,7 +13,8 @@
         android:layout_gravity="center"
         android:clickable="false"
         android:tint="@color/colorOnSurface"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/ic_type_folder" />
 
     <FrameLayout
         android:id="@+id/view_icon_selectable_mask"
