@@ -8,7 +8,7 @@
     android:clickable="true"
     android:background="?attr/selectableItemBackgroundBorderless">
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <ImageView
         style="@style/AlphaImageButton"
         android:id="@+id/button_popup_image"
         android:layout_width="wrap_content"
@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <ImageView
         style="@style/AlphaImageView"
         android:id="@+id/button_popup_arrow"
         android:layout_width="@dimen/share_access_arrow_size"
