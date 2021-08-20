@@ -36,4 +36,12 @@ object UiUtils {
             )
         }
     }
+    fun setOneDriveImage(image: ImageView) {
+        image.setImageDrawable(
+            ContextCompat.getDrawable(
+                image.context,
+                R.drawable.ic_storage_onedrive
+            )
+        )
+    }
 }

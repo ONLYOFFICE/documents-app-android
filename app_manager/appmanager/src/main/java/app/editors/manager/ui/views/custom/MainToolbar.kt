@@ -54,6 +54,8 @@ class MainToolbar @JvmOverloads constructor(
             subtitle.text = cloudAccount.portal
             if (cloudAccount.isWebDav) {
                 setWebDavAvatar(cloudAccount.webDavProvider ?: "")
+            } else if(cloudAccount.isOneDrive) {
+                setOneDriveAvatar()
             } else {
                 loadAvatar(it)
             }
@@ -82,6 +84,15 @@ class MainToolbar @JvmOverloads constructor(
         }
     }
 
+    private fun setOneDriveAvatar() {
+        toolbarIcon.setImageDrawable(
+            ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_storage_onedrive
+            )
+        )
+    }
+
     private fun setWebDavAvatar(provider: String) {
         when (WebDavApi.Providers.valueOf(provider)) {
             WebDavApi.Providers.Yandex -> toolbarIcon.setImageDrawable(
@@ -102,6 +113,7 @@ class MainToolbar @JvmOverloads constructor(
                     R.drawable.ic_storage_owncloud
                 )
             )
+
             else -> {
                 toolbarIcon.setImageDrawable(
                     ContextCompat.getDrawable(
