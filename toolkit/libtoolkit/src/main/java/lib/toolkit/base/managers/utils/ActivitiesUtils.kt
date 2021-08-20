@@ -2,7 +2,6 @@ package lib.toolkit.base.managers.utils
 
 import android.Manifest
 import android.app.Activity
-import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -27,11 +26,11 @@ object ActivitiesUtils {
     private const val PICKER_PNG_FILTER = "image/png"
 
     @JvmStatic
-    val downloadsViewerIntent: Intent
-        get() {
-            return Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    fun getDownloadsViewerIntent(uri: Uri): Intent {
+        return Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "vnd.android.document/*")
         }
+    }
 
     @JvmStatic
     private fun getIntentSingleFilePicker(): Intent {
@@ -123,9 +122,9 @@ object ActivitiesUtils {
     }
 
     @JvmStatic
-    fun showDownloadViewer(fragment: Fragment, requestCode: Int): Boolean {
+    fun showDownloadViewer(fragment: Fragment, requestCode: Int, uri: Uri): Boolean {
         return try {
-            fragment.startActivityForResult(downloadsViewerIntent, requestCode)
+            fragment.startActivityForResult(getDownloadsViewerIntent(uri), requestCode)
             true
         } catch (e: ActivityNotFoundException) {
             Log.e(TAG, e.message ?: "")
@@ -138,7 +137,7 @@ object ActivitiesUtils {
     fun showCamera(fragment: Fragment, requestCode: Int, name: String): Uri? {
         try {
             val uri = ContentResolverUtils.getImageUri(
-                fragment.context!!,
+                fragment.requireContext(),
                 name
             )
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)

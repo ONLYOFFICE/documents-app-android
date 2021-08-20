@@ -50,7 +50,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
 
         fun sendBroadcastDownloadComplete(
             id: String?, url: String?, title: String?,
-            path: String?, mime: String?
+            path: String?, mime: String?, uri: Uri?
         ) {
             val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_COMPLETE)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
@@ -58,6 +58,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_PATH, path)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_MIME_TYPE, mime)
+            intent.putExtra(DownloadReceiver.EXTRAS_KEY_URI, uri.toString())
             LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
         }
 
@@ -128,7 +129,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                     object : Finish {
                         override fun onFinish() {
                             notificationUtils.removeNotification(id.hashCode())
-                            notificationUtils.showCompleteNotification(id.hashCode(), fileName)
+                            notificationUtils.showCompleteNotification(id.hashCode(), fileName, file?.uri)
                             sendBroadcastDownloadComplete(
                                 id,
                                 url,
@@ -136,7 +137,8 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                                 PathUtils.getPath(applicationContext, to ?: Uri.EMPTY),
                                 StringUtils.getMimeTypeFromPath(
                                     fileName ?: ""
-                                )
+                                ),
+                                to
                             )
                         }
                     },

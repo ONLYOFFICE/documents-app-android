@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
+import android.net.Uri
 import android.view.View
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.account.CloudAccount
@@ -304,7 +305,8 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         title: String,
         info: String,
         path: String,
-        mime: String
+        mime: String,
+        uri: Uri
     ) {
         viewState.onDialogClose()
         viewState.onSnackBarWithAction(
@@ -312,7 +314,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     $info
     $title
     """.trimIndent(), mContext.getString(R.string.download_manager_open)
-        ) { showDownloadFolderActivity() }
+        ) { showDownloadFolderActivity(uri) }
     }
 
     override fun onDownloadCanceled(id: String, info: String) {
@@ -671,8 +673,8 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             }
         }
 
-    private fun showDownloadFolderActivity() {
-        viewState.onDownloadActivity()
+    private fun showDownloadFolderActivity(uri: Uri) {
+        viewState.onDownloadActivity(uri)
     }
 
 }
