@@ -223,7 +223,6 @@
     <string name="dialogs_edit_feedback_rate_title">Would you mind sending us feedback?</string>
     <string name="dialogs_edit_feedback_rate_hint">Tell us what to improve</string>
     <string name="dialogs_edit_feedback_rate_accept">SEND</string>
-    <string name="dialog_send_password_reminder">SEND</string>
 
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
@@ -406,7 +405,7 @@
     <string name="storage_select_box">Box</string>
     <string name="storage_select_share_point">SharePoint</string>
     <string name="storage_select_own_cloud">ownCloud</string>
-    <string name="storage_select_kdrive">KDrive</string>
+    <string name="storage_select_kdrive" translatable="false">KDrive</string>
     <string name="storage_select_web_dav">Other WebDAV storage</string>
 
     <string name="storage_connect_title">Folder settings</string>
