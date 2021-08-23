@@ -21,6 +21,7 @@ import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.managers.works.DownloadWork
 import app.editors.manager.onedrive.managers.works.UploadWork
 import app.editors.manager.onedrive.mvp.models.request.ExternalLinkRequest
@@ -58,8 +59,8 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         get() {
             mItemClicked?.let {
                 val request = ExternalLinkRequest(
-                    type = "view",
-                    scope = "anonymous"
+                    type = OneDriveUtils.VAL_SHARE_TYPE_READ_WRITE,
+                    scope = OneDriveUtils.VAL_SHARE_SCOPE_ANON
                 )
                 (mFileProvider as OneDriveFileProvider).share(it.id, request)?.let { it1 ->
                     mDisposable.add(it1

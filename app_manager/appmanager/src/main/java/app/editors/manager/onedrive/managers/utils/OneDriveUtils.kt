@@ -19,6 +19,13 @@ object OneDriveUtils {
     const val VAL_CONFLICT_BEHAVIOR_REPLACE = "replace"
     const val VAL_CONFLICT_BEHAVIOR_FAIL = "fail"
 
+    const val VAL_SHARE_TYPE_READ = "view"
+    const val VAL_SHARE_TYPE_READ_WRITE = "edit"
+    const val VAL_SHARE_TYPE_EMBED = "embed"
+
+    const val VAL_SHARE_SCOPE_ANON = "anonymous"
+    const val VAL_SHARE_SCOPE_ORG = "organization"
+
     fun getSortBy(filter: MutableMap<String, String>?): Map<String, String> {
         val resultMap = mutableMapOf(KEY_SORT to "")
         when(filter?.get(ApiContract.Parameters.ARG_SORT_BY)) {
