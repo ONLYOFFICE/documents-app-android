@@ -336,6 +336,7 @@
         </item>
         <item name="android:gravity">center</item>
         <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/colorGrey</item>
     </style>
 
     <style name="AccentButtons" parent="ColorButtons">
