@@ -247,7 +247,6 @@
     <string name="navigation_drawer_menu_help">Nápověda</string>
     <string name="navigation_drawer_menu_logout">Odhlásit se</string>
     <string name="navigation_drawer_menu_add_account">Přidat účet</string>
-    <string name="navigation_drawer_menu_feedback">Zpětná vazba</string>
     <string name="settings_item_title">Nastavení</string>
     <string name="settings_item_change_account">Změnit účet</string>
     <string name="settings_clear_cache">Vymazat mezipaměť</string>

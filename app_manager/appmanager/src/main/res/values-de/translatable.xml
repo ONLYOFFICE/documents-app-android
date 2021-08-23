@@ -174,7 +174,6 @@
     <string name="navigation_drawer_menu_help">Hilfe</string>
     <string name="navigation_drawer_menu_logout">Abmelden</string>
     <string name="navigation_drawer_menu_add_account">Konto hinzufügen</string>
-    <string name="navigation_drawer_menu_feedback">Feedback</string>
     <string name="settings_item_title">Einstellungen</string>
     <string name="settings_item_change_account">Konto wechseln</string>
     <string name="settings_clear_cache">Cache löschen</string>

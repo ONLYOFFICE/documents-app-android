@@ -247,7 +247,7 @@
     <string name="navigation_drawer_menu_about">О программе</string>
     <string name="navigation_drawer_menu_add_account">Добавить аккаунт</string>
     <string name="navigation_drawer_menu_common">Общие</string>
-    <string name="navigation_drawer_menu_feedback">Обратная связь</string>
+    <string name="navigation_drawer_menu_feedback">Обратная связь и поддержка</string>
     <string name="navigation_drawer_menu_help">Справка</string>
     <string name="navigation_drawer_menu_logout">Выйти</string>
     <string name="navigation_drawer_menu_my">Мои документы</string>
