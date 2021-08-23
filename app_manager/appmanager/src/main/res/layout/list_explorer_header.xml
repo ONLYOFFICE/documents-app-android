@@ -7,7 +7,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_explorer_header_title"
-        style="@style/SmallTextView"
+        style="@style/ItemSmallGreyText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"

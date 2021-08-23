@@ -11,6 +11,7 @@
 
     <ImageView
         android:id="@+id/itemImage"
+        style="@style/CommonImageView"
         android:layout_width="@dimen/image_default_size"
         android:layout_height="@dimen/image_default_size"
         android:layout_marginStart="@dimen/default_margin_large"
