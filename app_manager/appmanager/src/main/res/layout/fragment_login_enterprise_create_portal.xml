@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
     android:fillViewport="true"
     android:orientation="vertical">
 
@@ -23,6 +22,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/login_create_portal_address_edit_layout"
+                style="@style/CommonEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipChildren="false"
@@ -31,7 +31,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.appcompat.widget.AppCompatEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/login_create_portal_address_edit"
                     style="@style/MediumEditText"
                     android:layout_width="match_parent"
@@ -42,7 +42,7 @@
                     android:paddingRight="@dimen/hints_in_end_create_domain" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/login_create_portal_address_hint_end"
                 style="@style/MediumTextView"
                 android:layout_width="@dimen/hints_in_end_create_domain"
@@ -58,6 +58,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_create_portal_email_layout"
+            style="@style/CommonEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -66,7 +67,7 @@
             app:layout_constraintStart_toStartOf="@+id/login_create_portal_address_edit_container"
             app:layout_constraintTop_toBottomOf="@+id/login_create_portal_address_edit_container">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_create_portal_email_edit"
                 style="@style/MediumEditText"
                 android:layout_width="match_parent"
@@ -79,6 +80,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_create_portal_first_name_layout"
+            style="@style/CommonEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -87,7 +89,7 @@
             app:layout_constraintStart_toStartOf="@+id/login_create_portal_address_edit_container"
             app:layout_constraintTop_toBottomOf="@+id/login_create_portal_email_layout">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_create_portal_first_name_edit"
                 style="@style/MediumEditText"
                 android:layout_width="match_parent"
@@ -100,6 +102,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_create_portal_last_name_layout"
+            style="@style/CommonEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -108,7 +111,7 @@
             app:layout_constraintStart_toStartOf="@+id/login_create_portal_address_edit_container"
             app:layout_constraintTop_toBottomOf="@+id/login_create_portal_first_name_layout">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_create_portal_last_name_edit"
                 style="@style/MediumEditText"
                 android:layout_width="match_parent"
@@ -119,9 +122,9 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_signin_create_portal_button"
-            style="@style/FixedAccentButtons"
+            style="@style/AccentButton"
             android:layout_width="0dp"
             android:layout_marginTop="16dp"
             android:text="@string/login_create_portal_next_button"

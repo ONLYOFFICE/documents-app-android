@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -223,7 +224,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
         mListContextHeaderTitle.setText(mState.mTitle);
         mListContextHeaderInfo.setText(mState.mInfo);
         mListContextHeaderImage.setImageResource(mState.mIconResId);
-        UiUtils.setImageTint(mListContextHeaderImage, R.color.colorGrey);
+        UiUtils.setImageTint(mListContextHeaderImage, R.color.colorOnSurface);
         if (!mState.mIsFolder) {
             app.editors.manager.managers.utils.UiUtils.setFileIcon(mListContextHeaderImage,
                     StringUtils.getExtensionFromPath(mState.mTitle));
@@ -354,7 +355,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
 
     private void setUploadToPortal(boolean isVisible) {
         if (isVisible) {
-            ((AppCompatImageView) mListExplorerContextDownload.findViewById(R.id.context_download_image)).setImageResource(R.drawable.ic_list_action_upload);
+            ((ImageView) mListExplorerContextDownload.findViewById(R.id.context_download_image)).setImageResource(R.drawable.ic_list_action_upload);
             ((AppCompatTextView) mListExplorerContextDownload.findViewById(R.id.context_download_text)).setText(R.string.list_context_upload_to_portal);
             mListExplorerContextDownload.setVisibility(View.VISIBLE);
         } else {

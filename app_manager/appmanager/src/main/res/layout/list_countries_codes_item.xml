@@ -4,18 +4,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
+    android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
     android:padding="16dp">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/countries_codes_alpha_text"
         style="@style/LargeTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="R"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorSecondary"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline1"
@@ -29,7 +29,7 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.1" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/countries_codes_name_text"
         style="@style/MediumTextView"
         android:layout_width="0dp"

@@ -5,13 +5,10 @@
     <color name="colorPrimary">#104071</color>
     <color name="colorPrimaryDark">#10315A</color>
     <color name="colorPrimaryLight">#3E73A3</color>
-    <color name="colorAccent">#FF9A2E</color>
+    <color name="colorSecondary">#FF9A2E</color>
 
     <!-- On boarding  -->
     <color name="colorOnBoardStart">#FCFCFC</color>
     <color name="colorOnBoardEnd">#ECECEC</color>
-
-    <!--    Clouds-->
-    <color name="colorCloudItem">#EDF9FF</color>
 
 </resources>

@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/colorWhite"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,6 +13,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_enterprise_portal_layout"
+            style="@style/CommonEditText"
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_top_bottom_padding"
@@ -23,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread_inside">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_enterprise_portal_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -34,17 +34,18 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_enterprise_next_button"
-            style="@style/FixedAccentButtons"
+            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="0dp"
+            android:layout_height="@dimen/default_login_accent_button_height"
             android:layout_marginTop="16dp"
             android:text="@string/login_enterprise_button_next"
             app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_layout"
             app:layout_constraintStart_toStartOf="@+id/login_enterprise_portal_layout"
             app:layout_constraintTop_toBottomOf="@+id/login_enterprise_portal_layout" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_enterprise_forgot_pwd_button"
             style="@style/ItemSmallGreyText"
             android:layout_width="@dimen/default_screen_width"
@@ -61,10 +62,11 @@
             app:layout_constraintTop_toBottomOf="@+id/login_enterprise_next_button"
             app:layout_constraintVertical_chainStyle="packed" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_enterprise_create_button"
-            style="@style/FixedTransparentAccentButtons"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="0dp"
+            android:layout_height="@dimen/default_login_accent_button_height"
             android:layout_marginTop="8dp"
             android:text="@string/login_enterprise_button_create"
             app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_layout"

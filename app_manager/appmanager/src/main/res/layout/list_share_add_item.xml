@@ -7,7 +7,7 @@
     android:layout_height="@dimen/item_two_line_height"
     android:clickable="false"
     android:focusable="false"
-    android:background="@color/colorWhite">
+    android:background="@color/colorSurface">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/share_add_item_layout"
@@ -16,7 +16,7 @@
         android:background="?attr/selectableItemBackground"
         android:clickable="true">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/share_add_item_alpha_text"
             style="@style/LargeTextView"
             android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
             android:layout_marginLeft="@dimen/screen_margin_large"
             android:gravity="center"
             android:text="R"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +49,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             style="@style/ItemMediumBlackText"
             android:id="@+id/share_add_item_main_title"
             android:layout_width="0dp"
@@ -63,7 +63,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             style="@style/ItemSmallGreyText"
             android:id="@+id/share_add_item_info_title"
             android:layout_width="0dp"

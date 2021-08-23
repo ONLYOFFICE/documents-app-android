@@ -2,6 +2,7 @@ package app.editors.manager.ui.fragments.main
 
 import android.os.Bundle
 import android.view.View
+import app.documents.core.network.ApiContract
 import app.editors.manager.managers.providers.CloudFileProvider
 
 class DocsCommonFragment : DocsCloudFragment() {
@@ -37,6 +38,8 @@ class DocsCommonFragment : DocsCloudFragment() {
             mCloudPresenter.getItemsById(ID)
         }
     }
+
+    override fun getSection() = ApiContract.SectionType.CLOUD_COMMON
 
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()

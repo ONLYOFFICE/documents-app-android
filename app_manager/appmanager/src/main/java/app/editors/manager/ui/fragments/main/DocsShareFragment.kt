@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -75,6 +76,8 @@ class DocsShareFragment : DocsCloudFragment() {
         }
         mCloudPresenter.getItemsById(ID)
     }
+
+    override fun getSection() = ApiContract.SectionType.CLOUD_SHARE
 
     override fun onRemoveItemFromFavorites() {}
     private fun init() {

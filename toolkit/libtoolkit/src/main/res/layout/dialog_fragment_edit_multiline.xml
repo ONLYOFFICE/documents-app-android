@@ -7,18 +7,17 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dialogCommonEditMultilineTextInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/dialogCommonEditMultilineValueEdit"
-            style="@style/MediumEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/drawable_rectangle_transparent_rounded_border"
             android:gravity="top|start"
             android:imeOptions="actionDone"
             android:importantForAutofill="noExcludeDescendants"

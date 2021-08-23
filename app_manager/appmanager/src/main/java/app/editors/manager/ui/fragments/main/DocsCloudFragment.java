@@ -275,4 +275,18 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
     public boolean isRoot() {
         return getPresenter().isRoot();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCloudPresenter.setSectionType(getSection());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mCloudPresenter.setSectionType(getSection());
+    }
+
+    abstract protected int getSection();
 }

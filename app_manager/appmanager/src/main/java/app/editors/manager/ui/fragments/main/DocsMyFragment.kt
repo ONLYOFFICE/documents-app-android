@@ -2,6 +2,7 @@ package app.editors.manager.ui.fragments.main
 
 import android.os.Bundle
 import android.view.View
+import app.documents.core.network.ApiContract
 import app.editors.manager.managers.providers.CloudFileProvider
 
 class DocsMyFragment : DocsCloudFragment() {
@@ -45,6 +46,8 @@ class DocsMyFragment : DocsCloudFragment() {
         }
         mCloudPresenter.getItemsById(ID)
     }
+
+    override fun getSection() = ApiContract.SectionType.CLOUD_USER
 
     override fun onRemoveItemFromFavorites() {}
     private fun init() {

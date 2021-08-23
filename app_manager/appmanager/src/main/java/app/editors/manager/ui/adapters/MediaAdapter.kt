@@ -35,7 +35,6 @@ import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setImageTint
 import lib.toolkit.base.managers.utils.UiUtils.setLayoutParams
-import java.util.*
 import javax.inject.Inject
 
 class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
@@ -170,7 +169,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
             setLayoutParams(imageLayout, cellSize, cellSize)
 
             imageView.isClickable = false
-            UiUtils.setColorFilter(progressBar.context, progressBar.indeterminateDrawable, R.color.colorAccent)
+            UiUtils.setColorFilter(progressBar.context, progressBar.indeterminateDrawable, R.color.colorSecondary)
 
             view.setOnClickListener { v: View? ->
                 mOnItemClickListener?.onItemClick(v, layoutPosition)

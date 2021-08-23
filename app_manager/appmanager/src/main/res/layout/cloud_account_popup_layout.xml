@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Created by Michael Efremov on 30.07.20 11:22
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/context_popup_width"
     android:layout_height="wrap_content"

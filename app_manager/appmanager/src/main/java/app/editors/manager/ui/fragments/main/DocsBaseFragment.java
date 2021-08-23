@@ -814,8 +814,8 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     }
 
     @Override
-    public void onDownloadActivity() {
-        showDownloadFolderActivity();
+    public void onDownloadActivity(Uri uri) {
+        showDownloadFolderActivity(uri);
     }
 
     @Override

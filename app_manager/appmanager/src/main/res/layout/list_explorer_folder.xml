@@ -1,77 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_explorer_folder_layout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height"
-    android:background="@color/colorWhite"
-    android:clickable="false"
-    android:focusable="false">
+    android:background="@color/listItemColor"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingBottom="@dimen/line_separator_height">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/list_explorer_folder_layout"
-        android:layout_width="match_parent"
+    <include
+        android:id="@+id/view_icon_selectable_layout"
+        layout="@layout/view_icon_selectable"
+
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
+        android:layout_marginLeft="@dimen/screen_margin_large"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/list_explorer_folder_name"
+        style="@style/ItemMediumBlackText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/list_explorer_folder_info"
+        app:layout_constraintLeft_toRightOf="@+id/view_icon_selectable_layout"
+        app:layout_constraintRight_toLeftOf="@+id/list_explorer_folder_context"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Folder name" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/list_explorer_folder_info"
+        style="@style/ItemSmallGreyText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/list_explorer_folder_name"
+        app:layout_constraintRight_toRightOf="@+id/list_explorer_folder_name"
+        app:layout_constraintTop_toBottomOf="@+id/list_explorer_folder_name"
+        tools:text="Folder date" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/list_explorer_folder_context"
+        style="@style/AlphaImageButton"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:paddingBottom="@dimen/line_separator_height">
-
-        <include
-            android:id="@+id/view_icon_selectable_layout"
-            layout="@layout/view_icon_selectable"
-            android:layout_width="@dimen/image_size"
-            android:layout_height="@dimen/image_size"
-            android:layout_marginLeft="@dimen/screen_margin_large"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/list_explorer_folder_name"
-            style="@style/ItemMediumBlackText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
-            android:text="Folder name"
-            app:layout_constraintBottom_toTopOf="@+id/list_explorer_folder_info"
-            app:layout_constraintLeft_toRightOf="@+id/view_icon_selectable_layout"
-            app:layout_constraintRight_toLeftOf="@+id/list_explorer_folder_context"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/list_explorer_folder_info"
-            style="@style/ItemSmallGreyText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Folder date"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="@+id/list_explorer_folder_name"
-            app:layout_constraintRight_toRightOf="@+id/list_explorer_folder_name"
-            app:layout_constraintTop_toBottomOf="@+id/list_explorer_folder_name" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/list_explorer_folder_context"
-            style="@style/AlphaImageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:padding="@dimen/screen_margin_large"
-            android:src="@drawable/ic_list_context_button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:padding="@dimen/screen_margin_large"
+        android:src="@drawable/ic_list_context_button"
+        android:tint="@color/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <include
         layout="@layout/view_line_separator"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_gravity="bottom" />
+        android:layout_gravity="bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/list_explorer_folder_name" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
 

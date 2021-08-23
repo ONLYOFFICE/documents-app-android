@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Primary -->
+    <color name="colorPrimary">#3E9CF0</color>
+    <color name="colorOnPrimary">@color/colorWhite</color>
+    <color name="colorPrimaryDark">#151515</color>
+    <color name="colorPrimaryLight">#191919</color>
+    <color name="colorSecondary">#FFAF49</color>
+    <color name="colorError">#FF5679</color>
+    <color name="colorSurface">#252525</color>
+    <color name="colorBackground">#121212</color>
+    <color name="colorOnBackground">#FFFFFFDE</color>
+    <color name="colorOnSurface">#FFFFFFDE</color>
+    <color name="colorOnSecondary">@color/colorBlack</color>
+    <color name="colorOnError">@color/colorBlack</color>
+    <color name="colorBackgroundSecond">@null</color>
+    <color name="colorOutline">#3F3F3F</color>
+    <color name="colorBgDescription">#363636</color>
+
+    <color name="colorAppBar" tools:ignore="MissingDefaultResource">#151515</color>
+    <color name="colorBottomBar">#191919</color>
+
+    <!--    Clouds-->
+    <color name="colorCloudItem">@color/colorOutline</color>
+
+    <color name="colorDocTint">#3B92F3</color>
+    <color name="colorSheetTint">#1DBC62</color>
+    <color name="colorPresentationTint">#FE8C33</color>
+    <color name="colorPicTint">#BA86FC</color>
+    <color name="colorPdfTint">#db4437</color>
+    <color name="colorVideoTint">#00a9cd</color>
+
+    <color name="listItemColor">@color/colorBackground</color>
+
+</resources>

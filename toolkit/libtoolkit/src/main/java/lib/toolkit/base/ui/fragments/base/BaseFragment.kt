@@ -460,8 +460,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
 
-    protected fun showDownloadFolderActivity() {
-        ActivitiesUtils.showDownloadViewer(this, BaseActivity.REQUEST_ACTIVITY_DOWNLOAD_VIEWER)
+    protected fun showDownloadFolderActivity(uri: Uri) {
+        ActivitiesUtils.showDownloadViewer(this, BaseActivity.REQUEST_ACTIVITY_DOWNLOAD_VIEWER, uri)
     }
 
     protected fun killSelf() {

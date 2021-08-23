@@ -2,14 +2,28 @@
 <resources>
 
     <!-- Primary -->
-    <color name="colorPrimary">#104071</color>
-    <color name="colorPrimaryDark">#10315A</color>
+    <color name="colorPrimary">#1A73E9</color>
+    <color name="colorOnPrimary">@color/colorBlack</color>
+    <color name="colorPrimaryDark">#0F4071</color>
     <color name="colorPrimaryLight">#3E73A3</color>
-    <color name="colorAccent">#ED7208</color>
+    <color name="colorSecondary">#ED7309</color>
+    <color name="colorOnSecondary">@color/colorWhite</color>
+    <color name="colorError">#FF0C3E</color>
+    <color name="colorOnError">@color/colorBlack</color>
+    <color name="colorSurface">@color/colorWhite</color>
+    <color name="colorOnSurface">@color/colorBlack</color>
+    <color name="colorBackground">@color/colorWhite</color>
+    <color name="colorOnBackground">@color/colorBlack</color>
+    <color name="colorBackgroundSecond">#F4F4F4</color>
+    <color name="colorOutline">#D8D8D8</color>
+    <color name="colorBgDescription">#F1F3F8</color>
 
     <!-- Common -->
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>
+
+    <color name="colorBottomBar">#0F4071</color>
+
     <color name="colorDark">#de000000</color>
     <color name="colorDarkGrey">#b2000000</color>
     <color name="colorGrey">#8a000000</color>
@@ -40,4 +54,8 @@
     <color name="colorStatusBarSheetTint">#336B4A</color>
     <color name="colorStatusBarPresentationTint">#884242</color>
 
+    <!--    Clouds-->
+    <color name="colorCloudItem">#EDF9FF</color>
+
+    <color name="listItemColor">@color/colorSurface</color>
 </resources>

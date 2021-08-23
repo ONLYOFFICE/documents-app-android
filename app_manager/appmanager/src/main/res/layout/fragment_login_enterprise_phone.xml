@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
     android:fillViewport="true"
     android:orientation="vertical">
 
@@ -14,6 +13,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_phone_country_layout"
+            style="@style/CommonEditText"
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_top_bottom_padding"
@@ -22,7 +22,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_phone_country_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -35,6 +35,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_phone_number_layout"
+            style="@style/CommonEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -43,7 +44,7 @@
             app:layout_constraintStart_toStartOf="@+id/login_phone_country_layout"
             app:layout_constraintTop_toBottomOf="@+id/login_phone_country_layout">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_phone_number_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -53,9 +54,9 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_phone_send_button"
-            style="@style/FixedAccentButtons"
+            style="@style/AccentButton"
             android:layout_width="0dp"
             android:layout_marginTop="16dp"
             android:text="@string/login_sms_phone_send_button"
@@ -64,7 +65,7 @@
             app:layout_constraintTop_toBottomOf="@+id/login_phone_number_layout"
             app:layout_constraintVertical_bias="0.0" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             style="@style/SmallTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

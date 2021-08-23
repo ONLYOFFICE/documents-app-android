@@ -1,12 +1,15 @@
 package app.editors.manager.mvp.presenters.main
 
+import android.net.Uri
 import android.view.View
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
+import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.api
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
@@ -59,8 +62,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver
 
+    private var api: Api? = null
+
+    private var currentSectionType = ApiContract.SectionType.UNKNOWN
+
     init {
         App.getApp().appComponent.inject(this)
+        api = mContext.api()
         downloadReceiver = DownloadReceiver()
         uploadReceiver = UploadReceiver()
         mModelExplorerStack = ModelExplorerStack()
@@ -214,7 +222,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onActionBarTitle(mContext.getString(R.string.toolbar_menu_search_result))
             viewState.onStateUpdateFilter(true, mFilteringValue)
             viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
-            viewState.onStateActionButton(isContextEditable)
+            viewState.onStateActionButton(false)
         } else if (!mModelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
@@ -302,7 +310,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         title: String,
         info: String,
         path: String,
-        mime: String
+        mime: String,
+        uri: Uri
     ) {
         viewState.onDialogClose()
         viewState.onSnackBarWithAction(
@@ -310,7 +319,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     $info
     $title
     """.trimIndent(), mContext.getString(R.string.download_manager_open)
-        ) { showDownloadFolderActivity() }
+        ) { showDownloadFolderActivity(uri) }
     }
 
     override fun onDownloadCanceled(id: String, info: String) {
@@ -386,19 +395,17 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             deleteShare.folderIds = mModelExplorerStack.selectedFoldersIds
             deleteShare.fileIds = mModelExplorerStack.selectedFilesIds
             mDisposable.add(Observable.fromCallable {
-//                mRetrofitTool.apiWithPreferences
-//                    .deleteShare(mToken, deleteShare).execute()
+                api?.deleteShare(deleteShare)?.execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-//                        baseResponse: Response<Base>? ->
-//                    mModelExplorerStack.removeSelected()
-//                    resetDatesHeaders()
-//                    setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-//                    viewState.onActionBarTitle("0")
-//                    viewState.onDeleteBatch(getListWithHeaders(mModelExplorerStack.last(), true))
-//                    onBatchOperations()
+                    mModelExplorerStack.removeSelected()
+                    resetDatesHeaders()
+                    setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    viewState.onActionBarTitle("0")
+                    viewState.onDeleteBatch(getListWithHeaders(mModelExplorerStack.last(), true))
+                    onBatchOperations()
                 }) { throwable: Throwable? -> fetchError(throwable) })
         }
     }
@@ -481,8 +488,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 deleteShare.fileIds = ArrayList(listOf(mItemClicked!!.id))
             }
             mDisposable.add(Observable.fromCallable {
-//                mRetrofitTool.apiWithPreferences
-//                    .deleteShare(mToken, deleteShare).execute()
+                api?.deleteShare(deleteShare)?.execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -631,32 +637,46 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
      * */
     val isContextItemEditable: Boolean
         get() = isContextEditable && (!isVisitor && !isShareSection || isCommonSection || isItemOwner)
+
     private val isContextOwner: Boolean
         get() = StringUtils.equals(mModelExplorerStack.currentFolderOwnerId, account.id)
+
     private val isContextReadWrite: Boolean
         get() = isContextOwner || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
+
     val isUserSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_USER
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
+
     private val isShareSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_SHARE
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_SHARE
+
     private val isCommonSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_COMMON
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_COMMON
+
     private val isProjectsSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_PROJECTS
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_PROJECTS
+
     private val isBunchSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_BUNCH
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_BUNCH
+
     private val isClickedItemShared: Boolean
         get() = mItemClicked != null && mItemClicked!!.shared
+
     private val isClickedItemFavorite: Boolean
         get() = mItemClicked != null && mItemClicked!!.favorite
+
     private val isItemOwner: Boolean
         get() = mItemClicked != null && StringUtils.equals(mItemClicked!!.createdBy.id, account.id)
+
     private val isItemReadWrite: Boolean
         get() = mItemClicked != null && (mItemClicked!!.access == ApiContract.ShareCode.READ_WRITE || mItemClicked!!.access == ApiContract.ShareCode.NONE || mItemClicked!!.access == ApiContract.ShareCode.REVIEW)
+
     private val isItemEditable: Boolean
         get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite)
+
     private val isItemShareable: Boolean
         get() = isItemEditable && (!isCommonSection || isAdmin) && !account.isPersonal() && !isProjectsSection && !isBunchSection
+
     private val isClickedItemStorage: Boolean
         get() = mItemClicked != null && mItemClicked!!.providerItem
 
@@ -669,8 +689,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
         }
 
-    private fun showDownloadFolderActivity() {
-        viewState.onDownloadActivity()
+    private fun showDownloadFolderActivity(uri: Uri) {
+        viewState.onDownloadActivity(uri)
     }
 
+    fun setSectionType(sectionType: Int) {
+        currentSectionType = sectionType
+    }
 }
