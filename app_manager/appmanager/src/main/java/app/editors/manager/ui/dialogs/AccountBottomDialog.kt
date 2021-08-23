@@ -47,6 +47,8 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: BottomAccountAdapter
 
+    private var toast: Toast? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.ContextMenuDialog)
@@ -55,6 +57,11 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     override fun onDestroyView() {
         super.onDestroyView()
         adapter.setOnAddAccountClick(null)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        toast?.cancel()
     }
 
     @SuppressLint("InflateParams")
@@ -83,7 +90,7 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
         recyclerView.adapter = adapter
         recyclerView.isNestedScrollingEnabled = true
         adapter.setOnItemClickListener(this)
-        adapter.setOnAddAccountClick { PortalsActivity.showPortals(activity) }
+        adapter.setOnAddAccountClick { PortalsActivity.showPortals(requireActivity()) }
         presenter.accounts
     }
 
@@ -96,7 +103,7 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
         hideDialog()
         if (context != null && activity != null) {
             val intent = Intent(context, MainActivity::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && activity!!.isInMultiWindowMode) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && requireActivity().isInMultiWindowMode) {
                 intent.flags =
                     Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT
             }
@@ -141,7 +148,9 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     override fun onError(message: String?) {
         hideDialog()
         if (message != null) {
-            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+            toast?.cancel()
+            toast = Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
+            toast?.show()
         }
     }
 }

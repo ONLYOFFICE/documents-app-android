@@ -4,13 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.transition.AutoTransition
-import androidx.transition.Transition
-import androidx.transition.TransitionManager
 import androidx.work.WorkManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
@@ -35,11 +31,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.PermissionUtils
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
+import lib.toolkit.base.ui.views.animation.collapse
+import lib.toolkit.base.ui.views.animation.expand
 import moxy.presenter.InjectPresenter
 import java.util.*
+
 
 interface ActionButtonFragment {
     fun showActionDialog()
@@ -200,7 +198,6 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
     }
 
     private fun initViews() {
-        UiUtils.removePaddingFromNavigationItem(viewBinding.bottomNavigation)
         viewBinding.appFloatingActionButton.visibility = View.GONE
         viewBinding.appFloatingActionButton.setOnClickListener { onFloatingButtonClick() }
     }
@@ -274,6 +271,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
                 checkPermission()
             }
             is MainActivityState.CloudState -> {
+                showActionButton(false)
                 state.account?.let {
                     showOnCloudFragment(state.account)
                 } ?: run {
@@ -332,6 +330,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
 
     override fun onDialogClose() {
         presenter.isDialogOpen = false
+        hideDialog()
     }
 
     override fun onCloseActionDialog() {
@@ -373,9 +372,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         ReviewManagerFactory.create(this).launchReviewFlow(this, reviewInfo)
             .addOnCompleteListener { task: Task<Void?> ->
                 if (task.isSuccessful) {
-                    Log.d(TAG, "onShowInAppReview: success")
+                    presenter.onRateOff()
                 } else {
-                    Log.d(TAG, "onShowInAppReview: error")
+                    presenter.onRateOff()
                 }
             }
     }
@@ -488,6 +487,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
                     }
                 }
             }
+            showActionButton(true)
         } ?: run {
             FragmentUtils.showFragment(
                 supportFragmentManager,
@@ -528,7 +528,6 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
                 CloudAccountFragment.newInstance(),
                 R.id.frame_container
             )
-
         } else {
             FragmentUtils.showFragment(
                 supportFragmentManager,
@@ -539,21 +538,18 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
     }
 
     override fun setAppBarStates(isVisible: Boolean) {
-        setAnimation()
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
-        viewBinding.appBarTabs.visibility = if (isVisible) View.VISIBLE else View.GONE
-    }
-
-    private fun setAnimation() {
-        val transition: Transition = AutoTransition()
-        transition.duration = 200
-        transition.excludeChildren(R.id.list_swipe_refresh, true)
-        transition.excludeChildren(viewBinding.bottomNavigation, true)
-        transition.excludeChildren(viewBinding.appBarToolbar, true)
-        transition.excludeChildren(viewBinding.appBarTabs, true)
-        TransitionManager.beginDelayedTransition(viewBinding.root, transition)
+        if (isVisible) {
+            if (viewBinding.appBarTabs.visibility != View.VISIBLE) {
+                viewBinding.appBarLayout.postDelayed({
+                    viewBinding.appBarTabs.expand(100)
+                }, 10)
+            }
+        } else {
+            viewBinding.appBarTabs.collapse()
+        }
     }
 
 }

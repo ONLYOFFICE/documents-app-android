@@ -15,9 +15,10 @@ import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
-import app.editors.manager.di.module.*
-import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
-import app.editors.manager.onedrive.di.component.OneDriveComponent
+import app.editors.manager.di.module.ApiModule
+import app.editors.manager.di.module.AppModule
+import app.editors.manager.di.module.ShareModule
+import app.editors.manager.di.module.ToolModule
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.util.*
@@ -55,10 +56,11 @@ class App : Application() {
             initCrashlytics()
         }
 
-    private lateinit var _appComponent: AppComponent
-
+    private var _appComponent: AppComponent? = null
     val appComponent: AppComponent
-        get() = _appComponent
+        get() = checkNotNull(_appComponent) {
+            "App component can't be null"
+        }
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
@@ -108,7 +110,7 @@ class App : Application() {
                 WebView.setDataDirectorySuffix("cacheWebView")
             }
         }
-        isAnalyticEnable = _appComponent.preference.isAnalyticEnable
+        isAnalyticEnable = appComponent.preference.isAnalyticEnable
         initCrashlytics()
     }
 
@@ -124,10 +126,8 @@ class App : Application() {
 
     private fun initDagger() {
         _appComponent = DaggerAppComponent.builder()
-            .appModule(AppModule(this))
-            .accountModule(AccountModule(RoomCallback()))
-            .toolModule(ToolModule())
-            .recentModule(RecentModule())
+            .context(context = this)
+            .roomCallback(RoomCallback())
             .build()
     }
 
@@ -138,37 +138,68 @@ class App : Application() {
         }
     }
 
-    fun getApi(token: String): Api {
+    fun getApi(): Api {
         return DaggerApiComponent.builder()
-            .appComponent(_appComponent)
-            .apiModule(ApiModule(token))
+            .appComponent(appComponent)
             .build()
-            .getApi()
+            .api
     }
 
-    val loginComponent: LoginComponent
-        get() = DaggerLoginComponent.builder().appComponent(_appComponent)
-            .loginModule(LoginModule())
-            .build()
-
-
-    fun getShareService(token: String): ShareService {
-        return DaggerShareComponent.builder().appComponent(_appComponent)
-            .shareModule(ShareModule(token))
+    fun getShareService(): ShareService {
+        return DaggerShareComponent.builder().appComponent(appComponent)
             .build()
             .shareService
     }
 
-    fun getWebDavApi(login: String?, password: String?): WebDavApi {
-        return DaggerWebDavComponent.builder().appComponent(_appComponent)
-            .webDavApiModule(WebDavApiModule(login, password))
+    fun getWebDavApi(): WebDavApi {
+        return DaggerWebDavComponent.builder().appComponent(appComponent)
             .build()
-            .getWebDavApi()
+            .webDavApi
     }
 
-    fun getOneDriveComponent(token: String): OneDriveComponent {
-        return DaggerOneDriveComponent.builder().appComponent(_appComponent)
-            .oneDriveModule(OneDriveModule(token))
-            .build()
+}
+
+val Context.accountOnline: CloudAccount?
+    get() = when (this) {
+        is App -> this.appComponent.accountOnline
+        else -> this.applicationContext.appComponent.accountOnline
+    }
+
+
+val Context.appComponent: AppComponent
+    get() = when (this) {
+        is App -> this.appComponent
+        else -> this.applicationContext.appComponent
+    }
+
+val Context.loginService: ILoginServiceProvider
+    get() = when (this) {
+        is App -> this.appComponent.loginService
+        else -> this.applicationContext.appComponent.loginService
+    }
+
+fun Context.api(): Api {
+    return when (this) {
+        is App -> this.getApi()
+        else -> this.applicationContext.api()
+    }
+}
+
+fun Context.webDavApi(): WebDavApi {
+    return when (this) {
+        is App -> this.getWebDavApi()
+        else -> this.applicationContext.webDavApi()
+    }
+}
+
+fun getOneDriveComponent(token: String): OneDriveComponent {
+    return DaggerOneDriveComponent.builder().appComponent(_appComponent)
+        .oneDriveModule(OneDriveModule(token))
+        .build()
+}
+fun Context.getShareApi(): ShareService {
+    return when (this) {
+        is App -> this.getShareService()
+        else -> this.applicationContext.getShareApi()
     }
 }

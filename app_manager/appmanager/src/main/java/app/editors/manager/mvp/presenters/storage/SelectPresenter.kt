@@ -7,8 +7,8 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.api
 import app.editors.manager.di.component.DaggerApiComponent
-import app.editors.manager.di.module.ApiModule
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.views.storage.SelectView
@@ -46,19 +46,7 @@ class SelectPresenter : MvpPresenter<SelectView>() {
     private var disposable: Disposable? = null
     private var storageList: List<Storage>? = null
 
-    private val api: Api = runBlocking(Dispatchers.Default) {
-        accountDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(R.string.account_type)))
-                ?.let {
-                    return@runBlocking DaggerApiComponent.builder().apiModule(ApiModule(it))
-                        .appComponent(App.getApp().appComponent)
-                        .build()
-                        .getApi()
-                }
-        } ?: run {
-            throw Error("No account")
-        }
-    }
+    private val api: Api = context.api()
 
     override fun onDestroy() {
         super.onDestroy()

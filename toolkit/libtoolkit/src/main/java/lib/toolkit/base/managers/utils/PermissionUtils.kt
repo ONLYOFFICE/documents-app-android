@@ -24,7 +24,7 @@ object PermissionUtils {
     @JvmStatic
     fun requestPermission(fragment: Fragment, requestCode: Int, vararg permissions: String): Boolean {
         return if (!checkPermission(
-                fragment.context!!,
+                fragment.requireContext(),
                 *permissions
             )
         ) {

@@ -10,8 +10,9 @@ import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.api
+import app.editors.manager.app.webDavApi
 import app.editors.manager.di.component.DaggerApiComponent
-import app.editors.manager.di.module.ApiModule
 import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Current
@@ -36,16 +37,16 @@ import retrofit2.HttpException
 import java.io.File
 import java.util.*
 
-sealed class RecentState{
-    class RenderList(val recents: List<Recent>): RecentState()
+sealed class RecentState {
+    class RenderList(val recents: List<Recent>) : RecentState()
 }
 
 sealed class OpenState {
-    class Docs(val uri: Uri): OpenState()
-    class Cells(val uri: Uri): OpenState()
-    class Slide(val uri: Uri): OpenState()
-    class Pdf(val uri: Uri): OpenState()
-    class Media(val explorer: Explorer, val isWebDav: Boolean): OpenState()
+    class Docs(val uri: Uri) : OpenState()
+    class Cells(val uri: Uri) : OpenState()
+    class Slide(val uri: Uri) : OpenState()
+    class Pdf(val uri: Uri) : OpenState()
+    class Media(val explorer: Explorer, val isWebDav: Boolean) : OpenState()
 }
 
 @InjectViewState
@@ -102,11 +103,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun getRecentFiles() {
         CoroutineScope(Dispatchers.Default).launch {
-                val list = recentDao.getRecents().filter { recent -> checkFiles(recent) }
-                    .sortedByDescending { it.date }
-                withContext(Dispatchers.Main) {
-                    viewState.onRender(RecentState.RenderList(list))
-                }
+            val list = recentDao.getRecents().filter { recent -> checkFiles(recent) }
+                .sortedByDescending { it.date }
+            withContext(Dispatchers.Main) {
+                viewState.onRender(RecentState.RenderList(list))
+            }
         }
     }
 
@@ -140,10 +141,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 Account(account.getAccountName(), mContext.getString(R.string.account_type))
             )?.let { it ->
                 disposable.add(
-                    DaggerApiComponent.builder().apiModule(ApiModule(it))
-                        .appComponent(App.getApp().appComponent)
-                        .build()
-                        .getApi()
+                    mContext.api()
                         .getFileInfo(recent.idFile)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -321,34 +319,29 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     override fun upload(uri: Uri?, uris: ClipData?) {
         account?.let {
             if (it.isWebDav) {
-                AccountUtils.getPassword(
-                    mContext,
-                    Account(it.getAccountName(), mContext.getString(R.string.account_type))
-                )?.let { password ->
-                    val provider = WebDavFileProvider(
-                        App.getApp().getWebDavApi(it.login, password),
-                        WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
-                    )
-                    item?.let { item ->
-                        val file = CloudFile().apply {
-                            id = item.idFile
-                            title = item.path
-                            webUrl = item.path
-                            folderId = item.idFile?.substring(0, item.idFile?.lastIndexOf('/')?.plus(1) ?: -1)
-                            fileExst = StringUtils.getExtensionFromPath(item.name)
-                        }
-                        disposable.add(provider.fileInfo(file, false)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .flatMap { cloudFile ->
-                                addRecent(cloudFile)
-                                return@flatMap provider.upload(cloudFile.folderId, arrayListOf(uri))
-                            }.subscribe({}, { error -> fetchError(error) }, {
-                                deleteTempFile()
-                                viewState.onSnackBar(mContext.getString(R.string.upload_manager_complete));
-                            }))
+                val provider = WebDavFileProvider(
+                    mContext.webDavApi(),
+                    WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
+                )
+                item?.let { item ->
+                    val file = CloudFile().apply {
+                        id = item.idFile
+                        title = item.path
+                        webUrl = item.path
+                        folderId = item.idFile?.substring(0, item.idFile?.lastIndexOf('/')?.plus(1) ?: -1)
+                        fileExst = StringUtils.getExtensionFromPath(item.name)
                     }
-
+                    disposable.add(provider.fileInfo(file, false)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap { cloudFile ->
+                            addRecent(cloudFile)
+                            return@flatMap provider.upload(cloudFile.folderId, arrayListOf(uri))
+                        }.subscribe({}, { error -> fetchError(error) }, {
+                            deleteTempFile()
+                            viewState.onSnackBar(mContext.getString(R.string.upload_manager_complete));
+                        })
+                    )
                 }
             }
         }
@@ -452,44 +445,39 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     private suspend fun openWebDavFile(recent: Recent, position: Int) {
-        accountDao.getAccount(recent.ownerId!!)?.let { account ->
-            AccountUtils.getPassword(
-                mContext,
-                Account(account.getAccountName(), mContext.getString(R.string.account_type))
-            )?.let { password ->
-                WebDavFileProvider(
-                    App.getApp().getWebDavApi(account.login, password),
-                    WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
-                ).let { provider ->
-                    val cloudFile = CloudFile().apply {
-                        title = recent.name
-                        id = recent.idFile
-                        fileExst = StringUtils.getExtensionFromPath(recent.name)
-                        pureContentLength = recent.size
-                    }
-                    withContext(Dispatchers.Main) {
-                        if (StringUtils.isImage(cloudFile.fileExst)) {
-                            viewState.onOpenFile(OpenState.Media(getWebDavImage(recent), true))
-                        } else {
-                            disposable.add(provider.fileInfo(cloudFile)
-                                .doOnSubscribe {
-                                    viewState.onDialogWaiting(
-                                        mContext.getString(R.string.dialogs_wait_title),
-                                        null
-                                    )
-                                }
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe({ file ->
-                                    temp = file
-                                    viewState.onDialogClose()
-                                    openLocalFile(Uri.parse(file.webUrl))
-                                    viewState.onMoveElement(recent, position)
-                                }, {
-                                    fetchError(it)
-                                })
-                            )
-                        }
+        accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
+            WebDavFileProvider(
+                mContext.webDavApi(),
+                WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+            ).let { provider ->
+                val cloudFile = CloudFile().apply {
+                    title = recent.name
+                    id = recent.idFile
+                    fileExst = StringUtils.getExtensionFromPath(recent.name)
+                    pureContentLength = recent.size
+                }
+                withContext(Dispatchers.Main) {
+                    if (StringUtils.isImage(cloudFile.fileExst)) {
+                        viewState.onOpenFile(OpenState.Media(getWebDavImage(recent), true))
+                    } else {
+                        disposable.add(provider.fileInfo(cloudFile)
+                            .doOnSubscribe {
+                                viewState.onDialogWaiting(
+                                    mContext.getString(R.string.dialogs_wait_title),
+                                    null
+                                )
+                            }
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({ file ->
+                                temp = file
+                                viewState.onDialogClose()
+                                openLocalFile(Uri.parse(file.webUrl))
+                                viewState.onMoveElement(recent, position)
+                            }, {
+                                fetchError(it)
+                            })
+                        )
                     }
                 }
             }

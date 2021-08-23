@@ -3,7 +3,6 @@ package app.editors.manager.mvp.presenters.login
 import android.accounts.Account
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.webkit.URLUtil
 import app.documents.core.account.CloudAccount
 import app.documents.core.login.LoginResponse
@@ -14,8 +13,8 @@ import app.documents.core.network.models.login.request.RequestSignIn
 import app.documents.core.network.models.login.response.ResponseSignIn
 import app.documents.core.network.models.login.response.ResponseUser
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.models.account.AccountsSqlData
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -52,7 +51,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
      * Common sign in
      * */
     protected fun signIn(requestSignIn: RequestSignIn) {
-        disposable = App.getApp().loginComponent.loginService
+        disposable = context.loginService
             .signIn(requestSignIn)
             .subscribe({ loginResponse ->
                 when (loginResponse) {
@@ -74,7 +73,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     }
 
     protected fun getUserInfo(request: RequestSignIn, token: Token) {
-        disposable = App.getApp().loginComponent.loginService.getUserInfo(token.token ?: "")
+        disposable = context.loginService.getUserInfo(token.token ?: "")
             .subscribe({ response ->
                 when (response) {
                     is LoginResponse.Success -> createAccount(

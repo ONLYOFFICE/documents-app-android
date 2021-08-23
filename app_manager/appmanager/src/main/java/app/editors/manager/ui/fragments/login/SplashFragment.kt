@@ -52,6 +52,7 @@ class SplashFragment : BaseAppFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         disposable?.dispose()
+        viewBinding = null
     }
 
     private fun init() {

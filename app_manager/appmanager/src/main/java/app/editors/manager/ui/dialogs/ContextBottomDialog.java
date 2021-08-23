@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -18,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.Serializable;
 
+import app.documents.core.settings.NetworkSettings;
 import app.editors.manager.R;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
@@ -67,6 +69,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
     }
 
     protected PreferenceTool mPreferenceTool;
+    protected NetworkSettings mNetworkSettings;
 
     protected Unbinder mUnbinder;
     @BindView(R.id.list_explorer_context_folder_name)
@@ -123,6 +126,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Dialog dialog = super.onCreateDialog(savedInstanceState);
         mPreferenceTool = App.getApp().getAppComponent().getPreference();
+        mNetworkSettings = App.getApp().getAppComponent().getNetworkSettings();
         restoreValues(savedInstanceState);
         return dialog;
     }
@@ -221,7 +225,11 @@ public class ContextBottomDialog extends BaseBottomDialog {
         mListContextHeaderTitle.setText(mState.mTitle);
         mListContextHeaderInfo.setText(mState.mInfo);
         mListContextHeaderImage.setImageResource(mState.mIconResId);
-        UiUtils.setImageTint(mListContextHeaderImage, R.color.colorGrey);
+        UiUtils.setImageTint(mListContextHeaderImage, R.color.colorOnSurface);
+        if (!mState.mIsFolder) {
+            app.editors.manager.managers.utils.UiUtils.setFileIcon(mListContextHeaderImage,
+                    StringUtils.getExtensionFromPath(mState.mTitle));
+        }
         setViewState();
     }
 
@@ -266,7 +274,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
         } else {
             // File can downloaded
             mListExplorerContextDownload.setVisibility(View.VISIBLE);
-            if(StringUtils.convertServerVersion(mPreferenceTool.getServerVersion()) >= 11) {
+            if(StringUtils.convertServerVersion(mNetworkSettings.getServerVersion()) >= 11 && mPreferenceTool.isFavoritesEnabled()) {
                 mViewLineSeparatorFavorites.setVisibility(View.VISIBLE);
                 if (mState.mIsFavorite) {
                     mListContextDeleteFavorite.setVisibility(View.VISIBLE);
@@ -354,7 +362,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
 
     private void setUploadToPortal(boolean isVisible) {
         if (isVisible) {
-            ((AppCompatImageView) mListExplorerContextDownload.findViewById(R.id.context_download_image)).setImageResource(R.drawable.ic_list_action_upload);
+            ((ImageView) mListExplorerContextDownload.findViewById(R.id.context_download_image)).setImageResource(R.drawable.ic_list_action_upload);
             ((AppCompatTextView) mListExplorerContextDownload.findViewById(R.id.context_download_text)).setText(R.string.list_context_upload_to_portal);
             mListExplorerContextDownload.setVisibility(View.VISIBLE);
         } else {

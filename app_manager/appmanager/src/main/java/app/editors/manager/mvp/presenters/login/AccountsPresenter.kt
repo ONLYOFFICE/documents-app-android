@@ -5,6 +5,7 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.login.LoginResponse
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.views.login.AccountsView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -93,7 +94,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
             val credential =
                 Credentials.basic(clickedAccount.login ?: "", password)
             setNetworkSettings()
-            disposable = App.getApp().getWebDavApi(clickedAccount.login, password)
+            disposable = context.webDavApi()
                 .capabilities(credential, clickedAccount.webDavPath)
                 .doOnSubscribe { viewState.showWaitingDialog() }
                 .subscribeOn(Schedulers.io())
@@ -123,19 +124,19 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
         if (token != null && token.isNotEmpty()) {
             setNetworkSettings()
             disposable =
-                App.getApp().loginComponent.loginService.getUserInfo(token)
+                App.getApp().appComponent.loginService.getUserInfo(token)
                     .doOnSubscribe { viewState.showWaitingDialog() }
                     .subscribe({ response ->
-                    when (response) {
-                        is LoginResponse.Success -> {
-                            setAccount()
+                        when (response) {
+                            is LoginResponse.Success -> {
+                                setAccount()
+                            }
+                            is LoginResponse.Error -> {
+                                setOnlineSettings()
+                                viewState.onSignIn(clickedAccount.portal ?: "", clickedAccount.login ?: "")
+                            }
                         }
-                        is LoginResponse.Error -> {
-                            setOnlineSettings()
-                            viewState.onSignIn(clickedAccount.portal ?: "", clickedAccount.login ?: "")
-                        }
-                    }
-                }, { fetchError(it) })
+                    }, { fetchError(it) })
         } else if (token != null && token.isEmpty()) {
             viewState.onSignIn(portal ?: "", clickedAccount.login ?: "")
         } else {
@@ -149,7 +150,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
             account?.let { accountDao.updateAccount(it) }
             accountDao.updateAccount(clickedAccount.copy(isOnline = true))
 
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 viewState.onAccountLogin()
             }
         }

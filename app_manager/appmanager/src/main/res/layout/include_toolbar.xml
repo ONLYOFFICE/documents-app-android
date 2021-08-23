@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.appbar.MaterialToolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?actionBarSize"
-    android:theme="?attr/actionBarTheme"
-    app:popupTheme="@style/AppTheme.PopupOverlay">
+    android:theme="@style/MainToolbar"
+    tools:menu="@menu/docs_main">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/accountContainer"
@@ -14,20 +15,22 @@
         android:background="?attr/selectableItemBackground"
         android:visibility="gone">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             android:id="@+id/toolbarArrowIcon"
             style="@style/CommonImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_margin_medium"
             android:src="@drawable/ic_arrow_down"
+            android:tint="@color/colorPrimary"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/linearLayoutCompat3"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             android:id="@+id/toolbarIcon"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
@@ -36,9 +39,10 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/linearLayoutCompat3"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:id="@+id/linearLayoutCompat3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -50,22 +54,22 @@
             app:layout_constraintStart_toEndOf="@+id/toolbarIcon"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/toolbarTitle"
                 style="@style/SmallTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/toolbarSubTitle"
                 style="@style/ItemSmallLightText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.appcompat.widget.Toolbar>
+</com.google.android.material.appbar.MaterialToolbar>

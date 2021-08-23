@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
     android:fillViewport="true"
     android:orientation="vertical">
 
@@ -14,6 +13,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_signin_password_layout"
+            style="@style/CommonEditText"
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_top_bottom_padding"
@@ -23,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:passwordToggleEnabled="true">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_signin_password_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -35,6 +35,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_signin_repeat_layout"
+            style="@style/CommonEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -44,7 +45,7 @@
             app:layout_constraintTop_toBottomOf="@+id/login_signin_password_layout"
             app:passwordToggleEnabled="true">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_signin_repeat_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -54,9 +55,9 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_signin_create_portal_button"
-            style="@style/FixedAccentButtons"
+            style="@style/AccentButton"
             android:layout_width="0dp"
             android:layout_marginTop="16dp"
             android:text="@string/login_create_signin_create_button"
@@ -65,10 +66,11 @@
             app:layout_constraintTop_toBottomOf="@+id/login_signin_repeat_layout"
             app:layout_constraintVertical_bias="0.0" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_signin_terms_info_button"
-            style="@style/FixedTransparentAccentButtonsNoCaps"
+            style="@style/AccentTextButtonSmall"
             android:layout_width="@dimen/default_screen_width"
+            android:layout_height="@dimen/default_login_accent_button_height"
             android:layout_marginTop="24dp"
             android:gravity="center"
             android:lines="2"

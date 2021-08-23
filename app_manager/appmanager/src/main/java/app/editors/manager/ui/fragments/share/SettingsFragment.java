@@ -262,6 +262,13 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
                 && mShareSettingsAdapter.getItem(1) instanceof Header) {
             mShareSettingsAdapter.removeHeader(getString(R.string.share_goal_user));
         }
+        showSnackBarWithAction(
+                getString(R.string.share_snackbar_remove_user),
+                getString(R.string.snackbar_undo),
+                (View v) -> {
+                    mSettingsPresenter.setItemAccess(share.getAccess());
+                    mShareSettingsAdapter.addItem(share);
+                });
     }
 
     @Override
@@ -316,22 +323,25 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
             return;
         }
         mSettingsPresenter.setShared(share, position);
-        setPopup(view);
+        setPopup(view, share.isGuest());
     }
 
-    private void setPopup(View view) {
+    private void setPopup(View view, boolean isVisitor) {
         view.post(() -> {
             if (getContext() != null && getActivity() != null) {
                 mSharePopup = new SharePopup(getContext(), R.layout.popup_share_menu);
                 mSharePopup.setContextListener(mListContextListener);
-                if (mSettingsPresenter.getItem() instanceof CloudFolder) {
-                    mSharePopup.setIsFolder(true);
+                if(!isVisitor) {
+                    if (mSettingsPresenter.getItem() instanceof CloudFolder) {
+                        mSharePopup.setIsFolder(true);
+                    } else {
+                        StringUtils.Extension extension = StringUtils.getExtension(StringUtils
+                                .getExtensionFromPath(mSettingsPresenter.getItem().getTitle()));
+                        mSharePopup.setIsDoc(extension == StringUtils.Extension.DOC);
+                    }
                 } else {
-                    StringUtils.Extension extension = StringUtils.getExtension(StringUtils
-                            .getExtensionFromPath(mSettingsPresenter.getItem().getTitle()));
-                    mSharePopup.setIsDoc(extension == StringUtils.Extension.DOC);
+                    mSharePopup.setIsVisitor();
                 }
-                mSharePopup.setFullAccess(true);
                 mSharePopup.showDropAt(view, getActivity());
             }
         });
@@ -360,7 +370,7 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
         mPlaceholderViews = new PlaceholderViews(mPlaceholderLayout);
         mPlaceholderViews.setViewForHide(mRecyclerView);
         mSwipeRefresh.setOnRefreshListener(this);
-        mSwipeRefresh.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.colorAccent));
+        mSwipeRefresh.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.colorSecondary));
         mShareSettingsAdapter = new ShareAdapter((view, integer) -> {
             onItemContextClick(view, integer);
             return Unit.INSTANCE;
@@ -453,11 +463,11 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
     }
 
     @Override
-    public void onShowPopup(int sharePosition) {
+    public void onShowPopup(int sharePosition, boolean isVisitor) {
         if (mRecyclerView != null) {
             mRecyclerView.post(() -> {
                 if (sharePosition != 0) {
-                    setPopup(mRecyclerView.getLayoutManager().findViewByPosition(sharePosition).findViewById(R.id.button_popup_arrow));
+                    setPopup(mRecyclerView.getLayoutManager().findViewByPosition(sharePosition).findViewById(R.id.button_popup_arrow), isVisitor);
                 } else {
                     if (getView() != null) {
                         showAccessPopup(getView());
@@ -465,13 +475,14 @@ public class SettingsFragment extends BaseAppFragment implements SettingsView, S
                 }
             });
         } else {
-            setPopup(mContentLayout);
+            setPopup(mContentLayout, isVisitor);
         }
     }
 
     private void showAccessPopup(View view) {
         mSharePopup = new SharePopup(requireContext(), R.layout.popup_share_menu);
         mSharePopup.setContextListener(mExternalContextListener);
+        mSharePopup.setExternalLink();
         mSharePopup.setFullAccess(false);
         if (mSettingsPresenter.getItem() instanceof CloudFolder) {
             mSharePopup.setIsFolder(true);

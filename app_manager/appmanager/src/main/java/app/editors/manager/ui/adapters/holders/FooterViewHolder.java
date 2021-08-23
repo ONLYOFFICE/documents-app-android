@@ -24,7 +24,7 @@ public class FooterViewHolder extends BaseViewHolderExplorer<Footer> {
     public FooterViewHolder(View parent, ExplorerAdapter adapter) {
         super(parent, adapter);
         mFooterProgress.getIndeterminateDrawable()
-                .setColorFilter(ContextCompat.getColor(adapter.mContext, R.color.colorAccent),
+                .setColorFilter(ContextCompat.getColor(adapter.mContext, R.color.colorSecondary),
                         PorterDuff.Mode.SRC_IN);
     }
 

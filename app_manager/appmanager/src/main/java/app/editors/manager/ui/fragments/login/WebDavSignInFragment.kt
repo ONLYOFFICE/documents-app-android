@@ -100,6 +100,9 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
                 initNextCloudState()
             }
 
+            WebDavApi.Providers.KDrive -> {
+                initKDriveState()
+            }
             else -> {
                 // Nothing
             }
@@ -113,6 +116,12 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
         viewBinding?.storageWebDavLoginLayout?.visibility = View.GONE
         viewBinding?.storageWebDavLoginEdit?.removeTextChangedListener(textWatcher)
         viewBinding?.storageWebDavPasswordEdit?.removeTextChangedListener(textWatcher)
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun initKDriveState() {
+        viewBinding?.storageWebDavUrlEdit?.setText("https://connect.drive.infomaniak.com")
+        viewBinding?.storageWebDavUrlLayout?.visibility = View.GONE
     }
 
     @SuppressLint("SetTextI18n")

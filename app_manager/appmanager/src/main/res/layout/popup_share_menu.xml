@@ -2,10 +2,11 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@color/colorWhite"
+    android:background="@color/colorSurface"
     android:paddingTop="@dimen/popup_margins_top_bottom"
     android:paddingBottom="@dimen/popup_margins_top_bottom">
 
@@ -18,11 +19,12 @@
             android:id="@+id/popup_share_access_full"
             style="@style/PopupLayout">
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_full" />
+                app:srcCompat="@drawable/ic_access_full"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/PopupText"
                 android:text="@string/share_popup_access_full" />
         </LinearLayout>
@@ -31,11 +33,12 @@
             android:id="@+id/popup_share_access_fill_forms"
             style="@style/PopupLayout">
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_fill_form" />
+                app:srcCompat="@drawable/ic_access_fill_form"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/PopupText"
                 android:text="@string/share_popup_access_fill_forms" />
         </LinearLayout>
@@ -44,11 +47,12 @@
             android:id="@+id/popup_share_access_comment"
             style="@style/PopupLayout">
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_comment" />
+                app:srcCompat="@drawable/ic_access_comment"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/PopupText"
                 android:text="@string/share_popup_access_comment" />
         </LinearLayout>
@@ -57,11 +61,12 @@
             android:id="@+id/popup_share_access_review"
             style="@style/PopupLayout">
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_review" />
+                app:srcCompat="@drawable/ic_access_review"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/PopupText"
                 android:text="@string/share_popup_access_review" />
         </LinearLayout>
@@ -70,11 +75,12 @@
             android:id="@+id/popup_share_access_read"
             style="@style/PopupLayout">
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_read" />
+                app:srcCompat="@drawable/ic_access_read"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/PopupText"
                 android:text="@string/share_popup_access_read_only" />
         </LinearLayout>
@@ -91,11 +97,12 @@
             android:id="@+id/popup_share_access_deny"
             style="@style/PopupLayout">
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_deny" />
+                app:srcCompat="@drawable/ic_access_deny"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/PopupText"
                 android:text="@string/share_popup_access_deny_access" />
         </LinearLayout>
@@ -112,14 +119,17 @@
         <LinearLayout
             android:id="@+id/popup_share_access_remove"
             style="@style/PopupLayout"
-            android:visibility="gone">
+            android:visibility="visible">
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_remove" />
+                android:tint="@color/colorError"
+                app:srcCompat="@drawable/ic_trash"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/PopupText"
+                android:textColor="@color/colorError"
                 android:text="@string/share_popup_access_deny_remove" />
         </LinearLayout>
 

@@ -23,8 +23,8 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <ProgressBar
-            style="@android:style/Widget.Holo.ProgressBar"
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            style="@style/Widget.MaterialComponents.CircularProgressIndicator"
             android:id="@+id/media_image_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

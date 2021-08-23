@@ -39,7 +39,7 @@
     <string name="countries_codes_title">Выбор страны</string>
     <string name="device_path_file_error">Этот файл не существует.</string>
     <string name="device_trash_files_restore">Восстановить</string>
-    <string name="dialog_clear_cache">Очистить кэш?</string>
+    <string name="dialog_clear_cache">Очистить кэш?\nЭта операция освободит место на устройстве за счет удаления временных файлов. Автономные файлы и персональные данные не будут удалены.</string>
     <string name="dialog_move_copy_copy">Создать копию файла</string>
     <string name="dialog_move_copy_overwrite">Перезаписать с обновлением версии</string>
     <string name="dialog_move_copy_skip">Пропустить</string>

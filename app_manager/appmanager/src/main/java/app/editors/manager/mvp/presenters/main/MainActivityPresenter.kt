@@ -6,7 +6,6 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.FirebaseUtils.OnRatingApp
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -14,10 +13,7 @@ import app.editors.manager.mvp.views.main.MainActivityView
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,7 +24,6 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
 import moxy.InjectViewState
-import java.util.concurrent.TimeUnit
 
 sealed class MainActivityState {
     object RecentState : MainActivityState()
@@ -124,12 +119,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
 
     fun getRemoteConfigRate() {
         if (!BuildConfig.DEBUG) {
-            disposable.add(
-                Observable.just(1)
-                    .delay(500, TimeUnit.MILLISECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { FirebaseUtils.checkRatingConfig(this@MainActivityPresenter) })
+            if (preferenceTool.isRateOn && preferenceTool.userSession % DEFAULT_RATE_SESSIONS == 0L) {
+                viewState.onRatingApp()
+            }
         }
     }
 
@@ -171,13 +163,12 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
                     )
                 }
                 TAG_DIALOG_RATE_SECOND -> {
-                    preferenceTool.isRateOn = false
-                    if (reviewInfo != null) {
-                        viewState.onShowInAppReview(reviewInfo!!)
-                    } else {
+                    viewState.onDialogClose()
+                    reviewInfo?.let {
+                        viewState.onShowInAppReview(it)
+                    } ?: run {
                         viewState.onShowPlayMarket(BuildConfig.RELEASE_ID)
                     }
-                    viewState.onDialogClose()
                 }
                 TAG_DIALOG_RATE_FEEDBACK -> {
                     if (value != null) {
@@ -271,18 +262,15 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let { account ->
                 Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query)).let { data ->
-                    withContext(Dispatchers.Main) {
-                        viewState.openFile(account, Json.encodeToString(data))
+                    if (data.portal?.equals(account.portal) == true && data.email?.equals(account.login) == true) {
+                        withContext(Dispatchers.Main) {
+                            viewState.openFile(account, Json.encodeToString(data))
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            viewState.onError(context.getString(R.string.error_recent_enter_account))
+                        }
                     }
-//                    if (data.portal?.equals(account.portal) == true && data.email?.equals(account.login) == true) {
-//                        withContext(Dispatchers.Main) {
-//                            viewState.openFile(Json.encodeToString(data))
-//                        }
-//                    } else {
-//                        withContext(Dispatchers.Main) {
-//                            viewState.onError(context.getString(R.string.error_recent_enter_account))
-//                        }
-//                    }
                 }
             } ?: run {
                 withContext(Dispatchers.Main) {
@@ -290,6 +278,10 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
                 }
             }
         }
+    }
+
+    fun onRateOff() {
+        preferenceTool.isRateOn = false
     }
 
 }

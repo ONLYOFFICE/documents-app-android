@@ -25,11 +25,9 @@ annotation class LoginScope
 class LoginModule {
 
     @Provides
-    @LoginScope
     fun provideLogin(loginService: LoginService): ILoginServiceProvider = LoginServiceProvider(loginService)
 
     @Provides
-    @LoginScope
     fun provideLoginService(okHttpClient: OkHttpClient, settings: NetworkSettings): LoginService = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(settings.getBaseUrl())
@@ -42,7 +40,6 @@ class LoginModule {
         .create(LoginService::class.java)
 
     @Provides
-    @LoginScope
     fun provideOkHttpClient(settings: NetworkSettings): OkHttpClient {
         val builder = NetworkClient.getOkHttpBuilder(settings.getSslState(), settings.getCipher())
         builder.protocols(listOf(Protocol.HTTP_1_1))

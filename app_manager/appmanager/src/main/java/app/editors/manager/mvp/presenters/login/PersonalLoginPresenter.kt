@@ -29,7 +29,7 @@ class PersonalLoginPresenter : EnterpriseLoginPresenter() {
     private fun initPersonal(): Boolean {
         networkSettings.setDefault()
         networkSettings.setBaseUrl(ApiContract.PERSONAL_HOST)
-        disposable = App.getApp().loginComponent.loginService
+        disposable = App.getApp().appComponent.loginService
             .serverVersion()
             .subscribe { loginResponse ->
                     networkSettings.serverVersion = loginResponse.response as String

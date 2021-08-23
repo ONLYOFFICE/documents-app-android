@@ -54,6 +54,7 @@
     <dimen name="context_popup_width">320dp</dimen>
 
     <!-- Alpha -->
+    <item name="alpha_small" format="float" type="dimen">0.87</item>
     <item name="alpha_medium" format="float" type="dimen">0.54</item>
 
     <!--Toolbar-->

@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.presenters.share
 
-import android.accounts.Account
 import android.content.Intent
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.share.Share
@@ -9,8 +8,8 @@ import app.documents.core.network.models.share.request.RequestShare
 import app.documents.core.network.models.share.request.RequestShareItem
 import app.documents.core.share.ShareService
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.getShareApi
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
@@ -23,12 +22,8 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
 import retrofit2.HttpException
-import java.util.*
-import kotlin.collections.ArrayList
 
 @InjectViewState
 class SettingsPresenter : BasePresenter<SettingsView>() {
@@ -69,18 +64,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         disposable?.dispose()
     }
 
-    private fun getApi(): ShareService = runBlocking {
-        accountDao.getAccountOnline()?.let { cloudAccount ->
-            AccountUtils.getToken(
-                context,
-                Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
-            )?.let {
-                return@runBlocking App.getApp().getShareService(it)
-            }
-        } ?: run {
-            throw Error("No account")
-        }
-    }
+    private fun getApi(): ShareService = context.getShareApi()
 
     /*
      * Requests
@@ -190,10 +174,10 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     }
 
     fun setItemAccess(accessCode: Int) {
-        if (item != null && shareItem?.access != accessCode) {
+        if (item != null) {
             if (accessCode == ApiContract.ShareCode.NONE) {
                 shareItem?.let {
-                    viewState.onRemove(ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner), sharePosition)
+                    viewState.onRemove(ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor), sharePosition)
                 }
 
                 isRemove = true
@@ -223,7 +207,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         viewState.onGetShare(commonList, item!!.access)
         if (isPopupShow) {
             isPopupShow = false
-            viewState.onShowPopup(sharePosition)
+            shareItem?.isGuest?.let { viewState.onShowPopup(sharePosition, it) }
         }
     }
 
@@ -280,10 +264,10 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         isAccessDenied = false
         val userList = shareList.filter {
             it.sharedTo.userName.isNotEmpty() && !it.isOwner
-        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked) }
+        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
         val groupList = shareList.filter {
             it.sharedTo.name.isNotEmpty()
-        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked) }
+        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
 
         shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {
             item?.access = it.access
@@ -305,7 +289,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
 
         if (isRemove) {
             if (commonList.isEmpty()) {
-                viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
+                viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
             }
             isRemove = false
             isShare = false
@@ -319,7 +303,12 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         } else {
             viewState.onGetShare(commonList, item?.access ?: -1)
         }
-        viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
+
+        if (commonList.isEmpty()) {
+            viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
+        } else {
+            viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
+        }
     }
 
     override fun fetchError(throwable: Throwable) {

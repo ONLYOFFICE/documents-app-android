@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="app.editors.manager.ui.activities.main.SettingsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
+        style="@style/MainAppBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-        <androidx.appcompat.widget.Toolbar
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/app_bar_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_gravity="center"
-            android:contentInsetLeft="0dp"
             android:contentInsetStart="0dp"
+            android:contentInsetLeft="0dp"
             app:contentInsetLeft="0dp"
             app:contentInsetStart="0dp"
-            app:contentInsetStartWithNavigation="0dp"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:contentInsetStartWithNavigation="0dp" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

@@ -126,7 +126,7 @@ public class OnlyOfficeCloudFragment extends BaseAppFragment {
                 break;
             }
             case R.id.otherStorageButton: {
-                CloudsActivity.show(requireContext());
+                CloudsActivity.Companion.show(requireContext());
                 break;
             }
         }

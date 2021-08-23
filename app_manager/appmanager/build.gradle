@@ -56,8 +56,8 @@ android {
     defaultConfig {
         minSdkVersion AppDependency.MIN_SDK_VERSION
         targetSdkVersion AppDependency.TARGET_SDK_VERSION
-        versionCode 263
-        versionName "5.1.1"
+        versionCode 277
+        versionName "5.2.0"
         multiDexEnabled true
         applicationId "com.onlyoffice.documents"
         buildConfigField "boolean", "IS_BETA", "false"
@@ -242,6 +242,12 @@ dependencies {
     implementation(Libs.glide)
     implementation(Libs.photoView)
     implementation(Libs.androidWork)
+
+    //TODO add to base module
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
+
+    implementation("androidx.fragment:fragment-ktx:1.3.6")
 
     //TODO feature remove
     implementation("com.jakewharton:butterknife:10.2.1")

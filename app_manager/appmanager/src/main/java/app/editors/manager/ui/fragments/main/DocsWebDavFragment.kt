@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import app.editors.manager.R
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.R
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
@@ -125,7 +125,9 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        mSortItem.isVisible = false
+        mMenu?.let {
+            it.findItem(R.id.toolbar_sort_item_owner).isVisible = false
+        }
     }
 
     override fun onStateMenuSelection() {

@@ -4,5 +4,5 @@
     android:id="@+id/view_line_separator"
     android:layout_width="match_parent"
     android:layout_height="@dimen/line_separator_height"
-    android:background="@color/colorDarkLight"
+    android:background="@color/colorOutline"
     android:clickable="false"/>

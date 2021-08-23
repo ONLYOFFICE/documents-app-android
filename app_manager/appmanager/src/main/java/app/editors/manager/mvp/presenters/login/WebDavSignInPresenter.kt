@@ -2,13 +2,12 @@ package app.editors.manager.mvp.presenters.login
 
 import android.accounts.Account
 import android.net.Uri
-import android.os.Bundle
 import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.login.WebDavSignInView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -71,7 +70,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             networkSettings.setScheme(webUrl.protocol + "://")
             networkSettings.setBaseUrl(webUrl.protocol + "://" + webUrl.host)
 
-            disposable = App.getApp().getWebDavApi(null, null)
+            disposable = context.webDavApi()
                 .capabilities(Credentials.basic(login, password), webUrl.path)
                 .doOnSubscribe { viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title)) }
                 .subscribeOn(Schedulers.io())
@@ -114,10 +113,10 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
 
     fun checkNextCloud(provider: WebDavApi.Providers, url: String) {
         val builder = StringBuilder()
-        if (!url.contains(ApiContract.SCHEME_HTTPS) || !url.contains(ApiContract.SCHEME_HTTP)) {
-            builder.append(ApiContract.SCHEME_HTTPS).append(url)
-        } else {
+        if (url.contains(ApiContract.SCHEME_HTTPS) || url.contains(ApiContract.SCHEME_HTTP)) {
             builder.append(url)
+        } else {
+            builder.append(ApiContract.SCHEME_HTTPS).append(url)
         }
         try {
             val correctUrl = URL(builder.toString())
@@ -128,7 +127,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             networkSettings.setBaseUrl(correctUrl.protocol + "://" + correctUrl.host + "/")
             networkSettings.setScheme(correctUrl.protocol + "://")
 
-            disposable = App.getApp().getWebDavApi(null, null)
+            disposable = context.webDavApi()
                 .capability("$path/index.php/login/flow")
                 .doOnSubscribe {
                     viewState.onDialogWaiting(context.getString(R.string.dialogs_check_portal_header_text))

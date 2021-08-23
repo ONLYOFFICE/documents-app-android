@@ -18,8 +18,9 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
+import javax.inject.Inject
 
-class LocalContentTools(private val mContext: Context) {
+class LocalContentTools @Inject constructor(val context: Context) {
 
     companion object {
         private val TAG = LocalContentTools::class.java.simpleName
@@ -75,12 +76,12 @@ class LocalContentTools(private val mContext: Context) {
 
     }
 
-    private val mContentResolver: ContentResolver = mContext.contentResolver
+    private val mContentResolver: ContentResolver = context.contentResolver
     private val mUri: Uri = MediaStore.Files.getContentUri(URI_KEY)
     private lateinit var mRootDir: File
 
     fun createRootDir(): File {
-        val rootDir = File(getDir(mContext))
+        val rootDir = File(getDir(context))
         if (!rootDir.exists() && rootDir.mkdirs()) {
             addSamples(rootDir)
         }
@@ -91,16 +92,16 @@ class LocalContentTools(private val mContext: Context) {
     fun getRootDir(): File = mRootDir
 
     private fun addSamples(rootDir: File) {
-        val samplesName = mContext.assets.list("samples")
+        val samplesName = context.assets.list("samples")
         samplesName?.let {
             it.forEach { name ->
                 val file = File(rootDir.absolutePath + "/" + name)
-                val inputStream = mContext.assets.open("samples/$name")
+                val inputStream = context.assets.open("samples/$name")
                 val outputStream = FileOutputStream(file)
                 outputStream.write(inputStream.readBytes())
                 inputStream.close()
                 outputStream.close()
-                mContext.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
+                context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
             }
         }
     }
@@ -121,7 +122,7 @@ class LocalContentTools(private val mContext: Context) {
             } else {
                 writeToFile(file, movedFile)
             }
-            mContext.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(movedFile)))
+            context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(movedFile)))
             if (!isCopy) {
                 deleteFile(file)
             }
@@ -253,7 +254,7 @@ class LocalContentTools(private val mContext: Context) {
         val fileList = File("/storage/").listFiles()
         for (file in fileList) {
             if (!file.absolutePath.equals(Environment.getExternalStorageDirectory().absolutePath, ignoreCase = true) && file.isDirectory && file.canRead())
-                if (getExternalStorage(mContext).size >= 2) {
+                if (getExternalStorage(context).size >= 2) {
                     return file.absolutePath
                 }
             return ""
@@ -282,7 +283,7 @@ class LocalContentTools(private val mContext: Context) {
                 file.canonicalFile.delete()
             }
             if (file.exists()) {
-                isDelete = mContext.deleteFile(file.name)
+                isDelete = context.deleteFile(file.name)
             }
         }
         return isDelete
@@ -334,20 +335,20 @@ class LocalContentTools(private val mContext: Context) {
     }
 
     fun createFile(name: String, parent: File?, locale: String): File {
-        val path = FileUtils.getTemplates(mContext, locale, StringUtils.getExtensionFromPath(name))
+        val path = FileUtils.getTemplates(context, locale, StringUtils.getExtensionFromPath(name))
         var file = File(parent, name)
 
         if (file.exists()) {
             file = FileUtils.getNewFileName(file)
         }
 
-        mContext.assets.open("$ASSETS_TEMPLATES/$path").use { input ->
+        context.assets.open("$ASSETS_TEMPLATES/$path").use { input ->
             FileOutputStream(file).use { output ->
                 output.write(input.readBytes())
             }
         }
 
-        mContext.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
+        context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
 
         return file
     }
@@ -362,7 +363,7 @@ class LocalContentTools(private val mContext: Context) {
             return false
         }
         return if (oldFile.renameTo(newFile)) {
-            mContext.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(newFile)))
+            context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(newFile)))
             true
         } else {
             false

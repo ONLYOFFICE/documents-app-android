@@ -24,5 +24,5 @@ interface SettingsView : BaseViewExt {
     fun onSendLink(intent: Intent)
     fun onButtonState(state: Boolean)
     fun onPopupState(state: Boolean)
-    fun onShowPopup(mSharePosition: Int)
+    fun onShowPopup(mSharePosition: Int, isVisitor: Boolean)
 }

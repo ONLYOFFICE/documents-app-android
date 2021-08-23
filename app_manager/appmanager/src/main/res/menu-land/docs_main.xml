@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <item
-        android:visible="false"
         android:id="@+id/toolbar_item_open"
         android:icon="@drawable/drawable_menu_open_file"
+        android:iconTint="@color/colorPrimary"
         android:orderInCategory="1"
-        android:iconTint="@color/colorWhite"
+        android:title="@string/toolbar_menu_main_open"
+        android:visible="false"
         app:showAsAction="always"
-        android:title="@string/toolbar_menu_main_open" />
+        tools:ignore="UnusedAttribute" />
 
     <item
         android:id="@+id/toolbar_item_search"
         android:icon="@drawable/ic_list_context_rename"
-        android:iconTint="@color/colorWhite"
         android:orderInCategory="0"
         android:title="@string/toolbar_menu_search_hint"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
@@ -24,67 +24,66 @@
 
     <item
         android:id="@+id/toolbar_item_empty_trash"
-        android:icon="@drawable/drawable_menu_delete_forever"
-        android:iconTint="@color/colorWhite"
-        android:visible="false"
-        android:title="@string/toolbar_menu_main_delete"
+        android:icon="@drawable/ic_trash_delete"
         android:orderInCategory="1"
+        android:title="@string/toolbar_menu_main_delete"
+        android:visible="false"
         app:showAsAction="always"
-        tools:ignore="MenuTitle" />
+        tools:ignore="AlwaysShowAction,MenuTitle" />
 
     <item
         android:id="@+id/toolbar_item_sort"
         android:icon="@drawable/drawable_menu_sort"
-        android:iconTint="@color/colorWhite"
+        android:iconTint="@color/colorPrimary"
         android:orderInCategory="10"
         android:title="@string/toolbar_menu_sort_by"
         app:showAsAction="always"
-        tools:ignore="MenuTitle">
+        tools:ignore="MenuTitle,UnusedAttribute">
 
         <menu>
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/toolbar_sort_item_date_update"
-                    android:title="@string/toolbar_menu_sort_date_modified"
-                    android:orderInCategory="110"/>
+                    android:orderInCategory="110"
+                    android:title="@string/toolbar_menu_sort_date_modified" />
                 <!--<item-->
                 <!--android:id="@+id/toolbar_sort_item_date_create"-->
                 <!--android:title="@string/toolbar_menu_sort_date_create"-->
                 <!--android:orderInCategory="120"/>-->
                 <item
                     android:id="@+id/toolbar_sort_item_title"
-                    android:title="@string/toolbar_menu_sort_title"
-                    android:orderInCategory="130"/>
+                    android:orderInCategory="130"
+                    android:title="@string/toolbar_menu_sort_title" />
                 <item
                     android:id="@+id/toolbar_sort_item_type"
-                    android:title="@string/toolbar_menu_sort_type"
-                    android:orderInCategory="140"/>
+                    android:orderInCategory="140"
+                    android:title="@string/toolbar_menu_sort_type" />
                 <item
                     android:id="@+id/toolbar_sort_item_size"
-                    android:title="@string/toolbar_menu_sort_size"
-                    android:orderInCategory="150"/>
+                    android:orderInCategory="150"
+                    android:title="@string/toolbar_menu_sort_size" />
                 <item
                     android:id="@+id/toolbar_sort_item_owner"
-                    android:title="@string/toolbar_menu_sort_owner"
-                    android:orderInCategory="160"/>
+                    android:orderInCategory="160"
+                    android:title="@string/toolbar_menu_sort_owner" />
             </group>
 
             <item
-                android:title="@string/toolbar_menu_sort_order"
                 android:orderInCategory="200"
+                android:title="@string/toolbar_menu_sort_order"
                 app:showAsAction="always">
                 <menu>
                     <group android:checkableBehavior="single">
                         <item
                             android:id="@+id/toolbar_sort_item_asc"
-                            android:title="@string/toolbar_menu_sort_asc"
                             android:orderInCategory="210"
-                            app:showAsAction="never"/>
+                            android:title="@string/toolbar_menu_sort_asc"
+                            app:showAsAction="never" />
                         <item
                             android:id="@+id/toolbar_sort_item_desc"
-                            android:title="@string/toolbar_menu_sort_desc"
                             android:orderInCategory="220"
-                            app:showAsAction="never"/>
+                            android:title="@string/toolbar_menu_sort_desc"
+                            app:showAsAction="never" />
                     </group>
                 </menu>
             </item>
@@ -94,7 +93,7 @@
     <item
         android:id="@+id/toolbar_item_main"
         android:icon="@drawable/drawable_menu_main"
-        android:iconTint="@color/colorWhite"
+        android:iconTint="@color/colorPrimary"
         android:orderInCategory="20"
         android:title="@string/toolbar_menu_main_options"
         app:showAsAction="always"
@@ -104,40 +103,40 @@
             <group>
                 <item
                     android:id="@+id/toolbar_main_item_select"
-                    android:title="@string/toolbar_menu_main_select"
                     android:orderInCategory="300"
-                    app:showAsAction="never"/>
+                    android:title="@string/toolbar_menu_main_select"
+                    app:showAsAction="never" />
                 <item
                     android:id="@+id/toolbar_main_item_select_all"
-                    android:title="@string/toolbar_menu_main_select_all"
                     android:orderInCategory="310"
-                    app:showAsAction="never"/>
+                    android:title="@string/toolbar_menu_main_select_all"
+                    app:showAsAction="never" />
             </group>
 
             <item
                 android:id="@+id/toolbar_main_item_options"
-                android:title="@string/toolbar_menu_main_options"
                 android:orderInCategory="320"
+                android:title="@string/toolbar_menu_main_options"
                 android:visible="false"
                 app:showAsAction="always">
                 <menu>
                     <group>
                         <item
                             android:id="@+id/toolbar_main_item_share"
-                            android:title="@string/toolbar_menu_main_share"
-                            android:orderInCategory="400"/>
+                            android:orderInCategory="400"
+                            android:title="@string/toolbar_menu_main_share" />
                         <item
                             android:id="@+id/toolbar_main_item_move"
-                            android:title="@string/toolbar_menu_main_move"
-                            android:orderInCategory="410"/>
+                            android:orderInCategory="410"
+                            android:title="@string/toolbar_menu_main_move" />
                         <item
                             android:id="@+id/toolbar_main_item_rename"
-                            android:title="@string/toolbar_menu_main_rename"
-                            android:orderInCategory="420"/>
+                            android:orderInCategory="420"
+                            android:title="@string/toolbar_menu_main_rename" />
                         <item
                             android:id="@+id/toolbar_main_item_delete"
-                            android:title="@string/toolbar_menu_main_delete"
-                            android:orderInCategory="440"/>
+                            android:orderInCategory="440"
+                            android:title="@string/toolbar_menu_main_delete" />
                     </group>
                 </menu>
             </item>

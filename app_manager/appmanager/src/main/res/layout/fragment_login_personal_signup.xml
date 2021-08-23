@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
     android:fillViewport="true"
     android:orientation="vertical">
 
@@ -14,6 +13,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_personal_portal_email_layout"
+            style="@style/CommonEditText"
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_top_bottom_padding"
@@ -22,7 +22,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_personal_portal_email_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -32,9 +32,9 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_personal_signup_button"
-            style="@style/AccentButtons"
+            style="@style/AccentButton"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_login_accent_button_height"
             android:layout_marginTop="8dp"

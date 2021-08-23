@@ -23,9 +23,8 @@ import java.util.*
 import java.util.regex.Pattern
 
 object StringUtils {
-
     @JvmField
-    val TAG = StringUtils::class.java!!.simpleName
+    val TAG = StringUtils::class.java.simpleName
 
     val MD5 = "MD5"
     val COMMON_MIME_TYPE = "*/*"
@@ -428,6 +427,20 @@ object StringUtils {
             Locale.GERMAN.language -> locale
             RU_LANG -> locale
             else -> Locale.ENGLISH.language
+        }
+    }
+
+    fun getDeviceName(): String {
+        return "${Build.MODEL} ${Build.TYPE}"
+    }
+
+    fun getAvatarName(name: String): String {
+        return name.split(" ").run {
+            if (size >= 2) {
+                return@run "${get(0)[0]}${get(1)[0]}".uppercase()
+            } else {
+                return@run "${get(0)[0]}${get(0)[1]}".uppercase()
+            }
         }
     }
 

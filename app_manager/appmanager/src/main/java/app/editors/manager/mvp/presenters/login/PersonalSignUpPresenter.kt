@@ -38,7 +38,7 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
         networkSettings.setBaseUrl(ApiContract.PERSONAL_HOST)
 
         email?.let {
-            disposable = App.getApp().loginComponent.loginService
+            disposable = App.getApp().appComponent.loginService
                 .registerPersonal(RequestRegister(email = email, language = Locale.getDefault().language))
                 .subscribe({ loginResponse ->
                     when (loginResponse) {

@@ -282,13 +282,8 @@ object UiUtils {
         val textView = view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.maxLines = 3
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            textView.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-        } else {
-            textView.gravity = Gravity.START or Gravity.CENTER_VERTICAL
-        }
+        textView.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
 
-        view.setBackgroundColor(ContextCompat.getColor(rootView.context, colorId))
         return snackbar
     }
 
@@ -297,7 +292,7 @@ object UiUtils {
         return getSnackBar(
             rootView,
             Snackbar.LENGTH_SHORT,
-            R.color.colorBlack
+            R.color.colorSurface
         )
     }
 
@@ -306,7 +301,7 @@ object UiUtils {
         return getSnackBar(
             activity.findViewById(android.R.id.content),
             Snackbar.LENGTH_SHORT,
-            R.color.colorBlack
+            R.color.colorSurface
         )
     }
 
@@ -506,19 +501,6 @@ object UiUtils {
     }
 
     @JvmStatic
-    fun removePaddingFromNavigationItem(view: BottomNavigationView) {
-        val menuView = view.getChildAt(0) as BottomNavigationMenuView
-
-        for (i in 0 until menuView.childCount) {
-            val item = menuView.getChildAt(i) as BottomNavigationItemView
-            val activeLabel = item.findViewById<View>(R.id.largeLabel)
-            if (activeLabel is TextView) {
-                activeLabel.setPadding(0, 0, 0, 0)
-            }
-        }
-    }
-
-    @JvmStatic
     fun checkDeXEnabled(configuration: Configuration): Boolean {
         val enabled: Boolean
         try {
@@ -683,6 +665,15 @@ object UiUtils {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    fun isDarkMode(context: Context): Boolean {
+        return when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            Configuration.UI_MODE_NIGHT_NO -> false
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> false
+            else -> false
+        }
     }
 
 }
