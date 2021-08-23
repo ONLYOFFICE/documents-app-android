@@ -19,6 +19,7 @@ import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companio
 import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companion.newInstance
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
+import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
@@ -124,6 +125,16 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
 
     private fun init() {
         presenter.checkBackStack()
+    }
+
+
+    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
+        super.onContextButtonClick(buttons)
+        when(buttons) {
+            ContextBottomDialog.Buttons.EXTERNAL -> {
+                presenter.externalLink
+            }
+        }
     }
 
     override fun onRemoveItemFromFavorites() {

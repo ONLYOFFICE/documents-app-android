@@ -23,6 +23,7 @@ import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.onedrive.managers.works.DownloadWork
 import app.editors.manager.onedrive.managers.works.UploadWork
+import app.editors.manager.onedrive.mvp.models.request.ExternalLinkRequest
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -33,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
@@ -51,6 +53,34 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     private val uploadReceiver: UploadReceiver
     private val downloadReceiver: DownloadReceiver
 
+
+    val externalLink : Unit
+        get() {
+            mItemClicked?.let {
+                val request = ExternalLinkRequest(
+                    type = "view",
+                    scope = "anonymous"
+                )
+                (mFileProvider as OneDriveFileProvider).share(it.id, request)?.let { it1 ->
+                    mDisposable.add(it1
+                        .subscribe( {response ->
+                            it.shared = !it.shared
+                            response.link?.webUrl?.let { it2 ->
+                                KeyboardUtils.setDataToClipboard(
+                                    mContext,
+                                    it2,
+                                    mContext.getString(R.string.share_clipboard_external_link_label)
+                                )
+                            }
+                            viewState.onDocsAccess(
+                                true,
+                                mContext.getString(R.string.share_clipboard_external_copied)
+                            )
+                        }) {throwable: Throwable -> fetchError(throwable)}
+                    )
+                }
+            }
+        }
 
     init {
         App.getApp().appComponent.inject(this)
@@ -244,6 +274,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         state.mIsTrash = isTrash
         state.mIsItemEditable = true
         state.mIsContextEditable = true
+        state.mIsCanShare = true
         if (!isClickedItemFile) {
             state.mIconResId = R.drawable.ic_type_folder
         } else {

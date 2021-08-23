@@ -29,4 +29,5 @@ interface IOneDriveServiceProvider {
     fun moveItem(itemId: String, request: CopyItemRequest): Single<Response<ResponseBody>>
     fun getPhoto(): Single<Response<ResponseBody>>
     fun filter(value: String, map: Map<String, String>): Single<OneDriveResponse>
+    fun getExternalLink(itemId: String, request: ExternalLinkRequest): Single<OneDriveResponse>
 }

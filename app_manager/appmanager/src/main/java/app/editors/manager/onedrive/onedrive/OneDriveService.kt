@@ -4,6 +4,7 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemCloudTree
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
 import app.editors.manager.onedrive.mvp.models.request.*
+import app.editors.manager.onedrive.mvp.models.response.ExternalLinkResponse
 import app.editors.manager.onedrive.mvp.models.response.UploadResponse
 import app.editors.manager.onedrive.mvp.models.user.User
 import io.reactivex.Single
@@ -131,5 +132,12 @@ interface OneDriveService {
     )
     @GET(API_VERSION + "me/drive/root/search(q='{search_text}')")
     fun filter(@Path(value = "search_text") value: String, @QueryMap map: Map<String, String>): Single<Response<DriveItemCloudTree>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST(API_VERSION + "me/drive/items/{item_id}/createLink")
+    fun getExternalLink(@Path(value = "item_id") itemId: String, @Body request: ExternalLinkRequest): Single<Response<ExternalLinkResponse>>
 
 }

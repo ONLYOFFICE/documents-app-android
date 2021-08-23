@@ -134,6 +134,16 @@ class OneDriveServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun getExternalLink(
+        itemId: String,
+        request: ExternalLinkRequest
+    ): Single<OneDriveResponse> {
+        return oneDriveService.getExternalLink(itemId, request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     private fun <T> fetchResponse(response: Response<T>): OneDriveResponse {
         return if (response.isSuccessful && response.body() != null) {
             OneDriveResponse.Success(response.body()!!)

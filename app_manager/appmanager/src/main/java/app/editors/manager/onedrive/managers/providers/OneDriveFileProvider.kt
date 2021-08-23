@@ -23,6 +23,7 @@ import app.editors.manager.onedrive.mvp.models.explorer.DriveItemFolder
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemParentReference
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
 import app.editors.manager.onedrive.mvp.models.request.*
+import app.editors.manager.onedrive.mvp.models.response.ExternalLinkResponse
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -387,6 +388,25 @@ class OneDriveFileProvider : BaseFileProvider {
         requestExternal: RequestExternal?
     ): Observable<ResponseExternal> {
         TODO("Not yet implemented")
+    }
+
+    fun share(id: String, request: ExternalLinkRequest): Observable<ExternalLinkResponse>? {
+        return Observable.fromCallable { api.oneDriveService.getExternalLink(id, request).blockingGet() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                when (response) {
+                    is OneDriveResponse.Success -> {
+                        return@map (response.response as ExternalLinkResponse)
+                    }
+                    is OneDriveResponse.Error -> {
+                        throw response.error
+                    }
+                    else -> {
+                        return@map null
+                    }
+                }
+            }
     }
 
     override fun terminate(): Observable<MutableList<Operation>> {
