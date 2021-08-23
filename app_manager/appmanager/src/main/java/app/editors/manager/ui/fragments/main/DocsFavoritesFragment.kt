@@ -2,6 +2,7 @@ package app.editors.manager.ui.fragments.main
 
 import android.os.Bundle
 import android.view.View
+import app.documents.core.network.ApiContract
 import app.editors.manager.managers.providers.CloudFileProvider
 
 class DocsFavoritesFragment : DocsCloudFragment() {
@@ -54,4 +55,5 @@ class DocsFavoritesFragment : DocsCloudFragment() {
         mCloudPresenter.checkBackStack()
     }
 
+    override fun getSection() = ApiContract.SectionType.UNKNOWN
 }

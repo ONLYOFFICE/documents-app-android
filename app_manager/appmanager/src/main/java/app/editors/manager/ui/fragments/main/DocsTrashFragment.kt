@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.mvp.models.base.Entity
@@ -146,6 +147,8 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         super.onPause()
         mCloudPresenter.isTrashMode = false
     }
+
+    override fun getSection() = ApiContract.SectionType.CLOUD_TRASH
 
     companion object {
         fun newInstance(account: String?): DocsTrashFragment {

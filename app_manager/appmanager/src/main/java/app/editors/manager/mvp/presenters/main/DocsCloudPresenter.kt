@@ -65,12 +65,13 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
 
     private val account = Json.decodeFromString<CloudAccount>(stringAccount)
 
-    private val api: Api = mContext.api()
+    private var api: Api? = null
 
     private var currentSectionType = ApiContract.SectionType.UNKNOWN
 
     init {
         App.getApp().appComponent.inject(this)
+        api = mContext.api()
         downloadReceiver = DownloadReceiver()
         uploadReceiver = UploadReceiver()
         mModelExplorerStack = ModelExplorerStack()
@@ -397,7 +398,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             deleteShare.folderIds = mModelExplorerStack.selectedFoldersIds
             deleteShare.fileIds = mModelExplorerStack.selectedFilesIds
             mDisposable.add(Observable.fromCallable {
-                api.deleteShare(deleteShare).execute()
+                api?.deleteShare(deleteShare)?.execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -490,7 +491,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
                 deleteShare.fileIds = ArrayList(listOf(mItemClicked!!.id))
             }
             mDisposable.add(Observable.fromCallable {
-                api.deleteShare(deleteShare).execute()
+                api?.deleteShare(deleteShare)?.execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
