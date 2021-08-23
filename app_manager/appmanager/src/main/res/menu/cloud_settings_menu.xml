@@ -6,15 +6,18 @@
     <item
         android:id="@+id/settingsItem"
         android:icon="@drawable/drawable_setting_icon"
+        android:iconTint="@color/colorPrimary"
         android:title="@string/settings_item_title"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction,UnusedAttribute" />
 
     <item
         android:id="@+id/deleteSelected"
         android:icon="@drawable/drawable_ic_trash"
+        android:iconTint="@color/colorPrimary"
         android:visible="false"
         app:showAsAction="always"
-        tools:ignore="MenuTitle" />
+        tools:ignore="MenuTitle,UnusedAttribute" />
 
     <item
         android:id="@+id/selectAll"

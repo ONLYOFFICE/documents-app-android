@@ -122,7 +122,7 @@ public class WebTokenFragment extends BaseAppFragment implements SwipeRefreshLay
 
         mIsPageLoad = false;
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.colorAccent));
+        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.colorSecondary));
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setAppCacheEnabled(false);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);

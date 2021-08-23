@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/screen_margin_large"
     android:paddingBottom="16dp">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/share_settings_external_access_title"
         style="@style/MediumTextView"
         android:layout_width="0dp"
@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread_inside" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/share_settings_external_access_info_title"
         style="@style/SmallTextView"
         android:layout_width="0dp"
@@ -60,9 +60,9 @@
             android:layout_height="match_parent"
             android:visibility="visible">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/share_settings_external_copy_link"
-                style="@style/ColorButtons"
+                style="@style/AccentButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -71,9 +71,9 @@
                 app:layout_constraintStart_toEndOf="@+id/share_settings_external_send_link"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/share_settings_external_send_link"
-                style="@style/ColorButtons"
+                style="@style/AccentButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

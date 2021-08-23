@@ -70,7 +70,8 @@ public abstract class ListFragment extends BaseAppFragment implements SwipeRefre
         mPlaceholderViews.setViewForHide(mRecyclerView);
         mRecyclerView.setLayoutAnimation(mRecyclerAnimation);
         mLinearLayoutManager = new LinearLayoutManager(getContext());
-        mSwipeRefresh.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.colorAccent));
+        mSwipeRefresh.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(requireContext(), R.color.colorTransparent));
+        mSwipeRefresh.setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.colorSecondary));
         mSwipeRefresh.setOnRefreshListener(this);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.addOnScrollListener(new LoadingScroll() {
