@@ -283,7 +283,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             placeholderViews?.setViewForHide(binding.shareMainListOfItems)
             binding.shareSettingsListSwipeRefresh.setOnRefreshListener(this@SettingsFragment)
             binding.shareSettingsListSwipeRefresh.setColorSchemeColors(
-                ContextCompat.getColor(requireContext(), R.color.colorAccent)
+                ContextCompat.getColor(requireContext(), R.color.colorSecondary)
             )
             shareSettingsAdapter = ShareAdapter { view, integer ->
                 onItemContextClick(view, integer)
