@@ -80,6 +80,11 @@ public class DocsCloudOperationFragment extends DocsCloudFragment implements Ope
     }
 
     @Override
+    protected int getSection() {
+        return ApiContract.SectionType.UNKNOWN;
+    }
+
+    @Override
     public void onItemLongClick(View view, int position) {
         // Not actions
     }
@@ -116,6 +121,7 @@ public class DocsCloudOperationFragment extends DocsCloudFragment implements Ope
     public void onRemoveItemFromFavorites() {
         //stub
     }
+
 
     public void onActionClick() {
         switch (mOperationType) {

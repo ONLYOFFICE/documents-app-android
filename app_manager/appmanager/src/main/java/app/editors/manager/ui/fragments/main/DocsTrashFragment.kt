@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.mvp.models.base.Entity
@@ -61,7 +62,6 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
 
     override fun onScrollPage() {
         super.onScrollPage()
-        mCloudPresenter.isTrashMode = true
         mCloudPresenter.getItemsById(ID)
         initViews()
     }
@@ -94,11 +94,6 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         }
     }
 
-    override fun isActivePage(): Boolean {
-        return true
-    }
-
-
     private fun showMenu() {
         if (mCloudPresenter.isSelectionMode) {
             mDeleteItem.isVisible = true
@@ -116,7 +111,6 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
                 mRecyclerView.paddingLeft, mRecyclerView.paddingTop,
                 mRecyclerView.paddingLeft, 0
             )
-            mCloudPresenter.isTrashMode = true
             mCloudPresenter.checkBackStack()
         }
     }
@@ -143,6 +137,18 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
     }
 
     override fun onRemoveItemFromFavorites() {}
+
+    override fun onResume() {
+        super.onResume()
+        mCloudPresenter.isTrashMode = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mCloudPresenter.isTrashMode = false
+    }
+
+    override fun getSection() = ApiContract.SectionType.CLOUD_TRASH
 
     companion object {
         fun newInstance(account: String?): DocsTrashFragment {
