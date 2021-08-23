@@ -10,7 +10,6 @@ import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
-import app.editors.manager.app.appComponent
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
@@ -52,7 +51,7 @@ import moxy.InjectViewState
 import java.util.*
 
 @InjectViewState
-class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudView>(),
+class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
     OnDownloadListener,
     OnUploadListener {
 
@@ -62,8 +61,6 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
 
     private val downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver
-
-    private val account = Json.decodeFromString<CloudAccount>(stringAccount)
 
     private var api: Api? = null
 
