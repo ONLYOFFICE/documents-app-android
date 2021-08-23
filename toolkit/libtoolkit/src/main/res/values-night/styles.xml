@@ -32,4 +32,6 @@
 
     <style name="AlphaImageView" parent="AppTheme"/>
 
+    <style name="CloudImageView" parent="AppTheme"/>
+
 </resources>
