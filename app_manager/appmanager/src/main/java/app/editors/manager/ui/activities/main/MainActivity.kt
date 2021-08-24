@@ -52,7 +52,7 @@ interface IMainActivity {
 }
 
 
-class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.OnNavigationItemSelectedListener,
+class MainActivity : BaseAppActivity(), MainActivityView,
     BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity {
 
     companion object {
@@ -80,6 +80,15 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
     lateinit var presenter: MainActivityPresenter
 
     private lateinit var viewBinding: ActivityMainBinding
+
+    private val navigationListener: (item: MenuItem) -> Boolean = { item ->
+        if (presenter.isDialogOpen) {
+            false
+        } else {
+            presenter.navigationItemClick(item.itemId)
+            true
+        }
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -219,7 +228,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
             presenter.init()
             viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
         }
-        viewBinding.bottomNavigation.setOnNavigationItemSelectedListener(this)
+        viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
         presenter.checkOnBoarding()
     }
 
@@ -290,15 +299,6 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
 
     override fun openFile(account: CloudAccount, fileData: String) {
         showCloudFragment(account = account, fileData = fileData)
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        return if (presenter.isDialogOpen) {
-            false
-        } else {
-            presenter.navigationItemClick(item.itemId)
-            true
-        }
     }
 
     override fun showActionButton(isShow: Boolean) {
