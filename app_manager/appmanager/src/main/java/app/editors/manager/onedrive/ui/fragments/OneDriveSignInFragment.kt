@@ -121,7 +121,7 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
             setColorSchemeColors(
                 ContextCompat.getColor(
                     requireContext(),
-                    R.color.colorAccent
+                    R.color.colorSecondary
                 )
             )
         }

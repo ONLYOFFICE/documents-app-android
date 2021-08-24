@@ -419,7 +419,8 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         title: String?,
         info: String?,
         path: String?,
-        mime: String?
+        mime: String?,
+        uri: Uri?
     ) {
         viewState.onDialogClose()
         viewState.onSnackBarWithAction(
@@ -427,7 +428,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     $info
     $title
     """.trimIndent(), mContext.getString(R.string.download_manager_open)
-        ) { showDownloadFolderActivity() }
+        ) { showDownloadFolderActivity(uri) }
     }
 
     override fun onDownloadCanceled(id: String?, info: String?) {
@@ -440,7 +441,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         info?.let { viewState.onSnackBar(it) }
     }
 
-    private fun showDownloadFolderActivity() {
-        viewState.onDownloadActivity()
+    private fun showDownloadFolderActivity(uri: Uri?) {
+        viewState.onDownloadActivity(uri)
     }
 }

@@ -7,18 +7,15 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Process
 import android.webkit.WebView
-import app.documents.core.di.module.AccountModule
-import app.documents.core.di.module.LoginModule
-import app.documents.core.di.module.RecentModule
-import app.documents.core.di.module.WebDavApiModule
+import app.documents.core.account.CloudAccount
+import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
-import app.editors.manager.di.module.ApiModule
-import app.editors.manager.di.module.AppModule
-import app.editors.manager.di.module.ShareModule
-import app.editors.manager.di.module.ToolModule
+import app.editors.manager.di.module.*
+import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
+import app.editors.manager.onedrive.di.component.OneDriveComponent
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.util.*
@@ -157,6 +154,12 @@ class App : Application() {
             .webDavApi
     }
 
+    fun getOneDriveComponent(token: String): OneDriveComponent {
+        return DaggerOneDriveComponent.builder().appComponent(appComponent)
+            .oneDriveModule(OneDriveModule(token))
+            .build()
+    }
+
 }
 
 val Context.accountOnline: CloudAccount?
@@ -192,11 +195,6 @@ fun Context.webDavApi(): WebDavApi {
     }
 }
 
-fun getOneDriveComponent(token: String): OneDriveComponent {
-    return DaggerOneDriveComponent.builder().appComponent(_appComponent)
-        .oneDriveModule(OneDriveModule(token))
-        .build()
-}
 fun Context.getShareApi(): ShareService {
     return when (this) {
         is App -> this.getShareService()

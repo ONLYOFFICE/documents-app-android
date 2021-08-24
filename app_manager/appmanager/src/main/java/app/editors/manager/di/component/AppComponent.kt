@@ -22,6 +22,7 @@ import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -29,6 +30,7 @@ import app.editors.manager.ui.adapters.MediaAdapter
 import app.editors.manager.ui.adapters.ShareAddAdapter
 import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.login.*
+import app.editors.manager.ui.fragments.main.AppSettingsFragment
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.WebViewerFragment
 import app.editors.manager.ui.fragments.media.MediaImageFragment
@@ -99,6 +101,7 @@ interface AppComponent {
     fun inject(personalPortalFragment: PersonalPortalFragment?)
     fun inject(webDavInterceptor: WebDavInterceptor?)
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
+    fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
 
     /*
     * Main
@@ -114,7 +117,6 @@ interface AppComponent {
     fun inject(docsOperationSectionFragment: DocsOperationSectionFragment?)
     fun inject(explorerAdapter: ExplorerAdapter?)
     fun inject(mediaAdapter: MediaAdapter?)
-    fun inject(settingsPresenter: AppSettingsPresenter?)
     fun inject(accountsPresenter: CloudAccountPresenter?)
     fun inject(mainPagerPresenter: MainPagerPresenter?)
     fun inject(docsOneDrivePresenter: DocsOneDrivePresenter)
