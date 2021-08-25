@@ -11,14 +11,12 @@ import androidx.work.WorkerParameters
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.getOneDriveServiceProvider
 import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.managers.works.DownloadWork
-import app.editors.manager.onedrive.di.component.OneDriveComponent
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -75,11 +73,9 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
     private var to: Uri? = null
     private var timeMark = 0L
 
-    private val api = getOneDriveApi()
-
     override fun doWork(): Result {
         getArgs()
-        val response = id?.let { api.oneDriveService.download(it).blockingGet() }
+        val response = id?.let { applicationContext.getOneDriveServiceProvider().download(it).blockingGet() }
         if (response is OneDriveResponse.Success) {
             FileUtils.writeFromResponseBody((response.response as ResponseBody), to!!, applicationContext, object: FileUtils.Progress {
                 override fun onProgress(total: Long, progress: Long): Boolean {
@@ -134,20 +130,6 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
             } else {
                 notificationUtils.showArchivingProgressNotification(id, tag, file!!.name!!, percent)
             }
-        }
-    }
-
-    @JvmName("getApiAsync")
-    private fun getOneDriveApi(): OneDriveComponent = runBlocking {
-        App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
-            AccountUtils.getToken(
-                context = App.getApp().applicationContext,
-                accountName = cloudAccount.getAccountName()
-            )?.let { token ->
-                return@runBlocking App.getApp().getOneDriveComponent(token)
-            }
-        } ?: run {
-            throw Exception("No account")
         }
     }
 

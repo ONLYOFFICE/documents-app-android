@@ -25,15 +25,6 @@ interface OneDriveService {
     @POST("authorization" + ApiContract.RESPONSE_FORMAT)
     fun authorization(@QueryMap parameters: Map<String, String>): Single<Response<ResponseBody>>
 
-
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @GET("${API_VERSION}me/")
-    fun getUserInfo(): Single<Response<User>>
-
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT

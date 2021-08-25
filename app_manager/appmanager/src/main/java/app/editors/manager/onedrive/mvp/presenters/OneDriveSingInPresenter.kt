@@ -1,10 +1,10 @@
 package app.editors.manager.onedrive.mvp.presenters
 
 import android.accounts.Account
-import android.util.Log
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.oneDriveLoginService
 import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.onedrive.managers.utils.OneDriveUtils
@@ -36,7 +36,7 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
 
 
     fun checkOneDrive(token: String) {
-        disposable = App.getApp().getOneDriveComponent(token).oneDriveService.userInfo()
+        disposable = App.getApp().oneDriveLoginService.getUserInfo(token)
             .subscribe { oneDriveResponse ->
                 when (oneDriveResponse) {
                     is OneDriveResponse.Success -> {

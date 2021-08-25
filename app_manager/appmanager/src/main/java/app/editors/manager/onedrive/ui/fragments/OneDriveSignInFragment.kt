@@ -1,7 +1,6 @@
 package app.editors.manager.onedrive.ui.fragments
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -13,15 +12,12 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.editors.manager.R
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
 import app.editors.manager.onedrive.mvp.views.OneDriveSignInView
-import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
@@ -202,11 +198,8 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
             if (url.startsWith(mRedirectUrl!!)) {
                 val uri = Uri.parse(url)
                 val accessToken = url.split("=")
-                //val token = uri.getQueryParameter("access_token")
-                //if (token != null && !token.equals("null", ignoreCase = true)) {
                 val token = accessToken[1]
                 presenter.checkOneDrive(token.removeRange(token.length - 11, token.length))
-                //}
             }
         }
 

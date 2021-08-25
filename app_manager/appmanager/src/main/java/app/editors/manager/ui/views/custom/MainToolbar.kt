@@ -53,6 +53,8 @@ class MainToolbar @JvmOverloads constructor(
             subtitle.text = cloudAccount.portal
             if (cloudAccount.isWebDav) {
                 setWebDavAvatar(cloudAccount.webDavProvider ?: "")
+            } else if (cloudAccount.isOneDrive) {
+                setOneDriveAvatar()
             } else {
                 loadAvatar(it)
             }

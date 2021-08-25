@@ -21,13 +21,6 @@ class OneDriveServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun userInfo(): Single<OneDriveResponse> {
-        return oneDriveService.getUserInfo()
-            .map { fetchResponse(it) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
     override fun getFiles(map: Map<String, String>): Single<OneDriveResponse> {
         return oneDriveService.getFiles(map)
             .map { fetchResponse(it) }

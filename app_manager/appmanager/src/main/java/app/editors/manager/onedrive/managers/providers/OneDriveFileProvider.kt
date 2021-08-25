@@ -6,6 +6,7 @@ import android.os.Environment
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.App.Companion.getApp
+import app.editors.manager.app.getOneDriveServiceProvider
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.mvp.models.base.Base
@@ -16,7 +17,6 @@ import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.onedrive.*
-import app.editors.manager.onedrive.di.component.OneDriveComponent
 import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemCloudTree
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemFolder
@@ -28,8 +28,6 @@ import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
 import lib.toolkit.base.managers.utils.FileUtils.createFile
 import lib.toolkit.base.managers.utils.StringUtils
@@ -43,33 +41,17 @@ import java.util.*
 
 class OneDriveFileProvider : BaseFileProvider {
 
-    var api = getOneDriveApi()
-
-    private var tag: String = ""
-
-    @JvmName("getApiAsync")
-    private fun getOneDriveApi(): OneDriveComponent = runBlocking {
-        getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
-            AccountUtils.getToken(
-                context = App.getApp().applicationContext,
-                accountName = cloudAccount.getAccountName()
-            )?.let { token ->
-                return@runBlocking App.getApp().getOneDriveComponent(token)
-            }
-        } ?: run {
-            throw Exception("No account")
-        }
-    }
+    val context = App.getApp().applicationContext
 
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer>? {
         return Observable.fromCallable {
             if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
                 id?.let {
-                    api.oneDriveService.getChildren(id, OneDriveUtils.getSortBy(filter))
+                    context.getOneDriveServiceProvider().getChildren(id, OneDriveUtils.getSortBy(filter))
                         .blockingGet()
-                } ?: api.oneDriveService.getFiles(OneDriveUtils.getSortBy(filter)).blockingGet()
+                } ?: context.getOneDriveServiceProvider().getFiles(OneDriveUtils.getSortBy(filter)).blockingGet()
             } else {
-                api.oneDriveService.filter(
+                context.getOneDriveServiceProvider().filter(
                     filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!,
                     OneDriveUtils.getSortBy(filter)
                 ).blockingGet()
@@ -159,7 +141,7 @@ class OneDriveFileProvider : BaseFileProvider {
     override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
         return Observable.fromCallable { body?.title?.let {
             folderId?.let { it1 ->
-                api.oneDriveService.createFile(
+                context.getOneDriveServiceProvider().createFile(
                     it1,
                     it, mapOf(OneDriveUtils.KEY_CONFLICT_BEHAVIOR to OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME)).blockingGet()
             }
@@ -192,7 +174,7 @@ class OneDriveFileProvider : BaseFileProvider {
             folder = DriveItemFolder(),
             conflictBehavior = OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME
         )
-        return Observable.fromCallable { api.oneDriveService.createFolder(folderId!!, request).blockingGet() }
+        return Observable.fromCallable { context.getOneDriveServiceProvider().createFolder(folderId!!, request).blockingGet() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
@@ -218,7 +200,7 @@ class OneDriveFileProvider : BaseFileProvider {
         val correctName = if(item is CloudFile) {StringUtils.getEncodedString(newName) + item.fileExst} else { newName }
         val request = correctName?.let { RenameRequest(it) }
         return Observable.fromCallable{ item?.id?.let { request?.let { it1 ->
-            api.oneDriveService.renameItem(it,
+            context.getOneDriveServiceProvider().renameItem(it,
                 it1
             ).blockingGet()
         } } }
@@ -240,7 +222,7 @@ class OneDriveFileProvider : BaseFileProvider {
         from: CloudFolder?
     ): Observable<List<Operation>> {
         return items?.size?.let {
-            Observable.fromIterable(items).map { item -> api.oneDriveService.deleteItem(item.id).blockingGet() }
+            Observable.fromIterable(items).map { item -> context.getOneDriveServiceProvider().deleteItem(item.id).blockingGet() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { response ->
@@ -278,7 +260,7 @@ class OneDriveFileProvider : BaseFileProvider {
         return Observable.fromIterable(items)
             .flatMap { item ->
                 val request = CopyItemRequest(parentReference = DriveItemParentReference(driveId = "", driveType = "", id = to, name = item.title, path = ""), name = item.title)
-                Observable.fromCallable { api.oneDriveService.copyItem(item.id, request).blockingGet() }
+                Observable.fromCallable { context.getOneDriveServiceProvider().copyItem(item.id, request).blockingGet() }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
             }.map { responseBody ->
@@ -297,7 +279,7 @@ class OneDriveFileProvider : BaseFileProvider {
         return Observable.fromIterable(items)
             .flatMap { item ->
                 val request = CopyItemRequest(parentReference = DriveItemParentReference(driveId = "", driveType = "", id = to, name = item.title, path = ""), name = item.title)
-                Observable.fromCallable { api.oneDriveService.moveItem(item.id, request).blockingGet() }
+                Observable.fromCallable { context.getOneDriveServiceProvider().moveItem(item.id, request).blockingGet() }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
             }.map { responseBody ->
@@ -360,7 +342,7 @@ class OneDriveFileProvider : BaseFileProvider {
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
-        val result = api.oneDriveService.download((item as CloudFile).id).blockingGet()
+        val result = context.getOneDriveServiceProvider().download((item as CloudFile).id).blockingGet()
         if(result is OneDriveResponse.Success) {
             try {
                 (result.response as ResponseBody).byteStream().use { inputStream ->
@@ -391,7 +373,7 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     fun share(id: String, request: ExternalLinkRequest): Observable<ExternalLinkResponse>? {
-        return Observable.fromCallable { api.oneDriveService.getExternalLink(id, request).blockingGet() }
+        return Observable.fromCallable { context.getOneDriveServiceProvider().getExternalLink(id, request).blockingGet() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->

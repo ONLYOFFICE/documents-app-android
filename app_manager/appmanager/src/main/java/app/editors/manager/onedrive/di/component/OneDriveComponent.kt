@@ -10,5 +10,15 @@ import dagger.Component
 @Component(modules = [OneDriveModule::class], dependencies = [AppComponent::class])
 @OneDriveScope
 interface OneDriveComponent {
-    val oneDriveService: IOneDriveServiceProvider
+
+    @Component.Builder
+    interface Builder {
+
+        fun appComponent(appComponent: AppComponent): Builder
+
+        fun build(): OneDriveComponent
+
+    }
+
+    val oneDriveServiceProvider: IOneDriveServiceProvider
 }

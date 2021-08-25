@@ -3,31 +3,27 @@ package app.editors.manager.onedrive.managers.works
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
+import app.editors.manager.app.getOneDriveServiceProvider
 import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.onedrive.di.component.OneDriveComponent
 import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.mvp.models.request.UploadRequest
 import app.editors.manager.onedrive.mvp.models.response.UploadResponse
 import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import java.io.DataOutputStream
 import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
 import kotlin.math.min
 
 class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(context, workerParameters) {
@@ -51,23 +47,6 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
     private var tag = ""
     private var fileName = ""
 
-    private val api = getOneDriveApi()
-
-
-    @JvmName("getApiAsync")
-    private fun getOneDriveApi(): OneDriveComponent = runBlocking {
-        App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
-            AccountUtils.getToken(
-                context = App.getApp().applicationContext,
-                accountName = cloudAccount.getAccountName()
-            )?.let { token ->
-                return@runBlocking App.getApp().getOneDriveComponent(token)
-            }
-        } ?: run {
-            throw Exception("No account")
-        }
-    }
-
     override fun doWork(): Result {
         getArgs()
 
@@ -82,7 +61,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
 
         val request = UploadRequest()
         val response = folderId?.let {
-            api.oneDriveService.uploadFile(
+            applicationContext.getOneDriveServiceProvider().uploadFile(
                 it, fileName,
                 when (tag) {
                     DocsOneDriveFragment.KEY_UPLOAD -> request.copy(

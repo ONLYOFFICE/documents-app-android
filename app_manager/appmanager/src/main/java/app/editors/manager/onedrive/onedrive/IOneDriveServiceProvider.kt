@@ -14,7 +14,6 @@ sealed class OneDriveResponse {
 interface IOneDriveServiceProvider {
 
     fun authorization(parameters: Map<String, String>): Single<OneDriveResponse>
-    fun userInfo(): Single<OneDriveResponse>
     fun getFiles(map: Map<String, String>): Single<OneDriveResponse>
     fun getChildren(itemId: String, map:  Map<String, String>): Single<OneDriveResponse>
     fun getRoot(): Single<OneDriveResponse>

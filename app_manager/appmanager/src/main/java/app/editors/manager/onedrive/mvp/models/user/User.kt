@@ -13,7 +13,7 @@ data class User(
     val id: String = "",
     val userPrincipalName: String = "",
     val businessPhones: List<String> = emptyList(),
-    val jobTitle: String = "",
+    val jobTitle: String? = null,
     val mail: String? = null,
     val mobilePhone: String? = null,
     val officeLocation: String? = null,
