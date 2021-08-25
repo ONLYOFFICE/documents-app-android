@@ -35,6 +35,8 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         const val KEY_UPLOAD = "KEY_UPLOAD"
         const val KEY_UPDATE = "KEY_UPDATE"
 
+        const val KEY_MODIFIED = "EXTRA_IS_MODIFIED"
+
         fun newInstance(account: String): DocsOneDriveFragment {
             return DocsOneDriveFragment().apply {
                 arguments = Bundle().apply {
@@ -74,10 +76,13 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         } else if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let {
-                    presenter.upload(
-                        it,
-                        null,
-                        KEY_UPDATE)
+                    if(data.getBooleanExtra(KEY_MODIFIED, false)) {
+                        presenter.upload(
+                            it,
+                            null,
+                            KEY_UPDATE
+                        )
+                    }
                 }
                 BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let {
                     presenter.upload(

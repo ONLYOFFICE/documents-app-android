@@ -268,6 +268,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
             if(!mState.mIsOneDrive) {
                 mListExplorerContextDownload.setVisibility(View.VISIBLE);
             } else {
+                mListContextExternalLink.setVisibility(View.VISIBLE);
                 mListExplorerContextDownload.setVisibility(View.GONE);
             }
 

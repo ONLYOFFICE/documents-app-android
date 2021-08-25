@@ -3,6 +3,9 @@ package app.editors.manager.onedrive.managers.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.App.Companion.getApp
@@ -18,6 +21,7 @@ import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.onedrive.*
 import app.editors.manager.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.onedrive.managers.works.UploadWork
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemCloudTree
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemFolder
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemParentReference
@@ -28,6 +32,7 @@ import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
 import lib.toolkit.base.managers.utils.FileUtils.createFile
 import lib.toolkit.base.managers.utils.StringUtils
@@ -41,7 +46,13 @@ import java.util.*
 
 class OneDriveFileProvider : BaseFileProvider {
 
+
+    companion object {
+        private const val PATH_TEMPLATES = "templates/"
+    }
+
     val context = App.getApp().applicationContext
+    private val workManager = WorkManager.getInstance()
 
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer>? {
         return Observable.fromCallable {
@@ -138,34 +149,34 @@ class OneDriveFileProvider : BaseFileProvider {
         return explorer
     }
 
+    @SuppressLint("MissingPermission")
     override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
-        return Observable.fromCallable { body?.title?.let {
-            folderId?.let { it1 ->
-                context.getOneDriveServiceProvider().createFile(
-                    it1,
-                    it, mapOf(OneDriveUtils.KEY_CONFLICT_BEHAVIOR to OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME)).blockingGet()
-            }
-        } }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map {response ->
-                when (response) {
-                    is OneDriveResponse.Success -> {
-                        val file = CloudFile()
-                        file.id = (response.response as DriveItemValue).id
-                        file.title = response.response.name
-                        file.updated = Date()
-                        file.fileExst = response.response.name.split(".")[1]
-                        return@map file
-                    }
-                    is OneDriveResponse.Error -> {
-                        throw response.error
-                    }
-                    else -> {
-                        return@map null
-                    }
-                }
-            }
+        val title = body?.title
+        val path = PATH_TEMPLATES + body?.title?.lowercase()?.let { getExtensionFromPath(it) }?.let {
+            FileUtils.getTemplates(
+                getApp(), App.getLocale(),
+                it
+            )
+        }
+        val temp = title?.let { StringUtils.getNameWithoutExtension(it) }?.let {
+            FileUtils.createTempAssetsFile(
+                getApp(),
+                path,
+                it,
+                getExtensionFromPath(title)
+            )
+        }
+        upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
+        return Observable.fromCallable {
+            val file = CloudFile()
+            file.webUrl = Uri.fromFile(temp).toString()
+            file.pureContentLength = temp?.length() ?: 0
+            file.id = folderId + body?.title
+            file.updated = Date()
+            file.title = body?.title
+            file.fileExst = body?.title?.let { getExtensionFromPath(it) }
+            file
+        }
     }
 
     override fun createFolder(folderId: String?, body: RequestCreate?): Observable<CloudFolder>? {
@@ -337,7 +348,21 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     override fun upload(folderId: String?, uris: MutableList<Uri>?): Observable<Int> {
-        TODO("Not yet implemented")
+        return Observable.fromIterable(uris)
+            .flatMap {
+                val data = Data.Builder()
+                    .putString(UploadWork.KEY_FOLDER_ID, folderId)
+                    .putString(UploadWork.KEY_FROM, it.toString())
+                    .putString(UploadWork.KEY_TAG, "KEY_UPDATE")
+                    .build()
+
+                val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
+                    .setInputData(data)
+                    .build()
+
+                workManager.enqueue(request)
+                return@flatMap Observable.just(1)
+            }
     }
 
     @Throws(IOException::class)
