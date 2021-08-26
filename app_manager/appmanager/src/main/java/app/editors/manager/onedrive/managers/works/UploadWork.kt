@@ -103,7 +103,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
         val maxBufferSize = 2 * 1024 * 1024
         val boundary = "*****"
         var outputStream: OutputStream? = null
-        var bytesAvailable = fileInputStream?.available()
+        val bytesAvailable = fileInputStream?.available()
         connection.doInput = true
         connection.doOutput = true
         connection.useCaches = false
@@ -112,11 +112,11 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
         connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
         try {
             outputStream = DataOutputStream(connection.outputStream)
-            var bufferSize = min(bytesAvailable!!, maxBufferSize)
+            val bufferSize = min(bytesAvailable!!, maxBufferSize)
             val buffer = ByteArray(bufferSize)
             var count = 0
             var bytesRead = 0
-            while (fileInputStream?.read(buffer).also { bytesRead = it!! } != -1) {
+            while (fileInputStream.read(buffer).also { bytesRead = it } != -1) {
                 outputStream.write(buffer, 0, bytesRead)
                 count += bytesRead
                 if(tag == DocsOneDriveFragment.KEY_UPLOAD) {
@@ -127,8 +127,8 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
                 mNotificationUtils.removeNotification(id.hashCode())
                 if (tag == DocsOneDriveFragment.KEY_UPLOAD) {
                     mNotificationUtils.showUploadCompleteNotification(id.hashCode(), fileName)
+                    sendBroadcastUploadComplete(path, fileName, CloudFile(), path)
                 }
-                sendBroadcastUploadComplete(path, fileName, CloudFile(), path)
             } else {
                 mNotificationUtils.removeNotification(id.hashCode())
                 mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)

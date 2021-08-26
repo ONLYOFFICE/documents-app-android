@@ -151,32 +151,56 @@ class OneDriveFileProvider : BaseFileProvider {
 
     @SuppressLint("MissingPermission")
     override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
-        val title = body?.title
-        val path = PATH_TEMPLATES + body?.title?.lowercase()?.let { getExtensionFromPath(it) }?.let {
-            FileUtils.getTemplates(
-                getApp(), App.getLocale(),
-                it
-            )
-        }
-        val temp = title?.let { StringUtils.getNameWithoutExtension(it) }?.let {
-            FileUtils.createTempAssetsFile(
-                getApp(),
-                path,
-                it,
-                getExtensionFromPath(title)
-            )
-        }
-        upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
         return Observable.fromCallable {
-            val file = CloudFile()
-            file.webUrl = Uri.fromFile(temp).toString()
-            file.pureContentLength = temp?.length() ?: 0
-            file.id = folderId + body?.title
-            file.updated = Date()
-            file.title = body?.title
-            file.fileExst = body?.title?.let { getExtensionFromPath(it) }
-            file
+            body?.title?.let {
+                folderId?.let { it1 ->
+                    context.getOneDriveServiceProvider().createFile(
+                        it1,
+                        it,
+                        mapOf(OneDriveUtils.KEY_CONFLICT_BEHAVIOR to OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME)
+                    ).blockingGet()
+                }
+            }
         }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                when (response) {
+                    is OneDriveResponse.Success -> {
+                        val title = (response.response as DriveItemValue).name
+                        val path = PATH_TEMPLATES + response.response.name.lowercase()
+                            .let { getExtensionFromPath(it) }.let {
+                            FileUtils.getTemplates(
+                                getApp(), App.getLocale(),
+                                it
+                            )
+                        }
+                        val temp = title.let { StringUtils.getNameWithoutExtension(it) }.let {
+                            FileUtils.createTempAssetsFile(
+                                getApp(),
+                                path,
+                                it,
+                                getExtensionFromPath(title)
+                            )
+                        }
+                        upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
+                        val file = CloudFile()
+                        file.webUrl = Uri.fromFile(temp).toString()
+                        file.pureContentLength = temp?.length() ?: 0
+                        file.updated = Date()
+                        file.id = response.response.id
+                        file.title = response.response.name
+                        file.fileExst = response.response.name.split(".")[1]
+                        return@map file
+                    }
+                    is OneDriveResponse.Error -> {
+                        throw response.error
+                    }
+                    else -> {
+                        return@map null
+                    }
+                }
+            }
     }
 
     override fun createFolder(folderId: String?, body: RequestCreate?): Observable<CloudFolder>? {
@@ -446,17 +470,17 @@ class OneDriveFileProvider : BaseFileProvider {
         }
     }
 
-    private fun setFile(item: Item, outputFile: File): CloudFile? {
+    private fun setFile(item: Item, outputFile: File): CloudFile {
         val originFile = item as CloudFile
-        val file = CloudFile()
-        file.folderId = originFile.folderId
-        file.title = originFile.title
-        file.pureContentLength = outputFile.length()
-        file.fileExst = originFile.fileExst
-        file.viewUrl = originFile.id
-        file.id = ""
-        file.webUrl = Uri.fromFile(outputFile).toString()
-        return file
+        return CloudFile().apply {
+            folderId = originFile.folderId
+            title = originFile.title
+            pureContentLength = outputFile.length()
+            fileExst = originFile.fileExst
+            viewUrl = originFile.id
+            id = ""
+            webUrl = Uri.fromFile(outputFile).toString()
+        }
     }
 
 }
