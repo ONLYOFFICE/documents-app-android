@@ -176,7 +176,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
             mMoveItem = mMenu!!.findItem(R.id.toolbar_selection_move).setVisible(true)
             mCopyItem = mMenu!!.findItem(R.id.toolbar_selection_copy).setVisible(true)
             mDownloadItem = mMenu!!.findItem(R.id.toolbar_selection_download).setVisible(false)
-            setMenuItemTint(requireContext(), mDeleteItem, R.color.colorWhite)
+            setMenuItemTint(requireContext(), mDeleteItem, R.color.colorPrimary)
             setAccountEnable(false)
         }
     }
