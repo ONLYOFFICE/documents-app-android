@@ -34,6 +34,8 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
         private const val KEY_ERROR_INFO = "error"
         private const val KEY_ERROR_INFO_MESSAGE = "message"
 
+        private const val LOAD_PROGRESS_UPDATE = 15
+
         const val DOWNLOAD_ZIP_NAME = "download.zip"
 
         fun sendBroadcastDownloadComplete(
@@ -120,7 +122,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
     private fun showProgress(total: Long, progress: Long, isArchiving: Boolean) {
         val deltaTime = System.currentTimeMillis() - timeMark
-        if (deltaTime > 25) {
+        if (deltaTime > LOAD_PROGRESS_UPDATE) {
             timeMark = System.currentTimeMillis()
             val percent = FileUtils.getPercentOfLoading(total, progress)
             val id = id.hashCode()
