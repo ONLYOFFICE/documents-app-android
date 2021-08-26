@@ -658,7 +658,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     private val isItemEditable: Boolean
         get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite)
     private val isItemShareable: Boolean
-        get() = isItemEditable && (!isCommonSection || isAdmin) && !account.isPersonal() && !isProjectsSection && !isBunchSection
+        get() = isItemEditable && (!isCommonSection || isAdmin) && !account.isPersonal() && !isProjectsSection && !isBunchSection && mItemClicked!!.access != ApiContract.ShareCode.REVIEW
     private val isClickedItemStorage: Boolean
         get() = mItemClicked != null && mItemClicked!!.providerItem
 
