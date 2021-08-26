@@ -4,6 +4,7 @@ import app.editors.manager.R
 import app.editors.manager.mvp.models.base.ItemProperties
 import kotlinx.serialization.Transient
 import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.ui.adapters.holder.ViewType
 
 data class UserUi(
     val id: String,
@@ -16,7 +17,7 @@ data class UserUi(
     @Transient
     val getDisplayNameHtml = StringUtils.getHtmlString(displayName)
 
-    override val type: Int
+    override val viewType: Int
         get() = R.layout.list_share_add_item
 
 

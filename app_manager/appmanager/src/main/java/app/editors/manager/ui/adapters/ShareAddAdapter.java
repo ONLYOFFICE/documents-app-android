@@ -26,10 +26,10 @@ import app.editors.manager.app.App;
 import app.editors.manager.mvp.models.ui.GroupUi;
 import app.editors.manager.mvp.models.ui.ShareHeaderUi;
 import app.editors.manager.mvp.models.ui.UserUi;
-import app.editors.manager.mvp.models.ui.ViewType;
 import app.editors.manager.ui.adapters.base.BaseAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import lib.toolkit.base.ui.adapters.holder.ViewType;
 
 //TODO make divided viewHolder and load avatars, make filter by api args
 public class ShareAddAdapter extends BaseAdapter<ViewType> implements Filterable {
@@ -159,7 +159,7 @@ public class ShareAddAdapter extends BaseAdapter<ViewType> implements Filterable
 
     @Override
     public int getItemViewType(int position) {
-        return getItem(position).getType();
+        return getItem(position).getViewType();
     }
 
     @Override

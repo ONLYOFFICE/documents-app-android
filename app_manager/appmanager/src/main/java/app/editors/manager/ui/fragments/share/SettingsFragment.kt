@@ -23,7 +23,6 @@ import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.ShareUi
-import app.editors.manager.mvp.models.ui.ViewType
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.views.share.SettingsView
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
@@ -35,6 +34,7 @@ import app.editors.manager.ui.views.popup.SharePopup
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
+import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
 
 class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {

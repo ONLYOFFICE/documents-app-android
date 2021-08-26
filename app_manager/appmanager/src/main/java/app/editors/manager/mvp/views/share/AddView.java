@@ -1,16 +1,11 @@
 package app.editors.manager.mvp.views.share;
 
 import androidx.annotation.Nullable;
-
-import app.editors.manager.mvp.models.ui.ViewType;
+import lib.toolkit.base.ui.adapters.holder.ViewType;
 import moxy.viewstate.strategy.OneExecutionStateStrategy;
 import moxy.viewstate.strategy.StateStrategyType;
-
 import java.util.List;
-
-import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.views.base.BaseViewExt;
-
 
 @StateStrategyType(OneExecutionStateStrategy.class)
 public interface AddView extends BaseViewExt {

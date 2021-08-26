@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import app.editors.manager.R
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
-import app.editors.manager.mvp.models.ui.ViewType
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import lib.toolkit.base.managers.extensions.inflate
+import lib.toolkit.base.ui.adapters.holder.ViewType
 
 class ShareAdapter(val listener: (view: View, position: Int) -> Unit) : BaseAdapter<ViewType>() {
 
@@ -36,6 +36,6 @@ class ShareAdapter(val listener: (view: View, position: Int) -> Unit) : BaseAdap
     }
 
     override fun getItemViewType(position: Int): Int {
-        return mList[position].type
+        return mList[position].viewType
     }
 }

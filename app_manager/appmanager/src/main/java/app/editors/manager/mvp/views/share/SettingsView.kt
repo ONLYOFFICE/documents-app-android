@@ -3,9 +3,9 @@ package app.editors.manager.mvp.views.share
 import android.content.Intent
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.ui.ShareUi
-import app.editors.manager.mvp.models.ui.ViewType
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
