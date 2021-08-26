@@ -139,6 +139,9 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
             ContextBottomDialog.Buttons.EXTERNAL -> {
                 presenter.externalLink
             }
+            ContextBottomDialog.Buttons.EDIT -> {
+                presenter.getFileInfo()
+            }
         }
     }
 
