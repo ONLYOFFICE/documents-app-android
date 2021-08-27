@@ -34,6 +34,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
         val TAG: String = MainPagerFragment::class.java.simpleName
 
+        private const val TAG_SELECTED_PAGE = "TAG_SELECTED_PAGE"
         private const val TAG_VISIBLE = "TAG_VISIBLE"
         private const val TAG_SCROLL = "TAG_SCROLL"
         private const val OFFSCREEN_COUNT = 5
@@ -60,6 +61,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private var activity: IMainActivity? = null
     private var isScroll = true
     private var isVisibleRoot = true
+    private var selectedPage = 0
 
     private var viewBinding: FragmentMainPagerBinding? = null
     private var placeholderViews: PlaceholderViews? = null
@@ -94,6 +96,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(TAG_VISIBLE, isVisibleRoot)
         outState.putBoolean(TAG_SCROLL, isScroll)
+        outState.putInt(TAG_SELECTED_PAGE, selectedPage)
         super.onSaveInstanceState(outState)
     }
 
@@ -118,6 +121,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             }
             if (savedInstanceState.containsKey(TAG_SCROLL)) {
                 isScroll = savedInstanceState.getBoolean(TAG_SCROLL)
+            }
+            if (savedInstanceState.containsKey(TAG_SELECTED_PAGE)) {
+                selectedPage = savedInstanceState.getInt(TAG_SELECTED_PAGE)
             }
         }
     }
@@ -353,6 +359,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             viewBinding?.mainViewPager?.addOnPageChangeListener(it)
         }
         activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
+        adapter?.selectedPage = selectedPage
     }
 
     override fun setFileData(fileData: String) {
@@ -386,6 +393,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
             activity?.showActionButton(false)
+            this@MainPagerFragment.selectedPage = mSelectedPage
             (getActiveFragment(viewBinding?.mainViewPager) as DocsCloudFragment).onScrollPage()
         }
     }

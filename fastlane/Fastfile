@@ -23,15 +23,15 @@ platform :android do
   desc "Composit task (clean, incriment, build, deploy, commit) fo deploy a new internal testing build to Google Play Store"
   lane :bundleRelease do
     versionCode = android_get_version_code(
-      gradle_file: "app_manager/appmanager/build.gradle"
+      gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
 
     versionName = android_get_version_name(
-      gradle_file: "app_manager/appmanager/build.gradle"
+      gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
 
     versionCode = increment_version_code(
-      gradle_file_path: "app_manager/appmanager/build.gradle"
+      gradle_file_path: "app_manager/appmanager/build.gradle.kts"
     )
 
     # get the last commit comments from Git history
@@ -99,7 +99,7 @@ platform :android do
   desc "Increment build number"
   lane :increment_build do
     increment_version_code(
-      gradle_file_path: "app_manager/appmanager/build.gradle"
+      gradle_file_path: "app_manager/appmanager/build.gradle.kts"
     )
   end
 
@@ -107,11 +107,11 @@ platform :android do
   desc "Commit bumped version"
   lane :git_version_bumped do
     versionCode = android_get_version_code(
-      gradle_file: "app_manager/appmanager/build.gradle"
+      gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
 
     versionName = android_get_version_name(
-      gradle_file: "app_manager/appmanager/build.gradle"
+      gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
 
     # creates a bump version commit 
@@ -134,11 +134,11 @@ platform :android do
   desc "Deploy a new internal testing build to Google Play Store"
   lane :deploy_playmarket do
     versionCode = android_get_version_code(
-      gradle_file: "app_manager/appmanager/build.gradle"
+      gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
 
     versionName = android_get_version_name(
-      gradle_file: "app_manager/appmanager/build.gradle"
+      gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
 
     # get the last commit comments from Git history
@@ -186,11 +186,11 @@ platform :android do
   desc "Build the application as APK files for all platforms"
   lane :apk do
     versionCode = android_get_version_code(
-      gradle_file: "app_manager/appmanager/build.gradle"
+      gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
 
     versionName = android_get_version_name(
-      gradle_file: "app_manager/appmanager/build.gradle"
+      gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
 
     # get the last commit comments from Git history

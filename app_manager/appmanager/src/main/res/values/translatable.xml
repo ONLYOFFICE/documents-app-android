@@ -258,7 +258,7 @@
     <string name="navigation_drawer_menu_help">Help</string>
     <string name="navigation_drawer_menu_logout">Log out</string>
     <string name="navigation_drawer_menu_add_account">Add account</string>
-    <string name="navigation_drawer_menu_feedback">Feedback</string>
+    <string name="navigation_drawer_menu_feedback">Feedback and support</string>
     <string name="settings_item_title">Settings</string>
     <string name="settings_item_change_account">Change account</string>
     <string name="settings_clear_cache">Clear cache</string>

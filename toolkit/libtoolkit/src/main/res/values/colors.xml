@@ -57,4 +57,5 @@
     <!--    Clouds-->
     <color name="colorCloudItem">#EDF9FF</color>
 
+    <color name="listItemColor">@color/colorSurface</color>
 </resources>

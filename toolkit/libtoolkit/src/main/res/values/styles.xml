@@ -156,6 +156,8 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="CloudImageView" parent="CommonImageView"/>
+
     <style name="CommonImageButton" parent="AppTheme" />
 
     <style name="CommonWebView" parent="AppTheme" />
@@ -288,7 +290,7 @@
 
     <style name="ItemSmallLightText" parent="SmallTextView">
         <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:alpha">@dimen/alpha_small</item>
+        <item name="android:alpha">@dimen/alpha_medium</item>
     </style>
 
     <style name="CloudStorageText" parent="ItemMediumGreyText">
@@ -334,6 +336,7 @@
         </item>
         <item name="android:gravity">center</item>
         <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/colorGrey</item>
     </style>
 
     <style name="AccentButtons" parent="ColorButtons">

@@ -157,7 +157,6 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
                     getString(R.string.dialogs_common_cancel_button), TAG_LOGOUT
                 )
             }
-            UiUtils.setImageTint(viewBinding?.logoutItem?.itemImage ?: throw Error("Error inflate"), R.color.colorLight)
         }
     }
 

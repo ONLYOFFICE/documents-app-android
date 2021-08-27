@@ -61,7 +61,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         init()
         initSettingItems()
-        viewModel.getCache()
+        viewModel.getData()
     }
 
     private fun init() {
@@ -135,13 +135,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
                 showUrlInBrowser(getString(R.string.app_url_help))
             }
             R.id.settingSupportItem -> {
-                mBaseActivity.showEditMultilineDialog(
-                    getString(R.string.dialogs_edit_feedback_title),
-                    getString(R.string.dialogs_edit_feedback_rate_hint),
-                    getString(R.string.dialogs_edit_feedback_rate_accept),
-                    getString(R.string.dialogs_common_cancel_button),
-                    TAG_DIALOG_RATE_FEEDBACK
-                )
+                showEmailClientTemplate("")
             }
             R.id.wifiSwitch -> {
                 viewModel.setWifiState(viewBinding?.wifiSwitch?.isChecked ?: false)
