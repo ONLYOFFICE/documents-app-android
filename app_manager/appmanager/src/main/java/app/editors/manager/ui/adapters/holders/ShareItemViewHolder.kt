@@ -6,7 +6,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareSettingsItemBinding
-import app.editors.manager.managers.utils.UiUtils.loadAvatar
+import app.editors.manager.managers.utils.GlideUtils.loadAvatar
 import app.editors.manager.managers.utils.UiUtils.setAccessIcon
 import app.editors.manager.mvp.models.ui.ShareUi
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
@@ -28,6 +28,7 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
     }
 
     override fun bind(item: ShareUi) {
+        shareImage.loadAvatar(item.sharedTo.avatarSmall)
         if (item.sharedTo.userName.isNotEmpty()) {
             itemInfo.visibility = View.VISIBLE
             itemName.text = item.sharedTo.displayNameHtml
@@ -48,6 +49,5 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
 
         // Access icons
         setAccessIcon(contextButton, item.access)
-        loadAvatar(item.sharedTo, itemBinding.root.context, shareImage)
     }
 }

@@ -73,7 +73,7 @@ class MainToolbar @JvmOverloads constructor(
             }
             Glide.with(context)
                 .load(GlideUtils.getCorrectLoad(url ?: "", it))
-                .apply(GlideUtils.getAvatarOptions())
+                .apply(GlideUtils.avatarOptions)
                 .into(toolbarIcon)
         } ?: run {
             Glide.with(context).load(R.drawable.ic_account_placeholder)

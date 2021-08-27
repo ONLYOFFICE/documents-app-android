@@ -58,7 +58,7 @@ class CloudAccountsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
                 Glide.with(mViewIconSelectableImage)
                     .load(GlideUtils.getCorrectLoad(url, token))
-                    .apply(GlideUtils.getAvatarOptions())
+                    .apply(GlideUtils.avatarOptions)
                     .into(mViewIconSelectableImage)
             }
 

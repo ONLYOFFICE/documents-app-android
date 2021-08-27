@@ -8,6 +8,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.getShareApi
+import app.editors.manager.managers.utils.GlideUtils.loadAvatar
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
@@ -63,7 +64,7 @@ class AddPresenter : BasePresenter<AddView>() {
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.response.filter { it.id != account.id }.map {
-                    UserUi(it.id, it.department, it.displayName, it.avatarMedium)
+                    UserUi(it.id, it.department, it.displayName, loadAvatar(it.avatarSmall))
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -94,7 +95,7 @@ class AddPresenter : BasePresenter<AddView>() {
         disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups()) { users, groups ->
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
-                UserUi(it.id, it.department, it.displayName, it.avatarMedium)
+                UserUi(it.id, it.department, it.displayName, loadAvatar(it.avatarMedium))
             })
             return@zip true
         }.subscribeOn(Schedulers.io())
@@ -114,7 +115,7 @@ class AddPresenter : BasePresenter<AddView>() {
             shareStack.clearModel()
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
-                UserUi(it.id, it.department, it.displayName, it.avatarMedium)
+                UserUi(it.id, it.department, it.displayName, loadAvatar(it.avatarMedium))
             })
             return@zip true
         }.subscribeOn(Schedulers.io())

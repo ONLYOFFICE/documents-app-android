@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.models.ui
 
+import android.graphics.drawable.Drawable
 import app.editors.manager.R
 import app.editors.manager.mvp.models.base.ItemProperties
 import kotlinx.serialization.Transient
@@ -10,7 +11,7 @@ data class UserUi(
     val id: String,
     val department: String,
     val displayName: String,
-    val avatarMedium: String
+    val avatar: Drawable
 ): ItemProperties(), ViewType, Comparable<UserUi>{
 
 

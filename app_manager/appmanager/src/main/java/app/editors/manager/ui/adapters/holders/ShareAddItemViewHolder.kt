@@ -1,15 +1,13 @@
 package app.editors.manager.ui.adapters.holders
 
-import android.graphics.drawable.LayerDrawable
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Guideline
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareAddItemBinding
-import app.editors.manager.managers.utils.UiUtils.loadAvatar
+import app.editors.manager.managers.utils.GlideUtils.setAvatar
 import app.editors.manager.managers.utils.UiUtils.setMargins
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
@@ -31,6 +29,7 @@ class ShareAddItemViewHolder<T: ViewType>(
     private var avatarImage: ImageView = itemBinding.shareAddItemAvatarImage
     private var mainTitle: TextView = itemBinding.shareAddItemMainTitle
     private var infoTitle: TextView = itemBinding.shareAddItemInfoTitle
+    private val resourcesProvider = ResourcesProvider(itemBinding.root.context)
     private val guideLine = itemBinding.root.context.resources.getDimension(R.dimen.share_group_guideline).toInt()
     private val leftMargin = itemBinding.root.context.resources.getDimension(R.dimen.screen_margin_large).toInt()
 
@@ -40,9 +39,6 @@ class ShareAddItemViewHolder<T: ViewType>(
                 listener.onItemClick(view, layoutPosition)
             }
         }
-
-        val layerDrawable = LayerDrawable(listOf(avatarImage.drawable,
-            AppCompatResources.getDrawable(itemBinding.root.context, R.drawable.drawable_list_image_select_mask)).toTypedArray())
 
         when (item) {
             is UserUi -> {
@@ -58,18 +54,16 @@ class ShareAddItemViewHolder<T: ViewType>(
                     removeAlpha()
                 }
                 mainTitle.text = item.getDisplayNameHtml
-
+                avatarImage.setAvatar(if(item.isSelected) resourcesProvider
+                    .getDrawable(R.drawable.drawable_list_image_select_mask)
+                else { item.avatar })
                 setInfo(item)
-                if (item.isSelected) avatarImage.setImageDrawable(layerDrawable)
-                else {
-                    loadAvatar(context = itemBinding.root.context, imageView = avatarImage, avatarUrl = item.avatarMedium)
-                }
             }
             is GroupUi -> {
-                if (item.isSelected) {
-                    avatarImage.setImageDrawable(ResourcesProvider(itemBinding.root.context)
-                        .getDrawable(R.drawable.drawable_list_share_image_item_group_placeholder))
-                }
+                avatarImage.setAvatar(if(item.isSelected) resourcesProvider
+                    .getDrawable(R.drawable.drawable_list_image_select_mask)
+                else { resourcesProvider
+                    .getDrawable(R.drawable.drawable_list_share_image_item_group_placeholder) })
                 removeAlpha()
                 setAvatarMargins(item)
             }
