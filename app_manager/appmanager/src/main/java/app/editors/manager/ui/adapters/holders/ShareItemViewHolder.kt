@@ -28,7 +28,8 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
     }
 
     override fun bind(item: ShareUi) {
-        shareImage.loadAvatar(item.sharedTo.avatarSmall)
+        if (item.sharedTo.avatarSmall.isNotEmpty())
+            shareImage.loadAvatar(item.sharedTo.avatarSmall)
         if (item.sharedTo.userName.isNotEmpty()) {
             itemInfo.visibility = View.VISIBLE
             itemName.text = item.sharedTo.displayNameHtml
