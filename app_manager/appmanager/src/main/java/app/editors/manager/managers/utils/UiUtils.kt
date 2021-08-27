@@ -1,12 +1,28 @@
 package app.editors.manager.managers.utils
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import app.documents.core.network.ApiContract
+import app.documents.core.network.models.share.SharedTo
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 
@@ -100,5 +116,71 @@ object UiUtils {
         view.setImageResource(resId)
         view.alpha = UiUtils.getFloatResource(view.context, R.dimen.alpha_medium)
         view.clearColorFilter()
+    }
+
+
+    fun setAccessIcon(imageView: ImageView, accessCode: Int) {
+        when (accessCode) {
+            ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> {
+                imageView.setImageResource(R.drawable.ic_access_deny)
+                return
+            }
+            ApiContract.ShareCode.REVIEW -> imageView.setImageResource(R.drawable.ic_access_review)
+            ApiContract.ShareCode.READ -> imageView.setImageResource(R.drawable.ic_access_read)
+            ApiContract.ShareCode.READ_WRITE -> imageView.setImageResource(R.drawable.ic_access_full)
+            ApiContract.ShareCode.COMMENT -> imageView.setImageResource(R.drawable.ic_access_comment)
+            ApiContract.ShareCode.FILL_FORMS -> imageView.setImageResource(R.drawable.ic_access_fill_form)
+        }
+    }
+
+    fun View.setMargins(left: Int, top: Int, right: Int, bottom: Int) {
+        val layoutParams = this.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.leftMargin = left
+        layoutParams.topMargin = top
+        layoutParams.rightMargin = right
+        layoutParams.bottomMargin = bottom
+        this.layoutParams = layoutParams
+    }
+
+    @SuppressLint("CheckResult")
+    fun loadAvatar(
+        sharedTo: SharedTo? = null,
+        context: Context,
+        imageView: ImageView,
+        avatarUrl: String? = null
+    ) {
+        context.accountOnline
+        CoroutineScope(Dispatchers.Default).launch {
+            App.getApp().appComponent.accountsDao.getAccountOnline()?.let { account ->
+                AccountUtils.getToken(
+                    context = context,
+                    accountName = account.getAccountName()
+                )?.let {
+                    val avatar = avatarUrl ?: sharedTo?.avatar
+                    val url = GlideUtils
+                        .getCorrectLoad(account.scheme + account.portal + avatar, it)
+
+                    withContext(Dispatchers.Main) {
+                        Glide.with(context)
+                            .load(url)
+                            .apply(RequestOptions().apply {
+                                skipMemoryCache(true)
+                                diskCacheStrategy(DiskCacheStrategy.NONE)
+                                timeout(30 * 1000)
+                                circleCrop()
+                                error(R.drawable.drawable_list_share_image_item_user_placeholder)
+                                placeholder(R.drawable.drawable_list_share_image_item_user_placeholder)
+                            })
+                            .into(imageView)
+                    }
+                }
+            } ?: run {
+                withContext(Dispatchers.Main) {
+                    Glide.with(context)
+                        .load(R.drawable.drawable_list_share_image_item_user_placeholder)
+                        .into(imageView)
+                }
+            }
+        }
     }
 }

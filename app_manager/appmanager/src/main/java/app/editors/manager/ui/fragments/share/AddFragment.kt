@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentListBinding
 import app.editors.manager.databinding.FragmentShareAddListBinding
 import app.editors.manager.mvp.models.explorer.Item
@@ -13,13 +14,16 @@ import app.editors.manager.mvp.models.ui.UserUi
 import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.views.share.AddView
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
-import app.editors.manager.ui.adapters.ShareAddAdapter
+import app.editors.manager.ui.adapters.holders.factory.ShareAddHolderFactory
+import app.editors.manager.ui.adapters.share.ShareAddAdapter
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import butterknife.ButterKnife
+import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
+import javax.inject.Inject
 
 class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
@@ -96,14 +100,15 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     override fun onGetUsers(list: List<ViewType>) {
         setPlaceholder(true, list.isNotEmpty())
         mSwipeRefresh.isRefreshing = false
-        shareAddAdapter?.setMode(ShareAddAdapter.Mode.USERS)
+        shareAddAdapter?.setMode(BaseAdapter.Mode.USERS)
         shareAddAdapter?.setItems(list)
     }
 
     override fun onGetGroups(list: List<ViewType>) {
         setPlaceholder(false, list.isNotEmpty())
         mSwipeRefresh.isRefreshing = false
-        shareAddAdapter?.setMode(ShareAddAdapter.Mode.GROUPS)
+        mSwipeRefresh.isRefreshing = false
+        shareAddAdapter?.setMode(BaseAdapter.Mode.GROUPS)
         shareAddAdapter?.setItems(list)
     }
 
@@ -117,6 +122,10 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     override fun onSearchValue(value: String?) {
+        // Stub
+    }
+
+    override fun onUpdateSearch(users: MutableList<ViewType>?) {
         // Stub
     }
 
@@ -134,8 +143,9 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     private fun initViews() {
-        shareAddAdapter = ShareAddAdapter()
-        shareAddAdapter?.setOnItemClickListener(this)
+        shareAddAdapter = ShareAddAdapter(ShareAddHolderFactory { view, integer ->
+            onItemClick(view, integer)
+        })
         mRecyclerView.adapter = shareAddAdapter
     }
 

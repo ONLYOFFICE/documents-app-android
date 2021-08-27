@@ -15,14 +15,17 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.views.share.AddView
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.ShareActivity
-import app.editors.manager.ui.adapters.ShareAddAdapter
+import app.editors.manager.ui.adapters.holders.factory.ShareAddHolderFactory
+import app.editors.manager.ui.adapters.share.ShareAddAdapter
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.custom.SharePanelViews
 import butterknife.ButterKnife
+import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
+import javax.inject.Inject
 
 class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListener,
     BaseAdapter.OnItemClickListener, SharePanelViews.OnEventListener {
@@ -136,8 +139,13 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
 
     override fun onQueryTextChange(newText: String): Boolean {
         addPresenter.setSearchValue(newText)
-        shareAddAdapter?.filter?.filter(newText)
         return false
+    }
+
+    override fun onUpdateSearch(users: MutableList<ViewType>?) {
+        users?.let { shareAddAdapter?.setItems(it) } ?: run {
+            setPlaceholder(true)
+        }
     }
 
     override fun onItemClick(view: View, position: Int) {
@@ -199,7 +207,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     override fun onGetCommon(list: List<ViewType>) {
         setPlaceholder(list.isNotEmpty())
         mSwipeRefresh.isRefreshing = false
-        shareAddAdapter?.setMode(ShareAddAdapter.Mode.COMMON)
+        shareAddAdapter?.setMode(BaseAdapter.Mode.COMMON)
         shareAddAdapter?.setItems(list)
     }
 
@@ -233,10 +241,10 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
             setOnEventListener(this@AddSearchFragment)
             setAccessIcon(addPresenter.accessCode)
         }
-        shareAddAdapter = ShareAddAdapter().apply {
-            setOnItemClickListener(this@AddSearchFragment)
-            setMode(ShareAddAdapter.Mode.COMMON)
-        }
+        shareAddAdapter = ShareAddAdapter(ShareAddHolderFactory{ view, position ->
+            onItemClick(view, position)
+        })
+        shareAddAdapter?.setMode(BaseAdapter.Mode.COMMON)
         mRecyclerView.adapter = shareAddAdapter
         setCountChecked()
     }

@@ -24,7 +24,7 @@ import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
-import app.editors.manager.ui.adapters.ShareAddAdapter
+import app.editors.manager.ui.adapters.share.ShareAddAdapter
 import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.login.*
 import app.editors.manager.ui.fragments.main.DocsBaseFragment

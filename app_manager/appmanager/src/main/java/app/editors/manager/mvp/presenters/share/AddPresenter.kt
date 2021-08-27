@@ -79,7 +79,7 @@ class AddPresenter : BasePresenter<AddView>() {
         isCommon = false
         disposable = shareApi.getGroups()
             .subscribeOn(Schedulers.io())
-            .map { response -> response.response.map { GroupUi(it.id, it.name, it.manager) } }
+            .map { response -> response.response.map { GroupUi(it.id, it.name, it.manager ?: "null") } }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
                 shareStack.addGroups(response)
@@ -91,13 +91,33 @@ class AddPresenter : BasePresenter<AddView>() {
 
     fun getCommons() {
         isCommon = true
-        disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups(), { users, groups ->
-            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager) })
+        disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups()) { users, groups ->
+            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
                 UserUi(it.id, it.department, it.displayName, it.avatarMedium)
             })
             return@zip true
-        }).subscribeOn(Schedulers.io())
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState.onGetCommon(commonList)
+            }, { error ->
+                fetchError(error)
+            })
+    }
+
+    private fun getFilter(searchValue: String) {
+        isCommon = true
+
+        disposable = Observable.zip(shareApi.getUsersFilter(searchValue),
+            shareApi.getGroupsFilter(searchValue)) { users, groups ->
+            shareStack.clearModel()
+            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
+            shareStack.addUsers(users.response.filter { it.id != account.id }.map {
+                UserUi(it.id, it.department, it.displayName, it.avatarMedium)
+            })
+            return@zip true
+        }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 viewState.onGetCommon(commonList)
@@ -228,9 +248,9 @@ class AddPresenter : BasePresenter<AddView>() {
 
 
     private val userListItems: List<ViewType>
-        get() = shareStack.userSet.toMutableList()
+        get() = shareStack.userSet.toMutableList().sortedBy { it.displayName }
     private val groupListItems: List<ViewType>
-        get() = shareStack.groupSet.toMutableList()
+        get() = shareStack.groupSet.toMutableList().sortedBy { it.name }
 
     val countChecked: Int
         get() = shareStack.countChecked
@@ -251,6 +271,9 @@ class AddPresenter : BasePresenter<AddView>() {
 
     fun setSearchValue(searchValue: String?) {
         this.searchValue = searchValue
-    }
 
+        searchValue?.let { value ->
+            getFilter(value)
+        }
+    }
 }

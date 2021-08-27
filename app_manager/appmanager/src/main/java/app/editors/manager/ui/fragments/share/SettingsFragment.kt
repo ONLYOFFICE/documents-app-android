@@ -27,6 +27,7 @@ import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.views.share.SettingsView
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.ShareActivity
+import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.adapters.share.ShareAdapter
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -170,7 +171,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         viewBinding?.shareSettingsListSwipeRefresh?.isRefreshing = false
         shareSettingsAdapter?.let { adapter ->
             adapter.removeItem(share)
-            if (adapter.itemList.size > 1 && adapter.getItem(0) is Header
+            if (adapter.itemsList.size > 1 && adapter.getItem(0) is Header
                 && adapter.getItem(1) is Header
             ) {
                 adapter.removeHeader(getString(R.string.share_goal_user))
@@ -285,9 +286,9 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             binding.shareSettingsListSwipeRefresh.setColorSchemeColors(
                 ContextCompat.getColor(requireContext(), R.color.colorSecondary)
             )
-            shareSettingsAdapter = ShareAdapter { view, integer ->
+            shareSettingsAdapter = ShareAdapter(ShareHolderFactory { view, integer ->
                 onItemContextClick(view, integer)
-            }
+            })
             binding.shareMainListOfItems.layoutManager = LinearLayoutManager(context)
             binding.shareMainListOfItems.adapter = shareSettingsAdapter
             ViewCompat.setNestedScrollingEnabled(binding.shareMainListOfItems, false)

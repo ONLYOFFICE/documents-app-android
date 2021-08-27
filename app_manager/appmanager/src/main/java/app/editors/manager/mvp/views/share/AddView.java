@@ -14,4 +14,5 @@ public interface AddView extends BaseViewExt {
     void onGetCommon(List<ViewType> list);
     void onSuccessAdd();
     void onSearchValue(@Nullable String value);
+    void onUpdateSearch(@Nullable List<ViewType> users);
 }
