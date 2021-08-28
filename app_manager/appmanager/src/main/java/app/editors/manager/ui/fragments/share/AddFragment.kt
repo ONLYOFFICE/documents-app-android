@@ -107,7 +107,6 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     override fun onGetGroups(list: List<ViewType>) {
         setPlaceholder(false, list.isNotEmpty())
         mSwipeRefresh.isRefreshing = false
-        mSwipeRefresh.isRefreshing = false
         shareAddAdapter?.setMode(BaseAdapter.Mode.GROUPS)
         shareAddAdapter?.setItems(list)
     }

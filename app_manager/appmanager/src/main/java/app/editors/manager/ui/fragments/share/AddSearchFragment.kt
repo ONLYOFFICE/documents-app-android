@@ -217,6 +217,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     override fun onSearchValue(value: String?) {
+        mSwipeRefresh.isRefreshing = true
         value?.let {
             searchView?.setQuery(value, false)
         }

@@ -20,8 +20,8 @@ import app.editors.manager.databinding.IncludeButtonPopupBinding
 import app.editors.manager.databinding.IncludeShareSettingsHeaderBinding
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ModelShareStack
+import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.views.share.SettingsView
@@ -32,6 +32,7 @@ import app.editors.manager.ui.adapters.share.ShareAdapter
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.popup.SharePopup
+import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
@@ -170,12 +171,20 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     override fun onRemove(share: ShareUi, sharePosition: Int) {
         viewBinding?.shareSettingsListSwipeRefresh?.isRefreshing = false
         shareSettingsAdapter?.let { adapter ->
-            adapter.removeItem(share)
-            if (adapter.itemsList.size > 1 && adapter.getItem(0) is Header
-                && adapter.getItem(1) is Header
-            ) {
-                adapter.removeHeader(getString(R.string.share_goal_user))
+            val previousItem = adapter.getItem(adapter.itemsList.indexOf(share) - 1)
+            val nextItem =  try {
+                adapter.getItem(adapter.itemsList.indexOf(share) + 1)
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                null
             }
+
+            adapter.removeItem(share)
+
+            if (previousItem is ShareHeaderUi && nextItem == null
+                || nextItem != null && nextItem is ShareHeaderUi) {
+                adapter.removeHeader(previousItem as ShareHeaderUi)
+            }
+
             showSnackBarWithAction(
                 getString(R.string.share_snackbar_remove_user),
                 getString(R.string.snackbar_undo)

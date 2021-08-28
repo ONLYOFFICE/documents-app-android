@@ -78,8 +78,8 @@ open class BaseViewTypeAdapter<T : ViewType>(holderFactory: HolderFactory)
 
     fun removeItem(item: T) {
         if (items.isNotEmpty() && items.contains(item)) {
-            items.remove(item)
             notifyItemRemoved(items.indexOf(item))
+            items.remove(item)
         }
     }
 

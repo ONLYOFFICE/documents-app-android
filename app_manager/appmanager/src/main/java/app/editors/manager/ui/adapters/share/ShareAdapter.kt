@@ -18,15 +18,7 @@ class ShareAdapter(
     factory: ShareHolderFactory,
 ) : BaseViewTypeAdapter<ViewType>(factory) {
 
-    fun removeHeader(title: String) {
-        for (item in itemsList) {
-            if (item is Header) {
-                if (item.title == title) {
-                    removeItem(item)
-                    return
-                }
-            }
-        }
+    fun removeHeader(item: ShareHeaderUi) {
+        removeItem(item)
     }
-
 }
