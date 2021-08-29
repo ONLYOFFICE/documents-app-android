@@ -405,6 +405,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         sharePopup = SharePopup(requireContext(), R.layout.popup_share_menu)
         sharePopup?.let { popup ->
             popup.setContextListener(mExternalContextListener)
+            popup.setExternalLink()
             popup.setFullAccess(false)
             if (settingsPresenter.item is CloudFolder) {
                 popup.setIsFolder(true)

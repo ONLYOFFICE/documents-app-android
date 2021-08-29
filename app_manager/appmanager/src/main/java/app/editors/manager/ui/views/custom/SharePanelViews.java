@@ -93,6 +93,7 @@ public class SharePanelViews implements HeightValueAnimator.OnAnimationListener 
             case R.id.button_popup_layout:
                 mSharePopup = new SharePopup(mView.getContext(), R.layout.popup_share_menu);
                 mSharePopup.setContextListener(mPopupAccessListener);
+                mSharePopup.setExternalLink();
                 mSharePopup.setFullAccess(true);
                 mSharePopup.showOverlap(view, mActivity);
                 break;
