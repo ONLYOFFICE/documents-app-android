@@ -13,4 +13,12 @@ data class ShareUi(
 ) : ViewType {
     override val viewType: Int
         get() = R.layout.list_share_settings_item
+
+    override fun getItemId(): String {
+        return ""
+    }
+
+    override fun getItemName(): String {
+        return ""
+    }
 }

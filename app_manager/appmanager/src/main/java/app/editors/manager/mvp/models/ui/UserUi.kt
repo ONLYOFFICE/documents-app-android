@@ -21,6 +21,14 @@ data class UserUi(
     override val viewType: Int
         get() = R.layout.list_share_add_item
 
+    override fun getItemId(): String {
+        return id
+    }
+
+    override fun getItemName(): String {
+        return displayName
+    }
+
 
     override fun compareTo(other: UserUi): Int = id.compareTo(other.id)
 

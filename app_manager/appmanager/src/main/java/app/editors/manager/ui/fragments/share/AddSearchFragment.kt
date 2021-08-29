@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
+import androidx.recyclerview.widget.DiffUtil
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentListBinding
 import app.editors.manager.databinding.FragmentShareAddListSearchBinding
@@ -15,17 +16,16 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.views.share.AddView
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.ShareActivity
+import app.editors.manager.ui.adapters.diffutilscallback.ShareSearchDiffUtilsCallback
 import app.editors.manager.ui.adapters.holders.factory.ShareAddHolderFactory
 import app.editors.manager.ui.adapters.share.ShareAddAdapter
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.custom.SharePanelViews
 import butterknife.ButterKnife
-import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
-import javax.inject.Inject
 
 class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListener,
     BaseAdapter.OnItemClickListener, SharePanelViews.OnEventListener {
@@ -142,8 +142,8 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         return false
     }
 
-    override fun onUpdateSearch(users: MutableList<ViewType>?) {
-        users?.let { shareAddAdapter?.setItems(it) } ?: run {
+    override fun onUpdateSearch(list: MutableList<ViewType>?) {
+        if (list == null) {
             setPlaceholder(true)
         }
     }
@@ -208,7 +208,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         setPlaceholder(list.isNotEmpty())
         mSwipeRefresh.isRefreshing = false
         shareAddAdapter?.setMode(BaseAdapter.Mode.COMMON)
-        shareAddAdapter?.setItems(list)
+        updateDiffUtils(list)
     }
 
     override fun onSuccessAdd() {
@@ -221,6 +221,12 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         value?.let {
             searchView?.setQuery(value, false)
         }
+    }
+
+    private fun updateDiffUtils(list: List<ViewType>) {
+        val diffUtils = ShareSearchDiffUtilsCallback(list, shareAddAdapter?.itemsList!!)
+        val result = DiffUtil.calculateDiff(diffUtils)
+        shareAddAdapter?.set(list, result)
     }
 
     private fun init(savedInstanceState: Bundle?) {

@@ -19,12 +19,10 @@ class ShareAddAdapter(factory: ShareAddHolderFactory)
     lateinit var context: Context
 
     private var mode: BaseAdapter.Mode
-    private var api: Api? = null
 
     init {
         getApp().appComponent.inject(this)
         mode = BaseAdapter.Mode.USERS
-        api = context.api()
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<ViewType>, position: Int) {

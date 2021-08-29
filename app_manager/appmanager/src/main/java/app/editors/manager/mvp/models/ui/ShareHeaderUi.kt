@@ -6,4 +6,12 @@ import lib.toolkit.base.ui.adapters.holder.ViewType
 data class ShareHeaderUi(val title: String) : ViewType {
     override val viewType: Int
         get() = R.layout.list_share_add_header
+
+    override fun getItemId(): String {
+        return ""
+    }
+
+    override fun getItemName(): String {
+        return ""
+    }
 }
