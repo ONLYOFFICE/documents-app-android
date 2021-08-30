@@ -42,9 +42,9 @@ public class StorageUtils {
     }
 
     public static final class OneDrive {
-        public static final String AUTH_URL = "https://login.live.com/oauth20_authorize.srf?";
-        public static final String VALUE_RESPONSE_TYPE = "code";
-        public static final String VALUE_SCOPE = "wl.signin wl.skydrive_update wl.offline_access";
+        public static final String AUTH_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?";
+        public static final String VALUE_RESPONSE_TYPE = "token";
+        public static final String VALUE_SCOPE = "User.Read files.readwrite.all offline_access";
     }
 
     public static final class WevDav {
@@ -142,10 +142,10 @@ public class StorageUtils {
      * */
     private static Storage oneDrive(final String providerKey, final String clientId, final String redirectUrl) {
         final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, OneDrive.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_SCOPE, OneDrive.VALUE_SCOPE);
         uriMap.put(ARG_CLIENT_ID, clientId);
         uriMap.put(ARG_REDIRECT_URI, redirectUrl);
+        uriMap.put(ARG_RESPONSE_TYPE, OneDrive.VALUE_RESPONSE_TYPE);
+        uriMap.put(ARG_SCOPE, OneDrive.VALUE_SCOPE);
         return new Storage(providerKey, OneDrive.AUTH_URL, uriMap);
     }
 

@@ -425,6 +425,9 @@
     <string name="storage_web_dav_settings_password">Password</string>
     <string name="storage_web_dav_settings_title">Input title for service</string>
 
+    <string name="storage_onedrive_error_opened">File is opened on portal</string>
+    <string name="storage_onedrive_error_exist">File with same name is already exist in this folder</string>
+
     <!-- ======================================================================================= -->
     <!-- Operations -->
     <string name="operation_title">Select folder</string>

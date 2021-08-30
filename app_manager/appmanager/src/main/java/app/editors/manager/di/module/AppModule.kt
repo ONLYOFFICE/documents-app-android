@@ -4,7 +4,8 @@ import app.documents.core.di.module.AccountModule
 import app.documents.core.di.module.LoginModule
 import app.documents.core.di.module.RecentModule
 import app.documents.core.di.module.SettingsModule
+import app.editors.manager.onedrive.di.module.OneDriveLoginModule
 import dagger.Module
 
-@Module(includes = [ToolModule::class, SettingsModule::class, AccountModule::class, RecentModule::class, LoginModule::class])
+@Module(includes = [ToolModule::class, SettingsModule::class, AccountModule::class, RecentModule::class, LoginModule::class, OneDriveLoginModule::class])
 class AppModule

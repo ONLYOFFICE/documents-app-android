@@ -14,4 +14,5 @@ interface AccountsView : BaseView {
     fun onSignIn(portal: String, login: String)
     fun showWaitingDialog()
     fun onWebDavLogin(account: CloudAccount)
+    fun onOneDriveLogin()
 }

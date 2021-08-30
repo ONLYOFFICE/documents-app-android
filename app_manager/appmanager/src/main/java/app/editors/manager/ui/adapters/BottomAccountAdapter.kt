@@ -103,9 +103,9 @@ class AccountViewHolder(view: View, listener: BaseAdapter.OnItemClickListener?) 
     }
 
     private fun setDrawable(account: CloudAccount) {
-        if (!account.isWebDav) {
-            portalIcon.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.mipmap.ic_launcher_foreground))
-        } else {
+        if (account.isOneDrive) {
+            portalIcon.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.ic_storage_onedrive))
+        } else if(account.isWebDav) {
             when (WebDavApi.Providers.valueOf(account.webDavProvider!!)) {
                 WebDavApi.Providers.NextCloud -> portalIcon.setImageDrawable(
                     ContextCompat.getDrawable(
@@ -133,6 +133,8 @@ class AccountViewHolder(view: View, listener: BaseAdapter.OnItemClickListener?) 
                     )
                 )
             }
+        } else {
+            portalIcon.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.mipmap.ic_launcher_foreground))
         }
     }
 

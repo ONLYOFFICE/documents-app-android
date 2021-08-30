@@ -13,8 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.login.AccountsPresenter
 import app.editors.manager.mvp.views.login.AccountsView
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
@@ -22,6 +26,7 @@ import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.adapters.BottomAccountAdapter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.utils.FragmentUtils.showFragment
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import moxy.presenter.InjectPresenter
@@ -129,6 +134,15 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
 
     override fun onWebDavLogin(account: CloudAccount) {
         WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.valueOf(account.webDavProvider ?: ""), Json.encodeToString(account))
+    }
+
+    override fun onOneDriveLogin() {
+        val storage = Storage(
+            OneDriveUtils.ONEDRIVE_STORAGE,
+            Constants.OneDrive.COM_CLIENT_ID,
+            Constants.OneDrive.COM_REDIRECT_URL
+        )
+        fragmentManager?.let { showFragment(fragmentManager = it,OneDriveSignInFragment.newInstance(storage), R.id.frame_container, OneDriveSignInFragment.TAG, false) }
     }
 
     override fun onError(message: String?) {

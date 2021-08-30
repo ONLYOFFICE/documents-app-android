@@ -14,9 +14,14 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.presenters.main.CloudAccountState
 import app.editors.manager.mvp.views.main.CloudAccountView
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companion.newInstance
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
@@ -310,6 +315,15 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onAccountLogin(portal: String, login: String) {
         SignInActivity.showPortalSignIn(this, portal, login)
+    }
+
+    override fun onOneDriveLogin() {
+        val storage = Storage(
+            OneDriveUtils.ONEDRIVE_STORAGE,
+            Constants.OneDrive.COM_CLIENT_ID,
+            Constants.OneDrive.COM_REDIRECT_URL
+        )
+        showFragment(newInstance(storage), OneDriveSignInFragment.TAG, false)
     }
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {

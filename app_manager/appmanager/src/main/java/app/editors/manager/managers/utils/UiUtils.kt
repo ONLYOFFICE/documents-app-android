@@ -48,6 +48,15 @@ object UiUtils {
         }
     }
 
+    fun ImageView.setOneDriveImage() {
+        this.setImageDrawable(
+            ContextCompat.getDrawable(
+                this.context,
+                R.drawable.ic_storage_onedrive
+            )
+        )
+    }
+
     @JvmStatic
     fun setFileIcon(view: AppCompatImageView, ext: String) {
         val extension = StringUtils.getExtension(ext)

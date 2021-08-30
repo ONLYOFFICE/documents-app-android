@@ -13,6 +13,9 @@ import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
+import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
+import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
+import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.util.*
@@ -151,6 +154,12 @@ class App : Application() {
             .webDavApi
     }
 
+    fun getOneDriveComponent(): IOneDriveServiceProvider {
+        return DaggerOneDriveComponent.builder().appComponent(appComponent)
+            .build()
+            .oneDriveServiceProvider
+    }
+
 }
 
 val Context.accountOnline: CloudAccount?
@@ -172,6 +181,12 @@ val Context.loginService: ILoginServiceProvider
         else -> this.applicationContext.appComponent.loginService
     }
 
+val Context.oneDriveLoginService: IOneDriveLoginServiceProvider
+    get() = when(this) {
+        is App -> this.appComponent.oneDriveLoginService
+        else -> applicationContext.appComponent.oneDriveLoginService
+    }
+
 fun Context.api(): Api {
     return when (this) {
         is App -> this.getApi()
@@ -190,5 +205,12 @@ fun Context.getShareApi(): ShareService {
     return when (this) {
         is App -> this.getShareService()
         else -> this.applicationContext.getShareApi()
+    }
+}
+
+fun Context.getOneDriveServiceProvider(): IOneDriveServiceProvider {
+    return when(this) {
+        is App -> this.getOneDriveComponent()
+        else -> this.applicationContext.getOneDriveServiceProvider()
     }
 }

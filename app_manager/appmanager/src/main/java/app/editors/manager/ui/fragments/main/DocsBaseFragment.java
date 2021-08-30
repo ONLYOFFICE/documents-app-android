@@ -35,6 +35,7 @@ import app.editors.manager.mvp.models.list.Header;
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
 import app.editors.manager.mvp.views.base.BaseViewExt;
 import app.editors.manager.mvp.views.main.DocsBaseView;
+import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment;
 import app.editors.manager.ui.activities.base.BaseAppActivity;
 import app.editors.manager.ui.activities.main.MainActivity;
 import app.editors.manager.ui.activities.main.MediaActivity;
@@ -1167,10 +1168,12 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         }
     }
 
-    protected void setToolbarState(final boolean isVisible) {
+    public void setToolbarState(final boolean isVisible) {
         final Fragment fragment = getParentFragment();
         if (fragment instanceof MainPagerFragment) {
             ((MainPagerFragment) fragment).setToolbarState(isVisible);
+        } else if(fragment instanceof DocsOneDriveFragment) {
+            ((DocsOneDriveFragment) fragment).setToolbarState(isVisible);
         }
     }
 
@@ -1200,7 +1203,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
     }
 
-    protected void setAccountEnable(boolean isEnable) {
+    public void setAccountEnable(boolean isEnable) {
         final Fragment fragment = getParentFragment();
         if (fragment instanceof MainPagerFragment) {
             ((MainPagerFragment) fragment).setAccountEnable(isEnable);

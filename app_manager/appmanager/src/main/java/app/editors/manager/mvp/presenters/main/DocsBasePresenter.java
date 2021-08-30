@@ -62,6 +62,7 @@ import app.editors.manager.mvp.models.request.RequestDownload;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.presenters.base.BasePresenter;
 import app.editors.manager.mvp.views.main.DocsBaseView;
+import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -152,7 +153,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * Clicked/Checked and etc...
      * */
     @Nullable
-    Item mItemClicked;
+    protected Item mItemClicked;
     private int mItemClickedPosition;
     protected boolean mIsContextClick;
 
@@ -191,7 +192,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      */
     WorkManager mDownloadManager = WorkManager.getInstance();
 
-    private boolean mIsMultipleDelete = false;
+    protected boolean mIsMultipleDelete = false;
 
     @Inject
     protected Context mContext;
@@ -353,7 +354,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     abstract public void addRecent(CloudFile file);
 
-    abstract void updateViewsState();
+    abstract protected void updateViewsState();
 
     public abstract void onContextClick(final Item item, final int position, final boolean isTrash);
 
@@ -820,7 +821,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         }
     }
 
-    void addFile(final CloudFile file) {
+    protected void addFile(final CloudFile file) {
         file.setJustCreated(true);
         mModelExplorerStack.addFileFirst(file);
         getViewState().onDocsGet(getListWithHeaders(mModelExplorerStack.last(), true));
@@ -1207,7 +1208,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     /*
      * Get clicked item and do action with current state
      * */
-    void onClickEvent(final Item item, final int position) {
+    protected void onClickEvent(final Item item, final int position) {
         mItemClickedPosition = position;
         mItemClicked = mModelExplorerStack.getItemById(item);
     }
@@ -1272,7 +1273,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * */
 
 
-    boolean isPdf() {
+    protected boolean isPdf() {
         if (mItemClicked instanceof CloudFile) {
             CloudFile file = (CloudFile) mItemClicked;
             return StringUtils.getExtension(file.getFileExst()).equals(StringUtils.Extension.PDF);
@@ -1280,7 +1281,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return false;
     }
 
-    int getIconContext(String ext) {
+    protected int getIconContext(String ext) {
         final StringUtils.Extension extension = StringUtils.getExtension(ext);
         switch (extension) {
             case DOC:
@@ -1342,7 +1343,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     /*
      * Dialogs templates
      * */
-    void showDialogWaiting(@Nullable String tag) {
+    protected void showDialogWaiting(@Nullable String tag) {
         getViewState().onDialogWaiting(mContext.getString(R.string.dialogs_wait_title), tag);
     }
 
@@ -1353,7 +1354,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     /*
      * On batch operation
      * */
-    void onBatchOperations() {
+    protected void onBatchOperations() {
         getViewState().onDialogClose();
         getViewState().onSnackBar(mContext.getString(R.string.operation_complete_message));
         getViewState().onDocsBatchOperation();
@@ -1377,25 +1378,25 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return mModelExplorerStack.isRoot();
     }
 
-    String getCurrentTitle() {
+    protected String getCurrentTitle() {
         final String title = mModelExplorerStack.getCurrentTitle();
         return title != null ? title : "";
     }
 
-    String getItemClickedTitle() {
+    protected String getItemClickedTitle() {
         return mItemClicked != null ? mItemClicked.getTitle() : "";
     }
 
-    boolean isClickedItemFile() {
+    protected boolean isClickedItemFile() {
         return mItemClicked instanceof CloudFile;
     }
 
-    boolean isClickedItemDocs() {
+    protected boolean isClickedItemDocs() {
         return isClickedItemFile() && StringUtils.isDocument(((CloudFile) mItemClicked).getFileExst());
     }
 
     @Nullable
-    Date getItemClickedDate() {
+    protected Date getItemClickedDate() {
         return mItemClicked != null ? mItemClicked.getUpdated() : null;
     }
 

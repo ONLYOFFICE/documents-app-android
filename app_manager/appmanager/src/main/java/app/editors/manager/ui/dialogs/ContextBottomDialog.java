@@ -65,6 +65,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
         public boolean mIsWebDav = false;
         public boolean mIsTrash = false;
         public boolean mIsFavorite = false;
+        public boolean mIsOneDrive = false;
     }
 
     protected PreferenceTool mPreferenceTool;
@@ -264,7 +265,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
                 mListExplorerContextDeleteText.setText(R.string.list_context_delete);
             }
 
-            mListExplorerContextDownload.setVisibility(View.VISIBLE);
+            if(!mState.mIsOneDrive) {
+                mListExplorerContextDownload.setVisibility(View.VISIBLE);
+            } else {
+                mListContextExternalLink.setVisibility(View.VISIBLE);
+                mListExplorerContextDownload.setVisibility(View.GONE);
+            }
 
         } else {
             // File can downloaded
@@ -305,9 +311,11 @@ public class ContextBottomDialog extends BaseBottomDialog {
         }
 
         // Item can share
-        if (mState.mIsCanShare) {
+        if (mState.mIsCanShare && !mState.mIsOneDrive) {
             mViewLineSeparatorShare.setVisibility(View.VISIBLE);
             mListContextShare.setVisibility(View.VISIBLE);
+        } else {
+            mViewLineSeparatorShare.setVisibility(View.VISIBLE);
         }
 
         // Only for share section, instead of delete

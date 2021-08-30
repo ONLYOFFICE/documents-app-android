@@ -7,6 +7,10 @@ import android.view.ViewGroup
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentChooseCloudsBinding
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.models.account.Storage
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -78,6 +82,18 @@ class CloudsFragment : BaseAppFragment() {
             R.string.storage_select_kdrive
         ) {
             WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.KDrive, null)
+        }
+
+        viewBinding?.cloudsItemOneDrive?.bind(
+            R.drawable.ic_storage_onedrive,
+            R.string.storage_select_one_drive
+        ) {
+            val storage = Storage(
+                OneDriveUtils.ONEDRIVE_STORAGE,
+                Constants.OneDrive.COM_CLIENT_ID,
+                Constants.OneDrive.COM_REDIRECT_URL
+            )
+            showFragment(OneDriveSignInFragment.newInstance(storage), OneDriveSignInFragment.TAG, false)
         }
 
         viewBinding?.cloudsItemYandex?.isVisible = false

@@ -20,6 +20,10 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
+import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
+import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
+import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
+import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -42,6 +46,7 @@ import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import dagger.BindsInstance
+import app.editors.manager.ui.fragments.storage.*
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
 import lib.toolkit.base.managers.tools.LocalContentTools
@@ -76,6 +81,7 @@ interface AppComponent {
     val networkSettings: NetworkSettings
     val accountsDao: AccountDao
     val loginService: ILoginServiceProvider
+    val oneDriveLoginService: IOneDriveLoginServiceProvider
     val accountOnline: CloudAccount?
 
     /*
@@ -96,6 +102,7 @@ interface AppComponent {
     fun inject(personalPortalFragment: PersonalPortalFragment?)
     fun inject(webDavInterceptor: WebDavInterceptor?)
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
+    fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
 
     /*
     * Main
@@ -113,6 +120,7 @@ interface AppComponent {
     fun inject(mediaAdapter: MediaAdapter?)
     fun inject(accountsPresenter: CloudAccountPresenter?)
     fun inject(mainPagerPresenter: MainPagerPresenter?)
+    fun inject(docsOneDrivePresenter: DocsOneDrivePresenter)
 
     /*
     * Media
@@ -147,6 +155,7 @@ interface AppComponent {
     * */
     fun inject(accountProvider: AccountProvider?)
     fun inject(settingsPresenter: ProfilePresenter?)
+    fun inject(oneDriveFileProvider: OneDriveFileProvider?)
     fun inject(docsRecentPresenter: DocsRecentPresenter?)
     fun inject(authPagerFragment: AuthPagerFragment?)
     fun inject(enterpriseAppAuthPresenter: EnterpriseAppAuthPresenter?)

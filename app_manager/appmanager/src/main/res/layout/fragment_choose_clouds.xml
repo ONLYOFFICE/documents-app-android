@@ -118,6 +118,16 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cloudsItemOneDrive" />
+
+        <app.editors.manager.ui.views.custom.ConnectCloudView
+            android:id="@+id/cloudsItemOneDrive"
+            layout="@layout/include_clouds_item"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_two_line_height"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cloudsItemYandex" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
