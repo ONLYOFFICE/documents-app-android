@@ -214,7 +214,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 )
             }
             val correctOrderTabs = setCorrectOrder(fragments)
-            setAdapter(correctOrderTabs)
+            setAdapter(correctOrderTabs.filterNotNull())
             arguments?.getString(KEY_FILE_DATA)?.let {
                 childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
                     viewBinding?.mainViewPager?.post {
@@ -255,7 +255,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     private fun getCloudFragments(stringAccount: String, serverVersion: Int) {
-        val fragments = arrayListOf<ViewPagerAdapter.Container?>()
+        val fragments = arrayListOf<ViewPagerAdapter.Container>()
         fragments.add(
             ViewPagerAdapter.Container(
                 DocsMyFragment.newInstance(stringAccount), getString(
@@ -300,7 +300,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     private fun getVisitorFragments(stringAccount: String) {
-        val fragments = arrayListOf<ViewPagerAdapter.Container?>()
+        val fragments = arrayListOf<ViewPagerAdapter.Container>()
         fragments.add(
             ViewPagerAdapter.Container(
                 DocsShareFragment.newInstance(stringAccount),
@@ -325,7 +325,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     private fun getPersonalFragments(stringAccount: String, serverVersion: Int) {
-        val fragments = arrayListOf<ViewPagerAdapter.Container?>()
+        val fragments = arrayListOf<ViewPagerAdapter.Container>()
         fragments.add(
             ViewPagerAdapter.Container(
                 DocsMyFragment.newInstance(stringAccount), getString(
@@ -351,7 +351,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         setAdapter(fragments)
     }
 
-    private fun setAdapter(fragments: ArrayList<ViewPagerAdapter.Container?>) {
+    private fun setAdapter(fragments: List<ViewPagerAdapter.Container>) {
         adapter = AdapterForPages(childFragmentManager, fragments)
         viewBinding?.mainViewPager?.offscreenPageLimit = OFFSCREEN_COUNT
         viewBinding?.mainViewPager?.adapter = adapter
