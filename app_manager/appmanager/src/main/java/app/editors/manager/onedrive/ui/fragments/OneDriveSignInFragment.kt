@@ -8,22 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.editors.manager.R
+import app.editors.manager.databinding.FragmentStorageWebBinding
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
 import app.editors.manager.onedrive.mvp.views.OneDriveSignInView
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.Unbinder
 import lib.toolkit.base.managers.utils.NetworkUtils.isOnline
 import moxy.presenter.InjectPresenter
-import java.net.URLEncoder
 
 class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener,
     OneDriveSignInView {
@@ -34,32 +30,19 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
         private val TAG_WEB_VIEW = "TAG_WEB_VIEW"
         private val TAG_PAGE_LOAD = "TAG_PAGE_LOAD"
 
-        fun newInstance(storage: Storage): OneDriveSignInFragment {
-            val bundle = Bundle()
-            bundle.putParcelable(TAG_STORAGE, storage)
-            val fileViewerFragment = OneDriveSignInFragment()
-            fileViewerFragment.arguments = bundle
-            return fileViewerFragment
+        fun newInstance(storage: Storage) = OneDriveSignInFragment().apply {
+            arguments = Bundle(1).apply {
+                putParcelable(TAG_STORAGE, storage)
+            }
         }
     }
 
-    @JvmField
-    @BindView(R.id.web_storage_layout)
-    protected var mWebLayout: LinearLayoutCompat? = null
+    var viewBinding: FragmentStorageWebBinding? = null
 
-    @JvmField
-    @BindView(R.id.web_storage_webview)
-    protected var mWebView: WebView? = null
-
-    @JvmField
-    @BindView(R.id.web_storage_swipe)
-    protected var mSwipeRefreshLayout: SwipeRefreshLayout? = null
-
-    private var mUnbinder: Unbinder? = null
-    private var mUrl: String? = null
-    private var mStorage: Storage? = null
-    private var mRedirectUrl: String? = null
-    private var mIsPageLoad = false
+    private var url: String? = null
+    private var storage: Storage? = null
+    private var redirectUrl: String? = null
+    private var isPageLoad = false
 
     @InjectPresenter
     lateinit var presenter: OneDriveSingInPresenter
@@ -68,11 +51,10 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        val view: View = inflater.inflate(R.layout.fragment_storage_web, container, false)
-        mUnbinder = ButterKnife.bind(this, view)
-        return view
+        viewBinding = FragmentStorageWebBinding.inflate(inflater)
+        return viewBinding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,12 +64,11 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(TAG_PAGE_LOAD, mIsPageLoad)
+        outState.putBoolean(TAG_PAGE_LOAD, isPageLoad)
 
-        // Save WebView state
-        if (mWebView != null) {
+        viewBinding?.webStorageWebview?.let {
             val bundle = Bundle()
-            mWebView!!.saveState(bundle)
+            it.saveState(bundle)
             outState.putBundle(TAG_WEB_VIEW, bundle)
         }
     }
@@ -95,11 +76,10 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
     override fun onDestroyView() {
         super.onDestroyView()
         CookieManager.getInstance().removeAllCookies(null)
-        mUnbinder?.unbind()
     }
 
     override fun onRefresh() {
-        loadWebView(mUrl)
+        loadWebView(url)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -111,8 +91,8 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
             setHomeButtonEnabled(true)
         }
 
-        mIsPageLoad = false
-        mSwipeRefreshLayout?.apply {
+        isPageLoad = false
+        viewBinding?.webStorageSwipe?.apply {
             setOnRefreshListener(this@OneDriveSignInFragment)
             setColorSchemeColors(
                 ContextCompat.getColor(
@@ -122,7 +102,7 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
             )
         }
 
-        mWebView?.apply {
+        viewBinding?.webStorageWebview?.apply {
             settings.apply {
                 javaScriptEnabled = true
                 setAppCacheEnabled(false)
@@ -138,16 +118,15 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
     }
 
     private fun getArgs() {
-        val bundle = arguments
-        if (bundle != null) {
-            mStorage = bundle.getParcelable(TAG_STORAGE)
-            mStorage?.let {
-                mUrl = StorageUtils.getStorageUrl(
-                    it.name,
-                    it.clientId,
-                    it.redirectUrl
+        arguments?.let { it ->
+            storage = it.getParcelable(TAG_STORAGE)
+            storage?.let {storage ->
+                url = StorageUtils.getStorageUrl(
+                    storage.name,
+                    storage.clientId,
+                    storage.redirectUrl
                 )
-                mRedirectUrl = it.redirectUrl
+                redirectUrl = storage.redirectUrl
             }
         }
     }
@@ -156,33 +135,22 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(TAG_WEB_VIEW)) {
                 val bundle = savedInstanceState.getBundle(TAG_WEB_VIEW)
-                mSwipeRefreshLayout?.isRefreshing = true
+                viewBinding?.webStorageSwipe?.isRefreshing = true
                 if (bundle != null) {
-                    mWebView?.restoreState(bundle)
+                    viewBinding?.webStorageWebview?.restoreState(bundle)
                 }
             }
             if (savedInstanceState.containsKey(TAG_PAGE_LOAD)) {
-                mIsPageLoad = savedInstanceState.getBoolean(TAG_PAGE_LOAD)
+                isPageLoad = savedInstanceState.getBoolean(TAG_PAGE_LOAD)
             }
         } else {
-            loadWebView(mUrl)
-        }
-    }
-
-    private fun pairsToUrlQueryString(pairs: Map<String, String>): String {
-        return pairs.entries.joinToString("&") {
-            "${it.key}=${
-                URLEncoder.encode(
-                    it.value,
-                    "UTF-8"
-                )
-            }"
+            loadWebView(url)
         }
     }
 
     private fun loadWebView(url: String?) {
-        mSwipeRefreshLayout!!.isRefreshing = true
-        mWebView?.loadUrl(url!!)
+        viewBinding?.webStorageSwipe?.isRefreshing = true
+        viewBinding?.webStorageWebview?.loadUrl(url!!)
     }
 
     /*
@@ -195,8 +163,7 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
     inner class WebViewCallbacks : WebViewClient() {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
-            if (url.startsWith(mRedirectUrl!!)) {
-                val uri = Uri.parse(url)
+            if (url.startsWith(redirectUrl!!)) {
                 val accessToken = url.split("=")
                 val token = accessToken[1]
                 presenter.checkOneDrive(token.removeRange(token.length - 11, token.length))
@@ -205,8 +172,8 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
 
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
-            mSwipeRefreshLayout?.isRefreshing = false
-            mIsPageLoad = true
+            viewBinding?.webStorageSwipe?.isRefreshing = false
+            isPageLoad = true
         }
 
         override fun onReceivedError(
@@ -215,7 +182,7 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
             error: WebResourceError
         ) {
             super.onReceivedError(view, request, error)
-            mSwipeRefreshLayout?.isRefreshing = false
+            viewBinding?.webStorageSwipe?.isRefreshing = false
             if (!isOnline(requireContext())) {
                 showSnackBar(R.string.errors_connection_error)
             }

@@ -2,10 +2,8 @@ package app.editors.manager.onedrive.ui.fragments.operations
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.models.base.Entity
@@ -36,8 +34,8 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
     }
 
 
-    private var mOperationActivity: OperationActivity? = null
-    private var mOperationType: OperationsState.OperationType? = null
+    private var operationActivity: OperationActivity? = null
+    private var operationType: OperationsState.OperationType? = null
 
     @InjectPresenter
     lateinit var presenter: DocsOneDrivePresenter
@@ -49,8 +47,8 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
-            mOperationActivity = context as OperationActivity
-            mOperationActivity!!.setOnActionClickListener(this)
+            operationActivity = context as OperationActivity
+            operationActivity?.setOnActionClickListener(this)
         } catch (e: ClassCastException) {
             throw RuntimeException(
                 DocsCloudOperationFragment::class.java.simpleName + " - must implement - " +
@@ -75,13 +73,16 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
 
     override fun onItemClick(view: View?, position: Int) {
         super.onItemClick(view, position)
-        mOperationActivity?.setEnabledActionButton(false)
+        operationActivity?.setEnabledActionButton(false)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mOperationActivity!!.setOnActionClickListener(null)
-        mOperationActivity!!.setEnabledActionButton(false)
+        operationActivity?.apply {
+            setOnActionClickListener(null)
+            setEnabledActionButton(false)
+        }
+
     }
 
     override fun onItemLongClick(view: View?, position: Int) {
@@ -98,12 +99,12 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
 
     override fun onError(message: String?) {
         super.onError(message)
-        mOperationActivity?.setEnabledActionButton(false)
+        operationActivity?.setEnabledActionButton(false)
     }
 
     override fun onDocsGet(list: List<Entity?>?) {
         super.onDocsGet(list?.filter { it is CloudFolder})
-        mOperationActivity?.setEnabledActionButton(true)
+        operationActivity?.setEnabledActionButton(true)
     }
 
     override fun onDocsBatchOperation() {
@@ -124,16 +125,16 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
     }
 
     override fun onActionClick() {
-        when (mOperationType) {
+        when (operationType) {
             OperationsState.OperationType.COPY -> presenter.copy()
             OperationsState.OperationType.MOVE -> presenter.move()
         }
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        if (supportActionBar != null) {
-            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-            supportActionBar!!.setHomeButtonEnabled(true)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeButtonEnabled(true)
         }
         getArgs(savedInstanceState)
         initViews()
@@ -142,7 +143,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
 
     private fun getArgs(savedInstanceState: Bundle?) {
         val intent = requireActivity().intent
-        mOperationType =
+        operationType =
             intent.getSerializableExtra(OperationActivity.TAG_OPERATION_TYPE) as OperationsState.OperationType?
         if (savedInstanceState == null) {
             val explorer =
@@ -156,7 +157,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
     }
 
     private fun initViews() {
-        mOperationActivity?.setEnabledActionButton(false)
+        operationActivity?.setEnabledActionButton(false)
         mExplorerAdapter.isFoldersMode = true
         mRecyclerView.setPadding(0, 0, 0, 0)
     }

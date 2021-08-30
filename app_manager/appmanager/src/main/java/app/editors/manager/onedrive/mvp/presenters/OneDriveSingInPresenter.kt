@@ -53,28 +53,28 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
     private fun createUser(user: User, token: String) {
         networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_BASE_URL)
         val cloudAccount = CloudAccount(
-            id = "${user.userPrincipalName}",
+            id = user.userPrincipalName,
             isWebDav = false,
             isOneDrive = true,
             portal = OneDriveUtils.ONEDRIVE_PORTAL,
             webDavPath = "",
             webDavProvider = "",
-            login = "${user.userPrincipalName}",
+            login = user.userPrincipalName,
             scheme = "https://",
             isSslState = networkSettings.getSslState(),
             isSslCiphers = networkSettings.getCipher(),
-            name = "${user.displayName}"
+            name = user.displayName
         )
 
         val accountData = AccountData(
             portal = cloudAccount.portal ?: "",
             scheme = cloudAccount.scheme ?: "",
-            displayName = "${user.displayName}",
+            displayName = user.displayName,
             userId = cloudAccount.id,
             provider = cloudAccount.webDavProvider ?: "",
             accessToken = token,
             webDav = cloudAccount.webDavPath,
-            email = "${user.userPrincipalName}",
+            email = user.userPrincipalName,
         )
 
         val account = Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))

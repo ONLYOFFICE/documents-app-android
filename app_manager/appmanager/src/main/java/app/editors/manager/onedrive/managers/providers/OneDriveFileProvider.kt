@@ -1,6 +1,7 @@
 package app.editors.manager.onedrive.managers.providers
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.work.Data
@@ -41,8 +42,10 @@ import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import java.io.*
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 class OneDriveFileProvider : BaseFileProvider {
 
@@ -51,8 +54,14 @@ class OneDriveFileProvider : BaseFileProvider {
         private const val PATH_TEMPLATES = "templates/"
     }
 
-    val context = App.getApp().applicationContext
+    @Inject
+    lateinit var context: Context
+
     private val workManager = WorkManager.getInstance()
+
+    init {
+        getApp().appComponent.inject(this)
+    }
 
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer>? {
         return Observable.fromCallable {
@@ -96,7 +105,7 @@ class OneDriveFileProvider : BaseFileProvider {
                 this.title = response.value[0].parentReference.path.split("/").last()
                 this.etag = response.value[0].eTag
                 this.updated =
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(response.value[0].lastModifiedDateTime)
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(response.value[0].lastModifiedDateTime)
             }
 
             for (item in response.value) {
@@ -106,7 +115,7 @@ class OneDriveFileProvider : BaseFileProvider {
                     folder.title = item.name
                     folder.parentId = item.parentReference.id
                     folder.updated =
-                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(item.lastModifiedDateTime)
+                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.lastModifiedDateTime)
                     folder.etag = item.eTag
                     folders.add(folder)
                 } else if (item.file != null) {
@@ -117,9 +126,9 @@ class OneDriveFileProvider : BaseFileProvider {
                     file.pureContentLength = item.size.toLong()
                     file.fileExst = getExtensionFromPath(file.title.toLowerCase())
                     file.created =
-                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(item.createdDateTime)
+                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.createdDateTime)
                     file.updated =
-                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(item.lastModifiedDateTime)
+                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.lastModifiedDateTime)
                     files.add(file)
                 }
             }

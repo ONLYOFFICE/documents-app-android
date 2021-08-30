@@ -37,11 +37,9 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
 
         const val KEY_MODIFIED = "EXTRA_IS_MODIFIED"
 
-        fun newInstance(account: String): DocsOneDriveFragment {
-            return DocsOneDriveFragment().apply {
-                arguments = Bundle().apply {
-                    putString(KEY_ACCOUNT, account)
-                }
+        fun newInstance(account: String) = DocsOneDriveFragment().apply {
+            arguments = Bundle(1).apply {
+                putString(KEY_ACCOUNT, account)
             }
         }
     }
@@ -96,8 +94,8 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         activity?.showAccount(false)
         activity?.showNavigationButton(false)
     }
@@ -164,8 +162,8 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        mMenu!!.findItem(R.id.toolbar_sort_item_type).isVisible = false
-        mMenu!!.findItem(R.id.toolbar_sort_item_owner).isVisible = false
+        mMenu?.findItem(R.id.toolbar_sort_item_type)?.isVisible = false
+        mMenu?.findItem(R.id.toolbar_sort_item_owner)?.isVisible = false
         mSearchCloseButton.setOnClickListener { v: View? ->
             onBackPressed()
         }
@@ -174,11 +172,11 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
     override fun onStateMenuSelection() {
         super.onStateMenuSelection()
         if (mMenu != null && mMenuInflater != null) {
-            mMenuInflater!!.inflate(R.menu.docs_select, mMenu)
-            mDeleteItem = mMenu!!.findItem(R.id.toolbar_selection_delete).setVisible(true)
-            mMoveItem = mMenu!!.findItem(R.id.toolbar_selection_move).setVisible(true)
-            mCopyItem = mMenu!!.findItem(R.id.toolbar_selection_copy).setVisible(true)
-            mDownloadItem = mMenu!!.findItem(R.id.toolbar_selection_download).setVisible(false)
+            mMenuInflater?.inflate(R.menu.docs_select, mMenu)
+            mDeleteItem = mMenu?.findItem(R.id.toolbar_selection_delete)?.setVisible(true)
+            mMoveItem = mMenu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
+            mCopyItem = mMenu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
+            mDownloadItem = mMenu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
             setMenuItemTint(requireContext(), mDeleteItem, R.color.colorPrimary)
             setAccountEnable(false)
         }

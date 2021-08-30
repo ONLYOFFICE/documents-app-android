@@ -243,20 +243,20 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     override fun addRecent(file: CloudFile?) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
-                file?.title?.let { it1 ->
+                file?.title?.let { fileName ->
                     Recent(
                         idFile = if (file.fileExst?.let { it1 -> StringUtils.isImage(it1) } == true) file.id else file.viewUrl,
                         path = file.webUrl,
-                        name = it1,
+                        name = fileName,
                         size = file.pureContentLength,
                         isLocal = false,
                         isWebDav = true,
                         date = Date().time,
                         ownerId = it.id
                     )
-                }?.let { it2 ->
+                }?.let { recent ->
                     recentDao.addRecent(
-                        it2
+                        recent
                     )
                 }
             }

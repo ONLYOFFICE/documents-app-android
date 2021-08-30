@@ -20,6 +20,7 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
+import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
@@ -154,6 +155,7 @@ interface AppComponent {
     * */
     fun inject(accountProvider: AccountProvider?)
     fun inject(settingsPresenter: ProfilePresenter?)
+    fun inject(oneDriveFileProvider: OneDriveFileProvider?)
     fun inject(docsRecentPresenter: DocsRecentPresenter?)
     fun inject(authPagerFragment: AuthPagerFragment?)
     fun inject(enterpriseAppAuthPresenter: EnterpriseAppAuthPresenter?)
