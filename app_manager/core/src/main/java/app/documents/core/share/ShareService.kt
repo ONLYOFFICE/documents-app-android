@@ -111,33 +111,4 @@ interface ShareService {
     fun getUsers(
         @QueryMap options: Map<String, String> = mapOf()
     ): Observable<ResponseUsers>
-
-    /**
-     * Filter users by name
-     * */
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @GET("api/" + ApiContract.API_VERSION + "/people" + ApiContract.RESPONSE_FORMAT)
-    fun getUsersFilter(
-        @Query("filterValue") value: String,
-        @Query("filterBy") by: String = "displayName",
-        @Query("filterOp") op: String = "contains"
-    ): Observable<ResponseUsersFilter>
-
-    /**
-     * Filter groups by name
-     * */
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @GET("api/" + ApiContract.API_VERSION + "/group" + ApiContract.RESPONSE_FORMAT)
-    fun getGroupsFilter(
-        @Query("filterValue") value: String,
-        @Query("filterBy") by: String = "name",
-        @Query("filterOp") op: String = "contains"
-    ): Observable<ResponseGroupsFilter>
-
 }

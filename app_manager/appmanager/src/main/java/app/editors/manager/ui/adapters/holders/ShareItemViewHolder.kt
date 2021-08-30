@@ -12,7 +12,7 @@ import app.editors.manager.mvp.models.ui.ShareUi
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 
 class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) -> Unit) :
-    BaseViewHolder<ShareUi>(view) {
+    ShareViewHolder<ShareUi>(view) {
 
     private val itemBinding = ListShareSettingsItemBinding.bind(view)
     private val shareImage: ImageView = itemBinding.listShareSettingsImage

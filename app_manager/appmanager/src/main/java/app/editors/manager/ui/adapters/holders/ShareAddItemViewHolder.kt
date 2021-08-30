@@ -13,14 +13,13 @@ import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.ui.adapters.BaseAdapter
-import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import java.util.*
 
-class ShareAddItemViewHolder<T: ViewType>(
+class ShareAddItemViewHolder(
     view: View,
     private val listener: BaseAdapter.OnItemClickListener?)
-    : BaseViewHolder<T>(view) {
+    : ShareViewHolder<ViewType>(view) {
 
     private val itemBinding = ListShareAddItemBinding.bind(view)
     private var shareLayout: ConstraintLayout = itemBinding.shareAddItemLayout
@@ -33,7 +32,7 @@ class ShareAddItemViewHolder<T: ViewType>(
     private val guideLine = itemBinding.root.context.resources.getDimension(R.dimen.share_group_guideline).toInt()
     private val leftMargin = itemBinding.root.context.resources.getDimension(R.dimen.screen_margin_large).toInt()
 
-    override fun bind(item: T, mode: BaseAdapter.Mode, previousItem: T?) {
+    override fun bind(item: ViewType, mode: BaseAdapter.Mode, previousItem: ViewType?) {
         listener?.let { listener ->
             shareLayout.setOnClickListener { view ->
                 listener.onItemClick(view, layoutPosition)
@@ -74,7 +73,6 @@ class ShareAddItemViewHolder<T: ViewType>(
         }
     }
 
-    /** Get letter */
     private fun getLetter(user: UserUi, userBefore: UserUi?) {
         userBefore?.let { previous ->
             if (user.getDisplayNameHtml[0] != previous.getDisplayNameHtml[0]) {
@@ -91,14 +89,12 @@ class ShareAddItemViewHolder<T: ViewType>(
         }
     }
 
-    /** Set margins for avatar */
     private fun setAvatarMargins(item: GroupUi) {
         avatarImage.setMargins(leftMargin, 0, 0, 0)
         mainTitle.text = item.name
         infoTitle.visibility = View.GONE
     }
 
-    /** Remove alpha word */
     private fun removeAlpha() {
         alphaText.visibility = View.GONE
         guideline.layoutParams =
@@ -108,7 +104,6 @@ class ShareAddItemViewHolder<T: ViewType>(
             }
     }
 
-    /** Set info if not empty */
     private fun setInfo(item: UserUi) {
         val info = item.department.trim { it <= ' ' }
         if (info.isNotEmpty()) {

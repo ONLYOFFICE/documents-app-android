@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_one_line_height">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_share_add_header_title"
         style="@style/MediumTextView"
         android:layout_width="match_parent"

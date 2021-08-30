@@ -74,7 +74,6 @@ object GlideUtils {
      * Load avatar into ImageView
      * */
     fun ImageView.loadAvatar(avatar: String) {
-        val context = App.getApp().appComponent.context
         val placeholderDrawable = R.drawable.drawable_list_share_image_item_user_placeholder
         context.accountOnline?.let { account ->
             val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
@@ -86,6 +85,8 @@ object GlideUtils {
                     diskCacheStrategy(DiskCacheStrategy.NONE)
                     timeout(30 * 1000)
                     circleCrop()
+                    error(placeholderDrawable)
+                    placeholder(placeholderDrawable)
                 })
                 .into(this)
         }

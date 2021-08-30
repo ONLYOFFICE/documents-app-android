@@ -1,6 +1,12 @@
 package app.editors.manager.mvp.presenters.share
 
 import app.documents.core.account.CloudAccount
+import app.documents.core.network.ApiContract.FilterOptions.CONTAINS
+import app.documents.core.network.ApiContract.FilterOptions.DISPLAY_NAME
+import app.documents.core.network.ApiContract.FilterOptions.FILTER_BY
+import app.documents.core.network.ApiContract.FilterOptions.FILTER_OPERATION
+import app.documents.core.network.ApiContract.FilterOptions.FILTER_VALUE
+import app.documents.core.network.ApiContract.FilterOptions.NAME
 import app.documents.core.network.models.share.request.RequestShare
 import app.documents.core.network.models.share.request.RequestShareItem
 import app.documents.core.share.ShareService
@@ -25,7 +31,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
-import java.util.*
 
 @InjectViewState
 class AddPresenter : BasePresenter<AddView>() {
@@ -110,8 +115,8 @@ class AddPresenter : BasePresenter<AddView>() {
     private fun getFilter(searchValue: String) {
         isCommon = true
 
-        disposable = Observable.zip(shareApi.getUsersFilter(searchValue),
-            shareApi.getGroupsFilter(searchValue)) { users, groups ->
+        disposable = Observable.zip(shareApi.getUsers(getOptions(searchValue)),
+            shareApi.getGroups(getOptions(searchValue, true))) { users, groups ->
             shareStack.clearModel()
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
@@ -201,6 +206,13 @@ class AddPresenter : BasePresenter<AddView>() {
             }
             return commonList
         }
+
+    private fun getOptions(value: String, isGroup: Boolean = false): Map<String, String> =
+        mapOf(
+            FILTER_VALUE to value,
+            FILTER_BY to if (isGroup) NAME else DISPLAY_NAME,
+            FILTER_OPERATION to CONTAINS
+        )
 
     val shared: Unit
         get() {

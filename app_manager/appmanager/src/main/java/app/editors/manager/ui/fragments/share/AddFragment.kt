@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentListBinding
 import app.editors.manager.databinding.FragmentShareAddListBinding
 import app.editors.manager.mvp.models.explorer.Item
@@ -14,16 +13,14 @@ import app.editors.manager.mvp.models.ui.UserUi
 import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.views.share.AddView
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
-import app.editors.manager.ui.adapters.holders.factory.ShareAddHolderFactory
+import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.adapters.share.ShareAddAdapter
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import butterknife.ButterKnife
-import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
-import javax.inject.Inject
 
 class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
@@ -142,8 +139,8 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     private fun initViews() {
-        shareAddAdapter = ShareAddAdapter(ShareAddHolderFactory { view, integer ->
-            onItemClick(view, integer)
+        shareAddAdapter = ShareAddAdapter(ShareHolderFactory { view, position ->
+            onItemClick(view, position)
         })
         mRecyclerView.adapter = shareAddAdapter
     }
@@ -200,17 +197,12 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
         @JvmStatic
         fun newInstance(item: Item?, type: Type?): AddFragment {
-            item?.let {
-                return AddFragment().apply {
-                    arguments = Bundle(2).apply {
-                        putSerializable(TAG_ITEM, item)
-                        putSerializable(TAG_TYPE, type)
-                    }
+            return AddFragment().apply {
+                arguments = Bundle(2).apply {
+                    putSerializable(TAG_ITEM, checkNotNull(item))
+                    putSerializable(TAG_TYPE, checkNotNull(type))
                 }
-            } ?: run {
-                throw NullPointerException("Item must not be null!")
             }
-
         }
     }
 }

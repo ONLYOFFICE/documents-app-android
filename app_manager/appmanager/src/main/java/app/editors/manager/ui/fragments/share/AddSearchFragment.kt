@@ -17,7 +17,7 @@ import app.editors.manager.mvp.views.share.AddView
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.adapters.diffutilscallback.ShareSearchDiffUtilsCallback
-import app.editors.manager.ui.adapters.holders.factory.ShareAddHolderFactory
+import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.adapters.share.ShareAddAdapter
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -248,7 +248,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
             setOnEventListener(this@AddSearchFragment)
             setAccessIcon(addPresenter.accessCode)
         }
-        shareAddAdapter = ShareAddAdapter(ShareAddHolderFactory{ view, position ->
+        shareAddAdapter = ShareAddAdapter(ShareHolderFactory { view, position ->
             onItemClick(view, position)
         })
         shareAddAdapter?.setMode(BaseAdapter.Mode.COMMON)
@@ -280,14 +280,10 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         const val TAG_ITEM = "TAG_ITEM"
 
         fun newInstance(item: Item?): AddSearchFragment {
-            item?.let {
-                return AddSearchFragment().apply {
-                    arguments = Bundle(1).apply {
-                        putSerializable(TAG_ITEM, item)
-                    }
+            return AddSearchFragment().apply {
+                arguments = Bundle(1).apply {
+                    putSerializable(TAG_ITEM, checkNotNull(item))
                 }
-            } ?: run {
-                throw NullPointerException("Item must not be null!")
             }
         }
     }

@@ -32,7 +32,6 @@ import app.editors.manager.ui.adapters.share.ShareAdapter
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.popup.SharePopup
-import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
@@ -172,17 +171,12 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         viewBinding?.shareSettingsListSwipeRefresh?.isRefreshing = false
         shareSettingsAdapter?.let { adapter ->
             val previousItem = adapter.getItem(adapter.itemsList.indexOf(share) - 1)
-            val nextItem =  try {
-                adapter.getItem(adapter.itemsList.indexOf(share) + 1)
-            } catch (e: ArrayIndexOutOfBoundsException) {
-                null
-            }
+            val nextItem = adapter.getItem(adapter.itemsList.indexOf(share) + 1)
 
             adapter.removeItem(share)
 
-            if (previousItem is ShareHeaderUi && nextItem == null
-                || nextItem != null && nextItem is ShareHeaderUi) {
-                adapter.removeHeader(previousItem as ShareHeaderUi)
+            if (previousItem is ShareHeaderUi && (nextItem == null || nextItem is ShareHeaderUi)) {
+                adapter.removeHeader(previousItem)
             }
 
             showSnackBarWithAction(
@@ -295,8 +289,8 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             binding.shareSettingsListSwipeRefresh.setColorSchemeColors(
                 ContextCompat.getColor(requireContext(), R.color.colorSecondary)
             )
-            shareSettingsAdapter = ShareAdapter(ShareHolderFactory { view, integer ->
-                onItemContextClick(view, integer)
+            shareSettingsAdapter = ShareAdapter(ShareHolderFactory { view, position ->
+                onItemContextClick(view, position)
             })
             binding.shareMainListOfItems.layoutManager = LinearLayoutManager(context)
             binding.shareMainListOfItems.adapter = shareSettingsAdapter

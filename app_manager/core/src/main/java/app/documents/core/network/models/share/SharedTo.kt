@@ -39,8 +39,4 @@ data class SharedTo(
     val displayNameHtml: String
         get() = StringUtils.getHtmlString(displayName)
 
-    fun getManager(): Any? {
-        return manager
-    }
-    
 }

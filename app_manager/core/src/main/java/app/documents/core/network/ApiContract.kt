@@ -186,4 +186,12 @@ object ApiContract {
         const val PPTX = "PPTX"
     }
 
+    object FilterOptions {
+        const val FILTER_VALUE = "filterValue"
+        const val FILTER_BY = "filterBy"
+        const val FILTER_OPERATION = "filterOp"
+        const val DISPLAY_NAME = "displayName"
+        const val CONTAINS = "contains"
+        const val NAME = "name"
+    }
 }

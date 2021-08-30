@@ -84,8 +84,8 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_share_add_search ->
-                showFragment(AddSearchFragment.newInstance(inputItem),
-                    AddSearchFragment.TAG,false)
+                showFragment(AddSearchFragment
+                    .newInstance(inputItem), AddSearchFragment.TAG, false)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -210,16 +210,11 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
         const val ANIMATION_DURATION = 200
 
         fun newInstance(item: Item?): AddPagerFragment {
-            item?.let {
-                return AddPagerFragment().apply {
-                    arguments = Bundle(1).apply {
-                        putSerializable(TAG_ITEM, item)
-                    }
+            return AddPagerFragment().apply {
+                arguments = Bundle(1).apply {
+                    putSerializable(TAG_ITEM, checkNotNull(item))
                 }
-            } ?: run {
-                throw NullPointerException("Item must not be null!")
             }
-
         }
     }
 }
