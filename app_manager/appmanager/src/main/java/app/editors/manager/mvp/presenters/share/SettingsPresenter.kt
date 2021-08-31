@@ -15,13 +15,13 @@ import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
-import app.editors.manager.mvp.models.ui.ViewType
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.share.SettingsView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
 import retrofit2.HttpException
 

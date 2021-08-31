@@ -20,14 +20,14 @@ import app.editors.manager.databinding.IncludeButtonPopupBinding
 import app.editors.manager.databinding.IncludeShareSettingsHeaderBinding
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ModelShareStack
+import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
-import app.editors.manager.mvp.models.ui.ViewType
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.views.share.SettingsView
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.ShareActivity
+import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.adapters.share.ShareAdapter
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -35,6 +35,7 @@ import app.editors.manager.ui.views.popup.SharePopup
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
+import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
 
 class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
@@ -169,12 +170,15 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     override fun onRemove(share: ShareUi, sharePosition: Int) {
         viewBinding?.shareSettingsListSwipeRefresh?.isRefreshing = false
         shareSettingsAdapter?.let { adapter ->
+            val previousItem = adapter.getItem(adapter.itemsList.indexOf(share) - 1)
+            val nextItem = adapter.getItem(adapter.itemsList.indexOf(share) + 1)
+
             adapter.removeItem(share)
-            if (adapter.itemList.size > 1 && adapter.getItem(0) is Header
-                && adapter.getItem(1) is Header
-            ) {
-                adapter.removeHeader(getString(R.string.share_goal_user))
+
+            if (previousItem is ShareHeaderUi && (nextItem == null || nextItem is ShareHeaderUi)) {
+                adapter.removeHeader(previousItem)
             }
+
             showSnackBarWithAction(
                 getString(R.string.share_snackbar_remove_user),
                 getString(R.string.snackbar_undo)
@@ -285,9 +289,9 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             binding.shareSettingsListSwipeRefresh.setColorSchemeColors(
                 ContextCompat.getColor(requireContext(), R.color.colorSecondary)
             )
-            shareSettingsAdapter = ShareAdapter { view, integer ->
-                onItemContextClick(view, integer)
-            }
+            shareSettingsAdapter = ShareAdapter(ShareHolderFactory { view, position ->
+                onItemContextClick(view, position)
+            })
             binding.shareMainListOfItems.layoutManager = LinearLayoutManager(context)
             binding.shareMainListOfItems.adapter = shareSettingsAdapter
             ViewCompat.setNestedScrollingEnabled(binding.shareMainListOfItems, false)
@@ -395,6 +399,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         sharePopup = SharePopup(requireContext(), R.layout.popup_share_menu)
         sharePopup?.let { popup ->
             popup.setContextListener(mExternalContextListener)
+            popup.setExternalLink()
             popup.setFullAccess(false)
             if (settingsPresenter.item is CloudFolder) {
                 popup.setIsFolder(true)

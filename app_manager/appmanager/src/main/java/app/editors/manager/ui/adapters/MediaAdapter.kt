@@ -222,7 +222,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
                 view.context,
                 Account(account.getAccountName(), view.context.getString(R.string.account_type))
             )?.let { pass ->
-                val url = GlideUtils.getWebDavUrl(file?.id, account, pass)
+                val url = GlideUtils.getWebDavUrl(file?.id!!, account, pass)
                 withContext(Dispatchers.Main) {
                     glideTool.load(imageView, url, false, Point(cellSize, cellSize), requestListener)
                 }

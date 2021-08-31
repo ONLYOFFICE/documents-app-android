@@ -263,7 +263,7 @@ class AccountContextDialog : BaseBottomDialog() {
             }
             Glide.with(mAvatarImage!!)
                 .load(GlideUtils.getCorrectLoad(url ?: "", arguments?.getString(KEY_TOKEN) ?: ""))
-                .apply(GlideUtils.getAvatarOptions())
+                .apply(GlideUtils.avatarOptions)
                 .into(mAvatarImage!!)
         }
     }

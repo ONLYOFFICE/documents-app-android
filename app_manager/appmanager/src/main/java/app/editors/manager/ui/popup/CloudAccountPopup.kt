@@ -156,7 +156,7 @@ class CloudAccountPopup(context: Context) : BasePopup(context, R.layout.cloud_ac
                         AccountUtils.getToken(context, account?.getAccountName() ?: "") ?: ""
                     )
                 )
-                .apply(GlideUtils.getAvatarOptions())
+                .apply(GlideUtils.avatarOptions)
                 .into(it)
         }
     }

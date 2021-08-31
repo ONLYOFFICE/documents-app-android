@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.share
 
 import app.documents.core.account.CloudAccount
+import app.documents.core.network.ApiContract
 import app.documents.core.network.models.share.request.RequestShare
 import app.documents.core.network.models.share.request.RequestShareItem
 import app.documents.core.share.ShareService
@@ -8,6 +9,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.getShareApi
+import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
@@ -15,7 +17,6 @@ import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.UserUi
-import app.editors.manager.mvp.models.ui.ViewType
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.share.AddView
 import app.editors.manager.ui.fragments.share.AddFragment
@@ -23,8 +24,8 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
-import java.util.*
 
 @InjectViewState
 class AddPresenter : BasePresenter<AddView>() {
@@ -35,16 +36,14 @@ class AddPresenter : BasePresenter<AddView>() {
 
     private lateinit var item: Item
     private lateinit var type: AddFragment.Type
-    private val shareStack: ModelShareStack
-    private var isCommon: Boolean
+    private val shareStack: ModelShareStack = ModelShareStack.getInstance()
+    private var isCommon: Boolean = false
     private var searchValue: String? = null
 
     private var disposable: Disposable? = null
 
     init {
         App.getApp().appComponent.inject(this)
-        shareStack = ModelShareStack.getInstance()
-        isCommon = false
     }
 
     private val account: CloudAccount =
@@ -63,7 +62,7 @@ class AddPresenter : BasePresenter<AddView>() {
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.response.filter { it.id != account.id }.map {
-                    UserUi(it.id, it.department, it.displayName, it.avatarMedium)
+                    UserUi(it.id, it.department, it.displayName, GlideUtils.loadAvatar(it.avatarSmall))
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -79,7 +78,7 @@ class AddPresenter : BasePresenter<AddView>() {
         isCommon = false
         disposable = shareApi.getGroups()
             .subscribeOn(Schedulers.io())
-            .map { response -> response.response.map { GroupUi(it.id, it.name, it.manager) } }
+            .map { response -> response.response.map { GroupUi(it.id, it.name, it.manager ?: "null") } }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
                 shareStack.addGroups(response)
@@ -91,13 +90,33 @@ class AddPresenter : BasePresenter<AddView>() {
 
     fun getCommons() {
         isCommon = true
-        disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups(), { users, groups ->
-            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager) })
+        disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups()) { users, groups ->
+            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
-                UserUi(it.id, it.department, it.displayName, it.avatarMedium)
+                UserUi(it.id, it.department, it.displayName, GlideUtils.loadAvatar(it.avatarMedium))
             })
             return@zip true
-        }).subscribeOn(Schedulers.io())
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState.onGetCommon(commonList)
+            }, { error ->
+                fetchError(error)
+            })
+    }
+
+    private fun getFilter(searchValue: String) {
+        isCommon = true
+
+        disposable = Observable.zip(shareApi.getUsers(getOptions(searchValue)),
+            shareApi.getGroups(getOptions(searchValue, true))) { users, groups ->
+            shareStack.clearModel()
+            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
+            shareStack.addUsers(users.response.filter { it.id != account.id }.map {
+                UserUi(it.id, it.department, it.displayName, GlideUtils.loadAvatar(it.avatarMedium))
+            })
+            return@zip true
+        }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 viewState.onGetCommon(commonList)
@@ -181,6 +200,13 @@ class AddPresenter : BasePresenter<AddView>() {
             return commonList
         }
 
+    private fun getOptions(value: String, isGroup: Boolean = false): Map<String, String> =
+        mapOf(
+            ApiContract.Parameters.ARG_FILTER_VALUE to value,
+            ApiContract.Parameters.ARG_FILTER_BY to if (isGroup) ApiContract.Parameters.VAL_SORT_BY_NAME else ApiContract.Parameters.VAL_SORT_BY_DISPLAY_NAME,
+            ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS
+        )
+
     val shared: Unit
         get() {
             when (type) {
@@ -228,9 +254,9 @@ class AddPresenter : BasePresenter<AddView>() {
 
 
     private val userListItems: List<ViewType>
-        get() = shareStack.userSet.toMutableList()
+        get() = shareStack.userSet.toMutableList().sortedBy { it.displayName }
     private val groupListItems: List<ViewType>
-        get() = shareStack.groupSet.toMutableList()
+        get() = shareStack.groupSet.toMutableList().sortedBy { it.name }
 
     val countChecked: Int
         get() = shareStack.countChecked
@@ -251,6 +277,9 @@ class AddPresenter : BasePresenter<AddView>() {
 
     fun setSearchValue(searchValue: String?) {
         this.searchValue = searchValue
-    }
 
+        searchValue?.let { value ->
+            getFilter(value)
+        }
+    }
 }

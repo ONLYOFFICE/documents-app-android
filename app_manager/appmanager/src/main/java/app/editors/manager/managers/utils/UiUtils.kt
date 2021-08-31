@@ -1,10 +1,13 @@
 package app.editors.manager.managers.utils
 
+import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import lib.toolkit.base.managers.utils.StringUtils
@@ -110,4 +113,30 @@ object UiUtils {
         view.alpha = UiUtils.getFloatResource(view.context, R.dimen.alpha_medium)
         view.clearColorFilter()
     }
+
+
+    fun setAccessIcon(imageView: ImageView, accessCode: Int) {
+        when (accessCode) {
+            ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> {
+                imageView.setImageResource(R.drawable.ic_access_deny)
+                return
+            }
+            ApiContract.ShareCode.REVIEW -> imageView.setImageResource(R.drawable.ic_access_review)
+            ApiContract.ShareCode.READ -> imageView.setImageResource(R.drawable.ic_access_read)
+            ApiContract.ShareCode.READ_WRITE -> imageView.setImageResource(R.drawable.ic_access_full)
+            ApiContract.ShareCode.COMMENT -> imageView.setImageResource(R.drawable.ic_access_comment)
+            ApiContract.ShareCode.FILL_FORMS -> imageView.setImageResource(R.drawable.ic_access_fill_form)
+        }
+    }
+
+    fun View.setMargins(left: Int, top: Int, right: Int, bottom: Int) {
+        val layoutParams = this.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.leftMargin = left
+        layoutParams.topMargin = top
+        layoutParams.rightMargin = right
+        layoutParams.bottomMargin = bottom
+        this.layoutParams = layoutParams
+    }
+
+
 }

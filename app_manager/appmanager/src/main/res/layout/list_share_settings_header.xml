@@ -6,8 +6,8 @@
     android:layout_height="@dimen/item_one_line_height">
 
     <com.google.android.material.textview.MaterialTextView
-        style="@style/MediumTextView"
         android:id="@+id/list_share_settings_header_title"
+        style="@style/MediumTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/screen_margin_large"
