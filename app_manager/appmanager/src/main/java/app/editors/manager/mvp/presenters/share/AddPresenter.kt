@@ -1,12 +1,7 @@
 package app.editors.manager.mvp.presenters.share
 
 import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract.FilterOptions.CONTAINS
-import app.documents.core.network.ApiContract.FilterOptions.DISPLAY_NAME
-import app.documents.core.network.ApiContract.FilterOptions.FILTER_BY
-import app.documents.core.network.ApiContract.FilterOptions.FILTER_OPERATION
-import app.documents.core.network.ApiContract.FilterOptions.FILTER_VALUE
-import app.documents.core.network.ApiContract.FilterOptions.NAME
+import app.documents.core.network.ApiContract
 import app.documents.core.network.models.share.request.RequestShare
 import app.documents.core.network.models.share.request.RequestShareItem
 import app.documents.core.share.ShareService
@@ -14,7 +9,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.getShareApi
-import app.editors.manager.managers.utils.GlideUtils.loadAvatar
+import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
@@ -41,16 +36,14 @@ class AddPresenter : BasePresenter<AddView>() {
 
     private lateinit var item: Item
     private lateinit var type: AddFragment.Type
-    private val shareStack: ModelShareStack
-    private var isCommon: Boolean
+    private val shareStack: ModelShareStack = ModelShareStack.getInstance()
+    private var isCommon: Boolean = false
     private var searchValue: String? = null
 
     private var disposable: Disposable? = null
 
     init {
         App.getApp().appComponent.inject(this)
-        shareStack = ModelShareStack.getInstance()
-        isCommon = false
     }
 
     private val account: CloudAccount =
@@ -69,7 +62,7 @@ class AddPresenter : BasePresenter<AddView>() {
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.response.filter { it.id != account.id }.map {
-                    UserUi(it.id, it.department, it.displayName, loadAvatar(it.avatarSmall))
+                    UserUi(it.id, it.department, it.displayName, GlideUtils.loadAvatar(it.avatarSmall))
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -100,7 +93,7 @@ class AddPresenter : BasePresenter<AddView>() {
         disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups()) { users, groups ->
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
-                UserUi(it.id, it.department, it.displayName, loadAvatar(it.avatarMedium))
+                UserUi(it.id, it.department, it.displayName, GlideUtils.loadAvatar(it.avatarMedium))
             })
             return@zip true
         }.subscribeOn(Schedulers.io())
@@ -120,7 +113,7 @@ class AddPresenter : BasePresenter<AddView>() {
             shareStack.clearModel()
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
-                UserUi(it.id, it.department, it.displayName, loadAvatar(it.avatarMedium))
+                UserUi(it.id, it.department, it.displayName, GlideUtils.loadAvatar(it.avatarMedium))
             })
             return@zip true
         }.subscribeOn(Schedulers.io())
@@ -209,9 +202,9 @@ class AddPresenter : BasePresenter<AddView>() {
 
     private fun getOptions(value: String, isGroup: Boolean = false): Map<String, String> =
         mapOf(
-            FILTER_VALUE to value,
-            FILTER_BY to if (isGroup) NAME else DISPLAY_NAME,
-            FILTER_OPERATION to CONTAINS
+            ApiContract.Parameters.ARG_FILTER_VALUE to value,
+            ApiContract.Parameters.ARG_FILTER_BY to if (isGroup) ApiContract.Parameters.VAL_SORT_BY_NAME else ApiContract.Parameters.VAL_SORT_BY_DISPLAY_NAME,
+            ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS
         )
 
     val shared: Unit

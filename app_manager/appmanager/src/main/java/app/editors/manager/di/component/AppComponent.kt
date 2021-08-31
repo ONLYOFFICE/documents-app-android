@@ -125,7 +125,6 @@ interface AppComponent {
     * */
     fun inject(settingsPresenter: SettingsPresenter?)
     fun inject(addPresenter: AddPresenter?)
-    fun inject(shareAddAdapter: ShareAddAdapter?)
 
     /*
     * Storage

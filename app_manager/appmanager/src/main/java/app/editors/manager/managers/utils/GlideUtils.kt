@@ -80,14 +80,14 @@ object GlideUtils {
             val url = getCorrectLoad(account.scheme + account.portal + avatar, token)
             Glide.with(context)
                 .load(url)
-                .apply(RequestOptions().apply {
-                    skipMemoryCache(true)
-                    diskCacheStrategy(DiskCacheStrategy.NONE)
-                    timeout(30 * 1000)
-                    circleCrop()
-                    error(placeholderDrawable)
-                    placeholder(placeholderDrawable)
-                })
+                .apply(
+                    RequestOptions().skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .timeout(30 * 1000)
+                        .circleCrop()
+                        .error(placeholderDrawable)
+                        .placeholder(placeholderDrawable)
+                )
                 .into(this)
         }
     }
@@ -99,12 +99,10 @@ object GlideUtils {
     fun ImageView.setAvatar(avatar: Drawable?) {
         Glide.with(context)
             .load(avatar)
-            .apply(RequestOptions().apply {
-                skipMemoryCache(true)
-                diskCacheStrategy(DiskCacheStrategy.NONE)
-                timeout(30 * 1000)
-                circleCrop()
-            })
+            .apply(
+                RequestOptions()
+                    .circleCrop()
+            )
             .into(this)
     }
 }

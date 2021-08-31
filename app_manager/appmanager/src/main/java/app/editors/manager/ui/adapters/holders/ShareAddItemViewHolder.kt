@@ -35,7 +35,7 @@ class ShareAddItemViewHolder(
     override fun bind(item: ViewType, mode: BaseAdapter.Mode, previousItem: ViewType?) {
         listener?.let { listener ->
             shareLayout.setOnClickListener { view ->
-                listener.onItemClick(view, layoutPosition)
+                listener.onItemClick(view, absoluteAdapterPosition)
             }
         }
 
