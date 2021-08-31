@@ -351,10 +351,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         showEditors(uri, EditorsType.PDF)
     }
 
-    override fun onOpenMedia(mediaFiles: Explorer) {
-        MediaActivity.show(this, mediaFiles, false)
-    }
-
     override fun onOpenMedia(state: OpenState.Media) {
         MediaActivity.show(this, state.explorer, state.isWebDav)
     }
