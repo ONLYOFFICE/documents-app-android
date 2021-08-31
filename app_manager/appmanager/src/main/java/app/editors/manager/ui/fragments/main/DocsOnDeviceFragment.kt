@@ -22,6 +22,7 @@ import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter
+import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
@@ -354,8 +355,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         showEditors(uri, EditorsType.PDF)
     }
 
-    override fun onOpenMedia(mediaFiles: Explorer) {
-        MediaActivity.show(this, mediaFiles, false)
+    override fun onOpenMedia(state: OpenState.Media) {
+        MediaActivity.show(this, state.explorer, state.isWebDav)
     }
 
     override fun isWebDav(): Boolean {
