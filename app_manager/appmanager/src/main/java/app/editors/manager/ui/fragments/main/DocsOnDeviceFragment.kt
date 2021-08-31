@@ -317,11 +317,15 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     override fun onRemoveItem(item: Item) {
         mExplorerAdapter.removeItem(item)
         mExplorerAdapter.checkHeaders()
+        setPlaceholder(mExplorerAdapter.itemList.size == 0)
+        onClearMenu()
     }
 
     override fun onRemoveItems(items: List<Item>) {
         mExplorerAdapter.removeItems(ArrayList<Entity>(items))
         mExplorerAdapter.checkHeaders()
+        setPlaceholder(mExplorerAdapter.itemList.size == 0)
+        onClearMenu()
     }
 
     override fun onShowFolderChooser() {
@@ -415,5 +419,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 mPlaceholderViews.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
             }
         }
+    }
+
+    private fun setPlaceholder(isEmpty: Boolean) {
+        onPlaceholder(if (isEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
     }
 }

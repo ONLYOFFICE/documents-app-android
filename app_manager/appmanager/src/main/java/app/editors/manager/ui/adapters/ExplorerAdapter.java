@@ -308,6 +308,9 @@ public class ExplorerAdapter extends BaseAdapter<Entity> {
                     }
                 }
             }
+            if (mList.size() == 1 && mList.get(0) instanceof Header) {
+                mList.clear();
+            }
         }
     }
 }
