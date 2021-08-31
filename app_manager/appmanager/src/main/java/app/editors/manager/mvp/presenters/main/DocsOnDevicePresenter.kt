@@ -25,6 +25,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.PathUtils.getPath
+import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import moxy.InjectViewState
 import java.io.File
 import java.util.*
@@ -309,7 +311,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia()
+            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(uri)
             else -> viewState.onError(mContext.getString(R.string.error_unsupported_format))
         }
     }
@@ -403,35 +405,27 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
-    fun showMedia() {
-        viewState.onOpenMedia(mediaFile)
+    @SuppressLint("MissingPermission")
+    fun showMedia(uri: Uri) {
+        viewState.onOpenMedia(OpenState.Media(getMediaFile(uri), false))
     }
 
-    private val mediaFile: Explorer
-        get() {
-            val explorer = mModelExplorerStack.last()!!.clone()
-            if (explorer != null) {
-                val files = explorer.files
-                val images: MutableList<CloudFile> = ArrayList()
-                for (file in files) {
-                    val extension = file.fileExst
-                    if (StringUtils.isImage(extension) || StringUtils.isImageGif(extension) || StringUtils.isVideoSupport(
-                            extension
-                        )
-                    ) {
-                        val cloneFile = file.clone()
-                        cloneFile.id = ""
-                        images.add(cloneFile)
-                    }
-                    if (file == mItemClicked) {
-                        file.isClicked = true
-                    }
-                }
-                explorer.folders = null
-                explorer.files = images
-                return explorer
+    private fun getMediaFile(uri: Uri): Explorer =
+        Explorer().apply {
+            val file = File(getPath(mContext, uri).toString())
+            val explorerFile = CloudFile().apply {
+                pureContentLength = file.length()
+                webUrl = file.absolutePath
+                fileExst = getExtensionFromPath(file.name)
+                title = file.name
+                isClicked = true
             }
-            return Explorer()
+            current = Current().apply {
+                title = file.name
+                filesCount = "1"
+            }
+            files = listOf(explorerFile)
+            addRecent(explorerFile)
         }
 
     override fun fetchError(throwable: Throwable) {
