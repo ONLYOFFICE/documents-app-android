@@ -64,6 +64,8 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
                 } else {
                     builder.append(provider.path)
                 }
+            } else if (provider == WebDavApi.Providers.OwnCloud) {
+                builder.append(getPortalPath(webUrl.protocol + "://" + webUrl.host, provider, login))
             }
             webUrl = URL(builder.toString())
 
