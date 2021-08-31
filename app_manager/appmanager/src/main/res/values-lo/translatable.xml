@@ -570,4 +570,16 @@
     <string name="list_context_add_to_favorite">ເພີ່ມເຂົ້າໃນໝວດໃຊ້ປະຈຳ</string>
     <string name="list_context_delete_from_favorite">ລຶບອອກຈາກໝວດໃຊ້ປະຈຳ</string>
 
+    <string name="login_enterprise_button_create">ສ້າງພອດ</string>
+    <string name="login_enterprise_single_sign_button_login">ເຂົ້າລະບົບໂດຍ %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">ນຳໃຊ້ໄອດີ (SSO)</string>
+    <string name="login_not_authorization_info_token">ໝົດເວລາເຊື່ອມຕໍ່</string>
+    <string name="login_password_recovery_hint">ກະລຸນາໃສ້ເມວທີ່ໃຊ້ໃນການລົງທະບຽນພອດ. ຄຳແນະນຳໃນການກູ້ລະຫັດຜ່ານຈະຖືກສົ່ງໄປເມວນີ້</string>
+    <string name="login_password_recovery_button_text">ກັບໄປສູ່ໜ້າທຳອິດ</string>
+    <string name="login_password_recovery_success_hint">ຖ້າຊື່ຜູ້ໃຊ້ມີເມວ %1$s, ຄຳແນະນຳໃນການກູ້ລະຫັດຜ່ານໄດ້ຖືກສົ່ງໄປເມວນີ້</string>
+    <string name="login_password_recovery_toolbar_title">ລະຫັດກູ້</string>
+    <string name="download_manager_archiving_progress">ສ້າງສຳເນົາ</string>
+    <string name="download_manager_exceed_size_100">ຂະໜາດຟາຍກາຍກຳນົດ(100MB)</string>
+    <string name="download_manager_exceed_size_25">ຂະໜາດຟາຍກາຍກຳນົດ (25MB)</string>
+
 </resources>

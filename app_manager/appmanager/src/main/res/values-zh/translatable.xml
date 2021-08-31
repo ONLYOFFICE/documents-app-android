@@ -501,12 +501,19 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
 
     <string name="app_internal_error">内部错误</string>
     <string name="app_fragment_crash_error">请关闭此应用程序并再次尝试</string>
-
     <string name="operation_add_to_favorites">添加到收藏夹</string>
     <string name="operation_remove_from_favorites">从收藏夹中删除</string>
-
     <string name="main_pager_docs_favorites">收藏夹</string>
-
     <string name="list_context_add_to_favorite">添加到收藏夹</string>
     <string name="list_context_delete_from_favorite">从收藏夹中删除</string>
+    <string name="login_enterprise_single_sign_button_login">通过 %1$s 登录</string>
+    <string name="login_enterprise_single_sign_button_login_default">单点登录</string>
+    <string name="login_not_authorization_info_token">会话时间结束</string>
+    <string name="login_password_recovery_hint">输入您在门户上注册时所使用的邮箱。密码恢复说明指南将随邮件发送。</string>
+    <string name="login_password_recovery_button_text">返回输入页面</string>
+    <string name="login_password_recovery_success_hint">如果存在使用邮箱 %1$s 的用户，则密码变更指南将随邮件发送。</string>
+    <string name="login_password_recovery_toolbar_title">密码恢复</string>
+    <string name="download_manager_archiving_progress">创建存档</string>
+    <string name="download_manager_exceed_size_100">超出最大文件大小（100MB）</string>
+    <string name="download_manager_exceed_size_25">超出最大文件大小（25MB）</string>
 </resources>
