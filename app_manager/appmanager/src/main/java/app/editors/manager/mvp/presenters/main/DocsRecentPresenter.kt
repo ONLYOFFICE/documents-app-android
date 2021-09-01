@@ -160,8 +160,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                             if (throwable is HttpException) {
                                 if (throwable.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
                                     viewState.onError(mContext.getString(R.string.errors_client_unauthorized));
-                                } else if (throwable.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN) {
-                                    onErrorHandle(throwable.response()?.errorBody(), throwable.code())
+                                }
+                                else if (throwable.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN) {
+                                    viewState.onError(mContext.getString(R.string.error_recent_account))
+                                } else {
+                                    onErrorHandle(throwable.response()?.errorBody(),throwable.code())
                                 }
                             } else {
                                 viewState.onError(mContext.getString(R.string.error_recent_account))
@@ -175,13 +178,15 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     private fun checkExt(file: CloudFile, recent: Recent, position: Int) {
-        when (StringUtils.getExtension(file.fileExst)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                addRecent(recent)
-                viewState.onMoveElement(recent, position)
-                viewState.openFile(file)
+        if (file.rootFolderType.toInt() != ApiContract.SectionType.CLOUD_TRASH) {
+            when (StringUtils.getExtension(file.fileExst)) {
+                StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
+                    viewState.openFile(file)
+                }
+                else -> viewState.onError(mContext.getString(R.string.error_unsupported_format))
             }
-            else -> viewState.onError(mContext.getString(R.string.error_unsupported_format))
+        } else {
+            viewState.onError(mContext.getString(R.string.error_recent_account))
         }
     }
 
