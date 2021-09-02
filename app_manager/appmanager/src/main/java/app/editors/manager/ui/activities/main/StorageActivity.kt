@@ -1,100 +1,92 @@
-package app.editors.manager.ui.activities.main;
+package app.editors.manager.ui.activities.main
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.widget.FrameLayout;
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.view.MenuItem
+import android.widget.FrameLayout
+import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.fragment.app.Fragment
+import app.editors.manager.R
+import app.editors.manager.databinding.ActivityStorageBinding
+import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.fragments.storage.SelectFragment
+import com.google.android.material.appbar.AppBarLayout
+import java.lang.RuntimeException
 
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.Fragment;
+class StorageActivity : BaseAppActivity() {
 
-import com.google.android.material.appbar.AppBarLayout;
+    private var viewBinding: ActivityStorageBinding? = null
+    private var appBarToolbar: Toolbar? = viewBinding?.appBarToolbar
 
-import app.editors.manager.R;
-import app.editors.manager.mvp.models.explorer.CloudFolder;
-import app.editors.manager.ui.activities.base.BaseAppActivity;
-import app.editors.manager.ui.fragments.storage.SelectFragment;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+    var appLayout: CoordinatorLayout? = viewBinding?.appLayout
+    var appBarLayout: AppBarLayout? = viewBinding?.appBarLayout
+    var frameContainer: FrameLayout? = viewBinding?.frameContainer
 
-public class StorageActivity extends BaseAppActivity {
-
-    public static final String TAG = StorageActivity.class.getSimpleName();
-    public static final String TAG_SECTION = "TAG_SECTION";
-    public static final String TAG_RESULT = "TAG_RESULT";
-
-    protected Unbinder mUnbinder;
-    @BindView(R.id.app_layout)
-    protected CoordinatorLayout mAppLayout;
-    @BindView(R.id.app_bar_layout)
-    protected AppBarLayout mAppBarLayout;
-    @BindView(R.id.app_bar_toolbar)
-    protected Toolbar mAppBarToolbar;
-    @BindView(R.id.frame_container)
-    protected FrameLayout mFrameContainer;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_storage);
-        mUnbinder = ButterKnife.bind(this);
-        init(savedInstanceState);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewBinding = ActivityStorageBinding.inflate(layoutInflater)
+        setContentView(viewBinding?.root)
+        init(savedInstanceState)
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.home -> {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        hideKeyboard()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewBinding = null
+    }
+
+    private fun init(savedInstanceState: Bundle?) {
+        setSupportActionBar(appBarToolbar)
+        savedInstanceState ?: run {
+            showFragment(SelectFragment.newInstance(), null)
+        }
+        setFinishOnTouchOutside(true)
+    }
+
+    fun finishWithResult(folder: CloudFolder?) {
+        val intent = Intent().apply { putExtra(TAG_RESULT, folder) }
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
+    val isMySection: Boolean
+        get() {
+            return if (intent.hasExtra(TAG_SECTION)) {
+                intent.getBooleanExtra(TAG_SECTION, false)
+            } else {
+                throw RuntimeException(StorageActivity::class.java.simpleName
+                        + " - must open with extra: " + TAG_SECTION)
+            }
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+    companion object {
+        val TAG = StorageActivity::class.java.simpleName
+        const val TAG_SECTION = "TAG_SECTION"
+        const val TAG_RESULT = "TAG_RESULT"
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        hideKeyboard();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mUnbinder.unbind();
-    }
-
-    private void init(final Bundle savedInstanceState) {
-        setSupportActionBar(mAppBarToolbar);
-        if (savedInstanceState == null) {
-            showFragment(SelectFragment.newInstance(), null);
-        }
-        setFinishOnTouchOutside(true);
-    }
-
-    public void finishWithResult(final CloudFolder folder) {
-        final Intent intent = new Intent();
-        intent.putExtra(TAG_RESULT, folder);
-        setResult(Activity.RESULT_OK, intent);
-        finish();
-    }
-
-    public boolean isMySection() {
-        final Intent intent = getIntent();
-        if ( intent.hasExtra(TAG_SECTION)) {
-            return intent.getBooleanExtra(TAG_SECTION, false);
-        } else {
-            throw new RuntimeException(StorageActivity.class.getSimpleName() + " - must open with extra: " + TAG_SECTION);
+        @JvmStatic
+        fun show(fragment: Fragment, isMySection: Boolean) {
+            val intent = Intent(fragment.context, StorageActivity::class.java).apply {
+                putExtra(TAG_SECTION, isMySection)
+            }
+            fragment.startActivityForResult(intent, REQUEST_ACTIVITY_STORAGE)
         }
     }
-
-    public static void show(final Fragment fragment, final boolean isMySection) {
-        final Intent intent = new Intent(fragment.getContext(), StorageActivity.class);
-        intent.putExtra(StorageActivity.TAG_SECTION, isMySection);
-        fragment.startActivityForResult(intent, REQUEST_ACTIVITY_STORAGE);
-    }
-
 }

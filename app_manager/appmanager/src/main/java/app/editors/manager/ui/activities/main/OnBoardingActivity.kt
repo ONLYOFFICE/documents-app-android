@@ -1,33 +1,37 @@
-package app.editors.manager.ui.activities.main;
+package app.editors.manager.ui.activities.main
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import app.editors.manager.R
+import app.editors.manager.databinding.ActivityOnBoardingBinding
+import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.activities.main.OnBoardingActivity
+import app.editors.manager.ui.fragments.onboarding.OnBoardingPagerFragment
 
-import app.editors.manager.R;
-import app.editors.manager.ui.activities.base.BaseAppActivity;
-import app.editors.manager.ui.fragments.onboarding.OnBoardingPagerFragment;
+class OnBoardingActivity : BaseAppActivity() {
+    private var viewBinding: ActivityOnBoardingBinding? = null
 
-public class OnBoardingActivity extends BaseAppActivity {
-
-    public static final String TAG = OnBoardingActivity.class.getSimpleName();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_on_boarding);
-        init(savedInstanceState);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewBinding = ActivityOnBoardingBinding.inflate(LayoutInflater.from(this))
+        setContentView(viewBinding?.root)
+        init(savedInstanceState)
     }
 
-    private void init(final Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
-            showFragment(OnBoardingPagerFragment.newInstance(), null);
+    private fun init(savedInstanceState: Bundle?) {
+        savedInstanceState ?: run {
+            showFragment(OnBoardingPagerFragment.newInstance(), null)
         }
     }
 
-    public static void show(final Activity activity) {
-        final Intent intent = new Intent(activity, OnBoardingActivity.class);
-        activity.startActivityForResult(intent, REQUEST_ACTIVITY_ONBOARDING);
-    }
+    companion object {
+        val TAG = OnBoardingActivity::class.java.simpleName
 
+        fun show(activity: Activity) {
+            val intent = Intent(activity, OnBoardingActivity::class.java)
+            activity.startActivityForResult(intent, REQUEST_ACTIVITY_ONBOARDING)
+        }
+    }
 }
