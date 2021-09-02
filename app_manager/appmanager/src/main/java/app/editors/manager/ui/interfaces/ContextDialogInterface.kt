@@ -1,5 +1,5 @@
-package app.editors.manager.ui.interfaces;
+package app.editors.manager.ui.interfaces
 
-public interface ContextDialogInterface {
-    void onContextDialogOpen();
+interface ContextDialogInterface {
+    fun onContextDialogOpen()
 }
