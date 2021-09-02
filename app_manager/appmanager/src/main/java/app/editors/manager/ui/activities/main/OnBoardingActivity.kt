@@ -15,7 +15,7 @@ class OnBoardingActivity : BaseAppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewBinding = ActivityOnBoardingBinding.inflate(LayoutInflater.from(this))
+        viewBinding = ActivityOnBoardingBinding.inflate(layoutInflater)
         setContentView(viewBinding?.root)
         init(savedInstanceState)
     }

@@ -35,7 +35,7 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewBinding = ActivityMediaBinding.inflate(LayoutInflater.from(this))
+        viewBinding = ActivityMediaBinding.inflate(layoutInflater)
         setContentView(viewBinding?.root)
         init(savedInstanceState)
     }
