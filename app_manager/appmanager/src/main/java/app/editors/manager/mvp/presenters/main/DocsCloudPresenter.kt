@@ -671,17 +671,17 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private val isItemReadWrite: Boolean
         get() = (mItemClicked?.access == ApiContract.ShareCode.READ_WRITE ||
-                mItemClicked?.access == ApiContract.ShareCode.NONE ||
+                mItemClicked?.access == ApiContract.ShareCode.NONE)
+
+    private val isItemEditable: Boolean
+        get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite  ||
                 mItemClicked?.access == ApiContract.ShareCode.REVIEW ||
                 mItemClicked?.access == ApiContract.ShareCode.FILL_FORMS ||
                 mItemClicked?.access == ApiContract.ShareCode.COMMENT)
 
-    private val isItemEditable: Boolean
-        get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite)
-
     private val isItemShareable: Boolean
         get() = isItemEditable && (!isCommonSection || isAdmin) && !account.isPersonal() && !isProjectsSection
-                && !isBunchSection && mItemClicked?.access == ApiContract.ShareCode.READ_WRITE
+                && !isBunchSection && isItemReadWrite
 
     private val isClickedItemStorage: Boolean
         get() = mItemClicked != null && mItemClicked!!.providerItem
