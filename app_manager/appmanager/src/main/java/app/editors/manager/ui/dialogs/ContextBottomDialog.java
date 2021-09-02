@@ -268,7 +268,6 @@ public class ContextBottomDialog extends BaseBottomDialog {
             if(!mState.mIsOneDrive) {
                 mListExplorerContextDownload.setVisibility(View.VISIBLE);
             } else {
-                mListContextExternalLink.setVisibility(View.VISIBLE);
                 mListExplorerContextDownload.setVisibility(View.GONE);
             }
 
@@ -290,6 +289,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
                     mViewLineSeparatorEdit.setVisibility(View.VISIBLE);
                     mListExplorerContextEdit.setVisibility(View.VISIBLE);
                 }
+            }
+
+            // File can be share by external link. Full access required
+            if (mState.mIsCanShare) {
+                mListContextExternalLink.setVisibility(View.VISIBLE);
+                mViewLineSeparatorShare.setVisibility(View.VISIBLE);
             }
         }
         // Folders and files
@@ -321,9 +326,6 @@ public class ContextBottomDialog extends BaseBottomDialog {
             mViewLineSeparatorShare.setVisibility(View.VISIBLE);
             mListContextExternalLink.setVisibility(View.VISIBLE);
         }
-
-        mListContextExternalLink.setVisibility(View.VISIBLE);
-        mViewLineSeparatorShare.setVisibility(View.VISIBLE);
     }
 
     private void setTrashState() {
