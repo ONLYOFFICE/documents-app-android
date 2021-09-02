@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -195,7 +196,7 @@ public class ExplorerAdapter extends BaseAdapter<Entity> {
         return mIsSectionMy;
     }
 
-    public void setFileIcon(final AppCompatImageView view, final String ext) {
+    public void setFileIcon(final ImageView view, final String ext) {
         final StringUtils.Extension extension = StringUtils.getExtension(ext);
         @DrawableRes int resId = R.drawable.ic_type_file;
         @ColorRes int colorId = R.color.colorGrey;
@@ -243,7 +244,7 @@ public class ExplorerAdapter extends BaseAdapter<Entity> {
         view.setColorFilter(ContextCompat.getColor(mContext, colorId));
     }
 
-    public void setAlphaIcon(final AppCompatImageView view, @DrawableRes final int resId) {
+    public void setAlphaIcon(final ImageView view, @DrawableRes final int resId) {
         view.setImageResource(resId);
         view.setAlpha(UiUtils.getFloatResource(mContext, R.dimen.alpha_medium));
         view.clearColorFilter();
