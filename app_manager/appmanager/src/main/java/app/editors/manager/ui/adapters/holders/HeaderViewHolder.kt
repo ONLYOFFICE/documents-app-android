@@ -1,28 +1,21 @@
-package app.editors.manager.ui.adapters.holders;
+package app.editors.manager.ui.adapters.holders
 
-import android.view.View;
-import android.widget.TextView;
+import android.view.View
+import app.editors.manager.R
+import app.editors.manager.databinding.ListExplorerHeaderBinding
+import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.ui.adapters.ExplorerAdapter
 
-import app.editors.manager.R;
-import app.editors.manager.mvp.models.list.Header;
-import app.editors.manager.ui.adapters.ExplorerAdapter;
-import butterknife.BindView;
+class HeaderViewHolder(itemView: View, adapter: ExplorerAdapter) :
+    BaseViewHolderExplorer<Header>(itemView, adapter) {
 
-public class HeaderViewHolder extends BaseViewHolderExplorer<Header> {
+    private val viewBinding = ListExplorerHeaderBinding.bind(itemView)
 
-    public static final int LAYOUT = R.layout.list_explorer_header;
-
-    @BindView(R.id.list_explorer_header_title)
-    public
-    TextView mHeaderTitle;
-
-    public HeaderViewHolder(View itemView, ExplorerAdapter adapter) {
-        super(itemView, adapter);
+    override fun bind(header: Header) {
+        viewBinding.listExplorerHeaderTitle.text = header.title
     }
 
-    @Override
-    public void bind(Header header) {
-        mHeaderTitle.setText(header.getTitle());
+    companion object {
+        const val LAYOUT: Int = R.layout.list_explorer_header
     }
 }
-

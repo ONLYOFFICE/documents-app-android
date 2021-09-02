@@ -1,93 +1,73 @@
-package app.editors.manager.ui.adapters.holders;
+package app.editors.manager.ui.adapters.holders
 
-import android.view.View;
-import android.widget.FrameLayout;
+import android.view.View
+import app.editors.manager.R
+import app.editors.manager.databinding.ListExplorerFolderBinding
+import app.editors.manager.managers.utils.isVisible
+import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.ui.adapters.ExplorerAdapter
+import lib.toolkit.base.managers.utils.TimeUtils
 
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.constraintlayout.widget.ConstraintLayout;
+class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
+    BaseViewHolderExplorer<CloudFolder>(view, adapter) {
 
-import app.editors.manager.R;
-import app.editors.manager.mvp.models.explorer.CloudFolder;
-import app.editors.manager.ui.adapters.ExplorerAdapter;
-import butterknife.BindView;
-import butterknife.OnClick;
-import lib.toolkit.base.managers.utils.TimeUtils;
+    private var viewBinding = ListExplorerFolderBinding.bind(view)
 
-public class FolderViewHolder extends BaseViewHolderExplorer<CloudFolder> {
+    init {
+        viewBinding.listExplorerFolderLayout.setOnClickListener { v: View? ->
+            adapter.mOnItemClickListener?.run { onItemClick(v, layoutPosition) }
+        }
 
-    public static final int LAYOUT = R.layout.list_explorer_folder;
+        viewBinding.listExplorerFolderLayout.setOnLongClickListener { v: View? ->
+            adapter.mOnItemLongClickListener?.run { onItemLongClick(v, layoutPosition) }
+            false
+        }
 
-    @BindView(R.id.list_explorer_folder_layout)
-    ConstraintLayout mConstraintLayout;
-    @BindView(R.id.view_icon_selectable_image)
-    AppCompatImageView mViewIconSelectableImage;
-    @BindView(R.id.view_icon_selectable_mask)
-    FrameLayout mViewIconSelectableMask;
-    @BindView(R.id.view_icon_selectable_layout)
-    FrameLayout mViewIconSelectableLayout;
-    @BindView(R.id.list_explorer_folder_name)
-    AppCompatTextView mFolderName;
-    @BindView(R.id.list_explorer_folder_info)
-    AppCompatTextView mFolderInfo;
-    @BindView(R.id.list_explorer_folder_context)
-    AppCompatImageButton mFolderContext;
-
-    public FolderViewHolder(final View view, ExplorerAdapter adapter) {
-        super(view, adapter);
-        mConstraintLayout.setOnClickListener(v -> {
-            if (mAdapter.mOnItemClickListener != null) {
-                mAdapter.mOnItemClickListener.onItemClick(v, getLayoutPosition());
-            }
-        });
-
-        mConstraintLayout.setOnLongClickListener(v -> {
-            if (mAdapter.mOnItemLongClickListener != null) {
-                mAdapter.mOnItemLongClickListener.onItemLongClick(v, getLayoutPosition());
-            }
-            return false;
-        });
-    }
-
-    @OnClick(R.id.list_explorer_folder_context)
-    public void onContextClick(View view) {
-        if (mAdapter.mOnItemContextListener != null) {
-            mAdapter.mOnItemContextListener.onItemContextClick(view, getLayoutPosition());
+        viewBinding.listExplorerFolderContext.setOnClickListener {
+            adapter.mOnItemContextListener?.run { onItemContextClick(view, layoutPosition) }
         }
     }
 
-    public void bind(CloudFolder folder) {
+    override fun bind(folder: CloudFolder) {
         // Get folder info
-        final StringBuilder folderInfo = new StringBuilder(TimeUtils.getWeekDate(folder.getUpdated()));
-        if (mAdapter.mPreferenceTool.getSelfId().equalsIgnoreCase(folder.getCreatedBy().getId())) {
-            if (!mAdapter.isSectionMy()) {
-                folderInfo.append(PLACEHOLDER_POINT).append(mAdapter.mContext.getString(R.string.item_owner_self));
+        val folderInfo = TimeUtils.getWeekDate(folder.updated)
+
+        if (adapter.mPreferenceTool.selfId.equals(folder.createdBy.id,ignoreCase = true)) {
+            if (!adapter.isSectionMy) {
+                folderInfo + PLACEHOLDER_POINT +
+                        adapter.mContext.getString(R.string.item_owner_self)
             }
-        } else if (!folder.getCreatedBy().getDisplayName().equals("")) {
-            folderInfo.append(PLACEHOLDER_POINT).append(folder.getCreatedBy().getDisplayName());
+        } else if (folder.createdBy.displayName.isNotEmpty()) {
+            folderInfo + PLACEHOLDER_POINT + folder.createdBy.displayName
         }
 
-        mFolderName.setText(folder.getTitle());
-        mFolderInfo.setText(folderInfo.toString());
-        mFolderContext.setVisibility(View.VISIBLE);
-        mViewIconSelectableLayout.setBackground(null);
-        mViewIconSelectableMask.setBackground(null);
-        mAdapter.setFolderIcon(mViewIconSelectableImage, folder);
+        with(viewBinding) {
+            listExplorerFolderName.text = folder.title
+            listExplorerFolderInfo.text = folderInfo
+            listExplorerFolderContext.isVisible = false
+            viewIconSelectableLayout.viewIconSelectableImage.background = null
+            viewIconSelectableLayout.viewIconSelectableMask.background = null
+            adapter.setFolderIcon(viewIconSelectableLayout.viewIconSelectableImage, folder)
 
-        // Show/hide context button
-        if (mAdapter.isSelectMode() || mAdapter.isFoldersMode()) {
-            mFolderContext.setVisibility(View.GONE);
-        }
+            // Show/hide context button
+            if (adapter.isSelectMode || adapter.isFoldersMode) {
+                listExplorerFolderContext.isVisible = false
+            }
 
-        // For selection mode add background/foreground
-        if (mAdapter.isSelectMode()) {
-            if (folder.isSelected()) {
-                mViewIconSelectableMask.setBackgroundResource(R.drawable.drawable_list_image_select_mask);
-            } else {
-                mViewIconSelectableLayout.setBackgroundResource(R.drawable.drawable_list_image_select_background);
+            // For selection mode add background/foreground
+            if (adapter.isSelectMode) {
+                if (folder.isSelected) {
+                    viewIconSelectableLayout.viewIconSelectableMask
+                        .setBackgroundResource(R.drawable.drawable_list_image_select_mask)
+                } else {
+                    viewIconSelectableLayout.viewIconSelectableLayout
+                        .setBackgroundResource(R.drawable.drawable_list_image_select_background)
+                }
             }
         }
     }
 
+    companion object {
+        const val LAYOUT: Int = R.layout.list_explorer_folder
+    }
 }

@@ -1,37 +1,30 @@
-package app.editors.manager.ui.adapters.holders;
+package app.editors.manager.ui.adapters.holders
 
-import android.graphics.PorterDuff;
-import android.view.View;
-import android.widget.ProgressBar;
+import android.graphics.PorterDuff
+import android.view.View
+import androidx.core.content.ContextCompat
+import app.editors.manager.R
+import app.editors.manager.databinding.ListExplorerFooterBinding
+import app.editors.manager.managers.utils.isVisible
+import app.editors.manager.mvp.models.list.Footer
+import app.editors.manager.ui.adapters.ExplorerAdapter
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
+class FooterViewHolder(parent: View, adapter: ExplorerAdapter)
+    : BaseViewHolderExplorer<Footer>(parent, adapter) {
 
-import app.editors.manager.R;
-import app.editors.manager.mvp.models.list.Footer;
-import app.editors.manager.ui.adapters.ExplorerAdapter;
-import butterknife.BindView;
+    private val viewBinding = ListExplorerFooterBinding.bind(parent)
 
-public class FooterViewHolder extends BaseViewHolderExplorer<Footer> {
-
-    public static final int LAYOUT = R.layout.list_explorer_footer;
-
-    @BindView(R.id.list_explorer_footer_layout)
-    ConstraintLayout mFooterLayout;
-    @BindView(R.id.list_explorer_footer_progress)
-    ProgressBar mFooterProgress;
-
-    public FooterViewHolder(View parent, ExplorerAdapter adapter) {
-        super(parent, adapter);
-        mFooterProgress.getIndeterminateDrawable()
-                .setColorFilter(ContextCompat.getColor(adapter.mContext, R.color.colorSecondary),
-                        PorterDuff.Mode.SRC_IN);
+    init {
+        viewBinding.listExplorerFooterProgress.indeterminateDrawable?.setColorFilter(
+            ContextCompat.getColor(adapter.mContext, R.color.colorSecondary),
+            PorterDuff.Mode.SRC_IN)
     }
 
-    @Override
-    public void bind(Footer footer) {
-        mFooterLayout.setVisibility(mAdapter.isFooter() ? View.VISIBLE : View.INVISIBLE);
+    override fun bind(footer: Footer) {
+        viewBinding.listExplorerFooterLayout.isVisible = adapter.isFooter
     }
 
-
+    companion object {
+        const val LAYOUT: Int = R.layout.list_explorer_footer
+    }
 }

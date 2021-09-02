@@ -15,18 +15,16 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
 
     init {
         viewBinding.listExplorerFileLayout.setOnClickListener{ view ->
-            adapter.mOnItemContextListener?.run {
-                adapter.mOnItemClickListener.onItemClick(view, layoutPosition)
-            }
+            adapter.mOnItemContextListener?.run { onItemContextClick(view, layoutPosition) }
         }
+
         viewBinding.listExplorerFileLayout.setOnLongClickListener { view ->
-            adapter.mOnItemLongClickListener?.run {
-                adapter.mOnItemLongClickListener.onItemLongClick(view, layoutPosition)
-            }
+            adapter.mOnItemLongClickListener?.run { onItemLongClick(view, layoutPosition) }
             false
         }
+
         viewBinding.listExplorerFileContext.setOnClickListener { view ->
-            adapter.mOnItemContextListener.onItemContextClick(view, layoutPosition)
+            adapter.mOnItemContextListener?.run { onItemContextClick(view, layoutPosition) }
         }
     }
 
@@ -63,7 +61,6 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
                 }
             }
         }
-
     }
 
     companion object {
