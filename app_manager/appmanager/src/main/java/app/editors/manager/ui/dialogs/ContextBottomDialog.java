@@ -291,13 +291,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
                     mListExplorerContextEdit.setVisibility(View.VISIBLE);
                 }
             }
-
-            // File can access by link
-            if (mState.mIsCanShare) {
-                mListContextExternalLink.setVisibility(View.VISIBLE);
-            }
         }
-
         // Folders and files
         // Context is editable
         if (mState.mIsContextEditable) {
@@ -306,7 +300,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
         }
 
         // Item can edit
-        if (mState.mIsItemEditable) {
+        if (mState.mIsItemEditable && mState.mIsCanShare) {
             mListContextRename.setVisibility(View.VISIBLE);
         }
 
@@ -315,7 +309,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
             mViewLineSeparatorShare.setVisibility(View.VISIBLE);
             mListContextShare.setVisibility(View.VISIBLE);
         } else {
-            mViewLineSeparatorShare.setVisibility(View.VISIBLE);
+            mViewLineSeparatorShare.setVisibility(View.GONE);
         }
 
         // Only for share section, instead of delete
@@ -327,6 +321,9 @@ public class ContextBottomDialog extends BaseBottomDialog {
             mViewLineSeparatorShare.setVisibility(View.VISIBLE);
             mListContextExternalLink.setVisibility(View.VISIBLE);
         }
+
+        mListContextExternalLink.setVisibility(View.VISIBLE);
+        mViewLineSeparatorShare.setVisibility(View.VISIBLE);
     }
 
     private void setTrashState() {
