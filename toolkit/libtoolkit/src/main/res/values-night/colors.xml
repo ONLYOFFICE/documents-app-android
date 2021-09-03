@@ -18,7 +18,7 @@
     <color name="colorOutline">#3F3F3F</color>
     <color name="colorBgDescription">#363636</color>
 
-    <color name="colorAppBar" tools:ignore="MissingDefaultResource">#151515</color>
+    <color name="colorAppBar" tools:ignore="MissingDefaultResource">@color/colorPrimaryDark</color>
     <color name="colorBottomBar">#191919</color>
 
     <!--    Clouds-->
@@ -32,5 +32,7 @@
     <color name="colorVideoTint">#00a9cd</color>
 
     <color name="listItemColor">@color/colorBackground</color>
+    <color name="shadow_end">@color/colorBackground</color>
+    <color name="shadow_start">@color/colorBackground</color>
 
 </resources>
