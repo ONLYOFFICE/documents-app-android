@@ -3,6 +3,7 @@ package app.editors.manager.ui.adapters.holders
 import android.view.View
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFolderBinding
+import app.editors.manager.managers.utils.UiUtils.setFolderIcon
 import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -32,10 +33,10 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
         // Get folder info
         val folderInfo = TimeUtils.getWeekDate(folder.updated)
 
-        if (adapter.mPreferenceTool.selfId.equals(folder.createdBy.id,ignoreCase = true)) {
+        if (adapter.preferenceTool.selfId.equals(folder.createdBy.id,ignoreCase = true)) {
             if (!adapter.isSectionMy) {
                 folderInfo + PLACEHOLDER_POINT +
-                        adapter.mContext.getString(R.string.item_owner_self)
+                        adapter.context.getString(R.string.item_owner_self)
             }
         } else if (folder.createdBy.displayName.isNotEmpty()) {
             folderInfo + PLACEHOLDER_POINT + folder.createdBy.displayName
@@ -47,7 +48,7 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
             listExplorerFolderContext.isVisible = false
             viewIconSelectableLayout.viewIconSelectableImage.background = null
             viewIconSelectableLayout.viewIconSelectableMask.background = null
-            adapter.setFolderIcon(viewIconSelectableLayout.viewIconSelectableImage, folder)
+            setFolderIcon(viewIconSelectableLayout.viewIconSelectableImage, folder, adapter.isRoot)
 
             // Show/hide context button
             if (adapter.isSelectMode || adapter.isFoldersMode) {

@@ -3,6 +3,8 @@ package app.editors.manager.ui.adapters.holders
 import android.view.View
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
+import app.editors.manager.managers.utils.UiUtils.setFileIcon
+import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.StringUtils
@@ -31,11 +33,11 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
     override fun bind(file: CloudFile) {
         // Get file info
         val filesInfo: String = TimeUtils.getWeekDate(file.updated) + PLACEHOLDER_POINT +
-                StringUtils.getFormattedSize(adapter.mContext, file.pureContentLength)
+                StringUtils.getFormattedSize(adapter.context, file.pureContentLength)
 
-        if (adapter.mPreferenceTool.selfId.equals(file.createdBy.id, ignoreCase = true)) {
+        if (adapter.preferenceTool.selfId.equals(file.createdBy.id, ignoreCase = true)) {
             if (!adapter.isSectionMy) {
-                filesInfo + PLACEHOLDER_POINT + adapter.mContext.getString(R.string.item_owner_self)
+                filesInfo + PLACEHOLDER_POINT + adapter.context.getString(R.string.item_owner_self)
             }
         } else if (file.createdBy.title.isNotEmpty()) {
             filesInfo + PLACEHOLDER_POINT + file.createdBy.displayName
@@ -44,15 +46,15 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         with(viewBinding) {
             listExplorerFileName.text = file.title
             listExplorerFileInfo.text = filesInfo
-            listExplorerFileContext.visibility = View.VISIBLE
+            listExplorerFileContext.isVisible = true
 
             viewIconSelectableLayout.viewIconSelectableImage.background = null
             viewIconSelectableLayout.viewIconSelectableMask.background = null
-            adapter.setFileIcon(viewIconSelectableLayout.viewIconSelectableImage, file.fileExst)
+            setFileIcon(viewIconSelectableLayout.viewIconSelectableImage, file.fileExst)
 
             // For selection mode add background/foreground
             if (adapter.isSelectMode) {
-                listExplorerFileContext.setVisibility(View.GONE)
+                listExplorerFileContext.isVisible = false
                 if (file.isSelected) {
                     viewIconSelectableLayout.viewIconSelectableMask.setBackgroundResource(R.drawable.drawable_list_image_select_mask)
                 } else {

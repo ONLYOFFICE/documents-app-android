@@ -1,316 +1,185 @@
-package app.editors.manager.ui.adapters;
+package app.editors.manager.ui.adapters
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.content.Context
+import app.editors.manager.app.App.Companion.getApp
+import lib.toolkit.base.managers.utils.UiUtils.getFloatResource
+import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.mvp.models.list.Footer
+import android.view.ViewGroup
+import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
+import android.widget.ImageView
+import androidx.recyclerview.widget.RecyclerView
+import app.editors.manager.ui.adapters.holders.FooterViewHolder
+import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
+import app.editors.manager.mvp.models.explorer.UploadFile
+import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.ApiContract
+import androidx.annotation.DrawableRes
+import app.editors.manager.R
+import app.editors.manager.mvp.models.base.Entity
+import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.ui.adapters.base.BaseAdapter
+import app.editors.manager.ui.adapters.holders.factory.TypeFactory
+import lib.toolkit.base.ui.adapters.factory.inflate
+import javax.inject.Inject
 
-import androidx.annotation.ColorRes;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
-import app.documents.core.network.ApiContract;
-import app.editors.manager.R;
-import app.editors.manager.app.App;
-import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.mvp.models.base.Entity;
-import app.editors.manager.mvp.models.explorer.CloudFile;
-import app.editors.manager.mvp.models.explorer.CloudFolder;
-import app.editors.manager.mvp.models.explorer.UploadFile;
-import app.editors.manager.mvp.models.list.Footer;
-import app.editors.manager.mvp.models.list.Header;
-import app.editors.manager.ui.adapters.base.BaseAdapter;
-import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer;
-import app.editors.manager.ui.adapters.holders.FooterViewHolder;
-import app.editors.manager.ui.adapters.holders.UploadFileViewHolder;
-import app.editors.manager.ui.adapters.holders.factory.TypeFactory;
-import lib.toolkit.base.managers.utils.StringUtils;
-import lib.toolkit.base.managers.utils.UiUtils;
-
-public class ExplorerAdapter extends BaseAdapter<Entity> {
+class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() {
 
     @Inject
-    public Context mContext;
+    lateinit var context: Context
 
     @Inject
-    public PreferenceTool mPreferenceTool;
+    lateinit var preferenceTool: PreferenceTool
 
-    private boolean mIsSelectMode;
-    private boolean mIsFoldersMode;
-    private boolean mIsFooter;
-    private boolean mIsRoot;
-    private boolean mIsSectionMy;
+    var isRoot: Boolean = false
+    var isFooter: Boolean = false
+    var isSectionMy: Boolean = false
 
-    private Footer mFooter;
-    private TypeFactory mFactory;
+    var isSelectMode = false
+        private set(isSelectMode) {
+            field = isSelectMode
+            notifyDataSetChanged()
+        }
 
+    var isFoldersMode = false
+        private set(isFoldersMode) {
+            field = isFoldersMode
+            notifyDataSetChanged()
+        }
 
-    public ExplorerAdapter(TypeFactory factory) {
-        App.getApp().getAppComponent().inject(this);
-        mIsSelectMode = false;
-        mIsFoldersMode = false;
-        mIsFooter = false;
-        mIsSectionMy = false;
-        mFactory = factory;
-        mFooter = new Footer();
+    private val footer: Footer = Footer()
+
+    init {
+        getApp().appComponent.inject(this)
     }
 
-    @NonNull
-    @Override
-    public BaseViewHolderExplorer onCreateViewHolder(ViewGroup viewGroup, int typeHolder) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(typeHolder, viewGroup, false);
-        return mFactory.createViewHolder(view, typeHolder, this);
+    override fun onCreateViewHolder(view: ViewGroup, type: Int):
+            BaseViewHolderExplorer<*> {
+        return factory.createViewHolder(view.inflate(type), type, this)
+            ?: throw RuntimeException("ViewHolder can not be null")
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof FooterViewHolder) {
-            FooterViewHolder viewHolder = (FooterViewHolder) holder;
-            viewHolder.bind(mFooter);
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is FooterViewHolder) {
+            holder.bind(footer)
         } else {
-            BaseViewHolderExplorer viewHolder = (BaseViewHolderExplorer) holder;
-            setFileFavoriteStatus(position);
-            viewHolder.bind(mList.get(position));
+            setFileFavoriteStatus(position)
+            (holder as BaseViewHolderExplorer<Entity>).bind(mList[position])
         }
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, List payloads) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<*>) {
         if (payloads.isEmpty()) {
-            onBindViewHolder(holder, position);
+            onBindViewHolder(holder, position)
         } else {
-            if (holder instanceof UploadFileViewHolder) {
-                UploadFileViewHolder viewHolder = (UploadFileViewHolder) holder;
-                viewHolder.updateProgress((UploadFile) payloads.get(0));
-            }
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return super.getItemCount() + 1;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (position == getItemCount() - 1) {
-            return FooterViewHolder.LAYOUT;
-        } else {
-            return getItemList().get(position).getType(mFactory);
-        }
-    }
-
-
-    public void setSelectMode(final boolean isSelectMode) {
-        mIsSelectMode = isSelectMode;
-        notifyDataSetChanged();
-    }
-
-    public void setFoldersMode(final boolean isFoldersMode) {
-        mIsFoldersMode = isFoldersMode;
-        notifyDataSetChanged();
-    }
-
-    public void isLoading(final boolean isShow) {
-        mIsFooter = isShow;
-        notifyItemChanged(getItemCount() - 1);
-    }
-
-    public UploadFile getUploadFileById(String id) {
-        if (mList != null) {
-            for (Entity file : mList) {
-                if (file instanceof UploadFile) {
-                    UploadFile uploadFile = (UploadFile) file;
-                    if (uploadFile.getId().equals(id)) {
-                        return uploadFile;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public void removeUploadItemById(String id) {
-        if (mList != null) {
-            for (Entity file : mList) {
-                if (file instanceof UploadFile) {
-                    UploadFile uploadFile = (UploadFile) file;
-                    if (uploadFile.getId().equals(id)) {
-                        int position = mList.indexOf(uploadFile);
-                        mList.remove(uploadFile);
-                        notifyItemRemoved(position);
-                        break;
+            if (holder is UploadFileViewHolder) {
+                payloads[0]?.let { payload ->
+                    if (payload is UploadFile) {
+                        holder.updateProgress(payload)
                     }
                 }
             }
         }
     }
 
-    private void setFileFavoriteStatus(int position) {
-        if(mList.get(position) instanceof CloudFile){
-            CloudFile file = ((CloudFile)mList.get(position));
-            if(!file.getFileStatus().isEmpty()) {
-                int favoriteMask = Integer.parseInt(file.getFileStatus()) & ApiContract.FileStatus.FAVORITE;
-                if (favoriteMask != 0) {
-                    file.setFavorite(true);
-                } else {
-                    file.setFavorite(false);
+    override fun getItemCount(): Int {
+        return super.getItemCount() + 1
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (position == itemCount - 1) {
+            FooterViewHolder.LAYOUT
+        } else {
+            itemList[position].getType(factory)
+        }
+    }
+
+    fun isLoading(isShow: Boolean) {
+        isFooter = isShow
+        notifyItemChanged(itemCount - 1)
+    }
+
+    fun getUploadFileById(id: String): UploadFile? {
+        mList?.let { list ->
+            for (file in list) {
+                if (file is UploadFile && file.id == id)
+                    return file
+            }
+        }
+        return null
+    }
+
+    fun removeUploadItemById(id: String) {
+        mList?.let { list ->
+            for (file in list) {
+                if (file is UploadFile && file.id == id) {
+                    mList.remove(file)
+                    notifyItemRemoved(mList.indexOf(file))
+                    break
                 }
             }
         }
     }
 
-    public void setRoot(boolean root) {
-        mIsRoot = root;
-    }
-
-    public void setSectionMy(boolean sectionMy) {
-        mIsSectionMy = sectionMy;
-    }
-
-    public boolean isSelectMode() {
-        return mIsSelectMode;
-    }
-
-    public boolean isFoldersMode() {
-        return mIsFoldersMode;
-    }
-
-    public boolean isFooter() {
-        return mIsFooter;
-    }
-
-    public boolean isRoot() {
-        return mIsRoot;
-    }
-
-    public boolean isSectionMy() {
-        return mIsSectionMy;
-    }
-
-    public void setFileIcon(final ImageView view, final String ext) {
-        final StringUtils.Extension extension = StringUtils.getExtension(ext);
-        @DrawableRes int resId = R.drawable.ic_type_file;
-        @ColorRes int colorId = R.color.colorGrey;
-        switch (extension) {
-            case DOC:
-                resId = R.drawable.ic_type_text_document;
-                colorId = R.color.colorDocTint;
-                break;
-            case SHEET:
-                resId = R.drawable.ic_type_spreadsheet;
-                colorId = R.color.colorSheetTint;
-                break;
-            case PRESENTATION:
-                resId = R.drawable.ic_type_presentation;
-                colorId = R.color.colorPresentationTint;
-                break;
-            case IMAGE:
-            case IMAGE_GIF:
-                resId = R.drawable.ic_type_image;
-                colorId = R.color.colorPicTint;
-                break;
-            case HTML:
-            case EBOOK:
-            case PDF:
-                resId = R.drawable.ic_type_pdf;
-                colorId = R.color.colorLightRed;
-                break;
-            case VIDEO_SUPPORT:
-                resId = R.drawable.ic_type_video;
-                colorId = R.color.colorBlack;
-                break;
-            case VIDEO:
-                setAlphaIcon(view, R.drawable.ic_type_video);
-                return;
-            case ARCH:
-                setAlphaIcon(view, R.drawable.ic_type_archive);
-                return;
-            case UNKNOWN:
-                setAlphaIcon(view, R.drawable.ic_type_file);
-                return;
+    private fun setFileFavoriteStatus(position: Int) {
+        val file = mList[position]
+        if (file is CloudFile && file.fileStatus.isNotEmpty()) {
+            val favoriteMask = file.fileStatus.toInt() and ApiContract.FileStatus.FAVORITE
+            file.favorite = favoriteMask != 0
         }
-
-        view.setImageResource(resId);
-        view.setAlpha(1.0f);
-        view.setColorFilter(ContextCompat.getColor(mContext, colorId));
     }
 
-    public void setAlphaIcon(final ImageView view, @DrawableRes final int resId) {
-        view.setImageResource(resId);
-        view.setAlpha(UiUtils.getFloatResource(mContext, R.dimen.alpha_medium));
-        view.clearColorFilter();
-    }
-
-    public void setFolderIcon(final AppCompatImageView view, final CloudFolder folder) {
-        @DrawableRes int resId = R.drawable.ic_type_folder;
-        if (folder.getShared() && folder.getProviderKey().isEmpty()) {
-            resId = R.drawable.ic_type_folder_shared;
-        } else if (isRoot() && folder.getProviderItem() && !folder.getProviderKey().isEmpty()) {
-            switch (folder.getProviderKey()) {
-                case ApiContract.Storage.BOXNET:
-                    resId = R.drawable.ic_storage_box;
-                    break;
-                case ApiContract.Storage.DROPBOX:
-                    resId = R.drawable.ic_storage_dropbox;
-                    break;
-                case ApiContract.Storage.SHAREPOINT:
-                    resId = R.drawable.ic_storage_sharepoint;
-                    break;
-                case ApiContract.Storage.GOOGLEDRIVE:
-                    resId = R.drawable.ic_storage_google;
-                    break;
-                case ApiContract.Storage.ONEDRIVE:
-                case ApiContract.Storage.SKYDRIVE:
-                    resId = R.drawable.ic_storage_onedrive;
-                    break;
-                case ApiContract.Storage.YANDEX:
-                    resId = R.drawable.ic_storage_yandex;
-                    break;
-                case ApiContract.Storage.WEBDAV:
-                    resId = R.drawable.ic_storage_webdav;
-                    view.setImageResource(resId);
-                    view.setAlpha(UiUtils.getFloatResource(mContext, R.dimen.alpha_medium));
-                    return;
+    fun setFolderIcon(view: ImageView, folder: CloudFolder,) {
+        @DrawableRes var resId = R.drawable.ic_type_folder
+        if (folder.shared && folder.providerKey.isEmpty()) {
+            resId = R.drawable.ic_type_folder_shared
+        } else if (isRoot && folder.providerItem && !folder.providerKey.isEmpty()) {
+            when (folder.providerKey) {
+                ApiContract.Storage.BOXNET -> resId = R.drawable.ic_storage_box
+                ApiContract.Storage.DROPBOX -> resId = R.drawable.ic_storage_dropbox
+                ApiContract.Storage.SHAREPOINT -> resId = R.drawable.ic_storage_sharepoint
+                ApiContract.Storage.GOOGLEDRIVE -> resId = R.drawable.ic_storage_google
+                ApiContract.Storage.ONEDRIVE, ApiContract.Storage.SKYDRIVE -> resId =
+                    R.drawable.ic_storage_onedrive
+                ApiContract.Storage.YANDEX -> resId = R.drawable.ic_storage_yandex
+                ApiContract.Storage.WEBDAV -> {
+                    resId = R.drawable.ic_storage_webdav
+                    view.setImageResource(resId)
+                    view.alpha =
+                        getFloatResource(context, R.dimen.alpha_medium)
+                    return
+                }
             }
-
-            view.setImageResource(resId);
-            view.setAlpha(1.0f);
-            view.clearColorFilter();
-            return;
+            view.setImageResource(resId)
+            view.alpha = 1.0f
+            view.clearColorFilter()
+            return
         }
-
-        view.setImageResource(resId);
-        view.setAlpha(UiUtils.getFloatResource(mContext, R.dimen.alpha_medium));
+        view.setImageResource(resId)
+        view.alpha =
+            getFloatResource(context, R.dimen.alpha_medium)
     }
 
-    public void checkHeaders() {
+    fun checkHeaders() {
         if (mList != null) {
-            for (int i = 0; i < mList.size(); i++) {
-                if (mList.get(i) instanceof Header) {
-                    Header header = (Header) mList.get(i);
-                    int position = mList.indexOf(header);
-                    if (position + 1 < mList.size() - 1) {
-                        if (mList.get(i + 1) instanceof Header) {
-                            mList.remove(header);
-                            notifyItemRemoved(position);
+            for (i in mList.indices) {
+                if (mList[i] is Header) {
+                    val header = mList[i] as Header
+                    val position = mList.indexOf(header)
+                    if (position + 1 < mList.size - 1) {
+                        if (mList[i + 1] is Header) {
+                            mList.remove(header)
+                            notifyItemRemoved(position)
                         }
-                    } else if (mList.lastIndexOf(header) == mList.size() - 1) {
-                        mList.remove(header);
-                        notifyItemRemoved(position);
+                    } else if (mList.lastIndexOf(header) == mList.size - 1) {
+                        mList.remove(header)
+                        notifyItemRemoved(position)
                     }
                 }
             }
-            if (mList.size() == 1 && mList.get(0) instanceof Header) {
-                mList.clear();
+            if (mList.size == 1 && mList[0] is Header) {
+                mList.clear()
             }
         }
     }
