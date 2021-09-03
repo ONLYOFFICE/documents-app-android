@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentListBinding
@@ -17,6 +18,8 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
 
     protected var linearLayoutManager: LinearLayoutManager? = null
     protected var placeholderViews: PlaceholderViews? = null
+    protected var recyclerView: RecyclerView? = null
+    protected var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var viewBinding: FragmentListBinding? = null
 
     override fun onCreateView(
@@ -59,6 +62,8 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
                     this@ListFragment.onListEnd()
                 }
             })
+            recyclerView = it.listOfItems
+            swipeRefreshLayout = it.listSwipeRefresh
         }
     }
 

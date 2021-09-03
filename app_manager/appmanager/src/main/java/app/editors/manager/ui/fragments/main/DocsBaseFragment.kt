@@ -1,1151 +1,1017 @@
-package app.editors.manager.ui.fragments.main;
+package app.editors.manager.ui.fragments.main
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.widget.ImageView
+import androidx.appcompat.widget.SearchView
+import androidx.recyclerview.widget.DiffUtil
+import app.documents.core.network.ApiContract
+import app.editors.manager.R
+import app.editors.manager.app.App.Companion.getApp
+import app.editors.manager.managers.utils.isVisible
+import app.editors.manager.mvp.models.base.Entity
+import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.explorer.Item
+import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.mvp.models.models.State
+import app.editors.manager.mvp.presenters.main.DocsBasePresenter
+import app.editors.manager.mvp.views.base.BaseViewExt
+import app.editors.manager.mvp.views.main.DocsBaseView
+import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.ui.activities.main.MainActivity.Companion.show
+import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
+import app.editors.manager.ui.adapters.ExplorerAdapter
+import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
+import app.editors.manager.ui.adapters.holders.factory.TypeFactory
+import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer.Companion.factory
+import app.editors.manager.ui.dialogs.ActionBottomDialog
+import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.dialogs.MoveCopyDialog
+import app.editors.manager.ui.dialogs.MoveCopyDialog.DialogButtonOnClick
+import app.editors.manager.ui.fragments.base.ListFragment
+import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.managers.utils.ActivitiesUtils.createFile
+import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.StringUtils.getExtension
+import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
+import lib.toolkit.base.managers.utils.StringUtils.getNameWithoutExtension
+import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
+import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.ui.adapters.BaseAdapter
+import lib.toolkit.base.ui.adapters.BaseAdapter.OnItemContextListener
+import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog.OnBottomDialogCloseListener
+import lib.toolkit.base.ui.dialogs.common.CommonDialog
+import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
+import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DiffUtil;
+abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnItemClickListener,
+    OnItemContextListener, BaseAdapter.OnItemLongClickListener, ContextBottomDialog.OnClickListener,
+    ActionBottomDialog.OnClickListener, SearchView.OnQueryTextListener, DialogButtonOnClick {
 
-import java.util.Collections;
-import java.util.List;
-
-import app.documents.core.network.ApiContract;
-import app.editors.manager.R;
-import app.editors.manager.app.App;
-import app.editors.manager.mvp.models.base.Entity;
-import app.editors.manager.mvp.models.explorer.CloudFile;
-import app.editors.manager.mvp.models.explorer.CloudFolder;
-import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.Item;
-import app.editors.manager.mvp.models.explorer.UploadFile;
-import app.editors.manager.mvp.models.list.Header;
-import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
-import app.editors.manager.mvp.views.base.BaseViewExt;
-import app.editors.manager.mvp.views.main.DocsBaseView;
-import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment;
-import app.editors.manager.ui.activities.base.BaseAppActivity;
-import app.editors.manager.ui.activities.main.MainActivity;
-import app.editors.manager.ui.activities.main.MediaActivity;
-import app.editors.manager.ui.adapters.ExplorerAdapter;
-import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback;
-import app.editors.manager.ui.adapters.holders.factory.TypeFactory;
-import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer;
-import app.editors.manager.ui.dialogs.ActionBottomDialog;
-import app.editors.manager.ui.dialogs.ContextBottomDialog;
-import app.editors.manager.ui.dialogs.MoveCopyDialog;
-import app.editors.manager.ui.fragments.base.ListFragment;
-import app.editors.manager.ui.views.custom.PlaceholderViews;
-import lib.toolkit.base.managers.utils.ActivitiesUtils;
-import lib.toolkit.base.managers.utils.EditorsContract;
-import lib.toolkit.base.managers.utils.PermissionUtils;
-import lib.toolkit.base.managers.utils.StringUtils;
-import lib.toolkit.base.managers.utils.TimeUtils;
-import lib.toolkit.base.ui.adapters.BaseAdapter;
-import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog;
-import lib.toolkit.base.ui.dialogs.common.CommonDialog;
-
-import static lib.toolkit.base.ui.activities.base.BaseActivity.REQUEST_ACTIVITY_MEDIA;
-
-public abstract class DocsBaseFragment extends ListFragment implements DocsBaseView, BaseAdapter.OnItemClickListener,
-        BaseAdapter.OnItemContextListener, BaseAdapter.OnItemLongClickListener, ContextBottomDialog.OnClickListener,
-        ActionBottomDialog.OnClickListener, SearchView.OnQueryTextListener, MoveCopyDialog.DialogButtonOnClick {
-
-    private static final long CLICK_TIME_INTERVAL = 350;
-
-    protected static final int REQUEST_OPEN_FILE = 10000;
-    protected static final int REQUEST_DOCS = 10001;
-    protected static final int REQUEST_PRESENTATION = 10002;
-    protected static final int REQUEST_SHEETS = 10003;
-    protected static final int REQUEST_PDF = 10004;
-    protected static final int REQUEST_DOWNLOAD = 10005;
-    protected static final int REQUEST_STORAGE_ACCESS = 10006;
-
-    protected enum EditorsType {
+    protected enum class EditorsType {
         DOCS, CELLS, PRESENTATION, PDF
     }
 
     /*
      * Toolbar menu
      * */
-    protected MenuItem mSearchItem;
-    protected MenuItem mOpenItem;
-    protected MenuItem mSortItem;
-    protected MenuItem mMainItem;
-    protected MenuItem mDeleteItem;
-    protected MenuItem mMoveItem;
-    protected MenuItem mCopyItem;
-    protected MenuItem mDownloadItem;
-    protected MenuItem mSelectItem;
-    protected SearchView mSearchView;
-    protected ImageView mSearchCloseButton;
+    protected var searchItem: MenuItem? = null
+    protected var openItem: MenuItem? = null
+    protected var sortItem: MenuItem? = null
+    protected var mainItem: MenuItem? = null
+    protected var deleteItem: MenuItem? = null
+    protected var moveItem: MenuItem? = null
+    protected var copyItem: MenuItem? = null
+    protected var downloadItem: MenuItem? = null
+    protected var searchView: SearchView? = null
+    protected var searchCloseButton: ImageView? = null
+    protected var explorerAdapter: ExplorerAdapter? = null
 
-    protected ExplorerAdapter mExplorerAdapter;
-    ContextBottomDialog mContextBottomDialog;
-    ActionBottomDialog mActionBottomDialog;
+    var contextBottomDialog: ContextBottomDialog? = null
+    var actionBottomDialog: ActionBottomDialog? = null
+    var moveCopyDialog: MoveCopyDialog? = null
 
-    private long mLastClickTime = 0;
+    private var mLastClickTime: Long = 0
+    private var selectItem: MenuItem? = null
+    private val mTypeFactory: TypeFactory = factory
 
-    private TypeFactory mTypeFactory = TypeFactoryExplorer.getFactory();
-    MoveCopyDialog mMoveCopyDialog;
+    protected abstract val presenter: DocsBasePresenter<out DocsBaseView?>
+    protected abstract val isWebDav: Boolean?
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+    companion object {
+        private const val CLICK_TIME_INTERVAL: Long = 350
+        const val REQUEST_OPEN_FILE = 10000
+        const val REQUEST_DOCS = 10001
+        const val REQUEST_PRESENTATION = 10002
+        const val REQUEST_SHEETS = 10003
+        const val REQUEST_PDF = 10004
+        const val REQUEST_DOWNLOAD = 10005
+        const val REQUEST_STORAGE_ACCESS = 10006
     }
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        init(savedInstanceState);
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (isActivePage() && resultCode == Activity.RESULT_CANCELED && requestCode == BaseAppActivity.REQUEST_ACTIVITY_OPERATION) {
-            onRefresh();
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init(savedInstanceState)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (isActivePage && resultCode == Activity.RESULT_CANCELED && requestCode == BaseActivity.REQUEST_ACTIVITY_OPERATION) {
+            onRefresh()
         } else if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case REQUEST_DOCS:
-                case REQUEST_SHEETS:
-                case REQUEST_PRESENTATION:
-                    removeCommonDialog();
-                case REQUEST_ACTIVITY_MEDIA:
-                    break;
-                case REQUEST_DOWNLOAD:
-                    if (data.getData() != null) {
-                        getPresenter().download(data.getData());
+            when (requestCode) {
+                REQUEST_DOCS,
+                REQUEST_SHEETS,
+                REQUEST_PRESENTATION -> removeCommonDialog()
+                REQUEST_DOWNLOAD ->
+                    data?.let {
+                        presenter.download(it.data!!)
                     }
-                    break;
+                BaseActivity.REQUEST_ACTIVITY_MEDIA -> {
+                }
             }
         }
     }
 
-    @Override
-    public void onContextDialogClose() {
-        if (getActivity() != null && getActivity() instanceof BaseBottomDialog.OnBottomDialogCloseListener) {
-            ((BaseBottomDialog.OnBottomDialogCloseListener) getActivity()).onBottomDialogClose();
+    override fun onContextDialogClose() {
+        if (requireActivity() is OnBottomDialogCloseListener) {
+            (requireActivity() as OnBottomDialogCloseListener).onBottomDialogClose()
         }
     }
 
     @SuppressLint("MissingPermission")
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (isActivePage()) {
-            switch (requestCode) {
-                case PERMISSION_WRITE_STORAGE: {
-                    if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        getPresenter().createDownloadFile();
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (isActivePage) {
+            when (requestCode) {
+                PERMISSION_WRITE_STORAGE -> {
+                    if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        presenter.createDownloadFile()
                     }
-                    break;
                 }
-
-                case PERMISSION_READ_STORAGE: {
-                    if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        showMultipleFilePickerActivity();
+                PERMISSION_READ_STORAGE -> {
+                    if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        showMultipleFilePickerActivity()
                     }
-                    break;
                 }
-
-                case PERMISSION_CAMERA: {
-                    if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                            grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                        showCameraActivity(TimeUtils.getFileTimeStamp());
+                PERMISSION_CAMERA -> {
+                    if (grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        showCameraActivity(fileTimeStamp)
                     }
                 }
             }
         }
         if (requestCode == PERMISSION_READ_UPLOAD) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (requireActivity().getIntent() != null) {
-                    final Uri uri = requireActivity().getIntent().getClipData().getItemAt(0).getUri();
-                    getPresenter().uploadToMy(uri);
-                    requireActivity().setIntent(null);
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requireActivity().intent?.let {
+                    presenter.uploadToMy(it.clipData?.getItemAt(0)?.uri)
+                    requireActivity().intent = null
                 }
             }
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-        super.onCreateOptionsMenu(menu, menuInflater);
-        if (menu != null) {
-            menu.clear();
-            getPresenter().initMenu();
-        }
+    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater)
+        menu.clear()
+        presenter.initMenu()
     }
 
-    @Override
-    public void onReverseSortOrder(String order) {
-        if(order.equals(ApiContract.Parameters.VAL_SORT_ORDER_ASC)) {
-            mMenu.findItem(R.id.toolbar_sort_item_asc).setChecked(true);
+    override fun onReverseSortOrder(order: String) {
+        if (order == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
+            menu?.findItem(R.id.toolbar_sort_item_asc)?.isChecked = true
         } else {
-            mMenu.findItem(R.id.toolbar_sort_item_desc).setChecked(true);
+            menu?.findItem(R.id.toolbar_sort_item_desc)?.isChecked = true
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Sort by
-            case R.id.toolbar_item_search:
-            case R.id.toolbar_item_sort:
-                item.setChecked(true);
-                break;
-            case R.id.toolbar_sort_item_date_update:
-                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, item.isChecked());
-                item.setChecked(true);
-                break;
-//            case R.id.toolbar_sort_item_date_create:
-//                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_CREATED);
-//                item.setSelected(true);
-//                break;
-            case R.id.toolbar_sort_item_title:
-                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, item.isChecked());
-                item.setChecked(true);
-                break;
-            case R.id.toolbar_sort_item_type:
-                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, item.isChecked());
-                item.setChecked(true);
-                break;
-            case R.id.toolbar_sort_item_size:
-                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, item.isChecked());
-                item.setChecked(true);
-                break;
-            case R.id.toolbar_sort_item_owner:
-                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, item.isChecked());
-                item.setChecked(true);
-                break;
-
-            // Sort order
-            case R.id.toolbar_sort_item_asc:
-                getPresenter().orderBy(ApiContract.Parameters.VAL_SORT_ORDER_ASC);
-                item.setChecked(true);
-                break;
-            case R.id.toolbar_sort_item_desc:
-                getPresenter().orderBy(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
-                item.setChecked(true);
-                break;
-
-            // Main menu options
-//            case R.id.toolbar_main_item_share:
-//                break;
-//            case R.id.toolbar_main_item_move:
-//                getPresenter().moveSelected();
-//                break;
-//            case R.id.toolbar_main_item_rename:
-//                break;
-//            case R.id.toolbar_main_item_delete:
-//                break;
-
-            case R.id.toolbar_main_item_select:
-                getPresenter().setSelection(true);
-                break;
-            case R.id.toolbar_main_item_select_all:
-                getPresenter().setSelectionAll();
-                break;
-
-            // Selection menu
-//            case R.id.toolbar_selection_share:
-//                break;
-            case R.id.toolbar_selection_delete:
-                getPresenter().delete();
-                break;
-            case R.id.toolbar_selection_move:
-                getPresenter().moveSelected();
-                break;
-            case R.id.toolbar_selection_copy:
-                getPresenter().copySelected();
-                break;
-            case R.id.toolbar_selection_deselect:
-                getPresenter().deselectAll();
-                break;
-            case R.id.toolbar_selection_select_all:
-                getPresenter().selectAll();
-                break;
-            case R.id.toolbar_selection_download:
-                getPresenter().createDownloadFile();
-                break;
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.toolbar_item_search, R.id.toolbar_item_sort -> item.isChecked = true
+            R.id.toolbar_sort_item_date_update -> {
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, item.isChecked)
+                item.isChecked = true
+            }
+            R.id.toolbar_sort_item_title -> {
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, item.isChecked)
+                item.isChecked = true
+            }
+            R.id.toolbar_sort_item_type -> {
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, item.isChecked)
+                item.isChecked = true
+            }
+            R.id.toolbar_sort_item_size -> {
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, item.isChecked)
+                item.isChecked = true
+            }
+            R.id.toolbar_sort_item_owner -> {
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, item.isChecked)
+                item.isChecked = true
+            }
+            R.id.toolbar_sort_item_asc -> {
+                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_ASC)
+                item.isChecked = true
+            }
+            R.id.toolbar_sort_item_desc -> {
+                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_DESC)
+                item.isChecked = true
+            }
+            R.id.toolbar_main_item_select -> presenter.setSelection(true)
+            R.id.toolbar_main_item_select_all -> presenter.setSelectionAll()
+            R.id.toolbar_selection_delete -> presenter.delete()
+            R.id.toolbar_selection_move -> presenter.moveSelected()
+            R.id.toolbar_selection_copy -> presenter.copySelected()
+            R.id.toolbar_selection_deselect -> presenter.deselectAll()
+            R.id.toolbar_selection_select_all -> presenter.selectAll()
+            R.id.toolbar_selection_download -> presenter.createDownloadFile()
         }
-
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    public boolean onBackPressed() {
-        return getPresenter().getBackStack();
+    override fun onBackPressed(): Boolean {
+        return presenter.backStack
     }
 
-    @Override
-    protected void onListEnd() {
-        super.onListEnd();
-        mExplorerAdapter.isLoading(true);
-        getPresenter().getNextList();
+    override fun onListEnd() {
+        super.onListEnd()
+        explorerAdapter?.isLoading(true)
+        presenter.getNextList()
     }
 
-    @Override
-    public final void onRefresh() {
-        onSwipeRefresh();
+    override fun onRefresh() {
+        onSwipeRefresh()
     }
 
-    protected boolean onSwipeRefresh() {
-        return getPresenter().refresh();
+    protected open fun onSwipeRefresh(): Boolean {
+        return presenter.refresh()
     }
 
     /*
      * Views callbacks
      * */
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        getPresenter().filter(query, true);
-        mSearchView.onActionViewCollapsed();
-        return false;
+    override fun onQueryTextSubmit(query: String): Boolean {
+        presenter.filter(query, true)
+        searchView?.onActionViewCollapsed()
+        return false
     }
 
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        mSearchCloseButton.setVisibility(newText.isEmpty() ? View.INVISIBLE : View.VISIBLE);
-        getPresenter().filterWait(newText);
-        return false;
+    override fun onQueryTextChange(newText: String): Boolean {
+        searchCloseButton?.isVisible = newText.isEmpty()
+        presenter.filterWait(newText)
+        return false
     }
 
-    @Override
-    public void onItemContextClick(View view, int position) {
-        final Entity item = mExplorerAdapter.getItem(position);
-        if (item instanceof Item && !isFastClick()) {
-            mContextDialogListener.onContextDialogOpen();
-            getPresenter().onContextClick((Item) item, position, false);
+    override fun onItemContextClick(view: View, position: Int) {
+        val item = explorerAdapter?.getItem(position)
+        if (item is Item && !isFastClick) {
+            mContextDialogListener!!.onContextDialogOpen()
+            presenter.onContextClick(item, position, false)
         }
     }
 
-    @Override
-    public void onItemClick(View view, int position) {
-        if (!isFastClick() || mExplorerAdapter.isSelectMode()) {
-            final Item item = (Item) mExplorerAdapter.getItem(position);
-            getPresenter().onItemClick(item, position);
+    override fun onItemClick(view: View, position: Int) {
+        if (!isFastClick || explorerAdapter?.isSelectMode == true) {
+            presenter.onItemClick(explorerAdapter?.getItem(position) as Item, position)
         }
     }
 
-    protected boolean isFastClick() {
-        long now = System.currentTimeMillis();
-        if (now - mLastClickTime < CLICK_TIME_INTERVAL) {
-            return true;
-        } else {
-            mLastClickTime = now;
-            return false;
+    private val isFastClick: Boolean
+        get() {
+            val now = System.currentTimeMillis()
+            return if (now - mLastClickTime < CLICK_TIME_INTERVAL) {
+                true
+            } else {
+                mLastClickTime = now
+                false
+            }
         }
+
+    override fun onItemLongClick(view: View, position: Int) {
+        presenter.setSelection(true)
+        presenter.onItemClick(explorerAdapter?.getItem(position) as Item, position)
     }
 
-    @Override
-    public void onItemLongClick(View view, int position) {
-        final Item item = (Item) mExplorerAdapter.getItem(position);
-        getPresenter().setSelection(true);
-        getPresenter().onItemClick(item, position);
+    override fun onNoProvider() {
+        requireActivity().finish()
+        show(requireContext())
     }
 
-    @Override
-    public void onNoProvider() {
-        if (getActivity() != null && getContext() != null) {
-            getActivity().finish();
-            MainActivity.show(getContext());
-        }
-    }
-
-    @Override
-    public void onOpenLocalFile(CloudFile file) {
-        Uri uri = Uri.parse(file.getWebUrl());
-        switch (StringUtils.getExtension(file.getFileExst())) {
-            case DOC:
-                getPresenter().addRecent(file);
-                showEditors(uri, EditorsType.DOCS);
-                break;
-            case SHEET:
-                getPresenter().addRecent(file);
-                showEditors(uri, EditorsType.CELLS);
-                break;
-            case PRESENTATION:
-                getPresenter().addRecent(file);
-                showEditors(uri, EditorsType.PRESENTATION);
-                break;
-            case PDF:
-                getPresenter().addRecent(file);
-                showEditors(uri, EditorsType.PDF);
-                break;
-            case VIDEO_SUPPORT:
-                getPresenter().addRecent(file);
-                Explorer explorer = new Explorer();
-                CloudFile videoFile = file.clone();
-                videoFile.setWebUrl(uri.getPath());
-                videoFile.setId("");
-                explorer.setFiles(Collections.singletonList(videoFile));
-                MediaActivity.show(this, explorer, true);
-                break;
-            case UNKNOWN:
-            case EBOOK:
-            case ARCH:
-            case VIDEO:
-            case HTML:
-                onSnackBar(getString(R.string.download_manager_complete));
-                break;
-        }
-    }
-
-    @Override
-    public void onContextButtonClick(ContextBottomDialog.Buttons buttons) {
-        switch (buttons) {
-            case MOVE:
-                getPresenter().moveContext();
-                break;
-            case COPY:
-                getPresenter().copyContext();
-                break;
-            case DOWNLOAD:
-                onFileDownloadPermission();
-                break;
-            case RENAME:
-                if (getPresenter().getItemClicked() instanceof CloudFile) {
-                    showEditDialogRename(getString(R.string.dialogs_edit_rename_title),
-                            StringUtils.getNameWithoutExtension(getPresenter().getItemTitle()),
-                            getString(R.string.dialogs_edit_hint), DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                            getString(R.string.dialogs_edit_accept_rename), getString(R.string.dialogs_common_cancel_button));
-                } else {
-                    showEditDialogRename(getString(R.string.dialogs_edit_rename_title),
-                            getPresenter().getItemTitle(),
-                            getString(R.string.dialogs_edit_hint), DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                            getString(R.string.dialogs_edit_accept_rename), getString(R.string.dialogs_common_cancel_button));
+    override fun onOpenLocalFile(file: CloudFile) {
+        val uri = Uri.parse(file.webUrl)
+        when (getExtension(file.fileExst)) {
+            StringUtils.Extension.DOC -> {
+                presenter.addRecent(file)
+                showEditors(uri, EditorsType.DOCS)
+            }
+            StringUtils.Extension.SHEET -> {
+                presenter.addRecent(file)
+                showEditors(uri, EditorsType.CELLS)
+            }
+            StringUtils.Extension.PRESENTATION -> {
+                presenter.addRecent(file)
+                showEditors(uri, EditorsType.PRESENTATION)
+            }
+            StringUtils.Extension.PDF -> {
+                presenter.addRecent(file)
+                showEditors(uri, EditorsType.PDF)
+            }
+            StringUtils.Extension.VIDEO_SUPPORT -> {
+                presenter.addRecent(file)
+                val videoFile = file.clone().apply {
+                    webUrl = uri.path
+                    id = ""
                 }
-                break;
-            case DELETE:
-                showQuestionDialog(getString(R.string.dialogs_question_delete), getPresenter().getItemTitle(),
-                        getString(R.string.dialogs_question_accept_remove), getString(R.string.dialogs_common_cancel_button),
-                        DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT);
-                break;
+                val explorer = Explorer().apply {
+                    files = listOf(videoFile)
+                }
+                show(this, explorer, true)
+            }
+            StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH,
+            StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
+                onSnackBar(getString(R.string.download_manager_complete))
+            }
+            else -> { }
         }
     }
 
-    @Override
-    public void onActionButtonClick(ActionBottomDialog.Buttons buttons) {
-        switch (buttons) {
-            case SHEET:
-                showEditDialogCreate(getString(R.string.dialogs_edit_create_sheet), getString(R.string.dialogs_edit_create_sheet),
-                        getString(R.string.dialogs_edit_hint), "." + ApiContract.Extension.XLSX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_SHEET,
-                        getString(R.string.dialogs_edit_accept_create), getString(R.string.dialogs_common_cancel_button));
-                break;
-            case PRESENTATION:
-                showEditDialogCreate(getString(R.string.dialogs_edit_create_presentation), getString(R.string.dialogs_edit_create_presentation),
-                        getString(R.string.dialogs_edit_hint), "." + ApiContract.Extension.PPTX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION,
-                        getString(R.string.dialogs_edit_accept_create), getString(R.string.dialogs_common_cancel_button));
-                break;
-            case DOC:
-                showEditDialogCreate(getString(R.string.dialogs_edit_create_docs), getString(R.string.dialogs_edit_create_docs),
-                        getString(R.string.dialogs_edit_hint), "." + ApiContract.Extension.DOCX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_DOC,
-                        getString(R.string.dialogs_edit_accept_create), getString(R.string.dialogs_common_cancel_button));
-                break;
-            case FOLDER:
-                showEditDialogCreate(getString(R.string.dialogs_edit_create_folder), "",
-                        getString(R.string.dialogs_edit_hint), null, DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER,
-                        getString(R.string.dialogs_edit_accept_create), getString(R.string.dialogs_common_cancel_button));
-                break;
-            case UPLOAD:
-                getPresenter().uploadPermission();
-                break;
+    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
+        when (buttons) {
+            ContextBottomDialog.Buttons.MOVE -> presenter.moveContext()
+            ContextBottomDialog.Buttons.COPY -> presenter.copyContext()
+            ContextBottomDialog.Buttons.DOWNLOAD -> onFileDownloadPermission()
+            ContextBottomDialog.Buttons.RENAME -> if (presenter.itemClicked is CloudFile) {
+                showEditDialogRename(
+                    getString(R.string.dialogs_edit_rename_title),
+                    getNameWithoutExtension(presenter.itemTitle),
+                    getString(R.string.dialogs_edit_hint),
+                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
+                    getString(R.string.dialogs_edit_accept_rename),
+                    getString(R.string.dialogs_common_cancel_button))
+            } else {
+                showEditDialogRename(
+                    getString(R.string.dialogs_edit_rename_title),
+                    presenter.itemTitle,
+                    getString(R.string.dialogs_edit_hint),
+                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
+                    getString(R.string.dialogs_edit_accept_rename),
+                    getString(R.string.dialogs_common_cancel_button))
+            }
+            ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
+                getString(R.string.dialogs_question_delete),
+                presenter.itemTitle,
+                getString(R.string.dialogs_question_accept_remove),
+                getString(R.string.dialogs_common_cancel_button),
+                DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
+            )
         }
     }
 
+    override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
+        when (buttons) {
+            ActionBottomDialog.Buttons.SHEET -> showEditDialogCreate(
+                getString(R.string.dialogs_edit_create_sheet),
+                getString(R.string.dialogs_edit_create_sheet),
+                getString(R.string.dialogs_edit_hint),
+                "." + ApiContract.Extension.XLSX.lowercase(),
+                DocsBasePresenter.TAG_DIALOG_ACTION_SHEET,
+                getString(R.string.dialogs_edit_accept_create),
+                getString(R.string.dialogs_common_cancel_button)
+            )
+            ActionBottomDialog.Buttons.PRESENTATION -> showEditDialogCreate(
+                getString(R.string.dialogs_edit_create_presentation),
+                getString(R.string.dialogs_edit_create_presentation),
+                getString(R.string.dialogs_edit_hint),
+                "." + ApiContract.Extension.PPTX.lowercase(),
+                DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION,
+                getString(R.string.dialogs_edit_accept_create),
+                getString(R.string.dialogs_common_cancel_button)
+            )
+            ActionBottomDialog.Buttons.DOC -> showEditDialogCreate(
+                getString(R.string.dialogs_edit_create_docs),
+                getString(R.string.dialogs_edit_create_docs),
+                getString(R.string.dialogs_edit_hint),
+                "." + ApiContract.Extension.DOCX.lowercase(),
+                DocsBasePresenter.TAG_DIALOG_ACTION_DOC,
+                getString(R.string.dialogs_edit_accept_create),
+                getString(R.string.dialogs_common_cancel_button)
+            )
+            ActionBottomDialog.Buttons.FOLDER -> showEditDialogCreate(
+                getString(R.string.dialogs_edit_create_folder),
+                "",
+                getString(R.string.dialogs_edit_hint),
+                null,
+                DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER,
+                getString(R.string.dialogs_edit_accept_create),
+                getString(R.string.dialogs_common_cancel_button)
+            )
+            ActionBottomDialog.Buttons.UPLOAD -> presenter.uploadPermission()
+        }
+    }
 
-    @Override
-    public void onAcceptClick(CommonDialog.Dialogs dialogs, @Nullable String value, @Nullable String tag) {
-        super.onAcceptClick(dialogs, value, tag);
-        if (isResumed()) {
-            if (tag != null) {
-                switch (tag) {
-                    case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT:
-                        getPresenter().delete();
-                        break;
-                    case DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME:
-                        getPresenter().rename(value);
-                        break;
-                    case DocsBasePresenter.TAG_DIALOG_ACTION_SHEET:
-                        getPresenter().createDocs(value + "." + ApiContract.Extension.XLSX.toLowerCase());
-                        break;
-                    case DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION:
-                        getPresenter().createDocs(value + "." + ApiContract.Extension.PPTX.toLowerCase());
-                        break;
-                    case DocsBasePresenter.TAG_DIALOG_ACTION_DOC:
-                        getPresenter().createDocs(value + "." + ApiContract.Extension.DOCX.toLowerCase());
-                        break;
-                    case DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER:
-                        getPresenter().createFolder(value);
-                        break;
-                    case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED:
-                        getPresenter().deleteItems();
-                        break;
+    override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
+        super.onAcceptClick(dialogs, value, tag)
+        if (isResumed) {
+            tag?.let {
+                when (it) {
+                    DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT -> presenter.delete()
+                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME -> presenter.rename(value)
+                    DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER -> presenter.createFolder(value)
+                    DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> presenter.deleteItems()
+                    DocsBasePresenter.TAG_DIALOG_ACTION_SHEET -> presenter.createDocs(value
+                            + "." + ApiContract.Extension.XLSX.lowercase())
+                    DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION -> presenter.createDocs(value
+                            + "." + ApiContract.Extension.PPTX.lowercase())
+                    DocsBasePresenter.TAG_DIALOG_ACTION_DOC -> presenter.createDocs(value
+                            + "." + ApiContract.Extension.DOCX.lowercase())
+                    else -> { }
                 }
             }
         }
     }
 
-    @Override
-    public void onCancelClick(CommonDialog.Dialogs dialogs, @Nullable String tag) {
-        if (tag != null) {
-            switch (tag) {
-                case DocsBasePresenter.TAG_DIALOG_CANCEL_DOWNLOAD:
-                    getPresenter().cancelDownload();
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_CANCEL_UPLOAD:
-                    getPresenter().cancelUpload();
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_CANCEL_SINGLE_OPERATIONS:
-                    getPresenter().cancelSingleOperationsRequests();
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_CANCEL_BATCH_OPERATIONS:
-                    getPresenter().terminate();
-                    return;
+    override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
+        tag?.let {
+            when (it) {
+                DocsBasePresenter.TAG_DIALOG_CANCEL_DOWNLOAD -> presenter.cancelDownload()
+                DocsBasePresenter.TAG_DIALOG_CANCEL_UPLOAD -> presenter.cancelUpload()
+                DocsBasePresenter.TAG_DIALOG_CANCEL_SINGLE_OPERATIONS -> presenter.cancelSingleOperationsRequests()
+                DocsBasePresenter.TAG_DIALOG_CANCEL_BATCH_OPERATIONS -> {
+                    presenter.terminate()
+                    return
+                }
             }
         }
-
-        super.onCancelClick(dialogs, tag);
+        super.onCancelClick(dialogs, tag)
     }
 
     /*
      * Presenter callbacks
      * */
-    @Override
-    public void onError(@Nullable String message) {
-        resetIndicators();
-        hideDialog();
-        if (message != null) {
-//            TODO add webdav exeption
-            if (message.equals("HTTP 503 Service Unavailable")) {
-                setAccessDenied();
-                getPresenter().clearStack();
-                return;
-            } else if (message.equals(getString(R.string.errors_client_host_not_found)) || message.equals(getString(R.string.errors_client_unauthorized))) {
-                if (requireActivity() instanceof BaseViewExt) {
-                    ((BaseViewExt) requireActivity()).onUnauthorized(message);
-                    return;
+    override fun onError(message: String?) {
+        resetIndicators()
+        hideDialog()
+        message?.let {
+//            TODO add webdav exception
+            if (it == "HTTP 503 Service Unavailable") {
+                setAccessDenied()
+                presenter.clearStack()
+                return
+            } else if (it == getString(R.string.errors_client_host_not_found) || it == getString(
+                    R.string.errors_client_unauthorized
+                )
+            ) {
+                if (requireActivity() is BaseViewExt) {
+                    (requireActivity() as BaseViewExt).onUnauthorized(it)
+                    return
                 }
             }
-            showSnackBar(message);
+            showSnackBar(it)
         }
     }
 
-    private void setAccessDenied() {
-        resetIndicators();
-        setVisibilityActionButton(false);
-        setScrollViewPager(false);
-        setVisibleTabs(false);
-        onStateMenuEnabled(false);
-        setActionBarTitle("");
-        onPlaceholder(PlaceholderViews.Type.ACCESS);
-        getPresenter().setAccessDenied();
+    private fun setAccessDenied() {
+        resetIndicators()
+        setVisibilityActionButton(false)
+        setScrollViewPager(false)
+        setVisibleTabs(false)
+        onStateMenuEnabled(false)
+        setActionBarTitle("")
+        onPlaceholder(PlaceholderViews.Type.ACCESS)
+        presenter.setAccessDenied()
     }
 
-    @Override
-    public void onUnauthorized(@Nullable String message) {
-        requireActivity().finish();
-        MainActivity.show(getContext());
+    override fun onUnauthorized(message: String?) {
+        requireActivity().finish()
+        show(requireContext())
     }
 
     /*
      * Docs
      * */
-    @Override
-    public void onDocsGet(@Nullable List<Entity> list) {
-        final boolean isEmpty = list != null && list.isEmpty();
-        setViewState(isEmpty);
-        onStateMenuEnabled(!isEmpty);
-        mExplorerAdapter.setItems(list);
+    override fun onDocsGet(list: List<Entity>?) {
+        val isEmpty = list?.isEmpty() ?: false
+        setViewState(isEmpty)
+        onStateMenuEnabled(!isEmpty)
+        explorerAdapter?.setItems(list)
     }
 
-    @Override
-    public void onDocsRefresh(@Nullable List<Entity> list) {
-        final boolean isEmpty = list != null && list.isEmpty();
-        setViewState(isEmpty);
-        onStateMenuEnabled(!isEmpty);
-        mExplorerAdapter.setItems(list);
-        mRecyclerView.scheduleLayoutAnimation();
+    override fun onDocsRefresh(list: List<Entity>?) {
+        val isEmpty = list?.isEmpty() ?: false
+        setViewState(isEmpty)
+        onStateMenuEnabled(!isEmpty)
+        explorerAdapter?.setItems(list)
+        recyclerView?.scheduleLayoutAnimation()
     }
 
-    @Override
-    public void onDocsFilter(@Nullable List<Entity> list) {
-        final boolean isEmpty = list != null && list.isEmpty();
-        setViewState(isEmpty);
-        setMenuMainEnabled(!isEmpty);
-        mExplorerAdapter.setItems(list);
+    override fun onDocsFilter(list: List<Entity>?) {
+        val isEmpty = list != null && list.isEmpty()
+        setViewState(isEmpty)
+        setMenuMainEnabled(!isEmpty)
+        explorerAdapter?.setItems(list)
     }
 
-    @Override
-    public void onDocsNext(@Nullable List<Entity> list) {
-        setViewState(false);
-        mExplorerAdapter.setItems(list);
+    override fun onDocsNext(list: List<Entity>?) {
+        setViewState(false)
+        explorerAdapter?.setItems(list)
     }
 
-    @Override
-    public void onDocsAccess(boolean isAccess, @NonNull final String message) {
-        setContextDialogExternalLinkEnable(true);
-        setContextDialogExternalLinkSwitch(isAccess, message);
+    override fun onDocsAccess(isAccess: Boolean, message: String) {
+        setContextDialogExternalLinkEnable(true)
+        setContextDialogExternalLinkSwitch(isAccess, message)
     }
 
-    @Override
-    public void onDocsBatchOperation() {
+    override fun onDocsBatchOperation() {
         // Stub
     }
 
     /*
      * Views states
      * */
-    @Override
-    public void onStateUpdateRoot(boolean isRoot) {
-        if (isActivePage()) {
-            setViewsModalState(!isRoot);
+    override fun onStateUpdateRoot(isRoot: Boolean) {
+        if (isActivePage) {
+            setViewsModalState(!isRoot)
         }
     }
 
-    @Override
-    public void onStateUpdateFilter(boolean isFilter, @Nullable String value) {
-        if (isActivePage()) {
+    override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
+        if (isActivePage) {
             if (isFilter) {
-                setViewsModalState(true);
+                setViewsModalState(true)
                 // Set previous text in search field
-                if (mSearchView != null && mSearchView.getQuery().toString().isEmpty()) {
-                    mSearchView.setQuery(value, false);
+                if (searchView?.query.toString().isEmpty()) {
+                    searchView?.setQuery(value, false)
                 }
 
                 // Set close button visibility
-                if (mSearchCloseButton != null) {
-                    mSearchCloseButton.setEnabled(value != null && !value.isEmpty());
-                    mSearchCloseButton.setVisibility(value != null && !value.isEmpty() ?
-                            View.VISIBLE : View.INVISIBLE);
+                searchCloseButton?.let {
+                    val isEmpty = value?.isEmpty() ?: false
+                    it.isEnabled = !isEmpty
+                    it.isVisible = !isEmpty
                 }
             } else {
-                if (mSearchView != null) {
-                    mSearchView.setQuery("", false);
-                    if (!mSearchView.isIconified()) {
-                        mSearchView.setIconified(true);
+                searchView?.let {
+                    it.setQuery("", false)
+                    if (!it.isIconified) {
+                        it.isIconified = true
                     }
                 }
             }
         }
     }
 
-    @Override
-    public void onStateUpdateSelection(boolean isSelection) {
-        if (isActivePage()) {
+    override fun onStateUpdateSelection(isSelection: Boolean) {
+        if (isActivePage) {
             if (isSelection) {
-                setViewsModalState(true);
-                setVisibilityActionButton(false);
-                mExplorerAdapter.setSelectMode(true);
+                setViewsModalState(true)
+                setVisibilityActionButton(false)
+                explorerAdapter?.isSelectMode = true
             } else {
-                setVisibilityActionButton(true);
-                mExplorerAdapter.setSelectMode(false);
+                setVisibilityActionButton(true)
+                explorerAdapter?.isSelectMode = false
             }
-
-            onCreateOptionsMenu(mMenu, getActivity().getMenuInflater());
+            menu?.let {
+                onCreateOptionsMenu(it, requireActivity().menuInflater)
+            }
         }
     }
 
-    @Override
-    public void onStateAdapterRoot(boolean isRoot) {
-        mExplorerAdapter.setRoot(isRoot);
+    override fun onStateAdapterRoot(isRoot: Boolean) {
+        explorerAdapter?.isRoot = isRoot
     }
 
-    @Override
-    public void onStateMenuDefault(@NonNull String sortBy, boolean isAsc) {
-        if (mMenu != null && mMenuInflater != null) {
-            mMenuInflater.inflate(R.menu.docs_main, mMenu);
-            mSortItem = mMenu.findItem(R.id.toolbar_item_sort);
-            mMainItem = mMenu.findItem(R.id.toolbar_item_main);
-            mSelectItem = mMenu.findItem(R.id.toolbar_main_item_options);
-            mOpenItem = mMenu.findItem(R.id.toolbar_item_open);
-            mSearchItem = mMenu.findItem(R.id.toolbar_item_search);
-            mSearchView = (SearchView) mSearchItem.getActionView();
-            mSearchView.setOnQueryTextListener(this);
-            mSearchView.setMaxWidth(Integer.MAX_VALUE);
-            mSearchView.setIconified(!getPresenter().isFilteringMode());
-            mSearchCloseButton = mSearchView.findViewById(androidx.appcompat.R.id.search_close_btn);
-            mSearchCloseButton.setVisibility(View.INVISIBLE);
-            mSearchCloseButton.setOnClickListener(v -> {
-                if (!isSearchViewClear()) {
-                    onBackPressed();
+    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
+        if (menu != null && menuInflater != null) {
+            menu?.let { menu ->
+                menuInflater?.let { inflater ->
+                    inflater.inflate(R.menu.docs_main, menu)
+                    sortItem = menu.findItem(R.id.toolbar_item_sort)
+                    mainItem = menu.findItem(R.id.toolbar_item_main)
+                    selectItem = menu.findItem(R.id.toolbar_main_item_options)
+                    openItem = menu.findItem(R.id.toolbar_item_open)
+                    searchItem = menu.findItem(R.id.toolbar_item_search)
+                    searchView = (searchItem?.actionView as SearchView).apply {
+                        setOnQueryTextListener(this@DocsBaseFragment)
+                        maxWidth = Int.MAX_VALUE
+                        isIconified = !presenter.isFilteringMode
+                        searchCloseButton = findViewById(androidx.appcompat.R.id.search_close_btn)
+                        searchCloseButton?.isVisible = false
+                        searchCloseButton?.setOnClickListener {
+                            if(!isSearchViewClear)
+                                onBackPressed()
+                        }
+
+                        // On search open
+                        setOnSearchClickListener { presenter.setFiltering(true) }
+                    }
+
+                    // Init order by
+                    menu.findItem(if (isAsc) R.id.toolbar_sort_item_asc else
+                        R.id.toolbar_sort_item_desc).isChecked = true
+
+                    when (sortBy) {
+                        ApiContract.Parameters.VAL_SORT_BY_UPDATED -> menu.findItem(R.id.toolbar_sort_item_date_update)
+                            .setEnabled(false).setChecked(true).isEnabled = true
+                        ApiContract.Parameters.VAL_SORT_BY_TITLE -> menu.findItem(R.id.toolbar_sort_item_title)
+                            .setEnabled(false).setChecked(true).isEnabled = true
+                        ApiContract.Parameters.VAL_SORT_BY_TYPE -> menu.findItem(R.id.toolbar_sort_item_type)
+                            .setEnabled(false).setChecked(true).isEnabled = true
+                        ApiContract.Parameters.VAL_SORT_BY_SIZE -> menu.findItem(R.id.toolbar_sort_item_size)
+                            .setEnabled(false).setChecked(true).isEnabled = true
+                        ApiContract.Parameters.VAL_SORT_BY_OWNER -> menu.findItem(R.id.toolbar_sort_item_owner)
+                            .setEnabled(false).setChecked(true).isEnabled = true
+                    }
+                    presenter.initMenuSearch()
+                    presenter.initMenuState()
                 }
-            });
-
-            // On search open
-            mSearchView.setOnSearchClickListener(v -> getPresenter().setFiltering(true));
-
-            // Init order by
-            if (isAsc) {
-                mMenu.findItem(R.id.toolbar_sort_item_asc).setChecked(true);
-            } else {
-                mMenu.findItem(R.id.toolbar_sort_item_desc).setChecked(true);
             }
-
-            // Init sortBy by
-            switch (sortBy) {
-                case ApiContract.Parameters.VAL_SORT_BY_UPDATED:
-                    mMenu.findItem(R.id.toolbar_sort_item_date_update)
-                            .setEnabled(false).setChecked(true).setEnabled(true);
-                    break;
-                case ApiContract.Parameters.VAL_SORT_BY_TITLE:
-                    mMenu.findItem(R.id.toolbar_sort_item_title)
-                            .setEnabled(false).setChecked(true).setEnabled(true);
-                    break;
-                case ApiContract.Parameters.VAL_SORT_BY_TYPE:
-                    mMenu.findItem(R.id.toolbar_sort_item_type)
-                            .setEnabled(false).setChecked(true).setEnabled(true);
-                    break;
-                case ApiContract.Parameters.VAL_SORT_BY_SIZE:
-                    mMenu.findItem(R.id.toolbar_sort_item_size)
-                            .setEnabled(false).setChecked(true).setEnabled(true);
-                    break;
-                case ApiContract.Parameters.VAL_SORT_BY_OWNER:
-                    mMenu.findItem(R.id.toolbar_sort_item_owner)
-                            .setEnabled(false).setChecked(true).setEnabled(true);
-                    break;
-            }
-
-            getPresenter().initMenuSearch();
-            getPresenter().initMenuState();
         }
     }
 
-    @Override
-    public void onStateMenuSelection() {
-
+    override fun onStateMenuSelection() {
+        // Stub
     }
 
-    @Override
-    public void onStateMenuEnabled(boolean isEnabled) {
-        setMenuMainEnabled(isEnabled);
-        setMenuSearchEnabled(isEnabled);
+    override fun onStateMenuEnabled(isEnabled: Boolean) {
+        setMenuMainEnabled(isEnabled)
+        setMenuSearchEnabled(isEnabled)
     }
 
-    @Override
-    public void onStateActionButton(boolean isVisible) {
-        if (isActivePage()) {
-            setVisibilityActionButton(isVisible);
+    override fun onStateActionButton(isVisible: Boolean) {
+        if (isActivePage) {
+            setVisibilityActionButton(isVisible)
         }
     }
 
-    @Override
-    public void onStateEmptyBackStack() {
+    override fun onStateEmptyBackStack() {
         // Stub
     }
 
     /*
      * Changes
      * */
-    @Override
-    public void onCreateFolder(CloudFolder folder) {
+    override fun onCreateFolder(folder: CloudFolder) {
         // Stub
     }
 
-    @Override
-    public void onCreateFile(CloudFile file) {
-        showViewerActivity(file);
+    override fun onCreateFile(file: CloudFile) {
+        showViewerActivity(file)
     }
 
-    @Override
-    public void onDeleteBatch(List<Entity> list) {
-        EntityDiffUtilsCallback callback = new EntityDiffUtilsCallback(list, mExplorerAdapter.getItemList());
-        DiffUtil.DiffResult result = DiffUtil.calculateDiff(callback);
-        mExplorerAdapter.setData(list);
-        result.dispatchUpdatesTo(mExplorerAdapter);
+    override fun onDeleteBatch(list: List<Entity>) {
+        explorerAdapter?.let { adapter ->
+            val callback = EntityDiffUtilsCallback(list, adapter.itemList)
+            val result = DiffUtil.calculateDiff(callback)
+            adapter.setData(list)
+            result.dispatchUpdatesTo(adapter)
+        }
     }
 
-    @Override
-    public void onRename(Item item, int position) {
-        mExplorerAdapter.setItem(item, position);
+    override fun onRename(item: Item, position: Int) {
+        explorerAdapter?.setItem(item, position)
     }
 
-    @Override
-    public void onBatchMove(@NonNull Explorer explorer) {
-        showOperationMoveActivity(explorer);
+    override fun onBatchMove(explorer: Explorer) {
+        showOperationMoveActivity(explorer)
     }
 
-    @Override
-    public void onBatchCopy(@NonNull Explorer explorer) {
-        showOperationCopyActivity(explorer);
+    override fun onBatchCopy(explorer: Explorer) {
+        showOperationCopyActivity(explorer)
     }
 
-    protected abstract Boolean isWebDav();
-
-    @Override
-    public void onActionBarTitle(String title) {
+    override fun onActionBarTitle(title: String) {
+        // Stub
     }
 
-    @Override
-    public void onItemsSelection(String countSelected) {
-        onActionBarTitle(countSelected);
-        mExplorerAdapter.notifyDataSetChanged();
+    override fun onItemsSelection(countSelected: String) {
+        onActionBarTitle(countSelected)
+        explorerAdapter?.notifyDataSetChanged()
     }
 
-    @Override
-    public void onItemSelected(int position, String countSelected) {
-        onActionBarTitle(countSelected);
-        mExplorerAdapter.notifyItemChanged(position);
+    override fun onItemSelected(position: Int, countSelected: String) {
+        onActionBarTitle(countSelected)
+        explorerAdapter?.notifyItemChanged(position)
     }
 
-    @Override
-    public void onItemContext(@NonNull ContextBottomDialog.State state) {
-        showContextDialog(state);
+    override fun onItemContext(state: State) {
+        showContextDialog(state)
     }
 
-    @Override
-    public void onActionDialog(boolean isThirdParty, boolean isDocs) {
-        mActionBottomDialog.setOnClickListener(this);
-        mActionBottomDialog.setThirdParty(isThirdParty);
-        mActionBottomDialog.setDocs(isDocs);
-        mActionBottomDialog.show(requireFragmentManager(), ActionBottomDialog.TAG);
+    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
+        actionBottomDialog?.let { dialog ->
+            dialog.onClickListener = this
+            dialog.setThirdParty(isThirdParty)
+            dialog.setDocs(isDocs)
+            dialog.show(requireFragmentManager(), ActionBottomDialog.TAG)
+        }
     }
 
-    @Override
-    public void onDownloadActivity(Uri uri) {
-        showDownloadFolderActivity(uri);
+    override fun onDownloadActivity(uri: Uri) {
+        showDownloadFolderActivity(uri)
     }
 
-    @Override
-    public void onFileMedia(Explorer explorer, boolean isWebDAv) {
-        showMediaActivity(explorer, isWebDAv);
+    override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
+        showMediaActivity(explorer, isWebDAv)
     }
 
-    @Override
-    public void onFileDownloadPermission() {
-        getPresenter().createDownloadFile();
+    override fun onFileDownloadPermission() {
+        presenter.createDownloadFile()
     }
 
-    @Override
-    public void onFileUploadPermission() {
+    override fun onFileUploadPermission() {
         if (checkReadPermission()) {
-            showMultipleFilePickerActivity();
+            showMultipleFilePickerActivity()
         }
     }
 
-    @Override
-    public void onCreateDownloadFile(String name) {
-        ActivitiesUtils.createFile(this, name, REQUEST_DOWNLOAD);
+    override fun onCreateDownloadFile(name: String) {
+        createFile(this, name, REQUEST_DOWNLOAD)
     }
 
-    @Override
-    public void onScrollToPosition(int position) {
-        mRecyclerView.scrollToPosition(position);
+    override fun onScrollToPosition(position: Int) {
+        recyclerView?.scrollToPosition(position)
     }
 
-    @Override
-    public void onSwipeEnable(boolean isSwipeEnable) {
-        mSwipeRefresh.setRefreshing(isSwipeEnable);
+    override fun onSwipeEnable(isSwipeEnable: Boolean) {
+        swipeRefreshLayout?.setRefreshing(isSwipeEnable)
     }
 
-    @Override
-    public void onPlaceholder(PlaceholderViews.Type type) {
-        mPlaceholderViews.setTemplatePlaceholder(type);
+    override fun onPlaceholder(type: PlaceholderViews.Type) {
+        placeholderViews?.setTemplatePlaceholder(type)
     }
 
-    @Override
-    public void onDialogClose() {
-        if (isActivePage()) {
-            hideDialog();
+    override fun onDialogClose() {
+        if (isActivePage) {
+            hideDialog()
         }
     }
 
-    @Override
-    public void onDialogWaiting(@Nullable String title, @Nullable String tag) {
-        if (isActivePage()) {
-            showWaitingDialog(title, getString(R.string.dialogs_common_cancel_button), tag);
+    override fun onDialogWaiting(title: String?, tag: String?) {
+        if (isActivePage) {
+            showWaitingDialog(title, getString(R.string.dialogs_common_cancel_button), tag)
         }
     }
 
-    @Override
-    public void onDialogQuestion(String title, String question, String tag) {
-        if (isActivePage()) {
-            showQuestionDialog(title, question, getString(R.string.dialogs_question_accept_yes),
-                    getString(R.string.dialogs_question_accept_no), tag);
+    override fun onDialogQuestion(title: String?, question: String?, tag: String?) {
+        if (isActivePage) {
+            showQuestionDialog(
+                title!!, question, getString(R.string.dialogs_question_accept_yes),
+                getString(R.string.dialogs_question_accept_no), tag!!
+            )
         }
     }
 
-    @Override
-    public void onDialogProgress(@Nullable String title, boolean isHideButtons, @Nullable String tag) {
-        if (isActivePage()) {
-            showProgressDialog(title, isHideButtons, getString(R.string.dialogs_common_cancel_button), tag);
+    override fun onDialogProgress(title: String?, isHideButtons: Boolean, tag: String?) {
+        if (isActivePage) {
+            showProgressDialog(
+                title,
+                isHideButtons,
+                getString(R.string.dialogs_common_cancel_button),
+                tag
+            )
         }
     }
 
-    @Override
-    public void onDialogProgress(int total, int progress) {
-        if (isActivePage()) {
-            updateProgressDialog(total, progress);
+    override fun onDialogProgress(total: Int, progress: Int) {
+        if (isActivePage) {
+            updateProgressDialog(total, progress)
         }
     }
 
-    @Override
-    public void onSnackBar(@NonNull String message) {
-        if (isActivePage()) {
-            showSnackBar(message);
+    override fun onSnackBar(message: String) {
+        if (isActivePage) {
+            showSnackBar(message)
         }
     }
 
-    @Override
-    public void onSnackBarWithAction(@NonNull String message, @NonNull String button, @NonNull View.OnClickListener action) {
-        if (isActivePage()) {
-            showSnackBarWithAction(message, button, action);
+    override fun onSnackBarWithAction(message: String, button: String, action: View.OnClickListener) {
+        if (isActivePage) {
+            showSnackBarWithAction(message, button, action)
         }
     }
 
-    @Override
-    public void onClearMenu() {
-        if (mMenu != null && mExplorerAdapter.getItemList().size() == 0) {
-            mMenu.findItem(R.id.toolbar_item_empty_trash).setVisible(false);
-            mSortItem.setVisible(false);
-            mSearchItem.setVisible(false);
+    override fun onClearMenu() {
+        menu?.let {
+            if (explorerAdapter?.itemList?.size == 0) {
+                it.findItem(R.id.toolbar_item_empty_trash).isVisible = false
+                sortItem?.isVisible = false
+                searchItem?.isVisible = false
+            }
         }
     }
 
-    @Override
-    public void onUploadFileProgress(int progress, String id) {
-        UploadFile uploadFile = mExplorerAdapter.getUploadFileById(id);
-        if(uploadFile != null) {
-            uploadFile.setProgress(progress);
-            mExplorerAdapter.updateItem(uploadFile);
+    override fun onUploadFileProgress(progress: Int, id: String) {
+        val uploadFile = explorerAdapter?.getUploadFileById(id)
+        uploadFile?.let { file ->
+            file.progress = progress
+            explorerAdapter?.updateItem(file)
         }
     }
 
-    @Override
-    public void onDeleteUploadFile(String id) {
-        mExplorerAdapter.removeUploadItemById(id);
+    override fun onDeleteUploadFile(id: String) {
+        explorerAdapter?.removeUploadItemById(id)
     }
 
-    @Override
-    public void onRemoveUploadHead() {
-        mExplorerAdapter.removeHeader(App.getApp().getString(R.string.upload_manager_progress_title));
+    override fun onRemoveUploadHead() {
+        explorerAdapter?.removeHeader(getApp().getString(R.string.upload_manager_progress_title))
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void onAddUploadsFile(List<? extends Entity> uploadFiles) {
-        onRemoveUploadHead();
-        mExplorerAdapter.addItemsAtTop((List<Entity>) uploadFiles);
-        mExplorerAdapter.addItemAtTop(new Header(getString(R.string.upload_manager_progress_title)));
-        mRecyclerView.scrollToPosition(0);
+    override fun onAddUploadsFile(uploadFiles: List<Entity>) {
+        onRemoveUploadHead()
+        explorerAdapter?.addItemsAtTop(uploadFiles)
+        explorerAdapter?.addItemAtTop(Header(getString(R.string.upload_manager_progress_title)))
+        recyclerView?.scrollToPosition(0)
     }
 
-    @Override
-    public void continueClick(@NonNull String tag, String action) {
-        int operationType = ApiContract.Operation.OVERWRITE;
-        switch (tag) {
-            case MoveCopyDialog.TAG_DUPLICATE:
-                operationType = ApiContract.Operation.DUPLICATE;
-                break;
-            case MoveCopyDialog.TAG_OVERWRITE:
-                operationType = ApiContract.Operation.OVERWRITE;
-                break;
-            case MoveCopyDialog.TAG_SKIP:
-                operationType = ApiContract.Operation.SKIP;
-                break;
-        }
-        if (action.equals(MoveCopyDialog.ACTION_COPY)) {
-            getPresenter().transfer(operationType, false);
-        } else {
-            getPresenter().transfer(operationType, true);
+    override fun continueClick(tag: String?, action: String?) {
+        var operationType = ApiContract.Operation.OVERWRITE
+        tag?.let {
+            when (it) {
+                MoveCopyDialog.TAG_DUPLICATE -> operationType = ApiContract.Operation.DUPLICATE
+                MoveCopyDialog.TAG_OVERWRITE -> operationType = ApiContract.Operation.OVERWRITE
+                MoveCopyDialog.TAG_SKIP -> operationType = ApiContract.Operation.SKIP
+            }
+            if (action == MoveCopyDialog.ACTION_COPY) {
+                presenter.transfer(operationType, false)
+            } else {
+                presenter.transfer(operationType, true)
+            }
         }
     }
 
-    @Override
-    public void onActionDialogClose() {
-        if (getActivity() != null && getActivity() instanceof BaseBottomDialog.OnBottomDialogCloseListener) {
-            ((BaseBottomDialog.OnBottomDialogCloseListener) getActivity()).onBottomDialogClose();
+    override fun onActionDialogClose() {
+        if (requireActivity() is OnBottomDialogCloseListener) {
+            (requireActivity() as OnBottomDialogCloseListener?)!!.onBottomDialogClose()
         }
     }
-    @Override
-    public void onCloseCommonDialog() {
-        if (getActivity() != null && getActivity() instanceof CommonDialog.OnCommonDialogClose) {
-            ((CommonDialog.OnCommonDialogClose) getActivity()).onCommonClose();
+
+    override fun onCloseCommonDialog() {
+        if (requireActivity() is OnCommonDialogClose) {
+            (requireActivity() as OnCommonDialogClose?)!!.onCommonClose()
         }
     }
 
     /*
      * Clear SearchView
      * */
-    private boolean isSearchViewClear() {
-        if (mSearchView != null && mSearchView.getQuery().length() > 0) {
-            mSearchView.setQuery("", true);
-            return true;
+    private val isSearchViewClear: Boolean
+        private get() {
+            if (searchView?.query?.isNotEmpty() == true) {
+                searchView?.setQuery("", true)
+                return true
+            }
+            return false
         }
-
-        return false;
-    }
 
     /*
      * On pager scroll callback
      * */
-    public void onScrollPage() {
-        getPresenter().initViews();
+    open fun onScrollPage() {
+        presenter.initViews()
     }
 
     /*
      * Menu methods
      * */
-    protected void setMenuMainEnabled(final boolean isEnabled) {
-        if (mSortItem != null) {
-            mSortItem.setVisible(isEnabled);
-        }
-
-        if (mMainItem != null) {
-            mMainItem.setVisible(isEnabled);
-        }
+    protected open fun setMenuMainEnabled(isEnabled: Boolean) {
+        sortItem?.isVisible = isEnabled
+        mainItem?.isVisible = isEnabled
     }
 
-    void setMenuSearchEnabled(final boolean isEnabled) {
-        if (mSearchItem != null) {
-            mSearchItem.setVisible(isEnabled);
-        }
+    fun setMenuSearchEnabled(isEnabled: Boolean) {
+        searchItem?.isVisible = isEnabled
     }
 
     /*
      * Initialisations
      * */
-    private void init(@Nullable final Bundle savedInstanceState) {
-        setDialogs();
+    private fun init(savedInstanceState: Bundle?) {
+        setDialogs()
+        explorerAdapter = ExplorerAdapter(mTypeFactory).apply {
+            setOnItemContextListener(this@DocsBaseFragment)
+            setOnItemClickListener(this@DocsBaseFragment)
+            setOnItemLongClickListener(this@DocsBaseFragment)
+        }
 
-        mExplorerAdapter = new ExplorerAdapter(mTypeFactory);
-        mExplorerAdapter.setOnItemContextListener(this);
-        mExplorerAdapter.setOnItemClickListener(this);
-        mExplorerAdapter.setOnItemLongClickListener(this);
-
-        mRecyclerView.setAdapter(mExplorerAdapter);
-        mRecyclerView.setPadding(getResources().getDimensionPixelSize(R.dimen.screen_left_right_padding),
-                getResources().getDimensionPixelSize(R.dimen.screen_top_bottom_padding),
-                getResources().getDimensionPixelSize(R.dimen.screen_left_right_padding),
-                getResources().getDimensionPixelSize(R.dimen.screen_bottom_padding));
+        recyclerView?.adapter = explorerAdapter
+        recyclerView?.setPadding(
+            resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
+            resources.getDimensionPixelSize(R.dimen.screen_top_bottom_padding),
+            resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
+            resources.getDimensionPixelSize(R.dimen.screen_bottom_padding)
+        )
     }
 
     /*
      * Views states for root/empty and etc...
      * */
-    private void setViewsModalState(final boolean isModal) {
-        if (isActivePage()) {
-            setToolbarState(!isModal);
-            setScrollViewPager(!isModal);
+    private fun setViewsModalState(isModal: Boolean) {
+        if (isActivePage) {
+            setToolbarState(!isModal)
+            setScrollViewPager(!isModal)
         }
     }
 
-    private void expandRootViews() {
-        if (isActivePage()) {
-            setExpandToolbar();
+    private fun expandRootViews() {
+        if (isActivePage) {
+            setExpandToolbar()
         }
     }
 
-    private void resetIndicators() {
-        mSwipeRefresh.post(() -> {
-            if (mSwipeRefresh != null) {
-                mSwipeRefresh.setRefreshing(false);
+    private fun resetIndicators() {
+        swipeRefreshLayout?.let { swipeRefresh ->
+            swipeRefresh.post {
+                swipeRefresh.isRefreshing = false
             }
-        });
-        mExplorerAdapter.isLoading(false);
-        setContextDialogExternalLinkEnable(true);
+        }
+        explorerAdapter?.isLoading(false)
+        setContextDialogExternalLinkEnable(true)
     }
 
-    private void setViewState(final boolean isEmpty) {
-        resetIndicators();
+    private fun setViewState(isEmpty: Boolean) {
+        resetIndicators()
         if (isEmpty) {
-            expandRootViews();
+            expandRootViews()
         }
     }
 
-    void showFolderChooser(int requestCode) {
-        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        i.addCategory(Intent.CATEGORY_DEFAULT);
-        startActivityForResult(i, requestCode);
+    fun showFolderChooser(requestCode: Int) {
+        val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        i.addCategory(Intent.CATEGORY_DEFAULT)
+        startActivityForResult(i, requestCode)
     }
 
     /*
      * BottomSheetFragmentDialogs context/action
      * */
-    private void setDialogs() {
-        mContextBottomDialog = (ContextBottomDialog) requireFragmentManager().findFragmentByTag(ContextBottomDialog.TAG);
-        if (mContextBottomDialog == null) {
-            mContextBottomDialog = ContextBottomDialog.newInstance();
+    private fun setDialogs() {
+        contextBottomDialog =
+            requireFragmentManager().findFragmentByTag(ContextBottomDialog.TAG) as ContextBottomDialog?
+        if (contextBottomDialog == null) {
+            contextBottomDialog = ContextBottomDialog.newInstance()
         }
-
-        mActionBottomDialog = (ActionBottomDialog) requireFragmentManager().findFragmentByTag(ActionBottomDialog.TAG);
-        if (mActionBottomDialog == null) {
-            mActionBottomDialog = ActionBottomDialog.newInstance();
+        actionBottomDialog =
+            requireFragmentManager().findFragmentByTag(ActionBottomDialog.TAG) as ActionBottomDialog?
+        if (actionBottomDialog == null) {
+            actionBottomDialog = ActionBottomDialog.newInstance()
         }
-
-        mMoveCopyDialog = (MoveCopyDialog) requireFragmentManager().findFragmentByTag(MoveCopyDialog.TAG);
-        if (mMoveCopyDialog != null) {
-            mMoveCopyDialog.setOnClick(this);
-        }
-
-        if (getUserVisibleHint()) {
-            mContextBottomDialog.setOnClickListener(this);
-            mActionBottomDialog.setOnClickListener(this);
+        moveCopyDialog =
+            requireFragmentManager().findFragmentByTag(MoveCopyDialog.TAG) as MoveCopyDialog?
+        moveCopyDialog?.dialogButtonOnClick = this
+        if (userVisibleHint) {
+            contextBottomDialog?.onClickListener = this
+            actionBottomDialog?.onClickListener = this
         }
     }
 
-    private void showContextDialog(@NonNull ContextBottomDialog.State state) {
-        mContextBottomDialog.setState(state);
-        mContextBottomDialog.setOnClickListener(this);
-        mContextBottomDialog.show(requireFragmentManager(), ContextBottomDialog.TAG);
-    }
-
-    private void setContextDialogExternalLinkSwitch(final boolean isCheck, final String message) {
-        if (mContextBottomDialog != null) {
-            mContextBottomDialog.setItemSharedState(isCheck);
-            mContextBottomDialog.showMessage(message);
+    private fun showContextDialog(state: State) {
+        contextBottomDialog?.let { dialog ->
+            dialog.state = state
+            dialog.onClickListener = this
+            dialog.show(requireFragmentManager(), ContextBottomDialog.TAG)
         }
     }
 
-    void setContextDialogExternalLinkEnable(final boolean isEnable) {
-        if (mContextBottomDialog != null) {
-            mContextBottomDialog.setItemSharedEnable(isEnable);
+    private fun setContextDialogExternalLinkSwitch(isCheck: Boolean, message: String) {
+        contextBottomDialog?.let { dialog ->
+            dialog.setItemSharedState(isCheck)
+            dialog.showMessage(message)
         }
     }
 
-    public void showActionDialog() {
-        if (!isFastClick()) {
-            getPresenter().onActionClick();
+    fun setContextDialogExternalLinkEnable(isEnable: Boolean) {
+        contextBottomDialog?.setItemSharedEnable(isEnable)
+    }
+
+    fun showActionDialog() {
+        if (!isFastClick) {
+            presenter.onActionClick()
         }
     }
 
-    protected void getArgs() {
-        if (requireActivity().getIntent() != null) {
-            final Intent intent = requireActivity().getIntent();
-            final String action = intent.getAction();
-            if (intent.getClipData() != null) {
-                startUpload(intent, action);
+    protected val args: Unit
+        get() {
+            requireActivity().intent?.let { intent ->
+                intent.clipData?.let {
+                    startUpload(intent, intent.action)
+                }
             }
         }
-    }
 
-    public void getArgs(Intent intent) {
-        final String action = intent.getAction();
-        if (intent.getClipData() != null) {
-            startUpload(intent, action);
+    fun getArgs(intent: Intent) {
+        intent.clipData?.let {
+            startUpload(intent, intent.action)
         }
     }
 
-    private void startUpload(Intent intent, String action) {
-        if (intent.getClipData() != null) {
-            final Uri uri = intent.getClipData().getItemAt(0).getUri();
-            if (action != null && action.equals(Intent.ACTION_SEND) && uri != null) {
-                if (PermissionUtils.requestReadPermission(this, PERMISSION_READ_UPLOAD)) {
-                    getPresenter().uploadToMy(uri);
-                    requireActivity().setIntent(null);
+    private fun startUpload(intent: Intent, action: String?) {
+        intent.clipData?.let { data ->
+            val uri = data.getItemAt(0).uri
+            if (action != null && action == Intent.ACTION_SEND && uri != null) {
+                if (requestReadPermission(this, PERMISSION_READ_UPLOAD)) {
+                    presenter.uploadToMy(uri)
+                    requireActivity().intent = null
                 }
             }
         }
@@ -1154,102 +1020,100 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     /*
      * Parent ViewPager methods. Check instanceof for trash fragment
      * */
-    private void setScrollViewPager(final boolean isScroll) {
-        final Fragment fragment = getParentFragment();
-        if (fragment instanceof MainPagerFragment) {
-            ((MainPagerFragment) fragment).setScrollViewPager(isScroll);
+    private fun setScrollViewPager(isScroll: Boolean) {
+        val fragment = parentFragment
+        if (fragment is MainPagerFragment) {
+            fragment.setScrollViewPager(isScroll)
         }
     }
 
-    private void setVisibleTabs(final boolean isVisible) {
-        final Fragment fragment = getParentFragment();
-        if (fragment instanceof MainPagerFragment) {
-            ((MainPagerFragment) fragment).setVisibleTabs(isVisible);
+    private fun setVisibleTabs(isVisible: Boolean) {
+        val fragment = parentFragment
+        if (fragment is MainPagerFragment) {
+            fragment.setVisibleTabs(isVisible)
         }
     }
 
-    public void setToolbarState(final boolean isVisible) {
-        final Fragment fragment = getParentFragment();
-        if (fragment instanceof MainPagerFragment) {
-            ((MainPagerFragment) fragment).setToolbarState(isVisible);
-        } else if(fragment instanceof DocsOneDriveFragment) {
-            ((DocsOneDriveFragment) fragment).setToolbarState(isVisible);
+    open fun setToolbarState(isVisible: Boolean) {
+        val fragment = parentFragment
+        if (fragment is MainPagerFragment) {
+            fragment.setToolbarState(isVisible)
+        } else if (fragment is DocsOneDriveFragment) {
+            fragment.setToolbarState(isVisible)
         }
     }
 
-    protected void setExpandToolbar() {
-        final Fragment fragment = getParentFragment();
-        if (fragment instanceof MainPagerFragment) {
-            ((MainPagerFragment) fragment).setExpandToolbar();
+    open fun setExpandToolbar() {
+        val fragment = parentFragment
+        if (fragment is MainPagerFragment) {
+            fragment.setExpandToolbar()
         }
     }
 
-    protected void setVisibilityActionButton(final boolean isShow) {
-        final Fragment fragment = getParentFragment();
-        if (fragment instanceof MainPagerFragment) {
-            ((MainPagerFragment) fragment).setVisibilityActionButton(isShow);
+    open fun setVisibilityActionButton(isShow: Boolean) {
+        val fragment = parentFragment
+        if (fragment is MainPagerFragment) {
+            fragment.setVisibilityActionButton(isShow)
         }
     }
 
-    protected boolean isActivePage() {
-        final Fragment fragment = getParentFragment();
-        if (fragment == null) {
-            return true;
-        } else if (fragment instanceof MainPagerFragment) {
-            return ((MainPagerFragment) fragment).isActivePage(this);
-        } else {
-            return true;
-        }
-
-    }
-
-    public void setAccountEnable(boolean isEnable) {
-        final Fragment fragment = getParentFragment();
-        if (fragment instanceof MainPagerFragment) {
-            ((MainPagerFragment) fragment).setAccountEnable(isEnable);
-        }
-    }
-
-    protected void showEditors(Uri uri, @NonNull EditorsType type) {
-        try {
-            final Intent intent = new Intent();
-            intent.setData(uri);
-            intent.putExtra(EditorsContract.KEY_HELP_URL, StringUtils.getHelpUrl(requireContext()));
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            switch (type) {
-                case DOCS:
-                    intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS);
-                    startActivityForResult(intent, REQUEST_DOCS);
-                    break;
-                case CELLS:
-                    intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS);
-                    startActivityForResult(intent, REQUEST_SHEETS);
-                    break;
-                case PRESENTATION:
-                    intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES);
-                    startActivityForResult(intent, REQUEST_PRESENTATION);
-                    break;
-                case PDF:
-                    intent.setClassName(requireContext(), EditorsContract.PDF);
-                    startActivity(intent);
-                    break;
+    open val isActivePage: Boolean
+         get() {
+             return when (val fragment = parentFragment) {
+                is MainPagerFragment -> fragment.isActivePage(this)
+                null -> true
+                else -> true
             }
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
-            showToast("Not found");
         }
 
-    }
-
-
-    private void removeCommonDialog() {
-        final Fragment fragment = requireFragmentManager().findFragmentByTag(CommonDialog.TAG);
-        if (fragment != null) {
-            requireFragmentManager().beginTransaction().remove(fragment).commit();
+    fun setAccountEnable(isEnable: Boolean) {
+        val fragment = parentFragment
+        if (fragment is MainPagerFragment) {
+            fragment.setAccountEnable(isEnable)
         }
     }
 
-    abstract protected DocsBasePresenter<? extends DocsBaseView> getPresenter();
+    protected fun showEditors(uri: Uri?, type: EditorsType) {
+        try {
+            val intent = Intent().apply {
+                data = uri
+                putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
+                action = Intent.ACTION_VIEW
+                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            }
+            when (type) {
+                EditorsType.DOCS -> {
+                    intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
+                    startActivityForResult(intent, REQUEST_DOCS)
+                }
+                EditorsType.CELLS -> {
+                    intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
+                    startActivityForResult(intent, REQUEST_SHEETS)
+                }
+                EditorsType.PRESENTATION -> {
+                    intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
+                    startActivityForResult(intent, REQUEST_PRESENTATION)
+                }
+                EditorsType.PDF -> {
+                    intent.setClassName(requireContext(), EditorsContract.PDF)
+                    startActivity(intent)
+                }
+            }
+        } catch (e: ActivityNotFoundException) {
+            e.printStackTrace()
+            showToast("Not found")
+        }
+    }
+
+    private fun removeCommonDialog() {
+        val fragment = requireFragmentManager().findFragmentByTag(CommonDialog.TAG)
+        fragment?.let {
+            requireFragmentManager()
+                .beginTransaction()
+                .remove(it)
+                .commit()
+        }
+    }
+
 
 }

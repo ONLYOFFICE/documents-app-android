@@ -37,7 +37,7 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
     var isSectionMy: Boolean = false
 
     var isSelectMode = false
-        private set(isSelectMode) {
+        set(isSelectMode) {
             field = isSelectMode
             notifyDataSetChanged()
         }

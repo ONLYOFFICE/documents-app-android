@@ -112,6 +112,14 @@ class ActionBottomDialog : BaseBottomDialog() {
         }
     }
 
+    fun setThirdParty(isThirdParty: Boolean) {
+        this.isThirdParty = isThirdParty
+    }
+
+    fun setDocs(isDocs: Boolean) {
+        this.isDocs = isDocs
+    }
+
     companion object {
 
         @JvmField
