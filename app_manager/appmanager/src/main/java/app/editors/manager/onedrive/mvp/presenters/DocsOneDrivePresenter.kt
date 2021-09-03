@@ -17,15 +17,15 @@ import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
+import app.editors.manager.mvp.models.models.State
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
-import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.managers.works.DownloadWork
 import app.editors.manager.onedrive.managers.works.UploadWork
 import app.editors.manager.onedrive.mvp.models.request.ExternalLinkRequest
-import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -266,29 +266,29 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     override fun onContextClick(item: Item?, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
         mIsContextClick = true
-        val state = ContextBottomDialog.State()
-        state.mTitle = itemClickedTitle
-        state.mInfo = TimeUtils.formatDate(itemClickedDate)
-        state.mIsFolder = !isClickedItemFile
-        state.mIsDocs = isClickedItemDocs
-        state.mIsWebDav = false
-        state.mIsOneDrive = true
-        state.mIsTrash = isTrash
-        state.mIsItemEditable = true
-        state.mIsContextEditable = true
-        state.mIsCanShare = true
+        val state = State()
+        state.title = itemClickedTitle
+        state.info = TimeUtils.formatDate(itemClickedDate)
+        state.isFolder = !isClickedItemFile
+        state.isDocs = isClickedItemDocs
+        state.isWebDav = false
+        state.isOneDrive = true
+        state.isTrash = isTrash
+        state.isItemEditable = true
+        state.isContextEditable = true
+        state.isCanShare = true
         if (!isClickedItemFile) {
-            state.mIconResId = R.drawable.ic_type_folder
+            state.iconResId = R.drawable.ic_type_folder
         } else {
-            state.mIconResId = getIconContext(
+            state.iconResId = getIconContext(
                 StringUtils.getExtensionFromPath(
                     itemClickedTitle
                 )
             )
         }
-        state.mIsPdf = isPdf
-        if (state.mIsShared && state.mIsFolder) {
-            state.mIconResId = R.drawable.ic_type_folder_shared
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
     }

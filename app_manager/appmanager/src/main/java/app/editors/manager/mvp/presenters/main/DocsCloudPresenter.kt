@@ -25,13 +25,13 @@ import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.models.OpenDataModel
+import app.editors.manager.mvp.models.models.State
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestDeleteShare
 import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.views.main.DocsCloudView
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.Observable
@@ -251,37 +251,37 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
         mIsContextClick = true
-        val state = ContextBottomDialog.State()
-        state.mTitle = itemClickedTitle
-        state.mInfo = TimeUtils.formatDate(itemClickedDate)
-        state.mIsFolder = !isClickedItemFile
-        state.mIsShared = isClickedItemShared
-        state.mIsCanShare = isItemShareable
-        state.mIsDocs = isClickedItemDocs
-        state.mIsContextEditable = isContextItemEditable
-        state.mIsItemEditable = isItemEditable
-        state.mIsStorage = isClickedItemStorage && isRoot
-        state.mIsDeleteShare = isShareSection
-        state.mIsWebDav = false
-        state.mIsOneDrive = false
-        state.mIsTrash = isTrash
-        state.mIsFavorite = isClickedItemFavorite
+        val state = State()
+        state.title = itemClickedTitle
+        state.info = TimeUtils.formatDate(itemClickedDate)
+        state.isFolder = !isClickedItemFile
+        state.isShared = isClickedItemShared
+        state.isCanShare = isItemShareable
+        state.isDocs = isClickedItemDocs
+        state.isContextEditable = isContextItemEditable
+        state.isItemEditable = isItemEditable
+        state.isStorage = isClickedItemStorage && isRoot
+        state.isDeleteShare = isShareSection
+        state.isWebDav = false
+        state.isOneDrive = false
+        state.isTrash = isTrash
+        state.isFavorite = isClickedItemFavorite
         if (!isClickedItemFile) {
             if((itemClicked as CloudFolder).providerKey.isEmpty()) {
-                state.mIconResId = R.drawable.ic_type_folder
+                state.iconResId = R.drawable.ic_type_folder
             } else {
-                state.mIconResId = StorageUtils.getStorageIcon((itemClicked as CloudFolder).providerKey)
+                state.iconResId = StorageUtils.getStorageIcon((itemClicked as CloudFolder).providerKey)
             }
         } else {
-            state.mIconResId = getIconContext(
+            state.iconResId = getIconContext(
                 StringUtils.getExtensionFromPath(
                     itemClickedTitle
                 )
             )
         }
-        state.mIsPdf = isPdf
-        if (state.mIsShared && state.mIsFolder) {
-            state.mIconResId = R.drawable.ic_type_folder_shared
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
     }

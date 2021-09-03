@@ -14,9 +14,9 @@ import app.editors.manager.managers.providers.ProviderError
 import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.models.ModelExplorerStack
+import app.editors.manager.mvp.models.models.State
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -159,23 +159,23 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
         mIsContextClick = true
-        val state = ContextBottomDialog.State()
-        state.mIsLocal = true
-        state.mTitle = item.title
-        state.mInfo = TimeUtils.formatDate(itemClickedDate)
-        state.mIsFolder = item is CloudFolder
+        val state = State()
+        state.isLocal = true
+        state.title = item.title
+        state.info = TimeUtils.formatDate(itemClickedDate)
+        state.isFolder = item is CloudFolder
         if (!isClickedItemFile) {
-            state.mIconResId = R.drawable.ic_type_folder
+            state.iconResId = R.drawable.ic_type_folder
         } else {
-            state.mIconResId = getIconContext(
+            state.iconResId = getIconContext(
                 StringUtils.getExtensionFromPath(
                     itemClickedTitle
                 )
             )
         }
-        state.mIsPdf = isPdf
-        if (state.mIsShared && state.mIsFolder) {
-            state.mIconResId = R.drawable.ic_type_folder_shared
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
     }

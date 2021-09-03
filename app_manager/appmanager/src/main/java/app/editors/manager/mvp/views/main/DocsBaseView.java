@@ -13,6 +13,7 @@ import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.Item;
+import app.editors.manager.mvp.models.models.State;
 import app.editors.manager.mvp.views.base.BaseViewExt;
 import app.editors.manager.ui.dialogs.ContextBottomDialog;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
@@ -89,7 +90,7 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemSelected(int position, String countSelected);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onItemContext(@NonNull ContextBottomDialog.State state);
+    void onItemContext(@NonNull State state);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onActionDialog(boolean isThirdParty, boolean isShowDocs);
     @StateStrategyType(OneExecutionStateStrategy.class)

@@ -12,15 +12,14 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.webDavApi
-import app.editors.manager.di.component.DaggerApiComponent
 import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Current
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
+import app.editors.manager.mvp.models.models.State
 import app.editors.manager.mvp.views.main.DocsRecentView
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -294,21 +293,21 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         CoroutineScope(Dispatchers.Default).launch {
             contextItem = recent
             contextPosition = position
-            val state = ContextBottomDialog.State()
-            state.mTitle = recent.name
+            val state = State()
+            state.title = recent.name
             if (!recent.isLocal) {
                 accountDao.getAccount(recent.ownerId ?: "")?.let {
-                    state.mInfo =
+                    state.info =
                         it.portal + mContext.getString(R.string.placeholder_point) + TimeUtils.formatDate(Date(recent.date))
                 }
 
             } else {
-                state.mInfo = TimeUtils.formatDate(Date(recent.date))
+                state.info = TimeUtils.formatDate(Date(recent.date))
             }
-            state.mIconResId = getIconContext(StringUtils.getExtensionFromPath(recent.name))
-            state.mIsRecent = true
+            state.iconResId = getIconContext(StringUtils.getExtensionFromPath(recent.name))
+            state.isRecent = true
             if (recent.isLocal) {
-                state.mIsLocal = true
+                state.isLocal = true
             }
             withContext(Dispatchers.Main) {
                 viewState.onContextShow(state)
