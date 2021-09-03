@@ -1,4 +1,4 @@
-package app.editors.manager.ui.adapters
+package app.editors.manager.ui.adapters.holders
 
 import android.view.View
 import androidx.annotation.ColorRes

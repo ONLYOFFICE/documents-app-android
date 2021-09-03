@@ -1,7 +1,7 @@
-package app.editors.manager.ui.adapters.share
+package app.editors.manager.ui.adapters
 
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
-import app.editors.manager.ui.adapters.BaseViewTypeAdapter
+import app.editors.manager.ui.adapters.base.BaseViewTypeAdapter
 import app.editors.manager.ui.adapters.holders.ShareViewHolder
 import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import lib.toolkit.base.ui.adapters.BaseAdapter

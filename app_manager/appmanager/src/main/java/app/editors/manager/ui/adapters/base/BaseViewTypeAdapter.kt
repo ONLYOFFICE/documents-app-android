@@ -1,4 +1,4 @@
-package app.editors.manager.ui.adapters
+package app.editors.manager.ui.adapters.base
 
 import androidx.recyclerview.widget.DiffUtil.DiffResult
 import lib.toolkit.base.ui.adapters.ViewTypeAdapter
