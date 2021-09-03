@@ -16,16 +16,16 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
 
     init {
         viewBinding.listExplorerFolderLayout.setOnClickListener { v: View? ->
-            adapter.mOnItemClickListener?.run { onItemClick(v, layoutPosition) }
+            adapter.mOnItemClickListener?.onItemClick(v, layoutPosition)
         }
 
         viewBinding.listExplorerFolderLayout.setOnLongClickListener { v: View? ->
-            adapter.mOnItemLongClickListener?.run { onItemLongClick(v, layoutPosition) }
+            adapter.mOnItemLongClickListener?.onItemLongClick(v, layoutPosition)
             false
         }
 
         viewBinding.listExplorerFolderContext.setOnClickListener {
-            adapter.mOnItemContextListener?.run { onItemContextClick(view, layoutPosition) }
+            adapter.mOnItemContextListener?.onItemContextClick(view, layoutPosition)
         }
     }
 

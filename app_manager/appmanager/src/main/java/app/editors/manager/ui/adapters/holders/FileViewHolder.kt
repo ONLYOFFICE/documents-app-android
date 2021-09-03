@@ -17,16 +17,16 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
 
     init {
         viewBinding.listExplorerFileLayout.setOnClickListener{ view ->
-            adapter.mOnItemContextListener?.run { onItemContextClick(view, layoutPosition) }
+            adapter.mOnItemContextListener?.onItemContextClick(view, layoutPosition)
         }
 
         viewBinding.listExplorerFileLayout.setOnLongClickListener { view ->
-            adapter.mOnItemLongClickListener?.run { onItemLongClick(view, layoutPosition) }
+            adapter.mOnItemLongClickListener?.onItemLongClick(view, layoutPosition)
             false
         }
 
         viewBinding.listExplorerFileContext.setOnClickListener { view ->
-            adapter.mOnItemContextListener?.run { onItemContextClick(view, layoutPosition) }
+            adapter.mOnItemContextListener?.onItemContextClick(view, layoutPosition)
         }
     }
 
