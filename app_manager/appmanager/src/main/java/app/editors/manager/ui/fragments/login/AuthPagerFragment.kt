@@ -1,199 +1,183 @@
-package app.editors.manager.ui.fragments.login;
+package app.editors.manager.ui.fragments.login
 
-import android.app.Activity;
-import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.app.Activity
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.databinding.FragmentOnBoardingPagerBinding
+import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.utils.isVisible
+import app.editors.manager.ui.activities.login.AuthAppActivity
+import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import com.rd.animation.type.AnimationType
+import lib.toolkit.base.managers.tools.ResourcesProvider
+import javax.inject.Inject
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
-
-import com.rd.PageIndicatorView;
-import com.rd.animation.type.AnimationType;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import app.editors.manager.R;
-import app.editors.manager.app.App;
-import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.ui.activities.login.AuthAppActivity;
-import app.editors.manager.ui.fragments.base.BaseAppFragment;
-import app.editors.manager.ui.views.pager.PagingViewPager;
-import app.editors.manager.ui.views.pager.ViewPagerAdapter;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
-
-public class AuthPagerFragment extends BaseAppFragment {
-
-    public static final String TAG = AuthPagerFragment.class.getSimpleName();
-
-    public static final int KEY_FIRST_FRAGMENT = 0;
-    public static final int KEY_SECOND_FRAGMENT = 1;
-    public static final int KEY_THIRD_FRAGMENT = 2;
-    public static final int KEY_FOURTH_FRAGMENT = 3;
-
-    private Unbinder mUnbinder;
-    @BindView(R.id.on_boarding_view_pager)
-    protected PagingViewPager mViewpager;
-    @BindView(R.id.pager_fragment_layout)
-    protected ConstraintLayout mFragmentLayout;
-    @BindView(R.id.include)
-    protected ConstraintLayout mPageIndicatorLayout;
-    @BindView(R.id.on_boarding_panel_skip_button)
-    protected AppCompatButton mAuthPanelSkipButton;
-    @BindView(R.id.on_boarding_panel_indicator)
-    protected PageIndicatorView mAuthPanelIndicator;
-    @BindView(R.id.on_boarding_panel_next_button)
-    protected AppCompatButton mAuthPanelNextButton;
+class AuthPagerFragment : BaseAppFragment() {
 
     @Inject
-    PreferenceTool mPreferenceTool;
+    lateinit var preferenceTool: PreferenceTool
 
-    private AuthAdapter mAuthAdapter;
-    private String mSqlData;
+    private var authAdapter: AuthAdapter? = null
+    private var sqlData: String? = null
+    private var viewBinding: FragmentOnBoardingPagerBinding? = null
+    private val resourcesProvider = ResourcesProvider(requireContext())
 
-    public static AuthPagerFragment newInstance(String request, String key) {
-        Bundle bundle = new Bundle();
-        bundle.putString(AuthAppActivity.REQUEST_KEY, request);
-        bundle.putString(AuthAppActivity.TFA_KEY, key);
-        AuthPagerFragment fragment = new AuthPagerFragment();
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            if (getArguments().containsKey(AuthAppActivity.REQUEST_KEY)) {
-                mSqlData = getArguments().getString(AuthAppActivity.REQUEST_KEY);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            if (it.containsKey(AuthAppActivity.REQUEST_KEY)) {
+                sqlData = it.getString(AuthAppActivity.REQUEST_KEY)
             }
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        App.getApp().getAppComponent().inject(this);
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        App.getApp().appComponent.inject(this)
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        final View view = inflater.inflate(R.layout.fragment_on_boarding_pager, container, false);
-        mUnbinder = ButterKnife.bind(this, view);
-        return view;
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        viewBinding = FragmentOnBoardingPagerBinding.inflate(layoutInflater, container, false)
+        return viewBinding?.root
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        init();
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init()
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mUnbinder.unbind();
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewBinding = null
     }
 
-    @Override
-    public boolean onBackPressed() {
-        if (getActivity() != null) {
-            getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
-        }
-        return false;
+    override fun onBackPressed(): Boolean {
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .remove(this)
+            .commit()
+        return false
     }
 
-    @OnClick({R.id.on_boarding_panel_skip_button,
-            R.id.on_boarding_panel_next_button})
-    protected void onButtonsClick(final View view) {
-        switch (view.getId()) {
-            case R.id.on_boarding_panel_skip_button:
-                mPreferenceTool.setOnBoarding(true);
-                finishWithOkCode();
-                break;
-            case R.id.on_boarding_panel_next_button:
-                if (mAuthAdapter.isLastPagePosition()) {
-                    finishWithOkCode();
+    private fun initListeners() {
+        viewBinding?.let { binding ->
+            binding.include.onBoardingPanelSkipButton.setOnClickListener {
+                preferenceTool.onBoarding = true
+                finishWithOkCode()
+            }
+            binding.include.onBoardingPanelNextButton.setOnClickListener {
+                if (authAdapter?.isLastPagePosition!!) {
+                    finishWithOkCode()
                 } else {
-                    mViewpager.setCurrentItem(mAuthAdapter.getSelectedPage() + 1, true);
+                    binding.onBoardingViewPager
+                        .setCurrentItem(authAdapter?.selectedPage!! + 1, true)
                 }
-                break;
+            }
         }
     }
 
-    private void finishWithOkCode() {
-        getActivity().setResult(Activity.RESULT_OK);
-        getActivity().finish();
+    private fun finishWithOkCode() {
+        requireActivity().setResult(Activity.RESULT_OK)
+        requireActivity().finish()
     }
 
-    private void init() {
-        initColor();
-        mAuthAdapter = new AuthAdapter(getChildFragmentManager(), getFragments());
-        mViewpager.setAdapter(mAuthAdapter);
-        mViewpager.addOnPageChangeListener(mAuthAdapter);
-
-        mAuthPanelIndicator.setAnimationType(AnimationType.WORM);
-        mAuthPanelIndicator.setViewPager(mViewpager);
-        mAuthPanelSkipButton.setVisibility(View.INVISIBLE);
-    }
-
-    private void initColor() {
-        if (getContext() != null) {
-            mFragmentLayout.setBackground(ContextCompat.getDrawable(getContext(), R.color.colorWhite));
-            mPageIndicatorLayout.setBackground(ContextCompat.getDrawable(getContext(), R.color.colorWhite));
-
-            mAuthPanelNextButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorSecondary));
-            mAuthPanelSkipButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorSecondary));
-
-            mAuthPanelIndicator.setSelectedColor(ContextCompat.getColor(getContext(), R.color.colorSecondary));
-            mAuthPanelIndicator.setUnselectedColor(ContextCompat.getColor(getContext(), R.color.colorGrey));
+    private fun init() {
+        initColor()
+        initListeners()
+        viewBinding?.let {
+            authAdapter = AuthAdapter(childFragmentManager, fragments).apply {
+                it.onBoardingViewPager.addOnPageChangeListener(this)
+            }
+            it.onBoardingViewPager.adapter = authAdapter
+            it.include.onBoardingPanelIndicator.setAnimationType(AnimationType.WORM)
+            it.include.onBoardingPanelIndicator.setViewPager(it.onBoardingViewPager)
+            it.include.onBoardingPanelSkipButton.isVisible = false
         }
     }
 
-    private List<ViewPagerAdapter.Container> getFragments() {
-        final List<ViewPagerAdapter.Container> pairs = new ArrayList<>();
-        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_FIRST_FRAGMENT, mSqlData, getArguments().getString(AuthAppActivity.TFA_KEY)), null));
-        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_SECOND_FRAGMENT, mSqlData, getArguments().getString(AuthAppActivity.TFA_KEY)), null));
-        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_THIRD_FRAGMENT, mSqlData, getArguments().getString(AuthAppActivity.TFA_KEY)), null));
-        pairs.add(new ViewPagerAdapter.Container(AuthPageFragment.newInstance(KEY_FOURTH_FRAGMENT, mSqlData, getArguments().getString(AuthAppActivity.TFA_KEY)), null));
-        return pairs;
+    private fun initColor() {
+        viewBinding?.let {
+            it.pagerFragmentLayout.background = resourcesProvider.getDrawable(R.color.colorWhite)
+            it.include.pageIndicatorLayout.background =
+                resourcesProvider.getDrawable(R.color.colorWhite)
+            it.include.onBoardingPanelNextButton
+                .setTextColor(resourcesProvider.getColor(R.color.colorSecondary))
+            it.include.onBoardingPanelSkipButton
+                .setTextColor(resourcesProvider.getColor(R.color.colorSecondary))
+            it.include.onBoardingPanelIndicator.selectedColor =
+                resourcesProvider.getColor(R.color.colorSecondary)
+            it.include.onBoardingPanelIndicator.unselectedColor =
+                resourcesProvider.getColor(R.color.colorGrey)
+        }
+    }
+
+    private val fragments: List<ViewPagerAdapter.Container?>
+        get() {
+            return listOf(
+                ViewPagerAdapter.Container(getInstance(KEY_FIRST_FRAGMENT), null),
+                ViewPagerAdapter.Container(getInstance(KEY_SECOND_FRAGMENT), null),
+                ViewPagerAdapter.Container(getInstance(KEY_THIRD_FRAGMENT), null),
+                ViewPagerAdapter.Container(getInstance(KEY_FOURTH_FRAGMENT), null),
+            )
+        }
+
+    private fun getInstance(fragment: Int): AuthPageFragment {
+        sqlData?.let { data ->
+            arguments?.let { args ->
+                return AuthPageFragment
+                    .newInstance(fragment, data, args.getString(AuthAppActivity.TFA_KEY) ?: "")
+            }
+        }
+        return AuthPageFragment()
     }
 
     /*
      * Pager adapter
      * */
-    private class AuthAdapter extends ViewPagerAdapter {
+    private inner class AuthAdapter(manager: FragmentManager?, fragmentList: List<Container?>?) :
+        ViewPagerAdapter(manager, fragmentList) {
 
-        AuthAdapter(FragmentManager manager, List<ViewPagerAdapter.Container> fragmentList) {
-            super(manager, fragmentList);
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            super.onPageSelected(position);
-            if (position == mAuthAdapter.getCount() - 1) {
-                mAuthPanelNextButton.setVisibility(View.INVISIBLE);
-                mAuthPanelSkipButton.setVisibility(View.INVISIBLE);
-            } else {
-                mAuthPanelSkipButton.setVisibility(View.INVISIBLE);
-                mAuthPanelNextButton.setVisibility(View.VISIBLE);
-                mAuthPanelNextButton.setText(R.string.on_boarding_next_button);
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+            viewBinding?.let {
+                if (position == authAdapter?.count!! - 1) {
+                    it.include.onBoardingPanelNextButton.isVisible = false
+                    it.include.onBoardingPanelSkipButton.isVisible = false
+                } else {
+                    it.include.onBoardingPanelNextButton.isVisible = true
+                    it.include.onBoardingPanelSkipButton.isVisible = false
+                    it.include.onBoardingPanelNextButton.setText(R.string.on_boarding_next_button)
+                }
+                (authAdapter?.getActiveFragment(it.onBoardingViewPager) as AuthPageFragment)
+                    .onPageSelected(position)
             }
-            ((AuthPageFragment) mAuthAdapter.getActiveFragment(mViewpager)).onPageSelected(position);
         }
     }
 
+    companion object {
+        val TAG = AuthPagerFragment::class.java.simpleName
+        const val KEY_FIRST_FRAGMENT = 0
+        const val KEY_SECOND_FRAGMENT = 1
+        const val KEY_THIRD_FRAGMENT = 2
+        const val KEY_FOURTH_FRAGMENT = 3
+
+        fun newInstance(request: String?, key: String?): AuthPagerFragment =
+            AuthPagerFragment().apply {
+                arguments = Bundle(2).apply {
+                    putString(AuthAppActivity.REQUEST_KEY, request)
+                    putString(AuthAppActivity.TFA_KEY, key)
+                }
+            }
+    }
 }
