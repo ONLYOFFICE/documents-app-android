@@ -1,129 +1,59 @@
-package app.editors.manager.ui.adapters;
+package app.editors.manager.ui.adapters
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.TextView;
+import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
+import androidx.recyclerview.widget.RecyclerView
+import app.editors.manager.R
+import app.editors.manager.managers.tools.CountriesCodesTool.*
+import app.editors.manager.ui.adapters.base.BaseAdapter
+import app.editors.manager.ui.adapters.holders.CountriesCodeViewHolder
+import lib.toolkit.base.managers.extensions.inflate
+import java.util.ArrayList
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+class CountriesCodesAdapter : BaseAdapter<Codes>(), Filterable {
 
-import java.util.ArrayList;
-import java.util.List;
+    private var mAdapterFilter: AdapterFilter? = null
+    private var mDefaultList: List<Codes>? = null
 
-import app.editors.manager.R;
-import app.editors.manager.managers.tools.CountriesCodesTool;
-import app.editors.manager.ui.adapters.base.BaseAdapter;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+    override fun onCreateViewHolder(view: ViewGroup, type: Int): RecyclerView.ViewHolder =
+        CountriesCodeViewHolder(view.inflate(R.layout.list_countries_codes_item), mOnItemClickListener)
 
-public class CountriesCodesAdapter extends BaseAdapter<CountriesCodesTool.Codes> implements Filterable {
-
-    private final Context mContext;
-    private AdapterFilter mAdapterFilter;
-    private List<CountriesCodesTool.Codes> mDefaultList;
-
-    public CountriesCodesAdapter(@NonNull Context context) {
-        mContext = context;
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        (holder as CountriesCodeViewHolder).bind(getItem(position), getItem(position - 1))
     }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int typeHolder) {
-        final View viewItem = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_countries_codes_item, viewGroup, false);
-        return new ViewHolderItem(viewItem);
-    }
-
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        final ViewHolderItem mViewHolder = (ViewHolderItem) viewHolder;
-        final CountriesCodesTool.Codes codesBefore = getItem(position - 1);
-        final CountriesCodesTool.Codes codesCurrent = getItem(position);
-
-        mViewHolder.mCountriesCodesCodeText.setText("+" + codesCurrent.getNumber());
-        mViewHolder.mCountriesCodesNameText.setText(codesCurrent.getName());
-
-        if (codesBefore == null || (codesBefore != null && codesCurrent.getName().charAt(0) != codesBefore.getName().charAt(0))) {
-            mViewHolder.mCountriesCodesAlphaText.setVisibility(View.VISIBLE);
-            mViewHolder.mCountriesCodesAlphaText.setText(String.valueOf(codesCurrent.getName().charAt(0)));
-        } else {
-            mViewHolder.mCountriesCodesAlphaText.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public Filter getFilter() {
-        if (mAdapterFilter == null) {
-            mDefaultList = new ArrayList<>(mList);
-            mAdapterFilter = new AdapterFilter();
-        }
-        return mAdapterFilter;
-    }
-
-    public void setDefault() {
-        mList = mDefaultList;
-        notifyDataSetChanged();
-    }
-
-    protected class ViewHolderItem extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.countries_codes_alpha_text)
-        TextView mCountriesCodesAlphaText;
-        @BindView(R.id.countries_codes_name_text)
-        TextView mCountriesCodesNameText;
-        @BindView(R.id.countries_codes_code_text)
-        TextView mCountriesCodesCodeText;
-
-        public ViewHolderItem(final View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-            view.setOnClickListener(v -> {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemClick(view, getLayoutPosition());
-                }
-            });
+    override fun getFilter(): Filter =
+        mAdapterFilter ?: run {
+            mDefaultList = ArrayList(mList)
+            AdapterFilter()
         }
 
-    }
-
-    private class AdapterFilter extends Filter {
-
-        private final FilterResults mResults;
-        private final List<CountriesCodesTool.Codes> mFilteredList;
-
-        public AdapterFilter() {
-            mResults = new FilterResults();
-            mFilteredList = new ArrayList<>();
+    private inner class AdapterFilter : Filter() {
+        private val mFilteredList: MutableList<Codes> = mutableListOf()
+        private val mResults: FilterResults = FilterResults().apply {
+            count = 0
+            values = null
         }
 
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            mList = mDefaultList;
-            mResults.count = 0;
-            mResults.values = null;
-            mFilteredList.clear();
-
-            final String upperSymbols = constraint.toString().toUpperCase();
-            for (int i = 0; i < mList.size(); i++) {
-                final CountriesCodesTool.Codes codes = mList.get(i);
-                if (codes.getName().toUpperCase().startsWith(upperSymbols))  {
-                    mFilteredList.add(codes);
+        override fun performFiltering(constraint: CharSequence): FilterResults {
+            val upperSymbols = constraint.toString().uppercase()
+            mList = mDefaultList
+            mFilteredList.clear()
+            mList.forEach { codes ->
+                if (codes.name.uppercase().startsWith(upperSymbols)) {
+                    mFilteredList.add(codes)
                 }
             }
-
-            mResults.count = mFilteredList.size();
-            mResults.values = mFilteredList;
-            return mResults;
+            return mResults.also {
+                it.count = mFilteredList.size
+                it.values = mFilteredList
+            }
         }
 
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            mList = (List<CountriesCodesTool.Codes>) results.values;
-            notifyDataSetChanged();
+        override fun publishResults(constraint: CharSequence, results: FilterResults) {
+            mList = results.values as List<Codes?>
+            notifyDataSetChanged()
         }
-
     }
-
 }
