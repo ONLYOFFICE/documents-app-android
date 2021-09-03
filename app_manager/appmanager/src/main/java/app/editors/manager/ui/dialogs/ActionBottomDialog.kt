@@ -20,11 +20,11 @@ class ActionBottomDialog : BaseBottomDialog() {
     }
 
     private var viewBinding: ListExplorerActionMenuBinding? = null
-    private var onClickListener: OnClickListener? = null
     private var isThirdParty = false
     private var isDocs = true
     private var isLocal = false
     private var isWebDav = false
+    var onClickListener: OnClickListener? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         restoreValues(savedInstanceState)
