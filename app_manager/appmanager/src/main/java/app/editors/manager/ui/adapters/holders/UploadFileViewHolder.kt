@@ -1,79 +1,61 @@
-package app.editors.manager.ui.adapters.holders;
+package app.editors.manager.ui.adapters.holders
 
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
+import android.view.View
+import androidx.work.WorkManager
+import app.editors.manager.R
+import app.editors.manager.databinding.ListExplorerUploadFilesBinding
+import app.editors.manager.mvp.models.explorer.UploadFile
+import app.editors.manager.ui.adapters.ExplorerAdapter
+import lib.toolkit.base.managers.utils.StringUtils
+import java.util.*
 
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.work.WorkManager;
+class UploadFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
+    BaseViewHolderExplorer<UploadFile>(itemView, adapter) {
 
-import java.util.Locale;
+    private var mFile: UploadFile? = null
+    private var viewBinding = ListExplorerUploadFilesBinding.bind(itemView)
 
-import app.editors.manager.R;
-import app.editors.manager.mvp.models.explorer.UploadFile;
-import app.editors.manager.ui.adapters.ExplorerAdapter;
-import butterknife.BindView;
-import lib.toolkit.base.managers.utils.StringUtils;
-
-public class UploadFileViewHolder extends BaseViewHolderExplorer<UploadFile> {
-
-    public static final int LAYOUT = R.layout.list_explorer_upload_files;
-
-    @BindView(R.id.view_icon_selectable_image)
-    AppCompatImageView mViewIconSelectableImage;
-    @BindView(R.id.view_icon_selectable_mask)
-    FrameLayout mViewIconSelectableMask;
-    @BindView(R.id.view_icon_selectable_layout)
-    FrameLayout mViewIconSelectableLayout;
-    @BindView(R.id.list_explorer_upload_file_name)
-    AppCompatTextView mFileName;
-    @BindView(R.id.list_explorer_upload_file_progress)
-    AppCompatTextView mFileProgress;
-    @BindView(R.id.list_explorer_upload_file_cancel)
-    AppCompatImageButton mButtonCancelUpload;
-    @BindView(R.id.upload_file_progress_bar)
-    ProgressBar mUploadFileProgressBar;
-    @BindView(R.id.list_explorer_upload_file_layout)
-    ConstraintLayout listExplorerUploadFileLayout;
-
-    private UploadFile mFile;
-
-    public UploadFileViewHolder(View itemView, ExplorerAdapter adapter) {
-        super(itemView, adapter);
-        mButtonCancelUpload.setOnClickListener(v -> WorkManager.getInstance().cancelAllWorkByTag(mFile.getUri().toString()));
-    }
-
-    @Override
-    public void bind(UploadFile file) {
-        mFile = file;
-        if (file.getProgress() == 0) {mUploadFileProgressBar.setProgress(0);
-            mFileProgress.setText(R.string.upload_manager_waiting_title);
-        } else {
-            updateProgress(file);
-        }
-        mFileName.setText(file.getName());
-        mViewIconSelectableLayout.setBackground(null);
-        mViewIconSelectableMask.setBackground(null);
-        if (file.getUri().getPath() != null){
-            mAdapter.setFileIcon(mViewIconSelectableImage, StringUtils.getExtensionFromPath(file.getUri().getPath()));
+    init {
+        viewBinding.listExplorerUploadFileCancel.setOnClickListener {
+            WorkManager.getInstance().cancelAllWorkByTag(mFile?.uri.toString())
         }
     }
 
-    public void updateProgress(UploadFile file) {
-        final StringBuilder fileProgress = new StringBuilder();
-        fileProgress.append(getFileProgress(file)).append(" / ").append(file.getSize());
-        mFileProgress.setText(fileProgress);
-        mUploadFileProgressBar.setProgress(file.getProgress());
+    override fun bind(file: UploadFile) {
+        with(viewBinding) {
+            mFile = file
+            if (file.progress == 0) {
+                uploadFileProgressBar.progress = 0
+                listExplorerUploadFileProgress.setText(R.string.upload_manager_waiting_title)
+            } else {
+                updateProgress(file)
+            }
+            listExplorerUploadFileName.text = file.name
+            viewIconSelectableLayout.viewIconSelectableLayout.background = null
+            viewIconSelectableLayout.viewIconSelectableMask.background = null
+            file.uri.path?.let { path ->
+                adapter.setFileIcon(
+                    viewIconSelectableLayout.viewIconSelectableImage,
+                    StringUtils.getExtensionFromPath(path))
+            }
+        }
     }
 
-    private char[] getFileProgress(UploadFile file) {
-        String stringSize = file.getSize().substring(0, file.getSize().indexOf(" "));
-        double total = Double.parseDouble(stringSize.replace(',', '.'));
-        double kof = total / 100;
-        double progressSize = kof * file.getProgress();
-        return String.format(Locale.getDefault(), "%.2f", progressSize).toCharArray();
+    fun updateProgress(file: UploadFile) {
+        val fileProgress = "${getFileProgress(file)} / ${file.size}"
+        viewBinding.listExplorerUploadFileProgress.text = fileProgress
+        viewBinding.uploadFileProgressBar.progress = file.progress
+    }
+
+    private fun getFileProgress(file: UploadFile): CharArray {
+        val stringSize: String = file.size.substring(0, file.size.indexOf(" "))
+        val total = stringSize.replace(',', '.').toDouble()
+        val kof = total / 100
+        val progressSize: Double = kof * file.progress
+        return String.format(Locale.getDefault(), "%.2f", progressSize).toCharArray()
+    }
+
+    companion object {
+        const val LAYOUT: Int = R.layout.list_explorer_upload_files
     }
 }
