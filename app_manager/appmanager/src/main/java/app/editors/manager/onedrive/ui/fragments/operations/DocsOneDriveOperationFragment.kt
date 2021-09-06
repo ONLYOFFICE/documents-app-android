@@ -10,19 +10,14 @@ import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState
-import app.editors.manager.mvp.presenters.main.DocsBasePresenter
-import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.ui.activities.main.OperationActivity
-import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import moxy.presenter.InjectPresenter
-import java.lang.ClassCastException
-import java.lang.RuntimeException
 
 class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnActionClickListener, DocsOneDriveView {
-
 
     companion object {
 
@@ -38,7 +33,10 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
     private var operationType: OperationsState.OperationType? = null
 
     @InjectPresenter
-    lateinit var presenter: DocsOneDrivePresenter
+    override lateinit var presenter: DocsOneDrivePresenter
+
+    override val isWebDav: Boolean
+        get() = false
 
     init {
         App.getApp().appComponent.inject(this)
@@ -62,8 +60,8 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
         setHasOptionsMenu(false)
     }
 
-    override fun onDocsRefresh(list: MutableList<Entity>?) {
-        super.onDocsRefresh(list?.filter { it is CloudFolder })
+    override fun onDocsRefresh(list: List<Entity>?) {
+        super.onDocsRefresh(list?.filterIsInstance<CloudFolder>())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,7 +69,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
         init(savedInstanceState)
     }
 
-    override fun onItemClick(view: View?, position: Int) {
+    override fun onItemClick(view: View, position: Int) {
         super.onItemClick(view, position)
         operationActivity?.setEnabledActionButton(false)
     }
@@ -85,25 +83,13 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
 
     }
 
-    override fun onItemLongClick(view: View?, position: Int) {
-        // Not actions
-    }
-
-    override fun isWebDav(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun getPresenter(): DocsBasePresenter<out DocsBaseView> {
-        return presenter
-    }
-
     override fun onError(message: String?) {
         super.onError(message)
         operationActivity?.setEnabledActionButton(false)
     }
 
-    override fun onDocsGet(list: List<Entity?>?) {
-        super.onDocsGet(list?.filter { it is CloudFolder})
+    override fun onDocsGet(list: List<Entity>?) {
+        super.onDocsGet(list?.filterIsInstance<CloudFolder>())
         operationActivity?.setEnabledActionButton(true)
     }
 
@@ -116,7 +102,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
         setActionBarTitle(getString(R.string.operation_title))
-        mSwipeRefresh.isRefreshing = true
+        swipeRefreshLayout?.isRefreshing = true
         presenter.getProvider()
     }
 
@@ -128,6 +114,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
         when (operationType) {
             OperationsState.OperationType.COPY -> presenter.copy()
             OperationsState.OperationType.MOVE -> presenter.move()
+            else -> { }
         }
     }
 
@@ -158,7 +145,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
 
     private fun initViews() {
         operationActivity?.setEnabledActionButton(false)
-        mExplorerAdapter.isFoldersMode = true
-        mRecyclerView.setPadding(0, 0, 0, 0)
+        explorerAdapter?.isFoldersMode = true
+        recyclerView?.setPadding(0, 0, 0, 0)
     }
 }
