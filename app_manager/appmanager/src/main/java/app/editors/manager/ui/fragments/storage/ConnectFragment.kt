@@ -23,14 +23,6 @@ import moxy.presenter.InjectPresenter
 import javax.inject.Inject
 
 class ConnectFragment : BaseAppFragment(), ConnectView {
-//    @BindView(R.id.storage_connect_title_edit)
-//    protected var mTitleEdit: AppCompatEditText? = null
-//
-//    @BindView(R.id.storage_connect_title_layout)
-//    protected var mTitleEditLayout: TextInputLayout? = null
-//
-//    @BindView(R.id.storage_connect_save)
-//    protected var mSaveButton: AppCompatButton? = null
 
     @InjectPresenter
     lateinit var connectPresenter: ConnectPresenter
