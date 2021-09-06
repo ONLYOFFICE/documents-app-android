@@ -1,189 +1,152 @@
-package app.editors.manager.ui.fragments.operations;
+package app.editors.manager.ui.fragments.operations
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
+import android.app.Activity
+import android.content.Context
+import android.os.Bundle
+import android.view.View
+import app.documents.core.network.ApiContract
+import app.editors.manager.R
+import app.editors.manager.mvp.models.base.Entity
+import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.ui.activities.main.OperationActivity
+import app.editors.manager.ui.activities.main.OperationActivity.OnActionClickListener
+import app.editors.manager.ui.fragments.main.*
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
-import java.util.List;
+    private var operationActivity: OperationActivity? = null
+    private var operationType: OperationsState.OperationType? = null
+    private var sectionType = 0
 
-import app.documents.core.network.ApiContract;
-import app.editors.manager.R;
-import app.editors.manager.mvp.models.base.Entity;
-import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.states.OperationsState;
-import app.editors.manager.ui.activities.main.OperationActivity;
-import app.editors.manager.ui.fragments.main.DocsCloudFragment;
-import app.editors.manager.ui.fragments.main.DocsCommonFragment;
-import app.editors.manager.ui.fragments.main.DocsMyFragment;
-import app.editors.manager.ui.fragments.main.DocsProjectsFragment;
-import app.editors.manager.ui.fragments.main.DocsShareFragment;
-
-
-public class DocsCloudOperationFragment extends DocsCloudFragment implements OperationActivity.OnActionClickListener {
-
-    public static final String TAG = DocsCloudOperationFragment.class.getSimpleName();
-
-    private static final String TAG_OPERATION_SECTION_TYPE = "TAG_OPERATION_SECTION_TYPE";
-
-    private OperationActivity mOperationActivity;
-    private OperationsState.OperationType mOperationType;
-    private int mSectionType;
-
-    public static DocsCloudOperationFragment newInstance(final int sectionType) {
-        final DocsCloudOperationFragment docsOperationFragment = new DocsCloudOperationFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putInt(TAG_OPERATION_SECTION_TYPE, sectionType);
-        docsOperationFragment.setArguments(bundle);
-        return docsOperationFragment;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
         try {
-            mOperationActivity = (OperationActivity) context;
-            mOperationActivity.setOnActionClickListener(this);
-        } catch (ClassCastException e) {
-            throw new RuntimeException(DocsCloudOperationFragment.class.getSimpleName() + " - must implement - " +
-                    OperationActivity.class.getSimpleName());
+            operationActivity = context as OperationActivity
+            operationActivity?.setOnActionClickListener(this)
+        } catch (e: ClassCastException) {
+            throw RuntimeException(
+                DocsCloudOperationFragment::class.java.simpleName + " - must implement - " +
+                        OperationActivity::class.java.simpleName
+            )
         }
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(false);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(false)
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        init(savedInstanceState);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init(savedInstanceState)
     }
 
-    @Override
-    public void onItemClick(View view, int position) {
-        super.onItemClick(view, position);
-        mOperationActivity.setEnabledActionButton(false);
+    override fun onItemClick(view: View, position: Int) {
+        super.onItemClick(view, position)
+        operationActivity?.setEnabledActionButton(false)
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mOperationActivity.setOnActionClickListener(null);
-        mOperationActivity.setEnabledActionButton(false);
+    override fun onDestroyView() {
+        super.onDestroyView()
+        operationActivity?.setOnActionClickListener(null)
+        operationActivity?.setEnabledActionButton(false)
     }
 
-    @Override
-    protected int getSection() {
-        return ApiContract.SectionType.UNKNOWN;
-    }
 
-    @Override
-    public void onItemLongClick(View view, int position) {
+    override fun onItemLongClick(view: View, position: Int) {
         // Not actions
     }
 
-    @Override
-    public void onError(@Nullable String message) {
-        super.onError(message);
-        mOperationActivity.setEnabledActionButton(false);
+    override fun onError(message: String?) {
+        super.onError(message)
+        operationActivity?.setEnabledActionButton(false)
     }
 
-    @Override
-    public void onDocsGet(List<Entity> list) {
-        super.onDocsGet(list);
-        mOperationActivity.setEnabledActionButton(true);
+    override fun onDocsGet(list: List<Entity>?) {
+        super.onDocsGet(list)
+        operationActivity?.setEnabledActionButton(true)
     }
 
-    @Override
-    public void onDocsBatchOperation() {
-        super.onDocsBatchOperation();
-        requireActivity().setResult(Activity.RESULT_OK);
-        requireActivity().finish();
+    override fun onDocsBatchOperation() {
+        super.onDocsBatchOperation()
+        requireActivity().setResult(Activity.RESULT_OK)
+        requireActivity().finish()
     }
 
-    @Override
-    public void onStateEmptyBackStack() {
-        super.onStateEmptyBackStack();
-        setActionBarTitle(getString(R.string.operation_title));
-        mSwipeRefresh.setRefreshing(true);
-
-        getDocs();
+    override fun onStateEmptyBackStack() {
+        super.onStateEmptyBackStack()
+        setActionBarTitle(getString(R.string.operation_title))
+        swipeRefreshLayout?.isRefreshing = true
+        getDocs()
     }
 
-    @Override
-    public void onRemoveItemFromFavorites() {
+    override fun onRemoveItemFromFavorites() {
         //stub
     }
 
-
-    public void onActionClick() {
-        switch (mOperationType) {
-            case COPY:
-                mCloudPresenter.copy();
-                break;
-            case MOVE:
-                mCloudPresenter.move();
-                break;
+    override fun onActionClick() {
+        when (operationType) {
+            OperationsState.OperationType.COPY -> cloudPresenter.copy()
+            OperationsState.OperationType.MOVE -> cloudPresenter.move()
+            else -> { }
         }
     }
 
-    private void init(final Bundle savedInstanceState) {
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-        }
-        getArgs(savedInstanceState);
-        initViews();
-        mCloudPresenter.checkBackStack();
+    private fun init(savedInstanceState: Bundle?) {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+        getArgs(savedInstanceState)
+        initViews()
+        cloudPresenter.checkBackStack()
     }
 
-    private void getArgs(final Bundle savedInstanceState) {
-        final Bundle bundle = getArguments();
-        if (bundle != null) {
-            mSectionType = bundle.getInt(TAG_OPERATION_SECTION_TYPE);
-            final Intent intent = requireActivity().getIntent();
-            mOperationType = (OperationsState.OperationType) intent.getSerializableExtra(OperationActivity.TAG_OPERATION_TYPE);
-
-            if (savedInstanceState == null) {
-                final Explorer explorer = (Explorer) intent.getSerializableExtra(OperationActivity.TAG_OPERATION_EXPLORER);
-                if (explorer != null) {
-                    mCloudPresenter.setOperationExplorer(explorer);
-                } else {
-                    requireActivity().finish();
-                }
+    private fun getArgs(savedInstanceState: Bundle?) {
+        arguments?.let {
+            sectionType = it.getInt(TAG_OPERATION_SECTION_TYPE)
+            operationType = requireActivity().intent
+                    .getSerializableExtra(OperationActivity.TAG_OPERATION_TYPE) as
+                    OperationsState.OperationType
+            savedInstanceState ?: {
+                requireActivity().intent
+                    .getSerializableExtra(OperationActivity.TAG_OPERATION_EXPLORER)?.let { explorer ->
+                        cloudPresenter.setOperationExplorer(explorer as Explorer)
+                    } ?: run { requireActivity().finish() }
             }
         }
     }
 
-    private void initViews() {
-        mOperationActivity.setEnabledActionButton(false);
-        mExplorerAdapter.setFoldersMode(true);
-        mRecyclerView.setPadding(0, 0, 0, 0);
+    private fun initViews() {
+        operationActivity?.setEnabledActionButton(false)
+        explorerAdapter?.isFoldersMode = true
+        recyclerView?.setPadding(0, 0, 0, 0)
     }
 
-    private void getDocs() {
-        mCloudPresenter.setFoldersMode(true);
-        switch (mSectionType) {
-            case ApiContract.SectionType.CLOUD_USER:
-                mCloudPresenter.getItemsById(DocsMyFragment.Companion.getID());
-                break;
-            case ApiContract.SectionType.CLOUD_SHARE:
-                mCloudPresenter.getItemsById(DocsShareFragment.Companion.getID());
-                break;
-            case ApiContract.SectionType.CLOUD_COMMON:
-                mCloudPresenter.getItemsById(DocsCommonFragment.Companion.getID());
-                break;
-            case ApiContract.SectionType.CLOUD_PROJECTS:
-                mCloudPresenter.getItemsById(DocsProjectsFragment.Companion.getID());
-                break;
+    private fun getDocs() {
+        cloudPresenter.setFoldersMode(true)
+        when (sectionType) {
+            ApiContract.SectionType.CLOUD_USER -> cloudPresenter.getItemsById(DocsMyFragment.ID)
+            ApiContract.SectionType.CLOUD_SHARE -> cloudPresenter.getItemsById(DocsShareFragment.ID)
+            ApiContract.SectionType.CLOUD_COMMON ->
+                cloudPresenter.getItemsById(DocsCommonFragment.ID)
+            ApiContract.SectionType.CLOUD_PROJECTS ->
+                cloudPresenter.getItemsById(DocsProjectsFragment.ID)
         }
     }
 
+    override val section: Int
+        get() = ApiContract.SectionType.UNKNOWN
+
+    companion object {
+        val TAG = DocsCloudOperationFragment::class.java.simpleName
+        private const val TAG_OPERATION_SECTION_TYPE = "TAG_OPERATION_SECTION_TYPE"
+
+        fun newInstance(sectionType: Int): DocsCloudOperationFragment =
+            DocsCloudOperationFragment().apply {
+                arguments = Bundle(1).apply {
+                    putInt(TAG_OPERATION_SECTION_TYPE, sectionType)
+                }
+            }
+
+    }
 }
