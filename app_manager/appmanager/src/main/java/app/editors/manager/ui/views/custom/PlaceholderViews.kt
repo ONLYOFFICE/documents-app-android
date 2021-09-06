@@ -1,162 +1,94 @@
-package app.editors.manager.ui.views.custom;
+package app.editors.manager.ui.views.custom
 
+import android.view.View
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import app.editors.manager.R
+import app.editors.manager.databinding.IncludePlaceholdersImageBinding
+import app.editors.manager.managers.utils.isVisible
+import lib.toolkit.base.managers.tools.ResourcesProvider
+import lib.toolkit.base.managers.utils.UiUtils
 
-import android.view.View;
+class PlaceholderViews(val view: View) {
 
-import androidx.annotation.ColorRes;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-
-import app.editors.manager.R;
-import app.editors.manager.managers.exceptions.ButterknifeInitException;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Optional;
-import butterknife.Unbinder;
-import lib.toolkit.base.managers.utils.UiUtils;
-
-public class PlaceholderViews {
-
-    public enum Type {
-        NONE, CONNECTION, EMPTY, SEARCH, SHARE, ACCESS, SUBFOLDER,
-        USERS, GROUPS, COMMON, MEDIA, LOAD
+    enum class Type {
+        NONE, CONNECTION, EMPTY, SEARCH, SHARE, ACCESS,
+        SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD
     }
 
-    public interface OnClickListener {
-        void onRetryClick();
+    interface OnClickListener {
+        fun onRetryClick()
     }
 
-    @BindView(R.id.placeholder_layout)
-    protected ConstraintLayout mPlaceholderLayout;
-    @BindView(R.id.placeholder_text)
-    protected AppCompatTextView mPlaceholderTitle;
-    @BindView(R.id.placeholder_image)
-    @Nullable
-    protected AppCompatImageView mPlaceholderImage;
-    @BindView(R.id.placeholder_retry)
-    @Nullable
-    protected AppCompatTextView mPlaceholderRetry;
+    private var viewBinding = IncludePlaceholdersImageBinding.bind(view)
+    private var mViewForHide: View? = null
+    private var mOnClickListener: OnClickListener? = null
 
-    private View mView;
-    private View mViewForHide;
-    private Unbinder mUnbinder;
-    private OnClickListener mOnClickListener;
-
-    public PlaceholderViews(final View view) {
-        try {
-            mUnbinder = ButterKnife.bind(this, view);
-        } catch (RuntimeException e) {
-            throw new ButterknifeInitException(PlaceholderViews.class.getSimpleName() + " - must initWithPreferences with specific view!", e);
-        }
-
-        mView = view;
-        mPlaceholderLayout.setVisibility(View.GONE);
-    }
-
-    @OnClick(R.id.placeholder_retry)
-    @Optional
-    protected void onClick() {
-        if (mOnClickListener != null) {
-            mOnClickListener.onRetryClick();
+    init {
+        viewBinding.placeholderLayout.isVisible = true
+        viewBinding.placeholderRetry.setOnClickListener {
+            mOnClickListener?.onRetryClick()
         }
     }
 
-    public void setVisibility(final boolean isVisible) {
-        mPlaceholderLayout.setVisibility(isVisible? View.VISIBLE : View.GONE);
-        if (mViewForHide != null) {
-            mViewForHide.setVisibility(isVisible? View.GONE : View.VISIBLE);
+    fun setVisibility(isVisible: Boolean) {
+        viewBinding.placeholderLayout.isVisible = isVisible
+        mViewForHide?.isVisible = isVisible
+    }
+
+    fun setViewForHide(viewForHide: View?) {
+        mViewForHide = viewForHide
+    }
+
+    fun setTitle(@StringRes resId: Int) {
+        viewBinding.placeholderText.setText(resId)
+    }
+
+    private fun setTitleColor(@ColorRes resId: Int) {
+        viewBinding.placeholderText.setTextColor(ResourcesProvider(view.context).getColor(resId))
+    }
+
+    fun setImage(@DrawableRes resId: Int) {
+        viewBinding.placeholderImage.setImageResource(resId)
+    }
+
+    fun setImageTint(@ColorRes resId: Int) {
+        UiUtils.setImageTint(viewBinding.placeholderImage, resId)
+    }
+
+    private fun setRetryTint(@ColorRes resId: Int) {
+        viewBinding.placeholderRetry.setTextColor(ResourcesProvider(view.context).getColor(resId))
+    }
+
+    fun setTemplatePlaceholder(type: Type?) {
+        when (type) {
+            Type.CONNECTION -> setTitle(R.string.placeholder_connection)
+            Type.EMPTY -> setTitle(R.string.placeholder_empty)
+            Type.SEARCH -> setTitle(R.string.placeholder_search)
+            Type.SHARE -> setTitle(R.string.placeholder_share)
+            Type.ACCESS -> setTitle(R.string.placeholder_access_denied)
+            Type.SUBFOLDER -> setTitle(R.string.placeholder_no_subfolders)
+            Type.USERS -> setTitle(R.string.placeholder_no_users)
+            Type.GROUPS -> setTitle(R.string.placeholder_no_groups)
+            Type.COMMON -> setTitle(R.string.placeholder_no_users_groups)
+            Type.LOAD -> setTitle(R.string.placeholder_loading_files)
+            Type.MEDIA -> {
+                setImage(R.drawable.ic_media_error)
+                setImageTint(R.color.colorLightWhite)
+                setTitle(R.string.placeholder_media_error)
+                setTitleColor(R.color.colorLightWhite)
+                setRetryTint(R.color.colorSecondary)
+            }
+            Type.NONE -> {
+                setVisibility(false)
+                return
+            }
         }
+        setVisibility(true)
     }
 
-    public void setViewForHide(final View viewForHide) {
-        mViewForHide = viewForHide;
+    fun setOnClickListener(onClickListener: OnClickListener?) {
+        mOnClickListener = onClickListener
     }
-
-    public void setTitle(@StringRes final int resId) {
-        mPlaceholderTitle.setText(resId);
-    }
-
-    public void setTitleColor(@ColorRes final int resId) {
-        mPlaceholderTitle.setTextColor(ContextCompat.getColor(mView.getContext(), resId));
-    }
-
-    public void setImage(@DrawableRes final int resId) {
-        if (mPlaceholderImage != null) {
-            mPlaceholderImage.setImageResource(resId);
-        }
-    }
-
-    public void setImageTint(@ColorRes final int resId) {
-        if (mPlaceholderImage != null) {
-            UiUtils.setImageTint(mPlaceholderImage, resId);
-        }
-    }
-
-    public void setRetryTint(@ColorRes final int resId) {
-        if (mPlaceholderRetry != null) {
-            mPlaceholderRetry.setTextColor(ContextCompat.getColor(mPlaceholderRetry.getContext(), resId));
-        }
-    }
-
-    public void setTemplatePlaceholder(Type type) {
-        switch (type) {
-            case NONE:
-                setVisibility(false);
-                return;
-            case CONNECTION:
-                setTitle(R.string.placeholder_connection);
-                break;
-            case EMPTY:
-                setTitle(R.string.placeholder_empty);
-                break;
-            case SEARCH:
-                setTitle(R.string.placeholder_search);
-                break;
-            case SHARE:
-                setTitle(R.string.placeholder_share);
-                break;
-            case ACCESS:
-                setTitle(R.string.placeholder_access_denied);
-                break;
-            case SUBFOLDER:
-                setTitle(R.string.placeholder_no_subfolders);
-                break;
-            case USERS:
-                setTitle(R.string.placeholder_no_users);
-                break;
-            case GROUPS:
-                setTitle(R.string.placeholder_no_groups);
-                break;
-            case COMMON:
-                setTitle(R.string.placeholder_no_users_groups);
-                break;
-            case LOAD:
-                setTitle(R.string.placeholder_loading_files);
-                break;
-            case MEDIA:
-                setImage(R.drawable.ic_media_error);
-                setImageTint(R.color.colorLightWhite);
-                setTitle(R.string.placeholder_media_error);
-                setTitleColor(R.color.colorLightWhite);
-                setRetryTint(R.color.colorSecondary);
-                break;
-        }
-
-        setVisibility(true);
-    }
-
-    public void unbind() {
-        mUnbinder.unbind();
-    }
-
-    public void setOnClickListener(OnClickListener onClickListener) {
-        mOnClickListener = onClickListener;
-    }
-
 }
