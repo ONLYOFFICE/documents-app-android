@@ -1,26 +1,26 @@
 package app.editors.manager.ui.adapters
 
 import android.content.Context
-import app.editors.manager.app.App.Companion.getApp
-import lib.toolkit.base.managers.utils.UiUtils.getFloatResource
-import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.mvp.models.list.Footer
 import android.view.ViewGroup
-import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
 import android.widget.ImageView
-import androidx.recyclerview.widget.RecyclerView
-import app.editors.manager.ui.adapters.holders.FooterViewHolder
-import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
-import app.editors.manager.mvp.models.explorer.UploadFile
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.documents.core.network.ApiContract
 import androidx.annotation.DrawableRes
+import androidx.recyclerview.widget.RecyclerView
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
+import app.editors.manager.app.App.Companion.getApp
+import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.base.Entity
+import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.explorer.UploadFile
+import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.ui.adapters.base.BaseAdapter
+import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
+import app.editors.manager.ui.adapters.holders.FooterViewHolder
+import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactory
+import lib.toolkit.base.managers.utils.UiUtils.getFloatResource
 import lib.toolkit.base.ui.adapters.factory.inflate
 import javax.inject.Inject
 
@@ -43,7 +43,7 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
         }
 
     var isFoldersMode = false
-        private set(isFoldersMode) {
+        set(isFoldersMode) {
             field = isFoldersMode
             notifyDataSetChanged()
         }

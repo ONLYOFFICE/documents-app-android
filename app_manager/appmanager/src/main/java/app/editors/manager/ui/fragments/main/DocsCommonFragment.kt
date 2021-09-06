@@ -22,16 +22,14 @@ class DocsCommonFragment : DocsCloudFragment() {
 
     override fun onScrollPage() {
         super.onScrollPage()
-        if (cloudPresenter.stack == null) {
+        cloudPresenter.stack?.let {
             cloudPresenter.getItemsById(ID)
         }
     }
 
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout?.isRefreshing = true
-        }
+        swipeRefreshLayout?.isRefreshing = true
         cloudPresenter.getItemsById(ID)
     }
 

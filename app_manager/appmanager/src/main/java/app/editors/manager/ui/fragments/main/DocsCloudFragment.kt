@@ -236,6 +236,6 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         get() = presenter.isRoot
 
     companion object {
-        protected var KEY_ACCOUNT = "key_account"
+        var KEY_ACCOUNT = "key_account"
     }
 }

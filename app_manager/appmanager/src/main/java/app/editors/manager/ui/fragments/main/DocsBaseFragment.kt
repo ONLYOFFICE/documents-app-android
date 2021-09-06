@@ -701,8 +701,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
         actionBottomDialog?.let { dialog ->
             dialog.onClickListener = this
-            dialog.setThirdParty(isThirdParty)
-            dialog.setDocs(isDocs)
+            dialog.isThirdParty = isThirdParty
+            dialog.isDocs = isDocs
             dialog.show(requireFragmentManager(), ActionBottomDialog.TAG)
         }
     }

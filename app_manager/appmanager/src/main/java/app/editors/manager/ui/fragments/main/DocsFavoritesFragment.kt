@@ -26,7 +26,7 @@ class DocsFavoritesFragment : DocsCloudFragment() {
 
     override fun onSwipeRefresh(): Boolean {
         if (!super.onSwipeRefresh()) {
-            mCloudPresenter.getItemsById(ID)
+            cloudPresenter.getItemsById(ID)
             return true
         }
         return false
@@ -34,26 +34,25 @@ class DocsFavoritesFragment : DocsCloudFragment() {
 
     override fun onScrollPage() {
         super.onScrollPage()
-        if (mCloudPresenter.stack == null) {
-            mCloudPresenter.getItemsById(ID)
+        if (cloudPresenter.stack == null) {
+            cloudPresenter.getItemsById(ID)
         }
     }
+
+    override val section: Int
+        get() = ApiContract.SectionType.UNKNOWN
 
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
-        if (mSwipeRefresh != null) {
-            mSwipeRefresh.isRefreshing = true
-        }
-        mCloudPresenter.getItemsById(ID)
+        swipeRefreshLayout?.isRefreshing = true
+        cloudPresenter.getItemsById(ID)
     }
 
     override fun onRemoveItemFromFavorites() {
-        mCloudPresenter.removeFromFavorites()
+        cloudPresenter.removeFromFavorites()
     }
 
     private fun init() {
-        mCloudPresenter.checkBackStack()
+        cloudPresenter.checkBackStack()
     }
-
-    override fun getSection() = ApiContract.SectionType.UNKNOWN
 }

@@ -15,32 +15,6 @@ class MoveCopyDialog : BaseDialog() {
     interface DialogButtonOnClick {
         fun continueClick(tag: String?, action: String?)
     }
-//
-//    var mUnbinder: Unbinder? = null
-//
-//    @BindView(R.id.title_text_view)
-//    var mTitleTextView: AppCompatTextView? = null
-//
-//    @BindView(R.id.overwrite_radio_button)
-//    var mUpdateRadioButton: RadioButton? = null
-//
-//    @BindView(R.id.copy_radio_button)
-//    var mReplaceRadioButton: RadioButton? = null
-//
-//    @BindView(R.id.skip_radio_button)
-//    var mSkipRadioButton: RadioButton? = null
-//
-//    @BindView(R.id.options_radio_group)
-//    var mOptionsRadioGroup: RadioGroup? = null
-//
-//    @BindView(R.id.continue_button)
-//    var mContinueButton: AppCompatButton? = null
-//
-//    @BindView(R.id.cancel_button)
-//    var mCancelButton: AppCompatButton? = null
-//
-//    @BindView(R.id.descriptionTitle)
-//    var mDescriptionTitle: TextView? = null
 
     private var buttonTag = TAG_OVERWRITE
     private var viewBinding: DialogFragmentMoveCopyBinding? = null
@@ -128,7 +102,7 @@ class MoveCopyDialog : BaseDialog() {
         private const val TAG_FOLDER_NAME = "TAG_FOLDER_NAME"
 
         @JvmStatic
-        fun newInstance(filesName: ArrayList<String?>?, action: String?, titleFolder: String?) :
+        fun newInstance(filesName: ArrayList<String>, action: String, titleFolder: String) :
                 MoveCopyDialog {
 
             return MoveCopyDialog().apply {
