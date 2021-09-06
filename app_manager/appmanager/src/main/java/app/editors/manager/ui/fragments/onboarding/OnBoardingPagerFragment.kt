@@ -1,173 +1,142 @@
-package app.editors.manager.ui.fragments.onboarding;
+package app.editors.manager.ui.fragments.onboarding
 
-import android.app.Activity;
-import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
+import android.app.Activity
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.databinding.FragmentOnBoardingPagerBinding
+import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.utils.isVisible
+import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import com.rd.animation.type.AnimationType
+import lib.toolkit.base.managers.utils.SwipeEventUtils
+import javax.inject.Inject
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.fragment.app.FragmentManager;
-
-import com.rd.PageIndicatorView;
-import com.rd.animation.type.AnimationType;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import app.editors.manager.R;
-import app.editors.manager.app.App;
-import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.ui.fragments.base.BaseAppFragment;
-import app.editors.manager.ui.views.pager.PagingViewPager;
-import app.editors.manager.ui.views.pager.ViewPagerAdapter;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
-import lib.toolkit.base.managers.utils.SwipeEventUtils;
-
-public class OnBoardingPagerFragment extends BaseAppFragment {
-
-    public static final String TAG = OnBoardingPagerFragment.class.getSimpleName();
-
-    private Unbinder mUnbinder;
-    @BindView(R.id.on_boarding_view_pager)
-    protected PagingViewPager mViewpager;
-    @BindView(R.id.on_boarding_panel_skip_button)
-    protected AppCompatButton mOnBoardingPanelSkipButton;
-    @BindView(R.id.on_boarding_panel_indicator)
-    protected PageIndicatorView mOnBoardingPanelIndicator;
-    @BindView(R.id.on_boarding_panel_next_button)
-    protected AppCompatButton mOnBoardingPanelNextButton;
+class OnBoardingPagerFragment : BaseAppFragment() {
 
     @Inject
-    PreferenceTool mPreferenceTool;
+    lateinit var preferenceTool: PreferenceTool
 
-    private OnBoardAdapter mOnBoardAdapter;
+    private var mOnBoardAdapter: OnBoardAdapter? = null
+    private var viewBinding: FragmentOnBoardingPagerBinding? = null
 
-    public static OnBoardingPagerFragment newInstance() {
-        return new OnBoardingPagerFragment();
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        App.getApp().appComponent.inject(this)
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        App.getApp().getAppComponent().inject(this);
+    override fun dispatchTouchEvent(ev: MotionEvent) { }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        viewBinding = FragmentOnBoardingPagerBinding.inflate(inflater, container, false)
+        return viewBinding?.root
     }
 
-    @Override
-    public void dispatchTouchEvent(@NonNull MotionEvent ev) {
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init()
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        final View view = inflater.inflate(R.layout.fragment_on_boarding_pager, container, false);
-        mUnbinder = ButterKnife.bind(this, view);
-        return view;
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewBinding = null
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        init();
+    override fun onBackPressed(): Boolean {
+        minimizeApp()
+        return true
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mUnbinder.unbind();
+    private fun finishWithOkCode() {
+        requireActivity().setResult(Activity.RESULT_OK)
+        requireActivity().finish()
     }
 
-    @Override
-    public boolean onBackPressed() {
-        minimizeApp();
-        return true;
-    }
-
-    @OnClick({R.id.on_boarding_panel_skip_button,
-            R.id.on_boarding_panel_next_button})
-    protected void onButtonsClick(final View view) {
-        switch (view.getId()) {
-            case R.id.on_boarding_panel_skip_button:
-                mPreferenceTool.setOnBoarding(true);
-                finishWithOkCode();
-                break;
-            case R.id.on_boarding_panel_next_button:
-                if (mOnBoardAdapter.isLastPagePosition()) {
-                    finishWithOkCode();
-                } else {
-                    mViewpager.setCurrentItem(mOnBoardAdapter.getSelectedPage() + 1, true);
+    private fun init() {
+        viewBinding?.let { binding ->
+            mOnBoardAdapter = OnBoardAdapter(childFragmentManager, fragments)
+            binding.onBoardingViewPager.adapter = mOnBoardAdapter
+            binding.onBoardingViewPager.addOnPageChangeListener(mOnBoardAdapter!!)
+            binding.include.onBoardingPanelIndicator.setAnimationType(AnimationType.WORM)
+            binding.include.onBoardingPanelIndicator.setViewPager(binding.onBoardingViewPager)
+            binding.include.onBoardingPanelSkipButton.setOnClickListener {
+                preferenceTool.onBoarding = true
+                finishWithOkCode()
+            }
+            binding.include.onBoardingPanelNextButton.setOnClickListener {
+                mOnBoardAdapter?.isLastPagePosition?.let {
+                    finishWithOkCode()
+                } ?: run {
+                    binding.onBoardingViewPager
+                        .setCurrentItem(mOnBoardAdapter?.selectedPage!! + 1, true)
                 }
-                break;
-        }
-    }
-
-    private void finishWithOkCode() {
-        requireActivity().setResult(Activity.RESULT_OK);
-        requireActivity().finish();
-    }
-
-    private void init() {
-        mOnBoardAdapter = new OnBoardAdapter(getChildFragmentManager(), getFragments());
-        mViewpager.setAdapter(mOnBoardAdapter);
-        mViewpager.addOnPageChangeListener(mOnBoardAdapter);
-        mOnBoardingPanelIndicator.setAnimationType(AnimationType.WORM);
-        mOnBoardingPanelIndicator.setViewPager(mViewpager);
-    }
-
-    private List<ViewPagerAdapter.Container> getFragments() {
-        final List<ViewPagerAdapter.Container> pairs = new ArrayList<>();
-        pairs.add(new ViewPagerAdapter.Container(OnBoardingPageFragment.newInstance(R.string.on_boarding_welcome_header,
-                R.string.on_boarding_welcome_info, R.drawable.image_on_boarding_screen1), null));
-        pairs.add(new ViewPagerAdapter.Container(OnBoardingPageFragment.newInstance(R.string.on_boarding_edit_header,
-                R.string.on_boarding_edit_info, R.drawable.image_on_boarding_screen2), null));
-        pairs.add(new ViewPagerAdapter.Container(OnBoardingPageFragment.newInstance(R.string.on_boarding_access_header,
-                R.string.on_boarding_access_info, R.drawable.image_on_boarding_screen3), null));
-        pairs.add(new ViewPagerAdapter.Container(OnBoardingPageFragment.newInstance(R.string.on_boarding_collaborate_header,
-                R.string.on_boarding_collaborate_info, R.drawable.image_on_boarding_screen4), null));
-        pairs.add(new ViewPagerAdapter.Container(OnBoardingPageFragment.newInstance(R.string.on_boarding_third_party_header,
-                R.string.on_boarding_third_party_info, R.drawable.image_on_boarding_screen5), null));
-        return pairs;
-    }
-
-    /*
-     * Pager adapter
-     * */
-    private class OnBoardAdapter extends ViewPagerAdapter {
-
-        private int mPosition;
-
-        public OnBoardAdapter(FragmentManager manager, List<ViewPagerAdapter.Container> fragmentList) {
-            super(manager, fragmentList);
-            SwipeEventUtils.detectLeft(mViewpager, () -> {
-                if (mPosition == mOnBoardAdapter.getCount() - 1) {
-                    mOnBoardingPanelNextButton.callOnClick();
-                }
-            });
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            super.onPageSelected(position);
-            mPosition = position;
-            if (position == mOnBoardAdapter.getCount() - 1) {
-                mOnBoardingPanelNextButton.setText(R.string.on_boarding_finish_button);
-                mOnBoardingPanelSkipButton.setVisibility(View.INVISIBLE);
-                mPreferenceTool.setOnBoarding(true);
-            } else {
-                mOnBoardingPanelSkipButton.setVisibility(View.VISIBLE);
-                mOnBoardingPanelNextButton.setText(R.string.on_boarding_next_button);
             }
         }
     }
 
+    private fun getInstance(screen: Int) =
+        ViewPagerAdapter.Container(OnBoardingPageFragment.newInstance(
+            R.string.on_boarding_welcome_header,
+            R.string.on_boarding_welcome_info, screen), null)
+
+    private val fragments: List<ViewPagerAdapter.Container?>
+        get() = listOf(
+            getInstance(R.drawable.image_on_boarding_screen1),
+            getInstance(R.drawable.image_on_boarding_screen2),
+            getInstance(R.drawable.image_on_boarding_screen3),
+            getInstance(R.drawable.image_on_boarding_screen4),
+            getInstance(R.drawable.image_on_boarding_screen5))
+
+    /*
+     * Pager adapter
+     * */
+    private inner class OnBoardAdapter(manager: FragmentManager?, fragmentList: List<Container?>?) :
+        ViewPagerAdapter(manager, fragmentList) {
+        private var position = 0
+
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+            viewBinding?.let {
+                if (position == mOnBoardAdapter?.count!! - 1) {
+                    it.include.onBoardingPanelNextButton.setText(R.string.on_boarding_finish_button)
+                    it.include.onBoardingPanelSkipButton.isVisible = true
+                    preferenceTool.onBoarding = true
+                } else {
+                    it.include.onBoardingPanelNextButton.setText(R.string.on_boarding_next_button)
+                    it.include.onBoardingPanelSkipButton.isVisible = false
+                }
+            }
+            this.position = position
+        }
+
+        init {
+            SwipeEventUtils.detectLeft(viewBinding?.onBoardingViewPager!!,
+                object : SwipeEventUtils.SwipeSingleCallback {
+                override fun onSwipe() {
+                    if (position == mOnBoardAdapter?.count!! - 1) {
+                        viewBinding?.include?.onBoardingPanelNextButton?.callOnClick()
+                    }
+                }
+            })
+        }
+    }
+
+    companion object {
+        val TAG = OnBoardingPagerFragment::class.java.simpleName
+
+        fun newInstance(): OnBoardingPagerFragment {
+            return OnBoardingPagerFragment()
+        }
+    }
 }
