@@ -1,168 +1,107 @@
-package app.editors.manager.ui.views.custom;
+package app.editors.manager.ui.views.custom
 
+import android.accounts.Account
+import android.app.Activity
+import android.content.Intent
+import android.util.Log
+import android.view.View
+import app.editors.manager.R
+import app.editors.manager.databinding.IncludeSocialNetworksLayoutBinding
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.managers.utils.isVisible
+import com.facebook.*
+import com.facebook.login.LoginBehavior
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
+import com.facebook.login.widget.LoginButton
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 
-import android.accounts.Account;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
-import android.util.Log;
-import android.view.View;
+class SocialViews(private val activity: Activity, view: View?,
+                  private val facebookId: String?) {
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageButton;
-
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginBehavior;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
-
-import app.editors.manager.R;
-import app.editors.manager.managers.exceptions.ButterknifeInitException;
-import app.editors.manager.managers.utils.Constants;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
-
-public class SocialViews {
-
-    public static final String TAG = SocialViews.class.getSimpleName();
-    public static final int GOOGLE_PERMISSION = 1212;
-    private static final int RC_SIGN_IN = 9001;
-
-    public interface OnSocialNetworkCallbacks {
-        void onTwitterSuccess(String token);
-        void onTwitterFailed();
-        void onFacebookSuccess(String token);
-        void onFacebookLogin(String message);
-        void onFacebookCancel();
-        void onFacebookFailed();
-        void onGoogleSuccess(Account account);
-        void onGoogleFailed();
+    interface OnSocialNetworkCallbacks {
+        fun onTwitterSuccess(token: String?)
+        fun onTwitterFailed()
+        fun onFacebookSuccess(token: String?)
+        fun onFacebookLogin(message: String?)
+        fun onFacebookCancel()
+        fun onFacebookFailed()
+        fun onGoogleSuccess(account: Account?)
+        fun onGoogleFailed()
     }
 
-    @BindView(R.id.login_social_facebook_button)
-    protected AppCompatImageButton mLoginPersonalSocialFacebookButton;
-    @BindView(R.id.login_social_google_button)
-    protected AppCompatImageButton mLoginPersonalSocialGoogleButton;
-    @BindView(R.id.login_social_twitter_button)
-    protected AppCompatImageButton mLoginPersonalSocialTwitterButton;
-    @BindView(R.id.login_social_linkedin_button)
-    protected AppCompatImageButton mLoginPersonalSocialLinkedinButton;
+    private var onSocialNetworkCallbacks: OnSocialNetworkCallbacks? = null
+    private var googleSignInClient: GoogleSignInClient? = null
+    private var facebookCallbackManager: CallbackManager? = null
+    private var loginPersonalSocialFacebookNativeButton: LoginButton? = null
+    private var viewBinding: IncludeSocialNetworksLayoutBinding? = null
 
-    private Activity mActivity;
-    private Unbinder mUnbinder;
-    private String mFacebookId;
-
-    private OnSocialNetworkCallbacks mOnSocialNetworkCallbacks;
-    private GoogleSignInClient mGoogleSignInClient;
-    private CallbackManager mFacebookCallbackManager;
-
-    private LoginButton mLoginPersonalSocialFacebookNativeButton;
-
-    public SocialViews(final Activity activity, final View view, @Nullable final String facebookId) {
-        try {
-            mUnbinder = ButterKnife.bind(this, view);
-        } catch (RuntimeException e) {
-            throw new ButterknifeInitException(SocialViews.class.getSimpleName() + " - must initWithPreferences with specific view!", e);
-        }
-
-        mActivity = activity;
-        mFacebookId = facebookId;
-        initFacebook();
+    init {
+        viewBinding = view?.let { IncludeSocialNetworksLayoutBinding.bind(it) }
+        initListeners()
+        initFacebook()
     }
 
-    public void showGoogleLogin(boolean isShow) {
-        if (isShow) {
-            mLoginPersonalSocialGoogleButton.setVisibility(View.VISIBLE);
-        } else {
-            mLoginPersonalSocialGoogleButton.setVisibility(View.GONE);
-        }
+    fun showGoogleLogin(isShow: Boolean) {
+        viewBinding?.loginSocialGoogleButton?.isVisible = isShow
     }
 
-    public void showFacebookLogin(boolean isShow) {
-        if (isShow) {
-            mLoginPersonalSocialFacebookButton.setVisibility(View.VISIBLE);
-        } else {
-            mLoginPersonalSocialFacebookButton.setVisibility(View.GONE);
-        }
+    fun showFacebookLogin(isShow: Boolean) {
+        viewBinding?.loginSocialFacebookButton?.isVisible = isShow
     }
-
 
     /*
     * Facebook initWithPreferences
     * */
-    private void initFacebook() {
-        Log.d(TAG, "initFacebook() - app ID: " + mActivity.getString(R.string.facebook_app_id));
-        if (mFacebookId != null) {
-            FacebookSdk.setApplicationId(mFacebookId);
-        }
+    private fun initFacebook() {
+        Log.d(TAG, "initFacebook() - app ID: " + activity.getString(R.string.facebook_app_id))
+        facebookId?.let { FacebookSdk.setApplicationId(it) }
+        loginPersonalSocialFacebookNativeButton = LoginButton(activity)
+        loginPersonalSocialFacebookNativeButton?.loginBehavior = LoginBehavior.WEB_ONLY
+        facebookCallbackManager = CallbackManager.Factory.create()
+        LoginManager.getInstance().registerCallback(facebookCallbackManager, FacebookAuthCallback())
+    }
 
-        mLoginPersonalSocialFacebookNativeButton = new LoginButton(mActivity);
-        mLoginPersonalSocialFacebookNativeButton.setLoginBehavior(LoginBehavior.WEB_ONLY);
-        mFacebookCallbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(mFacebookCallbackManager, new FacebookAuthCallback());
+    private fun initListeners() {
+        viewBinding?.let {
+            it.loginSocialFacebookButton.setOnClickListener { onFacebookClick() }
+            it.loginSocialGoogleButton.setOnClickListener { onGoogleClick() }
+        }
     }
 
     /*
     * Actions
     * */
-    @OnClick({ R.id.login_social_twitter_button,
-                     R.id.login_social_facebook_button,
-                     R.id.login_social_google_button })
-    public void onButtonsClick(final View view) {
-        switch (view.getId()) {
-            case R.id.login_social_facebook_button:
-                onFacebookClick();
-                break;
-            case R.id.login_social_google_button:
-                onGoogleClick();
-                break;
-        }
-    }
-
-    @SuppressLint("RestrictedApi")
-    public void onGoogleClick() {
-        final GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+    private fun onGoogleClick() {
+        val gso: GoogleSignInOptions =
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(Constants.GOOGLE_WEB_ID)
                 .requestProfile()
                 .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(mActivity, gso);
-        mGoogleSignInClient.signOut();
-        final Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        mActivity.startActivityForResult(signInIntent, RC_SIGN_IN);
+                .build()
+        googleSignInClient = GoogleSignIn.getClient(activity, gso).apply {
+            signOut()
+            activity.startActivityForResult(signInIntent, RC_SIGN_IN)
+        }
     }
 
-    @SuppressLint("RestrictedApi")
-    private void getGoogleToken(Task<GoogleSignInAccount> completedTask) {
-        if (mOnSocialNetworkCallbacks != null) {
+    private fun getGoogleToken(completedTask: Task<GoogleSignInAccount>) {
+        onSocialNetworkCallbacks?.let { callbacks ->
             try {
-                final GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-                mOnSocialNetworkCallbacks.onGoogleSuccess(account.getAccount());
-            } catch (ApiException e) {
-                Log.e(TAG, "Status code: " + e.getStatusCode(), e);
-                if (mGoogleSignInClient != null) {
-                    mGoogleSignInClient.signOut();
-                }
-                mOnSocialNetworkCallbacks.onGoogleFailed();
-            } catch (Exception e) {
-                if (mGoogleSignInClient != null) {
-                    mGoogleSignInClient.signOut();
-                }
-                mOnSocialNetworkCallbacks.onGoogleFailed();
+                val account: GoogleSignInAccount = completedTask.getResult(ApiException::class.java)
+                callbacks.onGoogleSuccess(account.account)
+            } catch (e: ApiException) {
+                Log.e(TAG, "Status code: " + e.statusCode, e)
+                googleSignInClient?.signOut()
+                callbacks.onGoogleFailed()
+            } catch (e: Exception) {
+                googleSignInClient?.signOut()
+                callbacks.onGoogleFailed()
             }
         }
     }
@@ -170,78 +109,72 @@ public class SocialViews {
     /*
     * Facebook click. Get previous token or get new with button click.
     * */
-    private void onFacebookClick() {
-        final AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if (mOnSocialNetworkCallbacks != null) {
-            if (accessToken != null) {
-                mOnSocialNetworkCallbacks.onFacebookLogin(accessToken.getUserId());
-            } else {
-                mLoginPersonalSocialFacebookNativeButton.performClick();
+    private fun onFacebookClick() {
+        val accessToken: AccessToken? = AccessToken.getCurrentAccessToken()
+        onSocialNetworkCallbacks?.let { callbacks ->
+            accessToken?.let { token ->
+                callbacks.onFacebookLogin(token.userId)
+            } ?: run {
+                loginPersonalSocialFacebookNativeButton?.performClick()
             }
         }
     }
 
-    public void onFacebookContinue() {
-        mOnSocialNetworkCallbacks.onFacebookSuccess(AccessToken.getCurrentAccessToken().getToken());
+    fun onFacebookContinue() {
+        onSocialNetworkCallbacks?.onFacebookSuccess(AccessToken.getCurrentAccessToken().token)
     }
 
-    public void onFacebookLogout() {
-        LoginManager.getInstance().logOut();
-        mLoginPersonalSocialFacebookNativeButton.performClick();
+    fun onFacebookLogout() {
+        LoginManager.getInstance().logOut()
+        loginPersonalSocialFacebookNativeButton?.performClick()
     }
-
 
     /*
     * Lifecycle methods
     * */
-    public void onDestroyView() {
-        LoginManager.getInstance().unregisterCallback(mFacebookCallbackManager);
-        setOnSocialNetworkCallbacks(null);
-        mUnbinder.unbind();
+    fun onDestroyView() {
+        LoginManager.getInstance().unregisterCallback(facebookCallbackManager)
+        setOnSocialNetworkCallbacks(null)
+        viewBinding = null
     }
 
-    @SuppressLint("RestrictedApi")
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RC_SIGN_IN) {
-            getGoogleToken(GoogleSignIn.getSignedInAccountFromIntent(data));
+            getGoogleToken(GoogleSignIn.getSignedInAccountFromIntent(data))
         } else {
-            mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+            facebookCallbackManager?.onActivityResult(requestCode, resultCode, data)
         }
     }
 
     /*
     * Getters/Setters
     * */
-    public void setOnSocialNetworkCallbacks(OnSocialNetworkCallbacks onSocialNetworkCallbacks) {
-        mOnSocialNetworkCallbacks = onSocialNetworkCallbacks;
+    fun setOnSocialNetworkCallbacks(onSocialNetworkCallbacks: OnSocialNetworkCallbacks?) {
+        this.onSocialNetworkCallbacks = onSocialNetworkCallbacks
     }
 
     /*
     * Facebook callback
     * */
-    private class FacebookAuthCallback implements FacebookCallback<LoginResult> {
-
-        @Override
-        public void onSuccess(LoginResult loginResult) {
-            if (mOnSocialNetworkCallbacks != null) {
-                mOnSocialNetworkCallbacks.onFacebookSuccess(loginResult.getAccessToken().getToken());
-            }
+    private inner class FacebookAuthCallback : FacebookCallback<LoginResult> {
+        override fun onSuccess(loginResult: LoginResult) {
+            onSocialNetworkCallbacks?.onFacebookSuccess(loginResult.accessToken.token)
         }
 
-        @Override
-        public void onCancel() {
-            if (mOnSocialNetworkCallbacks != null) {
-                mOnSocialNetworkCallbacks.onFacebookCancel();
-            }
+        override fun onCancel() {
+            onSocialNetworkCallbacks?.onFacebookCancel()
         }
 
-        @Override
-        public void onError(FacebookException exception) {
-            LoginManager.getInstance().logOut();
-            if (mOnSocialNetworkCallbacks != null) {
-                mOnSocialNetworkCallbacks.onFacebookFailed();
-            }
+        override fun onError(exception: FacebookException) {
+            LoginManager.getInstance().logOut()
+            onSocialNetworkCallbacks?.onFacebookFailed()
         }
+    }
+
+    companion object {
+        val TAG = SocialViews::class.java.simpleName
+        const val GOOGLE_PERMISSION = 1212
+        private const val RC_SIGN_IN = 9001
     }
 
 }
