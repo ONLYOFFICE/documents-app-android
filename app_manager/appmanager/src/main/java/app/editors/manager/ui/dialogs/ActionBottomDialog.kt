@@ -20,10 +20,10 @@ class ActionBottomDialog : BaseBottomDialog() {
     }
 
     private var viewBinding: ListExplorerActionMenuBinding? = null
-    private var isThirdParty = false
-    private var isDocs = true
-    private var isLocal = false
-    private var isWebDav = false
+    var isThirdParty = false
+    var isDocs = true
+    var isLocal = false
+    var isWebDav = false
     var onClickListener: OnClickListener? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -110,14 +110,6 @@ class ActionBottomDialog : BaseBottomDialog() {
             it.listExplorerActionSheet.isVisible = !isDocs || isLocal
             it.listExplorerActionUpload.isVisible = isLocal && isWebDav
         }
-    }
-
-    fun setThirdParty(isThirdParty: Boolean) {
-        this.isThirdParty = isThirdParty
-    }
-
-    fun setDocs(isDocs: Boolean) {
-        this.isDocs = isDocs
     }
 
     companion object {
