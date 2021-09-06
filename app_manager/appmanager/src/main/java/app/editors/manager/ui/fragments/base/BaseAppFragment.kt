@@ -99,10 +99,19 @@ abstract class BaseAppFragment : BaseFragment() {
     }
 
     companion object {
-        protected const val PERMISSION_SMS = 0
-        protected const val PERMISSION_WRITE_STORAGE = 1
-        protected const val PERMISSION_READ_STORAGE = 2
-        protected const val PERMISSION_CAMERA = 3
-        protected const val PERMISSION_READ_UPLOAD = 4
+        @JvmStatic
+        protected val PERMISSION_SMS = 0
+
+        @JvmStatic
+        protected val PERMISSION_WRITE_STORAGE = 1
+
+        @JvmStatic
+        protected val PERMISSION_READ_STORAGE = 2
+
+        @JvmStatic
+        protected val PERMISSION_CAMERA = 3
+
+        @JvmStatic
+        protected val PERMISSION_READ_UPLOAD = 4
     }
 }
