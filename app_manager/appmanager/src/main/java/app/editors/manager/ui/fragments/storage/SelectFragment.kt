@@ -1,131 +1,107 @@
-package app.editors.manager.ui.fragments.storage;
+package app.editors.manager.ui.fragments.storage
 
-import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.databinding.FragmentStorageSelectBinding
+import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.mvp.models.account.Storage
+import app.editors.manager.mvp.presenters.storage.SelectPresenter
+import app.editors.manager.mvp.views.storage.SelectView
+import app.editors.manager.ui.adapters.StorageAdapter
+import app.editors.manager.ui.fragments.base.BaseAppFragment
+import lib.toolkit.base.ui.adapters.BaseAdapter
+import moxy.presenter.InjectPresenter
+import javax.inject.Inject
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
-import app.editors.manager.R;
-import app.editors.manager.app.App;
-import app.editors.manager.managers.tools.PreferenceTool;
-import app.editors.manager.mvp.models.account.Storage;
-import app.editors.manager.mvp.presenters.storage.SelectPresenter;
-import app.editors.manager.mvp.views.storage.SelectView;
-import app.editors.manager.ui.adapters.StorageAdapter;
-import app.editors.manager.ui.fragments.base.BaseAppFragment;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-import lib.toolkit.base.ui.adapters.BaseAdapter;
-import moxy.presenter.InjectPresenter;
-
-public class SelectFragment extends BaseAppFragment implements BaseAdapter.OnItemClickListener, SelectView {
-
-    public static final String TAG = SelectFragment.class.getSimpleName();
-
-    @BindView(R.id.list_of_items)
-    protected RecyclerView mRecyclerView;
-    @BindView(R.id.refresh_layout)
-    protected SwipeRefreshLayout mRefreshLayout;
+class SelectFragment : BaseAppFragment(), BaseAdapter.OnItemClickListener, SelectView {
 
     @InjectPresenter
-    SelectPresenter mPresenter;
+    lateinit var presenter: SelectPresenter
 
     @Inject
-    PreferenceTool mPreferenceTool;
+    lateinit var preferenceTool: PreferenceTool
 
-    private Unbinder mUnbinder;
-    private StorageAdapter mStorageAdapter;
+    private var storageAdapter: StorageAdapter? = null
+    private var viewBinding: FragmentStorageSelectBinding? = null
 
-    public static SelectFragment newInstance() {
-        return new SelectFragment();
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        App.getApp().appComponent.inject(this)
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        App.getApp().getAppComponent().inject(this);
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        viewBinding = FragmentStorageSelectBinding.inflate(layoutInflater, container, false)
+        return viewBinding?.root
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        final View view = inflater.inflate(R.layout.fragment_storage_select, container, false);
-        mUnbinder = ButterKnife.bind(this, view);
-        return view;
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init()
+        presenter.getStorages()
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        init();
-        mPresenter.getStorages();
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewBinding = null
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mUnbinder.unbind();
-    }
-
-    @Override
-    public void onItemClick(View view, int position) {
-        String providerKey = mStorageAdapter.getItem(position);
-        mPresenter.connect(providerKey);
-    }
-
-    private void init() {
-        setActionBarTitle(getString(R.string.storage_select_title));
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
+    override fun onItemClick(view: View, position: Int) {
+        storageAdapter?.getItem(position)?.let {
+            presenter.connect(it)
         }
-        initViews();
     }
 
-    private void initViews() {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(mRecyclerView.getContext()));
-        mStorageAdapter = new StorageAdapter(requireContext());
-        mStorageAdapter.setOnItemClickListener(this);
-        mRecyclerView.setAdapter(mStorageAdapter);
-        mRefreshLayout.setOnRefreshListener(() -> mPresenter.getStorages());
+    private fun init() {
+        setActionBarTitle(getString(R.string.storage_select_title))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+        initViews()
     }
 
-    @Override
-    public void onUpdate(List<String> storages) {
-        mStorageAdapter.setItems(storages);
-    }
-
-    @Override
-    public void showWebTokenFragment(Storage storage) {
-        showFragment(WebTokenFragment.newInstance(storage), WebTokenFragment.TAG, false);
-    }
-
-    @Override
-    public void showWebDavFragment(String providerKey, String url, String title) {
-        showFragment(WebDavFragment.newInstance(providerKey, url, title), WebDavFragment.TAG, false);
-    }
-
-    @Override
-    public void showProgress(boolean isVisible) {
-        mRefreshLayout.setRefreshing(isVisible);
-    }
-
-    @Override
-    public void onError(@Nullable String message) {
-        if (message != null) {
-            showSnackBar(message);
+    private fun initViews() {
+        storageAdapter = StorageAdapter().apply {
+            setOnItemClickListener(this@SelectFragment)
         }
+        viewBinding?.let {
+            it.listOfItems.layoutManager = LinearLayoutManager(context)
+            it.listOfItems.adapter = storageAdapter
+            it.refreshLayout.setOnRefreshListener { presenter.getStorages() }
+        }
+    }
+
+    override fun onUpdate(storages: List<String>) {
+        storageAdapter?.setItems(storages)
+    }
+
+    override fun showWebTokenFragment(storage: Storage) {
+        showFragment(WebTokenFragment.newInstance(storage), WebTokenFragment.TAG, false)
+    }
+
+    override fun showWebDavFragment(providerKey: String, url: String, title: String) {
+        showFragment(WebDavFragment.newInstance(providerKey, url, title), WebDavFragment.TAG, false)
+    }
+
+    override fun showProgress(isVisible: Boolean) {
+        viewBinding?.refreshLayout?.isRefreshing = isVisible
+    }
+
+    override fun onError(message: String?) {
+        message?.let { showSnackBar(it) }
+    }
+
+    companion object {
+        val TAG = SelectFragment::class.java.simpleName
+
+        fun newInstance(): SelectFragment = SelectFragment()
     }
 }
