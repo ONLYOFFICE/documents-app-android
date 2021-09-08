@@ -7,7 +7,6 @@ import app.editors.manager.ui.adapters.holders.ShareHeaderViewHolder
 import app.editors.manager.ui.adapters.holders.ShareItemViewHolder
 import lib.toolkit.base.ui.adapters.factory.HolderFactory
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
-import java.lang.RuntimeException
 
 class ShareHolderFactory(private val clickListener: (view: View, position: Int) -> Unit)
     : HolderFactory() {

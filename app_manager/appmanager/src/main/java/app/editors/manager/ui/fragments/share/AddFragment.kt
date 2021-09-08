@@ -1,11 +1,7 @@
 package app.editors.manager.ui.fragments.share
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import app.editors.manager.databinding.FragmentListBinding
-import app.editors.manager.databinding.FragmentShareAddListBinding
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
@@ -31,33 +27,10 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     lateinit var addPresenter: AddPresenter
 
     private var shareAdapter: ShareAdapter? = null
-    private var viewBinding: FragmentShareAddListBinding? = null
-    private var fragmentListBinding: FragmentListBinding? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        viewBinding = FragmentShareAddListBinding.inflate(inflater, container, false)
-        fragmentListBinding = FragmentListBinding
-            .bind(viewBinding?.root ?: throw RuntimeException("View binding can not be null"))
-            .apply {
-                recyclerView = listOfItems
-                swipeRefreshLayout = listSwipeRefresh
-            }
-        return viewBinding?.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(savedInstanceState)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewBinding = null
-        fragmentListBinding = null
     }
 
     override fun onRefresh() {
@@ -169,9 +142,7 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     private val isActivePage: Boolean
-        get() = parentFragment.let {
-                it is AddPagerFragment && it.isActivePage(this)
-            }
+        get() = parentFragment.let { it is AddPagerFragment && it.isActivePage(this) }
 
     fun updateAdapterState() {
         shareAdapter?.notifyDataSetChanged()

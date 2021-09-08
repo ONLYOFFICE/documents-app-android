@@ -19,7 +19,7 @@ import java.util.*
 class ShareAddItemViewHolder(
     view: View,
     private val listener: BaseAdapter.OnItemClickListener?)
-    : ShareViewHolder<ViewType>(view) {
+    : ShareViewHolder(view) {
 
     private val itemBinding = ListShareAddItemBinding.bind(view)
     private var shareLayout: ConstraintLayout = itemBinding.shareAddItemLayout

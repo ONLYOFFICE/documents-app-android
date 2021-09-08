@@ -33,7 +33,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     lateinit var addPresenter: AddPresenter
     
     private var shareActivity: ShareActivity? = null
-    private var shareAddAdapter: ShareAdapter? = null
+    private var shareAdapter: ShareAdapter? = null
     private var sharePanelViews: SharePanelViews? = null
     private var toolbarMenu: Menu? = null
     private var searchItem: MenuItem? = null
@@ -64,13 +64,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         savedInstanceState: Bundle?
     ): View? {
         viewBinding = FragmentShareAddListSearchBinding.inflate(inflater, container, false)
-        fragmentListBinding = FragmentListBinding
-            .bind(viewBinding?.root ?: throw RuntimeException("View binding can not be null"))
-            .apply {
-                recyclerView = listOfItems
-                swipeRefreshLayout = listSwipeRefresh
-            }
-        return viewBinding?.root
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -145,13 +139,13 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     override fun onItemClick(view: View, position: Int) {
-        shareAddAdapter?.getItem(position).let { item ->
+        shareAdapter?.getItem(position).let { item ->
             when (item) {
                 is UserUi -> item.isSelected = !item.isSelected
                 is GroupUi -> item.isSelected = !item.isSelected
             }
         }
-        shareAddAdapter?.notifyItemChanged(position)
+        shareAdapter?.notifyItemChanged(position)
         setCountChecked()
     }
 
@@ -163,7 +157,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         addPresenter.resetChecked()
         sharePanelViews?.setCount(0)
         sharePanelViews?.setAddButtonEnable(false)
-        shareAddAdapter?.notifyDataSetChanged()
+        shareAdapter?.notifyDataSetChanged()
     }
 
     override fun onPanelMessageClick(isShow: Boolean) {
@@ -182,7 +176,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     override fun onError(message: String?) {
         swipeRefreshLayout?.isRefreshing = false
         message?.let { showSnackBar(it) }
-        if (shareAddAdapter?.itemCount == 0) {
+        if (shareAdapter?.itemCount == 0) {
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.CONNECTION)
         }
     }
@@ -203,7 +197,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     override fun onGetCommon(list: List<ViewType>) {
         setPlaceholder(list.isNotEmpty())
         swipeRefreshLayout?.isRefreshing = false
-        shareAddAdapter?.setMode(BaseAdapter.Mode.COMMON)
+        shareAdapter?.setMode(BaseAdapter.Mode.COMMON)
         updateDiffUtils(list)
     }
 
@@ -220,9 +214,9 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     private fun updateDiffUtils(list: List<ViewType>) {
-        val diffUtils = ShareSearchDiffUtilsCallback(list, shareAddAdapter?.itemsList!!)
+        val diffUtils = ShareSearchDiffUtilsCallback(list, shareAdapter?.itemsList!!)
         val result = DiffUtil.calculateDiff(diffUtils)
-        shareAddAdapter?.set(list, result)
+        shareAdapter?.set(list, result)
     }
 
     private fun init(savedInstanceState: Bundle?) {
@@ -240,15 +234,19 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     private fun initViews() {
-        sharePanelViews = SharePanelViews(viewBinding?.sharePanelLayout?.root, activity).apply {
-            setOnEventListener(this@AddSearchFragment)
-            setAccessIcon(addPresenter.accessCode)
+        sharePanelViews = activity?.let { activity ->
+            viewBinding?.sharePanelLayout?.root?.let { layout ->
+                SharePanelViews(layout, activity).apply {
+                    setOnEventListener(this@AddSearchFragment)
+                    setAccessIcon(addPresenter.accessCode)
+                }
+            }
         }
-        shareAddAdapter = ShareAdapter(ShareHolderFactory { view, position ->
+        shareAdapter = ShareAdapter(ShareHolderFactory { view, position ->
             onItemClick(view, position)
         })
-        shareAddAdapter?.setMode(BaseAdapter.Mode.COMMON)
-        recyclerView?.adapter = shareAddAdapter
+        shareAdapter?.setMode(BaseAdapter.Mode.COMMON)
+        recyclerView?.adapter = shareAdapter
         setCountChecked()
     }
 

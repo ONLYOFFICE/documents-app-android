@@ -1,21 +1,18 @@
 package app.editors.manager.ui.fragments.share
 
 import android.content.Context
-import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.views.custom.SharePanelViews
-import app.editors.manager.R
-import app.editors.manager.mvp.models.models.ModelShareStack
-import app.editors.manager.ui.activities.main.ShareActivity
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareAddPagerBinding
 import app.editors.manager.mvp.models.explorer.Item
+import app.editors.manager.mvp.models.models.ModelShareStack
+import app.editors.manager.ui.activities.main.ShareActivity
+import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.animation.HeightValueAnimator
+import app.editors.manager.ui.views.custom.SharePanelViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
-import java.lang.ClassCastException
-import java.lang.NullPointerException
-import java.lang.RuntimeException
 
 class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
 
@@ -148,7 +145,7 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
             binding.shareAddViewPager.addOnPageChangeListener(viewPagerAdapter!!)
             binding.shareAddViewPager.adapter = viewPagerAdapter
             shareActivity?.getTabLayout()?.setupWithViewPager(binding.shareAddViewPager, true)
-            sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, activity).apply {
+            sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, requireActivity()).apply {
                 setOnEventListener(this@AddPagerFragment)
                 setAccessIcon(modelShareStack?.accessCode!!)
             }
