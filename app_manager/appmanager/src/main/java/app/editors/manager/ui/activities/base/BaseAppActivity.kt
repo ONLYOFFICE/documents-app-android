@@ -17,10 +17,10 @@ abstract class BaseAppActivity : BaseActivity(), FragmentManager.OnBackStackChan
     ContextDialogInterface {
 
     private val TAG = javaClass.simpleName
-    private var mHandler: Handler? = null
-    private var mFinishRunnable: Runnable? = null
-    private var mIsFinish = false
-    private var mIsBackStackNotice = false
+    private var handler: Handler? = null
+    private var finishRunnable: Runnable? = null
+    private var isFinish = false
+    private var isBackStackNotice = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,15 +28,15 @@ abstract class BaseAppActivity : BaseActivity(), FragmentManager.OnBackStackChan
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(TAG_FINISH, mIsFinish)
+        outState.putBoolean(TAG_FINISH, isFinish)
         super.onSaveInstanceState(outState)
     }
 
     override fun onContextDialogOpen() {}
     override fun onDestroy() {
         super.onDestroy()
-        mFinishRunnable?.let { runnable ->
-            mHandler?.removeCallbacks(runnable)
+        finishRunnable?.let { runnable ->
+            handler?.removeCallbacks(runnable)
         }
         supportFragmentManager.removeOnBackStackChangedListener(this)
     }
@@ -49,20 +49,20 @@ abstract class BaseAppActivity : BaseActivity(), FragmentManager.OnBackStackChan
     }
 
     private fun initHandlers() {
-        mIsBackStackNotice = false
-        mHandler = Handler()
-        mFinishRunnable = Runnable { mIsFinish = false }
+        isBackStackNotice = false
+        handler = Handler()
+        finishRunnable = Runnable { isFinish = false }
     }
 
     private fun startResetFinishTimer() {
-        mFinishRunnable?.let { runnable ->
-            mHandler?.postDelayed(runnable, TIMER_FINISH.toLong())
+        finishRunnable?.let { runnable ->
+            handler?.postDelayed(runnable, TIMER_FINISH.toLong())
         }
     }
 
     private fun initViews() {
         supportFragmentManager.addOnBackStackChangedListener(this)
-        mIsFinish = false
+        isFinish = false
     }
 
     private fun showEmailClients(to: String?, subject: String?, body: String?) {

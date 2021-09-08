@@ -3,7 +3,7 @@ package app.editors.manager.ui.adapters.holders
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import app.editors.manager.databinding.ListCountriesCodesItemBinding
-import app.editors.manager.managers.tools.CountriesCodesTool.*
+import app.editors.manager.managers.tools.CountriesCodesTool.Codes
 import app.editors.manager.managers.utils.isVisible
 import lib.toolkit.base.ui.adapters.BaseAdapter
 
@@ -21,8 +21,7 @@ class CountriesCodeViewHolder(view: View, mOnItemClickListener: BaseAdapter.OnIt
     fun bind(codesCurrent: Codes?, codesBefore: Codes?) {
         viewBinding.countriesCodesAlphaText.text = "+" + codesCurrent?.number
         viewBinding.countriesCodesNameText.text = codesCurrent?.name
-        if (codesBefore == null || codesCurrent?.name?.get(0) != codesBefore.name[0]
-        ) {
+        if (codesBefore == null || codesCurrent?.name?.get(0) != codesBefore.name[0]) {
             viewBinding.countriesCodesAlphaText.isVisible = true
             viewBinding.countriesCodesAlphaText.text = codesCurrent?.name?.get(0).toString()
         } else {

@@ -13,13 +13,13 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 class OnBoardingPageFragment : BaseAppFragment() {
 
     @StringRes
-    private var mHeaderResId = 0
+    private var headerResId = 0
 
     @StringRes
-    private var mInfoResId = 0
+    private var infoResId = 0
 
     @DrawableRes
-    private var mImageResId = 0
+    private var imageResId = 0
 
     private var viewBinding: FragmentOnBoardingPageBinding? = null
 
@@ -47,17 +47,17 @@ class OnBoardingPageFragment : BaseAppFragment() {
     private fun init() {
         getArgs()
         viewBinding?.let {
-            it.onBoardingPageHeader.setText(mHeaderResId)
-            it.onBoardingPageInfo.setText(mInfoResId)
-            it.onBoardingPageImage.setImageResource(mImageResId)
+            it.onBoardingPageHeader.setText(headerResId)
+            it.onBoardingPageInfo.setText(infoResId)
+            it.onBoardingPageImage.setImageResource(imageResId)
         }
     }
 
     private fun getArgs() {
         arguments?.let { bundle ->
-            mHeaderResId = bundle.getInt(TAG_HEADER)
-            mInfoResId = bundle.getInt(TAG_INFO)
-            mImageResId = bundle.getInt(TAG_IMAGE)
+            headerResId = bundle.getInt(TAG_HEADER)
+            infoResId = bundle.getInt(TAG_INFO)
+            imageResId = bundle.getInt(TAG_IMAGE)
         }
     }
 

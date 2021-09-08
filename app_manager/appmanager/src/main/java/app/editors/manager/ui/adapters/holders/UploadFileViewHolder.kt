@@ -13,18 +13,18 @@ import java.util.*
 class UploadFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
     BaseViewHolderExplorer<UploadFile>(itemView, adapter) {
 
-    private var mFile: UploadFile? = null
+    private var file: UploadFile? = null
     private var viewBinding = ListExplorerUploadFilesBinding.bind(itemView)
 
     init {
         viewBinding.listExplorerUploadFileCancel.setOnClickListener {
-            WorkManager.getInstance().cancelAllWorkByTag(mFile?.uri.toString())
+            WorkManager.getInstance().cancelAllWorkByTag(file?.uri.toString())
         }
     }
 
     override fun bind(file: UploadFile) {
         with(viewBinding) {
-            mFile = file
+            this@UploadFileViewHolder.file = file
             if (file.progress == 0) {
                 uploadFileProgressBar.progress = 0
                 listExplorerUploadFileProgress.setText(R.string.upload_manager_waiting_title)

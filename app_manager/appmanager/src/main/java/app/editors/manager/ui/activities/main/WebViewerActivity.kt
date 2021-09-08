@@ -13,7 +13,7 @@ import app.editors.manager.ui.fragments.main.WebViewerFragment.Companion.newInst
 
 class WebViewerActivity : BaseAppActivity() {
     private var viewBinding: ActivityViewerWebBinding? = null
-    private var mUncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
+    private var uncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,11 +37,11 @@ class WebViewerActivity : BaseAppActivity() {
     }
 
     private fun initException() {
-        mUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
+        uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread: Thread, throwable: Throwable? ->
             Log.d(TAG, "ID: " + thread.id + "; NAME: " + thread.name)
             setResult(RESULT_CANCELED, Intent())
-            mUncaughtExceptionHandler?.uncaughtException(thread, throwable ?: Throwable())
+            uncaughtExceptionHandler?.uncaughtException(thread, throwable ?: Throwable())
         }
     }
 

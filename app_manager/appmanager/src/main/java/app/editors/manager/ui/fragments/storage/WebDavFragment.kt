@@ -10,7 +10,6 @@ import android.view.inputmethod.EditorInfo
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
-import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
@@ -21,15 +20,11 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
-import javax.inject.Inject
 
 class WebDavFragment : BaseAppFragment(), ConnectView {
 
-    @Inject
-    lateinit var mPreferenceTool: PreferenceTool
-
     @InjectPresenter
-    lateinit var mConnectPresenter: ConnectPresenter
+    lateinit var connectPresenter: ConnectPresenter
 
     private var storageActivity: StorageActivity? = null
     private var fieldsWatcher: FieldsWatcher? = null
@@ -72,13 +67,13 @@ class WebDavFragment : BaseAppFragment(), ConnectView {
 
     override fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
         super.onCancelClick(dialogs, tag)
-        mConnectPresenter.cancelRequest()
+        connectPresenter.cancelRequest()
     }
 
     private fun onSaveClick() {
         viewBinding?.let {
             showWaitingDialog(getString(R.string.dialogs_wait_title_storage))
-            mConnectPresenter.connectWebDav(
+            connectPresenter.connectWebDav(
                 providerKey,
                 it.storageWebDavUrlEdit.text.toString(),
                 it.storageWebDavLoginEdit.text.toString(),

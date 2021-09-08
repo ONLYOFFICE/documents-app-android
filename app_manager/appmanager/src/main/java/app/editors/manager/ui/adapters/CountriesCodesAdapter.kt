@@ -5,16 +5,15 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import app.editors.manager.R
-import app.editors.manager.managers.tools.CountriesCodesTool.*
+import app.editors.manager.managers.tools.CountriesCodesTool.Codes
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import app.editors.manager.ui.adapters.holders.CountriesCodeViewHolder
 import lib.toolkit.base.managers.extensions.inflate
-import java.util.ArrayList
 
 class CountriesCodesAdapter : BaseAdapter<Codes>(), Filterable {
 
-    private var mAdapterFilter: AdapterFilter? = null
-    private var mDefaultList: List<Codes>? = null
+    private var adapterFilter: AdapterFilter? = null
+    private var defaultList: List<Codes>? = null
 
     override fun onCreateViewHolder(view: ViewGroup, type: Int): RecyclerView.ViewHolder =
         CountriesCodeViewHolder(view.inflate(R.layout.list_countries_codes_item), mOnItemClickListener)
@@ -24,8 +23,8 @@ class CountriesCodesAdapter : BaseAdapter<Codes>(), Filterable {
     }
 
     override fun getFilter(): Filter =
-        mAdapterFilter ?: run {
-            mDefaultList = ArrayList(mList)
+        adapterFilter ?: run {
+            defaultList = ArrayList(mList)
             AdapterFilter()
         }
 
@@ -38,7 +37,7 @@ class CountriesCodesAdapter : BaseAdapter<Codes>(), Filterable {
 
         override fun performFiltering(constraint: CharSequence): FilterResults {
             val upperSymbols = constraint.toString().uppercase()
-            mList = mDefaultList
+            mList = defaultList
             mFilteredList.clear()
             mList.forEach { codes ->
                 if (codes.name.uppercase().startsWith(upperSymbols)) {

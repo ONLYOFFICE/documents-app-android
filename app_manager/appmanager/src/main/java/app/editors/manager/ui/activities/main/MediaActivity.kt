@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewPropertyAnimator
@@ -21,9 +20,9 @@ import lib.toolkit.base.ui.activities.base.BaseActivity
 class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
     private var viewBinding: ActivityMediaBinding? = null
-    private var mUncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
-    private var mViewPropertyAnimator: ViewPropertyAnimator? = null
-    private var mBackDrawable: Drawable? = null
+    private var uncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
+    private var viewPropertyAnimator: ViewPropertyAnimator? = null
+    private var backDrawable: Drawable? = null
 
     private val mToolbarRunnableGone = Runnable {
         viewBinding?.appBarToolbar?.visibility = View.GONE
@@ -74,25 +73,25 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
     }
 
     private fun initException() {
-        mUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
+        uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread: Thread, throwable: Throwable? ->
             Log.d(TAG, "ID: " + thread.id + "; NAME: " + thread.name)
             setResult(Activity.RESULT_CANCELED, Intent())
-            mUncaughtExceptionHandler?.uncaughtException(thread, throwable ?: Throwable())
+            uncaughtExceptionHandler?.uncaughtException(thread, throwable ?: Throwable())
         }
     }
 
     private fun initToolbar() {
-        mBackDrawable = UiUtils
+        backDrawable = UiUtils
             .getFilteredDrawable(this, R.drawable.ic_toolbar_back, R.color.colorWhite)
         setSupportActionBar(viewBinding?.appBarToolbar)
         setStatusBarColor(R.color.colorBlack)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(mBackDrawable)
+        supportActionBar?.setHomeAsUpIndicator(backDrawable)
     }
 
     private fun resetToolbarView(isVisible: Boolean) {
-        mViewPropertyAnimator?.cancel()
+        viewPropertyAnimator?.cancel()
         viewBinding?.appBarToolbar?.run {
             removeCallbacks(mToolbarRunnableGone)
             removeCallbacks(mToolbarRunnableVisible)
@@ -116,7 +115,7 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
     fun showToolbar(): Boolean {
         val isVisible = viewBinding?.appBarToolbar?.visibility == View.VISIBLE
         resetToolbarView(isVisible)
-        mViewPropertyAnimator = viewBinding?.run {
+        viewPropertyAnimator = viewBinding?.run {
             appBarToolbar.animate()
                 .alpha(if (isVisible) ALPHA_FROM else ALPHA_TO)
                 .setDuration(ALPHA_DELAY.toLong())

@@ -2,16 +2,12 @@ package app.editors.manager.ui.adapters
 
 import android.content.Context
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.network.ApiContract
-import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.UploadFile
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.Header
@@ -20,7 +16,6 @@ import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
 import app.editors.manager.ui.adapters.holders.FooterViewHolder
 import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactory
-import lib.toolkit.base.managers.utils.UiUtils.getFloatResource
 import lib.toolkit.base.ui.adapters.factory.inflate
 import javax.inject.Inject
 
@@ -128,37 +123,6 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
             val favoriteMask = file.fileStatus.toInt() and ApiContract.FileStatus.FAVORITE
             file.favorite = favoriteMask != 0
         }
-    }
-
-    fun setFolderIcon(view: ImageView, folder: CloudFolder) {
-        @DrawableRes var resId = R.drawable.ic_type_folder
-        if (folder.shared && folder.providerKey.isEmpty()) {
-            resId = R.drawable.ic_type_folder_shared
-        } else if (isRoot && folder.providerItem && !folder.providerKey.isEmpty()) {
-            when (folder.providerKey) {
-                ApiContract.Storage.BOXNET -> resId = R.drawable.ic_storage_box
-                ApiContract.Storage.DROPBOX -> resId = R.drawable.ic_storage_dropbox
-                ApiContract.Storage.SHAREPOINT -> resId = R.drawable.ic_storage_sharepoint
-                ApiContract.Storage.GOOGLEDRIVE -> resId = R.drawable.ic_storage_google
-                ApiContract.Storage.ONEDRIVE, ApiContract.Storage.SKYDRIVE -> resId =
-                    R.drawable.ic_storage_onedrive
-                ApiContract.Storage.YANDEX -> resId = R.drawable.ic_storage_yandex
-                ApiContract.Storage.WEBDAV -> {
-                    resId = R.drawable.ic_storage_webdav
-                    view.setImageResource(resId)
-                    view.alpha =
-                        getFloatResource(context, R.dimen.alpha_medium)
-                    return
-                }
-            }
-            view.setImageResource(resId)
-            view.alpha = 1.0f
-            view.clearColorFilter()
-            return
-        }
-        view.setImageResource(resId)
-        view.alpha =
-            getFloatResource(context, R.dimen.alpha_medium)
     }
 
     fun checkHeaders() {

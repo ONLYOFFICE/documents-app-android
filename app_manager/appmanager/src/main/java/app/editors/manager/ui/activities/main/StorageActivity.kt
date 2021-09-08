@@ -4,26 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.FrameLayout
-import androidx.appcompat.widget.Toolbar
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import app.editors.manager.R
 import app.editors.manager.databinding.ActivityStorageBinding
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.storage.SelectFragment
-import com.google.android.material.appbar.AppBarLayout
-import java.lang.RuntimeException
 
 class StorageActivity : BaseAppActivity() {
 
     private var viewBinding: ActivityStorageBinding? = null
-    private var appBarToolbar: Toolbar? = viewBinding?.appBarToolbar
-
-    var appLayout: CoordinatorLayout? = viewBinding?.appLayout
-    var appBarLayout: AppBarLayout? = viewBinding?.appBarLayout
-    var frameContainer: FrameLayout? = viewBinding?.frameContainer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +43,7 @@ class StorageActivity : BaseAppActivity() {
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        setSupportActionBar(appBarToolbar)
+        setSupportActionBar(viewBinding?.appBarToolbar)
         savedInstanceState ?: run {
             showFragment(SelectFragment.newInstance(), null)
         }

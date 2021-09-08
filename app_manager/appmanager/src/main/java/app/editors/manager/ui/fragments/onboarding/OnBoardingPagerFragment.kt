@@ -24,7 +24,7 @@ class OnBoardingPagerFragment : BaseAppFragment() {
     @Inject
     lateinit var preferenceTool: PreferenceTool
 
-    private var mOnBoardAdapter: OnBoardAdapter? = null
+    private var onBoardAdapter: OnBoardAdapter? = null
     private var viewBinding: FragmentOnBoardingPagerBinding? = null
 
     override fun onAttach(context: Context) {
@@ -65,9 +65,9 @@ class OnBoardingPagerFragment : BaseAppFragment() {
 
     private fun init() {
         viewBinding?.let { binding ->
-            mOnBoardAdapter = OnBoardAdapter(childFragmentManager, fragments)
-            binding.onBoardingViewPager.adapter = mOnBoardAdapter
-            binding.onBoardingViewPager.addOnPageChangeListener(mOnBoardAdapter!!)
+            onBoardAdapter = OnBoardAdapter(childFragmentManager, fragments)
+            binding.onBoardingViewPager.adapter = onBoardAdapter
+            binding.onBoardingViewPager.addOnPageChangeListener(onBoardAdapter!!)
             binding.include.onBoardingPanelIndicator.setAnimationType(AnimationType.WORM)
             binding.include.onBoardingPanelIndicator.setViewPager(binding.onBoardingViewPager)
             binding.include.onBoardingPanelSkipButton.setOnClickListener {
@@ -75,11 +75,11 @@ class OnBoardingPagerFragment : BaseAppFragment() {
                 finishWithOkCode()
             }
             binding.include.onBoardingPanelNextButton.setOnClickListener {
-                if (mOnBoardAdapter?.isLastPagePosition == true) {
+                if (onBoardAdapter?.isLastPagePosition == true) {
                     finishWithOkCode()
                 } else {
                     binding.onBoardingViewPager
-                        .setCurrentItem(mOnBoardAdapter?.selectedPage!! + 1, true)
+                        .setCurrentItem(onBoardAdapter?.selectedPage!! + 1, true)
                 }
             }
         }
@@ -112,7 +112,7 @@ class OnBoardingPagerFragment : BaseAppFragment() {
             super.onPageSelected(position)
             this.position = position
             viewBinding?.let {
-                if (position == mOnBoardAdapter?.count!! - 1) {
+                if (position == onBoardAdapter?.count!! - 1) {
                     it.include.onBoardingPanelNextButton.setText(R.string.on_boarding_finish_button)
                     it.include.onBoardingPanelSkipButton.isVisible = false
                     preferenceTool.onBoarding = true
@@ -127,7 +127,7 @@ class OnBoardingPagerFragment : BaseAppFragment() {
             SwipeEventUtils.detectLeft(viewBinding?.onBoardingViewPager!!,
                 object : SwipeEventUtils.SwipeSingleCallback {
                 override fun onSwipe() {
-                    if (position == mOnBoardAdapter?.count!! - 1) {
+                    if (position == onBoardAdapter?.count!! - 1) {
                         viewBinding?.include?.onBoardingPanelNextButton?.callOnClick()
                     }
                 }
