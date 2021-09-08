@@ -14,9 +14,9 @@ import app.editors.manager.managers.providers.ProviderError
 import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.models.ModelExplorerStack
-import app.editors.manager.mvp.models.models.State
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
+import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -159,7 +159,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
         mIsContextClick = true
-        val state = State()
+        val state = ContextBottomDialog.State()
         state.isLocal = true
         state.title = item.title
         state.info = TimeUtils.formatDate(itemClickedDate)

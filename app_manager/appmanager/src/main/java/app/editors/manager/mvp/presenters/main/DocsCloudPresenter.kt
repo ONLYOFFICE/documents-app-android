@@ -25,13 +25,13 @@ import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.models.OpenDataModel
-import app.editors.manager.mvp.models.models.State
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestDeleteShare
 import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.views.main.DocsCloudView
+import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.Observable
@@ -251,7 +251,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
         mIsContextClick = true
-        val state = State()
+        val state = ContextBottomDialog.State()
         state.title = itemClickedTitle
         state.info = TimeUtils.formatDate(itemClickedDate)
         state.isFolder = !isClickedItemFile

@@ -16,9 +16,9 @@ import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
-import app.editors.manager.mvp.models.models.State
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.views.main.DocsWebDavView
+import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -190,7 +190,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
         mIsContextClick = true
-        val state = State()
+        val state = ContextBottomDialog.State()
         state.title = itemClickedTitle
         state.info = formatDate(itemClickedDate)
         state.isFolder = item is CloudFolder

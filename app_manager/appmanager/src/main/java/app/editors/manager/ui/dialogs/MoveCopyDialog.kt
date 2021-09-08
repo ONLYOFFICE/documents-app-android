@@ -50,7 +50,7 @@ class MoveCopyDialog : BaseDialog() {
             folderTitle = it.getString(TAG_FOLDER_NAME)
             setTitle(it.getStringArrayList(TAG_NAME_FILES) ?: listOf())
         }
-        setListeners()
+        initListeners()
     }
 
     @SuppressLint("StringFormatInvalid")
@@ -76,7 +76,7 @@ class MoveCopyDialog : BaseDialog() {
         viewBinding = null
     }
 
-    private fun setListeners() {
+    private fun initListeners() {
         viewBinding?.let {
             it.continueButton.setOnClickListener {
                 dialogButtonOnClick?.continueClick(buttonTag, action)

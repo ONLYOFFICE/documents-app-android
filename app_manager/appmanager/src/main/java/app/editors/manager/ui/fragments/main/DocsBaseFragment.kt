@@ -24,7 +24,6 @@ import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.list.Header
-import app.editors.manager.mvp.models.models.State
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
@@ -694,7 +693,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         explorerAdapter?.notifyItemChanged(position)
     }
 
-    override fun onItemContext(state: State) {
+    override fun onItemContext(state: ContextBottomDialog.State) {
         showContextDialog(state)
     }
 
@@ -965,7 +964,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    private fun showContextDialog(state: State) {
+    private fun showContextDialog(state: ContextBottomDialog.State) {
         contextBottomDialog?.let { dialog ->
             dialog.state = state
             dialog.onClickListener = this

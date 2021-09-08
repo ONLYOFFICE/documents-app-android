@@ -14,7 +14,6 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.models.State
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.main.RecentState
@@ -292,7 +291,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         recyclerView?.scrollToPosition(0)
     }
 
-    override fun onContextShow(state: State) {
+    override fun onContextShow(state: ContextBottomDialog.State) {
         parentFragmentManager.let {
             contextBottomDialog?.state = state
             contextBottomDialog?.show(it, ContextBottomDialog.TAG)

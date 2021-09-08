@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
@@ -12,14 +13,15 @@ import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.isVisible
-import app.editors.manager.mvp.models.models.State
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
+import java.io.Serializable
 
 class ContextBottomDialog : BaseBottomDialog() {
+
     enum class Buttons {
         NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD, 
         RENAME, DELETE, SHARE_DELETE, FAVORITE_ADD, FAVORITE_DELETE
@@ -54,8 +56,8 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     @SuppressLint("RestrictedApi")
     override fun setupDialog(dialog: Dialog, style: Int) {
-        super.setupDialog(dialog, style)
         init(dialog)
+        super.setupDialog(dialog, style)
     }
 
     override fun onDestroyView() {
@@ -75,7 +77,8 @@ class ContextBottomDialog : BaseBottomDialog() {
     }
 
     private fun init(dialog: Dialog) {
-        viewBinding = ListExplorerContextMenuBinding.inflate(layoutInflater).also {
+        viewBinding = ListExplorerContextMenuBinding.inflate(LayoutInflater.from(context))
+        viewBinding?.let {
             dialog.setContentView(it.root)
             it.listExplorerContextHeaderTitleText.text = state.title
             it.listExplorerContextHeaderInfoText.text = state.info
@@ -85,9 +88,9 @@ class ContextBottomDialog : BaseBottomDialog() {
                 app.editors.manager.managers.utils.UiUtils.setFileIcon(
                     it.listExplorerContextHeaderImage, StringUtils.getExtensionFromPath(state.title))
             }
-            setViewState()
-            initListeners()
         }
+        setViewState()
+        initListeners()
     }
 
     private fun setViewState() {
@@ -130,8 +133,11 @@ class ContextBottomDialog : BaseBottomDialog() {
                 if (StringUtils.convertServerVersion(networkSettings.serverVersion)
                     >= 11 && preferenceTool.isFavoritesEnabled) {
                     it.viewLineSeparatorFavorites.viewLineSeparator.isVisible = true
-                    it.listExplorerContextDeleteFromFavorite.isVisible = state.isFavorite
-                    it.listExplorerContextAddToFavorite.isVisible = state.isFavorite
+                    if (state.isFavorite) {
+                        it.listExplorerContextDeleteFromFavorite.isVisible = true
+                    } else {
+                        it.listExplorerContextAddToFavorite.isVisible = true
+                    }
                 }
 
                 /** File is document */
@@ -157,7 +163,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextShare.isVisible = state.isCanShare && !state.isOneDrive
 
             /** Only for share section, instead of delete */
-            it.listExplorerContextDelete.isVisible = state.isDeleteShare
+            it.listExplorerContextShareDelete.isVisible = state.isDeleteShare
 
             if (preferenceTool.isPersonalPortal && !state.isFolder) {
                 it.viewLineSeparatorShare.viewLineSeparator.isVisible = true
@@ -264,26 +270,45 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextAddToFavorite.setOnClickListener(Buttons.FAVORITE_ADD)
             it.listExplorerContextDeleteFromFavorite.setOnClickListener(Buttons.FAVORITE_DELETE)
         }
-        dismiss()
     }
 
     private fun View.setOnClickListener(button: Buttons) {
         this.setOnClickListener {
             onClickListener?.onContextButtonClick(button)
+            dismiss()
         }
     }
 
     companion object {
-
         @JvmField
         val TAG = ContextBottomDialog::class.java.simpleName
         private const val TAG_STATE = "TAG_STATE"
 
         @JvmStatic
         fun newInstance(): ContextBottomDialog {
-            String.apply {  }
             return ContextBottomDialog()
         }
     }
+
+    data class State (
+        var title: String = "",
+        var info: String = "",
+        var iconResId: Int = 0,
+        var isFolder: Boolean = false,
+        var isShared: Boolean = false,
+        var isCanShare: Boolean = false,
+        var isDocs: Boolean = false,
+        var isStorage: Boolean = false,
+        var isItemEditable: Boolean = false,
+        var isContextEditable: Boolean = false,
+        var isDeleteShare: Boolean = false,
+        var isPdf: Boolean = false,
+        var isLocal: Boolean = false,
+        var isRecent: Boolean = false,
+        var isWebDav: Boolean = false,
+        var isTrash: Boolean = false,
+        var isFavorite: Boolean = false,
+        var isOneDrive: Boolean = false
+    ) : Serializable
 }
 

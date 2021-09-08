@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.View
 import app.editors.manager.databinding.ListExplorerActionMenuBinding
 import app.editors.manager.managers.utils.isVisible
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
@@ -57,27 +58,19 @@ class ActionBottomDialog : BaseBottomDialog() {
 
     private fun initListeners() {
         viewBinding?.let {
-            it.listExplorerActionDocs.setOnClickListener {
-                onClickListener?.onActionButtonClick(Buttons.DOC)
-            }
-            it.listExplorerActionFolder.setOnClickListener {
-                onClickListener?.onActionButtonClick(Buttons.FOLDER)
-            }
-            it.listExplorerActionPhoto.setOnClickListener {
-                onClickListener?.onActionButtonClick(Buttons.PHOTO)
-            }
-            it.listExplorerActionUpload.setOnClickListener {
-                onClickListener?.onActionButtonClick(Buttons.UPLOAD)
-            }
-            it.listExplorerActionStorage.setOnClickListener {
-                onClickListener?.onActionButtonClick(Buttons.STORAGE)
-            }
-            it.listExplorerActionSheet.setOnClickListener {
-                onClickListener?.onActionButtonClick(Buttons.SHEET)
-            }
-            it.listExplorerActionPresentation.setOnClickListener {
-                onClickListener?.onActionButtonClick(Buttons.PRESENTATION)
-            }
+            it.listExplorerActionDocs.setOnClickListener(Buttons.DOC)
+            it.listExplorerActionFolder.setOnClickListener(Buttons.FOLDER)
+            it.listExplorerActionPhoto.setOnClickListener(Buttons.PHOTO)
+            it.listExplorerActionUpload.setOnClickListener(Buttons.UPLOAD)
+            it.listExplorerActionStorage.setOnClickListener(Buttons.STORAGE)
+            it.listExplorerActionSheet.setOnClickListener(Buttons.SHEET)
+            it.listExplorerActionPresentation.setOnClickListener(Buttons.PRESENTATION)
+        }
+    }
+
+    private fun View.setOnClickListener(button: Buttons) {
+        this.setOnClickListener {
+            onClickListener?.onActionButtonClick(button)
             dismiss()
         }
     }
@@ -91,12 +84,12 @@ class ActionBottomDialog : BaseBottomDialog() {
     }
 
     private fun init(dialog: Dialog) {
-        viewBinding = ListExplorerActionMenuBinding.inflate(layoutInflater).also {
-            dialog.setContentView(it.root)
+        viewBinding = ListExplorerActionMenuBinding.inflate(layoutInflater).apply {
+            dialog.setContentView(root)
             dialog.setCanceledOnTouchOutside(true)
             setViewState()
-            initListeners()
         }
+        initListeners()
     }
 
     private fun setViewState() {
