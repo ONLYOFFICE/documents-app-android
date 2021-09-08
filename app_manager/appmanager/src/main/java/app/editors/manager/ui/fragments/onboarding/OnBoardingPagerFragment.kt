@@ -75,9 +75,9 @@ class OnBoardingPagerFragment : BaseAppFragment() {
                 finishWithOkCode()
             }
             binding.include.onBoardingPanelNextButton.setOnClickListener {
-                mOnBoardAdapter?.isLastPagePosition?.let {
+                if (mOnBoardAdapter?.isLastPagePosition == true) {
                     finishWithOkCode()
-                } ?: run {
+                } else {
                     binding.onBoardingViewPager
                         .setCurrentItem(mOnBoardAdapter?.selectedPage!! + 1, true)
                 }
@@ -85,18 +85,21 @@ class OnBoardingPagerFragment : BaseAppFragment() {
         }
     }
 
-    private fun getInstance(screen: Int) =
-        ViewPagerAdapter.Container(OnBoardingPageFragment.newInstance(
-            R.string.on_boarding_welcome_header,
-            R.string.on_boarding_welcome_info, screen), null)
+    private fun getInstance(screen: Int, header: Int, info: Int) =
+        ViewPagerAdapter.Container(OnBoardingPageFragment.newInstance(header, info, screen), null)
 
     private val fragments: List<ViewPagerAdapter.Container?>
         get() = listOf(
-            getInstance(R.drawable.image_on_boarding_screen1),
-            getInstance(R.drawable.image_on_boarding_screen2),
-            getInstance(R.drawable.image_on_boarding_screen3),
-            getInstance(R.drawable.image_on_boarding_screen4),
-            getInstance(R.drawable.image_on_boarding_screen5))
+            getInstance(R.drawable.image_on_boarding_screen1, R.string.on_boarding_welcome_header,
+                R.string.on_boarding_welcome_info),
+            getInstance(R.drawable.image_on_boarding_screen2, R.string.on_boarding_edit_header,
+            R.string.on_boarding_edit_info),
+            getInstance(R.drawable.image_on_boarding_screen3, R.string.on_boarding_access_header,
+                R.string.on_boarding_access_info),
+            getInstance(R.drawable.image_on_boarding_screen4, R.string.on_boarding_collaborate_header,
+                R.string.on_boarding_collaborate_info),
+            getInstance(R.drawable.image_on_boarding_screen5, R.string.on_boarding_third_party_header,
+                R.string.on_boarding_third_party_info))
 
     /*
      * Pager adapter
@@ -107,17 +110,17 @@ class OnBoardingPagerFragment : BaseAppFragment() {
 
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
+            this.position = position
             viewBinding?.let {
                 if (position == mOnBoardAdapter?.count!! - 1) {
                     it.include.onBoardingPanelNextButton.setText(R.string.on_boarding_finish_button)
-                    it.include.onBoardingPanelSkipButton.isVisible = true
+                    it.include.onBoardingPanelSkipButton.isVisible = false
                     preferenceTool.onBoarding = true
                 } else {
                     it.include.onBoardingPanelNextButton.setText(R.string.on_boarding_next_button)
-                    it.include.onBoardingPanelSkipButton.isVisible = false
+                    it.include.onBoardingPanelSkipButton.isVisible = true
                 }
             }
-            this.position = position
         }
 
         init {

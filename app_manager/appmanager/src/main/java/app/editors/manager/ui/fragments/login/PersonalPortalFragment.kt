@@ -22,7 +22,7 @@ import app.editors.manager.ui.activities.login.SignInActivity.Companion.showSms
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.login.AuthPageFragment.Companion.newInstance
-import app.editors.manager.ui.fragments.login.AuthPagerFragment.KEY_FOURTH_FRAGMENT
+import app.editors.manager.ui.fragments.login.AuthPagerFragment.Companion.KEY_FOURTH_FRAGMENT
 import app.editors.manager.ui.views.custom.SocialViews
 import app.editors.manager.ui.views.custom.SocialViews.OnSocialNetworkCallbacks
 import app.editors.manager.ui.views.edits.BaseWatcher
@@ -133,7 +133,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     }
 
     private fun signUpClick() {
-        showPersonalSignUp(context!!)
+        showPersonalSignUp(requireContext())
     }
 
     private fun actionKeyPress(actionId: Int): Boolean {

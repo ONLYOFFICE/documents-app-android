@@ -347,7 +347,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
             if (networkSettings.isPortalInfo) getString(R.string.facebook_app_id_info) else getString(
                 R.string.facebook_app_id
             )
-        socialViews = SocialViews(activity, viewBinding?.socialNetworkLayout?.socialNetworkLayout, facebookId)
+        socialViews = SocialViews(requireActivity(), viewBinding?.socialNetworkLayout?.socialNetworkLayout, facebookId)
         socialViews?.setOnSocialNetworkCallbacks(this)
         fieldsWatcher = FieldsWatcher()
         viewBinding?.loginEnterprisePortalEmailEdit?.addTextChangedListener(fieldsWatcher)
