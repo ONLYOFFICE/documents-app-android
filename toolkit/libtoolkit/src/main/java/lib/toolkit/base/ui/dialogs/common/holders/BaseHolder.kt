@@ -1,6 +1,8 @@
 package lib.toolkit.base.ui.dialogs.common.holders
 
+import android.content.res.TypedArray
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +42,16 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     protected var mTopTitleGravity: Int = Gravity.START
     protected var mIsBackPress: Boolean = true
 
+    private val color: Int
+    get() {
+        val typedValue = TypedValue()
+        val a: TypedArray = checkNotNull(dialog.requireView().context?.obtainStyledAttributes(typedValue.data, intArrayOf(R.attr.colorPrimary))) {
+            "Primary color can't be null"
+        }
+        val color = a.getColor(0, 0)
+        a.recycle()
+        return color
+    }
 
     override fun onClick(v: View) {
         when (v.id) {
@@ -68,6 +80,9 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
         mFrameLayout.visibility = View.VISIBLE
         mAcceptView.setOnClickListener(this)
         mCancelView.setOnClickListener(this)
+
+        mAcceptView.setTextColor(color)
+        mCancelView.setTextColor(color)
 
         if (mTopTitle.isNullOrBlank()) {
             mTopTitleView.visibility = View.GONE
@@ -99,8 +114,8 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
         }
 
         if (mTextColor != 0 && dialog.context != null) {
-            mAcceptView.setTextColor(ContextCompat.getColor(dialog.context!!, mTextColor))
-            mCancelView.setTextColor(ContextCompat.getColor(dialog.context!!, mTextColor))
+            mAcceptView.setTextColor(ContextCompat.getColor(dialog.requireContext(), mTextColor))
+            mCancelView.setTextColor(ContextCompat.getColor(dialog.requireContext(), mTextColor))
         }
 
         dialog.view?.let { TransitionManager.beginDelayedTransition(it as ViewGroup, Fade()) }
