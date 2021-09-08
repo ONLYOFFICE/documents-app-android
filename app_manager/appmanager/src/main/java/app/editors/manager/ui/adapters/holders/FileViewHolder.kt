@@ -17,7 +17,7 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
 
     init {
         viewBinding.listExplorerFileLayout.setOnClickListener{ view ->
-            adapter.mOnItemContextListener?.onItemContextClick(view, layoutPosition)
+            adapter.mOnItemClickListener?.onItemClick(view, layoutPosition)
         }
 
         viewBinding.listExplorerFileLayout.setOnLongClickListener { view ->

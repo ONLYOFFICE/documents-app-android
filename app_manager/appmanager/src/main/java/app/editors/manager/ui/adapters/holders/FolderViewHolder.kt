@@ -45,7 +45,7 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
         with(viewBinding) {
             listExplorerFolderName.text = folder.title
             listExplorerFolderInfo.text = folderInfo
-            listExplorerFolderContext.isVisible = false
+            listExplorerFolderContext.isVisible = true
             viewIconSelectableLayout.viewIconSelectableImage.background = null
             viewIconSelectableLayout.viewIconSelectableMask.background = null
             setFolderIcon(viewIconSelectableLayout.viewIconSelectableImage, folder, adapter.isRoot)

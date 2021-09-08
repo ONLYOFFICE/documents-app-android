@@ -27,7 +27,7 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewBinding = FragmentListBinding.inflate(layoutInflater, container, false)
+        viewBinding = FragmentListBinding.inflate(inflater, container, false)
         return viewBinding?.root
     }
 

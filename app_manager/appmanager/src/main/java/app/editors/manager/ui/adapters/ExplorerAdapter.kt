@@ -130,7 +130,7 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
         }
     }
 
-    fun setFolderIcon(view: ImageView, folder: CloudFolder,) {
+    fun setFolderIcon(view: ImageView, folder: CloudFolder) {
         @DrawableRes var resId = R.drawable.ic_type_folder
         if (folder.shared && folder.providerKey.isEmpty()) {
             resId = R.drawable.ic_type_folder_shared
