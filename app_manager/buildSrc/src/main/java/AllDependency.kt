@@ -99,4 +99,5 @@ object Libs {
     const val androidWork = "android.arch.work:work-runtime:1.0.1"
     const val documentFile = "androidx.documentfile:documentfile:1.0.1"
     const val pdfView = "com.github.mhiew:android-pdf-viewer:3.2.0-beta.1"
+    const val colorPicker = "com.github.QuadFlask:colorpicker:0.0.15"
 }
