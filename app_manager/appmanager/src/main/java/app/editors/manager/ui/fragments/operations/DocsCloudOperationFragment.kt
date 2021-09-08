@@ -107,7 +107,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
             operationType = requireActivity().intent
                     .getSerializableExtra(OperationActivity.TAG_OPERATION_TYPE) as
                     OperationsState.OperationType
-            savedInstanceState ?: {
+            savedInstanceState ?: run {
                 requireActivity().intent
                     .getSerializableExtra(OperationActivity.TAG_OPERATION_EXPLORER)?.let { explorer ->
                         cloudPresenter.setOperationExplorer(explorer as Explorer)

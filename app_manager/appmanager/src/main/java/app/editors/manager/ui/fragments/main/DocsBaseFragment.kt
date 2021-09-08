@@ -265,7 +265,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onItemContextClick(view: View, position: Int) {
         val item = explorerAdapter?.getItem(position)
         if (item is Item && !isFastClick) {
-            mContextDialogListener!!.onContextDialogOpen()
+            mContextDialogListener?.onContextDialogOpen()
             presenter.onContextClick(item, position, false)
         }
     }
@@ -945,19 +945,17 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * BottomSheetFragmentDialogs context/action
      * */
     private fun setDialogs() {
-        contextBottomDialog =
-            requireFragmentManager().findFragmentByTag(ContextBottomDialog.TAG) as ContextBottomDialog?
-        if (contextBottomDialog == null) {
-            contextBottomDialog = ContextBottomDialog.newInstance()
-        }
-        actionBottomDialog =
-            requireFragmentManager().findFragmentByTag(ActionBottomDialog.TAG) as ActionBottomDialog?
-        if (actionBottomDialog == null) {
-            actionBottomDialog = ActionBottomDialog.newInstance()
-        }
-        moveCopyDialog =
-            requireFragmentManager().findFragmentByTag(MoveCopyDialog.TAG) as MoveCopyDialog?
+        contextBottomDialog = contextBottomDialog?.let {
+            parentFragmentManager.findFragmentByTag(ContextBottomDialog.TAG) as ContextBottomDialog
+        } ?: ContextBottomDialog.newInstance()
+
+        actionBottomDialog = actionBottomDialog?.let {
+            parentFragmentManager.findFragmentByTag(ActionBottomDialog.TAG) as ActionBottomDialog
+        } ?: ActionBottomDialog.newInstance()
+
+        moveCopyDialog = parentFragmentManager.findFragmentByTag(MoveCopyDialog.TAG) as MoveCopyDialog?
         moveCopyDialog?.dialogButtonOnClick = this
+
         if (userVisibleHint) {
             contextBottomDialog?.onClickListener = this
             actionBottomDialog?.onClickListener = this
@@ -998,8 +996,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
         }
 
-    fun getArgs(intent: Intent) {
-        intent.clipData?.let {
+    fun getArgs(intent: Intent?) {
+        intent?.clipData?.let {
             startUpload(intent, intent.action)
         }
     }
