@@ -25,13 +25,13 @@ class SocialViews(private val activity: Activity, view: View?,
                   private val facebookId: String?) {
 
     interface OnSocialNetworkCallbacks {
-        fun onTwitterSuccess(token: String?)
+        fun onTwitterSuccess(token: String)
         fun onTwitterFailed()
-        fun onFacebookSuccess(token: String?)
-        fun onFacebookLogin(message: String?)
+        fun onFacebookSuccess(token: String)
+        fun onFacebookLogin(message: String)
         fun onFacebookCancel()
         fun onFacebookFailed()
-        fun onGoogleSuccess(account: Account?)
+        fun onGoogleSuccess(account: Account)
         fun onGoogleFailed()
     }
 
@@ -94,7 +94,7 @@ class SocialViews(private val activity: Activity, view: View?,
         onSocialNetworkCallbacks?.let { callbacks ->
             try {
                 val account: GoogleSignInAccount = completedTask.getResult(ApiException::class.java)
-                callbacks.onGoogleSuccess(account.account)
+                account.account?.let { callbacks.onGoogleSuccess(it) }
             } catch (e: ApiException) {
                 Log.e(TAG, "Status code: " + e.statusCode, e)
                 googleSignInClient?.signOut()

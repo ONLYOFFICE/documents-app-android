@@ -19,7 +19,7 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
         fun onPanelResetClick()
         fun onPanelMessageClick(isShow: Boolean)
         fun onPanelAddClick()
-        fun onMessageInput(message: String?)
+        fun onMessageInput(message: String)
     }
 
     private val heightValueAnimator: HeightValueAnimator
@@ -66,9 +66,10 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
     }
 
     private fun onMessage() {
+        val isShowMessage = !isMessageShowed
         viewBinding?.sharePanelMessageEdit?.setText("")
-        heightValueAnimator.animate(!isMessageShowed)
-        onEventListener?.onPanelMessageClick(!isMessageShowed)
+        heightValueAnimator.animate(isShowMessage)
+        onEventListener?.onPanelMessageClick(isShowMessage)
     }
 
     private fun onAdd() {
