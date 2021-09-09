@@ -268,7 +268,6 @@ public class ContextBottomDialog extends BaseBottomDialog {
             if(!mState.mIsOneDrive) {
                 mListExplorerContextDownload.setVisibility(View.VISIBLE);
             } else {
-                mListContextExternalLink.setVisibility(View.VISIBLE);
                 mListExplorerContextDownload.setVisibility(View.GONE);
             }
 
@@ -292,12 +291,12 @@ public class ContextBottomDialog extends BaseBottomDialog {
                 }
             }
 
-            // File can access by link
+            // File can be share by external link. Full access required
             if (mState.mIsCanShare) {
                 mListContextExternalLink.setVisibility(View.VISIBLE);
+                mViewLineSeparatorShare.setVisibility(View.VISIBLE);
             }
         }
-
         // Folders and files
         // Context is editable
         if (mState.mIsContextEditable) {
@@ -306,7 +305,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
         }
 
         // Item can edit
-        if (mState.mIsItemEditable) {
+        if (mState.mIsItemEditable && mState.mIsCanShare) {
             mListContextRename.setVisibility(View.VISIBLE);
         }
 
@@ -315,7 +314,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
             mViewLineSeparatorShare.setVisibility(View.VISIBLE);
             mListContextShare.setVisibility(View.VISIBLE);
         } else {
-            mViewLineSeparatorShare.setVisibility(View.VISIBLE);
+            mViewLineSeparatorShare.setVisibility(View.GONE);
         }
 
         // Only for share section, instead of delete
