@@ -20,6 +20,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class OperationActivity : BaseAppActivity(){
@@ -108,9 +110,9 @@ class OperationActivity : BaseAppActivity(){
                         )
                     } else {
                         if (account.portal?.contains(ApiContract.PERSONAL_HOST) == true) {
-                            showFragment(DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER), null)
+                            showFragment(DocsCloudOperationFragment.newInstance(Json.encodeToString(account), ApiContract.SectionType.CLOUD_USER), null)
                         } else {
-                            showFragment(DocsOperationSectionFragment.newInstance(), null)
+                            showFragment(DocsOperationSectionFragment.newInstance(Json.encodeToString(account)), null)
                         }
                     }
                 }

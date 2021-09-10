@@ -36,7 +36,7 @@ import moxy.presenter.ProvidePresenter;
 
 public abstract class DocsCloudFragment extends DocsBaseFragment implements DocsCloudView {
 
-    protected static String KEY_ACCOUNT = "key_account";
+    public final static String KEY_ACCOUNT = "key_account";
 
     @InjectPresenter
     public DocsCloudPresenter mCloudPresenter;

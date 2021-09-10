@@ -34,10 +34,11 @@ public class DocsCloudOperationFragment extends DocsCloudFragment implements Ope
     private OperationsState.OperationType mOperationType;
     private int mSectionType;
 
-    public static DocsCloudOperationFragment newInstance(final int sectionType) {
+    public static DocsCloudOperationFragment newInstance(String account, final int sectionType) {
         final DocsCloudOperationFragment docsOperationFragment = new DocsCloudOperationFragment();
         final Bundle bundle = new Bundle();
         bundle.putInt(TAG_OPERATION_SECTION_TYPE, sectionType);
+        bundle.putString(DocsCloudFragment.KEY_ACCOUNT, account);
         docsOperationFragment.setArguments(bundle);
         return docsOperationFragment;
     }

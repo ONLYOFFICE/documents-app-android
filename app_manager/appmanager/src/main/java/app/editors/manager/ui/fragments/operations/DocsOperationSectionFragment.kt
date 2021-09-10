@@ -9,6 +9,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentOperationSectionBinding
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.fragments.main.DocsCloudFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,8 +20,12 @@ class DocsOperationSectionFragment : BaseAppFragment() {
     companion object {
         val TAG: String = DocsOperationSectionFragment::class.java.simpleName
 
-        fun newInstance(): DocsOperationSectionFragment {
-            return DocsOperationSectionFragment()
+        fun newInstance(account: String): DocsOperationSectionFragment {
+            return DocsOperationSectionFragment().apply {
+                arguments = Bundle(1).apply {
+                    putString(DocsCloudFragment.KEY_ACCOUNT, account)
+                }
+            }
         }
     }
 
@@ -35,7 +40,7 @@ class DocsOperationSectionFragment : BaseAppFragment() {
             else -> ApiContract.SectionType.CLOUD_USER
         }
         showFragment(
-            DocsCloudOperationFragment.newInstance(sectionType),
+            DocsCloudOperationFragment.newInstance(arguments?.getString(DocsCloudFragment.KEY_ACCOUNT), sectionType),
             DocsCloudOperationFragment.TAG, false
         )
     }
