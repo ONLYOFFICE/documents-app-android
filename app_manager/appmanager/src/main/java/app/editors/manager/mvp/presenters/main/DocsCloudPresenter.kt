@@ -338,7 +338,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         id: String
     ) {
         viewState.onSnackBar(info)
-        if (mModelExplorerStack.currentId == file.folderId) {
+        if ( id != null && mModelExplorerStack.currentId == file.folderId) {
             addFile(file)
         }
         viewState.onDeleteUploadFile(id)
@@ -349,7 +349,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     }
 
     override fun onUploadFileProgress(progress: Int, id: String, folderId: String) {
-        if (mModelExplorerStack.currentId == folderId) {
+        if (id != null && folderId != null && mModelExplorerStack.currentId == folderId) {
             viewState.onUploadFileProgress(progress, id)
         }
     }
