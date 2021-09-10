@@ -7,7 +7,7 @@ import app.documents.core.account.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerFilesBinding
-import app.editors.manager.managers.utils.UiUtils.setFileIcon
+import app.editors.manager.managers.utils.ManagerUiUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import lib.toolkit.base.managers.utils.StringUtils.getFormattedSize
 import lib.toolkit.base.managers.utils.TimeUtils.getWeekDate
@@ -36,7 +36,7 @@ class RecentViewHolder(
             listExplorerFileContext.setOnClickListener {
                 contextListener?.invoke(recent, absoluteAdapterPosition)
             }
-            setFileIcon(viewIconSelectableLayout.viewIconSelectableImage,
+            ManagerUiUtils.setFileIcon(viewIconSelectableLayout.viewIconSelectableImage,
                 getExtensionFromPath(recent.name.lowercase(Locale.ROOT)))
         }
     }

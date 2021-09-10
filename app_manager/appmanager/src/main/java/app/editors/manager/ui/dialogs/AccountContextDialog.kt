@@ -12,7 +12,7 @@ import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.databinding.AccountContextLayoutBinding
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.UiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.isVisible
 import com.bumptech.glide.Glide
 import kotlinx.serialization.decodeFromString
@@ -99,7 +99,7 @@ class AccountContextDialog : BaseBottomDialog() {
                 binding.accountItemPortal.text = acc.portal
                 if (acc.isWebDav) {
                     binding.accountItemName.isVisible = false
-                    UiUtils.setWebDavImage(
+                    ManagerUiUtils.setWebDavImage(
                         acc.webDavProvider,
                         binding.selectableLayout.viewIconSelectableImage)
                 } else {

@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import app.documents.core.network.ApiContract
@@ -14,7 +13,7 @@ import app.editors.manager.mvp.models.explorer.CloudFolder
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 
-object UiUtils {
+object ManagerUiUtils {
 
     @JvmStatic
     fun setWebDavImage(providerName: String?, image: ImageView) {

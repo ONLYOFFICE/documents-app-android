@@ -12,6 +12,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.isVisible
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -85,7 +86,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextHeaderImage.setImageResource(state.iconResId)
             UiUtils.setImageTint(it.listExplorerContextHeaderImage, R.color.colorOnSurface)
             if (!state.isFolder) {
-                app.editors.manager.managers.utils.UiUtils.setFileIcon(
+                ManagerUiUtils.setFileIcon(
                     it.listExplorerContextHeaderImage, StringUtils.getExtensionFromPath(state.title))
             }
         }
@@ -94,7 +95,7 @@ class ContextBottomDialog : BaseBottomDialog() {
     }
 
     private fun setViewState() {
-        viewBinding?.let {
+        viewBinding?.let { binding ->
             if (state.isRecent) {
                 setRecentState()
                 return
@@ -105,7 +106,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             }
 
             /** Common */
-            it.listExplorerContextCopy.isVisible = true
+            binding.listExplorerContextCopy.isVisible = true
             if (state.isWebDav) {
                 setWebDav()
                 return
@@ -119,55 +120,55 @@ class ContextBottomDialog : BaseBottomDialog() {
             if (state.isFolder) {
                 /** Folder is storage */
                 if (state.isStorage) {
-                    it.listExplorerContextDeleteText.text =
+                    binding.listExplorerContextDeleteText.text =
                         getString(R.string.list_context_delete_storage)
                 } else {
-                    it.listExplorerContextDeleteText.text =
+                    binding.listExplorerContextDeleteText.text =
                         getString(R.string.list_context_delete)
                 }
-                it.listExplorerContextDownload.isVisible = !state.isOneDrive
-                it.listExplorerContextExternalLink.isVisible = state.isOneDrive
+                binding.listExplorerContextDownload.isVisible = !state.isOneDrive
+                binding.listExplorerContextExternalLink.isVisible = state.isOneDrive
             } else {
                 /** File can downloaded */
-                it.listExplorerContextDownload.isVisible = true
+                binding.listExplorerContextDownload.isVisible = true
                 if (StringUtils.convertServerVersion(networkSettings.serverVersion)
                     >= 11 && preferenceTool.isFavoritesEnabled) {
-                    it.viewLineSeparatorFavorites.viewLineSeparator.isVisible = true
+                    binding.viewLineSeparatorFavorites.root.isVisible = true
                     if (state.isFavorite) {
-                        it.listExplorerContextDeleteFromFavorite.isVisible = true
+                        binding.listExplorerContextDeleteFromFavorite.isVisible = true
                     } else {
-                        it.listExplorerContextAddToFavorite.isVisible = true
+                        binding.listExplorerContextAddToFavorite.isVisible = true
                     }
                 }
 
                 /** File is document */
                 if (state.isDocs && !state.isPdf) {
-                    it.viewLineSeparatorEdit.viewLineSeparator.isVisible = state.isItemEditable
-                    it.listExplorerContextEdit.isVisible = state.isItemEditable
+                    binding.viewLineSeparatorEdit.root.isVisible = state.isItemEditable
+                    binding.listExplorerContextEdit.isVisible = state.isItemEditable
                 }
 
                 /** File can access by link */
-                it.listExplorerContextExternalLink.isVisible = state.isCanShare
+                binding.listExplorerContextExternalLink.isVisible = state.isCanShare
             }
 
             /**Folders and files*/
             /**Context is editable*/
-            it.listExplorerContextMove.isVisible = state.isContextEditable
+            binding.listExplorerContextMove.isVisible = state.isContextEditable
             setDeleteVisibility(state.isContextEditable)
 
             /** Item can edit */
-            it.listExplorerContextRename.isVisible = state.isItemEditable
+            binding.listExplorerContextRename.isVisible = state.isItemEditable
 
             /** Item can share */
-            it.viewLineSeparatorShare.viewLineSeparator.isVisible = state.isCanShare && !state.isOneDrive
-            it.listExplorerContextShare.isVisible = state.isCanShare && !state.isOneDrive
+            binding.viewLineSeparatorShare.root.isVisible = state.isCanShare && !state.isOneDrive
+            binding.listExplorerContextShare.isVisible = state.isCanShare && !state.isOneDrive
 
             /** Only for share section, instead of delete */
-            it.listExplorerContextShareDelete.isVisible = state.isDeleteShare
+            binding.listExplorerContextShareDelete.isVisible = state.isDeleteShare
 
             if (preferenceTool.isPersonalPortal && !state.isFolder) {
-                it.viewLineSeparatorShare.viewLineSeparator.isVisible = true
-                it.listExplorerContextExternalLink.isVisible = true
+                binding.viewLineSeparatorShare.root.isVisible = true
+                binding.listExplorerContextExternalLink.isVisible = true
             }
         }
     }
@@ -200,7 +201,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextMove.isVisible = true
             it.listExplorerContextRename.isVisible = true
             it.listExplorerContextDownload.isVisible = state.isFolder
-            it.viewLineSeparatorDelete.viewLineSeparator.isVisible = true
+            it.viewLineSeparatorDelete.root.isVisible = true
         }
     }
 
@@ -225,7 +226,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun setDeleteVisibility(isVisible: Boolean) {
         viewBinding?.let {
-            it.viewLineSeparatorDelete.viewLineSeparator.isVisible = isVisible
+            it.viewLineSeparatorDelete.root.isVisible = isVisible
             it.listExplorerContextDelete.isVisible = isVisible
         }
     }

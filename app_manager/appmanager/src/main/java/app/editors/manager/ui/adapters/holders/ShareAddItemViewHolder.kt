@@ -8,7 +8,7 @@ import androidx.constraintlayout.widget.Guideline
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareAddItemBinding
 import app.editors.manager.managers.utils.GlideUtils.setAvatar
-import app.editors.manager.managers.utils.UiUtils.setMargins
+import app.editors.manager.managers.utils.ManagerUiUtils.setMargins
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
 import lib.toolkit.base.managers.tools.ResourcesProvider

@@ -7,7 +7,7 @@ import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudAccountPopupLayoutBinding
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.UiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.ui.dialogs.AccountContextDialog.OnAccountContextClickListener
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -58,7 +58,7 @@ class CloudAccountPopup(context: Context) : BasePopup(context, R.layout.cloud_ac
                 header.accountItemPortal.text = it.portal
                 if (it.isWebDav) {
                     header.accountItemName.visibility = View.GONE
-                    UiUtils.setWebDavImage(it.webDavProvider, header.selectableLayout.viewIconSelectableImage)
+                    ManagerUiUtils.setWebDavImage(it.webDavProvider, header.selectableLayout.viewIconSelectableImage)
                 } else {
                     loadAvatar()
                 }

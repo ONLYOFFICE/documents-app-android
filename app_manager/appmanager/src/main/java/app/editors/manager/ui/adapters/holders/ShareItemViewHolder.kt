@@ -7,7 +7,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareSettingsItemBinding
 import app.editors.manager.managers.utils.GlideUtils.loadAvatar
-import app.editors.manager.managers.utils.UiUtils.setAccessIcon
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.mvp.models.ui.ShareUi
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 import lib.toolkit.base.ui.adapters.holder.ViewType
@@ -51,7 +51,7 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
             }
 
             // Access icons
-            setAccessIcon(contextButton, item.access)
+            ManagerUiUtils.setAccessIcon(contextButton, item.access)
         }
     }
 }

@@ -3,7 +3,7 @@ package app.editors.manager.ui.adapters.holders
 import android.view.View
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFolderBinding
-import app.editors.manager.managers.utils.UiUtils.setFolderIcon
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -48,7 +48,7 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
             listExplorerFolderContext.isVisible = true
             viewIconSelectableLayout.viewIconSelectableImage.background = null
             viewIconSelectableLayout.viewIconSelectableMask.background = null
-            setFolderIcon(viewIconSelectableLayout.viewIconSelectableImage, folder, adapter.isRoot)
+            ManagerUiUtils.setFolderIcon(viewIconSelectableLayout.viewIconSelectableImage, folder, adapter.isRoot)
 
             // Show/hide context button
             if (adapter.isSelectMode || adapter.isFoldersMode) {
