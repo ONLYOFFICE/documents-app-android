@@ -191,24 +191,24 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         onClickEvent(item, position)
         mIsContextClick = true
         val state = ContextBottomDialog.State()
-        state.mTitle = itemClickedTitle
-        state.mInfo = formatDate(itemClickedDate)
-        state.mIsFolder = item is CloudFolder
-        state.mIsWebDav = true
-        state.mIsOneDrive = false
-        state.mIsTrash = isTrash
+        state.title = itemClickedTitle
+        state.info = formatDate(itemClickedDate)
+        state.isFolder = item is CloudFolder
+        state.isWebDav = true
+        state.isOneDrive = false
+        state.isTrash = isTrash
         if (!isClickedItemFile) {
-            state.mIconResId = R.drawable.ic_type_folder
+            state.iconResId = R.drawable.ic_type_folder
         } else {
-            state.mIconResId = getIconContext(
+            state.iconResId = getIconContext(
                 StringUtils.getExtensionFromPath(
                     itemClickedTitle
                 )
             )
         }
-        state.mIsPdf = isPdf
-        if (state.mIsShared && state.mIsFolder) {
-            state.mIconResId = R.drawable.ic_type_folder_shared
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
     }

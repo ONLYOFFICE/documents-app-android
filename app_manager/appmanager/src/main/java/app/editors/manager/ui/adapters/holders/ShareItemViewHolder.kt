@@ -7,12 +7,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareSettingsItemBinding
 import app.editors.manager.managers.utils.GlideUtils.loadAvatar
-import app.editors.manager.managers.utils.UiUtils.setAccessIcon
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.mvp.models.ui.ShareUi
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
+import lib.toolkit.base.ui.adapters.holder.ViewType
 
 class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) -> Unit) :
-    ShareViewHolder<ShareUi>(view) {
+    BaseViewHolder<ViewType>(view) {
 
     private val itemBinding = ListShareSettingsItemBinding.bind(view)
     private val shareImage: ImageView = itemBinding.listShareSettingsImage
@@ -27,28 +28,30 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
         }
     }
 
-    override fun bind(item: ShareUi) {
-        if (item.sharedTo.avatarSmall.isNotEmpty())
-            shareImage.loadAvatar(item.sharedTo.avatarSmall)
-        if (item.sharedTo.userName.isNotEmpty()) {
-            itemInfo.visibility = View.VISIBLE
-            itemName.text = item.sharedTo.displayNameHtml
-
-            // Set info if not empty
-            val info = item.sharedTo.department.trim { it <= ' ' }
-            if (info.isNotEmpty()) {
+    override fun bind(item: ViewType) {
+        if (item is ShareUi) {
+            if (item.sharedTo.avatarSmall.isNotEmpty())
+                shareImage.loadAvatar(item.sharedTo.avatarSmall)
+            if (item.sharedTo.userName.isNotEmpty()) {
                 itemInfo.visibility = View.VISIBLE
-                itemInfo.text = info
+                itemName.text = item.sharedTo.displayNameHtml
+
+                // Set info if not empty
+                val info = item.sharedTo.department.trim { it <= ' ' }
+                if (info.isNotEmpty()) {
+                    itemInfo.visibility = View.VISIBLE
+                    itemInfo.text = info
+                } else {
+                    itemInfo.visibility = View.GONE
+                }
             } else {
                 itemInfo.visibility = View.GONE
+                itemName.text = item.sharedTo.name
+                shareImage.setImageResource(R.drawable.drawable_list_share_image_item_group_placeholder)
             }
-        } else {
-            itemInfo.visibility = View.GONE
-            itemName.text = item.sharedTo.name
-            shareImage.setImageResource(R.drawable.drawable_list_share_image_item_group_placeholder)
-        }
 
-        // Access icons
-        setAccessIcon(contextButton, item.access)
+            // Access icons
+            ManagerUiUtils.setAccessIcon(contextButton, item.access)
+        }
     }
 }

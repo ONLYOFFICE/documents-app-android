@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.account.Recent
 import app.editors.manager.R
+import app.editors.manager.ui.adapters.holders.RecentViewHolder
 import lib.toolkit.base.ui.adapters.BaseListAdapter
 
 class RecentAdapter(

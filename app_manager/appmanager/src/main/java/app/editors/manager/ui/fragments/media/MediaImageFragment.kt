@@ -16,11 +16,11 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentMediaImageBinding
 import app.editors.manager.managers.utils.GlideUtils
+import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.media.MediaPagerFragment.OnMediaListener
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import butterknife.OnClick
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.gif.GifDrawable
@@ -44,29 +44,6 @@ import javax.inject.Inject
 
 class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.OnClickListener, OnUriListener {
 
-    companion object {
-        val TAG: String = MediaImageFragment::class.java.simpleName
-
-        private const val TAG_DIALOG_SHARE = "TAG_DIALOG_SHARE"
-        private const val TAG_IMAGE = "TAG_IMAGE"
-        private const val TAG_WEB_DAV = "TAG_WEB_DAV"
-
-        private const val ALPHA_DELAY = 500
-        private const val ALPHA_FROM = 0.0f
-        private const val ALPHA_TO = 1.0f
-        private const val SCALE_MAX = 5.0f
-        private const val SCALE_MIN = 1.0f
-
-        fun newInstance(image: CloudFile, isWebDav: Boolean): MediaImageFragment {
-            return MediaImageFragment().apply {
-                arguments = Bundle().apply {
-                    putSerializable(TAG_IMAGE, image)
-                    putBoolean(TAG_WEB_DAV, isWebDav)
-                }
-            }
-        }
-    }
-
     @Inject
     lateinit var glideTool: GlideTool
 
@@ -76,12 +53,9 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     private var bitmap: Bitmap? = null
     private var gifDrawable: GifDrawable? = null
     private var asyncTaskShare: WeakAsyncUtils<*, *, *, *>? = null
-
-
     private var isWebDav: Boolean = false
-    private lateinit var image: CloudFile
-    private lateinit var placeholderViews: PlaceholderViews
-
+    private var image: CloudFile? = null
+    private var placeholderViews: PlaceholderViews? = null
     private var viewBinding: FragmentMediaImageBinding? = null
 
     init {
@@ -100,8 +74,8 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
 
     override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
         super.onCancelClick(dialogs, tag)
-        if (tag != null) {
-            if (TAG_DIALOG_SHARE == tag) {
+        tag?.let {
+            if (TAG_DIALOG_SHARE == it) {
                 cancelSharing()
             }
         }
@@ -127,11 +101,6 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
         glideTool.clear(bitmapTarget)
     }
 
-    @OnClick(R.id.media_image_container, R.id.media_image_view)
-    fun onClick() {
-        pageClicked()
-    }
-
     override fun onPageScroll(isActive: Boolean) {
         if (isActive) {
             gifDrawable?.start()
@@ -149,7 +118,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             showWaitingDialog(null, getString(R.string.dialogs_common_cancel_button), TAG_DIALOG_SHARE)
             asyncTaskShare = getBitmapUriAsync(
                 requireContext(), it, this,
-                StringUtils.getNameWithoutExtension(image.title)
+                StringUtils.getNameWithoutExtension(image?.title!!)
             )
         }
     }
@@ -170,7 +139,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
         loadImage()
     }
 
-    fun getArgs() {
+    private fun getArgs() {
         arguments?.let {
             image = it.getSerializable(TAG_IMAGE) as CloudFile
             isWebDav = it.getBoolean(TAG_WEB_DAV)
@@ -178,24 +147,27 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     }
 
     private fun initViews() {
-        placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root)
-        placeholderViews.setViewForHide(viewBinding?.mediaImageLayout)
-        placeholderViews.setOnClickListener(this)
-
-        viewBinding?.mediaImageView?.maximumScale = SCALE_MAX
-        viewBinding?.mediaImageView?.minimumScale = SCALE_MIN
-        UiUtils.setColorFilter(
-            requireContext(),
-            viewBinding?.mediaImageProgress?.indeterminateDrawable,
-            R.color.colorSecondary
-        )
+        placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root).apply {
+            setViewForHide(viewBinding?.mediaImageLayout)
+            setOnClickListener(this@MediaImageFragment)
+        }
+        viewBinding?.let {
+            it.mediaImageView.maximumScale = SCALE_MAX
+            it.mediaImageView.minimumScale = SCALE_MIN
+            it.mediaImageContainer.setOnClickListener { pageClicked() }
+            it.mediaImageView.setOnClickListener { pageClicked() }
+            UiUtils.setColorFilter(
+                requireContext(),
+                it.mediaImageProgress.indeterminateDrawable,
+                R.color.colorSecondary)
+        }
         setImageState()
     }
 
     private fun setImageState() {
-        placeholderViews.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
-        viewBinding?.mediaImageView?.visibility = View.GONE
-        viewBinding?.mediaImageProgress?.visibility = View.VISIBLE
+        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
+        viewBinding?.mediaImageView?.isVisible = false
+        viewBinding?.mediaImageProgress?.isVisible = true
     }
 
     private fun setImageBitmap(bitmap: Bitmap?) {
@@ -213,8 +185,8 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     }
 
     private fun setImageViewReady() {
-        placeholderViews.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
-        viewBinding?.mediaImageProgress?.visibility = View.GONE
+        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
+        viewBinding?.mediaImageProgress?.isVisible = false
         viewBinding?.mediaImageView?.apply {
             visibility = View.VISIBLE
             alpha = ALPHA_FROM
@@ -228,7 +200,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             isWebDav -> {
                 loadWebDavImage()
             }
-            image.id == "" -> {
+            image?.id == "" -> {
                 loadLocalImage()
             }
             else -> {
@@ -244,9 +216,9 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
                     requireContext(),
                     Account(account.getAccountName(), getString(R.string.account_type))
                 )?.let { token ->
-                    val url = GlideUtils.getCorrectLoad(image.viewUrl, token)
+                    val url = GlideUtils.getCorrectLoad(image?.viewUrl!!, token)
                     withContext(Dispatchers.Main) {
-                        if (StringUtils.isImageGif(image.fileExst)) {
+                        if (StringUtils.isImageGif(image?.fileExst!!)) {
                             glideTool.loadGif(gifTarget, url, false, gifRequestListener)
                         } else {
                             glideTool.load(bitmapTarget, url, false, bitmapRequestListener)
@@ -267,9 +239,9 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
                     requireContext(),
                     Account(account.getAccountName(), getString(R.string.account_type))
                 )?.let { password ->
-                    val url = GlideUtils.getWebDavUrl(image.id, account, password)
+                    val url = GlideUtils.getWebDavUrl(image?.id!!, account, password)
                     withContext(Dispatchers.Main) {
-                        if (StringUtils.isImageGif(image.fileExst)) {
+                        if (StringUtils.isImageGif(image?.fileExst!!)) {
                             glideTool.loadGif(gifTarget, url, false, gifRequestListener)
                         } else {
                             glideTool.load(bitmapTarget, url, false, bitmapRequestListener)
@@ -283,10 +255,10 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     }
 
     private fun loadLocalImage() {
-        if (StringUtils.isImageGif(image.fileExst)) {
-            glideTool.loadGif(gifTarget, image.webUrl, false, gifRequestListener)
+        if (StringUtils.isImageGif(image?.fileExst!!)) {
+            glideTool.loadGif(gifTarget, image?.webUrl!!, false, gifRequestListener)
         } else {
-            glideTool.load(bitmapTarget, image.webUrl, false, bitmapRequestListener)
+            glideTool.load(bitmapTarget, image?.webUrl!!, false, bitmapRequestListener)
         }
     }
 
@@ -319,7 +291,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             target: Target<GifDrawable>,
             isFirstResource: Boolean
         ): Boolean {
-            placeholderViews.setTemplatePlaceholder(PlaceholderViews.Type.MEDIA)
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.MEDIA)
             return false
         }
 
@@ -346,6 +318,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             // stub
         }
     }
+
     private val bitmapRequestListener: RequestListener<Bitmap> = object : RequestListener<Bitmap> {
         override fun onLoadFailed(
             e: GlideException?,
@@ -353,7 +326,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             target: Target<Bitmap?>,
             isFirstResource: Boolean
         ): Boolean {
-            placeholderViews.setTemplatePlaceholder(PlaceholderViews.Type.MEDIA)
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.MEDIA)
             return false
         }
 
@@ -369,6 +342,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             return false
         }
     }
+
     private val bitmapTarget: CustomTarget<Bitmap> = object : CustomTarget<Bitmap>() {
 
         override fun onLoadCleared(placeholder: Drawable?) {
@@ -377,6 +351,30 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
 
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
             Log.d(TAG, this.javaClass.simpleName + " - onResourceReady()")
+        }
+    }
+
+
+    companion object {
+        val TAG: String = MediaImageFragment::class.java.simpleName
+
+        private const val TAG_DIALOG_SHARE = "TAG_DIALOG_SHARE"
+        private const val TAG_IMAGE = "TAG_IMAGE"
+        private const val TAG_WEB_DAV = "TAG_WEB_DAV"
+
+        private const val ALPHA_DELAY = 500
+        private const val ALPHA_FROM = 0.0f
+        private const val ALPHA_TO = 1.0f
+        private const val SCALE_MAX = 5.0f
+        private const val SCALE_MIN = 1.0f
+
+        fun newInstance(image: CloudFile, isWebDav: Boolean): MediaImageFragment {
+            return MediaImageFragment().apply {
+                arguments = Bundle(2).apply {
+                    putSerializable(TAG_IMAGE, image)
+                    putBoolean(TAG_WEB_DAV, isWebDav)
+                }
+            }
         }
     }
 }

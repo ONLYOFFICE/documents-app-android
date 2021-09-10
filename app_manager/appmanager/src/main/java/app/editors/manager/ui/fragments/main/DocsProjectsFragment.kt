@@ -8,20 +8,6 @@ import app.editors.manager.managers.providers.CloudFileProvider
 
 class DocsProjectsFragment : DocsCloudFragment() {
 
-    companion object {
-
-        fun newInstance(account: String, fileData: String? = null): DocsProjectsFragment {
-            return DocsProjectsFragment().apply {
-                arguments = Bundle(2).apply {
-                    putString(KEY_ACCOUNT, account)
-                    putString(MainPagerFragment.KEY_FILE_DATA, fileData)
-                }
-            }
-        }
-
-        val ID = CloudFileProvider.Section.Projects.path
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
@@ -37,14 +23,14 @@ class DocsProjectsFragment : DocsCloudFragment() {
 
     override fun onScrollPage() {
         super.onScrollPage()
-        if (presenter.stack == null) {
+        presenter.stack?.let {
             presenter.getItemsById(ID)
         }
     }
 
     override fun onError(message: String?) {
-        if (message != null) {
-            if (message != getString(R.string.errors_server_error) + "500") {
+        message?.let {
+            if (it != getString(R.string.errors_server_error) + "500") {
                 super.onError(message)
             }
         }
@@ -52,24 +38,36 @@ class DocsProjectsFragment : DocsCloudFragment() {
 
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
-        if (mSwipeRefresh != null) {
-            mSwipeRefresh.isRefreshing = true
-        }
+        swipeRefreshLayout?.isRefreshing = true
         presenter.getItemsById(ID)
         arguments?.getString(MainPagerFragment.KEY_FILE_DATA)?.let {
-            mCloudPresenter.openFile(it)
+            cloudPresenter.openFile(it)
         }
     }
 
     override fun onRemoveItemFromFavorites() {}
 
-    override fun getSection() = ApiContract.SectionType.CLOUD_PROJECTS
+    override val section: Int
+        get() = ApiContract.SectionType.CLOUD_PROJECTS
 
     private fun init() {
         presenter.checkBackStack()
     }
 
     fun setFileData(fileData: String) {
-        mCloudPresenter.openFile(fileData)
+        cloudPresenter.openFile(fileData)
+    }
+
+    companion object {
+        val ID = CloudFileProvider.Section.Projects.path
+
+        fun newInstance(account: String, fileData: String? = null): DocsProjectsFragment {
+            return DocsProjectsFragment().apply {
+                arguments = Bundle(2).apply {
+                    putString(KEY_ACCOUNT, account)
+                    putString(MainPagerFragment.KEY_FILE_DATA, fileData)
+                }
+            }
+        }
     }
 }

@@ -160,22 +160,22 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         onClickEvent(item, position)
         mIsContextClick = true
         val state = ContextBottomDialog.State()
-        state.mIsLocal = true
-        state.mTitle = item.title
-        state.mInfo = TimeUtils.formatDate(itemClickedDate)
-        state.mIsFolder = item is CloudFolder
+        state.isLocal = true
+        state.title = item.title
+        state.info = TimeUtils.formatDate(itemClickedDate)
+        state.isFolder = item is CloudFolder
         if (!isClickedItemFile) {
-            state.mIconResId = R.drawable.ic_type_folder
+            state.iconResId = R.drawable.ic_type_folder
         } else {
-            state.mIconResId = getIconContext(
+            state.iconResId = getIconContext(
                 StringUtils.getExtensionFromPath(
                     itemClickedTitle
                 )
             )
         }
-        state.mIsPdf = isPdf
-        if (state.mIsShared && state.mIsFolder) {
-            state.mIconResId = R.drawable.ic_type_folder_shared
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
     }

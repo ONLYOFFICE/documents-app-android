@@ -1,11 +1,7 @@
 package app.editors.manager.ui.fragments.share
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import app.editors.manager.databinding.FragmentListBinding
-import app.editors.manager.databinding.FragmentShareAddListBinding
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
@@ -13,11 +9,10 @@ import app.editors.manager.mvp.models.ui.UserUi
 import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.views.share.AddView
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
+import app.editors.manager.ui.adapters.ShareAdapter
 import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
-import app.editors.manager.ui.adapters.share.ShareAddAdapter
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import butterknife.ButterKnife
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
@@ -31,37 +26,11 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     @InjectPresenter
     lateinit var addPresenter: AddPresenter
 
-    private var shareAddAdapter: ShareAddAdapter? = null
-    private var viewBinding: FragmentShareAddListBinding? = null
-    private var fragmentListBinding: FragmentListBinding? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        viewBinding = FragmentShareAddListBinding.inflate(inflater, container, false)
-        fragmentListBinding = FragmentListBinding
-            .bind(viewBinding?.root ?: throw RuntimeException("View binding can not be null"))
-            .apply {
-                mUnbinder = ButterKnife.bind(root)
-                mPlaceholderLayout = placeholderLayout.root
-                mRecyclerView = listOfItems
-                mSwipeRefresh = listSwipeRefresh
-                mListLayout = root
-            }
-        return viewBinding?.root
-    }
+    private var shareAdapter: ShareAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(savedInstanceState)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewBinding = null
-        fragmentListBinding = null
     }
 
     override fun onRefresh() {
@@ -69,20 +38,20 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     override fun onItemClick(view: View, position: Int) {
-        shareAddAdapter?.getItem(position).let { item ->
+        shareAdapter?.getItem(position).let { item ->
             when (item) {
                 is UserUi -> item.isSelected = !item.isSelected
                 is GroupUi -> item.isSelected = !item.isSelected
             }
         }
-        shareAddAdapter?.notifyItemChanged(position)
+        shareAdapter?.notifyItemChanged(position)
         setCountChecked()
     }
 
     override fun onError(message: String?) {
-        mSwipeRefresh.isRefreshing = false
-        if (shareAddAdapter?.itemCount == 0) {
-            mPlaceholderViews.setTemplatePlaceholder(PlaceholderViews.Type.CONNECTION)
+        swipeRefreshLayout?.isRefreshing = false
+        if (shareAdapter?.itemCount == 0) {
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.CONNECTION)
         }
         if (isActivePage) {
             message?.let { showSnackBar(it) }
@@ -96,16 +65,16 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
     override fun onGetUsers(list: List<ViewType>) {
         setPlaceholder(true, list.isNotEmpty())
-        mSwipeRefresh.isRefreshing = false
-        shareAddAdapter?.setMode(BaseAdapter.Mode.USERS)
-        shareAddAdapter?.setItems(list)
+        swipeRefreshLayout?.isRefreshing = false
+        shareAdapter?.setMode(BaseAdapter.Mode.USERS)
+        shareAdapter?.setItems(list)
     }
 
     override fun onGetGroups(list: List<ViewType>) {
         setPlaceholder(false, list.isNotEmpty())
-        mSwipeRefresh.isRefreshing = false
-        shareAddAdapter?.setMode(BaseAdapter.Mode.GROUPS)
-        shareAddAdapter?.setItems(list)
+        swipeRefreshLayout?.isRefreshing = false
+        shareAdapter?.setMode(BaseAdapter.Mode.GROUPS)
+        shareAdapter?.setItems(list)
     }
 
     override fun onGetCommon(list: List<ViewType>) {
@@ -139,10 +108,10 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     private fun initViews() {
-        shareAddAdapter = ShareAddAdapter(ShareHolderFactory { view, position ->
+        shareAdapter = ShareAdapter(ShareHolderFactory { view, position ->
             onItemClick(view, position)
         })
-        mRecyclerView.adapter = shareAddAdapter
+        recyclerView?.adapter = shareAdapter
     }
 
     private fun restoreViews(savedInstanceState: Bundle?) {
@@ -154,15 +123,17 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     private fun requestData() {
-        mSwipeRefresh.isRefreshing = true
+        swipeRefreshLayout?.isRefreshing = true
         addPresenter.shared
     }
 
     private fun setPlaceholder(isUsers: Boolean, isEmpty: Boolean) {
         if (isUsers) {
-            mPlaceholderViews.setTemplatePlaceholder(if (isEmpty) PlaceholderViews.Type.NONE else PlaceholderViews.Type.USERS)
+            placeholderViews?.setTemplatePlaceholder(if (isEmpty)
+                PlaceholderViews.Type.NONE else PlaceholderViews.Type.USERS)
         } else {
-            mPlaceholderViews.setTemplatePlaceholder(if (isEmpty) PlaceholderViews.Type.NONE else PlaceholderViews.Type.GROUPS)
+            placeholderViews?.setTemplatePlaceholder(if (isEmpty)
+                PlaceholderViews.Type.NONE else PlaceholderViews.Type.GROUPS)
         }
     }
 
@@ -171,15 +142,10 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     private val isActivePage: Boolean
-        get() {
-            val fragment = parentFragment
-            return if (fragment is AddPagerFragment) {
-                fragment.isActivePage(this)
-            } else true
-        }
+        get() = parentFragment.let { it is AddPagerFragment && it.isActivePage(this) }
 
     fun updateAdapterState() {
-        shareAddAdapter?.notifyDataSetChanged()
+        shareAdapter?.notifyDataSetChanged()
     }
 
     fun addAccess() {

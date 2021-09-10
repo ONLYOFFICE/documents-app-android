@@ -252,36 +252,36 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         onClickEvent(item, position)
         mIsContextClick = true
         val state = ContextBottomDialog.State()
-        state.mTitle = itemClickedTitle
-        state.mInfo = TimeUtils.formatDate(itemClickedDate)
-        state.mIsFolder = !isClickedItemFile
-        state.mIsShared = isClickedItemShared
-        state.mIsCanShare = isItemShareable
-        state.mIsDocs = isClickedItemDocs
-        state.mIsContextEditable = isContextItemEditable
-        state.mIsItemEditable = isItemEditable
-        state.mIsStorage = isClickedItemStorage && isRoot
-        state.mIsDeleteShare = isShareSection
-        state.mIsWebDav = false
-        state.mIsOneDrive = false
-        state.mIsTrash = isTrash
-        state.mIsFavorite = isClickedItemFavorite
+        state.title = itemClickedTitle
+        state.info = TimeUtils.formatDate(itemClickedDate)
+        state.isFolder = !isClickedItemFile
+        state.isShared = isClickedItemShared
+        state.isCanShare = isItemShareable
+        state.isDocs = isClickedItemDocs
+        state.isContextEditable = isContextItemEditable
+        state.isItemEditable = isItemEditable
+        state.isStorage = isClickedItemStorage && isRoot
+        state.isDeleteShare = isShareSection
+        state.isWebDav = false
+        state.isOneDrive = false
+        state.isTrash = isTrash
+        state.isFavorite = isClickedItemFavorite
         if (!isClickedItemFile) {
             if((itemClicked as CloudFolder).providerKey.isEmpty()) {
-                state.mIconResId = R.drawable.ic_type_folder
+                state.iconResId = R.drawable.ic_type_folder
             } else {
-                state.mIconResId = StorageUtils.getStorageIcon((itemClicked as CloudFolder).providerKey)
+                state.iconResId = StorageUtils.getStorageIcon((itemClicked as CloudFolder).providerKey)
             }
         } else {
-            state.mIconResId = getIconContext(
+            state.iconResId = getIconContext(
                 StringUtils.getExtensionFromPath(
                     itemClickedTitle
                 )
             )
         }
-        state.mIsPdf = isPdf
-        if (state.mIsShared && state.mIsFolder) {
-            state.mIconResId = R.drawable.ic_type_folder_shared
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
     }

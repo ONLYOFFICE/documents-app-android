@@ -299,20 +299,20 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             contextItem = recent
             contextPosition = position
             val state = ContextBottomDialog.State()
-            state.mTitle = recent.name
+            state.title = recent.name
             if (!recent.isLocal) {
                 accountDao.getAccount(recent.ownerId ?: "")?.let {
-                    state.mInfo =
+                    state.info =
                         it.portal + mContext.getString(R.string.placeholder_point) + TimeUtils.formatDate(Date(recent.date))
                 }
 
             } else {
-                state.mInfo = TimeUtils.formatDate(Date(recent.date))
+                state.info = TimeUtils.formatDate(Date(recent.date))
             }
-            state.mIconResId = getIconContext(StringUtils.getExtensionFromPath(recent.name))
-            state.mIsRecent = true
+            state.iconResId = getIconContext(StringUtils.getExtensionFromPath(recent.name))
+            state.isRecent = true
             if (recent.isLocal) {
-                state.mIsLocal = true
+                state.isLocal = true
             }
             withContext(Dispatchers.Main) {
                 viewState.onContextShow(state)

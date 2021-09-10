@@ -13,6 +13,66 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 
 class DocsShareFragment : DocsCloudFragment() {
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init()
+    }
+
+    override fun onSwipeRefresh(): Boolean {
+        if (!super.onSwipeRefresh()) {
+            cloudPresenter.getItemsById(ID)
+            return true
+        }
+        return false
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater)
+        if (cloudPresenter.isSelectionMode) {
+            val mShareDeleteItem = menu.findItem(R.id.toolbar_selection_share_delete)
+            mShareDeleteItem.isVisible = true
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.toolbar_selection_share_delete) {
+            cloudPresenter.removeShare()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onScrollPage() {
+        super.onScrollPage()
+        cloudPresenter.stack?.let {
+            cloudPresenter.getItemsById(ID)
+        }
+    }
+
+
+    override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
+        super.onAcceptClick(dialogs, value, tag)
+        tag?.let {
+            if (DocsBasePresenter.TAG_DIALOG_ACTION_REMOVE_SHARE == tag) {
+                cloudPresenter.removeShareSelected()
+            }
+        }
+    }
+
+    override fun onStateEmptyBackStack() {
+        super.onStateEmptyBackStack()
+        swipeRefreshLayout?.isRefreshing = true
+        cloudPresenter.getItemsById(ID)
+    }
+
+    override fun onRemoveItemFromFavorites() { }
+
+    private fun init() {
+        cloudPresenter.checkBackStack()
+    }
+
+    override val section: Int
+        get() = ApiContract.SectionType.CLOUD_SHARE
+
     companion object {
         val ID = CloudFileProvider.Section.Shared.path
 
@@ -24,64 +84,4 @@ class DocsShareFragment : DocsCloudFragment() {
             }
         }
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        init()
-    }
-
-    override fun onSwipeRefresh(): Boolean {
-        if (!super.onSwipeRefresh()) {
-            mCloudPresenter.getItemsById(ID)
-            return true
-        }
-        return false
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, menuInflater)
-        if (mCloudPresenter.isSelectionMode) {
-            val mShareDeleteItem = menu.findItem(R.id.toolbar_selection_share_delete)
-            mShareDeleteItem.isVisible = true
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.toolbar_selection_share_delete) {
-            mCloudPresenter.removeShare()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun onScrollPage() {
-        super.onScrollPage()
-        if (mCloudPresenter.stack == null) {
-            mCloudPresenter.getItemsById(ID)
-        }
-    }
-
-    override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
-        super.onAcceptClick(dialogs, value, tag)
-        if (tag != null) {
-            if (DocsBasePresenter.TAG_DIALOG_ACTION_REMOVE_SHARE == tag) {
-                mCloudPresenter.removeShareSelected()
-            }
-        }
-    }
-
-    override fun onStateEmptyBackStack() {
-        super.onStateEmptyBackStack()
-        if (mSwipeRefresh != null) {
-            mSwipeRefresh.isRefreshing = true
-        }
-        mCloudPresenter.getItemsById(ID)
-    }
-
-    override fun getSection() = ApiContract.SectionType.CLOUD_SHARE
-
-    override fun onRemoveItemFromFavorites() {}
-    private fun init() {
-        mCloudPresenter.checkBackStack()
-    }
-
 }
