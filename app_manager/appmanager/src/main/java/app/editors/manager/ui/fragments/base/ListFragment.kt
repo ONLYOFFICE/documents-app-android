@@ -20,15 +20,15 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
     protected var placeholderViews: PlaceholderViews? = null
     protected var recyclerView: RecyclerView? = null
     protected var swipeRefreshLayout: SwipeRefreshLayout? = null
-    private var viewBinding: FragmentListBinding? = null
+    protected var fragmentListBinding: FragmentListBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewBinding = FragmentListBinding.inflate(inflater, container, false)
-        return viewBinding?.root
+        fragmentListBinding = FragmentListBinding.inflate(inflater, container, false)
+        return fragmentListBinding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,11 +38,11 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewBinding = null
+        fragmentListBinding = null
     }
 
     private fun init() {
-        viewBinding?.let {
+        fragmentListBinding?.let {
             val resourcesProvider = ResourcesProvider(requireContext())
             placeholderViews = PlaceholderViews(it.placeholderLayout.root)
             placeholderViews?.setViewForHide(it.listOfItems)

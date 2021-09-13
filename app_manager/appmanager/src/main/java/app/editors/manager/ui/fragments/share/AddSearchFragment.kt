@@ -6,7 +6,6 @@ import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DiffUtil
 import app.editors.manager.R
-import app.editors.manager.databinding.FragmentListBinding
 import app.editors.manager.databinding.FragmentShareAddListSearchBinding
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
@@ -39,7 +38,6 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     private var searchItem: MenuItem? = null
     private var searchView: SearchView? = null
     private var viewBinding: FragmentShareAddListSearchBinding? = null
-    private var fragmentListBinding: FragmentListBinding? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -64,7 +62,9 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         savedInstanceState: Bundle?
     ): View? {
         viewBinding = FragmentShareAddListSearchBinding.inflate(inflater, container, false)
-        return super.onCreateView(inflater, container, savedInstanceState)
+        fragmentListBinding = viewBinding?.fragmentShareAddList?.fragmentList
+        return viewBinding?.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,9 +74,9 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
 
     override fun onDestroyView() {
         super.onDestroyView()
+        sharePanelViews?.popupDismiss()
         sharePanelViews?.unbind()
         viewBinding = null
-        fragmentListBinding = null
         shareActivity = null
     }
 
@@ -129,6 +129,9 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
 
     override fun onQueryTextChange(newText: String): Boolean {
         addPresenter.setSearchValue(newText)
+        addPresenter.resetChecked()
+        sharePanelViews?.setCount(0)
+        sharePanelViews?.setAddButtonEnable(false)
         return false
     }
 
@@ -207,7 +210,6 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     override fun onSearchValue(value: String?) {
-        swipeRefreshLayout?.isRefreshing = true
         value?.let {
             searchView?.setQuery(value, false)
         }
@@ -232,8 +234,8 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         supportActionBar?.setHomeButtonEnabled(true)
         shareActivity?.expandAppBar()
         getArgs()
-        initViews()
         restoreViews(savedInstanceState)
+        initViews()
     }
 
     private fun getArgs() {
@@ -241,13 +243,17 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     private fun initViews() {
-        sharePanelViews = activity?.let { activity ->
-            viewBinding?.sharePanelLayout?.root?.let { layout ->
-                SharePanelViews(layout, activity).apply {
+        viewBinding?.let { binding ->
+            sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, shareActivity!!).apply {
                     setOnEventListener(this@AddSearchFragment)
                     setAccessIcon(addPresenter.accessCode)
                 }
-            }
+//            binding.fragmentShareAddList.fragmentList.let { fragmentList ->
+//                recyclerView = fragmentList.listOfItems
+//                placeholderViews = PlaceholderViews(fragmentList.placeholderLayout.root)
+//                swipeRefreshLayout = fragmentList.listSwipeRefresh
+//                placeholderViews?.setViewForHide(fragmentList.listOfItems)
+//            }
         }
         shareAdapter = ShareAdapter(ShareHolderFactory { view, position ->
             onItemClick(view, position)
@@ -266,10 +272,8 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     private fun setCountChecked() {
-        addPresenter.countChecked.let { countChecked ->
-            sharePanelViews?.setCount(countChecked)
-            sharePanelViews?.setAddButtonEnable(countChecked > 0)
-        }
+        sharePanelViews?.setCount(addPresenter.countChecked)
+        sharePanelViews?.setAddButtonEnable(addPresenter.countChecked > 0)
     }
 
     private fun setPlaceholder(isEmpty: Boolean) {

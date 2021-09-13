@@ -101,7 +101,7 @@ open class BaseViewTypeAdapter<T : ViewType>(holderFactory: HolderFactory)
             }
             return position
         }
-        throw RuntimeException("Invalid item")
+        return 0
     }
 
     fun updateItem(item: T, position: Int) {
