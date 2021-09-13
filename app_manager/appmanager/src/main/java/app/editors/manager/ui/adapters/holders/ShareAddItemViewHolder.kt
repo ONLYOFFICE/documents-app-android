@@ -36,7 +36,14 @@ class ShareAddItemViewHolder(
 
     override fun bind(item: ViewType, payloads: List<Any>) {
         if (item is UserUi && ShareAdapter.PAYLOAD_AVATAR in payloads) {
-            avatarImage.setAvatar(item.avatar)
+            if (item.isSelected) {
+                val mask = resourcesProvider.getDrawable(R.drawable.drawable_list_image_select_mask)
+                val layerDrawable = LayerDrawable(arrayOf(item.avatar, mask))
+                avatarImage.setAvatar(layerDrawable)
+            } else {
+                avatarImage.setAvatar(item.avatar ?: resourcesProvider
+                    .getDrawable(R.drawable.drawable_list_share_image_item_user_placeholder))
+            }
         }
     }
 
