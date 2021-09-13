@@ -62,13 +62,14 @@ class AddPresenter : BasePresenter<AddView>() {
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.response.filter { it.id != account.id }.map {
-                    UserUi(it.id, it.department, it.displayName, GlideUtils.loadAvatar(it.avatarSmall))
+                    UserUi(it.id, it.department, it.displayName, it.avatarMedium)
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
                 shareStack.addUsers(response)
                 viewState.onGetUsers(userListItems)
+                loadAvatars()
             }, { error ->
                 fetchError(error)
             })
@@ -93,13 +94,14 @@ class AddPresenter : BasePresenter<AddView>() {
         disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups()) { users, groups ->
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
-                UserUi(it.id, it.department, it.displayName, GlideUtils.loadAvatar(it.avatarMedium))
+                UserUi(it.id, it.department, it.displayName, it.avatarMedium)
             })
             return@zip true
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 viewState.onGetCommon(commonList)
+                loadAvatars()
             }, { error ->
                 fetchError(error)
             })
@@ -113,13 +115,29 @@ class AddPresenter : BasePresenter<AddView>() {
             shareStack.clearModel()
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
-                UserUi(it.id, it.department, it.displayName, GlideUtils.loadAvatar(it.avatarMedium))
+                UserUi(it.id, it.department, it.displayName, it.avatarMedium)
             })
             return@zip true
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 viewState.onGetCommon(commonList)
+                loadAvatars()
+            }, { error ->
+                fetchError(error)
+            })
+    }
+
+    private fun loadAvatars() {
+        disposable = Observable.fromIterable(shareStack.userSet)
+            .subscribeOn(Schedulers.io())
+            .map { user ->
+                user.avatar = GlideUtils.loadAvatar(user.avatarUrl)
+                user
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState.onUpdateAvatar(it)
             }, { error ->
                 fetchError(error)
             })

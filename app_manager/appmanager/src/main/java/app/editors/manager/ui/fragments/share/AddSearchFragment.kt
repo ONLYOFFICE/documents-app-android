@@ -219,6 +219,13 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         shareAdapter?.set(list, result)
     }
 
+    override fun onUpdateAvatar(user: UserUi) {
+        shareAdapter?.let { adapter ->
+            val position = adapter.updateItem(user)
+            adapter.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
+        }
+    }
+
     private fun init(savedInstanceState: Bundle?) {
         setActionBarTitle(getString(R.string.share_title_search))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

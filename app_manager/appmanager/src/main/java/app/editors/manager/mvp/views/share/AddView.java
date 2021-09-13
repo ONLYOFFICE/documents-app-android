@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import app.editors.manager.mvp.models.ui.UserUi;
 import app.editors.manager.mvp.views.base.BaseViewExt;
 import lib.toolkit.base.ui.adapters.holder.ViewType;
 import moxy.viewstate.strategy.OneExecutionStateStrategy;
@@ -17,4 +18,5 @@ public interface AddView extends BaseViewExt {
     void onSuccessAdd();
     void onSearchValue(@Nullable String value);
     void onUpdateSearch(@Nullable List<ViewType> users);
+    void onUpdateAvatar(UserUi user);
 }

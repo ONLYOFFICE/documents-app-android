@@ -94,6 +94,13 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
         // Stub
     }
 
+    override fun onUpdateAvatar(user: UserUi) {
+        shareAdapter?.let { adapter ->
+            val position = adapter.updateItem(user)
+            adapter.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
+        }
+    }
+
     private fun init(savedInstanceState: Bundle?) {
         getArgs()
         initViews()
