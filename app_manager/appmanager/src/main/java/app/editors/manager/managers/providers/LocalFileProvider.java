@@ -61,22 +61,30 @@ public class LocalFileProvider implements BaseFileProvider {
     public Observable<CloudFile> createFile(String folderId, RequestCreate body) {
         final File parentFile = new File(folderId);
         final String name = body.getTitle();
-        return Observable.just(mLocalContentTools.createFile(name, parentFile, App.getLocale()))
-                .map(createFile -> {
-                    if (createFile.exists()) {
-                        CloudFile file = new CloudFile();
-                        file.setId(folderId + "/" + createFile.getName());
-                        file.setTitle(createFile.getName());
-                        file.setFolderId(folderId);
-                        file.setPureContentLength(createFile.length());
-                        file.setFileExst(StringUtils.getExtensionFromPath(name));
-                        file.setCreated(new Date());
-                        file.setJustCreated(true);
-                        return file;
-                    } else {
+        try {
+            final File localFile = mLocalContentTools.createFile(name, parentFile, App.getLocale());
+            return Observable.just(localFile)
+                    .map(createFile -> {
+                        if (createFile.exists()) {
+                            CloudFile file = new CloudFile();
+                            file.setId(folderId + "/" + createFile.getName());
+                            file.setTitle(createFile.getName());
+                            file.setFolderId(folderId);
+                            file.setPureContentLength(createFile.length());
+                            file.setFileExst(StringUtils.getExtensionFromPath(name));
+                            file.setCreated(new Date());
+                            file.setJustCreated(true);
+                            return file;
+                        } else {
+                            throw ProviderError.throwErrorCreate();
+                        }
+                    });
+        } catch (Throwable error) {
+            return Observable.just(new CloudFile())
+                    .map(  file ->  {
                         throw ProviderError.throwErrorCreate();
-                    }
-                });
+                    } );
+        }
     }
 
     @Override
