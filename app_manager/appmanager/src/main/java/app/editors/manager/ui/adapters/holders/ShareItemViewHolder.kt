@@ -6,9 +6,10 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareSettingsItemBinding
-import app.editors.manager.managers.utils.GlideUtils.loadAvatar
+import app.editors.manager.managers.utils.GlideUtils.setAvatar
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.mvp.models.ui.ShareUi
+import app.editors.manager.ui.adapters.ShareAdapter
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 import lib.toolkit.base.ui.adapters.holder.ViewType
 
@@ -28,10 +29,15 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
         }
     }
 
+    override fun bind(item: ViewType, payloads: List<Any>) {
+        if (item is ShareUi && ShareAdapter.PAYLOAD_AVATAR in payloads
+            && item.sharedTo.userName.isNotEmpty()) {
+            shareImage.setAvatar(item.avatar)
+        }
+    }
+
     override fun bind(item: ViewType) {
         if (item is ShareUi) {
-            if (item.sharedTo.avatarSmall.isNotEmpty())
-                shareImage.loadAvatar(item.sharedTo.avatarSmall)
             if (item.sharedTo.userName.isNotEmpty()) {
                 itemInfo.visibility = View.VISIBLE
                 itemName.text = item.sharedTo.displayNameHtml
