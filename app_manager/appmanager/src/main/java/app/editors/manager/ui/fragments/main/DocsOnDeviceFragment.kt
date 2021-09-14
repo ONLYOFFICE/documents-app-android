@@ -184,7 +184,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         if (menu != null && menuInflater != null && context != null) {
             menuInflater?.inflate(R.menu.docs_select, menu)
             deleteItem = menu?.findItem(R.id.toolbar_selection_delete)?.apply {
-                UiUtils.setMenuItemTint(requireContext(), this, R.color.colorWhite)
+                UiUtils.setMenuItemTint(requireContext(), this, R.color.colorPrimary)
                 isVisible = true
             }
             moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)

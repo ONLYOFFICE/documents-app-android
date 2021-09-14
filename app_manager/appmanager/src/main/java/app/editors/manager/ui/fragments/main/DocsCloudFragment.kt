@@ -95,7 +95,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 menuInflater.inflate(R.menu.docs_select, menu)
                 deleteItem = menu.findItem(R.id.toolbar_selection_delete)
                     .setVisible(cloudPresenter.isContextItemEditable).also {
-                        setMenuItemTint(requireContext(), it, R.color.colorWhite)
+                        setMenuItemTint(requireContext(), it, R.color.colorPrimary)
                     }
                 moveItem = menu.findItem(R.id.toolbar_selection_move)
                     .setVisible(cloudPresenter.isContextItemEditable)
