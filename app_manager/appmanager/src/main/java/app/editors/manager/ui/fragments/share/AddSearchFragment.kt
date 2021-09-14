@@ -236,6 +236,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         getArgs()
         restoreViews(savedInstanceState)
         initViews()
+        addPresenter.startSearch()
     }
 
     private fun getArgs() {
@@ -248,12 +249,6 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
                     setOnEventListener(this@AddSearchFragment)
                     setAccessIcon(addPresenter.accessCode)
                 }
-//            binding.fragmentShareAddList.fragmentList.let { fragmentList ->
-//                recyclerView = fragmentList.listOfItems
-//                placeholderViews = PlaceholderViews(fragmentList.placeholderLayout.root)
-//                swipeRefreshLayout = fragmentList.listSwipeRefresh
-//                placeholderViews?.setViewForHide(fragmentList.listOfItems)
-//            }
         }
         shareAdapter = ShareAdapter(ShareHolderFactory { view, position ->
             onItemClick(view, position)

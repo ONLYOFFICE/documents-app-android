@@ -24,8 +24,10 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
+import java.util.concurrent.TimeUnit
 
 @InjectViewState
 class AddPresenter : BasePresenter<AddView>() {
@@ -39,7 +41,7 @@ class AddPresenter : BasePresenter<AddView>() {
     private val shareStack: ModelShareStack = ModelShareStack.getInstance()
     private var isCommon: Boolean = false
     private var searchValue: String? = null
-
+    private var publishSearch: PublishSubject<String>? = null
     private var disposable: Disposable? = null
 
     init {
@@ -241,6 +243,17 @@ class AddPresenter : BasePresenter<AddView>() {
         }
     }
 
+    fun startSearch() {
+        publishSearch = PublishSubject.create<String>().apply {
+            disposable = subscribeOn(Schedulers.io())
+                .debounce(350, TimeUnit.MILLISECONDS)
+                .distinctUntilChanged()
+                .doOnNext { value ->
+                    getFilter(value)
+                }.subscribe()
+        }
+    }
+
     /*
     * Update states
     * */
@@ -297,7 +310,7 @@ class AddPresenter : BasePresenter<AddView>() {
         this.searchValue = searchValue
 
         searchValue?.let { value ->
-            getFilter(value)
+            publishSearch?.onNext(value)
         }
     }
 }
