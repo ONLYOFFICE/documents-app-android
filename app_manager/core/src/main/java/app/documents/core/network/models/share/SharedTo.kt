@@ -32,15 +32,11 @@ data class SharedTo(
     val avatarSmall: String = "",
     val profileUrl: String = "",
     val name: String = "",
-    val manager: String = "",
+    val manager: String? = "",
     val shareLink: String = ""
 ) {
 
     val displayNameHtml: String
         get() = StringUtils.getHtmlString(displayName)
 
-    fun getManager(): Any {
-        return manager
-    }
-    
 }

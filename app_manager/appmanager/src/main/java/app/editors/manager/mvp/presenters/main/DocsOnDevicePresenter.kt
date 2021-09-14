@@ -12,10 +12,7 @@ import app.editors.manager.app.webDavApi
 import app.editors.manager.managers.providers.LocalFileProvider
 import app.editors.manager.managers.providers.ProviderError
 import app.editors.manager.managers.providers.WebDavFileProvider
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.explorer.Item
+import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
@@ -163,22 +160,22 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         onClickEvent(item, position)
         mIsContextClick = true
         val state = ContextBottomDialog.State()
-        state.mIsLocal = true
-        state.mTitle = item.title
-        state.mInfo = TimeUtils.formatDate(itemClickedDate)
-        state.mIsFolder = item is CloudFolder
+        state.isLocal = true
+        state.title = item.title
+        state.info = TimeUtils.formatDate(itemClickedDate)
+        state.isFolder = item is CloudFolder
         if (!isClickedItemFile) {
-            state.mIconResId = R.drawable.ic_type_folder
+            state.iconResId = R.drawable.ic_type_folder
         } else {
-            state.mIconResId = getIconContext(
+            state.iconResId = getIconContext(
                 StringUtils.getExtensionFromPath(
                     itemClickedTitle
                 )
             )
         }
-        state.mIsPdf = isPdf
-        if (state.mIsShared && state.mIsFolder) {
-            state.mIconResId = R.drawable.ic_type_folder_shared
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
     }
@@ -308,7 +305,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia()
+            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(uri)
             else -> viewState.onError(mContext.getString(R.string.error_unsupported_format))
         }
     }
@@ -402,35 +399,27 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
-    fun showMedia() {
-        viewState.onOpenMedia(mediaFile)
+    @SuppressLint("MissingPermission")
+    fun showMedia(uri: Uri) {
+        viewState.onOpenMedia(OpenState.Media(getMediaFile(uri), false))
     }
 
-    private val mediaFile: Explorer
-        get() {
-            val explorer = mModelExplorerStack.last()!!.clone()
-            if (explorer != null) {
-                val files = explorer.files
-                val images: MutableList<CloudFile> = ArrayList()
-                for (file in files) {
-                    val extension = file.fileExst
-                    if (StringUtils.isImage(extension) || StringUtils.isImageGif(extension) || StringUtils.isVideoSupport(
-                            extension
-                        )
-                    ) {
-                        val cloneFile = file.clone()
-                        cloneFile.id = ""
-                        images.add(cloneFile)
-                    }
-                    if (file == mItemClicked) {
-                        file.isClicked = true
-                    }
-                }
-                explorer.folders = null
-                explorer.files = images
-                return explorer
+    private fun getMediaFile(uri: Uri): Explorer =
+        Explorer().apply {
+            val file = File(PathUtils.getPath(mContext, uri).toString())
+            val explorerFile = CloudFile().apply {
+                pureContentLength = file.length()
+                webUrl = file.absolutePath
+                fileExst = StringUtils.getExtensionFromPath(file.name)
+                title = file.name
+                isClicked = true
             }
-            return Explorer()
+            current = Current().apply {
+                title = file.name
+                filesCount = "1"
+            }
+            files = listOf(explorerFile)
+            addRecent(explorerFile)
         }
 
     override fun fetchError(throwable: Throwable) {

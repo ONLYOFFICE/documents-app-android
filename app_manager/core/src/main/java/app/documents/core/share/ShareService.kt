@@ -5,10 +5,7 @@ import app.documents.core.network.models.Base
 import app.documents.core.network.models.share.request.RequestDeleteShare
 import app.documents.core.network.models.share.request.RequestExternal
 import app.documents.core.network.models.share.request.RequestShare
-import app.documents.core.network.models.share.response.ResponseExternal
-import app.documents.core.network.models.share.response.ResponseGroups
-import app.documents.core.network.models.share.response.ResponseShare
-import app.documents.core.network.models.share.response.ResponseUsers
+import app.documents.core.network.models.share.response.*
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.http.*
@@ -114,5 +111,4 @@ interface ShareService {
     fun getUsers(
         @QueryMap options: Map<String, String> = mapOf()
     ): Observable<ResponseUsers>
-
 }

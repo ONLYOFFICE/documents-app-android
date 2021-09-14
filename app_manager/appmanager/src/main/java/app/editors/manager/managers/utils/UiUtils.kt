@@ -1,16 +1,19 @@
 package app.editors.manager.managers.utils
 
+import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import androidx.appcompat.widget.AppCompatImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.mvp.models.explorer.CloudFolder
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 
-object UiUtils {
+object ManagerUiUtils {
 
     @JvmStatic
     fun setWebDavImage(providerName: String?, image: ImageView) {
@@ -58,7 +61,7 @@ object UiUtils {
     }
 
     @JvmStatic
-    fun setFileIcon(view: AppCompatImageView, ext: String) {
+    fun setFileIcon(view: ImageView, ext: String) {
         val extension = StringUtils.getExtension(ext)
         @DrawableRes var resId = R.drawable.ic_type_file
         @ColorRes var colorId = R.color.colorGrey
@@ -105,9 +108,69 @@ object UiUtils {
         view.setColorFilter(ContextCompat.getColor(view.context, colorId))
     }
 
-    private fun setAlphaIcon(view: AppCompatImageView, @DrawableRes resId: Int) {
+    private fun setAlphaIcon(view: ImageView, @DrawableRes resId: Int) {
         view.setImageResource(resId)
         view.alpha = UiUtils.getFloatResource(view.context, R.dimen.alpha_medium)
         view.clearColorFilter()
     }
+
+    fun setFolderIcon(view: ImageView, folder: CloudFolder, isRoot: Boolean) {
+        @DrawableRes var resId = R.drawable.ic_type_folder
+        if (folder.shared && folder.providerKey.isEmpty()) {
+            resId = R.drawable.ic_type_folder_shared
+        } else if (isRoot && folder.providerItem && !folder.providerKey.isEmpty()) {
+            when (folder.providerKey) {
+                ApiContract.Storage.BOXNET -> resId = R.drawable.ic_storage_box
+                ApiContract.Storage.DROPBOX -> resId = R.drawable.ic_storage_dropbox
+                ApiContract.Storage.SHAREPOINT -> resId = R.drawable.ic_storage_sharepoint
+                ApiContract.Storage.GOOGLEDRIVE -> resId = R.drawable.ic_storage_google
+                ApiContract.Storage.ONEDRIVE, ApiContract.Storage.SKYDRIVE -> resId =
+                    R.drawable.ic_storage_onedrive
+                ApiContract.Storage.YANDEX -> resId = R.drawable.ic_storage_yandex
+                ApiContract.Storage.WEBDAV -> {
+                    resId = R.drawable.ic_storage_webdav
+                    view.setImageResource(resId)
+                    view.alpha =
+                        UiUtils.getFloatResource(view.context, R.dimen.alpha_medium)
+                    return
+                }
+            }
+            view.setImageResource(resId)
+            view.alpha = 1.0f
+            view.clearColorFilter()
+            return
+        }
+        view.setImageResource(resId)
+        view.alpha =
+            UiUtils.getFloatResource(view.context, R.dimen.alpha_medium)
+    }
+
+    fun setAccessIcon(imageView: ImageView, accessCode: Int) {
+        when (accessCode) {
+            ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> {
+                imageView.setImageResource(R.drawable.ic_access_deny)
+                return
+            }
+            ApiContract.ShareCode.REVIEW -> imageView.setImageResource(R.drawable.ic_access_review)
+            ApiContract.ShareCode.READ -> imageView.setImageResource(R.drawable.ic_access_read)
+            ApiContract.ShareCode.READ_WRITE -> imageView.setImageResource(R.drawable.ic_access_full)
+            ApiContract.ShareCode.COMMENT -> imageView.setImageResource(R.drawable.ic_access_comment)
+            ApiContract.ShareCode.FILL_FORMS -> imageView.setImageResource(R.drawable.ic_access_fill_form)
+        }
+    }
+
+    fun View.setMargins(left: Int, top: Int, right: Int, bottom: Int) {
+        val layoutParams = this.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.leftMargin = left
+        layoutParams.topMargin = top
+        layoutParams.rightMargin = right
+        layoutParams.bottomMargin = bottom
+        this.layoutParams = layoutParams
+    }
 }
+
+var View.isVisible: Boolean
+    get() = this.visibility == View.VISIBLE
+    set(isVisible) {
+        this.visibility = if (isVisible) View.VISIBLE else View.GONE
+    }

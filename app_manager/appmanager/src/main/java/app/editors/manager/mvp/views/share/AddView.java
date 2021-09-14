@@ -2,15 +2,12 @@ package app.editors.manager.mvp.views.share;
 
 import androidx.annotation.Nullable;
 
-import app.editors.manager.mvp.models.ui.ViewType;
-import moxy.viewstate.strategy.OneExecutionStateStrategy;
-import moxy.viewstate.strategy.StateStrategyType;
-
 import java.util.List;
 
-import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.views.base.BaseViewExt;
-
+import lib.toolkit.base.ui.adapters.holder.ViewType;
+import moxy.viewstate.strategy.OneExecutionStateStrategy;
+import moxy.viewstate.strategy.StateStrategyType;
 
 @StateStrategyType(OneExecutionStateStrategy.class)
 public interface AddView extends BaseViewExt {
@@ -19,4 +16,5 @@ public interface AddView extends BaseViewExt {
     void onGetCommon(List<ViewType> list);
     void onSuccessAdd();
     void onSearchValue(@Nullable String value);
+    void onUpdateSearch(@Nullable List<ViewType> users);
 }

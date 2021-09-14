@@ -12,7 +12,6 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.webDavApi
-import app.editors.manager.di.component.DaggerApiComponent
 import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Current
@@ -134,7 +133,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private suspend fun openFile(recent: Recent, position: Int) {
+    private suspend fun openFile(recent: Recent) {
         accountDao.getAccount(recent.ownerId!!)?.let { account ->
             AccountUtils.getToken(
                 mContext,
@@ -155,13 +154,16 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                             }
                         }
                         .subscribe({ response ->
-                            checkExt(response.invoke()!!, recent, position)
+                            checkExt(checkNotNull(response.invoke()))
                         }, { throwable ->
                             if (throwable is HttpException) {
-                                if (throwable.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
-                                    viewState.onError(mContext.getString(R.string.errors_client_unauthorized));
-                                } else if (throwable.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN) {
-                                    onErrorHandle(throwable.response()?.errorBody(), throwable.code())
+                                when (throwable.code()) {
+                                    ApiContract.HttpCodes.CLIENT_UNAUTHORIZED ->
+                                        viewState.onError(mContext.getString(R.string.errors_client_unauthorized))
+                                    ApiContract.HttpCodes.CLIENT_FORBIDDEN ->
+                                        viewState.onError(mContext.getString(R.string.error_recent_account))
+                                    else ->
+                                        onErrorHandle(throwable.response()?.errorBody(),throwable.code())
                                 }
                             } else {
                                 viewState.onError(mContext.getString(R.string.error_recent_account))
@@ -174,14 +176,16 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private fun checkExt(file: CloudFile, recent: Recent, position: Int) {
-        when (StringUtils.getExtension(file.fileExst)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                addRecent(recent)
-                viewState.onMoveElement(recent, position)
-                viewState.openFile(file)
+    private fun checkExt(file: CloudFile) {
+        if (file.rootFolderType.toInt() != ApiContract.SectionType.CLOUD_TRASH) {
+            when (StringUtils.getExtension(file.fileExst)) {
+                StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
+                    viewState.openFile(file)
+                }
+                else -> viewState.onError(mContext.getString(R.string.error_unsupported_format))
             }
-            else -> viewState.onError(mContext.getString(R.string.error_unsupported_format))
+        } else {
+            viewState.onError(mContext.getString(R.string.error_recent_account))
         }
     }
 
@@ -295,20 +299,20 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             contextItem = recent
             contextPosition = position
             val state = ContextBottomDialog.State()
-            state.mTitle = recent.name
+            state.title = recent.name
             if (!recent.isLocal) {
                 accountDao.getAccount(recent.ownerId ?: "")?.let {
-                    state.mInfo =
+                    state.info =
                         it.portal + mContext.getString(R.string.placeholder_point) + TimeUtils.formatDate(Date(recent.date))
                 }
 
             } else {
-                state.mInfo = TimeUtils.formatDate(Date(recent.date))
+                state.info = TimeUtils.formatDate(Date(recent.date))
             }
-            state.mIconResId = getIconContext(StringUtils.getExtensionFromPath(recent.name))
-            state.mIsRecent = true
+            state.iconResId = getIconContext(StringUtils.getExtensionFromPath(recent.name))
+            state.isRecent = true
             if (recent.isLocal) {
-                state.mIsLocal = true
+                state.isLocal = true
             }
             withContext(Dispatchers.Main) {
                 viewState.onContextShow(state)
@@ -339,7 +343,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                             return@flatMap provider.upload(cloudFile.folderId, arrayListOf(uri))
                         }.subscribe({}, { error -> fetchError(error) }, {
                             deleteTempFile()
-                            viewState.onSnackBar(mContext.getString(R.string.upload_manager_complete));
+                            viewState.onSnackBar(mContext.getString(R.string.upload_manager_complete))
                         })
                     )
                 }
@@ -422,7 +426,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     } else if (recentAccount.isWebDav) {
                         openWebDavFile(recent, position)
                     } else {
-                        openFile(recent, position)
+                        openFile(recent)
                     }
                 }
 

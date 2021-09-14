@@ -13,6 +13,10 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     public static final int TYPE_FOOTER = 4;
     public static final int TYPE_STUB = 5;
 
+    public enum Mode {
+        USERS, GROUPS, COMMON
+    }
+
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
     }

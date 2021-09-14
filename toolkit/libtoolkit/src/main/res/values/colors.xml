@@ -58,4 +58,6 @@
     <color name="colorCloudItem">#EDF9FF</color>
 
     <color name="listItemColor">@color/colorSurface</color>
+    <color name="shadow_end">@color/colorLightWhite</color>
+    <color name="shadow_start">@color/colorWhiteLight</color>
 </resources>

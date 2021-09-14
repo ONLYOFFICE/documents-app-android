@@ -114,7 +114,7 @@ class CountriesCodesFragment : BaseAppFragment(), SearchView.OnQueryTextListener
 
     private fun init() {
         setActionBarTitle(getString(R.string.countries_codes_title))
-        countriesCodesAdapter = context?.let { CountriesCodesAdapter(it) }
+        countriesCodesAdapter = CountriesCodesAdapter()
         countriesCodesAdapter?.setItems(countriesCodesTool.codes)
         countriesCodesAdapter?.setOnItemClickListener(this)
         viewBinding?.fragmentCountriesCodesList?.apply {

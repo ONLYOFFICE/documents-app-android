@@ -10,12 +10,9 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.mvp.presenters.main.DocsBasePresenter
-import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
-import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companion.TAG
 import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companion.newInstance
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
@@ -44,11 +41,14 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         }
     }
 
-
     var account: CloudAccount? = null
 
     @InjectPresenter
-    lateinit var presenter: DocsOneDrivePresenter
+    override lateinit var presenter: DocsOneDrivePresenter
+
+    override val isWebDav: Boolean?
+        get() = false
+
     private var activity: IMainActivity? = null
 
     override fun onAttach(context: Context) {
@@ -116,8 +116,8 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
     }
 
     private fun disableMenu() {
-        if (mMenu != null) {
-            mDeleteItem.isEnabled = false
+        menu?.let {
+            deleteItem?.isEnabled = false
         }
     }
 
@@ -125,11 +125,6 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         super.onViewCreated(view, savedInstanceState)
         init()
     }
-
-    private fun init() {
-        presenter.checkBackStack()
-    }
-
 
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         super.onContextButtonClick(buttons)
@@ -140,6 +135,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
             ContextBottomDialog.Buttons.EDIT -> {
                 presenter.getFileInfo()
             }
+            else -> { }
         }
     }
 
@@ -147,37 +143,30 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         //stub
     }
 
-    override fun isWebDav(): Boolean {
-        TODO("Not yet implemented")
-    }
-
     override fun setVisibilityActionButton(isShow: Boolean) {
         activity?.showActionButton(isShow)
     }
 
-    override fun getPresenter(): DocsBasePresenter<out DocsBaseView> {
-        return presenter
-    }
-
-
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        mMenu?.findItem(R.id.toolbar_sort_item_type)?.isVisible = false
-        mMenu?.findItem(R.id.toolbar_sort_item_owner)?.isVisible = false
-        mSearchCloseButton.setOnClickListener { v: View? ->
+        menu?.findItem(R.id.toolbar_sort_item_type)?.isVisible = false
+        menu?.findItem(R.id.toolbar_sort_item_owner)?.isVisible = false
+        searchCloseButton?.setOnClickListener { v: View? ->
             onBackPressed()
         }
     }
 
     override fun onStateMenuSelection() {
         super.onStateMenuSelection()
-        if (mMenu != null && mMenuInflater != null) {
-            mMenuInflater?.inflate(R.menu.docs_select, mMenu)
-            mDeleteItem = mMenu?.findItem(R.id.toolbar_selection_delete)?.setVisible(true)
-            mMoveItem = mMenu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
-            mCopyItem = mMenu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
-            mDownloadItem = mMenu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
-            setMenuItemTint(requireContext(), mDeleteItem, R.color.colorPrimary)
+        if (menu != null && menuInflater != null) {
+            menuInflater?.inflate(R.menu.docs_select, menu)
+            deleteItem = menu?.findItem(R.id.toolbar_selection_delete)?.apply {
+                setMenuItemTint(requireContext(), this, R.color.colorPrimary)
+                isVisible = true
+            }
+            moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
+            copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
+            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
             setAccountEnable(false)
         }
     }
@@ -185,11 +174,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
         loadFiles()
-        mSwipeRefresh.isRefreshing = true
-    }
-
-    private fun loadFiles() {
-        presenter.getProvider()
+        swipeRefreshLayout?.isRefreshing = true
     }
 
     override fun onError(message: String?) {
@@ -207,6 +192,14 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
             }
         }
 
+    }
+
+    private fun init() {
+        presenter.checkBackStack()
+    }
+
+    private fun loadFiles() {
+        presenter.getProvider()
     }
 
 }

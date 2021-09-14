@@ -136,6 +136,8 @@ object ApiContract {
         const val VAL_SORT_BY_TYPE = "type"
         const val VAL_SORT_BY_SIZE = "size"
         const val VAL_SORT_BY_OWNER = "Author"
+        const val VAL_SORT_BY_NAME = "name"
+        const val VAL_SORT_BY_DISPLAY_NAME = "displayName"
     }
 
     object SectionType {
@@ -185,5 +187,4 @@ object ApiContract {
         const val XLSX = "XLSX"
         const val PPTX = "PPTX"
     }
-
 }
