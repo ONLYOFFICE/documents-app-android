@@ -170,10 +170,10 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     override fun onRemove(share: ShareUi, sharePosition: Int) {
         viewBinding?.shareSettingsListSwipeRefresh?.isRefreshing = false
         shareSettingsAdapter?.let { adapter ->
-            val previousItem = adapter.getItem(adapter.itemsList.indexOf(share) - 1)
-            val nextItem = adapter.getItem(adapter.itemsList.indexOf(share) + 1)
+            val previousItem = adapter.getItem(sharePosition - 1)
+            val nextItem = adapter.getItem(sharePosition + 1)
 
-            adapter.removeItem(share)
+            adapter.removeItem(sharePosition)
 
             if (previousItem is ShareHeaderUi && (nextItem == null || nextItem is ShareHeaderUi)) {
                 adapter.removeHeader(previousItem)
