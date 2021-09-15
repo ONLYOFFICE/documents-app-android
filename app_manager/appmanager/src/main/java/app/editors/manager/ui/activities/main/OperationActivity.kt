@@ -113,7 +113,7 @@ class OperationActivity : BaseAppActivity(){
                         showFragment(DocsOneDriveOperationFragment.newInstance(), null)
                     } else {
                         if (account.portal?.contains(ApiContract.PERSONAL_HOST) == true) {
-                            showFragment(DocsCloudOperationFragment.newInstance(Json.encodeToString(account), ApiContract.SectionType.CLOUD_USER), null)
+                            showFragment(DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER), null)
                         } else {
                             showFragment(DocsOperationSectionFragment.newInstance(Json.encodeToString(account)), null)
                         }
