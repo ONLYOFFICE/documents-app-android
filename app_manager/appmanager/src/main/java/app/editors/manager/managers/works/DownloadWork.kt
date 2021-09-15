@@ -197,6 +197,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                                 if (operations[0].finished && operations[0].id == download.id) {
                                     url = operations[0].url
                                     id = operations[0].id
+                                    notificationUtils.removeNotification(0)
                                     break
                                 }
                             } else {

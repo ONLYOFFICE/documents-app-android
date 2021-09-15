@@ -22,7 +22,7 @@ class DocsCommonFragment : DocsCloudFragment() {
 
     override fun onScrollPage() {
         super.onScrollPage()
-        cloudPresenter.stack?.let {
+        if (cloudPresenter.stack == null) {
             cloudPresenter.getItemsById(ID)
         }
     }
