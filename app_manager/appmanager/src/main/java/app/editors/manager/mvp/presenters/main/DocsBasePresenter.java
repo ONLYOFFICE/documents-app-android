@@ -62,7 +62,6 @@ import app.editors.manager.mvp.models.request.RequestDownload;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.presenters.base.BasePresenter;
 import app.editors.manager.mvp.views.main.DocsBaseView;
-import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -148,6 +147,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     protected boolean mIsFilteringMode;
     protected boolean mIsSelectionMode;
     protected boolean mIsFoldersMode;
+    protected boolean mIsTrashMode;
 
     /*
      * Clicked/Checked and etc...
@@ -1632,5 +1632,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     public void recreateStack() {
         mModelExplorerStack = new ModelExplorerStack();
+    }
+
+    public Boolean isTrashMode() {
+        return mIsTrashMode;
     }
 }
