@@ -289,7 +289,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     /*
      * Loading callbacks
      * */
-    override fun onDownloadError(id: String, url: String, title: String, info: String) {
+    override fun onDownloadError(id: String?, url: String?, title: String, info: String) {
         viewState.onDialogClose()
         viewState.onSnackBar(info)
     }
