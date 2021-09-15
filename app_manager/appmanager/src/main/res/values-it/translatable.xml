@@ -411,17 +411,22 @@
     <string name="app_settings_analytic">Condividi le analisi dellapp</string>
     <string name="app_manage_files_title">Accedi per gestire i file</string>
     <string name="app_manage_files_description">È necessario concedere l’accesso ai file. Se neghi l’accesso, tutti i file dopo le applicazioni perse verranno cancellati.</string>
-
-
     <string name="app_internal_error">Errore interno</string>
     <string name="app_fragment_crash_error">Chiudi questa applicazione e riprova</string>
-
     <string name="operation_add_to_favorites">Aggiunto ai Preferiti</string>
     <string name="operation_remove_from_favorites">Rimosso dai Preferiti</string>
-
     <string name="main_pager_docs_favorites">Preferiti</string>
-
     <string name="list_context_add_to_favorite">Aggiungi ai Preferiti</string>
     <string name="list_context_delete_from_favorite">Rimuovi dai Preferiti</string>
+    <string name="login_enterprise_single_sign_button_login">Accedere via %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">Single Sign-on</string>
+    <string name="login_not_authorization_info_token">La sessione è finita</string>
+    <string name="login_password_recovery_hint">Inserisci l\'email che hai usata per registrarti sul portale. Le istruzioni per recuperare la password verranno inviate su tale e-mail.</string>
+    <string name="login_password_recovery_button_text">TONARE ALLA SCHERMATA DI ACCESSO</string>
+    <string name="login_password_recovery_success_hint">Se l\'utente con email %1$s esiste, le istruzioni per cambiare password sono inviate su tale e-mail.</string>
+    <string name="login_password_recovery_toolbar_title">Recupero password</string>
+    <string name="download_manager_archiving_progress">Creare archivio</string>
+    <string name="download_manager_exceed_size_100">Supera la dimensione massima consentita per il file (100MB)</string>
+    <string name="download_manager_exceed_size_25">Supera la dimensione massima consentita per il file (25MB)</string>
 
 </resources>

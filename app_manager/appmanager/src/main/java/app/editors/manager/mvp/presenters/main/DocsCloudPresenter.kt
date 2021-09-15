@@ -296,7 +296,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     /*
      * Loading callbacks
      * */
-    override fun onDownloadError(id: String, url: String, title: String, info: String) {
+    override fun onDownloadError(id: String?, url: String?, title: String, info: String) {
         viewState.onDialogClose()
         viewState.onSnackBar(info)
     }
@@ -346,7 +346,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         id: String
     ) {
         viewState.onSnackBar(info)
-        if (mModelExplorerStack.currentId == file.folderId) {
+        if ( id != null && mModelExplorerStack.currentId == file.folderId) {
             addFile(file)
         }
         viewState.onDeleteUploadFile(id)
@@ -357,7 +357,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun onUploadFileProgress(progress: Int, id: String, folderId: String) {
-        if (mModelExplorerStack.currentId == folderId) {
+        if (id != null && folderId != null && mModelExplorerStack.currentId == folderId) {
             viewState.onUploadFileProgress(progress, id)
         }
     }
@@ -670,9 +670,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = mItemClicked != null && StringUtils.equals(mItemClicked!!.createdBy.id, account.id)
 
     private val isItemReadWrite: Boolean
-        get() = (mItemClicked?.access == ApiContract.ShareCode.READ_WRITE ||
-                mItemClicked?.access == ApiContract.ShareCode.NONE)
-
+        get() = mItemClicked != null && (mItemClicked!!.access == ApiContract.ShareCode.READ_WRITE || mItemClicked!!.access == ApiContract.ShareCode.NONE || mItemClicked!!.access == ApiContract.ShareCode.REVIEW)
     private val isItemEditable: Boolean
         get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite  ||
                 mItemClicked?.access == ApiContract.ShareCode.REVIEW ||

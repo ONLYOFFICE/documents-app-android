@@ -554,12 +554,20 @@
 
     <string name="app_internal_error">Vnitřní chyba</string>
     <string name="app_fragment_crash_error">Prosím vypněte aplikaci a zkuste to znovu</string>
-
     <string name="operation_add_to_favorites">Přidáno do Oblíbených</string>
     <string name="operation_remove_from_favorites">Odstraněno z Oblíbených</string>
-
     <string name="main_pager_docs_favorites">Oblíbené</string>
-
     <string name="list_context_add_to_favorite">Přidat do Oblíbených</string>
     <string name="list_context_delete_from_favorite">Smazat z Oblíbených</string>
+    <string name="login_enterprise_single_sign_button_login">Přihláení do %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">Jednotné přihláení</string>
+    <string name="login_not_authorization_info_token">Doba relace vyprela</string>
+    <string name="login_password_recovery_hint">Zadejte e-mail, který pouíváte pro registraci na portálu. Na tento e-mail vám budou zaslány pokyny k obnovení hesla.</string>
+    <string name="login_password_recovery_button_text">NÁVRAT NA OBRAZOVKU PRO ZADÁNÍ</string>
+    <string name="login_password_recovery_success_hint">Pokud existuje uivatel s e-mailem %1$s, byl na tento e-mail odeslán pokyn ke změně hesla.</string>
+    <string name="login_password_recovery_toolbar_title">Obnovení hesla</string>
+    <string name="download_manager_archiving_progress">Vytváření archivu</string>
+    <string name="download_manager_exceed_size_100">Překračuje maximální velikost souboru (100MB)</string>
+    <string name="download_manager_exceed_size_25">Překračuje maximální velikost souboru (25MB)</string>
+
 </resources>

@@ -411,15 +411,21 @@
     <string name="app_settings_analytic">Compartilhe as análises de aplicativos</string>
     <string name="app_manage_files_title">Acesse para gerenciar arquivos</string>
     <string name="app_manage_files_description">É necessário dar acesso aos arquivos. Se for negado acesso, todos os arquivos serão excluídos após a perda do aplicativo.</string>
-
     <string name="app_internal_error">Erro interno</string>
     <string name="app_fragment_crash_error">Feche este aplicativo e tente novamente</string>
-
     <string name="operation_add_to_favorites">Adicionado aos Favoritos</string>
     <string name="operation_remove_from_favorites">Excluído dos favoritos</string>
-
     <string name="main_pager_docs_favorites">Favoritos</string>
-
     <string name="list_context_add_to_favorite">Adicionar aos Favoritos</string>
     <string name="list_context_delete_from_favorite">Excluir dos Favoritos</string>
+    <string name="login_enterprise_single_sign_button_login">Login por %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">Login único</string>
+    <string name="login_not_authorization_info_token">Tempo de sessão acabou</string>
+    <string name="login_password_recovery_hint">Insira o e-mail que você usou para se inscrever no Portal. As instruções de recuperação de senha serão enviadas para esse e-mail.</string>
+    <string name="login_password_recovery_button_text">VOLTAR PARA A TELA INICIAL</string>
+    <string name="login_password_recovery_success_hint">Se o usuário com o e-mail %1$s existir, as instruções para alterar a senha foram enviadas para esse e-mail.</string>
+    <string name="login_password_recovery_toolbar_title">Recuperação de senha</string>
+    <string name="download_manager_archiving_progress">Criar arquivo morto</string>
+    <string name="download_manager_exceed_size_100">Excede o tamanho de arquivo máximo (100 MB)</string>
+    <string name="download_manager_exceed_size_25">Excede o tamanho de arquivo máximo (25 MB)</string>
 </resources>
