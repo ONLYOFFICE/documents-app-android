@@ -83,4 +83,5 @@ dependencies {
     // Other
     implementation(Libs.glide)
     implementation(Libs.documentFile)
+    implementation("com.jakewharton.rxrelay2:rxrelay:2.1.1")
 }
