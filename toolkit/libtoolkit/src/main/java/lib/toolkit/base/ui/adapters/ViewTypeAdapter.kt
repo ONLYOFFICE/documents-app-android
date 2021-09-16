@@ -6,7 +6,7 @@ import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 import lib.toolkit.base.ui.adapters.factory.HolderFactory
 import lib.toolkit.base.ui.adapters.holder.ViewType
 
-abstract class ViewTypeAdapter<T : ViewType>(private val holderFactory: HolderFactory) :
+abstract class ViewTypeAdapter<T : ViewType>(val holderFactory: HolderFactory) :
     RecyclerView.Adapter<BaseViewHolder<ViewType>>() {
 
     abstract var itemsList: List<T>

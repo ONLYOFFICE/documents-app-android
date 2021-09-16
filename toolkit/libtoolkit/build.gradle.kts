@@ -83,4 +83,5 @@ dependencies {
     // Other
     implementation(Libs.glide)
     implementation(Libs.documentFile)
+    implementation(Rx.rxRelay)
 }
