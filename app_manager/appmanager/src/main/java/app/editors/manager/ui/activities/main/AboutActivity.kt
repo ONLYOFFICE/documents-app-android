@@ -42,7 +42,7 @@ class AboutActivity : BaseAppActivity() {
                 UiUtils.getFilteredDrawable(
                     this,
                     R.drawable.ic_toolbar_back,
-                    R.color.colorWhite
+                    lib.toolkit.base.R.color.colorWhite
                 )
             )
         } else {
@@ -50,7 +50,7 @@ class AboutActivity : BaseAppActivity() {
                 UiUtils.getFilteredDrawable(
                     this,
                     R.drawable.ic_toolbar_close,
-                    R.color.colorWhite
+                    lib.toolkit.base.R.color.colorWhite
                 )
             )
         }

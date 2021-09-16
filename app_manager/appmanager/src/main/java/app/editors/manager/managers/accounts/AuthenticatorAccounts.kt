@@ -59,7 +59,7 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
     ): Bundle {
         authTokenType?.let { tokenType ->
             options?.let { data ->
-                return if (tokenType == context.getString(R.string.account_auth_type) && data.containsKey(ACCOUNT_KEY)) {
+                return if (tokenType == context.getString(lib.toolkit.base.R.string.account_auth_type) && data.containsKey(ACCOUNT_KEY)) {
                     val cloudAccount = Json.decodeFromString<CloudAccount>(data.getString(ACCOUNT_KEY) ?: "")
                     getToken(cloudAccount, response, AccountUtils.getPassword(context, cloudAccount.getAccountName()))
                 } else {
@@ -105,7 +105,7 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
         }
 
     override fun getAuthTokenLabel(authTokenType: String?): String {
-        return context.getString(R.string.account_auth_type)
+        return context.getString(lib.toolkit.base.R.string.account_auth_type)
     }
 
     override fun updateCredentials(

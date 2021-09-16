@@ -56,7 +56,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
             accountDao.deleteAccount(clickedAccount)
             AccountUtils.removeAccount(
                 context,
-                Account(clickedAccount.getAccountName(), context.getString(R.string.account_type))
+                Account(clickedAccount.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
             )
             withContext(Dispatchers.Main) {
                 viewState.onAccountDelete(accountClickedPosition)
@@ -89,7 +89,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
     private fun loginWebDav() {
         AccountUtils.getPassword(
             context,
-            Account(clickedAccount.getAccountName(), context.getString(R.string.account_type))
+            Account(clickedAccount.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
         )?.let { password ->
             val credential =
                 Credentials.basic(clickedAccount.login ?: "", password)
@@ -118,7 +118,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
     private fun login() {
         val token = AccountUtils.getToken(
             context,
-            Account(clickedAccount.getAccountName(), context.getString(R.string.account_type))
+            Account(clickedAccount.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
         )
         val portal = clickedAccount.portal
         if (token != null && token.isNotEmpty()) {

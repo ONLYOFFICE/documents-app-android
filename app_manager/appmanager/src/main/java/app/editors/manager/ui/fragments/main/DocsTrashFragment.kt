@@ -93,7 +93,7 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
             copyItem?.isVisible = false
         } else {
             setActionBarTitle("")
-            setMenuItemTint(requireContext(), emptyTrashItem!!, R.color.colorWhite)
+            setMenuItemTint(requireContext(), emptyTrashItem!!, lib.toolkit.base.R.color.colorWhite)
         }
     }
 

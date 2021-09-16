@@ -67,7 +67,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
 
     private val token = runBlocking(Dispatchers.Default) {
         accountDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(R.string.account_type)))
+            AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type)))
                 ?.let { token ->
                     return@runBlocking token
                 }
@@ -147,7 +147,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                setImageTint(imageView, R.drawable.ic_media_error, R.color.colorLightWhite)
+                setImageTint(imageView, R.drawable.ic_media_error, lib.toolkit.base.R.color.colorLightWhite)
                 showImage()
                 return true
             }
@@ -189,7 +189,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
                         else -> {
                             AccountUtils.getToken(
                                 view.context,
-                                Account(account.getAccountName(), view.context.getString(R.string.account_type))
+                                Account(account.getAccountName(), view.context.getString(lib.toolkit.base.R.string.account_type))
                             )?.let { token ->
                                 loadCloud(file, token)
                             }
@@ -220,7 +220,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
         private suspend fun loadWebDav(file: CloudFile?, account: CloudAccount) {
             AccountUtils.getPassword(
                 view.context,
-                Account(account.getAccountName(), view.context.getString(R.string.account_type))
+                Account(account.getAccountName(), view.context.getString(lib.toolkit.base.R.string.account_type))
             )?.let { pass ->
                 val url = GlideUtils.getWebDavUrl(file?.id!!, account, pass)
                 withContext(Dispatchers.Main) {

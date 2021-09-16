@@ -191,7 +191,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             email = login,
         )
 
-        val account = Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
+        val account = Account(cloudAccount.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
 
         if (AccountUtils.addAccount(context, account, password, accountData)) {
             addAccountToDb(cloudAccount)

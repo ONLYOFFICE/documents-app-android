@@ -172,7 +172,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         accountDao.getAccountOnline()?.let { account ->
             return@runBlocking AccountUtils.getToken(
                 App.getApp().applicationContext,
-                Account(account.getAccountName(), App.getApp().getString(R.string.account_type))
+                Account(account.getAccountName(), App.getApp().getString(lib.toolkit.base.R.string.account_type))
             )
         } ?: run {
             throw Exception("No account")
@@ -389,9 +389,9 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     private fun setStatusBarColor() {
         when (StringUtils.getExtension(cloudFile?.fileExst ?: "")) {
-            StringUtils.Extension.DOC, StringUtils.Extension.PDF -> setStatusBarColor(R.color.colorStatusBarDocTint)
-            StringUtils.Extension.PRESENTATION -> setStatusBarColor(R.color.colorStatusBarPresentationTint)
-            StringUtils.Extension.SHEET -> setStatusBarColor(R.color.colorStatusBarSheetTint)
+            StringUtils.Extension.DOC, StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarDocTint)
+            StringUtils.Extension.PRESENTATION -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarPresentationTint)
+            StringUtils.Extension.SHEET -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarSheetTint)
             else -> setStatusBarColor(R.color.colorSecondary)
         }
     }

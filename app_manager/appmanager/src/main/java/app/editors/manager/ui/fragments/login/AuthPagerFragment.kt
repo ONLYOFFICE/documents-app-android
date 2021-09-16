@@ -108,9 +108,9 @@ class AuthPagerFragment : BaseAppFragment() {
 
     private fun initColor() {
         viewBinding?.let {
-            it.pagerFragmentLayout.background = resourcesProvider.getDrawable(R.color.colorWhite)
+            it.pagerFragmentLayout.background = resourcesProvider.getDrawable(lib.toolkit.base.R.color.colorWhite)
             it.include.pageIndicatorLayout.background =
-                resourcesProvider.getDrawable(R.color.colorWhite)
+                resourcesProvider.getDrawable(lib.toolkit.base.R.color.colorWhite)
             it.include.onBoardingPanelNextButton
                 .setTextColor(resourcesProvider.getColor(R.color.colorSecondary))
             it.include.onBoardingPanelSkipButton
@@ -118,7 +118,7 @@ class AuthPagerFragment : BaseAppFragment() {
             it.include.onBoardingPanelIndicator.selectedColor =
                 resourcesProvider.getColor(R.color.colorSecondary)
             it.include.onBoardingPanelIndicator.unselectedColor =
-                resourcesProvider.getColor(R.color.colorGrey)
+                resourcesProvider.getColor(lib.toolkit.base.R.color.colorGrey)
         }
     }
 

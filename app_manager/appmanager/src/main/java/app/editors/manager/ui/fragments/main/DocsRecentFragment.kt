@@ -137,10 +137,10 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         recyclerView?.let {
             it.adapter = adapter
             it.setPadding(
-                resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
-                resources.getDimensionPixelSize(R.dimen.screen_top_bottom_padding),
-                resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
-                resources.getDimensionPixelSize(R.dimen.screen_bottom_padding)
+                resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_left_right_padding),
+                resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_top_bottom_padding),
+                resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_left_right_padding),
+                resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_bottom_padding)
             )
         }
         swipeRefreshLayout?.isEnabled = false

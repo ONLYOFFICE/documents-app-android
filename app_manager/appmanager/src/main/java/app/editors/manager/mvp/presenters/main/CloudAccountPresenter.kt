@@ -84,7 +84,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         val accountsWithToken = accounts.map { account ->
             AccountUtils.getToken(
                 context,
-                Account(account.getAccountName(), context.getString(R.string.account_type))
+                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
             )?.let { token ->
                 account.token = token
                 return@map account

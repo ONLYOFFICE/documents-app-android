@@ -204,9 +204,9 @@ class CloudAccountFragment : BaseAppFragment(),
 
     private fun initRecyclerView(savedInstanceState: Bundle?) {
         (viewBinding?.accountsLayout?.layoutParams as FrameLayout.LayoutParams).setMargins(
-            resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
+            resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_left_right_padding),
             0,
-            resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
+            resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_left_right_padding),
             0
         )
 

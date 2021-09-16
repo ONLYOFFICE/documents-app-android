@@ -48,7 +48,7 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.home -> {
+            com.facebook.common.R.id.home -> {
                 finish()
                 return true
             }
@@ -83,9 +83,9 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
     private fun initToolbar() {
         backDrawable = UiUtils
-            .getFilteredDrawable(this, R.drawable.ic_toolbar_back, R.color.colorWhite)
+            .getFilteredDrawable(this, R.drawable.ic_toolbar_back, lib.toolkit.base.R.color.colorWhite)
         setSupportActionBar(viewBinding?.appBarToolbar)
-        setStatusBarColor(R.color.colorBlack)
+        setStatusBarColor(lib.toolkit.base.R.color.colorBlack)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(backDrawable)
     }
