@@ -12,7 +12,6 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentOnBoardingPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import com.rd.animation.type.AnimationType
@@ -114,11 +113,11 @@ class OnBoardingPagerFragment : BaseAppFragment() {
             viewBinding?.let {
                 if (position == onBoardAdapter?.count!! - 1) {
                     it.include.onBoardingPanelNextButton.setText(R.string.on_boarding_finish_button)
-                    it.include.onBoardingPanelSkipButton.isVisible = false
+                    it.include.onBoardingPanelSkipButton.visibility = View.INVISIBLE
                     preferenceTool.onBoarding = true
                 } else {
                     it.include.onBoardingPanelNextButton.setText(R.string.on_boarding_next_button)
-                    it.include.onBoardingPanelSkipButton.isVisible = true
+                    it.include.onBoardingPanelSkipButton.visibility = View.VISIBLE
                 }
             }
         }
