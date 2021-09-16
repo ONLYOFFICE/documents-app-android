@@ -25,4 +25,5 @@ interface SettingsView : BaseViewExt {
     fun onButtonState(state: Boolean)
     fun onPopupState(state: Boolean)
     fun onShowPopup(mSharePosition: Int, isVisitor: Boolean)
+    fun onUpdateAvatar(share: ShareUi)
 }

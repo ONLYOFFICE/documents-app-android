@@ -10,6 +10,7 @@ import app.documents.core.share.ShareService
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.getShareApi
+import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
@@ -18,6 +19,7 @@ import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.share.SettingsView
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -205,6 +207,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
      * */
     fun updateSharedListState() {
         viewState.onGetShare(commonList, item!!.access)
+        loadAvatars(commonList)
         if (isPopupShow) {
             isPopupShow = false
             shareItem?.isGuest?.let { viewState.onShowPopup(sharePosition, it) }
@@ -309,6 +312,24 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         } else {
             viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
         }
+
+        loadAvatars(commonList)
+    }
+
+    private fun loadAvatars(commonList: ArrayList<ViewType>) {
+        disposable = Observable.fromIterable(commonList).subscribeOn(Schedulers.io())
+            .filter { it is ShareUi && it.sharedTo.avatar.isNotEmpty() }
+            .map { user ->
+                user.also {
+                    (it as ShareUi).avatar = GlideUtils
+                        .loadAvatar((user as ShareUi).sharedTo.avatarMedium)
+                }
+            }.observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState.onUpdateAvatar(it as ShareUi)
+            }, { error ->
+                fetchError(error)
+            })
     }
 
     override fun fetchError(throwable: Throwable) {

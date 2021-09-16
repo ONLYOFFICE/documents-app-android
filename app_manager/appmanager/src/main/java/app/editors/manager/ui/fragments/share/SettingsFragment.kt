@@ -27,8 +27,8 @@ import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.views.share.SettingsView
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.ShareActivity
-import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.adapters.ShareAdapter
+import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.popup.SharePopup
@@ -170,10 +170,10 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     override fun onRemove(share: ShareUi, sharePosition: Int) {
         viewBinding?.shareSettingsListSwipeRefresh?.isRefreshing = false
         shareSettingsAdapter?.let { adapter ->
-            val previousItem = adapter.getItem(adapter.itemsList.indexOf(share) - 1)
-            val nextItem = adapter.getItem(adapter.itemsList.indexOf(share) + 1)
+            val previousItem = adapter.getItem(sharePosition - 1)
+            val nextItem = adapter.getItem(sharePosition + 1)
 
-            adapter.removeItem(share)
+            adapter.removeItem(sharePosition)
 
             if (previousItem is ShareHeaderUi && (nextItem == null || nextItem is ShareHeaderUi)) {
                 adapter.removeHeader(previousItem)
@@ -392,6 +392,13 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                     showAccessPopup()
                 }
             } ?: setPopup(viewBinding?.shareSettingsListContentLayout, isVisitor)
+        }
+    }
+
+    override fun onUpdateAvatar(share: ShareUi) {
+        shareSettingsAdapter?.let { adapter ->
+            val position = adapter.updateItem(share)
+            adapter.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
         }
     }
 

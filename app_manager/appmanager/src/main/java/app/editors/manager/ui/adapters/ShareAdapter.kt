@@ -28,4 +28,8 @@ class ShareAdapter(factory: ShareHolderFactory) : BaseViewTypeAdapter<ViewType>(
     fun removeHeader(item: ShareHeaderUi) {
         removeItem(item)
     }
+
+    companion object {
+        const val PAYLOAD_AVATAR = "PAYLOAD_AVATAR"
+    }
 }
