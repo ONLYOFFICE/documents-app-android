@@ -27,7 +27,6 @@ import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import java.io.File
-import java.util.*
 import javax.inject.Inject
 
 class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPreparedListener, OnCompletionListener,
@@ -67,23 +66,21 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
 
     private var viewBinding: FragmentMediaVideoBinding? = null
 
-    private val token: String = runBlocking(Dispatchers.Default) {
-        accountDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(
-                App.getApp().applicationContext,
-                Account(account.getAccountName(), App.getApp().applicationContext.getString(R.string.account_type))
-            )
-                ?.let {
-                    return@runBlocking it
-                }
-        } ?: run {
-            throw Error("No account")
-        }
-    }
-
-    private val headers: Map<String, String> by lazy {
+    private val headers: Map<String, String?> by lazy {
         mapOf(
-            ApiContract.HEADER_AUTHORIZATION to token,
+            ApiContract.HEADER_AUTHORIZATION to runBlocking(Dispatchers.Default) {
+                accountDao.getAccountOnline()?.let { account ->
+                    AccountUtils.getToken(
+                        App.getApp().applicationContext,
+                        Account(account.getAccountName(), App.getApp().applicationContext.getString(R.string.account_type))
+                    )
+                        ?.let {
+                            return@runBlocking it
+                        }
+                } ?: run {
+                    throw Error("No account")
+                }
+            },
             ApiContract.HEADER_ACCEPT to ApiContract.VALUE_ACCEPT
         )
     }

@@ -412,15 +412,21 @@
     <string name="app_settings_analytic">Udostępniaj dane analityczne aplikacji</string>
     <string name="app_manage_files_title">Dostęp do zarządzania plikami</string>
     <string name="app_manage_files_description">Należy udzielić dostępu do plików. W razie odmowy wszystkie pliki z usuniętych aplikacji zostaną utracone.</string>
-
     <string name="app_internal_error">Błąd wewnętrzny</string>
     <string name="app_fragment_crash_error">Zamknij tę aplikację i spróbuj ponownie</string>
-
     <string name="operation_add_to_favorites">Dodano do Ulubionych</string>
     <string name="operation_remove_from_favorites">Usunięto z Ulubionych</string>
-
     <string name="main_pager_docs_favorites">Ulubione</string>
-
     <string name="list_context_add_to_favorite">Dodaj do Ulubionych</string>
     <string name="list_context_delete_from_favorite">Usuń z Ulubionych</string>
+    <string name="login_enterprise_single_sign_button_login">Logowanie poprzez %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">Logowanie jednokrotne</string>
+    <string name="login_not_authorization_info_token">Sesja wygasła</string>
+    <string name="login_password_recovery_hint">Podaj adres e-mail użyty podczas rejestracji na portalu. Instrukcje dotyczące odzyskiwania hasła zostaną wysłane pod wskazany adres.</string>
+    <string name="login_password_recovery_button_text">WRÓĆ DO EKRANU LOGOWANIA</string>
+    <string name="login_password_recovery_success_hint">Jeśli użytkownik z adresem e-mail %1$s istnieje, instrukcje dotyczące zmiany hasła zostały wysłane na ten adres.</string>
+    <string name="login_password_recovery_toolbar_title">Odzyskiwanie hasła</string>
+    <string name="download_manager_archiving_progress">Tworzenie archiwum</string>
+    <string name="download_manager_exceed_size_100">Przekroczono maksymalny rozmiar pliku (100MB)</string>
+    <string name="download_manager_exceed_size_25">Przekroczono maksymalny rozmiar pliku (25MB)</string>
 </resources>

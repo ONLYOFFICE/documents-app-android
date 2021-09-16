@@ -109,58 +109,66 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
     @SuppressLint("MissingPermission")
     override fun doWork(): Result {
         getArgs()
+        var successArchiving = true
         if (downloadRequest != null) {
-            downloadFiles()
+            successArchiving = downloadFiles()
         }
-        val call: Call<ResponseBody> = api.downloadFile(url ?: "", ApiContract.COOKIE_HEADER + token)
-        try {
-            val response = call.execute()
-            if (response.isSuccessful && response.body() != null) {
-                FileUtils.writeFromResponseBody(
-                    response.body(),
-                    to ?: Uri.EMPTY,
-                    applicationContext,
-                    object : Progress {
-                        override fun onProgress(total: Long, progress: Long): Boolean {
-                            showProgress(total, progress, false)
-                            return isStopped
-                        }
-                    },
-                    object : Finish {
-                        override fun onFinish() {
-                            notificationUtils.removeNotification(id.hashCode())
-                            notificationUtils.showCompleteNotification(id.hashCode(), fileName, file?.uri)
-                            sendBroadcastDownloadComplete(
-                                id,
-                                url,
-                                fileName,
-                                PathUtils.getPath(applicationContext, to ?: Uri.EMPTY),
-                                StringUtils.getMimeTypeFromPath(
-                                    fileName ?: ""
-                                ),
-                                to
-                            )
-                        }
-                    },
-                    object : FileUtils.Error {
-                        override fun onError(message: String) {
-                            notificationUtils.removeNotification(id.hashCode())
-                            if (isStopped) {
-                                notificationUtils.showCanceledNotification(id.hashCode(), fileName)
-                            } else {
-                                notificationUtils.showErrorNotification(id.hashCode(), fileName)
-                                sendBroadcastUnknownError(id, url, fileName)
+        if(successArchiving) {
+            val call: Call<ResponseBody> =
+                api.downloadFile(url ?: "", ApiContract.COOKIE_HEADER + token)
+            try {
+                val response = call.execute()
+                if (response.isSuccessful && response.body() != null) {
+                    FileUtils.writeFromResponseBody(
+                        response.body(),
+                        to ?: Uri.EMPTY,
+                        applicationContext,
+                        object : Progress {
+                            override fun onProgress(total: Long, progress: Long): Boolean {
+                                showProgress(total, progress, false)
+                                return isStopped
                             }
-                            file?.delete()
-                        }
-                    })
-            } else {
-                notificationUtils.showErrorNotification(id.hashCode(), fileName)
-                sendBroadcastUnknownError(id, url, fileName)
+                        },
+                        object : Finish {
+                            override fun onFinish() {
+                                notificationUtils.removeNotification(id.hashCode())
+                                notificationUtils.showCompleteNotification(id.hashCode(), fileName, file?.uri)
+                                sendBroadcastDownloadComplete(
+                                    id,
+                                    url,
+                                    fileName,
+                                    PathUtils.getPath(applicationContext, to ?: Uri.EMPTY),
+                                    StringUtils.getMimeTypeFromPath(
+                                        fileName ?: ""
+                                    ),
+                                    to
+                                )
+                            }
+                        },
+                        object : FileUtils.Error {
+                            override fun onError(message: String) {
+                                notificationUtils.removeNotification(id.hashCode())
+                                if (isStopped) {
+                                    notificationUtils.showCanceledNotification(
+                                        id.hashCode(),
+                                        fileName
+                                    )
+                                } else {
+                                    notificationUtils.showErrorNotification(id.hashCode(), fileName)
+                                    sendBroadcastUnknownError(id, url, fileName)
+                                }
+                                file?.delete()
+                            }
+                        })
+                } else {
+                    notificationUtils.showErrorNotification(id.hashCode(), fileName)
+                    sendBroadcastUnknownError(id, url, fileName)
+                    file?.delete()
+                }
+            } catch (e: IOException) {
                 file?.delete()
             }
-        } catch (e: IOException) {
-            file?.delete()
+            return Result.success()
         }
         return Result.success()
     }
@@ -180,7 +188,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
         }
     }
 
-    private fun downloadFiles() {
+    private fun downloadFiles(): Boolean {
         try {
             val response = api.downloadFiles(downloadRequest ?: throw Exception("No download request")).blockingGet()
             val downloads = response.response
@@ -219,8 +227,10 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
         } catch (e: Exception) {
             if (e is HttpException) {
                 onError(e.response()!!.errorBody())
+                return false
             }
         }
+        return true
     }
 
     private fun onError(responseBody: ResponseBody?) {
@@ -238,6 +248,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
             if (jsonObject != null) {
                 try {
                     errorMessage = jsonObject.getJSONObject(KEY_ERROR_INFO).getString(KEY_ERROR_INFO_MESSAGE)
+                    file?.delete()
                     sendBroadcastError(id, url, fileName, errorMessage)
                 } catch (e: JSONException) {
                     Log.e(TAG, "onErrorHandle()", e)

@@ -60,9 +60,9 @@ public class DownloadReceiver extends BaseReceiver<Intent> {
                         final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
                         final String info = intent.getStringExtra(EXTRAS_KEY_ERROR);//context.getString(R.string.download_manager_error);
                         if(info != null) {
-                            mOnDownloadListener.onDownloadError(title, id, url, info);
+                            mOnDownloadListener.onDownloadError(id, url, title, info);
                         } else {
-                            mOnDownloadListener.onDownloadError(title, id, url, context.getString(R.string.download_manager_error));
+                            mOnDownloadListener.onDownloadError(id, url, title, context.getString(R.string.download_manager_error));
                         }
                         break;
                     }
