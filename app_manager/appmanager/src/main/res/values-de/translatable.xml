@@ -430,6 +430,6 @@
     <string name="download_manager_archiving_progress">Archiv wird erstellt</string>
     <string name="download_manager_exceed_size_100">Die maximale Dateigröße ist überschritten (100MB)</string>
     <string name="download_manager_exceed_size_25">Die maximale Dateigröße ist überschritten (25MB)</string>
-
+    <string name="item_owner_self">Ich</string>
 
 </resources>

@@ -569,5 +569,5 @@
     <string name="download_manager_archiving_progress">Vytváření archivu</string>
     <string name="download_manager_exceed_size_100">Překračuje maximální velikost souboru (100MB)</string>
     <string name="download_manager_exceed_size_25">Překračuje maximální velikost souboru (25MB)</string>
-
+    <string name="item_owner_self">Moje</string>
 </resources>
