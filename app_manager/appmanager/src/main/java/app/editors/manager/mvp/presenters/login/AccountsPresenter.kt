@@ -9,7 +9,10 @@ import app.editors.manager.mvp.views.login.AccountsView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
 import okhttp3.Credentials
@@ -106,31 +109,39 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
     }
 
     private fun login() {
-        val token = AccountUtils.getToken(
-            context,
-            Account(clickedAccount.getAccountName(), context.getString(R.string.account_type))
-        )
-        val portal = clickedAccount.portal
-        if (token != null && token.isNotEmpty()) {
-            setNetworkSettings()
-            disposable =
-                App.getApp().loginComponent.loginService.getUserInfo(token)
+        AccountUtils.getToken(context, Account(clickedAccount.getAccountName(),
+            context.getString(R.string.account_type)))?.let { token ->
+            if (token.isNotEmpty()) {
+                setNetworkSettings()
+                disposable = App.getApp().loginComponent.loginService.getUserInfo(token)
                     .doOnSubscribe { viewState.showWaitingDialog() }
                     .subscribe({ response ->
+                        when (response) {
+                            is LoginResponse.Success -> setAccount()
+                            is LoginResponse.Error -> {
+                                setOnlineSettings()
+                                viewState.onSignIn(clickedAccount.portal ?: "",
+                                    clickedAccount.login ?: "")
+                            }
+                        }
+                    }, { fetchError(it) })
+            } else {
+                viewState.onSignIn(clickedAccount.portal ?: "", clickedAccount.login ?: "")
+            }
+        } ?: run {
+            networkSettings.setBaseUrl(clickedAccount.portal ?: "")
+            disposable = App.getApp().loginComponent.loginService.capabilities()
+                .doOnSubscribe { viewState.showWaitingDialog() }
+                .subscribe({ response ->
                     when (response) {
                         is LoginResponse.Success -> {
-                            setAccount()
-                        }
-                        is LoginResponse.Error -> {
                             setOnlineSettings()
-                            viewState.onSignIn(clickedAccount.portal ?: "", clickedAccount.login ?: "")
+                            viewState.onSignIn(clickedAccount.portal ?: "",
+                                clickedAccount.login ?: "")
                         }
+                        is LoginResponse.Error -> fetchError(response.error)
                     }
-                }, { fetchError(it) })
-        } else if (token != null && token.isEmpty()) {
-            viewState.onSignIn(portal ?: "", clickedAccount.login ?: "")
-        } else {
-            viewState.onError(context.getString(R.string.errors_sign_in_account_error))
+                }) { fetchError(it) }
         }
     }
 
