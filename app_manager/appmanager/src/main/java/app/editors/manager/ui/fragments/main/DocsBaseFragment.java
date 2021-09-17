@@ -1183,7 +1183,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
     protected void setVisibilityActionButton(final boolean isShow) {
         final Fragment fragment = getParentFragment();
-        if (fragment instanceof MainPagerFragment) {
+        if (fragment instanceof MainPagerFragment && isResumed()) {
             ((MainPagerFragment) fragment).setVisibilityActionButton(isShow);
         }
     }
