@@ -17,10 +17,15 @@ class BaseInterceptor(val token: String?) : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         checkConnection()
+        val token = if (chain.request().url().host().contains("personal") ) {
+            token
+        } else {
+            KEY_AUTH + token
+        }
         return chain.proceed(
             chain.request().newBuilder().addHeader(
                 ApiContract.HEADER_AUTHORIZATION,
-                KEY_AUTH + token
+                token ?: ""
             ).build()
         )
     }
