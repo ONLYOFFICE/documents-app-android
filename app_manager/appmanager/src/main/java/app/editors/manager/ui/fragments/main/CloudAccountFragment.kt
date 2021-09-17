@@ -240,9 +240,9 @@ class CloudAccountFragment : BaseAppFragment(),
     override fun onSuccessLogin() {
         hideDialog()
         requireContext().startActivity(Intent(requireContext(), MainActivity::class.java).apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT
-            }
+//             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                 flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT
+//             }
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         })
     }
