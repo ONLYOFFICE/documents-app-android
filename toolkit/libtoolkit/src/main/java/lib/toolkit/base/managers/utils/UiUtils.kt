@@ -17,8 +17,14 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -39,12 +45,12 @@ object UiUtils {
     * Helpers methods
     * */
 
-    private fun getDeviceInfo(context: Context? = null) : Map<String, String> {
+    private fun getDeviceInfo(context: Context? = null): Map<String, String> {
         val deviceInfo = TreeMap<String, String>()
         deviceInfo["OS version"] = System.getProperty("os.version")!!
         deviceInfo["Api level"] = Build.VERSION.SDK_INT.toString()
-        deviceInfo["App code"] = BuildConfig.VERSION_CODE.toString()
-        deviceInfo["App name"] = BuildConfig.VERSION_NAME
+        deviceInfo["App code"] = ""
+        deviceInfo["App name"] = ""
         deviceInfo["Device"] = Build.DEVICE
         deviceInfo["Model"] = Build.MODEL
         deviceInfo["Brand"] = Build.BRAND
@@ -193,7 +199,14 @@ object UiUtils {
     }
 
     @JvmStatic
-    fun getDropViewRect(anchor: Rect, view: Rect, restrict: Rect, offset: Point, isDown: Boolean = true, isCentered: Boolean = false): Rect {
+    fun getDropViewRect(
+        anchor: Rect,
+        view: Rect,
+        restrict: Rect,
+        offset: Point,
+        isDown: Boolean = true,
+        isCentered: Boolean = false
+    ): Rect {
         val position = Rect().apply {
             left = anchor.left
             top = anchor.top
@@ -256,7 +269,11 @@ object UiUtils {
     * Show info message
     * */
     @JvmStatic
-    fun getSnackBar(rootView: View, duration: Int = BaseTransientBottomBar.LENGTH_LONG, @ColorRes colorId: Int = R.color.colorBlack): Snackbar {
+    fun getSnackBar(
+        rootView: View,
+        duration: Int = BaseTransientBottomBar.LENGTH_LONG,
+        @ColorRes colorId: Int = R.color.colorBlack
+    ): Snackbar {
         val snackbar = Snackbar.make(rootView, "", Snackbar.LENGTH_LONG)
 
         snackbar.duration = duration
@@ -278,18 +295,18 @@ object UiUtils {
     @JvmStatic
     fun getShortSnackBar(rootView: View): Snackbar {
         return getSnackBar(
-                rootView,
-                Snackbar.LENGTH_SHORT,
-                R.color.colorBlack
+            rootView,
+            Snackbar.LENGTH_SHORT,
+            R.color.colorBlack
         )
     }
 
     @JvmStatic
     fun getSnackBar(activity: Activity): Snackbar {
         return getSnackBar(
-                activity.findViewById(android.R.id.content),
-                Snackbar.LENGTH_SHORT,
-                R.color.colorBlack
+            activity.findViewById(android.R.id.content),
+            Snackbar.LENGTH_SHORT,
+            R.color.colorBlack
         )
     }
 
@@ -324,7 +341,9 @@ object UiUtils {
     @JvmStatic
     fun getFilteredDrawable(context: Context, @DrawableRes resId: Int, @ColorRes color: Int): Drawable {
         val drawable = ContextCompat.getDrawable(context, resId)!!.constantState!!.newDrawable().mutate()
-        drawable.setColorFilter(ContextCompat.getColor(context, color), PorterDuff.Mode.SRC_IN)
+        drawable.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+            ContextCompat.getColor(context, color), BlendModeCompat.SRC_IN
+        )
         return drawable
     }
 
@@ -343,8 +362,10 @@ object UiUtils {
 
     @JvmStatic
     fun setMenuItemTint(context: Context, menuTint: MenuItem, @ColorRes colorRes: Int): MenuItem {
-        menuTint.icon.setColorFilter(ContextCompat.getColor(context, colorRes),
-                PorterDuff.Mode.SRC_IN)
+        menuTint.icon.setColorFilter(
+            ContextCompat.getColor(context, colorRes),
+            PorterDuff.Mode.SRC_IN
+        )
         return menuTint
     }
 
@@ -424,7 +445,10 @@ object UiUtils {
 
     @JvmStatic
     fun setProgressBarColorDrawable(progressBar: ProgressBar, @ColorRes colorId: Int) {
-        progressBar.indeterminateDrawable.setColorFilter(ContextCompat.getColor(progressBar.context, colorId), PorterDuff.Mode.SRC_ATOP)
+        progressBar.indeterminateDrawable.setColorFilter(
+            ContextCompat.getColor(progressBar.context, colorId),
+            PorterDuff.Mode.SRC_ATOP
+        )
     }
 
     @JvmStatic
@@ -450,11 +474,13 @@ object UiUtils {
 
     @JvmStatic
     fun getStatusBarHeightResource(context: Context): Int {
-        return ceil(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            24
-        } else {
-            25
-        } * context.resources.displayMetrics.density).toInt()
+        return ceil(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                24
+            } else {
+                25
+            } * context.resources.displayMetrics.density
+        ).toInt()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -497,7 +523,8 @@ object UiUtils {
         val enabled: Boolean
         try {
             val configClass = configuration.javaClass
-            enabled = configClass.getField("SEM_DESKTOP_MODE_ENABLED").getInt(configClass) == configClass.getField("semDesktopModeEnabled").getInt(configuration)
+            enabled = configClass.getField("SEM_DESKTOP_MODE_ENABLED")
+                .getInt(configClass) == configClass.getField("semDesktopModeEnabled").getInt(configuration)
             return enabled
         } catch (ignored: NoSuchFieldException) {
         } catch (ignored: IllegalAccessException) {
@@ -571,6 +598,93 @@ object UiUtils {
         return ColorStateList(states, colors)
     }
 
+    @JvmStatic
+    fun getBoundCoordinate(size: Int, start: Int, end: Int, delta: Float): Float {
+        val newStart = start + delta
+        val newEnd = end + delta
+
+        val boundStart = 0 - newStart
+        val boundEnd = newEnd - size
+
+        return when {
+            boundStart > 0 -> delta + boundStart
+            boundEnd > 0 -> delta - boundEnd
+            else -> delta
+        }
+
+    }
+
+    fun setColorFilter(context: Context, drawable: Drawable?, color: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            drawable?.colorFilter = BlendModeColorFilter(color, BlendMode.SRC_ATOP)
+        } else {
+            drawable?.setColorFilter(ContextCompat.getColor(context, color), PorterDuff.Mode.SRC_ATOP)
+        }
+    }
+
+    fun showEditDialog(
+        context: Context,
+        title: String,
+        value: String? = null,
+        description: String? = null,
+        acceptListener: (value: String) -> Unit,
+        acceptTitle: String? = "Ok",
+        cancelTitle: String? = "Cancel"
+    ) {
+        val container = FrameLayout(context)
+        val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        params.marginEnd = context.resources.getDimensionPixelSize(R.dimen.alert_dialog_start_end_margin)
+        params.marginStart = context.resources.getDimensionPixelSize(R.dimen.alert_dialog_start_end_margin)
+        params.topMargin = context.resources.getDimensionPixelSize(R.dimen.default_margin_small)
+        params.bottomMargin = context.resources.getDimensionPixelSize(R.dimen.default_margin_small)
+
+        val text = EditText(context)
+        text.setText(value)
+        text.layoutParams = params
+        container.addView(text)
+
+        AlertDialog.Builder(context)
+            .setTitle(title)
+            .setMessage(description)
+            .setPositiveButton(acceptTitle) { dialog, _ ->
+                acceptListener.invoke(text.text.toString())
+                KeyboardUtils.forceHide(context as Activity)
+                dialog.dismiss()
+            }
+            .setNegativeButton(cancelTitle) { dialog, _ ->
+                KeyboardUtils.forceHide(context as Activity)
+                dialog.dismiss()
+            }
+            .setView(container)
+            .show()
+
+        KeyboardUtils.showKeyboard(text)
+    }
+
+    fun showQuestionDialog(
+        context: Context,
+        title: String,
+        description: String? = null,
+        acceptListener: () -> Unit,
+        cancelListener: (() -> Unit)? = null,
+        acceptTitle: String? = "Ok",
+        cancelTitle: String? = "Cancel"
+    ) {
+        AlertDialog.Builder(context)
+            .setTitle(title)
+            .setMessage(description)
+            .setPositiveButton(acceptTitle) { dialog, _ ->
+                acceptListener.invoke()
+                dialog.dismiss()
+            }
+            .setNegativeButton(cancelTitle) { dialog, _ ->
+                cancelListener?.invoke()
+                dialog.dismiss()
+            }
+            .show()
+    }
+
 }
 
 
@@ -578,11 +692,12 @@ class ActivityLayoutListener : ViewTreeObserver.OnGlobalLayoutListener {
 
     interface OnActivityChangeListener {
         fun onActivityChangeSize(
-                totalHeight: Int,
-                visibleHeight: Int,
-                topPadding: Int,
-                bottomPadding: Int
+            totalHeight: Int,
+            visibleHeight: Int,
+            topPadding: Int,
+            bottomPadding: Int
         )
+
         fun onFinishDrawingActivity()
     }
 
@@ -618,10 +733,10 @@ class ActivityLayoutListener : ViewTreeObserver.OnGlobalLayoutListener {
             activityBottomPadding = screenSize.y - activityVisibleRect.bottom
 
             mWeakListener?.get()?.onActivityChangeSize(
-                    activityTotalHeight,
-                    activityVisibleHeight,
-                    activityTopPadding,
-                    activityBottomPadding
+                activityTotalHeight,
+                activityVisibleHeight,
+                activityTopPadding,
+                activityBottomPadding
             )
             mWeakListener?.get()?.onFinishDrawingActivity()
         }
@@ -651,4 +766,25 @@ class ActivityLayoutListener : ViewTreeObserver.OnGlobalLayoutListener {
         mWeakListener = null
     }
 
+}
+
+class SlidesLinearLayoutManager(context: Context, orientation: Int, reverseLayout: Boolean) : LinearLayoutManager(context, orientation, reverseLayout) {
+
+    private val SCROLL_SPEED = 150f
+
+    override fun smoothScrollToPosition(recyclerView: RecyclerView, state: RecyclerView.State?, position: Int) {
+        val linearSmoothScroller = object : LinearSmoothScroller(recyclerView.context) {
+
+            override fun computeScrollVectorForPosition(targetPosition: Int): PointF? {
+                return this@SlidesLinearLayoutManager.computeScrollVectorForPosition(targetPosition)
+            }
+
+            override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                return SCROLL_SPEED / displayMetrics.densityDpi
+            }
+        }
+
+        linearSmoothScroller.targetPosition = position
+        startSmoothScroll(linearSmoothScroller)
+    }
 }

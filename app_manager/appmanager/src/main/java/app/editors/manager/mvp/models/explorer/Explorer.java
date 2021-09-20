@@ -14,11 +14,11 @@ public class Explorer implements Cloneable, Serializable {
 
     @SerializedName("files")
     @Expose
-    private List<File> files = new ArrayList<>();
+    private List<CloudFile> files = new ArrayList<>();
 
     @SerializedName("folders")
     @Expose
-    private List<Folder> folders = new ArrayList<>();
+    private List<CloudFolder> folders = new ArrayList<>();
 
     @SerializedName("current")
     @Expose
@@ -42,19 +42,19 @@ public class Explorer implements Cloneable, Serializable {
 
     private String destFolderId = "";
 
-    public List<File> getFiles() {
+    public List<CloudFile> getFiles() {
         return files;
     }
 
-    public void setFiles(List<File> files) {
+    public void setFiles(List<CloudFile> files) {
         this.files = files;
     }
 
-    public List<Folder> getFolders() {
+    public List<CloudFolder> getFolders() {
         return folders;
     }
 
-    public void setFolders(List<Folder> folders) {
+    public void setFolders(List<CloudFolder> folders) {
         this.folders = folders;
     }
 

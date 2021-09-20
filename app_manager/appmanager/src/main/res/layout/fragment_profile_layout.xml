@@ -54,6 +54,7 @@
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 tools:listitem="@layout/thirdparty_item_layout" />
 
             <include layout="@layout/view_line_separator" />

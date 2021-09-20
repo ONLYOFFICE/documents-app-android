@@ -22,13 +22,13 @@ import androidx.recyclerview.widget.DiffUtil;
 import java.util.Collections;
 import java.util.List;
 
+import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.mvp.models.base.Entity;
+import app.editors.manager.mvp.models.explorer.CloudFile;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.Folder;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.explorer.UploadFile;
 import app.editors.manager.mvp.models.list.Header;
@@ -190,7 +190,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
     @Override
     public void onReverseSortOrder(String order) {
-        if(order.equals(Api.Parameters.VAL_SORT_ORDER_ASC)) {
+        if(order.equals(ApiContract.Parameters.VAL_SORT_ORDER_ASC)) {
             mMenu.findItem(R.id.toolbar_sort_item_asc).setChecked(true);
         } else {
             mMenu.findItem(R.id.toolbar_sort_item_desc).setChecked(true);
@@ -206,7 +206,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_date_update:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_UPDATED, item.isChecked());
+                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, item.isChecked());
                 item.setChecked(true);
                 break;
 //            case R.id.toolbar_sort_item_date_create:
@@ -214,29 +214,29 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 //                item.setSelected(true);
 //                break;
             case R.id.toolbar_sort_item_title:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_TITLE, item.isChecked());
+                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_type:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_TYPE, item.isChecked());
+                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_size:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_SIZE, item.isChecked());
+                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, item.isChecked());
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_owner:
-                getPresenter().sortBy(Api.Parameters.VAL_SORT_BY_OWNER, item.isChecked());
+                getPresenter().sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, item.isChecked());
                 item.setChecked(true);
                 break;
 
             // Sort order
             case R.id.toolbar_sort_item_asc:
-                getPresenter().orderBy(Api.Parameters.VAL_SORT_ORDER_ASC);
+                getPresenter().orderBy(ApiContract.Parameters.VAL_SORT_ORDER_ASC);
                 item.setChecked(true);
                 break;
             case R.id.toolbar_sort_item_desc:
-                getPresenter().orderBy(Api.Parameters.VAL_SORT_ORDER_DESC);
+                getPresenter().orderBy(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
                 item.setChecked(true);
                 break;
 
@@ -365,7 +365,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     }
 
     @Override
-    public void onOpenLocalFile(File file) {
+    public void onOpenLocalFile(CloudFile file) {
         Uri uri = Uri.parse(file.getWebUrl());
         switch (StringUtils.getExtension(file.getFileExst())) {
             case DOC:
@@ -387,7 +387,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
             case VIDEO_SUPPORT:
                 getPresenter().addRecent(file);
                 Explorer explorer = new Explorer();
-                File videoFile = file.clone();
+                CloudFile videoFile = file.clone();
                 videoFile.setWebUrl(uri.getPath());
                 videoFile.setId("");
                 explorer.setFiles(Collections.singletonList(videoFile));
@@ -416,7 +416,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
                 onFileDownloadPermission();
                 break;
             case RENAME:
-                if (getPresenter().getItemClicked() instanceof File) {
+                if (getPresenter().getItemClicked() instanceof CloudFile) {
                     showEditDialogRename(getString(R.string.dialogs_edit_rename_title),
                             StringUtils.getNameWithoutExtension(getPresenter().getItemTitle()),
                             getString(R.string.dialogs_edit_hint), DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
@@ -441,17 +441,17 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
         switch (buttons) {
             case SHEET:
                 showEditDialogCreate(getString(R.string.dialogs_edit_create_sheet), getString(R.string.dialogs_edit_create_sheet),
-                        getString(R.string.dialogs_edit_hint), "." + Api.Extension.XLSX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_SHEET,
+                        getString(R.string.dialogs_edit_hint), "." + ApiContract.Extension.XLSX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_SHEET,
                         getString(R.string.dialogs_edit_accept_create), getString(R.string.dialogs_common_cancel_button));
                 break;
             case PRESENTATION:
                 showEditDialogCreate(getString(R.string.dialogs_edit_create_presentation), getString(R.string.dialogs_edit_create_presentation),
-                        getString(R.string.dialogs_edit_hint), "." + Api.Extension.PPTX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION,
+                        getString(R.string.dialogs_edit_hint), "." + ApiContract.Extension.PPTX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION,
                         getString(R.string.dialogs_edit_accept_create), getString(R.string.dialogs_common_cancel_button));
                 break;
             case DOC:
                 showEditDialogCreate(getString(R.string.dialogs_edit_create_docs), getString(R.string.dialogs_edit_create_docs),
-                        getString(R.string.dialogs_edit_hint), "." + Api.Extension.DOCX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_DOC,
+                        getString(R.string.dialogs_edit_hint), "." + ApiContract.Extension.DOCX.toLowerCase(), DocsBasePresenter.TAG_DIALOG_ACTION_DOC,
                         getString(R.string.dialogs_edit_accept_create), getString(R.string.dialogs_common_cancel_button));
                 break;
             case FOLDER:
@@ -469,29 +469,31 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
     @Override
     public void onAcceptClick(CommonDialog.Dialogs dialogs, @Nullable String value, @Nullable String tag) {
         super.onAcceptClick(dialogs, value, tag);
-        if (tag != null) {
-            switch (tag) {
-                case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT:
-                    getPresenter().delete();
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME:
-                    getPresenter().rename(value);
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_ACTION_SHEET:
-                    getPresenter().createDocs(value + "." + Api.Extension.XLSX.toLowerCase());
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION:
-                    getPresenter().createDocs(value + "." + Api.Extension.PPTX.toLowerCase());
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_ACTION_DOC:
-                    getPresenter().createDocs(value + "." + Api.Extension.DOCX.toLowerCase());
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER:
-                    getPresenter().createFolder(value);
-                    break;
-                case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED:
-                    getPresenter().deleteItems();
-                    break;
+        if (isResumed()) {
+            if (tag != null) {
+                switch (tag) {
+                    case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT:
+                        getPresenter().delete();
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME:
+                        getPresenter().rename(value);
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_ACTION_SHEET:
+                        getPresenter().createDocs(value + "." + ApiContract.Extension.XLSX.toLowerCase());
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION:
+                        getPresenter().createDocs(value + "." + ApiContract.Extension.PPTX.toLowerCase());
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_ACTION_DOC:
+                        getPresenter().createDocs(value + "." + ApiContract.Extension.DOCX.toLowerCase());
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER:
+                        getPresenter().createFolder(value);
+                        break;
+                    case DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED:
+                        getPresenter().deleteItems();
+                        break;
+                }
             }
         }
     }
@@ -694,23 +696,23 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
             // Init sortBy by
             switch (sortBy) {
-                case Api.Parameters.VAL_SORT_BY_UPDATED:
+                case ApiContract.Parameters.VAL_SORT_BY_UPDATED:
                     mMenu.findItem(R.id.toolbar_sort_item_date_update)
                             .setEnabled(false).setChecked(true).setEnabled(true);
                     break;
-                case Api.Parameters.VAL_SORT_BY_TITLE:
+                case ApiContract.Parameters.VAL_SORT_BY_TITLE:
                     mMenu.findItem(R.id.toolbar_sort_item_title)
                             .setEnabled(false).setChecked(true).setEnabled(true);
                     break;
-                case Api.Parameters.VAL_SORT_BY_TYPE:
+                case ApiContract.Parameters.VAL_SORT_BY_TYPE:
                     mMenu.findItem(R.id.toolbar_sort_item_type)
                             .setEnabled(false).setChecked(true).setEnabled(true);
                     break;
-                case Api.Parameters.VAL_SORT_BY_SIZE:
+                case ApiContract.Parameters.VAL_SORT_BY_SIZE:
                     mMenu.findItem(R.id.toolbar_sort_item_size)
                             .setEnabled(false).setChecked(true).setEnabled(true);
                     break;
-                case Api.Parameters.VAL_SORT_BY_OWNER:
+                case ApiContract.Parameters.VAL_SORT_BY_OWNER:
                     mMenu.findItem(R.id.toolbar_sort_item_owner)
                             .setEnabled(false).setChecked(true).setEnabled(true);
                     break;
@@ -748,12 +750,12 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
      * Changes
      * */
     @Override
-    public void onCreateFolder(Folder folder) {
+    public void onCreateFolder(CloudFolder folder) {
         // Stub
     }
 
     @Override
-    public void onCreateFile(File file) {
+    public void onCreateFile(CloudFile file) {
         showViewerActivity(file);
     }
 
@@ -942,16 +944,16 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
     @Override
     public void continueClick(@NonNull String tag, String action) {
-        int operationType = Api.Operation.OVERWRITE;
+        int operationType = ApiContract.Operation.OVERWRITE;
         switch (tag) {
             case MoveCopyDialog.TAG_DUPLICATE:
-                operationType = Api.Operation.DUPLICATE;
+                operationType = ApiContract.Operation.DUPLICATE;
                 break;
             case MoveCopyDialog.TAG_OVERWRITE:
-                operationType = Api.Operation.OVERWRITE;
+                operationType = ApiContract.Operation.OVERWRITE;
                 break;
             case MoveCopyDialog.TAG_SKIP:
-                operationType = Api.Operation.SKIP;
+                operationType = ApiContract.Operation.SKIP;
                 break;
         }
         if (action.equals(MoveCopyDialog.ACTION_COPY)) {
@@ -1181,7 +1183,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
 
     protected void setVisibilityActionButton(final boolean isShow) {
         final Fragment fragment = getParentFragment();
-        if (fragment instanceof MainPagerFragment) {
+        if (fragment instanceof MainPagerFragment && isResumed()) {
             ((MainPagerFragment) fragment).setVisibilityActionButton(isShow);
         }
     }

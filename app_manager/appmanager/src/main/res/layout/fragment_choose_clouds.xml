@@ -72,42 +72,47 @@
 
         </FrameLayout>
 
-        <include
+        <app.editors.manager.ui.views.custom.ConnectCloudView
+            android:layout_height="wrap_content"
             android:id="@+id/cloudsItemNextCloud"
-            layout="@layout/include_clouds_item"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_two_line_height"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cloudsItemOnlyOffice" />
 
-        <include
+        <app.editors.manager.ui.views.custom.ConnectCloudView
+            android:layout_height="wrap_content"
             android:id="@+id/cloudsItemOwnCloud"
-            layout="@layout/include_clouds_item"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_two_line_height"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cloudsItemNextCloud" />
 
-        <include
-            android:id="@+id/cloudsItemYandex"
-            layout="@layout/include_clouds_item"
+        <app.editors.manager.ui.views.custom.ConnectCloudView
+            android:layout_height="wrap_content"
+            android:id="@+id/cloudsItemKDrive"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_two_line_height"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cloudsItemOwnCloud" />
 
-        <include
-            android:id="@+id/cloudsItemWebDav"
-            layout="@layout/include_clouds_item"
+        <app.editors.manager.ui.views.custom.ConnectCloudView
+            android:id="@+id/cloudsItemYandex"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_two_line_height"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cloudsItemKDrive"
+            android:layout_height="wrap_content" />
+
+        <app.editors.manager.ui.views.custom.ConnectCloudView
+            android:id="@+id/cloudsItemWebDav"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

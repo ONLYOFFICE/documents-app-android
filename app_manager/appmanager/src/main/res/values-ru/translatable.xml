@@ -39,7 +39,7 @@
     <string name="countries_codes_title">Выбор страны</string>
     <string name="device_path_file_error">Этот файл не существует.</string>
     <string name="device_trash_files_restore">Восстановить</string>
-    <string name="dialog_clear_cache">Очистить кэш?</string>
+    <string name="dialog_clear_cache">Очистить кэш?\nЭта операция освободит место на устройстве за счет удаления временных файлов. Автономные файлы и персональные данные не будут удалены.</string>
     <string name="dialog_move_copy_copy">Создать копию файла</string>
     <string name="dialog_move_copy_overwrite">Перезаписать с обновлением версии</string>
     <string name="dialog_move_copy_skip">Пропустить</string>
@@ -98,6 +98,7 @@
     <string name="download_manager_notification_cancel_download">Скачивание отменено</string>
     <string name="download_manager_open">Открыть</string>
     <string name="download_manager_progress_title">Скачивание выполняется</string>
+    <string name="download_manager_archiving_progress">Создание архива</string>
     <string name="download_manager_repeat">Файл уже скачивается</string>
     <string name="download_manager_select_files">Выбрать файлы</string>
     <string name="download_manager_title">Скачивания ONLYOFFICE</string>
@@ -195,7 +196,7 @@
     <string name="login_enterprise_edit_error_hint">Введите действительный адрес</string>
     <string name="login_enterprise_edit_hint">Адрес облачного офиса</string>
     <string name="login_enterprise_email_hint">Email</string>
-    <string name="login_enterprise_forgot_password">Забыли пароль или email?</string>
+    <string name="login_enterprise_forgot_password">Забыли пароль?</string>
     <string name="login_enterprise_info">      Корпоративный облачный офис позволяет сохранять файлы в хранилище, делиться ими с коллегами и редактировать документы совместно в режиме реального времени
     </string>
     <string name="login_enterprise_password_hint">Пароль</string>
@@ -229,6 +230,10 @@
     <string name="login_sms_send_again">ОТПРАВИТЬ ПОВТОРНО</string>
     <string name="login_sms_send_again_after">ОТПРАВИТЬ ПОВТОРНО ЧЕРЕЗ</string>
     <string name="login_web_dav_title">Подключиться к %1$s</string>
+    <string name="login_password_recovery_hint">Введите email, указанный при регистрации на портале. Инструкции для восстановления пароля придут на этот email.</string>
+    <string name="login_password_recovery_button_text">ВЕРНУТЬСЯ НА ЭКРАН ВХОДА</string>
+    <string name="login_password_recovery_success_hint">Если пользователь с почтой %1$s существует, то на этот email была отправлена инструкция по смене пароля.</string>
+    <string name="login_password_recovery_toolbar_title">Восстановление пароля</string>
     <string name="main_pager_docs_common">Общие</string>
     <string name="main_pager_docs_my">Мои</string>
     <string name="main_pager_docs_projects">Проекты</string>
@@ -436,5 +441,10 @@
 
     <string name="app_internal_error">Внутренняя ошибка</string>
     <string name="app_fragment_crash_error">Закройте приложение и попробуйте снова</string>
+    <string name="login_enterprise_single_sign_button_login">Вход через %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">Единый вход</string>
+    <string name="login_not_authorization_info_token">Время сеанса истекло</string>
+    <string name="download_manager_exceed_size_100">Превышен максимальный размер файла (100МБ)</string>
+    <string name="download_manager_exceed_size_25">Превышен максимальный размер файла (25МБ)</string>
 
 </resources>

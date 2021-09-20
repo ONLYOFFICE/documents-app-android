@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-<!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>-->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="${permissionId}.permission.WRITE" />
     <uses-permission android:name="${permissionId}.permission.READ" />
 
@@ -95,32 +95,38 @@
             android:supportsPictureInPicture="true"
             android:theme="@style/MainActivityTheme"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
-            <intent-filter android:label="@string/upload_to_portal">
-                <action android:name="android.intent.action.SEND" />
+<!--            <intent-filter android:label="@string/upload_to_portal">-->
+<!--                <action android:name="android.intent.action.SEND" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
 
-                <data
-                    android:host="*"
-                    android:mimeType="application/*" />
-            </intent-filter>
-            <intent-filter android:label="@string/upload_to_portal">
-                <action android:name="android.intent.action.SEND" />
+<!--                <data-->
+<!--                    android:host="*"-->
+<!--                    android:mimeType="application/*" />-->
+<!--            </intent-filter>-->
+<!--            <intent-filter android:label="@string/upload_to_portal">-->
+<!--                <action android:name="android.intent.action.SEND" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
 
-                <data
-                    android:host="*"
-                    android:mimeType="video/*" />
-            </intent-filter>
-            <intent-filter android:label="@string/upload_to_portal">
-                <action android:name="android.intent.action.SEND" />
+<!--                <data-->
+<!--                    android:host="*"-->
+<!--                    android:mimeType="video/*" />-->
+<!--            </intent-filter>-->
+<!--            <intent-filter android:label="@string/upload_to_portal">-->
+<!--                <action android:name="android.intent.action.SEND" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
 
-                <data
-                    android:host="*"
-                    android:mimeType="image/*" />
+<!--                <data-->
+<!--                    android:host="*"-->
+<!--                    android:mimeType="image/*" />-->
+<!--            </intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="oodocuments" android:host="openfile"/>
             </intent-filter>
         </activity>
         <activity
@@ -231,16 +237,17 @@
 
         <service
             android:name=".managers.services.DownloadService"
-            android:enabled="true" /> <!-- <service -->
-        <!-- android:name=".managers.services.AuthenticatorService" -->
-        <!-- android:exported="false"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.accounts.AccountAuthenticator"/> -->
-        <!-- </intent-filter> -->
-        <!-- <meta-data -->
-        <!-- android:name="android.accounts.AccountAuthenticator" -->
-        <!-- android:resource="@xml/authenticator"/> -->
-        <!-- </service> -->
+            android:enabled="true" />
+         <service
+             android:name=".managers.services.AuthenticatorService"
+             android:exported="false">
+             <intent-filter>
+                 <action android:name="android.accounts.AccountAuthenticator" />
+             </intent-filter>
+             <meta-data
+                 android:name="android.accounts.AccountAuthenticator"
+                 android:resource="@xml/authenticator" />
+         </service>
         <service
             android:name=".managers.services.UploadService"
             android:enabled="true"

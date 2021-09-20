@@ -431,6 +431,20 @@ object StringUtils {
         }
     }
 
+    fun getDeviceName(): String {
+        return "${Build.MODEL} ${Build.TYPE}"
+    }
+
+    fun getAvatarName(name: String): String {
+        return name.split(" ").run {
+            if (size >= 2) {
+                return@run "${get(0)[0]}${get(1)[0]}".uppercase()
+            } else {
+                return@run "${get(0)[0]}${get(0)[1]}".uppercase()
+            }
+        }
+    }
+
     @JvmStatic
     fun getHelpUrl(context: Context): String {
         return context.getString(R.string.app_url_help)

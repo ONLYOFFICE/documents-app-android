@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.Serializable;
 
+import app.documents.core.settings.NetworkSettings;
 import app.editors.manager.R;
 import app.editors.manager.app.App;
 import app.editors.manager.managers.tools.PreferenceTool;
@@ -66,6 +67,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
     }
 
     protected PreferenceTool mPreferenceTool;
+    protected NetworkSettings mNetworkSettings;
 
     protected Unbinder mUnbinder;
     @BindView(R.id.list_explorer_context_folder_name)
@@ -122,6 +124,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Dialog dialog = super.onCreateDialog(savedInstanceState);
         mPreferenceTool = App.getApp().getAppComponent().getPreference();
+        mNetworkSettings = App.getApp().getAppComponent().getNetworkSettings();
         restoreValues(savedInstanceState);
         return dialog;
     }
@@ -261,7 +264,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
         } else {
             // File can downloaded
             mListExplorerContextDownload.setVisibility(View.VISIBLE);
-            if(StringUtils.convertServerVersion(mPreferenceTool.getServerVersion()) >= 11) {
+            if(StringUtils.convertServerVersion(mNetworkSettings.getServerVersion()) >= 11) {
                 mViewLineSeparatorFavorites.setVisibility(View.VISIBLE);
                 if (mState.mIsFavorite) {
                     mListContextDeleteFavorite.setVisibility(View.VISIBLE);
@@ -356,7 +359,7 @@ public class ContextBottomDialog extends BaseBottomDialog {
     }
 
     private void setLocalState() {
-        AccountsSqlData account = App.getApp().getAppComponent().getAccountsSql().getAccountOnline();
+        AccountsSqlData account = null;
         setUploadToPortal(account != null && account.isOnline() && !mState.mIsFolder);
         mListContextMove.setVisibility(View.VISIBLE);
         mListContextCopy.setVisibility(View.VISIBLE);

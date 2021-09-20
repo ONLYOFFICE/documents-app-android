@@ -2,8 +2,8 @@ package app.editors.manager.ui.adapters.holders.factory;
 
 import android.view.View;
 
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.Folder;
+import app.editors.manager.mvp.models.explorer.CloudFile;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.UploadFile;
 import app.editors.manager.mvp.models.list.Footer;
 import app.editors.manager.mvp.models.list.Header;
@@ -30,12 +30,12 @@ public class TypeFactoryExplorer implements TypeFactory {
     }
 
     @Override
-    public int type(File file) {
+    public int type(CloudFile file) {
         return FileViewHolder.LAYOUT;
     }
 
     @Override
-    public int type(Folder folder) {
+    public int type(CloudFolder folder) {
         return FolderViewHolder.LAYOUT;
     }
 

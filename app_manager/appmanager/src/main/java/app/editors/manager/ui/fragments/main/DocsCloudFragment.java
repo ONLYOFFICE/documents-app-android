@@ -10,12 +10,12 @@ import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.app.App;
 import app.editors.manager.mvp.models.base.Entity;
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.Folder;
+import app.editors.manager.mvp.models.explorer.CloudFile;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.UploadFile;
 import app.editors.manager.mvp.models.list.Header;
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter;
@@ -32,11 +32,18 @@ import lib.toolkit.base.managers.utils.TimeUtils;
 import lib.toolkit.base.managers.utils.UiUtils;
 import lib.toolkit.base.ui.dialogs.common.CommonDialog;
 import moxy.presenter.InjectPresenter;
+import moxy.presenter.ProvidePresenter;
 
 public abstract class DocsCloudFragment extends DocsBaseFragment implements DocsCloudView {
 
+    public final static String KEY_ACCOUNT = "key_account";
+
     @InjectPresenter
     public DocsCloudPresenter mCloudPresenter;
+    @ProvidePresenter
+    public DocsCloudPresenter providePresenter() {
+        return new DocsCloudPresenter(getArguments().getString(KEY_ACCOUNT));
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -44,7 +51,7 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case BaseAppActivity.REQUEST_ACTIVITY_WEB_VIEWER: {
-                    showViewerActivity((File) data.getSerializableExtra("TAG_FILE"));
+                    showViewerActivity((CloudFile) data.getSerializableExtra("TAG_FILE"));
                     break;
                 }
 
@@ -54,7 +61,7 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
                     break;
                 }
                 case BaseAppActivity.REQUEST_ACTIVITY_STORAGE: {
-                    final Folder folder = (Folder) data.getSerializableExtra(StorageActivity.TAG_RESULT);
+                    final CloudFolder folder = (CloudFolder) data.getSerializableExtra(StorageActivity.TAG_RESULT);
                     mCloudPresenter.addFolderAndOpen(folder, mLinearLayoutManager.findFirstVisibleItemPosition());
                     break;
                 }
@@ -81,12 +88,6 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
                 }
             }
         }
-    }
-
-    @Override
-    public void onStateMenuDefault(@NonNull String sortBy, boolean isAsc) {
-        super.onStateMenuDefault(sortBy, isAsc);
-        setAccountEnable(true);
     }
 
     @Override
@@ -208,16 +209,16 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
 
     @Override
     public void continueClick(@NonNull String tag, String action) {
-        int operationType = Api.Operation.OVERWRITE;
+        int operationType = ApiContract.Operation.OVERWRITE;
         switch (tag) {
             case MoveCopyDialog.TAG_DUPLICATE:
-                operationType = Api.Operation.DUPLICATE;
+                operationType = ApiContract.Operation.DUPLICATE;
                 break;
             case MoveCopyDialog.TAG_OVERWRITE:
-                operationType = Api.Operation.OVERWRITE;
+                operationType = ApiContract.Operation.OVERWRITE;
                 break;
             case MoveCopyDialog.TAG_SKIP:
-                operationType = Api.Operation.SKIP;
+                operationType = ApiContract.Operation.SKIP;
                 break;
         }
         if (action.equals(MoveCopyDialog.ACTION_COPY)) {
@@ -239,7 +240,7 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
     }
 
     @Override
-    public void onFileWebView(File file) {
+    public void onFileWebView(CloudFile file) {
         showViewerActivity(file);
     }
 
@@ -264,5 +265,9 @@ public abstract class DocsCloudFragment extends DocsBaseFragment implements Docs
     @Override
     protected Boolean isWebDav() {
         return false;
+    }
+
+    public boolean isRoot() {
+        return getPresenter().isRoot();
     }
 }

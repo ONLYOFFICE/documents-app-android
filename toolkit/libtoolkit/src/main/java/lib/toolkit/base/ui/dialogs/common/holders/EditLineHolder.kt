@@ -144,7 +144,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.EDIT_LINE
 
-    override fun getValue(): String? = mEditValueView.text.toString()
+    override fun getValue(): String = mEditValueView.text.toString()
 
     private inner class EditFilter : BaseInputFilter() {
 

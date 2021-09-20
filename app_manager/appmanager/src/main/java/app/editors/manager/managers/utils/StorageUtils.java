@@ -7,7 +7,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
-import app.editors.manager.app.Api;
+import app.documents.core.network.ApiContract;
+import app.editors.manager.R;
 import lib.toolkit.base.managers.utils.StringUtils;
 
 public class StorageUtils {
@@ -53,20 +54,48 @@ public class StorageUtils {
     @Nullable
     public static String getStorageUrl(final String providerKey, final String clientId, final String redirectUrl) {
         switch (providerKey) {
-            case Api.Storage.BOXNET:
+            case ApiContract.Storage.BOXNET:
                 return box(providerKey, clientId, redirectUrl).getUrl();
 
-            case Api.Storage.DROPBOX:
+            case ApiContract.Storage.DROPBOX:
                 return dropBox(providerKey, clientId, redirectUrl).getUrl();
 
-            case Api.Storage.GOOGLEDRIVE:
+            case ApiContract.Storage.GOOGLEDRIVE:
                 return google(providerKey, clientId, redirectUrl).getUrl();
 
-            case Api.Storage.ONEDRIVE:
+            case ApiContract.Storage.ONEDRIVE:
                 return oneDrive(providerKey, clientId, redirectUrl).getUrl();
         }
 
         return null;
+    }
+
+    public static Integer getStorageIcon(String providerKey) {
+        switch (providerKey) {
+            case ApiContract.Storage.BOXNET:
+                return R.drawable.ic_storage_box;
+            case ApiContract.Storage.DROPBOX:
+                return R.drawable.ic_storage_dropbox;
+            case ApiContract.Storage.SHAREPOINT:
+                return R.drawable.ic_storage_sharepoint;
+            case ApiContract.Storage.GOOGLEDRIVE:
+                return R.drawable.ic_storage_google;
+            case ApiContract.Storage.ONEDRIVE:
+            case ApiContract.Storage.SKYDRIVE:
+                return R.drawable.ic_storage_onedrive;
+            case ApiContract.Storage.YANDEX:
+                return R.drawable.ic_storage_yandex;
+            case ApiContract.Storage.KDRIVE:
+                return R.drawable.ic_storage_kdrive;
+            case ApiContract.Storage.NEXTCLOUD:
+                return R.drawable.ic_storage_nextcloud;
+            case ApiContract.Storage.OWNCLOUD:
+                return R.drawable.ic_storage_owncloud;
+            case ApiContract.Storage.WEBDAV:
+                return R.drawable.ic_storage_webdav;
+            default:
+                return R.drawable.ic_type_folder;
+        }
     }
 
     /*

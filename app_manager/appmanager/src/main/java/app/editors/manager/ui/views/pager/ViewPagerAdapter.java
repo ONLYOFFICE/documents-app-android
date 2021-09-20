@@ -17,7 +17,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter implements ViewPager.
     protected int mSelectedPage;
 
     public ViewPagerAdapter(FragmentManager manager) {
-        super(manager);
+        super(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         mManager = manager;
         mFragmentList = new ArrayList<>();
     }
@@ -108,6 +108,15 @@ public class ViewPagerAdapter extends FragmentPagerAdapter implements ViewPager.
 
     public int getSelectedPage() {
         return mSelectedPage;
+    }
+
+    public int getByTitle(String string) {
+        for (Container container : mFragmentList) {
+            if (container.mTitle.equals(string)) {
+                return mFragmentList.indexOf(container);
+            }
+        }
+        return 0;
     }
 
     /*

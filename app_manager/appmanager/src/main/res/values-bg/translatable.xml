@@ -414,13 +414,20 @@
   <string name="app_manage_files_description">Трябва да ви се предостави достъп до файловете. Ако достъпът е отказан, всички файлове след загубените приложения ще бъдат изтрити.</string>
   <string name="app_internal_error">Вътрешна грешка</string>
   <string name="app_fragment_crash_error">Моля, затворете приложението и опитайте отново</string>
-
   <string name="operation_add_to_favorites">Добавено към Любими</string>
   <string name="operation_remove_from_favorites">Премахнато от Любими</string>
-
   <string name="main_pager_docs_favorites">Любими</string>
-
   <string name="list_context_add_to_favorite">Добави към Любими</string>
   <string name="list_context_delete_from_favorite">Изтрий от Любими</string>
+  <string name="login_enterprise_single_sign_button_login">Вписване с %1$s</string>
+  <string name="login_enterprise_single_sign_button_login_default">Единично Вписване</string>
+  <string name="login_not_authorization_info_token">Времето на сесията изтече</string>
+  <string name="login_password_recovery_hint">Въведете имелйа, който използвате за регистрация в портала. Инструкциите за възстановяване на паролата ще бъдат изпратени на този имейл.</string>
+  <string name="login_password_recovery_button_text">ВЪРНИ СЕ КЪМ НАЧАЛЕН ЕКРАН</string>
+  <string name="login_password_recovery_success_hint">Ако потребителят с имейл %1$s съществува, инструкциите за смяна на паролата ще бъдат пратени на този имейл.</string>
+  <string name="login_password_recovery_toolbar_title">Възстановяване на парола</string>
+  <string name="download_manager_archiving_progress">Създаване на архив</string>
+  <string name="download_manager_exceed_size_100">Надвишава максималния размер на файла (100MB)</string>
+  <string name="download_manager_exceed_size_25">Надвишава максималния размер на файла (25MB)</string>
 
 </resources>

@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import app.editors.manager.app.Api;
+import app.documents.core.network.ApiContract;
+import app.editors.manager.mvp.models.explorer.CloudFile;
+import app.editors.manager.mvp.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.Folder;
 import app.editors.manager.mvp.models.explorer.Item;
 
 public class ModelExplorerStack {
@@ -170,7 +170,7 @@ public class ModelExplorerStack {
         return null;
     }
 
-    public List<File> getSelectedFiles() {
+    public List<CloudFile> getSelectedFiles() {
         final ExplorerStack explorerStack = getLast();
         if (explorerStack != null) {
             return explorerStack.getSelectedFiles();
@@ -178,7 +178,7 @@ public class ModelExplorerStack {
         return new ArrayList<>();
     }
 
-    public List<Folder> getSelectedFolders() {
+    public List<CloudFolder> getSelectedFolders() {
         final ExplorerStack explorerStack = getLast();
         if (explorerStack != null) {
             return explorerStack.getSelectedFolders();
@@ -186,28 +186,28 @@ public class ModelExplorerStack {
         return new ArrayList<>();
     }
 
-    public void addFile(final File file) {
+    public void addFile(final CloudFile file) {
         final ExplorerStack explorerStack = getLast();
         if (explorerStack != null) {
             explorerStack.addFile(file);
         }
     }
 
-    public void addFileFirst(final File file) {
+    public void addFileFirst(final CloudFile file) {
         final ExplorerStack explorerStack = getLast();
         if (explorerStack != null) {
             explorerStack.addFileFirst(file);
         }
     }
 
-    public void addFolder(final Folder folder) {
+    public void addFolder(final CloudFolder folder) {
         final ExplorerStack explorerStack = getLast();
         if (explorerStack != null) {
             explorerStack.addFolder(folder);
         }
     }
 
-    public void addFolderFirst(final Folder folder) {
+    public void addFolderFirst(final CloudFolder folder) {
         final ExplorerStack explorerStack = getLast();
         if (explorerStack != null) {
             explorerStack.addFolderFirst(folder);
@@ -300,7 +300,7 @@ public class ModelExplorerStack {
             return explorerStack.getRootFolderType();
         }
 
-        return Api.SectionType.UNKNOWN;
+        return ApiContract.SectionType.UNKNOWN;
     }
 
     public int getCurrentFolderAccess() {
@@ -309,7 +309,7 @@ public class ModelExplorerStack {
             return explorerStack.getCurrentFolderAccess();
         }
 
-        return Api.SectionType.UNKNOWN;
+        return ApiContract.SectionType.UNKNOWN;
     }
 
     @Nullable
@@ -416,12 +416,12 @@ public class ModelExplorerStack {
         }
 
         if (!mFilterStack.isEmpty() && mFilterStack.getLast().getSelectedItems() > 0) {
-            for (File file: explorer.getFiles()) {
+            for (CloudFile file: explorer.getFiles()) {
                 if (selectedFiles.contains(file.getId())) {
                     file.setSelected(true);
                 }
             }
-            for (Folder folder: explorer.getFolders()) {
+            for (CloudFolder folder: explorer.getFolders()) {
                 if (selectedFolders.contains(folder.getId())) {
                     folder.setSelected(true);
                 }
@@ -430,12 +430,12 @@ public class ModelExplorerStack {
         }
 
         if (!mNavigationStack.isEmpty() && mNavigationStack.getLast().getSelectedItems() > 0) {
-            for (File file: explorer.getFiles()) {
+            for (CloudFile file: explorer.getFiles()) {
                 if (selectedFiles.contains(file.getId())) {
                     file.setSelected(true);
                 }
             }
-            for (Folder folder: explorer.getFolders()) {
+            for (CloudFolder folder: explorer.getFolders()) {
                 if (selectedFolders.contains(folder.getId())) {
                     folder.setSelected(true);
                 }

@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import app.editors.manager.R;
 import app.editors.manager.ui.activities.login.PortalsActivity;
 import app.editors.manager.ui.activities.main.CloudsActivity;
+import app.editors.manager.ui.activities.main.IMainActivity;
 import app.editors.manager.ui.activities.main.MainActivity;
 import app.editors.manager.ui.activities.main.SettingsActivity;
 import app.editors.manager.ui.fragments.base.BaseAppFragment;
@@ -43,15 +44,15 @@ public class OnlyOfficeCloudFragment extends BaseAppFragment {
     @BindView(R.id.otherStorageButton)
     AppCompatButton mOtherButton;
 
-    private MainActivity mMainActivity;
+    private IMainActivity mMainActivity;
     private boolean mIsAccounts = false;
     private Unbinder mUnbinder;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof MainActivity) {
-            mMainActivity = (MainActivity) context;
+        if (context instanceof IMainActivity) {
+            mMainActivity = (IMainActivity) context;
         }
     }
 
@@ -113,8 +114,7 @@ public class OnlyOfficeCloudFragment extends BaseAppFragment {
             setActionBarTitle(getString(R.string.fragment_clouds_title));
 
         }
-        mMainActivity.setOffToolbarAccount();
-        mMainActivity.setCloudsState(false);
+        mMainActivity.showActionButton(false);
     }
 
     @OnClick({R.id.startButton, R.id.otherStorageButton})
@@ -126,7 +126,7 @@ public class OnlyOfficeCloudFragment extends BaseAppFragment {
                 break;
             }
             case R.id.otherStorageButton: {
-                CloudsActivity.show(requireContext());
+                CloudsActivity.Companion.show(requireContext());
                 break;
             }
         }

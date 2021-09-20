@@ -13,8 +13,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Guideline;
 import androidx.recyclerview.widget.RecyclerView;
 
+import app.documents.core.network.ApiContract;
 import app.editors.manager.R;
-import app.editors.manager.app.Api;
 import app.editors.manager.ui.adapters.base.BaseAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,39 +49,39 @@ public class StorageAdapter extends BaseAdapter<String> {
         final int padding = (int) mContext.getResources().getDimension(R.dimen.image_padding_icon);
 
         switch (id) {
-            case Api.Storage.BOXNET:
+            case ApiContract.Storage.BOXNET:
                 mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_box);
                 mViewHolder.mStorageTitle.setText(R.string.storage_select_box);
                 break;
-            case Api.Storage.DROPBOX:
+            case ApiContract.Storage.DROPBOX:
                 mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_dropbox);
                 mViewHolder.mStorageTitle.setText(R.string.storage_select_drop_box);
                 break;
-            case Api.Storage.SHAREPOINT:
+            case ApiContract.Storage.SHAREPOINT:
                 mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_sharepoint);
                 mViewHolder.mStorageTitle.setText(R.string.storage_select_share_point);
                 break;
-            case Api.Storage.GOOGLEDRIVE:
+            case ApiContract.Storage.GOOGLEDRIVE:
                 mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_google);
                 mViewHolder.mStorageTitle.setText(R.string.storage_select_google_drive);
                 break;
-            case Api.Storage.ONEDRIVE:
+            case ApiContract.Storage.ONEDRIVE:
                 mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_onedrive);
                 mViewHolder.mStorageTitle.setText(R.string.storage_select_one_drive);
                 break;
-            case Api.Storage.YANDEX:
+            case ApiContract.Storage.YANDEX:
                 mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_yandex);
                 mViewHolder.mStorageTitle.setText(R.string.storage_select_yandex);
                 break;
-            case Api.Storage.OWNCLOUD:
+            case ApiContract.Storage.OWNCLOUD:
                 mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_owncloud);
                 mViewHolder.mStorageTitle.setText(R.string.storage_select_own_cloud);
                 break;
-            case Api.Storage.NEXTCLOUD:
+            case ApiContract.Storage.NEXTCLOUD:
                 mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_nextcloud);
                 mViewHolder.mStorageTitle.setText(R.string.storage_select_next_cloud);
                 break;
-            case Api.Storage.WEBDAV:
+            case ApiContract.Storage.WEBDAV:
                 mViewHolder.mStorageImage.setImageResource(R.drawable.ic_storage_webdav);
                 mViewHolder.mStorageImage.setAlpha(UiUtils.getFloatResource(mContext, R.dimen.alpha_medium));
                 mViewHolder.mStorageImage.setPadding(padding, padding, padding, padding);

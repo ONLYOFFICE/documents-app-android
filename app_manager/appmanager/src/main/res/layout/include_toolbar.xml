@@ -4,8 +4,6 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?actionBarSize"
-    android:background="?attr/colorPrimary"
-    android:minHeight="?attr/actionBarSize"
     android:theme="?attr/actionBarTheme"
     app:popupTheme="@style/AppTheme.PopupOverlay">
 
@@ -13,7 +11,8 @@
         android:id="@+id/accountContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/selectableItemBackground">
+        android:background="?attr/selectableItemBackground"
+        android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/toolbarArrowIcon"

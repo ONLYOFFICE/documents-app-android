@@ -11,6 +11,7 @@ SECRETS=(
     "../../app_manager/facebook_id.xml"
     "../../app_manager/appmanager/google-services.json"
     "../../app_manager/appmanager/src/main/java/app/editors/manager/managers/utils/Constants.java"
+    "../../app_manager/auth_strings.xml"
 )
 
 if [ -z "$GIT_ANDROID_DOCUMENTS_PASSPHRASE" ]
@@ -30,3 +31,4 @@ for secret in ${SECRETS[@]}; do
 done
 
 mv ../../app_manager/facebook_id.xml ../../app_manager/appmanager/src/main/res/values/facebook_id.xml
+mv ../../app_manager/auth_strings.xml ../../toolkit/libtoolkit/src/main/res/values/auth_strings.xml

@@ -8,8 +8,7 @@ import androidx.annotation.Nullable;
 
 import app.editors.manager.R;
 import app.editors.manager.managers.utils.FirebaseUtils;
-import app.editors.manager.mvp.models.explorer.File;
-import app.editors.manager.mvp.models.explorer.UploadFile;
+import app.editors.manager.mvp.models.explorer.CloudFile;
 
 public class UploadReceiver extends BaseReceiver<Intent> {
 
@@ -32,9 +31,9 @@ public class UploadReceiver extends BaseReceiver<Intent> {
     public interface OnUploadListener {
         void onUploadError(@Nullable String path, String info, String file);
 
-        void onUploadComplete(String path, String info, @Nullable String title, File file, String id);
+        void onUploadComplete(String path, String info, @Nullable String title, CloudFile file, String id);
 
-        void onUploadAndOpen(String path, @Nullable String title, File file, String id);
+        void onUploadAndOpen(String path, @Nullable String title, CloudFile file, String id);
 
         void onUploadFileProgress(int progress, String id, String folderId);
 
@@ -81,7 +80,7 @@ public class UploadReceiver extends BaseReceiver<Intent> {
                     case UPLOAD_ACTION_COMPLETE: {
                         final String path = intent.getStringExtra(EXTRAS_KEY_PATH);
                         final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
-                        final File file = (File) intent.getSerializableExtra(EXTRAS_KEY_FILE);
+                        final CloudFile file = (CloudFile) intent.getSerializableExtra(EXTRAS_KEY_FILE);
                         final String id = intent.getStringExtra(EXTRAS_KEY_ID);
                         final String info = context.getString(R.string.upload_manager_complete);
                         mOnUploadListener.onUploadComplete(path, info, title, file, id);
@@ -91,7 +90,7 @@ public class UploadReceiver extends BaseReceiver<Intent> {
                     case UPLOAD_AND_OPEN: {
                         final String path = intent.getStringExtra(EXTRAS_KEY_PATH);
                         final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
-                        final File file = (File) intent.getSerializableExtra(EXTRAS_KEY_FILE);
+                        final CloudFile file = (CloudFile) intent.getSerializableExtra(EXTRAS_KEY_FILE);
                         final String id = intent.getStringExtra(EXTRAS_KEY_ID);
                         mOnUploadListener.onUploadAndOpen(path, title, file, id);
                         break;

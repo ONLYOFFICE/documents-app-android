@@ -91,21 +91,27 @@
     <string name="login_enterprise_edit_hint">Portal address</string>
     <string name="login_enterprise_button_next">NEXT</string>
     <string name="login_enterprise_edit_error_hint">Enter valid address</string>
-    <string name="login_enterprise_forgot_password">Forgot password or email?</string>
+    <string name="login_enterprise_forgot_password">Forgot password?</string>
     <string name="login_enterprise_button_create">CREATE PORTAL</string>
     <string name="login_enterprise_button_select">ACCOUNTS</string>
     <string name="login_enterprise_email_hint">Email</string>
     <string name="login_enterprise_password_hint">Password</string>
     <string name="login_enterprise_signin_button">SIGN IN</string>
     <string name="login_enterprise_single_sign_button">Single Sign-on</string>
+    <string name="login_enterprise_single_sign_button_login">Login by %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">Single Sign-on</string>
     <string name="login_enterprise_info">
         ONLYOFFICE portal allows to save files in the cloud, share it with co-workers and co-edit in real time.
     </string>
     <string name="login_not_authorization_info">Could not sign in to %1$s at %2$s</string>
+    <string name="login_not_authorization_info_token">Session time is over</string>
     <string name="login_not_authorization_button">TRY AGAIN</string>
     <string name="errors_first_name">First name is not valid. It must not contain digits.</string>
     <string name="errors_last_name">Last name is not valid. It must not contain digits.</string>
-
+    <string name="login_password_recovery_hint">Enter the email which you used for registration on the portal. The instructions for password recovery will be sent to this email.</string>
+    <string name="login_password_recovery_button_text">RETURN TO ENTER SCREEN</string>
+    <string name="login_password_recovery_success_hint">If a user with the email %1$s exists, the instructions for password change were sent to this email.</string>
+    <string name="login_password_recovery_toolbar_title">Password recovery</string>
     <!-- Portal personal -->
     <string name="login_personal_edit_email_hint">Email</string>
     <string name="login_personal_edit_password_hint">Password</string>
@@ -399,6 +405,7 @@
     <string name="storage_select_box">Box</string>
     <string name="storage_select_share_point">SharePoint</string>
     <string name="storage_select_own_cloud">ownCloud</string>
+    <string name="storage_select_kdrive" translatable="false">KDrive</string>
     <string name="storage_select_web_dav">Other WebDAV storage</string>
 
     <string name="storage_connect_title">Folder settings</string>
@@ -445,6 +452,7 @@
     <!-- Managers load -->
     <string name="download_manager_title">ONLYOFFICE downloads</string>
     <string name="download_manager_progress_title">Download in progress</string>
+    <string name="download_manager_archiving_progress">Creating archive</string>
     <string name="download_manager_complete">Download complete</string>
     <string name="download_manager_error">Download error</string>
     <string name="download_manager_error_free_space">Not enough free space</string>
@@ -455,6 +463,8 @@
     <string name="download_manager_notification_cancel_download">Cancel download</string>
     <string name="download_manager_folders_download">Folders cannot be downloaded</string>
     <string name="download_manager_select_files">Select files</string>
+    <string name="download_manager_exceed_size_100">Exceeds the maximum file size (100MB)</string>
+    <string name="download_manager_exceed_size_25">Exceeds the maximum file size (25MB)</string>
 
     <string name="upload_manager_file_picker_title">Select a file to upload</string>
     <string name="upload_manager_progress_title">Upload in progress</string>
@@ -531,7 +541,8 @@
     <string name="operation_move_file_existing">%1$s file already exists in the destination directory.</string>
     <string name="upload_to_portal">Upload to portal</string>
     <string name="this_device">This device</string>
-    <string name="dialog_clear_cache">Clear cache?</string>
+    <string name="dialog_clear_cache">Clear cache?\nThis operation will free up space on your device by deleting temporary files. Your offline files and personal data won\'t be removed.
+    </string>
 
     <string name="error_unsupported_path">Unsupported path</string>
     <string name="error_unsupported_format">Unsupported format</string>

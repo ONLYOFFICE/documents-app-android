@@ -33,6 +33,7 @@ import app.editors.manager.mvp.models.account.Recent;
 import app.editors.manager.mvp.models.account.Storage;
 import io.reactivex.Single;
 
+@Deprecated
 public class AccountSqlTool extends OrmLiteSqliteOpenHelper {
 
     public static final String TAG = AccountSqlTool.class.getSimpleName();

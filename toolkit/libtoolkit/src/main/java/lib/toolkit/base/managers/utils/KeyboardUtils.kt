@@ -78,7 +78,16 @@ object KeyboardUtils {
 
     fun hideKeyboard(context: Context, token: IBinder?) {
         token?.let {
-            (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager)?.hideSoftInputFromWindow(it, 0)
+            (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager)?.hideSoftInputFromWindow(
+                it,
+                0
+            )
+        }
+    }
+
+    fun forceHide(context: Activity) {
+        (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).apply {
+            toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
         }
     }
 
