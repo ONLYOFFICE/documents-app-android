@@ -363,9 +363,6 @@
     <string name="toolbar_menu_main_open">Abrir</string>
     <string name="trash_dialog_empty_title">¿Vaciar Papelera?</string>
     <string name="trash_popup_delete">Eliminar para siempre</string>
-    <string name="trash_popup_move">Mover a</string>
-    <string name="trash_snackbar_move_button">MOVER</string>
-    <string name="trash_snackbar_move_text">Usted puede mover archivos de la PAPELERA</string>
     <string name="upload_error_wifi">Solamente puede subir archivos cuando está conectado a una red Wi-Fi</string>
     <string name="upload_manager_cancel">Subida cancelada</string>
     <string name="upload_manager_complete">Carga completa</string>

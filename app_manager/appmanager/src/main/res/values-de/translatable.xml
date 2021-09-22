@@ -314,9 +314,6 @@
     <string name="operation_snackbar_return">ZURÜCK</string>
     <string name="operation_share_send_link">SENDEN</string> <!-- ======================================================================================= --> <!-- Trash -->
     <string name="trash_dialog_empty_title">Papierkorb leeren?</string>
-    <string name="trash_snackbar_move_text">Sie können Dateien aus dem PAPIERKORB verschieben</string>
-    <string name="trash_snackbar_move_button">VERSCHIEBEN</string>
-    <string name="trash_popup_move">Verschieben nach</string>
     <string name="trash_popup_delete">Endgültig löschen</string> <!-- ======================================================================================= --> <!-- Managers load -->
     <string name="download_manager_title">ONLYOFFICE Downloads</string>
     <string name="download_manager_progress_title">Herunterladen wird ausgeführt</string>

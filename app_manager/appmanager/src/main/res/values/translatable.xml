@@ -453,7 +453,7 @@
     <string name="trash_dialog_empty_title">Empty trash?</string>
     <string name="trash_snackbar_move_text">You can restore files from the TRASH</string>
     <string name="trash_snackbar_move_button">RESTORE</string>
-    <string name="trash_popup_move">Move to</string>
+    <string name="trash_popup_move">Restore to</string>
     <string name="trash_popup_delete">Delete forever</string>
 
     <!-- ======================================================================================= -->

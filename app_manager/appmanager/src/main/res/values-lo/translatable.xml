@@ -430,9 +430,6 @@
     <!-- ======================================================================================= -->
     <!-- Trash -->
     <string name="trash_dialog_empty_title">ລ້າງຖັງຂີ້ເຫຍື້ອບໍ?</string>
-    <string name="trash_snackbar_move_text">ທ່ານສາມາດຍ້າຍໄຟລ໌ຈາກ </string>
-    <string name="trash_snackbar_move_button">ຍ້າຍ</string>
-    <string name="trash_popup_move">ຍ້າຍໄປຫາ</string>
     <string name="trash_popup_delete">ລືບອອກເລີຍ</string>
 
     <!-- ======================================================================================= -->

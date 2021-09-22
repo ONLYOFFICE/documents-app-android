@@ -361,9 +361,6 @@
     <string name="toolbar_menu_main_open">Abrir</string>
     <string name="trash_dialog_empty_title">Esvaziar lixeira?</string>
     <string name="trash_popup_delete">EXCLUIR definitivamente</string>
-    <string name="trash_popup_move">Mover para</string>
-    <string name="trash_snackbar_move_button">MOVER</string>
-    <string name="trash_snackbar_move_text">Você pode mover arquivos da LIXEIRA</string>
     <string name="upload_error_wifi">Você pode fazer upload apenas quando Wi-Fi estiver habilitada</string>
     <string name="upload_manager_cancel">Upload cancelado</string>
     <string name="upload_manager_complete">Upload completo</string>

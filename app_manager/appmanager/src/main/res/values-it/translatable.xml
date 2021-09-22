@@ -361,9 +361,6 @@
     <string name="toolbar_menu_main_open">Apri</string>
     <string name="trash_dialog_empty_title">Svuotare il cestino?</string>
     <string name="trash_popup_delete">Elimina definitivamente</string>
-    <string name="trash_popup_move">Sposta in</string>
-    <string name="trash_snackbar_move_button">Sposta</string>
-    <string name="trash_snackbar_move_text">È possibile spostare i file dal cestino</string>
     <string name="upload_error_wifi">Puoi caricare solo quando il Wi-Fi è abilitato</string>
     <string name="upload_manager_cancel">Upload annullato</string>
     <string name="upload_manager_complete">Upload completato</string>
