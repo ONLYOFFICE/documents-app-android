@@ -496,6 +496,7 @@
     <!-- ======================================================================================= -->
     <!-- On boarding -->
     <string name="on_boarding_skip_button">SKIP</string>
+    <string name="on_boarding_back_button">BACK</string>
     <string name="on_boarding_next_button">NEXT</string>
     <string name="on_boarding_finish_button">DONE</string>
 
@@ -538,6 +539,11 @@
     <string name="auth_info_screen_3">Copy the key and paste it to your authenticator app </string>
     <string name="auth_header_screen_4">Copy the code</string>
     <string name="auth_info_screen_4">Copy the code from your authenticator app and insert it below</string>
+    <string name="auth_step_title">Step %d of %d</string>
+    <string name="auth_install_button">Install</string>
+    <string name="auth_confirm_button">Confirm</string>
+    <string name="auth_clipboard_key_copied">Key copied to clipboard</string>
+    <string name="auth_edit_hint">Code</string>
 
     <string name="rename_file_exist">File with the same name exists.</string>
     <string name="device_path_file_error">This file does not exist.</string>

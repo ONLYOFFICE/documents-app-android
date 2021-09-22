@@ -479,7 +479,12 @@
 
     <style name="AccentButton" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_height">@dimen/default_login_accent_button_height</item>
+    </style>
 
+    <style name="AuthAccentButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_height">@dimen/screen_auth_login_accent_button_height</item>
+        <item name="android:textSize">@dimen/screen_auth_accent_button_text_size</item>
+        <item name="android:textColor">@color/colorWhite</item>
     </style>
 
     <style name="AccentTextButton" parent="Widget.MaterialComponents.Button.TextButton">

@@ -3,9 +3,13 @@ package app.editors.manager.ui.activities.login
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import app.editors.manager.R
+import app.editors.manager.databinding.ActivityOnBoardingBinding
+import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.login.AuthPagerFragment
+import lib.toolkit.base.managers.tools.ResourcesProvider
 
 class AuthAppActivity : BaseAppActivity() {
 
@@ -23,15 +27,44 @@ class AuthAppActivity : BaseAppActivity() {
         }
     }
 
+    private var viewBinding: ActivityOnBoardingBinding? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_on_boarding)
+        viewBinding = ActivityOnBoardingBinding.inflate(layoutInflater)
+        setContentView(viewBinding?.root)
         init(savedInstanceState)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewBinding = null
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun init(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
             showFragment(AuthPagerFragment.newInstance(intent.getStringExtra(REQUEST_KEY), intent.getStringExtra(TFA_KEY)), null)
+        }
+    }
+
+    fun setActionBar() {
+        viewBinding?.appBarToolbar?.isVisible = true
+        setSupportActionBar(viewBinding?.appBarToolbar?.toolbar)
+        supportActionBar?.let {
+            it.title = ""
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setDisplayShowHomeEnabled(true)
+            it.setHomeAsUpIndicator(ResourcesProvider(this)
+                .getDrawable(R.drawable.ic_toolbar_close)?.apply {
+                    setTint(getColor(R.color.colorPrimary))
+                });
         }
     }
 }

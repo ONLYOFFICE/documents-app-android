@@ -3,9 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/page_indicator_layout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/default_on_boarding_panel_height"
-    android:elevation="12dp"
-    android:translationZ="12dp">
+    android:layout_height="@dimen/default_on_boarding_panel_height">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/on_boarding_panel_skip_button"
@@ -16,6 +14,20 @@
         android:clickable="true"
         android:focusable="true"
         android:text="@string/on_boarding_skip_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/on_boarding_panel_back_button"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/screen_margin_large"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/on_boarding_back_button"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -40,6 +52,7 @@
         android:layout_centerInParent="true"
         android:layout_marginLeft="@dimen/screen_margin_large"
         android:layout_marginRight="@dimen/screen_margin_large"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/on_boarding_panel_next_button"
         app:layout_constraintStart_toEndOf="@+id/on_boarding_panel_skip_button"
