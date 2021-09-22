@@ -14,6 +14,7 @@ import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.base.BaseView
 import app.editors.manager.mvp.views.base.BaseViewExt
+import com.google.android.gms.common.api.Api
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
 import lib.toolkit.base.managers.utils.StringUtils.getJsonObject
@@ -65,8 +66,7 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
 
     open fun cancelRequest() {}
 
-    protected open fun fetchError(throwable: Throwable) {
-        if (throwable is HttpException) {
+    protected open fun fetchError(throwable: Throwable) {if (throwable is HttpException) {
             if (throwable.response()?.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
                 onUnauthorized(throwable.response()?.code() ?: -1)
             } else {
@@ -143,9 +143,15 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
         } else if (responseCode >= ApiContract.HttpCodes.SERVER_ERROR) {
             if (errorMessage != null) {
                 // Add here new message for common errors
-                if (errorMessage.contains(ApiContract.Errors.AUTH)) {
-                    viewState.onError(context.getString(R.string.errors_server_auth_error))
-                    return
+                when {
+                    errorMessage.contains(ApiContract.Errors.AUTH) -> {
+                        viewState.onError(context.getString(R.string.errors_server_auth_error))
+                        return
+                    }
+                    errorMessage.contains(ApiContract.Errors.AUTH_TOO_MANY_ATTEMPTS) -> {
+                        viewState.onError(context.getString(R.string.errors_server_auth_too_many_attempts))
+                        return
+                    }
                 }
             }
             viewState.onError(context.getString(R.string.errors_server_error) + responseCode)

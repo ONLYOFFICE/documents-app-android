@@ -56,6 +56,7 @@
     <string name="errors_client_payment_required"> Payment required</string>
     <string name="errors_server_error">Unknown server error with code:\u0020</string>
     <string name="errors_server_auth_error">Authentication error</string>
+    <string name="errors_server_auth_too_many_attempts">Too many attempts. Try again later</string>
     <string name="errors_email_syntax_error">Invalid email</string>
     <string name="errors_viewer_download_name">Download failed</string>
     <string name="errors_email_already_registered">User with this email is already registered</string>
