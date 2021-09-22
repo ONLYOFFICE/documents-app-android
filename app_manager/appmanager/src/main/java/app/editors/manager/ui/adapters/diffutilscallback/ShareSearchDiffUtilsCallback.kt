@@ -8,7 +8,7 @@ class ShareSearchDiffUtilsCallback(newList: List<ViewType>, oldList: List<ViewTy
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         if (mOldList[oldItemPosition] is ShareViewType ||
-            mOldList[oldItemPosition] is ShareViewType) {
+            mNewList[newItemPosition] is ShareViewType) {
             val oldItem = mOldList[oldItemPosition] as ShareViewType
             val newItem = mNewList[newItemPosition] as ShareViewType
             return oldItem.itemId == newItem.itemId
@@ -18,7 +18,7 @@ class ShareSearchDiffUtilsCallback(newList: List<ViewType>, oldList: List<ViewTy
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         if (mOldList[oldItemPosition] is ShareViewType ||
-            mOldList[oldItemPosition] is ShareViewType) {
+            mNewList[newItemPosition] is ShareViewType) {
             val oldItem = mOldList[oldItemPosition] as ShareViewType
             val newItem = mNewList[newItemPosition] as ShareViewType
             return oldItem.itemName == newItem.itemName

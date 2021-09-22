@@ -114,20 +114,20 @@ class NextCloudLoginFragment : BaseAppFragment() {
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
             val uri = request.url
             if (uri != null) {
-                if (uri.toString().contains(BACK_PATTERN_1) || uri.toString().contains(BACK_PATTERN_2)) {
-                    isClear = true
-                    clearCookies(requireContext())
-                    viewBinding?.webView?.clearHistory()
-                    viewBinding?.webView?.clearCache(true)
-                    viewBinding?.webView?.loadUrl(portla + LOGIN_SUFFIX, headers)
-                    return true
-                }
                 if (uri.scheme != null && uri.scheme == "nc" && uri.host != null && uri.host == "login") {
                     val path = uri.path
                     if (path != null) {
                         saveUser(path)
                         return true
                     }
+                }
+                if (uri.toString().contains(BACK_PATTERN_1) || uri.path?.contains(BACK_PATTERN_2) == true) {
+                    isClear = true
+                    clearCookies(requireContext())
+                    viewBinding?.webView?.clearHistory()
+                    viewBinding?.webView?.clearCache(true)
+                    viewBinding?.webView?.loadUrl(portla + LOGIN_SUFFIX, headers)
+                    return true
                 }
             }
             return super.shouldOverrideUrlLoading(view, request)

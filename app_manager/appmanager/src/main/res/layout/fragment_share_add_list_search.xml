@@ -7,6 +7,7 @@
 
     <include
         layout="@layout/fragment_share_add_list"
+        android:id="@+id/fragment_share_add_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/share_panel_layout"

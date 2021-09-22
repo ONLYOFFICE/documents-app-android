@@ -92,14 +92,16 @@ open class BaseViewTypeAdapter<T : ViewType>(holderFactory: HolderFactory)
         }
     }
 
-    fun updateItem(item: T) {
+    fun updateItem(item: T): Int {
         if (items.isNotEmpty()) {
             val position = items.indexOf(item)
             if (position != -1) {
                 items[position] = item
                 notifyItemChanged(position, item)
             }
+            return position
         }
+        return 0
     }
 
     fun updateItem(item: T, position: Int) {

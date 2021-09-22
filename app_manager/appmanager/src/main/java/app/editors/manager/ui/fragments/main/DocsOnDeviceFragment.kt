@@ -22,6 +22,7 @@ import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter
 import app.editors.manager.mvp.presenters.main.OpenState
+import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
@@ -247,7 +248,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                     presenter.createFolder(it)
                 }
                 DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT -> presenter.deleteFile()
-                else -> { }
+                else -> {
+                }
             }
         }
         hideDialog()
@@ -279,7 +281,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 getString(R.string.dialogs_edit_hint), DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
                 getString(R.string.dialogs_edit_accept_rename), getString(R.string.dialogs_common_cancel_button)
             )
-            else -> { }
+            else -> {
+            }
         }
         contextBottomDialog?.dismiss()
     }
@@ -318,7 +321,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         this.startActivityForResult(
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
                 putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-            }, BaseActivity.REQUEST_ACTIVITY_CAMERA)
+            }, BaseActivity.REQUEST_ACTIVITY_CAMERA
+        )
     }
 
     override fun onShowDocs(uri: Uri) {
@@ -373,11 +377,13 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 //            presenter.getItemsById(LocalContentTools.getDir(requireContext()))
 
             //TODO раскоментировать когда будет доступно разрешение
-            showQuestionDialog(getString(R.string.app_manage_files_title),
-                    getString(R.string.app_manage_files_description),
-                    getString(R.string.dialogs_common_ok_button),
-                    getString(R.string.dialogs_common_cancel_button),
-                    TAG_STORAGE_ACCESS);
+            showQuestionDialog(
+                getString(R.string.app_manage_files_title),
+                getString(R.string.app_manage_files_description),
+                getString(R.string.dialogs_common_ok_button),
+                getString(R.string.dialogs_common_cancel_button),
+                TAG_STORAGE_ACCESS
+            );
         }
     }
 

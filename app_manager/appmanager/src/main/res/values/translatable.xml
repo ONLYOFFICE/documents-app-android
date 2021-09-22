@@ -109,9 +109,9 @@
     <string name="login_not_authorization_button">TRY AGAIN</string>
     <string name="errors_first_name">First name is not valid. It must not contain digits.</string>
     <string name="errors_last_name">Last name is not valid. It must not contain digits.</string>
-    <string name="login_password_recovery_hint">Enter email which you use for registration on portal. Instructions to password`s recovery will be sent on that email.</string>
+    <string name="login_password_recovery_hint">Enter the email which you used for registration on the portal. The instructions for password recovery will be sent to this email.</string>
     <string name="login_password_recovery_button_text">RETURN TO ENTER SCREEN</string>
-    <string name="login_password_recovery_success_hint">If user with email %1$s is exist instruction of change password was sent on that email.</string>
+    <string name="login_password_recovery_success_hint">If a user with the email %1$s exists, the instructions for password change were sent to this email.</string>
     <string name="login_password_recovery_toolbar_title">Password recovery</string>
     <!-- Portal personal -->
     <string name="login_personal_edit_email_hint">Email</string>
@@ -224,7 +224,6 @@
     <string name="dialogs_edit_feedback_rate_title">Would you mind sending us feedback?</string>
     <string name="dialogs_edit_feedback_rate_hint">Tell us what to improve</string>
     <string name="dialogs_edit_feedback_rate_accept">SEND</string>
-    <string name="dialog_send_password_reminder">SEND</string>
 
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
@@ -409,7 +408,7 @@
     <string name="storage_select_box">Box</string>
     <string name="storage_select_share_point">SharePoint</string>
     <string name="storage_select_own_cloud">ownCloud</string>
-    <string name="storage_select_kdrive">KDrive</string>
+    <string name="storage_select_kdrive" translatable="false">KDrive</string>
     <string name="storage_select_web_dav">Other WebDAV storage</string>
 
     <string name="storage_connect_title">Folder settings</string>
@@ -584,4 +583,5 @@
 
     <string name="app_internal_error">Internal error</string>
     <string name="app_fragment_crash_error">Please close this app and try again</string>
+    <string name="item_owner_self">Me</string>
 </resources>

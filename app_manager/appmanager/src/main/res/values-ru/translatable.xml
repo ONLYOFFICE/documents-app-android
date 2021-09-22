@@ -441,5 +441,10 @@
 
     <string name="app_internal_error">Внутренняя ошибка</string>
     <string name="app_fragment_crash_error">Закройте приложение и попробуйте снова</string>
+    <string name="login_enterprise_single_sign_button_login">Вход через %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">Единый вход</string>
+    <string name="login_not_authorization_info_token">Время сеанса истекло</string>
+    <string name="download_manager_exceed_size_100">Превышен максимальный размер файла (100МБ)</string>
+    <string name="download_manager_exceed_size_25">Превышен максимальный размер файла (25МБ)</string>
 
 </resources>

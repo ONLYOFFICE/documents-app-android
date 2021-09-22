@@ -214,9 +214,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override val isActivePage: Boolean
-        get() = parentFragment.let {
-                it is MainPagerFragment && it.isActivePage(this)
-            }
+        get() = isResumed
 
     override val presenter: DocsBasePresenter<out DocsBaseView?>
         get() = cloudPresenter

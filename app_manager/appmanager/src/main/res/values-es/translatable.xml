@@ -411,16 +411,22 @@
     <string name="app_settings_analytic">Compartir el análisis de la aplicación</string>
     <string name="app_manage_files_title">Acceder a la gestión de archivos</string>
     <string name="app_manage_files_description">Es necesario conceder acceso a los archivos. Si se deniega el acceso, todos los archivos se eliminarán después de la desinstalación de la aplicación.</string>
-
     <string name="app_internal_error">Error interno</string>
     <string name="app_fragment_crash_error">Por favor, cierre esta aplicación e inténtelo de nuevo</string>
-
     <string name="operation_add_to_favorites">Agregado a Favoritos</string>
     <string name="operation_remove_from_favorites">Quitado de Favoritos</string>
-
     <string name="main_pager_docs_favorites">Favoritos</string>
-
     <string name="list_context_add_to_favorite">Agregar a Favoritos</string>
     <string name="list_context_delete_from_favorite">Quitar de Favoritos</string>
+    <string name="login_enterprise_single_sign_button_login">Iniciar sesión con %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">Inicio de sesión único</string>
+    <string name="login_not_authorization_info_token">Se acabó el tiempo de sesión</string>
+    <string name="login_password_recovery_hint">Introduzca el correo electrónico que utilizó para registrarse en el portal. Las instrucciones para recuperar la contraseña se enviarán a este correo electrónico.</string>
+    <string name="login_password_recovery_button_text">VOLVER A LA PANTALLA DE ENTRADA</string>
+    <string name="login_password_recovery_success_hint">Si existe un usuario con el correo electrónico %1$s, las instrucciones para el cambio de contraseña se enviaron a este correo electrónico.</string>
+    <string name="login_password_recovery_toolbar_title">Recuperación de contraseña</string>
+    <string name="download_manager_archiving_progress">Creando archivo</string>
+    <string name="download_manager_exceed_size_100">Excede el tamaño máximo de archivo (100MB)</string>
+    <string name="download_manager_exceed_size_25">Excede el tamaño máximo de archivo (25MB)</string>
 
 </resources>
