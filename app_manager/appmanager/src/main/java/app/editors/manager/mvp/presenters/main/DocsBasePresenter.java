@@ -62,7 +62,6 @@ import app.editors.manager.mvp.models.request.RequestDownload;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.presenters.base.BasePresenter;
 import app.editors.manager.mvp.views.main.DocsBaseView;
-import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -1186,18 +1185,22 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     public void selectAll() {
-        getViewState().onStateUpdateSelection(true);
         getViewState().onItemsSelection(String.valueOf(mModelExplorerStack.setSelection(true)));
+        getViewState().onStateUpdateSelection(true);
     }
 
     public void deselectAll() {
-        getViewState().onStateUpdateSelection(true);
         getViewState().onItemsSelection(String.valueOf(mModelExplorerStack.setSelection(false)));
+        getViewState().onStateUpdateSelection(true);
         getBackStack();
     }
 
     public boolean isSelectionMode() {
         return mIsSelectionMode;
+    }
+
+    public boolean isSelectedAll() {
+        return mModelExplorerStack.getCountSelectedItems() == mModelExplorerStack.getTotalCount();
     }
 
     public void setFoldersMode(boolean foldersMode) {
