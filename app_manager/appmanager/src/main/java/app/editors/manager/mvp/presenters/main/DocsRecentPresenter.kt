@@ -126,7 +126,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun searchRecent(newText: String?) {
         CoroutineScope(Dispatchers.Default).launch {
-            val list = recentDao.getRecents().filter { it.name.lowercase().contains(newText?.lowercase() ?: "") }
+            val list = recentDao.getRecents().filter { it.name.contains(newText ?: "", true) }
             withContext(Dispatchers.Main) {
                 viewState.updateFiles(list)
             }
