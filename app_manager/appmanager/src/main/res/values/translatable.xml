@@ -378,6 +378,9 @@
 
     <string name="share_snackbar_remove_user">User is removed</string>
 
+    <string name="share_group_admin">Admin</string>
+    <string name="share_group_everyone">Everyone</string>
+
     <!-- External link -->
     <string name="share_access_success">External access successful</string>
     <string name="share_access_denied">External access denied</string>

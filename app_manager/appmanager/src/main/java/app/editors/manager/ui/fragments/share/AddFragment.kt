@@ -2,6 +2,7 @@ package app.editors.manager.ui.fragments.share
 
 import android.os.Bundle
 import android.view.View
+import app.editors.manager.R
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
@@ -27,6 +28,7 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     lateinit var addPresenter: AddPresenter
 
     private var shareAdapter: ShareAdapter? = null
+    private var type: Type? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,7 +76,16 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
         setPlaceholder(false, list.isNotEmpty())
         swipeRefreshLayout?.isRefreshing = false
         shareAdapter?.setMode(BaseAdapter.Mode.GROUPS)
-        shareAdapter?.setItems(list)
+        shareAdapter?.setItems(list.map {
+            it.apply {
+                if (it is GroupUi) {
+                    when (it.id) {
+                        GroupUi.GROUP_ADMIN_ID -> it.name = getString(R.string.share_group_admin)
+                        GroupUi.GROUP_EVERYONE_ID -> it.name = getString(R.string.share_group_everyone)
+                    }
+                }
+            }
+        })
     }
 
     override fun onGetCommon(list: List<ViewType>) {
@@ -101,6 +112,11 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateSelectionMenu()
+    }
+
     private fun init(savedInstanceState: Bundle?) {
         getArgs()
         initViews()
@@ -108,9 +124,10 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     private fun getArgs() {
-        arguments.let { bundle ->
-            addPresenter.setItem((bundle?.getSerializable(TAG_ITEM) as Item))
-            addPresenter.setType((bundle.getSerializable(TAG_TYPE) as Type))
+        arguments?.let {
+            addPresenter.item = it.getSerializable(TAG_ITEM) as Item
+            addPresenter.type = it.getSerializable(TAG_TYPE) as Type
+            type = it.getSerializable(TAG_TYPE) as Type
         }
     }
 
@@ -145,11 +162,36 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     private fun setCountChecked() {
+        updateSelectionMenu()
         (parentFragment as AddPagerFragment).setChecked()
     }
 
     private val isActivePage: Boolean
         get() = parentFragment.let { it is AddPagerFragment && it.isActivePage(this) }
+
+    private fun updateSelectionMenu() {
+        (parentFragment as AddPagerFragment).selectionMenu?.let { menu ->
+            type?.let { type ->
+                menu.findItem(R.id.menu_share_deselect)?.isVisible = addPresenter.isSelected(type)
+                menu.findItem(R.id.menu_share_select_all)?.isVisible = !addPresenter.isSelectedAll(type)
+            }
+        }
+    }
+
+    fun setSelectedAll(isSelected: Boolean) {
+        shareAdapter?.let { adapter ->
+            when (type) {
+                Type.USERS -> adapter.setItems(adapter.itemsList
+                    .filterIsInstance(UserUi::class.java)
+                    .map { it.apply { this.isSelected = isSelected } })
+                Type.GROUPS -> adapter.setItems(adapter.itemsList
+                    .filterIsInstance(GroupUi::class.java)
+                    .map { it.apply { this.isSelected = isSelected } })
+                else -> { }
+            }
+        }
+        setCountChecked()
+    }
 
     fun updateAdapterState() {
         shareAdapter?.notifyDataSetChanged()
