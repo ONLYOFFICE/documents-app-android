@@ -73,9 +73,9 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             networkSettings.setScheme(webUrl.protocol + "://")
             networkSettings.setBaseUrl(webUrl.protocol + "://" + webUrl.host)
 
+            viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title))
             disposable = App.getApp().getWebDavApi(null, null)
                 .capabilities(Credentials.basic(login, password), webUrl.path)
-                .doOnSubscribe { viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title)) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ response ->
@@ -130,11 +130,9 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             networkSettings.setBaseUrl(correctUrl.protocol + "://" + correctUrl.host + "/")
             networkSettings.setScheme(correctUrl.protocol + "://")
 
+            viewState.onDialogWaiting(context.getString(R.string.dialogs_check_portal_header_text))
             disposable = App.getApp().getWebDavApi(null, null)
                 .capability("$path/index.php/login/flow")
-                .doOnSubscribe {
-                    viewState.onDialogWaiting(context.getString(R.string.dialogs_check_portal_header_text))
-                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ response ->

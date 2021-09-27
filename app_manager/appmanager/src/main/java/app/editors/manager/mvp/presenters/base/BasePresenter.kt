@@ -84,7 +84,7 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
      * */
     protected fun onErrorHandle(responseBody: ResponseBody?, responseCode: Int) {
         // Error values from server
-        var errorCode: Int? = null
+//        var errorCode: Int? = null
         var errorMessage: String? = null
         var responseMessage: String? = null
 
@@ -100,7 +100,7 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
             val jsonObject = getJsonObject(responseMessage)
             if (jsonObject != null) {
                 try {
-                    errorCode = jsonObject.getInt(KEY_ERROR_CODE)
+//                    errorCode = jsonObject.getInt(KEY_ERROR_CODE)
                     errorMessage = jsonObject.getJSONObject(KEY_ERROR_INFO).getString(KEY_ERROR_INFO_MESSAGE)
                 } catch (e: JSONException) {
                     Log.e(TAG, "onErrorHandle()", e)

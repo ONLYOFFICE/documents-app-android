@@ -87,7 +87,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                         }
                     }
                 } ?: run {
-                    throw Error("Not accounts")
+                    viewState.onUnauthorized(mContext.getString(R.string.errors_client_unauthorized))
                 }
             }
         }
