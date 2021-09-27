@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.presenters.login
 
+import app.documents.core.account.CloudAccount
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.request.RequestRegister
@@ -49,6 +50,11 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
 
     override fun onGetUser(user: User) {
         super.onGetUser(user)
+        viewState.onSuccessLogin()
+    }
+
+    override fun onAccountCreateSuccess(account: CloudAccount) {
+        super.onAccountCreateSuccess(account)
         viewState.onSuccessLogin()
     }
 
