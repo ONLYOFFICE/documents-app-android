@@ -94,11 +94,6 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         }
     }
 
-    override fun isActivePage(): Boolean {
-        return true
-    }
-
-
     private fun showMenu() {
         if (mCloudPresenter.isSelectionMode) {
             mDeleteItem.isVisible = true
