@@ -3,6 +3,9 @@ package app.editors.manager.mvp.presenters.login
 import android.accounts.Account
 import app.documents.core.account.CloudAccount
 import app.documents.core.login.LoginResponse
+import app.documents.core.network.models.login.Capabilities
+import app.documents.core.network.models.login.response.ResponseCapabilities
+import app.documents.core.network.models.login.response.ResponseSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.AccountsView
@@ -135,9 +138,14 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
                 .subscribe({ response ->
                     when (response) {
                         is LoginResponse.Success -> {
-                            setOnlineSettings()
-                            viewState.onSignIn(clickedAccount.portal ?: "",
-                                clickedAccount.login ?: "")
+                            when (val loginResponse = response.response) {
+                                is ResponseCapabilities -> {
+                                    setSettings(loginResponse.response)
+                                    viewState.onSignIn(clickedAccount.portal ?: "", clickedAccount.login ?: "")
+                                }
+                                is ResponseSettings -> networkSettings.serverVersion =
+                                    loginResponse.response.communityServer ?: ""
+                            }
                         }
                         is LoginResponse.Error -> fetchError(response.error)
                     }
@@ -167,5 +175,11 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
                 networkSettings.setSettingsByAccount(it)
             }
         }
+    }
+
+    private fun setSettings(capabilities: Capabilities) {
+        networkSettings.ldap = capabilities.ldapEnabled
+        networkSettings.ssoUrl = capabilities.ssoUrl
+        networkSettings.ssoLabel = capabilities.ssoLabel
     }
 }
