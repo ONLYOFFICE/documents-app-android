@@ -610,10 +610,16 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * */
 
     public void createDownloadFile() {
-        if (!mModelExplorerStack.getSelectedFiles().isEmpty() || !mModelExplorerStack.getSelectedFolders().isEmpty() || (mItemClicked instanceof CloudFolder)) {
-            getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
+        if (!mModelExplorerStack.getSelectedFiles().isEmpty() || !mModelExplorerStack.getSelectedFolders().isEmpty()) {
+            if(mModelExplorerStack.getSelectedFiles().size() == 1) {
+                getViewState().onCreateDownloadFile(mModelExplorerStack.getSelectedFiles().get(0).getTitle());
+            } else {
+                getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
+            }
         } else if (mItemClicked instanceof CloudFile) {
             getViewState().onCreateDownloadFile(mItemClicked.getTitle());
+        } else if( mItemClicked instanceof CloudFolder ) {
+            getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
         }
     }
 
@@ -669,11 +675,16 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             }
         }
 
-        final RequestDownload requestDownload = new RequestDownload();
-        requestDownload.setFilesIds(filesIds);
-        requestDownload.setFoldersIds(foldersIds);
+        if(filesIds.size() > 1 || !foldersIds.isEmpty()) {
 
-        startDownloadWork(downloadTo, null, null, requestDownload);
+            final RequestDownload requestDownload = new RequestDownload();
+            requestDownload.setFilesIds(filesIds);
+            requestDownload.setFoldersIds(foldersIds);
+
+            startDownloadWork(downloadTo, null, null, requestDownload);
+        } else {
+            startDownloadWork(downloadTo, filesIds.get(0), files.get(0).getViewUrl(), null);
+        }
     }
 
     private void startDownloadWork(Uri to, String id, String url, RequestDownload requestDownload) {
