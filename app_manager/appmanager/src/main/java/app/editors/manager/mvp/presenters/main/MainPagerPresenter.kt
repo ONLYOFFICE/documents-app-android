@@ -52,7 +52,7 @@ class MainPagerPresenter : MvpPresenter<MainPagerView>() {
 
     private suspend fun render(cloudAccount: CloudAccount, jsonAccount: String) {
         when {
-            networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
+            networkSetting.getPortal().contains(ApiContract.PERSONAL_SUBDOMAIN) -> {
                 withContext(Dispatchers.Main) {
                     viewState.onRender(
                         MainPagerState.PersonalState(
