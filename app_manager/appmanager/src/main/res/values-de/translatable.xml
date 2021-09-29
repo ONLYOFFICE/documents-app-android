@@ -426,7 +426,7 @@
     <string name="login_not_authorization_info_token">Die Sitzung ist abgelaufen</string>
     <string name="login_password_recovery_hint">Geben Sie die E-Mail-Adresse ein, die Sie für die Registrierung auf dem Portal verwendet haben. Die Hinweise für die Kennwortwiederherstellung werden an Ihre E-Mail-Adresse geschickt.</string>
     <string name="login_password_recovery_button_text">Zurück zum Eingabeformular</string>
-    <string name="login_password_recovery_success_hint">Wenn solche E-Mail-Adresse existiert, wurden die Anweisungen zum Ändern des Passworts daran verschickt.</string>
+    <string name="login_password_recovery_success_hint">Wenn solche E-Mail-Adresse %1$s existiert, wurden die Anweisungen zum Ändern des Passworts daran verschickt.</string>
     <string name="login_password_recovery_toolbar_title">Wiederherstellung des Passworts</string>
     <string name="download_manager_archiving_progress">Archiv wird erstellt</string>
     <string name="download_manager_exceed_size_100">Die maximale Dateigröße ist überschritten (100MB)</string>

@@ -32,17 +32,25 @@ class EnterprisePhonePresenter : BasePresenter<EnterprisePhoneView>() {
 
     fun setPhone(newPhone: String?, request: String) {
         val service = App.getApp().loginComponent.loginService
-        val requestNumber = Json.decodeFromString<RequestSignIn>(request)
-        disposable = newPhone?.let { (requestNumber as RequestNumber).copy(mobilePhone = it) }?.let {
+        val requestSignIn = Json.decodeFromString<RequestSignIn>(request)
+        disposable = newPhone?.let {
+            RequestNumber(
+                mobilePhone = it,
+                provider = requestSignIn.provider,
+                userName = requestSignIn.userName,
+                password = requestSignIn.password,
+                accessToken = requestSignIn.accessToken
+            )
+        }?.let {
             service.changeNumber(it)
-                .subscribe({response ->
-                    if(response is LoginResponse.Success) {
+                .subscribe({ response ->
+                    if (response is LoginResponse.Success) {
                         preferenceTool.phoneNoise = newPhone
-                        viewState.onSuccessChange(Json.encodeToString((requestNumber as RequestNumber).copy(mobilePhone = newPhone)))
+                        viewState.onSuccessChange(Json.encodeToString(it))
                     } else {
                         viewState.onError((response as LoginResponse.Error).error.message)
                     }
-                }) {throwable -> fetchError(throwable)}
+                }) { throwable -> fetchError(throwable) }
         }
     }
 }
