@@ -94,7 +94,6 @@ class AuthPagerFragment : BaseAppFragment() {
     }
 
     private fun init() {
-        initColor()
         initListeners()
         (requireActivity() as AuthAppActivity).setActionBar()
         viewBinding?.let {
@@ -105,10 +104,6 @@ class AuthPagerFragment : BaseAppFragment() {
             it.include.onBoardingPanelBackButton.isVisible = false
             it.include.onBoardingPanelSkipButton.isVisible = false
         }
-    }
-
-    private fun initColor() {
-        viewBinding?.pagerFragmentLayout?.background = resourcesProvider.getDrawable(R.color.colorWhite)
     }
 
     private val fragments: List<ViewPagerAdapter.Container?>

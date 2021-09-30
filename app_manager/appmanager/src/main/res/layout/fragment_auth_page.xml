@@ -15,12 +15,11 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/auth_page_step"
-            style="@style/AuthTextView"
+            style="@style/AuthTextViewSecond"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_margin_large"
             android:text="@string/auth_step_title"
-            android:textColor="@color/colorGrey"
             android:textSize="@dimen/screen_on_boarding_header_text_size"
             tools:text="Step" />
 
@@ -67,13 +66,12 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/auth_page_info"
-            style="@style/AuthTextView"
+            style="@style/AuthTextViewSecond"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
             android:layout_marginTop="@dimen/default_margin_medium"
             android:text="@string/auth_info_screen_1"
-            android:textColor="@color/colorGrey"
             android:textSize="@dimen/screen_on_boarding_info_text_size"
             tools:text="Info" />
 

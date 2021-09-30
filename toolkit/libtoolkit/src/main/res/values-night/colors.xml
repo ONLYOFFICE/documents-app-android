@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- Primary -->
     <color name="colorPrimary">#3E9CF0</color>
@@ -12,13 +12,14 @@
     <color name="colorBackground">#121212</color>
     <color name="colorOnBackground">#FFFFFFDE</color>
     <color name="colorOnSurface">#FFFFFFDE</color>
+    <color name="colorOnSurfaceSecond">#FFFFFFDE</color>
     <color name="colorOnSecondary">@color/colorBlack</color>
     <color name="colorOnError">@color/colorBlack</color>
     <color name="colorBackgroundSecond">@null</color>
     <color name="colorOutline">#3F3F3F</color>
     <color name="colorBgDescription">#363636</color>
 
-    <color name="colorAppBar" tools:ignore="MissingDefaultResource">@color/colorPrimaryDark</color>
+    <color name="colorAppBar">@color/colorPrimaryDark</color>
     <color name="colorBottomBar">#191919</color>
 
     <!--    Clouds-->

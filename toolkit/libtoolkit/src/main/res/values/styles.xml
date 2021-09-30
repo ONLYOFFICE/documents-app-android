@@ -328,6 +328,14 @@
         <item name="android:maxLines">5</item>
     </style>
 
+    <style name="AuthTextViewSecond" parent="CommonTextView">
+        <item name="android:textColor">@color/colorOnSurfaceSecond</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lines">5</item>
+        <item name="android:minLines">1</item>
+        <item name="android:maxLines">5</item>
+    </style>
+
     <!-- ======================================================================================= -->
     <!-- Buttons -->
     <style name="ColorButtons" parent="CommonButton">

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/page_indicator_layout"
     android:layout_width="match_parent"
+    android:background="@color/colorAppBar"
     android:layout_height="@dimen/default_on_boarding_panel_height">
 
     <com.google.android.material.button.MaterialButton
