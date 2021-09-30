@@ -169,7 +169,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
             setLayoutParams(imageLayout, cellSize, cellSize)
 
             imageView.isClickable = false
-            UiUtils.setColorFilter(progressBar.context, progressBar.indeterminateDrawable, R.color.colorSecondary)
+            UiUtils.setColorFilter(progressBar.context, progressBar.indeterminateDrawable, lib.toolkit.base.R.color.colorSecondary)
 
             view.setOnClickListener { v: View? ->
                 mOnItemClickListener?.onItemClick(v, layoutPosition)
@@ -255,7 +255,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
 
         fun bind(file: CloudFile?) {
             viewIconBackgroundLayout.setBackgroundResource(R.drawable.drawable_media_background_video_play_light)
-            setImageTint(viewIconBackgroundImage, R.drawable.ic_media_play, R.color.colorPrimary)
+            setImageTint(viewIconBackgroundImage, R.drawable.ic_media_play, lib.toolkit.base.R.color.colorPrimary)
             if (file!!.id == "") {
                 cacheTool.getBitmap(file.webUrl) { bitmap: Bitmap? ->
                     if (bitmap == null) {

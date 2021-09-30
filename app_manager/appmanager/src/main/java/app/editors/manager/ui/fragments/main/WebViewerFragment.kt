@@ -299,7 +299,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun init(savedInstanceState: Bundle?) {
-        UiUtils.setColorFilter(requireContext(), progressBar.indeterminateDrawable, R.color.colorSecondary)
+        UiUtils.setColorFilter(requireContext(), progressBar.indeterminateDrawable, lib.toolkit.base.R.color.colorSecondary)
         connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         isDesktopMode = UiUtils.checkDeXEnabled(resources.configuration)
         isPageLoad = false
@@ -392,7 +392,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             StringUtils.Extension.DOC, StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarDocTint)
             StringUtils.Extension.PRESENTATION -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarPresentationTint)
             StringUtils.Extension.SHEET -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarSheetTint)
-            else -> setStatusBarColor(R.color.colorSecondary)
+            else -> setStatusBarColor(lib.toolkit.base.R.color.colorSecondary)
         }
     }
 

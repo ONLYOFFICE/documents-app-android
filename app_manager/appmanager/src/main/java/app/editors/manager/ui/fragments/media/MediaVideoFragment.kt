@@ -220,7 +220,7 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
         UiUtils.setImageTint(
             viewBinding?.viewIconBackgroundLayout?.viewIconBackgroundImage!!,
             R.drawable.ic_media_play,
-            R.color.colorPrimary
+            lib.toolkit.base.R.color.colorPrimary
         )
         mediaController = MediaController(context)
         mediaController!!.setMediaPlayer(viewBinding?.mediaVideoView)

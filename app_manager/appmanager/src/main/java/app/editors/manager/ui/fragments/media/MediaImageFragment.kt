@@ -159,7 +159,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             UiUtils.setColorFilter(
                 requireContext(),
                 it.mediaImageProgress.indeterminateDrawable,
-                R.color.colorSecondary)
+                lib.toolkit.base.R.color.colorSecondary)
         }
         setImageState()
     }

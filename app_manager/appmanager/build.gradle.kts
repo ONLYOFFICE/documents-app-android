@@ -57,6 +57,7 @@ android {
     compileSdk = AppDependency.COMPILE_SDK_VERSION
 
     defaultConfig {
+        manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
         versionCode = 294
@@ -72,6 +73,9 @@ android {
 
         ndk {
             abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))  //comment to armv7
+        }
+        vectorDrawables {
+            useSupportLibrary = true
         }
     }
 
@@ -139,6 +143,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        compose = true
     }
 
     compileOptions {
@@ -163,6 +168,9 @@ android {
     }
 
     packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
         arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DJVUFILE")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DOCTRENDERER")}.so")
@@ -178,6 +186,9 @@ android {
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_FB2FILE")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_EPUBFILE")}.so")
         }
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = rootProject.extra["compose_version"] as String
     }
 }
 
@@ -252,8 +263,17 @@ dependencies {
     //TODO add to base module
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
 
     implementation("androidx.fragment:fragment-ktx:1.3.6")
+
+    //Compose
+    implementation("androidx.compose.ui:ui:${rootProject.extra["compose_version"]}")
+    implementation("androidx.compose.material:material:${rootProject.extra["compose_version"]}")
+    implementation("androidx.compose.ui:ui-tooling-preview:${rootProject.extra["compose_version"]}")
+    implementation("androidx.activity:activity-compose:1.3.1")
+//    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${rootProject.extra["compose_version"]}")
+//    debugImplementation("androidx.compose.ui:ui-tooling:${rootProject.extra["compose_version"]}")
 
 }
 

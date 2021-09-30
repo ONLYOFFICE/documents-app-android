@@ -54,7 +54,7 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
                 .getColor(lib.toolkit.base.R.color.colorTransparent)
             )
             it.listSwipeRefresh.setColorSchemeColors(resourcesProvider
-                .getColor(R.color.colorSecondary))
+                .getColor(lib.toolkit.base.R.color.colorSecondary))
             it.listSwipeRefresh.setOnRefreshListener(this)
             it.listOfItems.layoutManager = linearLayoutManager
             it.listOfItems.addOnScrollListener(object : LoadingScroll() {

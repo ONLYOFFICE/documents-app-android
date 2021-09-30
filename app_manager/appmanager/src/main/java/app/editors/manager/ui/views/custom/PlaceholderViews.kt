@@ -83,7 +83,7 @@ class PlaceholderViews(val view: View?) {
                 setImageTint(lib.toolkit.base.R.color.colorLightWhite)
                 setTitle(R.string.placeholder_media_error)
                 setTitleColor(lib.toolkit.base.R.color.colorLightWhite)
-                setRetryTint(R.color.colorSecondary)
+                setRetryTint(lib.toolkit.base.R.color.colorSecondary)
             }
         }
         setVisibility(true)

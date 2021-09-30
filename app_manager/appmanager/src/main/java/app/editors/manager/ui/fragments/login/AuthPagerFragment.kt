@@ -112,11 +112,11 @@ class AuthPagerFragment : BaseAppFragment() {
             it.include.pageIndicatorLayout.background =
                 resourcesProvider.getDrawable(lib.toolkit.base.R.color.colorWhite)
             it.include.onBoardingPanelNextButton
-                .setTextColor(resourcesProvider.getColor(R.color.colorSecondary))
+                .setTextColor(resourcesProvider.getColor(lib.toolkit.base.R.color.colorSecondary))
             it.include.onBoardingPanelSkipButton
-                .setTextColor(resourcesProvider.getColor(R.color.colorSecondary))
+                .setTextColor(resourcesProvider.getColor(lib.toolkit.base.R.color.colorSecondary))
             it.include.onBoardingPanelIndicator.selectedColor =
-                resourcesProvider.getColor(R.color.colorSecondary)
+                resourcesProvider.getColor(lib.toolkit.base.R.color.colorSecondary)
             it.include.onBoardingPanelIndicator.unselectedColor =
                 resourcesProvider.getColor(lib.toolkit.base.R.color.colorGrey)
         }
