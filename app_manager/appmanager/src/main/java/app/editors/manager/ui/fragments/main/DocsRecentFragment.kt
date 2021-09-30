@@ -26,6 +26,10 @@ import app.editors.manager.ui.adapters.RecentAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.RecentDiffUtilsCallback
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
@@ -40,7 +44,9 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private var filterValue: CharSequence? = null
 
     private val recentListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
-        presenter.fileClick(recent, position)
+            Debounce.perform(1000L) {
+                presenter.fileClick(recent, position)
+            }
     }
 
     private val contextListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
@@ -360,6 +366,21 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override val isWebDav: Boolean
         get() = false
+
+    object Debounce {
+        var isClickable = true
+
+        fun perform(timeMillis: Long, func: () -> Unit) {
+            if (isClickable) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    func.invoke()
+                    isClickable = false
+                    delay(timeMillis)
+                    isClickable = true
+                }
+            }
+        }
+    }
 
     companion object {
         var TAG: String = DocsRecentFragment::class.java.simpleName
