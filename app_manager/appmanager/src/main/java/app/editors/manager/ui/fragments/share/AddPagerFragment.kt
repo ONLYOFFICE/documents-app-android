@@ -23,6 +23,8 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
     private var viewPagerAdapter: ViewPagerAdapter? = null
     private var inputItem: Item? = null
     private var viewBinding: FragmentShareAddPagerBinding? = null
+    var selectionMenu: Menu? = null
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -74,14 +76,19 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
         return super.onBackPressed()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.share_add, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.share_add, menu)
+        selectionMenu = menu.also {
+            it.findItem(R.id.menu_share_deselect).isVisible = false
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val fragment = viewPagerAdapter?.getActiveFragment(viewBinding?.shareAddViewPager) as? AddFragment
         when (item.itemId) {
-            R.id.menu_share_add_search ->
-                showFragment(AddSearchFragment
+            R.id.menu_share_select_all -> fragment?.setSelectedAll(true)
+            R.id.menu_share_deselect -> fragment?.setSelectedAll(false)
+            R.id.menu_share_add_search -> showFragment(AddSearchFragment
                     .newInstance(inputItem), AddSearchFragment.TAG, false)
         }
         return super.onOptionsItemSelected(item)
@@ -153,20 +160,12 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
         setChecked()
     }
 
-    fun setChecked() {
-        modelShareStack?.countChecked?.let { countChecked ->
-            sharePanelViews?.setCount(countChecked)
-            sharePanelViews?.setAddButtonEnable(countChecked > 0)
-        }
-    }
-
     private fun resetChecked() {
         modelShareStack?.resetChecked()
         sharePanelViews?.setCount(0)
-    }
-
-    fun isActivePage(fragment: Fragment?): Boolean {
-        return viewPagerAdapter?.isActiveFragment(viewBinding?.shareAddViewPager, fragment) == true
+        for (fragment in childFragmentManager.fragments) {
+            (fragment as AddFragment).setSelectedAll(false)
+        }
     }
 
     private fun updateAdaptersFragments() {
@@ -200,6 +199,17 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
                     getString(R.string.share_tab_groups))
             )
         }
+
+    fun setChecked() {
+        modelShareStack?.countChecked?.let { countChecked ->
+            sharePanelViews?.setCount(countChecked)
+            sharePanelViews?.setAddButtonEnable(countChecked > 0)
+        }
+    }
+
+    fun isActivePage(fragment: Fragment?): Boolean {
+        return viewPagerAdapter?.isActiveFragment(viewBinding?.shareAddViewPager, fragment) == true
+    }
 
     companion object {
         val TAG = AddPagerFragment::class.java.simpleName

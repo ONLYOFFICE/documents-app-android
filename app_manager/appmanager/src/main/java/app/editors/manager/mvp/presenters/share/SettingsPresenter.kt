@@ -14,6 +14,7 @@ import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
+import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -265,12 +266,11 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
 
     private fun getShareList(shareList: List<Share>) {
         isAccessDenied = false
-        val userList = shareList.filter {
-            it.sharedTo.userName.isNotEmpty() && !it.isOwner
-        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
-        val groupList = shareList.filter {
-            it.sharedTo.name.isNotEmpty()
-        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
+        val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() && !it.isOwner}
+            .map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
+        val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }
+            .map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
+            .sortedWith(groupComparator())
 
         shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {
             item?.access = it.access
@@ -330,6 +330,15 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             }, { error ->
                 fetchError(error)
             })
+    }
+
+    private fun groupComparator() = Comparator<ShareUi> { a, b ->
+        val list = listOf(GroupUi.GROUP_ADMIN_ID, GroupUi.GROUP_EVERYONE_ID)
+        when {
+            a.sharedTo.id in list -> -1
+            b.sharedTo.id in list -> 1
+            else -> a.sharedTo.displayName.compareTo(b.sharedTo.displayName)
+        }
     }
 
     override fun fetchError(throwable: Throwable) {
