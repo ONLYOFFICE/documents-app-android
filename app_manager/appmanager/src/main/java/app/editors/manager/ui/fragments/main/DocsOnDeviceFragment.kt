@@ -22,7 +22,6 @@ import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter
 import app.editors.manager.mvp.presenters.main.OpenState
-import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
@@ -98,7 +97,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_CAMERA) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 makePhoto()
