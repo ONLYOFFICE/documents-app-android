@@ -981,6 +981,7 @@ public abstract class DocsBaseFragment extends ListFragment implements DocsBaseV
      * */
     private boolean isSearchViewClear() {
         if (mSearchView != null && mSearchView.getQuery().length() > 0) {
+            mSearchView.setIconified(true);
             mSearchView.setQuery("", true);
             return true;
         }
