@@ -94,7 +94,7 @@ private fun AppBar(@StringRes title: Int, @DrawableRes icon: Int, click: () -> U
                 Icon(
                     painter = painterResource(id = icon),
                     contentDescription = "Close",
-                    tint = MaterialTheme.colors.onSurface,
+                    tint = MaterialTheme.colors.primary,
                     modifier = Modifier.clickable { click() }
                 )
             }
