@@ -4,7 +4,6 @@ buildscript {
         set("NDK_VERSION", AppDependency.NDK_VERSION)
         set("kotlin_version", Kotlin.version)
     }
-    val compose_version by extra("1.0.1")
 
     repositories {
         google()
