@@ -109,7 +109,7 @@ class OperationActivity : BaseAppActivity(){
                             ), null
                         )
                     } else {
-                        if (account.portal?.contains(ApiContract.PERSONAL_HOST) == true) {
+                        if (account.portal?.contains(ApiContract.PERSONAL_SUBDOMAIN) == true) {
                             showFragment(DocsCloudOperationFragment.newInstance(Json.encodeToString(account), ApiContract.SectionType.CLOUD_USER), null)
                         } else {
                             showFragment(DocsOperationSectionFragment.newInstance(Json.encodeToString(account)), null)
