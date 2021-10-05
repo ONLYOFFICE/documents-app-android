@@ -35,6 +35,6 @@ data class CloudAccount(
 
     fun getAccountName() = "$login@$portal"
 
-    fun isPersonal() = portal?.contains(ApiContract.PERSONAL_HOST) ?: false
+    fun isPersonal() = portal?.contains(ApiContract.PERSONAL_SUBDOMAIN) ?: false
 
 }
