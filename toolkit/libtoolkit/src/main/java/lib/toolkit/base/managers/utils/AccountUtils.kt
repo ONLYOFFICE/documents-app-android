@@ -33,6 +33,7 @@ data class AccountData(
     val displayName: String,
     val provider: String,
     val accessToken: String? = null,
+    val refreshToken: String? = null,
     val avatar: String? = null,
     val webDav: String? = null,
     val expires: String? = null

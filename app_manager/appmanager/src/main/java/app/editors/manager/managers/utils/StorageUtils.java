@@ -43,8 +43,13 @@ public class StorageUtils {
 
     public static final class OneDrive {
         public static final String AUTH_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?";
-        public static final String VALUE_RESPONSE_TYPE = "token";
+        public static final String ARG_GRANT_TYPE = "grant_type";
+        public static final String ARG_REFRESH_TOKEN = "refresh_token";
+        public static final String ARG_CLIENT_SECRET = "client_secret";
         public static final String VALUE_SCOPE = "User.Read files.readwrite.all offline_access";
+        public static final String VALUE_GRANT_TYPE_AUTH = "authorization_code";
+        public static final String VALUE_GRANT_TYPE_REFRESH = "refresh_token";
+        public static final String VALUE_RESPONSE_TYPE = "code";
     }
 
     public static final class WevDav {
