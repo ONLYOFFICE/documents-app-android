@@ -1,5 +1,8 @@
 package app.editors.manager.onedrive.mvp.models.response
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class AuthResponse(
     val token_type: String = "",
     val scope: String = "",

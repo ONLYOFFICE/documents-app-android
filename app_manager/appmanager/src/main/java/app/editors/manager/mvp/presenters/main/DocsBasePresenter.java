@@ -1492,7 +1492,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     protected void onErrorHandle(final ResponseBody responseBody, final int responseCode) {
         // Error values from server
-        Integer errorCode = null;
+        //Integer errorCode = null;
         String errorMessage = null;
         String responseMessage = null;
 
@@ -1508,7 +1508,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             final JSONObject jsonObject = StringUtils.getJsonObject(responseMessage);
             if (jsonObject != null) {
                 try {
-                    errorCode = jsonObject.getInt(KEY_ERROR_CODE);
+                    //errorCode = jsonObject.getInt(KEY_ERROR_CODE);
                     errorMessage = jsonObject.getJSONObject(KEY_ERROR_INFO).getString(KEY_ERROR_INFO_MESSAGE);
                 } catch (JSONException e) {
                     Log.e(TAG, "onErrorHandle()", e);
