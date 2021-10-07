@@ -161,11 +161,11 @@ class OneDriveFileProvider : BaseFileProvider {
     @SuppressLint("MissingPermission")
     override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
         return Observable.fromCallable {
-            body?.title?.let {
-                folderId?.let { it1 ->
+            body?.title?.let { title ->
+                folderId?.let { folderId ->
                     context.getOneDriveServiceProvider().createFile(
-                        it1,
-                        it,
+                        folderId,
+                        title,
                         mapOf(OneDriveUtils.KEY_CONFLICT_BEHAVIOR to OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME)
                     ).blockingGet()
                 }
@@ -241,17 +241,26 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     override fun rename(item: Item?, newName: String?, version: Int?): Observable<Item> {
-        val correctName = if(item is CloudFile) {StringUtils.getEncodedString(newName) + item.fileExst} else { newName }
+        val correctName = if (item is CloudFile) {
+            StringUtils.getEncodedString(newName) + item.fileExst
+        } else {
+            newName
+        }
         val request = correctName?.let { RenameRequest(it) }
-        return Observable.fromCallable{ item?.id?.let { request?.let { it1 ->
-            context.getOneDriveServiceProvider().renameItem(it,
-                it1
-            ).blockingGet()
-        } } }
+        return Observable.fromCallable {
+            item?.id?.let { id ->
+                request?.let { request ->
+                    context.getOneDriveServiceProvider().renameItem(
+                        id,
+                        request
+                    ).blockingGet()
+                }
+            }
+        }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
-                if(response.isSuccessful) {
+                if (response.isSuccessful) {
                     item?.updated = Date()
                     item?.title = newName
                     return@map item

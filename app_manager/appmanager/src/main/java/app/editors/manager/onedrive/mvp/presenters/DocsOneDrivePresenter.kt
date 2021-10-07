@@ -69,14 +69,14 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
                     type = OneDriveUtils.VAL_SHARE_TYPE_READ_WRITE,
                     scope = OneDriveUtils.VAL_SHARE_SCOPE_ANON
                 )
-                (mFileProvider as OneDriveFileProvider).share(it.id, request)?.let { it1 ->
-                    mDisposable.add(it1
+                (mFileProvider as OneDriveFileProvider).share(it.id, request)?.let { extrenalLinkResponse ->
+                    mDisposable.add(extrenalLinkResponse
                         .subscribe( {response ->
                             it.shared = !it.shared
-                            response.link?.webUrl?.let { it2 ->
+                            response.link?.webUrl?.let { link ->
                                 KeyboardUtils.setDataToClipboard(
                                     mContext,
-                                    it2,
+                                    link,
                                     mContext.getString(R.string.share_clipboard_external_link_label)
                                 )
                             }
@@ -161,7 +161,6 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
                         AccountUtils.setAccountData(mContext, account, accData.copy(accessToken = (oneDriveResponse.response as AuthResponse).access_token))
                         AccountUtils.setToken(mContext, account, oneDriveResponse.response.access_token)
                         refresh()
-                        Log.d("ONEDRIVE", "Token was refreshed")
                     }
                     is OneDriveResponse.Error -> {
                         throw oneDriveResponse.error
@@ -279,7 +278,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
             accountDao.getAccountOnline()?.let {
                 file?.title?.let { fileName ->
                     Recent(
-                        idFile = if (file.fileExst?.let { it1 -> StringUtils.isImage(it1) } == true) file.id else file.viewUrl,
+                        idFile = if (file.fileExst?.let { fileExt -> StringUtils.isImage(fileExt) } == true) file.id else file.viewUrl,
                         path = file.webUrl,
                         name = fileName,
                         size = file.pureContentLength,
