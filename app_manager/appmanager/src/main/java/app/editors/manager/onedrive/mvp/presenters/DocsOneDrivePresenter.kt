@@ -3,7 +3,6 @@ package app.editors.manager.onedrive.mvp.presenters
 import android.accounts.Account
 import android.content.ClipData
 import android.net.Uri
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
@@ -160,6 +159,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
                     is OneDriveResponse.Success -> {
                         AccountUtils.setAccountData(mContext, account, accData.copy(accessToken = (oneDriveResponse.response as AuthResponse).access_token))
                         AccountUtils.setToken(mContext, account, oneDriveResponse.response.access_token)
+                        (mFileProvider as OneDriveFileProvider).refreshInstance()
                         refresh()
                     }
                     is OneDriveResponse.Error -> {
