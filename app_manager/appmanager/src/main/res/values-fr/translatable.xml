@@ -20,11 +20,9 @@
     <string name="auth_header_screen_1">Configurez l’application pour générer les codes d’authentification</string>
     <string name="auth_header_screen_2">Lancez l’application Google Authenticator</string>
     <string name="auth_header_screen_3">Ajouter une clé secrète</string>
-    <string name="auth_header_screen_4">Copiez le code</string>
     <string name="auth_info_screen_1">Veuillez installer l’application pour génération des codes d’accès au portail (p.ex. Google Authenticator) pour continuer à travailler avec le portail.</string>
     <string name="auth_info_screen_2">Exécutez l’application et appuyez sur l’icône nouveau compte</string>
     <string name="auth_info_screen_3">Copiez la clé et collez-la dans l’application Google Authenticator</string>
-    <string name="auth_info_screen_4">Copiez le code généré par application Google Authenticator et insérez-le dans le champ de saisie</string>
     <string name="bottom_sheet_cloud_title">Clouds</string>
     <string name="bottom_sheet_portal_title">Portail</string>
     <string name="chooser_activity_not_found">Impossible de trouver l’application pour cette action</string>

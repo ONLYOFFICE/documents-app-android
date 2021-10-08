@@ -369,8 +369,6 @@
     <string name="auth_info_screen_2">Führen Sie die Anwendung aus und tippen Sie auf das Symbol für ein neues Konto</string>
     <string name="auth_header_screen_3">Fügen Sie einen geheimen Schlüssel hinzu</string>
     <string name="auth_info_screen_3">Kopieren Sie den Schlüssel und fügen Sie diesen in Ihre Authentifizierungs-App ein</string>
-    <string name="auth_header_screen_4">Code kopieren</string>
-    <string name="auth_info_screen_4">Kopieren Sie den von der Authentifizierungs-App generierten Code und fügen Sie diesen in das Eingabefeld unten ein</string>
     <string name="rename_file_exist">Eine Datei mit demselben Namen existiert bereits.</string>
     <string name="device_path_file_error">Diese Datei existiert nicht.</string>
     <string name="device_trash_files_restore">Wiederherstellen</string>

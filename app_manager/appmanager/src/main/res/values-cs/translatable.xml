@@ -509,8 +509,6 @@
     <string name="auth_info_screen_2">Spusťte aplikaci a klepněte na ikonu nového účtu</string>
     <string name="auth_header_screen_3">Vložení tajného klíče</string>
     <string name="auth_info_screen_3">Zkopírujte klíč a vložte jej do ověřovací aplikace </string>
-    <string name="auth_header_screen_4">Zkopírování kódu</string>
-    <string name="auth_info_screen_4">Zkopírujte kód z ověřovací aplikace a vložte jej níže</string>
 
     <string name="rename_file_exist">Existuje soubor s totožným názvem.</string>
     <string name="device_path_file_error">Tento soubor neexistuje.</string>

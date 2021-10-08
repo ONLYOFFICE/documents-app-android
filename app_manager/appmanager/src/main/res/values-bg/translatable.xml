@@ -20,11 +20,9 @@
   <string name="auth_header_screen_1">Настройте приложение за генериране на кодове за удостоверяване</string>
   <string name="auth_header_screen_2">Стартирайте приложението Google Authenticator</string>
   <string name="auth_header_screen_3">Добавете секретен ключ</string>
-  <string name="auth_header_screen_4">Копирайте кода</string>
-  <string name="auth_info_screen_1">Моля, задайте приложение за генериране на кодове за достъп до портала (напр. Google Authenticator), за да продължите работата в портала</string>
+    <string name="auth_info_screen_1">Моля, задайте приложение за генериране на кодове за достъп до портала (напр. Google Authenticator), за да продължите работата в портала</string>
   <string name="auth_info_screen_2">Стартирайте приложението и докоснете иконата на новия профил</string>
   <string name="auth_info_screen_3">Копирайте ключа и го поставете в приложението Google Authenticator</string>
-  <string name="auth_info_screen_4">Копирайте кода, генериран от приложението Google Authenticator, и го поставете в полето за въвеждане</string>
   <string name="chooser_activity_not_found">Заявлението за това действие не можа да бъде намерено ...</string>
   <string name="chooser_email_client">Изберете имейл клиент ...</string>
   <string name="chooser_web_browser">Изберете браузър ...</string>
