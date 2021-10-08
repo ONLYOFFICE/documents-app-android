@@ -95,7 +95,7 @@ class MainPagerPresenter : MvpPresenter<MainPagerView>() {
         fileData?.let { data ->
             if (data.scheme?.equals("oodocuments") == true && data.host.equals("openfile")) {
                 val dataModel = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(data.query))
-                if (dataModel.portal?.equals(account.portal) == true && dataModel.email?.equals(account.login) == true) {
+                if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(account.login, ignoreCase = true) == true) {
                     withContext(Dispatchers.Main) {
                         viewState.setFileData(Json.encodeToString(dataModel))
                     }
