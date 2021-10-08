@@ -419,7 +419,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             }
             getViewState().onDialogQuestion(mContext.getString(R.string.dialogs_question_delete), null,
                     TAG_DIALOG_BATCH_DELETE_SELECTED);
-        } else if (mItemClicked != null) {
+        } else if (mItemClicked != null && !isSelectionMode()) {
             if (mItemClicked instanceof CloudFile) {
                 mDisposable.add(
                         ((mFileProvider instanceof WebDavFileProvider) ? ((WebDavFileProvider) mFileProvider).fileInfo(mItemClicked, false) : (mFileProvider.fileInfo(mItemClicked))).subscribe(
