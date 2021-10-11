@@ -410,6 +410,13 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     override val isWebDav: Boolean
         get() = false
 
+    fun showRoot() {
+        presenter.recreateStack()
+        presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+        presenter.updateState()
+        onScrollToPosition(0)
+    }
+
     companion object {
         val TAG: String = DocsOnDeviceFragment::class.java.simpleName
 
