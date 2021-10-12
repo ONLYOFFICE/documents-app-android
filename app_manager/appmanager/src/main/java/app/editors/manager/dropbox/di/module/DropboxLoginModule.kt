@@ -33,7 +33,7 @@ class DropboxLoginModule {
         .addConverterFactory(Json {
             isLenient = true
             ignoreUnknownKeys = true
-        }.asConverterFactory(MediaType.get("application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8")))
+        }.asConverterFactory(MediaType.get("application/json")))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
         .create(DropboxLoginService::class.java)

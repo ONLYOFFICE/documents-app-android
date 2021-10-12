@@ -1,6 +1,6 @@
 package app.editors.manager.dropbox.dropbox.login
 
-import app.editors.manager.dropbox.mvp.models.AccountRequest
+import app.editors.manager.dropbox.mvp.models.request.AccountRequest
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -14,8 +14,9 @@ class DropboxLoginServiceProvider(
     private val dropboxErrorHandler: BehaviorRelay<DropboxResponse.Error>? = null
 ): IDropboxLoginServiceProvider {
 
-    override fun getUserInfo(token: String, request: Map<String, String>): Single<Response<ResponseBody>> {
+    override fun getUserInfo(token: String, request: AccountRequest): Single<DropboxResponse> {
         return dropBoxLoginService.getUserInfo(token, request)
+            .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

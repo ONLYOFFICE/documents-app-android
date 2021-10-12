@@ -15,7 +15,6 @@ import app.editors.manager.dropbox.mvp.presenters.DropboxSignInPresenter
 import app.editors.manager.dropbox.mvp.views.DropboxSignInView
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
 import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.NetworkUtils

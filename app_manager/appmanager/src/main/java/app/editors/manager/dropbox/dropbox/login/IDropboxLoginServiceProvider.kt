@@ -1,9 +1,7 @@
 package app.editors.manager.dropbox.dropbox.login
 
-import app.editors.manager.dropbox.mvp.models.AccountRequest
+import app.editors.manager.dropbox.mvp.models.request.AccountRequest
 import io.reactivex.Single
-import okhttp3.ResponseBody
-import retrofit2.Response
 
 
 sealed class DropboxResponse {
@@ -12,5 +10,5 @@ sealed class DropboxResponse {
 }
 
 interface IDropboxLoginServiceProvider {
-    fun getUserInfo(token: String, request: Map<String, String>): Single<Response<ResponseBody>>
+    fun getUserInfo(token: String, request: AccountRequest): Single<DropboxResponse>
 }

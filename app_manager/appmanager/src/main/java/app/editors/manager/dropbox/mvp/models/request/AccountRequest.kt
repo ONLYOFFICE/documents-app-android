@@ -1,4 +1,4 @@
-package app.editors.manager.dropbox.mvp.models
+package app.editors.manager.dropbox.mvp.models.request
 
 import kotlinx.serialization.Serializable
 
