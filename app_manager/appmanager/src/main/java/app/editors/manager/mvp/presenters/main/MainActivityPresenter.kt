@@ -262,7 +262,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let { account ->
                 Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query)).let { data ->
-                    if (data.portal?.equals(account.portal) == true && data.email?.equals(account.login) == true) {
+                    if (data.portal?.equals(account.portal, ignoreCase = true) == true && data.email?.equals(account.login, ignoreCase = true) == true) {
                         withContext(Dispatchers.Main) {
                             viewState.openFile(account, Json.encodeToString(data))
                         }

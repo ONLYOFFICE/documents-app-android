@@ -43,6 +43,7 @@ import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.managers.utils.FileUtils
 import org.json.JSONObject
+import java.net.URL
 import java.util.*
 import javax.inject.Inject
 
@@ -284,6 +285,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        NetworkUtils.clearCookies(requireContext())
         webView.removeJavascriptInterface(INTERFACE)
         webView.setDownloadListener(null)
         webView.webChromeClient = null
@@ -382,6 +384,13 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     }
 
     private fun loadWebView(url: String) {
+        CookieManager.getInstance().apply {
+            if (url.contains(ApiContract.PERSONAL_SUBDOMAIN)) {
+                setAcceptCookie(true)
+                setCookie(URL(url).protocol + "://" + URL(url).host, "asc_auth_key=$token")
+                setAcceptThirdPartyCookies(webView,true)
+            }
+        }
         webView.loadUrl(url, headers)
         progressBar.visibility = View.VISIBLE
     }
@@ -419,7 +428,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     private inner class WebViewCallbacks : WebViewClient() {
 
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-            if (request.url.toString().contains("/auth.aspx")) {
+            if (request.url.toString().contains("/auth.aspx") || request.url.query?.contains("folder") == true) {
                 requireActivity().finish()
                 show(requireContext())
             } else if (!StringUtils.equals(uri?.host, request.url.host) && !StringUtils.equals(

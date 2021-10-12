@@ -75,7 +75,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
 
     private fun render(cloudAccount: CloudAccount, jsonAccount: String) {
         when {
-            networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
+            networkSetting.getPortal().contains(ApiContract.PERSONAL_SUBDOMAIN) -> {
                 viewState.onRender(
                     MainPagerState.PersonalState(
                         jsonAccount,
@@ -141,7 +141,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         fileData?.let { data ->
             if (data.scheme?.equals("oodocuments") == true && data.host.equals("openfile")) {
                 val dataModel = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(data.query))
-                if (dataModel.portal?.equals(account.portal) == true && dataModel.email?.equals(account.login) == true) {
+                if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(account.login, ignoreCase = true) == true) {
                     viewState.setFileData(Json.encodeToString(dataModel))
                 } else {
                     viewState.onError(R.string.error_recent_enter_account)

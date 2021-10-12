@@ -234,9 +234,11 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     fun hideDialog() {
-        mCommonDialog?.view?.post {
-            if (mCommonDialog?.isAdded == true) {
-                mCommonDialog?.dismiss()
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+            mCommonDialog?.view?.post {
+                if (mCommonDialog?.isAdded == true) {
+                    mCommonDialog?.dismiss()
+                }
             }
         }
     }

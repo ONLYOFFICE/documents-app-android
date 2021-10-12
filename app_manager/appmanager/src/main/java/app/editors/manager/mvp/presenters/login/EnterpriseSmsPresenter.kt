@@ -53,9 +53,16 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
     }
 
     fun resendSms(request: String) {
-        val service = App.getApp().appComponent.loginService
-        val requestSignIn = Json.decodeFromString<RequestNumber>(request)
-        disposable = service.sendSms(requestSignIn)
+        val service = App.getApp().loginComponent.loginService
+        val requestNumber = Json.decodeFromString<RequestNumber>(request)
+        disposable = service.sendSms(
+            RequestSignIn(
+                userName = requestNumber.userName,
+                password = requestNumber.password,
+                accessToken = requestNumber.accessToken,
+                provider = requestNumber.provider
+            )
+        )
             .subscribe({ response ->
                 if (response is LoginResponse.Success) {
                     viewState.onResendSms()
