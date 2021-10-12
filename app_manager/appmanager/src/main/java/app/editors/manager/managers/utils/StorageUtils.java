@@ -29,7 +29,7 @@ public class StorageUtils {
 
     public static final class DropBox {
         public static final String AUTH_URL = "https://www.dropbox.com/oauth2/authorize?";
-        public static final String VALUE_RESPONSE_TYPE = "code";
+        public static final String VALUE_RESPONSE_TYPE = "token";
     }
 
     public static final class Google {

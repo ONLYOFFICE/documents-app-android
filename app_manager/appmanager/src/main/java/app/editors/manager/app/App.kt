@@ -13,6 +13,7 @@ import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
+import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
 import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
 import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
@@ -185,6 +186,12 @@ val Context.oneDriveLoginService: IOneDriveLoginServiceProvider
     get() = when(this) {
         is App -> this.appComponent.oneDriveLoginService
         else -> applicationContext.appComponent.oneDriveLoginService
+    }
+
+val Context.dropboxLoginService: IDropboxLoginServiceProvider
+    get() = when(this) {
+        is App -> this.appComponent.dropboxLoginService
+        else -> applicationContext.appComponent.dropboxLoginService
     }
 
 fun Context.api(): Api {
