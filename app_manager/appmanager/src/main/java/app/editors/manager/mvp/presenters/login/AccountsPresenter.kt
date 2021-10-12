@@ -8,6 +8,7 @@ import app.documents.core.network.models.login.response.ResponseCapabilities
 import app.documents.core.network.models.login.response.ResponseSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
 import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.views.login.AccountsView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -126,7 +127,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
             context.getString(R.string.account_type)))?.let { token ->
             if (token.isNotEmpty()) {
                 setNetworkSettings()
-                disposable = App.getApp().loginComponent.loginService.getUserInfo(token)
+                disposable = context.loginService.getUserInfo(token)
                     .doOnSubscribe { viewState.showWaitingDialog() }
                     .subscribe({ response ->
                         when (response) {
@@ -143,7 +144,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
             }
         } ?: run {
             networkSettings.setBaseUrl(clickedAccount.portal ?: "")
-            disposable = App.getApp().loginComponent.loginService.capabilities()
+            disposable = context.loginService.capabilities()
                 .doOnSubscribe { viewState.showWaitingDialog() }
                 .subscribe({ response ->
                     when (response) {

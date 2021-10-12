@@ -59,8 +59,8 @@ android {
     defaultConfig {
         minSdkVersion(AppDependency.MIN_SDK_VERSION)
         targetSdkVersion(AppDependency.TARGET_SDK_VERSION)
-        versionCode = 299
-        versionName = "5.2.0"
+        versionCode = 307
+        versionName = "5.3.0"
         multiDexEnabled = true
         applicationId("com.onlyoffice.documents")
         manifestPlaceholders["permissionId"] = APP_ID_BETA
