@@ -13,9 +13,9 @@ plugins {
 }
 
 // Onlyoffice
-val APP_ID = "com.onlyoffice.documents"
-val APP_ID_BETA = APP_ID + ".beta"
-val APP_NAME = "onlyoffice-manager"
+val appId = "com.onlyoffice.documents"
+val appIdBeta = "$appId.beta"
+val appName = "onlyoffice-manager"
 
 /*
 * Create a variable called keystorePropertiesFile, and initialize it to your
@@ -53,25 +53,29 @@ fun getKeystore(filePath: String): Properties {
 
 android {
 
-    buildToolsVersion(AppDependency.BUILD_TOOLS_VERSION)
-    compileSdkVersion(AppDependency.COMPILE_SDK_VERSION)
+    buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
+    compileSdk = AppDependency.COMPILE_SDK_VERSION
 
     defaultConfig {
-        minSdkVersion(AppDependency.MIN_SDK_VERSION)
-        targetSdkVersion(AppDependency.TARGET_SDK_VERSION)
+        manifestPlaceholders += mapOf()
+        minSdk = AppDependency.MIN_SDK_VERSION
+        targetSdk = AppDependency.TARGET_SDK_VERSION
         versionCode = 307
         versionName = "5.3.0"
         multiDexEnabled = true
-        applicationId("com.onlyoffice.documents")
-        manifestPlaceholders["permissionId"] = APP_ID_BETA
+        applicationId = "com.onlyoffice.documents"
+        manifestPlaceholders["permissionId"] = appIdBeta
 
         buildConfigField("boolean", "IS_BETA", "false")
-        buildConfigField("String", "RELEASE_ID", "\"" + APP_ID + "\"")
-        buildConfigField("String", "BETA_ID", "\"" + APP_ID_BETA + "\"")
+        buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
+        buildConfigField("String", "BETA_ID", "\"" + appIdBeta + "\"")
 
 
         ndk {
             abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))  //comment to armv7
+        }
+        vectorDrawables {
+            useSupportLibrary = true
         }
     }
 
@@ -95,14 +99,14 @@ android {
     }
     buildTypes {
 
-        getByName("release") {
+        release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
 
             signingConfig = signingConfigs.getByName("onlyoffice")
         }
 
-        getByName("debug") {
+        debug {
             isMinifyEnabled = false
         }
 
@@ -116,7 +120,7 @@ android {
                     val buildType = if (buildType.isDebuggable) "debug" else "release"
                     val buildCode = "_build-${output.versionCode}"
 
-                    output.outputFileName = "${APP_NAME}-${versionName}-" +
+                    output.outputFileName = "${appName}-${versionName}-" +
                             "${flavorName.toUpperCase()}-" +
                             "${buildAbi}-${buildType}${buildCode}${timeMark}.apk"
 
@@ -132,13 +136,14 @@ android {
     }
 
 
-    lintOptions {
+    lint {
         isCheckReleaseBuilds = false
         isAbortOnError = false
     }
 
     buildFeatures {
         viewBinding = true
+        compose = true
     }
 
     compileOptions {
@@ -163,21 +168,27 @@ android {
     }
 
     packagingOptions {
-        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_DJVUFILE")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_DOCTRENDERER")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_GRAPHICS")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_HTMLFILE")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_HTMLRENDERER")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_KERNEL")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_PDFREADER")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_PDFWRITER")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_UNICODECONVERTER")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_X2T")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_XPSFILE")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_FB2FILE")}.so")
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB_EPUBFILE")}.so")
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DJVUFILE")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DOCTRENDERER")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_GRAPHICS")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_HTMLFILE")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_HTMLRENDERER")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_PDFREADER")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_PDFWRITER")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_UNICODECONVERTER")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_X2T")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_XPSFILE")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_FB2FILE")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_EPUBFILE")}.so")
+        }
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = AndroidX.composeVersion
     }
 }
 
@@ -252,12 +263,17 @@ dependencies {
     //TODO add to base module
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
 
     implementation("androidx.fragment:fragment-ktx:1.3.6")
 
-    //TODO feature remove
-    implementation("com.jakewharton:butterknife:10.2.1")
-    kapt("com.jakewharton:butterknife-compiler:10.2.1")
+    //Compose
+    implementation("androidx.compose.ui:ui:${AndroidX.composeVersion}")
+    implementation("androidx.compose.material:material:${AndroidX.composeVersion}")
+    implementation("androidx.compose.ui:ui-tooling-preview:${AndroidX.composeVersion}")
+    debugImplementation("androidx.compose.ui:ui-tooling:${AndroidX.composeVersion}")
+    implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
+    implementation("androidx.activity:activity-compose:1.3.1")
 
 }
 

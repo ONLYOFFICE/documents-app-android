@@ -93,7 +93,7 @@ class MediaListFragment : ListFragment(), BaseAdapter.OnItemClickListener {
             toolbarView = layoutInflater.inflate(R.layout.include_media_header_list, null)
             toolbarViewHolder = ToolbarViewHolder(toolbarView)
             mediaActivity?.setToolbarView(toolbarView)
-            columnsCount = resources.getInteger(R.integer.screen_media_grid_columns)
+            columnsCount = resources.getInteger(lib.toolkit.base.R.integer.screen_media_grid_columns)
             mediaAdapter = MediaAdapter(getCellSize(columnsCount)).apply {
                 setOnItemClickListener(this@MediaListFragment)
                 setItems(mediaExplorer?.files!!)

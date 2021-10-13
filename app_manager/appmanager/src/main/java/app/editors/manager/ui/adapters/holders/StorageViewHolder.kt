@@ -23,7 +23,7 @@ class StorageViewHolder(view: View, clickListener: BaseAdapter.OnItemClickListen
 
     fun bind(id: String) {
         with(viewBinding) {
-            val padding = context.resources.getDimension(R.dimen.image_padding_icon).toInt()
+            val padding = context.resources.getDimension(lib.toolkit.base.R.dimen.image_padding_icon).toInt()
             storageItemTitle.gravity = Gravity.START or Gravity.CENTER_VERTICAL
             storageItemImage.setPadding(0, 0, 0, 0)
             storageItemImage.alpha = 1.0f
@@ -62,13 +62,13 @@ class StorageViewHolder(view: View, clickListener: BaseAdapter.OnItemClickListen
                 }
                 ApiContract.Storage.WEBDAV -> {
                     storageItemImage.setImageResource(R.drawable.ic_storage_webdav)
-                    storageItemImage.alpha = UiUtils.getFloatResource(context, R.dimen.alpha_medium)
+                    storageItemImage.alpha = UiUtils.getFloatResource(context, lib.toolkit.base.R.dimen.alpha_medium)
                     storageItemImage.setPadding(padding, padding, padding, padding)
                     storageItemTitle.setText(R.string.storage_select_web_dav)
                 }
                 else -> {
                     storageItemImage.setImageResource(R.drawable.ic_storage_webdav)
-                    storageItemImage.alpha = UiUtils.getFloatResource(context, R.dimen.alpha_medium                    )
+                    storageItemImage.alpha = UiUtils.getFloatResource(context, lib.toolkit.base.R.dimen.alpha_medium                    )
                     storageItemImage.setPadding(padding, padding, padding, padding)
                     storageItemTitle.text = id
                 }

@@ -263,12 +263,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-        <provider
-            android:name=".managers.providers.AccountProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="true"
-            android:readPermission="${applicationId}.permission.READ"
-            android:writePermission="${applicationId}.permission.WRITE" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

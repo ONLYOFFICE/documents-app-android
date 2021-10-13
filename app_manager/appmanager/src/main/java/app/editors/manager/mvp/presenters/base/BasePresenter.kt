@@ -7,7 +7,6 @@ import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.managers.exceptions.NoConnectivityException
-import app.editors.manager.managers.tools.AccountManagerTool
 import app.editors.manager.managers.tools.AccountSqlTool
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils

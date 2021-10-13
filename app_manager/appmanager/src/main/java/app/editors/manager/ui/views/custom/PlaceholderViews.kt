@@ -80,10 +80,10 @@ class PlaceholderViews(val view: View?) {
             Type.LOAD -> setTitle(R.string.placeholder_loading_files)
             Type.MEDIA -> {
                 setImage(R.drawable.ic_media_error)
-                setImageTint(R.color.colorLightWhite)
+                setImageTint(lib.toolkit.base.R.color.colorLightWhite)
                 setTitle(R.string.placeholder_media_error)
-                setTitleColor(R.color.colorLightWhite)
-                setRetryTint(R.color.colorSecondary)
+                setTitleColor(lib.toolkit.base.R.color.colorLightWhite)
+                setRetryTint(lib.toolkit.base.R.color.colorSecondary)
             }
         }
         setVisibility(true)

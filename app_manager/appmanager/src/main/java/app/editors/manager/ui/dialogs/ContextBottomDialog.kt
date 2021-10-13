@@ -84,7 +84,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextHeaderTitleText.text = state.title
             it.listExplorerContextHeaderInfoText.text = state.info
             it.listExplorerContextHeaderImage.setImageResource(state.iconResId)
-            UiUtils.setImageTint(it.listExplorerContextHeaderImage, R.color.colorOnSurface)
+            UiUtils.setImageTint(it.listExplorerContextHeaderImage, lib.toolkit.base.R.color.colorOnSurface)
             if (!state.isFolder) {
                 ManagerUiUtils.setFileIcon(
                     it.listExplorerContextHeaderImage, StringUtils.getExtensionFromPath(state.title))

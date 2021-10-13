@@ -14,6 +14,7 @@ object Moxy {
 }
 
 object AndroidX {
+    const val composeVersion = "1.0.1"
     private const val androidxVersion = "1.3.1"
     private const val recyclerViewVersion = "1.2.0"
     private const val recyclerViewSelectionVersion = "1.1.0"

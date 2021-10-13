@@ -52,7 +52,7 @@ class AccountContextDialog : BaseBottomDialog() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, R.style.ContextMenuDialog)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
         arguments?.containsKey(KEY_ACCOUNT)?.let {
             arguments?.getString(KEY_ACCOUNT)?.let { acc ->
                 account = Json.decodeFromString(acc)
@@ -155,9 +155,9 @@ class AccountContextDialog : BaseBottomDialog() {
         viewBinding?.removeItem?.let {
             it.itemImage.setImageDrawable(ContextCompat
                 .getDrawable(requireContext(), R.drawable.ic_trash))
-            setImageTint(it.itemImage, R.color.colorLightRed)
+            setImageTint(it.itemImage, lib.toolkit.base.R.color.colorLightRed)
             it.itemText.text = getString(R.string.dialog_remove_account_title)
-            it.itemText.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorLightRed))
+            it.itemText.setTextColor(ContextCompat.getColor(requireContext(), lib.toolkit.base.R.color.colorLightRed))
             it.itemLayout.setOnClickListener {
                 mClickListener?.onRemoveClick(account)
                 dismiss()
@@ -169,9 +169,9 @@ class AccountContextDialog : BaseBottomDialog() {
     private fun setState() {
         account?.let { account ->
             val password = AccountUtils.getPassword(requireContext(),
-                Account(account.getAccountName(), requireContext().getString(R.string.account_type)))
+                Account(account.getAccountName(), requireContext().getString(lib.toolkit.base.R.string.account_type)))
             val token = AccountUtils.getToken(requireContext(),
-                Account(account.getAccountName(), requireContext().getString(R.string.account_type)))
+                Account(account.getAccountName(), requireContext().getString(lib.toolkit.base.R.string.account_type)))
             viewBinding?.let {
                 if (account.isWebDav) {
                     if (account.isOnline || password?.isNotEmpty() == true) {

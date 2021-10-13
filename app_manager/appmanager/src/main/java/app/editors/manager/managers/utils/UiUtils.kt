@@ -64,31 +64,31 @@ object ManagerUiUtils {
     fun setFileIcon(view: ImageView, ext: String) {
         val extension = StringUtils.getExtension(ext)
         @DrawableRes var resId = R.drawable.ic_type_file
-        @ColorRes var colorId = R.color.colorGrey
+        @ColorRes var colorId = lib.toolkit.base.R.color.colorGrey
         when (extension) {
             StringUtils.Extension.DOC -> {
                 resId = R.drawable.ic_type_text_document
-                colorId = R.color.colorDocTint
+                colorId = lib.toolkit.base.R.color.colorDocTint
             }
             StringUtils.Extension.SHEET -> {
                 resId = R.drawable.ic_type_spreadsheet
-                colorId = R.color.colorSheetTint
+                colorId = lib.toolkit.base.R.color.colorSheetTint
             }
             StringUtils.Extension.PRESENTATION -> {
                 resId = R.drawable.ic_type_presentation
-                colorId = R.color.colorPresentationTint
+                colorId = lib.toolkit.base.R.color.colorPresentationTint
             }
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF -> {
                 resId = R.drawable.ic_type_image
-                colorId = R.color.colorPicTint
+                colorId = lib.toolkit.base.R.color.colorPicTint
             }
             StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.PDF -> {
                 resId = R.drawable.ic_type_pdf
-                colorId = R.color.colorLightRed
+                colorId = lib.toolkit.base.R.color.colorLightRed
             }
             StringUtils.Extension.VIDEO_SUPPORT -> {
                 resId = R.drawable.ic_type_video
-                colorId = R.color.colorBlack
+                colorId = lib.toolkit.base.R.color.colorBlack
             }
             StringUtils.Extension.VIDEO -> {
                 setAlphaIcon(view, R.drawable.ic_type_video)
@@ -110,7 +110,7 @@ object ManagerUiUtils {
 
     private fun setAlphaIcon(view: ImageView, @DrawableRes resId: Int) {
         view.setImageResource(resId)
-        view.alpha = UiUtils.getFloatResource(view.context, R.dimen.alpha_medium)
+        view.alpha = UiUtils.getFloatResource(view.context, lib.toolkit.base.R.dimen.alpha_medium)
         view.clearColorFilter()
     }
 
@@ -131,7 +131,7 @@ object ManagerUiUtils {
                     resId = R.drawable.ic_storage_webdav
                     view.setImageResource(resId)
                     view.alpha =
-                        UiUtils.getFloatResource(view.context, R.dimen.alpha_medium)
+                        UiUtils.getFloatResource(view.context, lib.toolkit.base.R.dimen.alpha_medium)
                     return
                 }
             }
@@ -142,7 +142,7 @@ object ManagerUiUtils {
         }
         view.setImageResource(resId)
         view.alpha =
-            UiUtils.getFloatResource(view.context, R.dimen.alpha_medium)
+            UiUtils.getFloatResource(view.context, lib.toolkit.base.R.dimen.alpha_medium)
     }
 
     fun setAccessIcon(imageView: ImageView, accessCode: Int) {
