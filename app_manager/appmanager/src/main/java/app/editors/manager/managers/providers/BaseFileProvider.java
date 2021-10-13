@@ -26,6 +26,8 @@ public interface BaseFileProvider {
 
     Observable<CloudFile> createFile(String folderId, RequestCreate body);
 
+    Observable<String> search(String query);
+
     Observable<CloudFolder> createFolder(String folderId, RequestCreate body);
 
     Observable<Item> rename(Item item, String newName, @Nullable Integer version);

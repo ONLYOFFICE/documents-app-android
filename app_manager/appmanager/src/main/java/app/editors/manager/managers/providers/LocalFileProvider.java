@@ -88,6 +88,11 @@ public class LocalFileProvider implements BaseFileProvider {
     }
 
     @Override
+    public Observable<String> search(String query) {
+        return null;
+    }
+
+    @Override
     public Observable<CloudFolder> createFolder(String folderId, RequestCreate body) {
         final File parentFile = new File(folderId);
         final String name = body.getTitle();

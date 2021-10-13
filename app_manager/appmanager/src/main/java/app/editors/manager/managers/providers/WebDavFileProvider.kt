@@ -87,6 +87,10 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
         }
     }
 
+    override fun search(query: String?): Observable<String> {
+        TODO("Not yet implemented")
+    }
+
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
         return Observable.fromCallable { api.createFolder(folderId + body.title).execute() }
             .subscribeOn(Schedulers.io())

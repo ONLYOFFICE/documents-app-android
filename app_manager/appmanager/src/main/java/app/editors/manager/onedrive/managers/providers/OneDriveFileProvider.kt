@@ -212,6 +212,10 @@ class OneDriveFileProvider : BaseFileProvider {
             }
     }
 
+    override fun search(query: String?): Observable<String> {
+        TODO("Not yet implemented")
+    }
+
     override fun createFolder(folderId: String?, body: RequestCreate?): Observable<CloudFolder>? {
         val request = CreateFolderRequest(
             name = body?.title!!,
