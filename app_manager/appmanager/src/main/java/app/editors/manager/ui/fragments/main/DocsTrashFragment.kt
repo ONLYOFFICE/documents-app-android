@@ -89,7 +89,7 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
     private fun showMenu() {
         if (cloudPresenter.isSelectionMode) {
             deleteItem?.isVisible = true
-            moveItem?.isVisible = true
+            restoreItem?.isVisible = true
             copyItem?.isVisible = false
         } else {
             setActionBarTitle("")
@@ -116,7 +116,7 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
                 getString(R.string.dialogs_common_cancel_button),
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
-            ContextBottomDialog.Buttons.MOVE -> cloudPresenter.moveContext()
+            ContextBottomDialog.Buttons.RESTORE -> cloudPresenter.moveContext()
             else -> { }
         }
         contextBottomDialog?.dismiss()

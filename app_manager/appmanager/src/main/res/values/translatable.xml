@@ -440,6 +440,7 @@
     <string name="operation_delete_multiple">. One or more files haven`t been deleted due to open on the portal</string>
     <string name="operation_panel_move_button">Move here</string>
     <string name="operation_panel_copy_button">Copy here</string>
+    <string name="operation_panel_restore_button">Restore here</string>
     <string name="operation_panel_cancel_button">Cancel</string>
     <string name="operation_empty_lists_data">Select items for operation</string>
     <string name="operation_error_move_to_same">Can not be moved to the same folder</string>
@@ -453,9 +454,9 @@
     <!-- ======================================================================================= -->
     <!-- Trash -->
     <string name="trash_dialog_empty_title">Empty trash?</string>
-    <string name="trash_snackbar_move_text">You can move files from the TRASH</string>
-    <string name="trash_snackbar_move_button">MOVE</string>
-    <string name="trash_popup_move">Move to</string>
+    <string name="trash_snackbar_move_text">You can restore files from the TRASH</string>
+    <string name="trash_snackbar_move_button">RESTORE</string>
+    <string name="trash_popup_move">Restore to</string>
     <string name="trash_popup_delete">Delete forever</string>
 
     <!-- ======================================================================================= -->

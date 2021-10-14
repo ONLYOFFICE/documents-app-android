@@ -12,6 +12,7 @@ import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
 import app.editors.manager.ui.activities.main.OperationActivity.Companion.showCopy
 import app.editors.manager.ui.activities.main.OperationActivity.Companion.showMove
+import app.editors.manager.ui.activities.main.OperationActivity.Companion.showRestore
 import app.editors.manager.ui.activities.main.ShareActivity.Companion.show
 import app.editors.manager.ui.activities.main.StorageActivity.Companion.show
 import app.editors.manager.ui.activities.main.WebViewerActivity.Companion.show
@@ -80,6 +81,10 @@ abstract class BaseAppFragment : BaseFragment() {
 
     protected fun showOperationCopyActivity(explorer: Explorer) {
         showCopy(this, explorer)
+    }
+
+    protected fun showOperationRestoreActivity(explorer: Explorer) {
+        showRestore(this, explorer)
     }
 
     protected fun showViewerActivity(file: CloudFile?) {
