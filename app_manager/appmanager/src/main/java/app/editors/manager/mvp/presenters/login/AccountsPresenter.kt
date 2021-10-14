@@ -124,7 +124,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
 
     private fun login() {
         AccountUtils.getToken(context, Account(clickedAccount.getAccountName(),
-            context.getString(R.string.account_type)))?.let { token ->
+            context.getString(lib.toolkit.base.R.string.account_type)))?.let { token ->
             if (token.isNotEmpty()) {
                 setNetworkSettings()
                 disposable = context.loginService.getUserInfo(token)
