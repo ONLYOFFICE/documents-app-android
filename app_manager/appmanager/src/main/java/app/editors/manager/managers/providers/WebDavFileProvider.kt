@@ -479,7 +479,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
                 folder.updated = bean.lastModifiedDate
                 folder.etag = bean.etag
                 if (filteringValue != null) {
-                    if (folder.title.lowercase().startsWith(filteringValue)) {
+                    if (folder.title.contains(filteringValue, true)) {
                         folders.add(folder)
                     }
                 } else {
@@ -495,7 +495,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
                 file.created = bean.lastModifiedDate
                 file.updated = bean.lastModifiedDate
                 if (filteringValue != null) {
-                    if (file.title.lowercase().startsWith(filteringValue)) {
+                    if (file.title.contains(filteringValue, true)) {
                         files.add(file)
                     }
                 } else {
