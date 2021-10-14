@@ -1197,18 +1197,22 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     public void selectAll() {
-        getViewState().onStateUpdateSelection(true);
         getViewState().onItemsSelection(String.valueOf(mModelExplorerStack.setSelection(true)));
+        getViewState().onStateUpdateSelection(true);
     }
 
     public void deselectAll() {
-        getViewState().onStateUpdateSelection(true);
         getViewState().onItemsSelection(String.valueOf(mModelExplorerStack.setSelection(false)));
+        getViewState().onStateUpdateSelection(true);
         getBackStack();
     }
 
     public boolean isSelectionMode() {
         return mIsSelectionMode;
+    }
+
+    public boolean isSelectedAll() {
+        return mModelExplorerStack.getCountSelectedItems() == mModelExplorerStack.getTotalCount();
     }
 
     public void setFoldersMode(boolean foldersMode) {

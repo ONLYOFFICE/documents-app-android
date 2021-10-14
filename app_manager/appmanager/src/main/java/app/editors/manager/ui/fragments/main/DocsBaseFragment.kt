@@ -574,6 +574,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
             menu?.let {
                 onCreateOptionsMenu(it, requireActivity().menuInflater)
+                it.findItem(R.id.toolbar_selection_select_all)?.isVisible = !presenter.isSelectedAll
             }
         }
     }
