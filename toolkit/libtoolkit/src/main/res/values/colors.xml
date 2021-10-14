@@ -12,6 +12,7 @@
     <color name="colorOnError">@color/colorBlack</color>
     <color name="colorSurface">@color/colorWhite</color>
     <color name="colorOnSurface">@color/colorBlack</color>
+    <color name="colorOnSurfaceSecond">@color/colorGrey</color>
     <color name="colorBackground">@color/colorWhite</color>
     <color name="colorOnBackground">@color/colorBlack</color>
     <color name="colorBackgroundSecond">#F4F4F4</color>
@@ -22,6 +23,7 @@
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>
 
+    <color name="colorAppBar">@color/colorWhite</color>
     <color name="colorBottomBar">#0F4071</color>
 
     <color name="colorDark">#de000000</color>
