@@ -1,11 +1,12 @@
 package app.editors.manager.managers.providers;
 
 import android.net.Uri;
-
+import android.os.Build;
 import androidx.annotation.Nullable;
-
-
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -255,7 +256,7 @@ public class LocalFileProvider implements BaseFileProvider {
         return explorer;
     }
 
-    private Observable<Explorer> getFilterExplorer(Explorer explorer, String value) {
+    private Observable<Explorer> getFilterExplorer(Explorer explorer, String value) throws IOException {
         if(!value.isEmpty()) {
             return Observable.just(search(value, explorer.getCurrent().getId()));
         } else {
@@ -263,23 +264,33 @@ public class LocalFileProvider implements BaseFileProvider {
         }
     }
 
-    private Explorer search(String value, String id){
-        File root = new File(id);
-        File[] listFiles = root.listFiles();
-
+    private Explorer search(String value, String id) throws IOException {
         List<File> files = new ArrayList();
         Explorer resultExplorer = new Explorer();
-        Explorer tempExplorer = new Explorer();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Files.walk(Paths.get(id))
+                    .filter(Files::isReadable)
+                    .forEach(foundFile -> {
+                        if (foundFile.toFile().getName().toLowerCase().contains(value.toLowerCase())) {
+                            files.add(foundFile.toFile());
+                        }
+                    });
+            resultExplorer = getExplorer(files, new File(id));
+        } else {
+            Explorer tempExplorer = new Explorer();
+            File root = new File(id);
+            File[] listFiles = root.listFiles();
 
-        for(File item: listFiles) {
-            if (item.getName().toLowerCase().contains(value.toLowerCase())) {
-                files.add(item);
-                resultExplorer = getExplorer(files, new File(id));
+            for(File item: listFiles) {
+                if (item.getName().toLowerCase().contains(value.toLowerCase())) {
+                    files.add(item);
+                    tempExplorer = getExplorer(files, new File(id));
+                }
+                if (item.isDirectory()) {
+                    tempExplorer = search(value, item.getAbsolutePath());
+                }
+                resultExplorer.add(tempExplorer);
             }
-            if (item.isDirectory()) {
-                tempExplorer = search(value, item.getAbsolutePath());
-            }
-            resultExplorer.add(tempExplorer);
         }
         return resultExplorer;
     }
