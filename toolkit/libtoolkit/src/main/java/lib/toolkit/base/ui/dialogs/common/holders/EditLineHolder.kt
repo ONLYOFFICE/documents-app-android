@@ -165,6 +165,11 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
                 mEditInputLayout.error = mErrorValue + StringUtils.DIALOG_FORBIDDEN_SYMBOLS
                 mAcceptView.isEnabled = mResultString.length > 1
                 ""
+            } else if (StringUtils.getAllowedName(mResultString)) {
+                mErrorValue = dialog.getString(R.string.dialogs_edit_forbidden_name)
+                mEditInputLayout.error = mErrorValue
+                mAcceptView.isEnabled = false
+                null
             } else {
                 mErrorValue = null
                 mEditInputLayout.isErrorEnabled = false

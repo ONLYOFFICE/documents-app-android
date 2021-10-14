@@ -425,9 +425,6 @@
     <!-- ======================================================================================= -->
     <!-- Trash -->
     <string name="trash_dialog_empty_title">Vysypat koš?</string>
-    <string name="trash_snackbar_move_text">Soubory z KOŠE lze přesunout</string>
-    <string name="trash_snackbar_move_button">PŘESUNOUT</string>
-    <string name="trash_popup_move">Přesunout do</string>
     <string name="trash_popup_delete">Trvale odstranit</string>
 
     <!-- ======================================================================================= -->

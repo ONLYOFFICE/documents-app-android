@@ -136,7 +136,7 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
 
     private fun setMessage(message: String?, isError: Boolean) {
         viewBinding?.loginPersonalPortalEmailLayout?.apply {
-            setErrorTextAppearance(if (isError) R.style.TextInputErrorRed else R.style.TextInputErrorGrey)
+            setErrorTextAppearance(if (isError) lib.toolkit.base.R.style.TextInputErrorRed else lib.toolkit.base.R.style.TextInputErrorGrey)
             error = message
         }
     }
@@ -148,7 +148,7 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
     private inner class FieldsWatcher : BaseWatcher() {
         override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
             viewBinding?.loginPersonalPortalEmailLayout?.apply {
-                setErrorTextAppearance(R.style.TextInputErrorGrey)
+                setErrorTextAppearance(lib.toolkit.base.R.style.TextInputErrorGrey)
                 error = getString(R.string.login_personal_signup_edit_info)
             }
             val email = viewBinding?.loginPersonalPortalEmailEdit?.text.toString()

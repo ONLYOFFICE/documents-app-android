@@ -56,6 +56,7 @@ object ApiContract {
 
     object Errors {
         const val AUTH = "User authentication failed"
+        const val AUTH_TOO_MANY_ATTEMPTS = "Login Fail. Too many attempts"
         const val PORTAL_EXIST = "Portal already exist"
         const val SMS_TO_MANY = "You have sent too many text messages"
         const val DISK_SPACE_QUOTA = "Disk space quota exceeded"

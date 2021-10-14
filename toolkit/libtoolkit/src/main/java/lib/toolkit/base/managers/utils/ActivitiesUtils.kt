@@ -17,12 +17,13 @@ import androidx.fragment.app.Fragment
 object ActivitiesUtils {
 
     @JvmField
-    val TAG = ActivitiesUtils::class.java.simpleName!!
+    val TAG: String = ActivitiesUtils::class.java.simpleName
+
+    const val IMAGE_TYPE = "image/*"
 
     private const val PLAY_MARKET = "market://details?id="
     private const val PLAY_STORE = "https://play.google.com/store/apps/details?id="
     private const val PICKER_NO_FILTER = "*/*"
-    private const val PICKER_IMAGE_FILTER = "image/*"
     private const val PICKER_PNG_FILTER = "image/png"
 
     @JvmStatic
@@ -95,7 +96,7 @@ object ActivitiesUtils {
     fun showImagesPicker(fragment: Fragment, title: String?, requestCode: Int) {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            type = PICKER_IMAGE_FILTER
+            type = IMAGE_TYPE
         }
 
         fragment.startActivityForResult(Intent.createChooser(intent, title), requestCode)

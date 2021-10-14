@@ -1,9 +1,7 @@
 package app.editors.manager.managers.tools;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
 
@@ -24,14 +22,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import app.editors.manager.BuildConfig;
 import app.editors.manager.app.App;
-import app.editors.manager.managers.providers.AccountProvider;
-import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.mvp.models.account.AccountsSqlData;
 import app.editors.manager.mvp.models.account.Recent;
 import app.editors.manager.mvp.models.account.Storage;
-import io.reactivex.Single;
 
 @Deprecated
 public class AccountSqlTool extends OrmLiteSqliteOpenHelper {
@@ -357,41 +351,6 @@ public class AccountSqlTool extends OrmLiteSqliteOpenHelper {
         } catch (SQLException e) {
             return 0;
         }
-    }
-
-    public Single<Integer> updateWithResolver() {
-        return Single.create(emitter -> {
-            Cursor cursor = null;
-            int count = 0;
-            try {
-                final Uri uri = BuildConfig.IS_BETA ? AccountProvider.CONTENT_URI_RELEASE : AccountProvider.CONTENT_URI_BETA;
-                cursor = mContext.getContentResolver().query(uri, null, null, null, null);
-                if (cursor != null && cursor.getCount() > 0) {
-                    while (cursor.moveToNext()) {
-                        final String portal = cursor.getString(cursor.getColumnIndex(AccountsSqlData.FIELD_NAME_PORTAL));
-                        final String login = cursor.getString(cursor.getColumnIndex(AccountsSqlData.FIELD_NAME_LOGIN));
-                        final String scheme = cursor.getString(cursor.getColumnIndex(AccountsSqlData.FIELD_NAME_SCHEME));
-                        final String name = cursor.getString(cursor.getColumnIndex(AccountsSqlData.FIELD_NAME_NAME));
-                        final String token = cursor.getString(cursor.getColumnIndex(AccountsSqlData.FIELD_NAME_TOKEN));
-                        final String provider = cursor.getString(cursor.getColumnIndex(AccountsSqlData.FIELD_NAME_PROVIDER));
-                        final String avatarUrl = cursor.getString(cursor.getColumnIndex(AccountsSqlData.FIELD_NAME_AVATAR_URL));
-                        final byte[] imageBytes = cursor.getBlob(cursor.getColumnIndex(AccountsSqlData.FIELD_NAME_AVATAR_IMAGE));
-                        final boolean isSslCiphers = cursor.getInt(cursor.getColumnIndex(AccountsSqlData.FIELD_NAME_SSL_CIPHERS)) > 0;
-                        final boolean isSslState = cursor.getInt(cursor.getColumnIndex(AccountsSqlData.FIELD_NAME_SSL_STATE)) > 0;
-                        if (setAccount(portal, login, scheme, name, token, provider, avatarUrl, imageBytes, isSslCiphers, isSslState)) {
-                            ++count;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                FirebaseUtils.addCrash(e);
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-            emitter.onSuccess(count);
-        });
     }
 
 }

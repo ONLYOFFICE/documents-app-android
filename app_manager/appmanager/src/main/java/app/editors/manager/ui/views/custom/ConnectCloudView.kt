@@ -20,9 +20,9 @@ class ConnectCloudView @JvmOverloads constructor(
 
     private val defaultSize = dpToPixel(40f, context)
 
-    private val imageView: ImageView = findViewById(R.id.settingIcon)
-    private val titleView: TextView = findViewById(R.id.settingText)
-    private val container: ConstraintLayout = findViewById(R.id.container)
+    private val imageView: ImageView? = findViewById(R.id.settingIcon)
+    private val titleView: TextView? = findViewById(R.id.settingText)
+    private val container: ConstraintLayout? = findViewById(R.id.container)
 
     var isVisible: Boolean
         get() {
@@ -37,10 +37,10 @@ class ConnectCloudView @JvmOverloads constructor(
         }
 
     fun bind(@DrawableRes icon: Int, @StringRes title: Int, listener: () -> Unit) {
-        imageView.setSize()
-        imageView.setImageResource(icon)
-        titleView.setText(title)
-        container.setOnClickListener {
+        imageView?.setSize()
+        imageView?.setImageResource(icon)
+        titleView?.setText(title)
+        container?.setOnClickListener {
             listener()
         }
     }

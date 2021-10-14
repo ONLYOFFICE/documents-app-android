@@ -7,16 +7,14 @@ plugins {
 
 android {
 
-    compileSdkVersion(AppDependency.COMPILE_SDK_VERSION)
-    buildToolsVersion(AppDependency.BUILD_TOOLS_VERSION)
+    buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
+    compileSdk = AppDependency.COMPILE_SDK_VERSION
 
     defaultConfig {
-        minSdkVersion(AppDependency.MIN_SDK_VERSION)
-        targetSdkVersion(AppDependency.TARGET_SDK_VERSION)
-        versionCode(1)
-        versionName("1.0")
+        minSdk = AppDependency.MIN_SDK_VERSION
+        targetSdk = AppDependency.TARGET_SDK_VERSION
 
-        testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
         javaCompileOptions {
@@ -31,8 +29,8 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
-            minifyEnabled(false)
+        release {
+            isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
