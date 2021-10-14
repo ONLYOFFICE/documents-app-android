@@ -143,7 +143,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     }
 
     fun refreshToken() {
-        val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), mContext.getString(R.string.account_type))
+        val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), mContext.getString(lib.toolkit.base.R.string.account_type))
         val accData = AccountUtils.getAccountData(mContext, account)
         val map = mapOf(
             StorageUtils.ARG_CLIENT_ID to Constants.OneDrive.COM_CLIENT_ID,
