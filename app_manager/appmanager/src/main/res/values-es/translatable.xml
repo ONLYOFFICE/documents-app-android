@@ -20,11 +20,9 @@
     <string name="auth_header_screen_1">Establezca la autenticación de dos factores</string>
     <string name="auth_header_screen_2">Lance una aplicación de autenticación</string>
     <string name="auth_header_screen_3">Añada una clave secreta</string>
-    <string name="auth_header_screen_4">Copie el código</string>
     <string name="auth_info_screen_1">Instale una aplicación de autenticación para generar códigos de acceso (por ejemplo, Google Authenticator, Authy) para seguir trabajando con su portal.</string>
     <string name="auth_info_screen_2">Ejecute la aplicación y toca el icono de la nueva cuenta</string>
     <string name="auth_info_screen_3">Copie la clave y péguela en su aplicación de autentificación</string>
-    <string name="auth_info_screen_4">Copie el código desde su aplicación de autentificación e insértelo debajo</string>
     <string name="bottom_sheet_cloud_title">Nubes</string>
     <string name="bottom_sheet_portal_title">Portal</string>
     <string name="chooser_activity_not_found">No se encontró ninguna aplicación para esta acción...</string>

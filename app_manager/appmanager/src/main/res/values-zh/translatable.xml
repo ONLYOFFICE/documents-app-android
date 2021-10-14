@@ -455,8 +455,6 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <string name="auth_info_screen_2">运行应用，然后点击新账户图标</string>
     <string name="auth_header_screen_3">添加密钥</string>
     <string name="auth_info_screen_3">复制密钥并将其粘贴至您的身份验证器应用中</string>
-    <string name="auth_header_screen_4">复制代码</string>
-    <string name="auth_info_screen_4">从您的身份验证器应用中复制代码并将其在下方插入</string>
     <string name="rename_file_exist">存在具有相同名称的文件</string>
     <string name="device_path_file_error">此文件不存在。</string>
     <string name="device_trash_files_restore">恢复</string>

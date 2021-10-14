@@ -542,8 +542,8 @@
     <string name="auth_info_screen_2">Run the app and tap the new account icon</string>
     <string name="auth_header_screen_3">Add a secret key</string>
     <string name="auth_info_screen_3">Copy the key and paste it to your authenticator app </string>
-    <string name="auth_header_screen_4">Copy the code</string>
-    <string name="auth_info_screen_4">Copy the code from your authenticator app and insert it below</string>
+    <string name="auth_header_screen_4">Type the code</string>
+    <string name="auth_info_screen_4">Type the code from your authenticator app to the input field</string>
     <string name="auth_step_title">Step %d of %d</string>
     <string name="auth_install_button">Install</string>
     <string name="auth_confirm_button">Confirm</string>
