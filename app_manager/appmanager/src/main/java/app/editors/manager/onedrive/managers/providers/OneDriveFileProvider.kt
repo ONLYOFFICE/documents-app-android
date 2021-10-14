@@ -1,7 +1,6 @@
 package app.editors.manager.onedrive.managers.providers
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.work.Data
@@ -10,7 +9,6 @@ import androidx.work.WorkManager
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.App.Companion.getApp
-import app.editors.manager.app.getOneDriveServiceProvider
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.mvp.models.base.Base
@@ -29,6 +27,7 @@ import app.editors.manager.onedrive.mvp.models.explorer.DriveItemParentReference
 import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
 import app.editors.manager.onedrive.mvp.models.request.*
 import app.editors.manager.onedrive.mvp.models.response.ExternalLinkResponse
+import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -42,10 +41,8 @@ import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import java.io.*
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.inject.Inject
 
 class OneDriveFileProvider : BaseFileProvider {
 
@@ -54,24 +51,24 @@ class OneDriveFileProvider : BaseFileProvider {
         private const val PATH_TEMPLATES = "templates/"
     }
 
-    @Inject
-    lateinit var context: Context
+    private var api: IOneDriveServiceProvider = getApp().getOneDriveComponent()
 
     private val workManager = WorkManager.getInstance()
 
-    init {
-        getApp().appComponent.inject(this)
+
+    fun refreshInstance() {
+        api = getApp().getOneDriveComponent()
     }
 
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer>? {
         return Observable.fromCallable {
             if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
                 id?.let {
-                    context.getOneDriveServiceProvider().getChildren(id, OneDriveUtils.getSortBy(filter))
+                    api.getChildren(id, OneDriveUtils.getSortBy(filter))
                         .blockingGet()
-                } ?: context.getOneDriveServiceProvider().getFiles(OneDriveUtils.getSortBy(filter)).blockingGet()
+                } ?: api.getFiles(OneDriveUtils.getSortBy(filter)).blockingGet()
             } else {
-                context.getOneDriveServiceProvider().filter(
+                api.filter(
                     filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!,
                     OneDriveUtils.getSortBy(filter)
                 ).blockingGet()
@@ -161,11 +158,11 @@ class OneDriveFileProvider : BaseFileProvider {
     @SuppressLint("MissingPermission")
     override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
         return Observable.fromCallable {
-            body?.title?.let {
-                folderId?.let { it1 ->
-                    context.getOneDriveServiceProvider().createFile(
-                        it1,
-                        it,
+            body?.title?.let { title ->
+                folderId?.let { folderId ->
+                    api.createFile(
+                        folderId,
+                        title,
                         mapOf(OneDriveUtils.KEY_CONFLICT_BEHAVIOR to OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME)
                     ).blockingGet()
                 }
@@ -218,7 +215,7 @@ class OneDriveFileProvider : BaseFileProvider {
             folder = DriveItemFolder(),
             conflictBehavior = OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME
         )
-        return Observable.fromCallable { context.getOneDriveServiceProvider().createFolder(folderId!!, request).blockingGet() }
+        return Observable.fromCallable { api.createFolder(folderId!!, request).blockingGet() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
@@ -241,17 +238,26 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     override fun rename(item: Item?, newName: String?, version: Int?): Observable<Item> {
-        val correctName = if(item is CloudFile) {StringUtils.getEncodedString(newName) + item.fileExst} else { newName }
+        val correctName = if (item is CloudFile) {
+            StringUtils.getEncodedString(newName) + item.fileExst
+        } else {
+            newName
+        }
         val request = correctName?.let { RenameRequest(it) }
-        return Observable.fromCallable{ item?.id?.let { request?.let { it1 ->
-            context.getOneDriveServiceProvider().renameItem(it,
-                it1
-            ).blockingGet()
-        } } }
+        return Observable.fromCallable {
+            item?.id?.let { id ->
+                request?.let { request ->
+                    api.renameItem(
+                        id,
+                        request
+                    ).blockingGet()
+                }
+            }
+        }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
-                if(response.isSuccessful) {
+                if (response.isSuccessful) {
                     item?.updated = Date()
                     item?.title = newName
                     return@map item
@@ -266,7 +272,7 @@ class OneDriveFileProvider : BaseFileProvider {
         from: CloudFolder?
     ): Observable<List<Operation>> {
         return items?.size?.let {
-            Observable.fromIterable(items).map { item -> context.getOneDriveServiceProvider().deleteItem(item.id).blockingGet() }
+            Observable.fromIterable(items).map { item -> api.deleteItem(item.id).blockingGet() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { response ->
@@ -304,7 +310,7 @@ class OneDriveFileProvider : BaseFileProvider {
         return Observable.fromIterable(items)
             .flatMap { item ->
                 val request = CopyItemRequest(parentReference = DriveItemParentReference(driveId = "", driveType = "", id = to, name = item.title, path = ""), name = item.title)
-                Observable.fromCallable { context.getOneDriveServiceProvider().copyItem(item.id, request).blockingGet() }
+                Observable.fromCallable { api.copyItem(item.id, request).blockingGet() }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
             }.map { responseBody ->
@@ -323,7 +329,7 @@ class OneDriveFileProvider : BaseFileProvider {
         return Observable.fromIterable(items)
             .flatMap { item ->
                 val request = CopyItemRequest(parentReference = DriveItemParentReference(driveId = "", driveType = "", id = to, name = item.title, path = ""), name = item.title)
-                Observable.fromCallable { context.getOneDriveServiceProvider().moveItem(item.id, request).blockingGet() }
+                Observable.fromCallable { api.moveItem(item.id, request).blockingGet() }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
             }.map { responseBody ->
@@ -400,7 +406,7 @@ class OneDriveFileProvider : BaseFileProvider {
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
-        val result = context.getOneDriveServiceProvider().download((item as CloudFile).id).blockingGet()
+        val result = api.download((item as CloudFile).id).blockingGet()
         if(result is OneDriveResponse.Success) {
             try {
                 (result.response as ResponseBody).byteStream().use { inputStream ->
@@ -431,7 +437,7 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     fun share(id: String, request: ExternalLinkRequest): Observable<ExternalLinkResponse>? {
-        return Observable.fromCallable { context.getOneDriveServiceProvider().getExternalLink(id, request).blockingGet() }
+        return Observable.fromCallable { api.getExternalLink(id, request).blockingGet() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->

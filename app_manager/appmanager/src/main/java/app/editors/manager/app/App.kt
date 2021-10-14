@@ -15,6 +15,7 @@ import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
 import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
 import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
+import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -185,6 +186,12 @@ val Context.oneDriveLoginService: IOneDriveLoginServiceProvider
     get() = when(this) {
         is App -> this.appComponent.oneDriveLoginService
         else -> applicationContext.appComponent.oneDriveLoginService
+    }
+
+val Context.oneDriveAuthService: IOneDriveAuthServiceProvider
+    get() = when(this) {
+        is App -> this.appComponent.oneDriveAuthService
+        else -> applicationContext.appComponent.oneDriveAuthService
     }
 
 fun Context.api(): Api {

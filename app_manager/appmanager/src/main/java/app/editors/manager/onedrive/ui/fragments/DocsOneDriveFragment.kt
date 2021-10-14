@@ -180,12 +180,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
     override fun onError(message: String?) {
         when(message) {
             context?.getString(R.string.errors_client_unauthorized) -> {
-                val storage = Storage(
-                    OneDriveUtils.ONEDRIVE_STORAGE,
-                    Constants.OneDrive.COM_CLIENT_ID,
-                    Constants.OneDrive.COM_REDIRECT_URL
-                )
-                showFragment(newInstance(storage), OneDriveSignInFragment.TAG, false)
+                presenter.refreshToken()
             }
             else -> {
                 message?.let { showSnackBar(it) }

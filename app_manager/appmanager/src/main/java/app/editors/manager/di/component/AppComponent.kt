@@ -22,6 +22,7 @@ import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
+import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
@@ -79,6 +80,7 @@ interface AppComponent {
     val accountsDao: AccountDao
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider
+    val oneDriveAuthService: IOneDriveAuthServiceProvider
     val accountOnline: CloudAccount?
 
     /*
