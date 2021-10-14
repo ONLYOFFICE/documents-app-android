@@ -438,8 +438,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     private fun showOnDeviceFragment() {
-        supportFragmentManager.findFragmentByTag(DocsOnDeviceFragment.TAG)?.let {
-            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
+        supportFragmentManager.findFragmentByTag(DocsOnDeviceFragment.TAG)?.let { fragment ->
+            if (fragment is DocsOnDeviceFragment && fragment.isActivePage) {
+                fragment.showRoot()
+            }
         } ?: run {
             FragmentUtils.showFragment(supportFragmentManager, DocsOnDeviceFragment.newInstance(), R.id.frame_container)
         }

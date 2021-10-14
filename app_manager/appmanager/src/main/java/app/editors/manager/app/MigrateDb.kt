@@ -126,7 +126,7 @@ class MigrateDb {
         val requestSignIn = RequestSignIn(
             userName = account.login,
             password = account.password,
-            provider = account.provider
+            provider = account.provider ?: ""
         )
 
         val response = App.getApp().appComponent.loginService.signIn(requestSignIn)

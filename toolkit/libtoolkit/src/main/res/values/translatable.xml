@@ -1,6 +1,7 @@
 <resources>
 
     <string name="dialogs_edit_forbidden_symbols">Do not use these symbols\u0020</string>
+    <string name="dialogs_edit_forbidden_name">Invalid name</string>
 
     <!-- File/Folder info -->
     <string name="sizes_bytes">Bytes</string>

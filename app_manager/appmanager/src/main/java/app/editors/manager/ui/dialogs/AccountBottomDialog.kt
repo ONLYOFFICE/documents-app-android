@@ -51,7 +51,7 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, R.style.ContextMenuDialog)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
     }
 
     override fun onDestroyView() {

@@ -78,14 +78,14 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             if (account.isWebDav) {
                 AccountUtils.getPassword(
                     mContext,
-                    Account(account.getAccountName(), mContext.getString(R.string.account_type))
+                    Account(account.getAccountName(), mContext.getString(lib.toolkit.base.R.string.account_type))
                 )?.let {
                     return@runBlocking account
                 }
             } else {
                 AccountUtils.getToken(
                     mContext,
-                    Account(account.getAccountName(), mContext.getString(R.string.account_type))
+                    Account(account.getAccountName(), mContext.getString(lib.toolkit.base.R.string.account_type))
                 )?.let {
                     return@runBlocking account
                 }
@@ -126,7 +126,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun searchRecent(newText: String?) {
         CoroutineScope(Dispatchers.Default).launch {
-            val list = recentDao.getRecents().filter { it.name.startsWith(newText ?: "") }
+            val list = recentDao.getRecents().filter { it.name.contains(newText ?: "", true) }
             withContext(Dispatchers.Main) {
                 viewState.updateFiles(list)
             }
@@ -137,7 +137,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         accountDao.getAccount(recent.ownerId!!)?.let { account ->
             AccountUtils.getToken(
                 mContext,
-                Account(account.getAccountName(), mContext.getString(R.string.account_type))
+                Account(account.getAccountName(), mContext.getString(lib.toolkit.base.R.string.account_type))
             )?.let { it ->
                 disposable.add(
                     mContext.api()

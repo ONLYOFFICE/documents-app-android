@@ -31,8 +31,8 @@ class ShareAddItemViewHolder(
     private var mainTitle: TextView = itemBinding.shareAddItemMainTitle
     private var infoTitle: TextView = itemBinding.shareAddItemInfoTitle
     private val resourcesProvider = ResourcesProvider(itemBinding.root.context)
-    private val guideLine = itemBinding.root.context.resources.getDimension(R.dimen.share_group_guideline).toInt()
-    private val leftMargin = itemBinding.root.context.resources.getDimension(R.dimen.screen_margin_large).toInt()
+    private val guideLine = itemBinding.root.context.resources.getDimension(lib.toolkit.base.R.dimen.share_group_guideline).toInt()
+    private val leftMargin = itemBinding.root.context.resources.getDimension(lib.toolkit.base.R.dimen.screen_margin_large).toInt()
 
     override fun bind(item: ViewType, payloads: List<Any>) {
         if (item is UserUi && ShareAdapter.PAYLOAD_AVATAR in payloads) {

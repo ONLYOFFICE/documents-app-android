@@ -1,6 +1,8 @@
 package app.editors.manager.mvp.models.account;
 
 
+import androidx.annotation.Nullable;
+
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 
@@ -86,6 +88,7 @@ public class Accounts {
         this.token = token;
     }
 
+    @Nullable
     public String getProvider() {
         return provider;
     }

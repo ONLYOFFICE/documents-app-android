@@ -36,13 +36,14 @@ class AddPresenter : BasePresenter<AddView>() {
         val TAG: String = AddPresenter::class.java.simpleName
     }
 
-    private lateinit var item: Item
-    private lateinit var type: AddFragment.Type
     private val shareStack: ModelShareStack = ModelShareStack.getInstance()
     private var isCommon: Boolean = false
     private var searchValue: String? = null
     private var publishSearch: PublishSubject<String>? = null
     private var disposable: Disposable? = null
+
+    var item: Item? = null
+    var type: AddFragment.Type? = null
 
     init {
         App.getApp().appComponent.inject(this)
@@ -84,7 +85,10 @@ class AddPresenter : BasePresenter<AddView>() {
             .map { response -> response.response.map { GroupUi(it.id, it.name, it.manager ?: "null") } }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
-                shareStack.addGroups(response)
+                shareStack.addGroups(response.toMutableList().also {
+                    it.add(GroupUi(GroupUi.GROUP_ADMIN_ID, "", ""))
+                    it.add(GroupUi(GroupUi.GROUP_EVERYONE_ID, "", ""))
+                })
                 viewState.onGetGroups(groupListItems)
             }, { error ->
                 fetchError(error)
@@ -109,7 +113,7 @@ class AddPresenter : BasePresenter<AddView>() {
             })
     }
 
-    private fun getFilter(searchValue: String) {
+    fun getFilter(searchValue: String) {
         isCommon = true
 
         disposable = Observable.zip(shareApi.getUsers(getOptions(searchValue)),
@@ -227,6 +231,15 @@ class AddPresenter : BasePresenter<AddView>() {
             ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS
         )
 
+    private fun groupComparator() = Comparator<GroupUi> { a, b ->
+        val list = listOf(GroupUi.GROUP_ADMIN_ID, GroupUi.GROUP_EVERYONE_ID)
+        when {
+            a.id in list -> -1
+            b.id in list -> 1
+            else -> a.name.lowercase().compareTo(b.name.lowercase())
+        }
+    }
+
     val shared: Unit
         get() {
             when (type) {
@@ -236,10 +249,11 @@ class AddPresenter : BasePresenter<AddView>() {
         }
 
     fun shareItem() {
-        if (item is CloudFolder) {
-            shareFolderTo(item.id)
-        } else if (item is CloudFile) {
-            shareFileTo(item.id)
+        item?.let {
+            when (it) {
+                is CloudFolder -> shareFolderTo(it.id)
+                is CloudFile -> shareFileTo(it.id)
+            }
         }
     }
 
@@ -275,22 +289,35 @@ class AddPresenter : BasePresenter<AddView>() {
     /*
     * Getters/Setters
     * */
-    fun setItem(item: Item) {
-        this.item = item
-    }
 
-    fun setType(type: AddFragment.Type) {
-        this.type = type
-    }
-
-
-    private val userListItems: List<ViewType>
+    private val userListItems: List<UserUi>
         get() = shareStack.userSet.toMutableList().sortedBy { it.displayName }
-    private val groupListItems: List<ViewType>
-        get() = shareStack.groupSet.toMutableList().sortedBy { it.name }
+
+    private val groupListItems: List<GroupUi>
+        get() = shareStack.groupSet.toMutableList().sortedWith(groupComparator())
 
     val countChecked: Int
         get() = shareStack.countChecked
+
+    fun isSelectedAll(type: AddFragment.Type): Boolean {
+        return if (shareStack.userSet.size > 0 || shareStack.groupSet.size > 0) {
+            when (type) {
+                AddFragment.Type.USERS ->
+                    shareStack.userSet.filter { it.isSelected }.size == shareStack.userSet.size
+                AddFragment.Type.GROUPS ->
+                    shareStack.groupSet.filter { it.isSelected }.size == shareStack.groupSet.size
+            }
+        } else {
+            false
+        }
+    }
+
+    fun isSelected(type: AddFragment.Type): Boolean {
+        return when (type) {
+            AddFragment.Type.USERS -> shareStack.userSet.any { it.isSelected }
+            AddFragment.Type.GROUPS -> shareStack.groupSet.any { it.isSelected }
+        }
+    }
 
     fun resetChecked() {
         shareStack.resetChecked()

@@ -90,6 +90,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
             searchView?.setQuery("", true)
             return true
         }
+        resetChecked()
         return super.onBackPressed()
     }
 
@@ -129,9 +130,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
 
     override fun onQueryTextChange(newText: String): Boolean {
         addPresenter.setSearchValue(newText)
-        addPresenter.resetChecked()
-        sharePanelViews?.setCount(0)
-        sharePanelViews?.setAddButtonEnable(false)
+        resetChecked()
         return false
     }
 
@@ -157,9 +156,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     override fun onPanelResetClick() {
-        addPresenter.resetChecked()
-        sharePanelViews?.setCount(0)
-        sharePanelViews?.setAddButtonEnable(false)
+        resetChecked()
         shareAdapter?.notifyDataSetChanged()
     }
 
@@ -233,6 +230,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
         shareActivity?.expandAppBar()
+        resetChecked()
         getArgs()
         restoreViews(savedInstanceState)
         initViews()
@@ -240,7 +238,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     private fun getArgs() {
-        addPresenter.setItem((arguments?.getSerializable(TAG_ITEM) as Item))
+        addPresenter.item = arguments?.getSerializable(TAG_ITEM) as Item
     }
 
     private fun initViews() {
@@ -262,7 +260,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         savedInstanceState?.let {
             addPresenter.updateCommonSharedListState()
         } ?: run {
-            addPresenter.getCommons()
+            addPresenter.getFilter("")
         }
     }
 
@@ -274,6 +272,12 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     private fun setPlaceholder(isEmpty: Boolean) {
         placeholderViews?.setTemplatePlaceholder(if (isEmpty)
             PlaceholderViews.Type.NONE else PlaceholderViews.Type.COMMON)
+    }
+
+    private fun resetChecked() {
+        addPresenter.resetChecked()
+        sharePanelViews?.setCount(0)
+        sharePanelViews?.setAddButtonEnable(false)
     }
 
     companion object {

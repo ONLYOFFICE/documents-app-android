@@ -47,12 +47,12 @@ class UploadFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         viewBinding.uploadFileProgressBar.progress = file.progress
     }
 
-    private fun getFileProgress(file: UploadFile): CharArray {
+    private fun getFileProgress(file: UploadFile): String {
         val stringSize: String = file.size.substring(0, file.size.indexOf(" "))
         val total = stringSize.replace(',', '.').toDouble()
         val kof = total / 100
         val progressSize: Double = kof * file.progress
-        return String.format(Locale.getDefault(), "%.2f", progressSize).toCharArray()
+        return String.format(Locale.getDefault(), "%.2f", progressSize)
     }
 
     companion object {
