@@ -111,7 +111,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         menu?.let { menu ->
             menuInflater?.inflate(R.menu.docs_select, this.menu)
             deleteItem = menu.findItem(R.id.toolbar_selection_delete).apply {
-                setMenuItemTint(requireContext(), this, R.color.colorPrimary)
+                setMenuItemTint(requireContext(), this, lib.toolkit.base.R.color.colorPrimary)
                 isVisible = true
             }
             moveItem = menu.findItem(R.id.toolbar_selection_move).setVisible(true)

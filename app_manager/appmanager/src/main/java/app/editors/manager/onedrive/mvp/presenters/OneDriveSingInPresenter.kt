@@ -4,10 +4,14 @@ import android.accounts.Account
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.oneDriveAuthService
 import app.editors.manager.app.oneDriveLoginService
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.onedrive.mvp.models.response.AuthResponse
 import app.editors.manager.onedrive.mvp.views.OneDriveSignInView
 import app.editors.manager.onedrive.mvp.models.user.User
 import app.editors.manager.onedrive.onedrive.OneDriveService
@@ -34,13 +38,34 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
         disposable?.dispose()
     }
 
-
-    fun checkOneDrive(token: String) {
-        disposable = App.getApp().oneDriveLoginService.getUserInfo(token)
-            .subscribe { oneDriveResponse ->
-                when (oneDriveResponse) {
+    fun getToken(code: String) {
+        val map = mapOf(
+            StorageUtils.ARG_CLIENT_ID to Constants.OneDrive.COM_CLIENT_ID,
+            StorageUtils.ARG_SCOPE to StorageUtils.OneDrive.VALUE_SCOPE,
+            StorageUtils.ARG_REDIRECT_URI to Constants.OneDrive.COM_REDIRECT_URL,
+            StorageUtils.OneDrive.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_AUTH,
+            StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.OneDrive.COM_CLIENT_SECRET,
+            StorageUtils.ARG_CODE to code
+        )
+        var accessToken = ""
+        var refreshToken = ""
+        disposable = App.getApp().oneDriveAuthService.getToken(map)
+            .map { oneDriveResponse ->
+                when(oneDriveResponse) {
                     is OneDriveResponse.Success -> {
-                        createUser(oneDriveResponse.response as User, token)
+                        accessToken = (oneDriveResponse.response as AuthResponse).access_token
+                        refreshToken = oneDriveResponse.response.refresh_token
+                        return@map oneDriveResponse.response
+                    }
+                    is OneDriveResponse.Error -> {
+                        throw oneDriveResponse.error
+                    }
+                }
+            }.flatMap {accessToken -> App.getApp().oneDriveLoginService.getUserInfo((accessToken).access_token) }
+            .subscribe { oneDriveResponse ->
+                when(oneDriveResponse) {
+                    is OneDriveResponse.Success -> {
+                        createUser((oneDriveResponse.response as User), accessToken, refreshToken)
                     }
                     is OneDriveResponse.Error -> {
                         throw oneDriveResponse.error
@@ -50,7 +75,7 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
     }
 
 
-    private fun createUser(user: User, token: String) {
+    private fun createUser(user: User, accessToken: String, refreshToken: String) {
         networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_BASE_URL)
         val cloudAccount = CloudAccount(
             id = user.userPrincipalName,
@@ -72,21 +97,22 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
             displayName = user.displayName,
             userId = cloudAccount.id,
             provider = cloudAccount.webDavProvider ?: "",
-            accessToken = token,
+            accessToken = accessToken,
+            refreshToken = refreshToken,
             webDav = cloudAccount.webDavPath,
             email = user.userPrincipalName,
         )
 
-        val account = Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
+        val account = Account(cloudAccount.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
 
         if (AccountUtils.addAccount(context, account, "", accountData)) {
             addAccountToDb(cloudAccount)
         } else {
             AccountUtils.setAccountData(context, account, accountData)
-            AccountUtils.setPassword(context, account, token)
+            AccountUtils.setPassword(context, account, accessToken)
             addAccountToDb(cloudAccount)
         }
-        AccountUtils.setToken(context, account, token)
+        AccountUtils.setToken(context, account, accessToken)
     }
 
     private fun addAccountToDb(cloudAccount: CloudAccount) {

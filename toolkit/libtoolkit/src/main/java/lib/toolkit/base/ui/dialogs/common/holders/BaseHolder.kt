@@ -45,7 +45,8 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     private val color: Int
     get() {
         val typedValue = TypedValue()
-        val a: TypedArray = checkNotNull(dialog.requireView().context?.obtainStyledAttributes(typedValue.data, intArrayOf(R.attr.colorPrimary))) {
+        val a: TypedArray = checkNotNull(dialog.requireView().context?.obtainStyledAttributes(typedValue.data, intArrayOf(
+            androidx.appcompat.R.attr.colorPrimary))) {
             "Primary color can't be null"
         }
         val color = a.getColor(0, 0)

@@ -95,10 +95,11 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 menuInflater.inflate(R.menu.docs_select, menu)
                 deleteItem = menu.findItem(R.id.toolbar_selection_delete)
                     .setVisible(cloudPresenter.isContextItemEditable).also {
-                        setMenuItemTint(requireContext(), it, R.color.colorPrimary)
+                        setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
                     }
                 moveItem = menu.findItem(R.id.toolbar_selection_move)
                     .setVisible(cloudPresenter.isContextItemEditable)
+                restoreItem = menu.findItem(R.id.toolbar_selection_restore)
                 copyItem = menu.findItem(R.id.toolbar_selection_copy)
                 downloadItem = menu.findItem(R.id.toolbar_selection_download)
                     .setVisible(!cloudPresenter.isTrashMode)
@@ -161,6 +162,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         super.onContextButtonClick(buttons)
         when (buttons) {
+            ContextBottomDialog.Buttons.RESTORE -> presenter.moveContext()
             ContextBottomDialog.Buttons.EDIT -> cloudPresenter.onEditContextClick()
             ContextBottomDialog.Buttons.SHARE -> showShareActivity(
                 cloudPresenter.itemClicked

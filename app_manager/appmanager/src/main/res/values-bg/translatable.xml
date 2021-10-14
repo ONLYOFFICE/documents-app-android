@@ -331,9 +331,6 @@
   <string name="toolbar_menu_main_open">Отвори</string>
   <string name="trash_dialog_empty_title">Празен боклук?</string>
   <string name="trash_popup_delete">Изтрийте завинаги</string>
-  <string name="trash_popup_move">Преместване в</string>
-  <string name="trash_snackbar_move_button">ХОД</string>
-  <string name="trash_snackbar_move_text">Можете да премествате файлове от TRASH</string>
   <string name="upload_manager_cancel">Качването е анулирано</string>
   <string name="upload_manager_complete">Качването е завършено</string>
   <string name="upload_manager_error">Грешка при качване</string>

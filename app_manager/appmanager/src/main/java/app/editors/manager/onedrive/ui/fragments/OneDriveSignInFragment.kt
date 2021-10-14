@@ -97,7 +97,7 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
             setColorSchemeColors(
                 ContextCompat.getColor(
                     requireContext(),
-                    R.color.colorSecondary
+                    lib.toolkit.base.R.color.colorSecondary
                 )
             )
         }
@@ -164,9 +164,10 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             if (url.startsWith(redirectUrl!!)) {
-                val accessToken = url.split("=")
-                val token = accessToken[1]
-                presenter.checkOneDrive(token.removeRange(token.length - 11, token.length))
+                val response = url.split("=")
+                val code = response[1]
+                presenter.getToken(code)
+                //presenter.checkOneDrive(token.removeRange(token.length - 11, token.length))
             }
         }
 

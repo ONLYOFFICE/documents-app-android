@@ -389,9 +389,6 @@
     <string name="toolbar_menu_main_open">Открыть</string>
     <string name="trash_dialog_empty_title">Очистить корзину?</string>
     <string name="trash_popup_delete">Удалить навсегда</string>
-    <string name="trash_popup_move">Переместить в</string>
-    <string name="trash_snackbar_move_button">Переместить</string>
-    <string name="trash_snackbar_move_text">Вы можете перемещать файлы из КОРЗИНЫ</string>
     <string name="upload_error_wifi">Загружать можно только когда включен Wi-Fi</string>
     <string name="upload_manager_cancel">Загрузка отменена</string>
     <string name="upload_manager_complete">Загрузка завершена</string>

@@ -13,9 +13,8 @@ import moxy.InjectViewState
 @InjectViewState
 class PasswordRecoveryPresenter : BaseLoginPresenter<PasswordRecoveryView>() {
 
-
     companion object {
-        val TAG = PasswordRecoveryPresenter::class.java.simpleName
+        val TAG: String = PasswordRecoveryPresenter::class.java.simpleName
     }
 
     init {
@@ -26,7 +25,7 @@ class PasswordRecoveryPresenter : BaseLoginPresenter<PasswordRecoveryView>() {
 
     fun recoverPassword(email: String, isPersonal: Boolean) {
         if (!isEmailValid(email)) {
-            viewState!!.onEmailError()
+            viewState.onEmailError()
         } else {
             sendEmailNotification(email, isPersonal)
         }
@@ -34,22 +33,24 @@ class PasswordRecoveryPresenter : BaseLoginPresenter<PasswordRecoveryView>() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (mDisposable != null) {
-            mDisposable!!.dispose()
-        }
+        mDisposable?.dispose()
     }
 
     private fun sendEmailNotification(email: String, isPersonal: Boolean) {
-        val requestPassword =
-            RequestPassword(if (isPersonal) ApiContract.PERSONAL_HOST else networkSettings.getPortal(), email)
-        mDisposable = context.loginService.passwordRecovery(requestPassword)
-            .map {
-                when (it) {
-                    is LoginResponse.Success -> viewState.onPasswordRecoverySuccess(email)
-                    is LoginResponse.Error -> viewState.onError(it.error.message)
+        try {
+            val requestPassword =
+                RequestPassword(if (isPersonal) ApiContract.PERSONAL_HOST else networkSettings.getPortal(), email)
+            mDisposable = context.loginService.passwordRecovery(requestPassword)
+                .map {
+                    when (it) {
+                        is LoginResponse.Success -> viewState.onPasswordRecoverySuccess(email)
+                        is LoginResponse.Error -> viewState.onError(it.error.message)
+                    }
                 }
-            }
-            .subscribe()
+                .subscribe()
+        } catch (error: IllegalArgumentException) {
+            viewState.onEmailError()
+        }
     }
 
 

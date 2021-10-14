@@ -159,7 +159,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             UiUtils.setColorFilter(
                 requireContext(),
                 it.mediaImageProgress.indeterminateDrawable,
-                R.color.colorSecondary)
+                lib.toolkit.base.R.color.colorSecondary)
         }
         setImageState()
     }
@@ -214,7 +214,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             accountsDao.getAccountOnline()?.let { account ->
                 AccountUtils.getToken(
                     requireContext(),
-                    Account(account.getAccountName(), getString(R.string.account_type))
+                    Account(account.getAccountName(), getString(lib.toolkit.base.R.string.account_type))
                 )?.let { token ->
                     val url = GlideUtils.getCorrectLoad(image?.viewUrl!!, token)
                     withContext(Dispatchers.Main) {
@@ -237,7 +237,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             accountsDao.getAccountOnline()?.let { account ->
                 AccountUtils.getPassword(
                     requireContext(),
-                    Account(account.getAccountName(), getString(R.string.account_type))
+                    Account(account.getAccountName(), getString(lib.toolkit.base.R.string.account_type))
                 )?.let { password ->
                     val url = GlideUtils.getWebDavUrl(image?.id!!, account, password)
                     withContext(Dispatchers.Main) {

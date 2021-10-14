@@ -7,6 +7,7 @@ import app.documents.core.network.models.login.request.RequestSignIn
 import app.documents.core.network.models.login.response.ResponseSignIn
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.EnterpriseSmsView
 import io.reactivex.disposables.Disposable
 import kotlinx.serialization.decodeFromString
@@ -53,9 +54,15 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
     }
 
     fun resendSms(request: String) {
-        val service = App.getApp().appComponent.loginService
-        val requestSignIn = Json.decodeFromString<RequestNumber>(request)
-        disposable = service.sendSms(requestSignIn)
+        val requestNumber = Json.decodeFromString<RequestNumber>(request)
+        disposable = context.loginService.sendSms(
+            RequestSignIn(
+                userName = requestNumber.userName,
+                password = requestNumber.password,
+                accessToken = requestNumber.accessToken,
+                provider = requestNumber.provider
+            )
+        )
             .subscribe({ response ->
                 if (response is LoginResponse.Success) {
                     viewState.onResendSms()

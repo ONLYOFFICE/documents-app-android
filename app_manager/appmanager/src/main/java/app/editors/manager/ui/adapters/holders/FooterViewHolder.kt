@@ -16,7 +16,7 @@ class FooterViewHolder(parent: View, adapter: ExplorerAdapter)
 
     init {
         viewBinding.listExplorerFooterProgress.indeterminateDrawable?.setColorFilter(
-            ContextCompat.getColor(adapter.context, R.color.colorSecondary),
+            ContextCompat.getColor(adapter.context, lib.toolkit.base.R.color.colorSecondary),
             PorterDuff.Mode.SRC_IN)
     }
 

@@ -72,6 +72,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             networkSettings.setScheme(webUrl.protocol + "://")
             networkSettings.setBaseUrl(webUrl.protocol + "://" + webUrl.host)
 
+            viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title))
             disposable = context.webDavApi()
                 .capabilities(Credentials.basic(login, password), webUrl.path)
                 .doOnSubscribe { viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title)) }
@@ -129,11 +130,9 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             networkSettings.setBaseUrl(correctUrl.protocol + "://" + correctUrl.host + "/")
             networkSettings.setScheme(correctUrl.protocol + "://")
 
+            viewState.onDialogWaiting(context.getString(R.string.dialogs_check_portal_header_text))
             disposable = context.webDavApi()
                 .capability("$path/index.php/login/flow")
-                .doOnSubscribe {
-                    viewState.onDialogWaiting(context.getString(R.string.dialogs_check_portal_header_text))
-                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ response ->
@@ -191,7 +190,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             email = login,
         )
 
-        val account = Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
+        val account = Account(cloudAccount.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
 
         if (AccountUtils.addAccount(context, account, password, accountData)) {
             addAccountToDb(cloudAccount)

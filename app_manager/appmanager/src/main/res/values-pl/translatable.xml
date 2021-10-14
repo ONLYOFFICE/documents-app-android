@@ -360,9 +360,6 @@
     <string name="toolbar_menu_main_open">Otwórz</string>
     <string name="trash_dialog_empty_title">Opróżnić kosz?</string>
     <string name="trash_popup_delete">Usuń trwale</string>
-    <string name="trash_popup_move">Przenieś do</string>
-    <string name="trash_snackbar_move_button">PRZENIEŚ</string>
-    <string name="trash_snackbar_move_text">Możesz przenieść pliki z KOSZA</string>
     <string name="upload_error_wifi">Możesz przesyłać tylko, jeśli Wi-Fi jest włączone</string>
     <string name="upload_manager_cancel">Anulowano przesyłanie</string>
     <string name="upload_manager_complete">Wgrywanie zakończone</string>

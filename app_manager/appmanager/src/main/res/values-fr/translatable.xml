@@ -361,9 +361,6 @@
     <string name="toolbar_menu_main_open">Ouvrir</string>
     <string name="trash_dialog_empty_title">Vider la corbeille?</string>
     <string name="trash_popup_delete">Supprimer définitivement</string>
-    <string name="trash_popup_move">Déplacer vers</string>
-    <string name="trash_snackbar_move_button">DÉPLACER</string>
-    <string name="trash_snackbar_move_text">Vous pouvez déplacer les fichiers de la CORBEILLE</string>
     <string name="upload_error_wifi">Vous ne pouvez télécharger que lorsque le Wi-Fi est activé</string>
     <string name="upload_manager_cancel">Chargement annulé</string>
     <string name="upload_manager_complete">Chargement terminé</string>

@@ -23,7 +23,11 @@
     <item name="screen_on_boarding_layout_height" format="dimension" type="dimen">0dp</item>
 
     <dimen name="screen_auth_image_width">240dp</dimen>
-    <dimen name="screen_auth_image_height">180dp</dimen>
+    <dimen name="screen_auth_image_height">240dp</dimen>
+
+    <dimen name="screen_auth_login_accent_button_height">56dp</dimen>
+    <dimen name="screen_auth_accent_button_text_size">14sp</dimen>
+
 
     <!-- Margins/Padding -->
     <dimen name="default_margin_xxxlarge">48dp</dimen>

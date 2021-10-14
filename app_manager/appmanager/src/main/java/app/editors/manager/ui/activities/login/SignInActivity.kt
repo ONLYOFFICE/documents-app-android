@@ -125,7 +125,7 @@ class SignInActivity : BaseAppActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.home -> {
+            com.facebook.common.R.id.home -> {
                 onBackPressed()
                 return true
             }

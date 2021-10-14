@@ -62,7 +62,6 @@ import app.editors.manager.mvp.models.request.RequestDownload;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.presenters.base.BasePresenter;
 import app.editors.manager.mvp.views.main.DocsBaseView;
-import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -148,6 +147,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     protected boolean mIsFilteringMode;
     protected boolean mIsSelectionMode;
     protected boolean mIsFoldersMode;
+    protected boolean mIsTrashMode;
 
     /*
      * Clicked/Checked and etc...
@@ -420,7 +420,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             }
             getViewState().onDialogQuestion(mContext.getString(R.string.dialogs_question_delete), null,
                     TAG_DIALOG_BATCH_DELETE_SELECTED);
-        } else if (mItemClicked != null) {
+        } else if (mItemClicked != null && !isSelectionMode()) {
             if (mItemClicked instanceof CloudFile) {
                 mDisposable.add(
                         ((mFileProvider instanceof WebDavFileProvider) ? ((WebDavFileProvider) mFileProvider).fileInfo(mItemClicked, false) : (mFileProvider.fileInfo(mItemClicked))).subscribe(
@@ -611,10 +611,16 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
      * */
 
     public void createDownloadFile() {
-        if (!mModelExplorerStack.getSelectedFiles().isEmpty() || !mModelExplorerStack.getSelectedFolders().isEmpty() || (mItemClicked instanceof CloudFolder)) {
-            getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
+        if (!mModelExplorerStack.getSelectedFiles().isEmpty() || !mModelExplorerStack.getSelectedFolders().isEmpty()) {
+            if(mModelExplorerStack.getSelectedFiles().size() == 1) {
+                getViewState().onCreateDownloadFile(mModelExplorerStack.getSelectedFiles().get(0).getTitle());
+            } else {
+                getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
+            }
         } else if (mItemClicked instanceof CloudFile) {
             getViewState().onCreateDownloadFile(mItemClicked.getTitle());
+        } else if( mItemClicked instanceof CloudFolder ) {
+            getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
         }
     }
 
@@ -670,11 +676,16 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             }
         }
 
-        final RequestDownload requestDownload = new RequestDownload();
-        requestDownload.setFilesIds(filesIds);
-        requestDownload.setFoldersIds(foldersIds);
+        if(filesIds.size() > 1 || !foldersIds.isEmpty()) {
 
-        startDownloadWork(downloadTo, null, null, requestDownload);
+            final RequestDownload requestDownload = new RequestDownload();
+            requestDownload.setFilesIds(filesIds);
+            requestDownload.setFoldersIds(foldersIds);
+
+            startDownloadWork(downloadTo, null, null, requestDownload);
+        } else {
+            startDownloadWork(downloadTo, filesIds.get(0), files.get(0).getViewUrl(), null);
+        }
     }
 
     private void startDownloadWork(Uri to, String id, String url, RequestDownload requestDownload) {
@@ -1186,18 +1197,22 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     public void selectAll() {
-        getViewState().onStateUpdateSelection(true);
         getViewState().onItemsSelection(String.valueOf(mModelExplorerStack.setSelection(true)));
+        getViewState().onStateUpdateSelection(true);
     }
 
     public void deselectAll() {
-        getViewState().onStateUpdateSelection(true);
         getViewState().onItemsSelection(String.valueOf(mModelExplorerStack.setSelection(false)));
+        getViewState().onStateUpdateSelection(true);
         getBackStack();
     }
 
     public boolean isSelectionMode() {
         return mIsSelectionMode;
+    }
+
+    public boolean isSelectedAll() {
+        return mModelExplorerStack.getCountSelectedItems() == mModelExplorerStack.getTotalCount();
     }
 
     public void setFoldersMode(boolean foldersMode) {
@@ -1492,7 +1507,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     protected void onErrorHandle(final ResponseBody responseBody, final int responseCode) {
         // Error values from server
-        Integer errorCode = null;
+        //Integer errorCode = null;
         String errorMessage = null;
         String responseMessage = null;
 
@@ -1508,7 +1523,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             final JSONObject jsonObject = StringUtils.getJsonObject(responseMessage);
             if (jsonObject != null) {
                 try {
-                    errorCode = jsonObject.getInt(KEY_ERROR_CODE);
+                    //errorCode = jsonObject.getInt(KEY_ERROR_CODE);
                     errorMessage = jsonObject.getJSONObject(KEY_ERROR_INFO).getString(KEY_ERROR_INFO_MESSAGE);
                 } catch (JSONException e) {
                     Log.e(TAG, "onErrorHandle()", e);
@@ -1632,5 +1647,9 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     public void recreateStack() {
         mModelExplorerStack = new ModelExplorerStack();
+    }
+
+    public Boolean isTrashMode() {
+        return mIsTrashMode;
     }
 }

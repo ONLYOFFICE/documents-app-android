@@ -161,7 +161,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         if (menu != null && menuInflater != null) {
             menuInflater?.inflate(R.menu.docs_select, menu)
             deleteItem = menu?.findItem(R.id.toolbar_selection_delete)?.apply {
-                setMenuItemTint(requireContext(), this, R.color.colorPrimary)
+                setMenuItemTint(requireContext(), this, lib.toolkit.base.R.color.colorPrimary)
                 isVisible = true
             }
             moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
@@ -180,12 +180,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
     override fun onError(message: String?) {
         when(message) {
             context?.getString(R.string.errors_client_unauthorized) -> {
-                val storage = Storage(
-                    OneDriveUtils.ONEDRIVE_STORAGE,
-                    Constants.OneDrive.COM_CLIENT_ID,
-                    Constants.OneDrive.COM_REDIRECT_URL
-                )
-                showFragment(newInstance(storage), OneDriveSignInFragment.TAG, false)
+                presenter.refreshToken()
             }
             else -> {
                 message?.let { showSnackBar(it) }

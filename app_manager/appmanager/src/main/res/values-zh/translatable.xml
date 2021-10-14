@@ -385,9 +385,6 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <!-- ======================================================================================= -->
     <!-- Trash -->
     <string name="trash_dialog_empty_title">清空垃圾箱？</string>
-    <string name="trash_snackbar_move_text">您可从垃圾箱中移动文件</string>
-    <string name="trash_snackbar_move_button">移动</string>
-    <string name="trash_popup_move">移动至</string>
     <string name="trash_popup_delete">永久删除</string>
     <!-- ======================================================================================= -->
     <!-- Managers load -->

@@ -78,7 +78,6 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 getItemsById(cloudAccount.webDavPath)
             }
         }
-
     }
 
     override fun onFirstViewAttach() {

@@ -328,6 +328,14 @@
         <item name="android:maxLines">5</item>
     </style>
 
+    <style name="AuthTextViewSecond" parent="CommonTextView">
+        <item name="android:textColor">@color/colorOnSurfaceSecond</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lines">5</item>
+        <item name="android:minLines">1</item>
+        <item name="android:maxLines">5</item>
+    </style>
+
     <!-- ======================================================================================= -->
     <!-- Buttons -->
     <style name="ColorButtons" parent="CommonButton">
@@ -479,7 +487,12 @@
 
     <style name="AccentButton" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_height">@dimen/default_login_accent_button_height</item>
+    </style>
 
+    <style name="AuthAccentButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_height">@dimen/screen_auth_login_accent_button_height</item>
+        <item name="android:textSize">@dimen/screen_auth_accent_button_text_size</item>
+        <item name="android:textColor">@color/colorWhite</item>
     </style>
 
     <style name="AccentTextButton" parent="Widget.MaterialComponents.Button.TextButton">

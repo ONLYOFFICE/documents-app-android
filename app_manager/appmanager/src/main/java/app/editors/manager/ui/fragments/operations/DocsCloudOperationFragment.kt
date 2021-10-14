@@ -89,6 +89,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
         when (operationType) {
             OperationsState.OperationType.COPY -> cloudPresenter.copy()
             OperationsState.OperationType.MOVE -> cloudPresenter.move()
+            OperationsState.OperationType.RESTORE -> cloudPresenter.move()
             else -> { }
         }
     }

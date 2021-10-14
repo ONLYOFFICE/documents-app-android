@@ -1,5 +1,6 @@
 package app.editors.manager.onedrive.mvp.presenters
 
+import android.accounts.Account
 import android.content.ClipData
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -10,8 +11,11 @@ import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.oneDriveAuthService
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
@@ -24,7 +28,9 @@ import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.managers.works.DownloadWork
 import app.editors.manager.onedrive.managers.works.UploadWork
 import app.editors.manager.onedrive.mvp.models.request.ExternalLinkRequest
+import app.editors.manager.onedrive.mvp.models.response.AuthResponse
 import app.editors.manager.onedrive.mvp.views.DocsOneDriveView
+import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -62,14 +68,14 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
                     type = OneDriveUtils.VAL_SHARE_TYPE_READ_WRITE,
                     scope = OneDriveUtils.VAL_SHARE_SCOPE_ANON
                 )
-                (mFileProvider as OneDriveFileProvider).share(it.id, request)?.let { it1 ->
-                    mDisposable.add(it1
+                (mFileProvider as OneDriveFileProvider).share(it.id, request)?.let { extrenalLinkResponse ->
+                    mDisposable.add(extrenalLinkResponse
                         .subscribe( {response ->
                             it.shared = !it.shared
-                            response.link?.webUrl?.let { it2 ->
+                            response.link?.webUrl?.let { link ->
                                 KeyboardUtils.setDataToClipboard(
                                     mContext,
-                                    it2,
+                                    link,
                                     mContext.getString(R.string.share_clipboard_external_link_label)
                                 )
                             }
@@ -134,6 +140,33 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
                 }
             }
         }
+    }
+
+    fun refreshToken() {
+        val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), mContext.getString(lib.toolkit.base.R.string.account_type))
+        val accData = AccountUtils.getAccountData(mContext, account)
+        val map = mapOf(
+            StorageUtils.ARG_CLIENT_ID to Constants.OneDrive.COM_CLIENT_ID,
+            StorageUtils.ARG_SCOPE to StorageUtils.OneDrive.VALUE_SCOPE,
+            StorageUtils.ARG_REDIRECT_URI to Constants.OneDrive.COM_REDIRECT_URL,
+            StorageUtils.OneDrive.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_REFRESH,
+            StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.OneDrive.COM_CLIENT_SECRET,
+            StorageUtils.OneDrive.ARG_REFRESH_TOKEN to accData.refreshToken!!
+        )
+        mDisposable.add(App.getApp().oneDriveAuthService.getToken(map)
+            .subscribe {oneDriveResponse ->
+                when(oneDriveResponse) {
+                    is OneDriveResponse.Success -> {
+                        AccountUtils.setAccountData(mContext, account, accData.copy(accessToken = (oneDriveResponse.response as AuthResponse).access_token))
+                        AccountUtils.setToken(mContext, account, oneDriveResponse.response.access_token)
+                        (mFileProvider as OneDriveFileProvider).refreshInstance()
+                        refresh()
+                    }
+                    is OneDriveResponse.Error -> {
+                        throw oneDriveResponse.error
+                    }
+                }
+            })
     }
 
     override fun download(downloadTo: Uri) {
@@ -245,7 +278,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
             accountDao.getAccountOnline()?.let {
                 file?.title?.let { fileName ->
                     Recent(
-                        idFile = if (file.fileExst?.let { it1 -> StringUtils.isImage(it1) } == true) file.id else file.viewUrl,
+                        idFile = if (file.fileExst?.let { fileExt -> StringUtils.isImage(fileExt) } == true) file.id else file.viewUrl,
                         path = file.webUrl,
                         name = fileName,
                         size = file.pureContentLength,

@@ -9,7 +9,6 @@ import app.documents.core.settings.NetworkSettings
 import app.documents.core.settings.WebDavInterceptor
 import app.editors.manager.app.MigrateDb
 import app.editors.manager.di.module.AppModule
-import app.editors.manager.managers.providers.AccountProvider
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.PreferenceTool
@@ -23,6 +22,7 @@ import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
+import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
@@ -45,7 +45,6 @@ import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import dagger.BindsInstance
-import app.editors.manager.ui.fragments.storage.*
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
 import lib.toolkit.base.managers.tools.LocalContentTools
@@ -81,6 +80,7 @@ interface AppComponent {
     val accountsDao: AccountDao
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider
+    val oneDriveAuthService: IOneDriveAuthServiceProvider
     val accountOnline: CloudAccount?
 
     /*
@@ -151,7 +151,6 @@ interface AppComponent {
     /*
     * Content provider
     * */
-    fun inject(accountProvider: AccountProvider?)
     fun inject(settingsPresenter: ProfilePresenter?)
     fun inject(oneDriveFileProvider: OneDriveFileProvider?)
     fun inject(docsRecentPresenter: DocsRecentPresenter?)
