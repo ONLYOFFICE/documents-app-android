@@ -1,14 +1,18 @@
 package app.editors.manager.managers.providers;
 
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import app.documents.core.network.ApiContract;
@@ -51,7 +55,7 @@ public class LocalFileProvider implements BaseFileProvider {
                 .map(explorer -> sortExplorer(explorer, filter))
                 .flatMap(explorer -> {
                     if (filter != null && filter.containsKey("filterValue")) {
-                        return getFilterExplorer(explorer, filter.get("filterValue"));
+                        return getFilterExplorer(filter.get("filterValue"), id);
                     }
                     return Observable.just(explorer);
                 });
@@ -215,6 +219,42 @@ public class LocalFileProvider implements BaseFileProvider {
     }
 
     private Observable<Explorer> getExplore(List<File> localFiles, File parent) {
+//        Explorer explorer = new Explorer();
+//        List<CloudFile> files = new ArrayList<>();
+//        List<CloudFolder> folders = new ArrayList<>();
+//        for (File convertFile : localFiles) {
+//            if (convertFile.isDirectory()) {
+//                CloudFolder folder = new CloudFolder();
+//                folder.setParentId(convertFile.getParentFile().getAbsolutePath());
+//                folder.setId(convertFile.getAbsolutePath());
+//                folder.setTitle(convertFile.getName());
+//                folder.setUpdated(new Date(convertFile.lastModified()));
+//                folders.add(folder);
+//            } else {
+//                CloudFile file = new CloudFile();
+//                file.setId(convertFile.getAbsolutePath());
+//                file.setTitle(convertFile.getName());
+//                file.setFileExst(StringUtils.getExtensionFromPath(convertFile.getName()));
+//                file.setPureContentLength(convertFile.length());
+//                file.setFolderId(convertFile.getParentFile().getAbsolutePath());
+//                file.setWebUrl(convertFile.getAbsolutePath());
+//                file.setUpdated(new Date(convertFile.lastModified()));
+//                files.add(file);
+//            }
+//        }
+//        Current current = new Current();
+//        current.setId(parent.getAbsolutePath());
+//        current.setTitle(parent.getName());
+//        current.setFilesCount(String.valueOf(files.size()));
+//        current.setFoldersCount(String.valueOf(folders.size()));
+//
+//        explorer.setFiles(files);
+//        explorer.setFolders(folders);
+//        explorer.setCurrent(current);
+        return Observable.just(getExplorer(localFiles, parent));
+    }
+
+    private Explorer getExplorer(List<File> localFiles, File parent) {
         Explorer explorer = new Explorer();
         List<CloudFile> files = new ArrayList<>();
         List<CloudFolder> folders = new ArrayList<>();
@@ -247,36 +287,34 @@ public class LocalFileProvider implements BaseFileProvider {
         explorer.setFiles(files);
         explorer.setFolders(folders);
         explorer.setCurrent(current);
-        return Observable.just(explorer);
+        return explorer;
     }
 
-    private Observable<Explorer> getFilterExplorer(Explorer explorer, String value) {
-        List<CloudFile> files = explorer.getFiles();
-        List<CloudFolder> folders = explorer.getFolders();
+    private Observable<Explorer> getFilterExplorer(String value, String id) {
+        return Observable.just(getFilesAndFolders(value, id));
+    }
 
-        Observable<CloudFile> startFile = Observable.fromIterable(files)
-                .filter(file -> file.getTitle().toLowerCase().contains(value.toLowerCase()));
+    private Explorer getFilesAndFolders(String value,  String id){
+        File root = new File(id);
+        File[] list = root.listFiles();
 
-        Observable<CloudFolder> startFolder = Observable.fromIterable(folders)
-                .filter(folder -> folder.getTitle().toLowerCase().contains(value.toLowerCase()));
+        List<File> files = new ArrayList();
+        Explorer test = new Explorer();
+        Explorer exp = new Explorer();
 
-        return Observable.concat(startFile, startFolder)
-                .distinct()
-                .toList()
-                .map(items -> {
-                    files.clear();
-                    folders.clear();
-                    for (Item item : items) {
-                        if (item instanceof CloudFile) {
-                            files.add((CloudFile) item);
-                        } else if (item instanceof CloudFolder) {
-                            folders.add((CloudFolder) item);
-                        }
-                    }
-                    explorer.setFiles(files);
-                    explorer.setFolders(folders);
-                    return explorer;
-                }).toObservable();
+        for(File file: list) {
+            if (!value.isEmpty()) {
+                if (file.getName().toLowerCase().contains(value.toLowerCase())) {
+                    files.add(file);
+                    test = getExplorer(files, new File(id));
+                }
+                if (file.isDirectory()) {
+                    exp = getFilesAndFolders(value, file.getAbsolutePath());
+                }
+                test.add(exp);
+            }
+        }
+        return test;
     }
 
     private Explorer sortExplorer(Explorer explorer, @Nullable Map<String, String> filter) {

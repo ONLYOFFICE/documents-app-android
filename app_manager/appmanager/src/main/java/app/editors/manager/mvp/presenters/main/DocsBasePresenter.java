@@ -238,7 +238,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                         }, this::fetchError));
                 getViewState().onSwipeEnable(true);
                 return true;
-            } else {
+            } else if(!mFilteringValue.isEmpty() && mFileProvider instanceof CloudFileProvider) {
                 mDisposable.add(((CloudFileProvider)mFileProvider).search(mFilteringValue)
                         .subscribe(items -> {
                             mModelExplorerStack.refreshStack(getSearchExplorer(items));
