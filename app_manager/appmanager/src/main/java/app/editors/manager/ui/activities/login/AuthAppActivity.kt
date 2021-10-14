@@ -63,7 +63,7 @@ class AuthAppActivity : BaseAppActivity() {
             it.setDisplayShowHomeEnabled(true)
             it.setHomeAsUpIndicator(ResourcesProvider(this)
                 .getDrawable(R.drawable.ic_toolbar_close)?.apply {
-                    setTint(getColor(R.color.colorPrimary))
+                    setTint(getColor(lib.toolkit.base.R.color.colorPrimary))
                 });
         }
     }

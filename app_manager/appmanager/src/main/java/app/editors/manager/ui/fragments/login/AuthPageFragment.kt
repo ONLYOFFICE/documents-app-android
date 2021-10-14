@@ -208,7 +208,7 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
                 var focused = false
                 isFocusableInTouchMode = false
                 inputType = InputType.TYPE_CLASS_NUMBER
-                setHintTextColor(requireContext().getColor(R.color.colorLightWhite))
+                setHintTextColor(requireContext().getColor(lib.toolkit.base.R.color.colorLightWhite))
                 addTextChangedListener(codeListener)
                 setText(PLACEHOLDER_MASK)
 
