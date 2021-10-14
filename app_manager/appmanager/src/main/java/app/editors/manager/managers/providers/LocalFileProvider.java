@@ -1,18 +1,15 @@
 package app.editors.manager.managers.providers;
 
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import app.documents.core.network.ApiContract;
@@ -55,7 +52,7 @@ public class LocalFileProvider implements BaseFileProvider {
                 .map(explorer -> sortExplorer(explorer, filter))
                 .flatMap(explorer -> {
                     if (filter != null && filter.containsKey("filterValue")) {
-                        return getFilterExplorer(filter.get("filterValue"), id);
+                        return getFilterExplorer(explorer, filter.get("filterValue"));
                     }
                     return Observable.just(explorer);
                 });
@@ -219,38 +216,6 @@ public class LocalFileProvider implements BaseFileProvider {
     }
 
     private Observable<Explorer> getExplore(List<File> localFiles, File parent) {
-//        Explorer explorer = new Explorer();
-//        List<CloudFile> files = new ArrayList<>();
-//        List<CloudFolder> folders = new ArrayList<>();
-//        for (File convertFile : localFiles) {
-//            if (convertFile.isDirectory()) {
-//                CloudFolder folder = new CloudFolder();
-//                folder.setParentId(convertFile.getParentFile().getAbsolutePath());
-//                folder.setId(convertFile.getAbsolutePath());
-//                folder.setTitle(convertFile.getName());
-//                folder.setUpdated(new Date(convertFile.lastModified()));
-//                folders.add(folder);
-//            } else {
-//                CloudFile file = new CloudFile();
-//                file.setId(convertFile.getAbsolutePath());
-//                file.setTitle(convertFile.getName());
-//                file.setFileExst(StringUtils.getExtensionFromPath(convertFile.getName()));
-//                file.setPureContentLength(convertFile.length());
-//                file.setFolderId(convertFile.getParentFile().getAbsolutePath());
-//                file.setWebUrl(convertFile.getAbsolutePath());
-//                file.setUpdated(new Date(convertFile.lastModified()));
-//                files.add(file);
-//            }
-//        }
-//        Current current = new Current();
-//        current.setId(parent.getAbsolutePath());
-//        current.setTitle(parent.getName());
-//        current.setFilesCount(String.valueOf(files.size()));
-//        current.setFoldersCount(String.valueOf(folders.size()));
-//
-//        explorer.setFiles(files);
-//        explorer.setFolders(folders);
-//        explorer.setCurrent(current);
         return Observable.just(getExplorer(localFiles, parent));
     }
 
@@ -290,31 +255,33 @@ public class LocalFileProvider implements BaseFileProvider {
         return explorer;
     }
 
-    private Observable<Explorer> getFilterExplorer(String value, String id) {
-        return Observable.just(getFilesAndFolders(value, id));
+    private Observable<Explorer> getFilterExplorer(Explorer explorer, String value) {
+        if(!value.isEmpty()) {
+            return Observable.just(search(value, explorer.getCurrent().getId()));
+        } else {
+            return Observable.just(explorer);
+        }
     }
 
-    private Explorer getFilesAndFolders(String value,  String id){
+    private Explorer search(String value, String id){
         File root = new File(id);
-        File[] list = root.listFiles();
+        File[] listFiles = root.listFiles();
 
         List<File> files = new ArrayList();
-        Explorer test = new Explorer();
-        Explorer exp = new Explorer();
+        Explorer resultExplorer = new Explorer();
+        Explorer tempExplorer = new Explorer();
 
-        for(File file: list) {
-            if (!value.isEmpty()) {
-                if (file.getName().toLowerCase().contains(value.toLowerCase())) {
-                    files.add(file);
-                    test = getExplorer(files, new File(id));
-                }
-                if (file.isDirectory()) {
-                    exp = getFilesAndFolders(value, file.getAbsolutePath());
-                }
-                test.add(exp);
+        for(File item: listFiles) {
+            if (item.getName().toLowerCase().contains(value.toLowerCase())) {
+                files.add(item);
+                resultExplorer = getExplorer(files, new File(id));
             }
+            if (item.isDirectory()) {
+                tempExplorer = search(value, item.getAbsolutePath());
+            }
+            resultExplorer.add(tempExplorer);
         }
-        return test;
+        return resultExplorer;
     }
 
     private Explorer sortExplorer(Explorer explorer, @Nullable Map<String, String> filter) {
