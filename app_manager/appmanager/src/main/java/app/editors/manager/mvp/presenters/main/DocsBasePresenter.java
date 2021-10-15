@@ -264,6 +264,10 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return refresh();
     }
 
+    public String getFilteringValue() {
+        return mFilteringValue;
+    }
+
     protected void reverseSortOrder() {
         if (mPreferenceTool.getSortOrder().equals(ApiContract.Parameters.VAL_SORT_ORDER_ASC)) {
             mPreferenceTool.setSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC);
