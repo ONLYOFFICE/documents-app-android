@@ -1,5 +1,5 @@
 object Dagger {
-    private const val version = "2.35.1"
+    private const val version = "2.39.1"
 
     const val dagger = "com.google.dagger:dagger:$version"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$version"
@@ -16,7 +16,7 @@ object Moxy {
 object AndroidX {
     const val composeVersion = "1.0.1"
     private const val androidxVersion = "1.3.1"
-    private const val recyclerViewVersion = "1.2.0"
+    private const val recyclerViewVersion = "1.2.1"
     private const val recyclerViewSelectionVersion = "1.1.0"
     private const val kotlinKtxVersion = "1.6.0"
 
@@ -45,7 +45,7 @@ object Kotlin {
     const val version = "1.5.21"
     const val pluginVersion = "1.5.21"
     private const val coroutinesVersion = "1.5.0"
-    private const val serializationVersion = "1.2.2"
+    private const val serializationVersion = "1.3.0"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
     const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"

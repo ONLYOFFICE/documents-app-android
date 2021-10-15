@@ -193,6 +193,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(lib.toolkit.base.R.style.MainActivityTheme)
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)

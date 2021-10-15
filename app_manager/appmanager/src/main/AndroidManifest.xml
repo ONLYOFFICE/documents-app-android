@@ -64,17 +64,6 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:supportsRtl">
         <activity
-            android:name=".ui.activities.login.SplashActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".ui.activities.login.PortalsActivity"
             android:launchMode="standard"
             android:theme="@style/PortalTheme"
@@ -93,7 +82,7 @@
             android:finishOnTaskLaunch="true"
             android:launchMode="singleTask"
             android:supportsPictureInPicture="true"
-            android:theme="@style/MainActivityTheme"
+            android:theme="@style/AppTheme.Launcher"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
 <!--            <intent-filter android:label="@string/upload_to_portal">-->
 <!--                <action android:name="android.intent.action.SEND" />-->
@@ -122,6 +111,11 @@
 <!--                    android:host="*"-->
 <!--                    android:mimeType="image/*" />-->
 <!--            </intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
