@@ -161,7 +161,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         if (menu != null && menuInflater != null) {
             menuInflater?.inflate(R.menu.docs_select, menu)
             deleteItem = menu?.findItem(R.id.toolbar_selection_delete)?.apply {
-                setMenuItemTint(requireContext(), this, R.color.colorPrimary)
+                setMenuItemTint(requireContext(), this, lib.toolkit.base.R.color.colorPrimary)
                 isVisible = true
             }
             moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)

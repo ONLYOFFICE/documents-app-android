@@ -83,7 +83,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
             isPageLoad = false
             it.webStorageSwipe.setOnRefreshListener(this)
             it.webStorageSwipe.setColorSchemeColors(ContextCompat
-                .getColor(requireContext(),R.color.colorSecondary))
+                .getColor(requireContext(),lib.toolkit.base.R.color.colorSecondary))
             webView = it.webStorageWebview.apply {
                 settings.javaScriptEnabled = true
                 settings.setAppCacheEnabled(false)
