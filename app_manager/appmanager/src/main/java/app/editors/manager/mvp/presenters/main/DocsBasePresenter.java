@@ -238,7 +238,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                         }, this::fetchError));
                 getViewState().onSwipeEnable(true);
                 return true;
-            } else if(!mFilteringValue.isEmpty() && mFileProvider instanceof CloudFileProvider) {
+            } else if(mIsFilteringMode && mFileProvider instanceof CloudFileProvider) {
                 mDisposable.add(((CloudFileProvider)mFileProvider).search(mFilteringValue)
                         .subscribe(items -> {
                             mModelExplorerStack.refreshStack(getSearchExplorer(items));
@@ -262,10 +262,6 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             reverseSortOrder();
         }
         return refresh();
-    }
-
-    public String getFilteringValue() {
-        return mFilteringValue;
     }
 
     protected void reverseSortOrder() {

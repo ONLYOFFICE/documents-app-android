@@ -235,7 +235,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onListEnd() {
         super.onListEnd()
-        if(presenter.filteringValue.isEmpty()) {
+        if(!presenter.isFilteringMode) {
             explorerAdapter?.isLoading(true)
             presenter.getNextList()
         }
