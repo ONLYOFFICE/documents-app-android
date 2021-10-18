@@ -19,6 +19,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.view.isInvisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -161,7 +162,9 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
                 if (dialog.isAdded) {
                     onDialogAdded()
                 } else {
-                    super.show(manager, tag)
+                    if (requireActivity().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                        super.show(manager, tag)
+                    }
                 }
             } catch (e: IllegalStateException) {
                 e.printStackTrace()

@@ -57,7 +57,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private val mGetDisposable = HashMap<String, Disposable>()
     private var mExternalAccessType: String? = null
-    private var mIsTrashMode: Boolean
 
     private val downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver
@@ -594,13 +593,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 })
             }
             .subscribe({ file: CloudFile ->
+                mItemClicked = file
                 when (StringUtils.getExtension(file.fileExst)) {
                     StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF -> {
                         viewState.onFileWebView(file)
                     }
-                    else -> {
-                        viewState.onError("Error")
+                    StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
+                        viewState.onFileMedia(getListMedia(file.id), false)
                     }
+                    else -> viewState.onFileDownloadPermission()
                 }
             }
             ) { throwable: Throwable? ->

@@ -105,7 +105,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
         CoroutineScope(Dispatchers.Default).launch {
             if (AccountUtils.removeAccount(
                     context,
-                    Account(account.getAccountName(), context.getString(R.string.account_type))
+                    Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
                 )
             ) {
                 accountDao.deleteAccount(account)

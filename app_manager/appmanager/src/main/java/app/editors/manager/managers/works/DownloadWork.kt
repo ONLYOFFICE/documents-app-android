@@ -94,7 +94,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
         App.getApp().appComponent.accountsDao.getAccountOnline()?.let { account ->
             AccountUtils.getToken(
                 applicationContext,
-                Account(account.getAccountName(), applicationContext.getString(R.string.account_type))
+                Account(account.getAccountName(), applicationContext.getString(lib.toolkit.base.R.string.account_type))
             )?.let {
                 token = it
                 return@runBlocking DaggerApiComponent.builder()

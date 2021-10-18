@@ -16,6 +16,7 @@ import app.editors.manager.di.component.*
 import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
 import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
 import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
+import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -192,6 +193,12 @@ val Context.dropboxLoginService: IDropboxLoginServiceProvider
     get() = when(this) {
         is App -> this.appComponent.dropboxLoginService
         else -> applicationContext.appComponent.dropboxLoginService
+    }
+
+val Context.oneDriveAuthService: IOneDriveAuthServiceProvider
+    get() = when(this) {
+        is App -> this.appComponent.oneDriveAuthService
+        else -> applicationContext.appComponent.oneDriveAuthService
     }
 
 fun Context.api(): Api {

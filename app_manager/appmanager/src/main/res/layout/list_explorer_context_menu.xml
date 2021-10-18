@@ -252,6 +252,22 @@
                     android:visibility="gone" />
 
                 <LinearLayout
+                    android:id="@+id/list_explorer_context_restore"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <ImageView
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_trash_restore"
+                        tools:ignore="ContentDescription" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/list_explorer_context_restore_text"
+                        style="@style/ContextListMediumText"
+                        android:text="@string/device_trash_files_restore" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/list_explorer_context_delete"
                     style="@style/ContextListLayout"
                     android:visibility="gone">

@@ -20,11 +20,9 @@
     <string name="auth_header_screen_1">Skonfiguruj aplikację generującą kody weryfikacyjne</string>
     <string name="auth_header_screen_2">Uruchom aplikację Google Authenticator</string>
     <string name="auth_header_screen_3">Dodaj tajny klucz</string>
-    <string name="auth_header_screen_4">Skopiuj kod</string>
     <string name="auth_info_screen_1">Uprzejmie prosimy o skonfigurowanie aplikacji generującej kody dostępu do portalu (np. Google Authenticator), aby kontynuować pracę w portalu</string>
     <string name="auth_info_screen_2">Kliknij ikonę nowe konto</string>
     <string name="auth_info_screen_3">Skopiuj klucz i wklej go w aplikacji Google Authenticator</string>
-    <string name="auth_info_screen_4">Skopiuj kod wygenerowany przez aplikację Google Authenticator i wklej go w wymaganym polu</string>
     <string name="bottom_sheet_cloud_title">Chmury</string>
     <string name="bottom_sheet_portal_title">Portal</string>
     <string name="chooser_activity_not_found">Nie znaleziono aplikacji dla danej akcji...</string>
@@ -362,9 +360,6 @@
     <string name="toolbar_menu_main_open">Otwórz</string>
     <string name="trash_dialog_empty_title">Opróżnić kosz?</string>
     <string name="trash_popup_delete">Usuń trwale</string>
-    <string name="trash_popup_move">Przenieś do</string>
-    <string name="trash_snackbar_move_button">PRZENIEŚ</string>
-    <string name="trash_snackbar_move_text">Możesz przenieść pliki z KOSZA</string>
     <string name="upload_error_wifi">Możesz przesyłać tylko, jeśli Wi-Fi jest włączone</string>
     <string name="upload_manager_cancel">Anulowano przesyłanie</string>
     <string name="upload_manager_complete">Wgrywanie zakończone</string>

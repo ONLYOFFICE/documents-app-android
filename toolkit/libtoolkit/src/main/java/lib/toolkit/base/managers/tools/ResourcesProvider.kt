@@ -1,14 +1,15 @@
 package lib.toolkit.base.managers.tools
 
 import android.content.Context
-import android.telephony.TelephonyManager
+import android.net.Uri
 import androidx.annotation.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import lib.toolkit.base.managers.utils.ContentResolverUtils
 import java.io.File
 import javax.inject.Inject
 
-class ResourcesProvider @Inject constructor(private val context: Context) {
+class ResourcesProvider @Inject constructor(val context: Context) {
 
     fun getString(@StringRes res: Int) = context.getString(res)
 
@@ -37,5 +38,7 @@ class ResourcesProvider @Inject constructor(private val context: Context) {
             context.resources.configuration.locale.country
         }
     }
+
+    fun getFileNameByUri(uri: Uri): String = ContentResolverUtils.getName(context, uri)
 
 }

@@ -85,9 +85,10 @@ object KeyboardUtils {
         }
     }
 
-    fun forceHide(context: Activity) {
+    // Don't call twice
+    fun forceHide(context: Context) {
         (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).apply {
-            toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+            toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0)
         }
     }
 

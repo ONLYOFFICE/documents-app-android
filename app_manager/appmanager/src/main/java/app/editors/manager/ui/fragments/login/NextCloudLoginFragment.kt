@@ -204,7 +204,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
                 }
 
                 val cloudAccount = createCloudAccount(url, login)
-                val account = Account(cloudAccount.id, getString(R.string.account_type))
+                val account = Account(cloudAccount.id, getString(lib.toolkit.base.R.string.account_type))
 
                 val accountData = AccountData(
                     portal = cloudAccount.portal ?: "",

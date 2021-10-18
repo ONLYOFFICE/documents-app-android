@@ -16,12 +16,14 @@ import app.editors.manager.ui.views.edits.BaseWatcher
 class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
 
     companion object {
-        var TAG = PasswordRecoveryFragment::class.java.simpleName
+        var TAG: String = PasswordRecoveryFragment::class.java.simpleName
+
         const val KEY_EMAIL = "KEY_EMAIL"
         const val KEY_PERSONAL = "KEY_PERSONAL"
+
         fun newInstance(email: String?, isPersonal: Boolean?): PasswordRecoveryFragment {
             return PasswordRecoveryFragment().apply {
-                arguments = Bundle().apply {
+                arguments = Bundle(2).apply {
                     putString(KEY_EMAIL, email)
                     putBoolean(KEY_PERSONAL, isPersonal!!)
                 }
@@ -72,7 +74,7 @@ class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
         setActionBarTitle(context?.getString(R.string.login_password_recovery_toolbar_title))
     }
 
-    fun onRecoverButtonClick() {
+    private fun onRecoverButtonClick() {
         if (!isPasswordRecovered) {
             arguments?.getBoolean(
                 KEY_PERSONAL
@@ -91,7 +93,7 @@ class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
         isPasswordRecovered = true
         viewBinding?.apply {
             loginPasswordRecoveryEmailLayout.visibility = View.INVISIBLE
-            loginPasswordRecoveryHint.text = context!!.getString(R.string.login_password_recovery_success_hint, email)
+            loginPasswordRecoveryHint.text = getString(R.string.login_password_recovery_success_hint, email)
             loginPasswordRecoveryImage.visibility = View.VISIBLE
             loginPasswordRecoveryButton.apply {
                 visibility = View.VISIBLE

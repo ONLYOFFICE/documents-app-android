@@ -53,6 +53,14 @@ class OperationActivity : BaseAppActivity(){
             intent.putExtra(TAG_OPERATION_EXPLORER, explorer)
             fragment.startActivityForResult(intent, REQUEST_ACTIVITY_OPERATION)
         }
+
+        @JvmStatic
+        fun showRestore(fragment: Fragment, explorer: Explorer) {
+            val intent = Intent(fragment.context, OperationActivity::class.java)
+            intent.putExtra(TAG_OPERATION_TYPE, OperationType.RESTORE)
+            intent.putExtra(TAG_OPERATION_EXPLORER, explorer)
+            fragment.startActivityForResult(intent, REQUEST_ACTIVITY_OPERATION)
+        }
     }
 
     @Inject
@@ -112,7 +120,7 @@ class OperationActivity : BaseAppActivity(){
                     } else if(account.isOneDrive) {
                         showFragment(DocsOneDriveOperationFragment.newInstance(), null)
                     } else {
-                        if (account.portal?.contains(ApiContract.PERSONAL_HOST) == true) {
+                        if (account.portal?.contains(ApiContract.PERSONAL_SUBDOMAIN) == true) {
                             showFragment(DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER), null)
                         } else {
                             showFragment(DocsOperationSectionFragment.newInstance(Json.encodeToString(account)), null)
@@ -137,6 +145,7 @@ class OperationActivity : BaseAppActivity(){
         when (actionOperationType) {
             OperationType.COPY -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_copy_button)
             OperationType.MOVE -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_move_button)
+            OperationType.RESTORE -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_restore_button)
             else -> {
             }
         }

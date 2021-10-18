@@ -105,12 +105,12 @@ class CloudAccountPopup(context: Context) : BasePopup(context, R.layout.cloud_ac
     private fun initRemoveItem() {
         viewBinding?.removeItem?.itemImage?.let {
             it.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_trash))
-            setImageTint(it, R.color.colorLightRed)
+            setImageTint(it, lib.toolkit.base.R.color.colorLightRed)
 
         }
         viewBinding?.removeItem?.itemText?.let {
             it.text = context.getString(R.string.dialog_remove_account_title)
-            it.setTextColor(ContextCompat.getColor(context, R.color.colorLightRed))
+            it.setTextColor(ContextCompat.getColor(context, lib.toolkit.base.R.color.colorLightRed))
         }
         viewBinding?.removeItem?.root?.setOnClickListener {
             clickListener?.onRemoveClick(account)

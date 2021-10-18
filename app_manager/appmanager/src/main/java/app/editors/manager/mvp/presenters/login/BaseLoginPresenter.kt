@@ -98,7 +98,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
             password = accessToken
         }
 
-        val account = Account("$login@$portal", context.getString(R.string.account_type))
+        val account = Account("$login@$portal", context.getString(lib.toolkit.base.R.string.account_type))
 
         val accountData = AccountData(
             portal = networkSettings.getPortal(),

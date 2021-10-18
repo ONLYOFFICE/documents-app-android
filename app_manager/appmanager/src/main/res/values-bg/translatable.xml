@@ -20,11 +20,9 @@
   <string name="auth_header_screen_1">Настройте приложение за генериране на кодове за удостоверяване</string>
   <string name="auth_header_screen_2">Стартирайте приложението Google Authenticator</string>
   <string name="auth_header_screen_3">Добавете секретен ключ</string>
-  <string name="auth_header_screen_4">Копирайте кода</string>
-  <string name="auth_info_screen_1">Моля, задайте приложение за генериране на кодове за достъп до портала (напр. Google Authenticator), за да продължите работата в портала</string>
+    <string name="auth_info_screen_1">Моля, задайте приложение за генериране на кодове за достъп до портала (напр. Google Authenticator), за да продължите работата в портала</string>
   <string name="auth_info_screen_2">Стартирайте приложението и докоснете иконата на новия профил</string>
   <string name="auth_info_screen_3">Копирайте ключа и го поставете в приложението Google Authenticator</string>
-  <string name="auth_info_screen_4">Копирайте кода, генериран от приложението Google Authenticator, и го поставете в полето за въвеждане</string>
   <string name="chooser_activity_not_found">Заявлението за това действие не можа да бъде намерено ...</string>
   <string name="chooser_email_client">Изберете имейл клиент ...</string>
   <string name="chooser_web_browser">Изберете браузър ...</string>
@@ -333,9 +331,6 @@
   <string name="toolbar_menu_main_open">Отвори</string>
   <string name="trash_dialog_empty_title">Празен боклук?</string>
   <string name="trash_popup_delete">Изтрийте завинаги</string>
-  <string name="trash_popup_move">Преместване в</string>
-  <string name="trash_snackbar_move_button">ХОД</string>
-  <string name="trash_snackbar_move_text">Можете да премествате файлове от TRASH</string>
   <string name="upload_manager_cancel">Качването е анулирано</string>
   <string name="upload_manager_complete">Качването е завършено</string>
   <string name="upload_manager_error">Грешка при качване</string>
