@@ -4,7 +4,6 @@ import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.request.*
 import app.documents.core.network.models.login.response.*
 import io.reactivex.Single
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 

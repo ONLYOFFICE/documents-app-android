@@ -1,6 +1,8 @@
 package app.documents.core.di.module
 
+import android.content.Context
 import app.documents.core.login.ILoginServiceProvider
+import app.documents.core.login.LoginInterceptor
 import app.documents.core.login.LoginService
 import app.documents.core.login.LoginServiceProvider
 import app.documents.core.settings.NetworkSettings
@@ -40,9 +42,10 @@ class LoginModule {
         .create(LoginService::class.java)
 
     @Provides
-    fun provideOkHttpClient(settings: NetworkSettings): OkHttpClient {
+    fun provideOkHttpClient(context: Context, settings: NetworkSettings): OkHttpClient {
         val builder = NetworkClient.getOkHttpBuilder(settings.getSslState(), settings.getCipher())
         builder.protocols(listOf(Protocol.HTTP_1_1))
+            .addInterceptor(LoginInterceptor(context))
             .readTimeout(NetworkClient.ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(NetworkClient.ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)
             .connectTimeout(NetworkClient.ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
