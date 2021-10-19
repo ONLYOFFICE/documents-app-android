@@ -1,8 +1,9 @@
 package app.editors.manager.dropbox.managers.providers
 
+import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
-import androidx.compose.ui.text.toLowerCase
+import android.os.Environment
+
 import app.editors.manager.app.App
 import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
@@ -18,10 +19,17 @@ import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
+import io.reactivex.Emitter
 import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import okhttp3.ResponseBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -71,7 +79,7 @@ class DropboxFileProvider : BaseFileProvider {
                 files.add(file)
             } else {
                 val folder = CloudFolder()
-                folder.id = item.id
+                folder.id = item.path_display
                 folder.title = item.name
                 //folder.updated = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.client_modified)
                 folders.add(folder)
@@ -119,8 +127,20 @@ class DropboxFileProvider : BaseFileProvider {
         TODO("Not yet implemented")
     }
 
-    override fun fileInfo(item: Item?): Observable<CloudFile> {
-        TODO("Not yet implemented")
+    override fun fileInfo(item: Item?): Observable<CloudFile?> {
+        return Observable.create { emitter: ObservableEmitter<CloudFile?> ->
+            val outputFile = item?.let { checkDirectory(it) }
+            if (outputFile != null && outputFile.exists()) {
+                if (item is CloudFile) {
+                    if (item.pureContentLength != outputFile.length()) {
+                        download(emitter, item, outputFile)
+                    } else {
+                        setFile(item, outputFile)?.let { emitter.onNext(it) }
+                        emitter.onComplete()
+                    }
+                }
+            }
+        }
     }
 
     override fun getStatusOperation(): ResponseOperation {
@@ -153,4 +173,62 @@ class DropboxFileProvider : BaseFileProvider {
     override fun deleteFromFavorites(requestFavorites: RequestFavorites?): Observable<Base> {
         TODO("Not yet implemented")
     }
+
+    @Throws(IOException::class)
+    private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
+        val request = ExplorerRequest(path = (item as CloudFile).id)
+        val result = api.download(request).blockingGet()
+        if(result is DropboxResponse.Success) {
+            try {
+                (result.response as ResponseBody).byteStream().use { inputStream ->
+                    FileOutputStream(outputFile).use { outputStream ->
+                        val buffer = ByteArray(4096)
+                        var count: Int
+                        while (inputStream.read(buffer).also { count = it } != -1) {
+                            outputStream.write(buffer, 0, count)
+                        }
+                        outputStream.flush()
+                        emitter.onNext(setFile(item, outputFile))
+                        emitter.onComplete()
+                    }
+                }
+            } catch (error: IOException) {
+                emitter.onError(error)
+            }
+        } else if(result is DropboxResponse.Error) {
+            throw result.error
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun checkDirectory(item: Item): File? {
+        val file = item as CloudFile
+        when (StringUtils.getExtension(file.fileExst)) {
+            StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH, StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
+                val parent =
+                    File(Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice")
+                return FileUtils.createFile(parent, file.title)
+            }
+        }
+        val local = File(Uri.parse(file.webUrl).path)
+        return if (local.exists()) {
+            local
+        } else {
+            FileUtils.createCacheFile(App.getApp(), item.getTitle())
+        }
+    }
+
+    private fun setFile(item: Item, outputFile: File): CloudFile {
+        val originFile = item as CloudFile
+        return CloudFile().apply {
+            folderId = originFile.folderId
+            title = originFile.title
+            pureContentLength = outputFile.length()
+            fileExst = originFile.fileExst
+            viewUrl = originFile.id
+            id = ""
+            webUrl = Uri.fromFile(outputFile).toString()
+        }
+    }
+
 }

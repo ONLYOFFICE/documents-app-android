@@ -22,4 +22,10 @@ interface DropboxService {
     )
     @POST("${API_VERSION}files/list_folder")
     fun getFiles(@Body request: ExplorerRequest): Single<Response<ExplorerResponse>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/download")
+    fun download(@Body request: ExplorerRequest): Single<Response<ResponseBody>>
 }

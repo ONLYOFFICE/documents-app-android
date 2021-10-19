@@ -9,4 +9,5 @@ import retrofit2.Response
 
 interface IDropboxServiceProvider {
     fun getFiles(request: ExplorerRequest): Single<DropboxResponse>
+    fun download(request: ExplorerRequest): Single<DropboxResponse>
 }

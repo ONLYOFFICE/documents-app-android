@@ -6,6 +6,7 @@ import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
 
@@ -16,6 +17,13 @@ class DropboxServiceProvider(
 
     override fun getFiles(request: ExplorerRequest): Single<DropboxResponse> {
         return dropBoxService.getFiles(request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun download(request: ExplorerRequest): Single<DropboxResponse> {
+        return dropBoxService.download(request)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
