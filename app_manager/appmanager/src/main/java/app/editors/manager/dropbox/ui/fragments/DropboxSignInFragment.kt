@@ -16,6 +16,7 @@ import app.editors.manager.dropbox.mvp.views.DropboxSignInView
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
+import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.NetworkUtils
 import moxy.presenter.InjectPresenter
@@ -95,7 +96,7 @@ class DropboxSignInFragment: BaseAppFragment(), SwipeRefreshLayout.OnRefreshList
             setColorSchemeColors(
                 ContextCompat.getColor(
                     requireContext(),
-                    R.color.colorSecondary
+                    lib.toolkit.base.R.color.colorSecondary
                 )
             )
         }
@@ -181,7 +182,8 @@ class DropboxSignInFragment: BaseAppFragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     override fun onLogin() {
-        TODO("Not yet implemented")
+        MainActivity.show(requireContext())
+        requireActivity().finish()
     }
 
     override fun onError(message: String?) {

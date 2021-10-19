@@ -4,7 +4,6 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.dropbox.mvp.models.request.AccountRequest
 import app.editors.manager.dropbox.mvp.models.response.UserResponse
 import io.reactivex.Single
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 

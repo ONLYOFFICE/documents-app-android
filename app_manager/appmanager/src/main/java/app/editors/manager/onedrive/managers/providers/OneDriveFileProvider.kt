@@ -95,8 +95,6 @@ class OneDriveFileProvider : BaseFileProvider {
         val folders: MutableList<CloudFolder> = mutableListOf()
 
         if(response.value.isNotEmpty()) {
-
-
             val parentFolder = CloudFolder().apply {
                 this.id = response.value[0].parentReference.id
                 this.title = response.value[0].parentReference.path.split("/").last()

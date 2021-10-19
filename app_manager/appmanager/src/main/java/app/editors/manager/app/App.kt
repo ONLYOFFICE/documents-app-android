@@ -13,6 +13,8 @@ import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
+import app.editors.manager.dropbox.di.component.DaggerDropboxComponent
+import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
 import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
 import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
@@ -162,6 +164,11 @@ class App : Application() {
             .oneDriveServiceProvider
     }
 
+    fun getDropboxComponent(): IDropboxServiceProvider {
+        return DaggerDropboxComponent.builder().appComponent(appComponent)
+            .build()
+            .dropboxServiceProvider
+    }
 }
 
 val Context.accountOnline: CloudAccount?
