@@ -214,6 +214,7 @@ dependencies {
     implementation(Google.playServiceAuth)
     implementation(Google.material)
     implementation(Google.gson)
+    implementation(Google.safetynet)
 
     // Androidx
     implementation(AndroidX.appCompat)

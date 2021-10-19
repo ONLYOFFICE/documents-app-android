@@ -58,11 +58,15 @@ object Google {
     private const val playCoreVersion = "1.10.0"
     private const val materialVersion = "1.4.0"
     private const val gsonVersion = "2.8.6"
+    private const val safetynetVersion = "17.0.1"
+
 
     const val playServiceAuth = "com.google.android.gms:play-services-auth:$playServicesAuthVersion"
     const val playCore = "com.google.android.play:core:$playCoreVersion"
     const val material = "com.google.android.material:material:$materialVersion"
     const val gson = "com.google.code.gson:gson:$gsonVersion"
+    const val safetynet = "com.google.android.gms:play-services-safetynet:$safetynetVersion"
+
 }
 
 object Firebase {

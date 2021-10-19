@@ -12,5 +12,6 @@ data class RequestRegister(
     var language: String = "",
     var phone: String = "",
     var timeZoneName: String = "",
-    var appKey: String = "",
+    var recaptchaResponse: String = "",
+    var recaptchaType: Int = 1
 )

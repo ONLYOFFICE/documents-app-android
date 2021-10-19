@@ -76,11 +76,19 @@ interface LoginService {
      * Register portal
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT,
     )
+    @FormUrlEncoded
     @POST("/api/portal/register")
-    fun registerPortal(@Body body: RequestRegister): Single<Response<ResponseRegisterPortal>>
+    fun registerPortal(
+        @Field("recaptchaType") recaptchaType: Int = 1,
+        @Field("recaptchaResponse") recaptchaResponse: String = "",
+        @Field("firstName") firstName: String = "",
+        @Field("email") email: String = "",
+        @Field("lastName") lastName: String = "",
+        @Field("portalName") portalName: String = "",
+        @Field("password") password: String = ""
+    ): Single<Response<ResponseRegisterPortal>>
 
     /*
      * Register personal portal

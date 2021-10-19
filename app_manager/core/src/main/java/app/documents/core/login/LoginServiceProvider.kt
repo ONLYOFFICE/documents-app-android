@@ -1,7 +1,6 @@
 package app.documents.core.login
 
 import app.documents.core.network.models.login.request.*
-import app.documents.core.network.models.login.response.ResponsePassword
 import app.documents.core.network.models.login.response.ResponseSettings
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Observable
@@ -59,7 +58,14 @@ class LoginServiceProvider(
     }
 
     override fun registerPortal(request: RequestRegister): Single<LoginResponse> {
-        return loginService.registerPortal(request).map { fetchResponse(it) }
+        return loginService.registerPortal(
+            recaptchaResponse = request.recaptchaResponse,
+            portalName = request.portalName,
+            firstName = request.firstName,
+            lastName = request.lastName,
+            email = request.email,
+            password = request.password
+        ).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

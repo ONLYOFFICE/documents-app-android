@@ -8,4 +8,5 @@ import moxy.viewstate.strategy.StateStrategyType
 interface EnterpriseCreateSignInView : BaseView {
     fun onSuccessLogin()
     fun onTwoFactorAuth(phoneNoise: String?, request: String?)
+    fun onShowProgress()
 }

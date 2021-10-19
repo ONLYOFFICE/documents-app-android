@@ -25,7 +25,6 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         private const val PORTAL_PART_HOST = 1
         private const val PORTAL_PART_DOMAIN = 2
         private const val PORTAL_LENGTH = 6
-        private const val APP_KEY = "android-39ed-4f49-89a4-01fe9175dc91"
     }
 
     init {
@@ -58,7 +57,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         viewState.onSuccessLogin()
     }
 
-    fun createPortal(password: String, email: String, first: String, last: String) {
+    fun createPortal(password: String, email: String, first: String, last: String, recaptcha: String) {
 
         // Check user input portal
         val portal = networkSettings.getPortal()
@@ -69,6 +68,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         }
 
         // Create api
+        viewState.onShowProgress()
         val domain = partsPortal[PORTAL_PART_HOST] + "." + partsPortal[PORTAL_PART_DOMAIN]
         networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + "." + domain)
         val loginService = App.getApp().appComponent.loginService
@@ -80,11 +80,10 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
             firstName = first,
             lastName = last,
             password = password,
-            appKey = APP_KEY
+            recaptchaResponse = recaptcha
         )
         disposable = loginService.registerPortal(requestRegister)
             .subscribe({ loginResponse ->
-
                 when (loginResponse) {
                     is LoginResponse.Success -> {
                         networkSettings.setBaseUrl(portal)
