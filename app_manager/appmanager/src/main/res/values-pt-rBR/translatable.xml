@@ -20,11 +20,9 @@
     <string name="auth_header_screen_1">Configure um aplicativo para gerar os códigos de autenticação</string>
     <string name="auth_header_screen_2">Inicie o aplicativo Google Authenticator</string>
     <string name="auth_header_screen_3">Adicione uma chave secreta</string>
-    <string name="auth_header_screen_4">Copie o código</string>
     <string name="auth_info_screen_1">Configure um aplicativo para gerar os códigos para o acesso ao portal (por ex., Google Authenticator) para continuar o trabalho no portal</string>
     <string name="auth_info_screen_2">Execute o aplicativo e toque no novo ícone de conta</string>
     <string name="auth_info_screen_3">Copie a chave e a cole no aplicativo Google Authenticator</string>
-    <string name="auth_info_screen_4">Copie o código gerado pelo aplicativo Google Authenticator e o insira no campo de entrada</string>
     <string name="bottom_sheet_cloud_title">Nuvens</string>
     <string name="bottom_sheet_portal_title">Portal</string>
     <string name="chooser_activity_not_found">Não foi possível encontrar nenhum aplicativo para esta ação...</string>
@@ -361,9 +359,6 @@
     <string name="toolbar_menu_main_open">Abrir</string>
     <string name="trash_dialog_empty_title">Esvaziar lixeira?</string>
     <string name="trash_popup_delete">EXCLUIR definitivamente</string>
-    <string name="trash_popup_move">Mover para</string>
-    <string name="trash_snackbar_move_button">MOVER</string>
-    <string name="trash_snackbar_move_text">Você pode mover arquivos da LIXEIRA</string>
     <string name="upload_error_wifi">Você pode fazer upload apenas quando Wi-Fi estiver habilitada</string>
     <string name="upload_manager_cancel">Upload cancelado</string>
     <string name="upload_manager_complete">Upload completo</string>

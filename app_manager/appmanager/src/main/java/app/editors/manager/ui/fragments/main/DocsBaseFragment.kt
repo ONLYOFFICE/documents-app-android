@@ -73,6 +73,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected var mainItem: MenuItem? = null
     protected var deleteItem: MenuItem? = null
     protected var moveItem: MenuItem? = null
+    protected var restoreItem: MenuItem? = null
     protected var copyItem: MenuItem? = null
     protected var downloadItem: MenuItem? = null
     protected var searchView: SearchView? = null
@@ -221,6 +222,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             R.id.toolbar_main_item_select_all -> presenter.setSelectionAll()
             R.id.toolbar_selection_delete -> presenter.delete()
             R.id.toolbar_selection_move -> presenter.moveSelected()
+            R.id.toolbar_selection_restore -> presenter.moveSelected()
             R.id.toolbar_selection_copy -> presenter.copySelected()
             R.id.toolbar_selection_deselect -> presenter.deselectAll()
             R.id.toolbar_selection_select_all -> presenter.selectAll()
@@ -574,6 +576,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
             menu?.let {
                 onCreateOptionsMenu(it, requireActivity().menuInflater)
+                it.findItem(R.id.toolbar_selection_select_all)?.isVisible = !presenter.isSelectedAll
             }
         }
     }
@@ -674,7 +677,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onBatchMove(explorer: Explorer) {
-        showOperationMoveActivity(explorer)
+        if (presenter.isTrashMode) {
+            showOperationRestoreActivity(explorer)
+        } else {
+            showOperationMoveActivity(explorer)
+        }
     }
 
     override fun onBatchCopy(explorer: Explorer) {

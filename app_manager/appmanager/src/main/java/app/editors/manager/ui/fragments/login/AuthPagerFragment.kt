@@ -15,7 +15,6 @@ import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.ui.activities.login.AuthAppActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
-import com.rd.animation.type.AnimationType
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import javax.inject.Inject
 
@@ -24,10 +23,12 @@ class AuthPagerFragment : BaseAppFragment() {
     @Inject
     lateinit var preferenceTool: PreferenceTool
 
+    @Inject
+    lateinit var resourcesProvider: ResourcesProvider
+
     private var authAdapter: AuthAdapter? = null
     private var sqlData: String? = null
     private var viewBinding: FragmentOnBoardingPagerBinding? = null
-    private val resourcesProvider = ResourcesProvider(requireContext())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +49,7 @@ class AuthPagerFragment : BaseAppFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewBinding = FragmentOnBoardingPagerBinding.inflate(layoutInflater, container, false)
+        viewBinding = FragmentOnBoardingPagerBinding.inflate(inflater, container, false)
         return viewBinding?.root
     }
 
@@ -72,9 +73,9 @@ class AuthPagerFragment : BaseAppFragment() {
 
     private fun initListeners() {
         viewBinding?.let { binding ->
-            binding.include.onBoardingPanelSkipButton.setOnClickListener {
-                preferenceTool.onBoarding = true
-                finishWithOkCode()
+            binding.include.onBoardingPanelBackButton.setOnClickListener {
+                binding.onBoardingViewPager
+                    .setCurrentItem(authAdapter?.selectedPage!! - 1, true)
             }
             binding.include.onBoardingPanelNextButton.setOnClickListener {
                 if (authAdapter?.isLastPagePosition!!) {
@@ -93,32 +94,15 @@ class AuthPagerFragment : BaseAppFragment() {
     }
 
     private fun init() {
-        initColor()
         initListeners()
+        (requireActivity() as AuthAppActivity).setActionBar()
         viewBinding?.let {
             authAdapter = AuthAdapter(childFragmentManager, fragments).apply {
                 it.onBoardingViewPager.addOnPageChangeListener(this)
             }
             it.onBoardingViewPager.adapter = authAdapter
-            it.include.onBoardingPanelIndicator.setAnimationType(AnimationType.WORM)
-            it.include.onBoardingPanelIndicator.setViewPager(it.onBoardingViewPager)
+            it.include.onBoardingPanelBackButton.isVisible = false
             it.include.onBoardingPanelSkipButton.isVisible = false
-        }
-    }
-
-    private fun initColor() {
-        viewBinding?.let {
-            it.pagerFragmentLayout.background = resourcesProvider.getDrawable(lib.toolkit.base.R.color.colorWhite)
-            it.include.pageIndicatorLayout.background =
-                resourcesProvider.getDrawable(lib.toolkit.base.R.color.colorWhite)
-            it.include.onBoardingPanelNextButton
-                .setTextColor(resourcesProvider.getColor(lib.toolkit.base.R.color.colorSecondary))
-            it.include.onBoardingPanelSkipButton
-                .setTextColor(resourcesProvider.getColor(lib.toolkit.base.R.color.colorSecondary))
-            it.include.onBoardingPanelIndicator.selectedColor =
-                resourcesProvider.getColor(lib.toolkit.base.R.color.colorSecondary)
-            it.include.onBoardingPanelIndicator.unselectedColor =
-                resourcesProvider.getColor(lib.toolkit.base.R.color.colorGrey)
         }
     }
 
@@ -142,6 +126,9 @@ class AuthPagerFragment : BaseAppFragment() {
         return AuthPageFragment()
     }
 
+    val fragmentCount: Int
+        get() = authAdapter?.count ?: 0
+
     /*
      * Pager adapter
      * */
@@ -150,17 +137,19 @@ class AuthPagerFragment : BaseAppFragment() {
 
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
-            viewBinding?.let {
+            viewBinding?.let { binding ->
                 if (position == authAdapter?.count!! - 1) {
-                    it.include.onBoardingPanelNextButton.isVisible = false
-                    it.include.onBoardingPanelSkipButton.isVisible = false
+                    binding.include.onBoardingPanelNextButton.isVisible = false
+                    binding.include.onBoardingPanelBackButton.isVisible = true
                 } else {
-                    it.include.onBoardingPanelNextButton.isVisible = true
-                    it.include.onBoardingPanelSkipButton.isVisible = false
-                    it.include.onBoardingPanelNextButton.setText(R.string.on_boarding_next_button)
+                    binding.include.onBoardingPanelNextButton.isVisible = true
+                    binding.include.onBoardingPanelBackButton.isVisible = position != 0
+                    binding.include.onBoardingPanelNextButton.setText(R.string.on_boarding_next_button)
                 }
-                (authAdapter?.getActiveFragment(it.onBoardingViewPager) as AuthPageFragment)
-                    .onPageSelected(position)
+                authAdapter?.let { adapter ->
+                    (getActiveFragment(binding.onBoardingViewPager) as AuthPageFragment)
+                        .onPageSelected(position, adapter.count)
+                }
             }
         }
     }

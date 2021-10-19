@@ -57,7 +57,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private val mGetDisposable = HashMap<String, Disposable>()
     private var mExternalAccessType: String? = null
-    private var mIsTrashMode: Boolean
 
     private val downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver

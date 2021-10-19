@@ -440,6 +440,7 @@
     <string name="operation_delete_multiple">. One or more files haven`t been deleted due to open on the portal</string>
     <string name="operation_panel_move_button">Move here</string>
     <string name="operation_panel_copy_button">Copy here</string>
+    <string name="operation_panel_restore_button">Restore here</string>
     <string name="operation_panel_cancel_button">Cancel</string>
     <string name="operation_empty_lists_data">Select items for operation</string>
     <string name="operation_error_move_to_same">Can not be moved to the same folder</string>
@@ -453,9 +454,9 @@
     <!-- ======================================================================================= -->
     <!-- Trash -->
     <string name="trash_dialog_empty_title">Empty trash?</string>
-    <string name="trash_snackbar_move_text">You can move files from the TRASH</string>
-    <string name="trash_snackbar_move_button">MOVE</string>
-    <string name="trash_popup_move">Move to</string>
+    <string name="trash_snackbar_move_text">You can restore files from the TRASH</string>
+    <string name="trash_snackbar_move_button">RESTORE</string>
+    <string name="trash_popup_move">Restore to</string>
     <string name="trash_popup_delete">Delete forever</string>
 
     <!-- ======================================================================================= -->
@@ -500,6 +501,7 @@
     <!-- ======================================================================================= -->
     <!-- On boarding -->
     <string name="on_boarding_skip_button">SKIP</string>
+    <string name="on_boarding_back_button">BACK</string>
     <string name="on_boarding_next_button">NEXT</string>
     <string name="on_boarding_finish_button">DONE</string>
 
@@ -540,8 +542,13 @@
     <string name="auth_info_screen_2">Run the app and tap the new account icon</string>
     <string name="auth_header_screen_3">Add a secret key</string>
     <string name="auth_info_screen_3">Copy the key and paste it to your authenticator app </string>
-    <string name="auth_header_screen_4">Copy the code</string>
-    <string name="auth_info_screen_4">Copy the code from your authenticator app and insert it below</string>
+    <string name="auth_header_screen_4">Type the code</string>
+    <string name="auth_info_screen_4">Type the code from your authenticator app to the input field</string>
+    <string name="auth_step_title">Step %d of %d</string>
+    <string name="auth_install_button">Install</string>
+    <string name="auth_confirm_button">Confirm</string>
+    <string name="auth_clipboard_key_copied">Key copied to clipboard</string>
+    <string name="auth_edit_hint">Code</string>
 
     <string name="rename_file_exist">File with the same name exists.</string>
     <string name="device_path_file_error">This file does not exist.</string>

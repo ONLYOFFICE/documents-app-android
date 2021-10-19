@@ -25,7 +25,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     enum class Buttons {
         NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD, 
-        RENAME, DELETE, SHARE_DELETE, FAVORITE_ADD, FAVORITE_DELETE
+        RENAME, DELETE, SHARE_DELETE, FAVORITE_ADD, FAVORITE_DELETE, RESTORE
     }
 
     interface OnClickListener {
@@ -175,7 +175,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun setTrashState() {
         viewBinding?.let {
-            it.listExplorerContextMove.isVisible = true
+            it.listExplorerContextRestore.isVisible = true
             it.listExplorerContextDelete.isVisible = true
         }
     }
@@ -270,6 +270,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextShareDelete.setOnClickListener(Buttons.SHARE_DELETE)
             it.listExplorerContextAddToFavorite.setOnClickListener(Buttons.FAVORITE_ADD)
             it.listExplorerContextDeleteFromFavorite.setOnClickListener(Buttons.FAVORITE_DELETE)
+            it.listExplorerContextRestore.setOnClickListener(Buttons.RESTORE)
         }
     }
 

@@ -20,11 +20,9 @@
     <string name="auth_header_screen_1">Configurare un’applicazione per generare i codici di autenticazione</string>
     <string name="auth_header_screen_2">Avvia Google Authenticator</string>
     <string name="auth_header_screen_3">Aggiungi una chiave segreta</string>
-    <string name="auth_header_screen_4">Copia il codice</string>
     <string name="auth_info_screen_1">Configurare un’applicazione per generare i codici per l’accesso al portale (ad esempio Google Authenticator) per continuare il lavoro sul portale</string>
     <string name="auth_info_screen_2">Esegui l’applicazione e tocca l’icona del nuovo account</string>
     <string name="auth_info_screen_3">Copia la chiave e incollala nell’applicazione Google Authenticator</string>
-    <string name="auth_info_screen_4">Copia il codice generato dall’applicazione Google Authenticator e inseriscilo nel campo di immissione</string>
     <string name="bottom_sheet_cloud_title">Cloud</string>
     <string name="bottom_sheet_portal_title">Portale</string>
     <string name="chooser_activity_not_found">Impossibile trovare alcuna applicazione per questa azione...</string>
@@ -361,9 +359,6 @@
     <string name="toolbar_menu_main_open">Apri</string>
     <string name="trash_dialog_empty_title">Svuotare il cestino?</string>
     <string name="trash_popup_delete">Elimina definitivamente</string>
-    <string name="trash_popup_move">Sposta in</string>
-    <string name="trash_snackbar_move_button">Sposta</string>
-    <string name="trash_snackbar_move_text">È possibile spostare i file dal cestino</string>
     <string name="upload_error_wifi">Puoi caricare solo quando il Wi-Fi è abilitato</string>
     <string name="upload_manager_cancel">Upload annullato</string>
     <string name="upload_manager_complete">Upload completato</string>

@@ -26,11 +26,9 @@
     <string name="auth_header_screen_1">Настройте приложение для генерации кодов входа</string>
     <string name="auth_header_screen_2">Запустите приложение Google Authenticator</string>
     <string name="auth_header_screen_3">Добавьте секретный ключ</string>
-    <string name="auth_header_screen_4">Скопируйте код</string>
     <string name="auth_info_screen_1">Для продолжения работы на портале настройте приложение для генерации кодов входа, например, Google Authenticator</string>
     <string name="auth_info_screen_2">Запустите приложение и нажмите на иконку добавления нового аккаунта</string>
     <string name="auth_info_screen_3">Скопируйте ключ и вставьте в приложение Google Authenticator</string>
-    <string name="auth_info_screen_4">Скопируйте код, который сгенерировала программа Google Authenticator и вставьте в поле ввода</string>
     <string name="bottom_sheet_cloud_title">Облака</string>
     <string name="bottom_sheet_portal_title">Портал</string>
     <string name="chooser_activity_not_found">Не найдено приложений для этого действия...</string>
@@ -391,9 +389,6 @@
     <string name="toolbar_menu_main_open">Открыть</string>
     <string name="trash_dialog_empty_title">Очистить корзину?</string>
     <string name="trash_popup_delete">Удалить навсегда</string>
-    <string name="trash_popup_move">Переместить в</string>
-    <string name="trash_snackbar_move_button">Переместить</string>
-    <string name="trash_snackbar_move_text">Вы можете перемещать файлы из КОРЗИНЫ</string>
     <string name="upload_error_wifi">Загружать можно только когда включен Wi-Fi</string>
     <string name="upload_manager_cancel">Загрузка отменена</string>
     <string name="upload_manager_complete">Загрузка завершена</string>

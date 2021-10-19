@@ -9,7 +9,7 @@ import kotlin.math.abs
 open class BaseWatcher : TextWatcher {
 
     companion object {
-        val TAG = BaseWatcher::class.java.simpleName
+        val TAG: String = BaseWatcher::class.java.simpleName
     }
 
     enum class StatesAction {
@@ -17,12 +17,12 @@ open class BaseWatcher : TextWatcher {
     }
 
     protected var mEditView: EditText? = null
-    protected var mBeforeText: String = ""
-    protected var mDeletedText: String = ""
-    protected var mResultText: String = ""
-    protected var mInputText: String = ""
+    protected var beforeText: String = ""
+    protected var deletedText: String = ""
+    protected var resultText: String = ""
+    protected var inputText: String = ""
 
-    protected var mState = StatesAction.NONE
+    protected var state = StatesAction.NONE
     protected var mSelectionStart = 0
     protected var mSelectionEnd = 0
     protected var mInputSelection = Pair(0, 0)
@@ -38,8 +38,8 @@ open class BaseWatcher : TextWatcher {
 
     override fun beforeTextChanged(text: CharSequence, start: Int, count: Int, after: Int) {
         Log.d(TAG, "beforeTextChanged($text, $start, $count, $after)")
-        mState = StatesAction.NONE
-        mBeforeText = text.toString()
+        state = StatesAction.NONE
+        beforeText = text.toString()
     }
 
     /*
@@ -52,20 +52,31 @@ open class BaseWatcher : TextWatcher {
     * */
     override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
         Log.d(TAG, "onTextChanged($text, $start, $before, $count)")
-        mResultText = text.toString()
-        mSelectionStart = mEditView?.selectionStart ?: mResultText.length
-        mSelectionEnd = mEditView?.selectionEnd ?: mResultText.length
+        resultText = text.toString()
+        mSelectionStart = mEditView?.selectionStart ?: resultText.length
+        mSelectionEnd = mEditView?.selectionEnd ?: resultText.length
 
-        mInputText = when {
+        inputText = when {
             abs(count - before) > 1 -> {
                 mInputSelection = Pair(start, start + count)
-                mResultText.substring(mInputSelection.first, mInputSelection.second)
+                resultText.substring(mInputSelection.first, mInputSelection.second)
             }
 
             count >= before -> {
-                mInputSelection = Pair(start + before, start + count)
-                mResultText.substring(mInputSelection.first, mInputSelection.second)
+                if (count == before && text.toString() != beforeText) {
+                    text.toString()
+                } else {
+                    mInputSelection = Pair(start + before, start + count)
+                    resultText.substring(mInputSelection.first, mInputSelection.second)
+                }
             }
+
+//            count == before -> {
+//                if (mBeforeText != text) {
+//                    mDeletedText = mBeforeText
+//                }
+//                text.toString()
+//            }
 
             else -> {
                 mInputSelection = Pair(0, 0)
@@ -73,20 +84,29 @@ open class BaseWatcher : TextWatcher {
             }
         }
 
-        mDeletedText = when {
+        deletedText = when {
             abs(count - before) > 1 -> {
                 mDeleteSelection = Pair(start, start + before)
-                mBeforeText.substring(mDeleteSelection.first, mDeleteSelection.second)
+                beforeText.substring(mDeleteSelection.first, mDeleteSelection.second)
             }
 
             count <= before -> {
-                mDeleteSelection = Pair(start + count, start + before)
-                mBeforeText.substring(mDeleteSelection.first, mDeleteSelection.second)
+                if (count == before && beforeText != text.toString()) {
+                    beforeText
+                } else {
+                    mDeleteSelection = Pair(start + count, start + before)
+                    beforeText.substring(mDeleteSelection.first, mDeleteSelection.second)
+                }
             }
 
             else -> {
-                mDeleteSelection = Pair(0, 0)
-                ""
+                if (resultText.substring(0, before) == beforeText) {
+                    mDeleteSelection = Pair(0, 0)
+                    ""
+                } else {
+                    beforeText
+                }
+
             }
         }
         mSelectionPosition = start + count
@@ -94,24 +114,24 @@ open class BaseWatcher : TextWatcher {
     }
 
     override fun afterTextChanged(s: Editable) {
-        Log.d(TAG, "afterTextChanged($mSelectionStart, $mInputText, $mDeletedText, $mResultText)")
+        Log.d(TAG, "afterTextChanged($mSelectionStart, $inputText, $deletedText, $resultText)")
     }
 
     protected fun setState() {
-        mState = when {
-            mInputText.isNotEmpty() && mDeletedText.isEmpty() -> {
-                if (mSelectionStart == mResultText.length) {
+        state = when {
+            inputText.isNotEmpty() && deletedText.isEmpty() -> {
+                if (mSelectionStart == resultText.length) {
                     StatesAction.APPEND
                 } else {
                     StatesAction.INSERT
                 }
             }
 
-            mInputText.isEmpty() && mDeletedText.isNotEmpty() -> {
+            inputText.isEmpty() && deletedText.isNotEmpty() -> {
                 StatesAction.DELETE
             }
 
-            mInputText.isNotEmpty() && mDeletedText.isNotEmpty() -> {
+            inputText.isNotEmpty() && deletedText.isNotEmpty() -> {
                 StatesAction.REPLACE
             }
 

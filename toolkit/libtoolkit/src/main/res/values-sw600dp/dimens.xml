@@ -20,7 +20,10 @@
     <dimen name="screen_share_panel_button_width">128dp</dimen>
 
     <dimen name="screen_auth_image_width">496dp</dimen>
-    <dimen name="screen_auth_image_height">422dp</dimen>
+    <dimen name="screen_auth_image_height">496dp</dimen>
+
+    <dimen name="screen_auth_login_accent_button_height">72dp</dimen>
+    <dimen name="screen_auth_accent_button_text_size">18sp</dimen>
 
     <item name="screen_on_boarding_layout_height" format="integer" type="dimen">-2</item>
 

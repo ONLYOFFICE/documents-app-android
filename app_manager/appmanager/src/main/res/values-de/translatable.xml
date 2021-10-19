@@ -314,9 +314,6 @@
     <string name="operation_snackbar_return">ZURÜCK</string>
     <string name="operation_share_send_link">SENDEN</string> <!-- ======================================================================================= --> <!-- Trash -->
     <string name="trash_dialog_empty_title">Papierkorb leeren?</string>
-    <string name="trash_snackbar_move_text">Sie können Dateien aus dem PAPIERKORB verschieben</string>
-    <string name="trash_snackbar_move_button">VERSCHIEBEN</string>
-    <string name="trash_popup_move">Verschieben nach</string>
     <string name="trash_popup_delete">Endgültig löschen</string> <!-- ======================================================================================= --> <!-- Managers load -->
     <string name="download_manager_title">ONLYOFFICE Downloads</string>
     <string name="download_manager_progress_title">Herunterladen wird ausgeführt</string>
@@ -369,8 +366,6 @@
     <string name="auth_info_screen_2">Führen Sie die Anwendung aus und tippen Sie auf das Symbol für ein neues Konto</string>
     <string name="auth_header_screen_3">Fügen Sie einen geheimen Schlüssel hinzu</string>
     <string name="auth_info_screen_3">Kopieren Sie den Schlüssel und fügen Sie diesen in Ihre Authentifizierungs-App ein</string>
-    <string name="auth_header_screen_4">Code kopieren</string>
-    <string name="auth_info_screen_4">Kopieren Sie den von der Authentifizierungs-App generierten Code und fügen Sie diesen in das Eingabefeld unten ein</string>
     <string name="rename_file_exist">Eine Datei mit demselben Namen existiert bereits.</string>
     <string name="device_path_file_error">Diese Datei existiert nicht.</string>
     <string name="device_trash_files_restore">Wiederherstellen</string>
