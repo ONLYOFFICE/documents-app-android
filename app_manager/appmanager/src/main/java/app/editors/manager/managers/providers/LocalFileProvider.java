@@ -49,7 +49,7 @@ public class LocalFileProvider implements BaseFileProvider {
                         throw ProviderError.throwErrorCreate();
                     }
                 })
-                .flatMap(files -> getExplore(files, new File(id)))
+                .flatMap(files -> Observable.just(getExplorer(files, new File(id))))
                 .map(explorer -> sortExplorer(explorer, filter))
                 .flatMap(explorer -> {
                     if (filter != null && filter.containsKey("filterValue")) {
@@ -214,10 +214,6 @@ public class LocalFileProvider implements BaseFileProvider {
         } else {
             throw ProviderError.throwUnsupportedException();
         }
-    }
-
-    private Observable<Explorer> getExplore(List<File> localFiles, File parent) {
-        return Observable.just(getExplorer(localFiles, parent));
     }
 
     private Explorer getExplorer(List<File> localFiles, File parent) {
