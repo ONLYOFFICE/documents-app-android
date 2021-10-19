@@ -5,6 +5,7 @@ import app.documents.core.account.CloudAccount
 import app.editors.manager.app.App
 import app.editors.manager.app.dropboxLoginService
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
+import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.models.request.AccountRequest
 import app.editors.manager.dropbox.mvp.models.response.UserResponse
 import app.editors.manager.dropbox.mvp.views.DropboxSignInView
@@ -56,7 +57,7 @@ class DropboxSignInPresenter: BasePresenter<DropboxSignInView>() {
             isWebDav = false,
             isOneDrive = false,
             isDropbox = true,
-            portal = "https://www.dropbox.com/",
+            portal = DropboxUtils.DROPBOX_PORTAL,
             webDavPath = "",
             webDavProvider = "",
             login = user.email,

@@ -6,6 +6,7 @@ import androidx.compose.ui.text.toLowerCase
 import app.editors.manager.app.App
 import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
+import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
@@ -29,17 +30,15 @@ class DropboxFileProvider : BaseFileProvider {
     private var api: IDropboxServiceProvider = App.getApp().getDropboxComponent()
 
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer> {
-
-        val request = ExplorerRequest(path = "/ ")
+        val request = id?.let { ExplorerRequest(path = it) }
         return Observable.fromCallable {
-            api.getFiles(request).blockingGet()
+            request?.let { api.getFiles(it).blockingGet() }
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { dropboxResponse ->
                 when(dropboxResponse) {
                     is DropboxResponse.Success -> {
-                        Log.d("DROPBOXSTROAGE", (dropboxResponse.response as ExplorerResponse).entries[0].name)
                         return@map getExplorer((dropboxResponse.response as ExplorerResponse).entries)
                     }
                     is DropboxResponse.Error -> {
@@ -54,6 +53,13 @@ class DropboxFileProvider : BaseFileProvider {
         val files: MutableList<CloudFile> = mutableListOf()
         val folders: MutableList<CloudFolder> = mutableListOf()
 
+        val parentFolder = CloudFolder().apply {
+            this.id = items[0].path_display.substring(0, items[0].path_display.lastIndexOf('/'))
+            this.title = items[0].path_display.split('/').run {
+                this[this.size - 2]
+            }
+        }
+
         for(item in items) {
             if(item.tag == "file") {
                 val file = CloudFile()
@@ -61,7 +67,7 @@ class DropboxFileProvider : BaseFileProvider {
                 file.title = item.name
                 file.pureContentLength = item.size.toLong()
                 file.fileExst = StringUtils.getExtensionFromPath(item.name.toLowerCase())
-                //file.updated = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.client_modified)
+                file.updated = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.client_modified)
                 files.add(file)
             } else {
                 val folder = CloudFolder()
@@ -74,7 +80,8 @@ class DropboxFileProvider : BaseFileProvider {
         val current = Current()
         current.filesCount = files.size.toString()
         current.foldersCount = files.size.toString()
-        current.title = "Test"
+        current.title = if(parentFolder.id.isEmpty()) "root" else parentFolder.title
+        current.id = if(parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT else parentFolder.id
 
         explorer.current = current
         explorer.files = files

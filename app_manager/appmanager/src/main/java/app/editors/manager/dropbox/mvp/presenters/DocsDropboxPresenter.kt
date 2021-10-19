@@ -3,6 +3,7 @@ package app.editors.manager.dropbox.mvp.presenters
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.dropbox.managers.providers.DropboxFileProvider
+import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.views.DocsDropboxView
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Item
@@ -49,7 +50,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                     withContext(Dispatchers.Main) {
-                        getItemsById(null)
+                        getItemsById(DropboxUtils.DROPBOX_ROOT)
                     }
 
                 }
@@ -60,7 +61,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
                     AccountUtils.getAccount(mContext, cloudAccount.getAccountName())?.let {
                         mFileProvider = DropboxFileProvider()
                         withContext(Dispatchers.Main) {
-                            getItemsById(null)
+                            getItemsById(DropboxUtils.DROPBOX_ROOT)
                         }
                     }
                 } ?: run {
