@@ -88,7 +88,7 @@ class DropboxFileProvider : BaseFileProvider {
         val current = Current()
         current.filesCount = files.size.toString()
         current.foldersCount = files.size.toString()
-        current.title = if(parentFolder.id.isEmpty()) "root" else parentFolder.title
+        current.title = if(parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT_TITLE else parentFolder.title
         current.id = if(parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT else parentFolder.id
 
         explorer.current = current

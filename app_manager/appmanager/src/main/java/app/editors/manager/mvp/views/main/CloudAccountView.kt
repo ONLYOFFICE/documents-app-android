@@ -13,5 +13,6 @@ interface CloudAccountView : BaseViewExt {
     fun onWebDavLogin(account: String, provider: WebDavApi.Providers)
     fun onAccountLogin(portal: String, login: String)
     fun onOneDriveLogin()
+    fun onDropboxLogin()
     fun onSuccessLogin()
 }
