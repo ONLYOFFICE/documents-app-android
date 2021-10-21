@@ -26,7 +26,7 @@ object OneDriveUtils {
     const val VAL_SHARE_SCOPE_ANON = "anonymous"
     const val VAL_SHARE_SCOPE_ORG = "organization"
 
-    fun getSortBy(filter: MutableMap<String, String>?): Map<String, String> {
+    fun getSortBy(filter: Map<String, String>?): Map<String, String> {
         val resultMap = mutableMapOf(KEY_SORT to "")
         when(filter?.get(ApiContract.Parameters.ARG_SORT_BY)) {
             ApiContract.Parameters.VAL_SORT_BY_TITLE -> resultMap[KEY_SORT] = VAL_SORT_NAME + " ${getSortOrder(filter)}"
@@ -36,7 +36,7 @@ object OneDriveUtils {
         return resultMap
     }
 
-    private fun getSortOrder(filter: MutableMap<String, String>?): String {
+    private fun getSortOrder(filter: Map<String, String>?): String {
         return when(filter?.get(ApiContract.Parameters.ARG_SORT_ORDER)) {
             ApiContract.Parameters.VAL_SORT_ORDER_ASC -> VAL_SORT_ASC
             ApiContract.Parameters.VAL_SORT_ORDER_DESC -> VAL_SORT_DESC

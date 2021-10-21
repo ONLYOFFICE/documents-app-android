@@ -178,7 +178,7 @@ class CloudFileProvider : BaseFileProvider {
         return null
     }
 
-    override fun upload(folderId: String, uri: List<Uri>): Observable<Int>? {
+    override fun upload(folderId: String, uri: List<Uri?>): Observable<Int>? {
         return null
     }
 
@@ -237,8 +237,8 @@ class CloudFileProvider : BaseFileProvider {
             }
     }
 
-    override fun fileInfo(item: Item): Observable<CloudFile> {
-        return api.getFileInfo(item.id)
+    override fun fileInfo(item: Item?): Observable<CloudFile> {
+        return api.getFileInfo(item?.id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseFile: Response<ResponseFile> ->

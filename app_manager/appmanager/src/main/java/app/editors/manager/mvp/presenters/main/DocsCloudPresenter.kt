@@ -185,7 +185,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun getFileInfo() {
         if (mItemClicked != null) {
-            mDisposable.add(mFileProvider.fileInfo(mItemClicked)
+            mDisposable.add(mFileProvider.fileInfo(mItemClicked!!)
                 .subscribe({ onFileClickAction() }) { throwable: Throwable? ->
                     fetchError(
                         throwable
@@ -427,7 +427,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 mExternalAccessType = ApiContract.ShareType.READ
                 val requestExternal = RequestExternal()
                 requestExternal.share = mExternalAccessType
-                mDisposable.add(mFileProvider.share(mItemClicked!!.id, requestExternal)
+                mDisposable.add(mFileProvider.share(mItemClicked!!.id, requestExternal)!!
                     .subscribe({ responseExternal: ResponseExternal ->
                         mItemClicked!!.shared = !mItemClicked!!.shared
                         when (mExternalAccessType) {
@@ -454,7 +454,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun addToFavorite() {
         val requestFavorites = RequestFavorites()
         requestFavorites.fileIds = ArrayList(listOf(mItemClicked!!.id))
-        mDisposable.add(mFileProvider.addToFavorites(requestFavorites)
+        mDisposable.add(mFileProvider.addToFavorites(requestFavorites)!!
             .subscribe({ response: Base? ->
                 mItemClicked!!.favorite = !mItemClicked!!.favorite
                 viewState.onSnackBar(mContext.getString(R.string.operation_add_to_favorites))
@@ -464,7 +464,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun deleteFromFavorite() {
         val requestFavorites = RequestFavorites()
         requestFavorites.fileIds = ArrayList(listOf(mItemClicked!!.id))
-        mDisposable.add(mFileProvider.deleteFromFavorites(requestFavorites)
+        mDisposable.add(mFileProvider.deleteFromFavorites(requestFavorites)!!
             .subscribe({ response: Base? ->
                 mItemClicked!!.favorite = !mItemClicked!!.favorite
                 viewState.onRemoveItemFromFavorites()
@@ -594,7 +594,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
             .subscribe({ file: CloudFile ->
                 mItemClicked = file
-                when (StringUtils.getExtension(file.fileExst)) {
+                when (StringUtils.getExtension(file?.fileExst)) {
                     StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF -> {
                         viewState.onFileWebView(file)
                     }

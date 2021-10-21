@@ -253,7 +253,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
             }
     }
 
-    override fun fileInfo(item: Item): Observable<CloudFile> {
+    override fun fileInfo(item: Item?): Observable<CloudFile> {
         return Observable.create { emitter: ObservableEmitter<CloudFile> ->
             val outputFile = checkDirectory(item)
 
@@ -330,7 +330,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     @SuppressLint("MissingPermission")
-    private fun checkDirectory(item: Item): File? {
+    private fun checkDirectory(item: Item?): File? {
         val file = item as CloudFile
         when (getExtension(file.fileExst)) {
             StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH, StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
@@ -450,21 +450,13 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
         return responseOperation
     }
 
-    override fun share(id: String?, requestExternal: RequestExternal?): Observable<ResponseExternal> {
-        TODO("Not yet implemented")
-    }
+    override fun share(id: String, requestExternal: RequestExternal): Observable<ResponseExternal>? = null
 
-    override fun terminate(): Observable<MutableList<Operation>> {
-        TODO("Not yet implemented")
-    }
+    override fun terminate(): Observable<List<Operation>>?  = null
 
-    override fun addToFavorites(requestFavorites: RequestFavorites?): Observable<Base> {
-        TODO("Not yet implemented")
-    }
+    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
 
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites?): Observable<Base> {
-        TODO("Not yet implemented")
-    }
+    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>?  = null
 
     @Throws(UnsupportedEncodingException::class)
     private fun getExplorer(responseBeans: List<WebDavModel.ResponseBean>, filter: Map<String, String>?): Explorer {

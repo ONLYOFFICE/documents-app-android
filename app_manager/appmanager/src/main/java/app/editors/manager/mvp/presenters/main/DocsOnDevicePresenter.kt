@@ -218,7 +218,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         if (id[id.length - 1] != '/') {
             id = "$id/"
         }
-        mUploadDisposable = webDavFileProvider!!.upload(id, uriList)
+        mUploadDisposable = webDavFileProvider!!.upload(id, uriList)!!
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ }, { throwable: Throwable -> fetchError(throwable) }
