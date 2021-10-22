@@ -57,7 +57,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
             activity = context as IMainActivity
         } catch (e: ClassCastException) {
             throw RuntimeException(
-                DocsOnDeviceFragment::class.java.simpleName + " - must implement - " +
+                DocsOneDriveFragment::class.java.simpleName + " - must implement - " +
                         IMainActivity::class.java.simpleName
             )
         }

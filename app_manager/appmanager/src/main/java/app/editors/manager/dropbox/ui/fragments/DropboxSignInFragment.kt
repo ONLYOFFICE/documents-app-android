@@ -157,8 +157,8 @@ class DropboxSignInFragment: BaseAppFragment(), SwipeRefreshLayout.OnRefreshList
             super.onPageStarted(view, url, favicon)
             if (url.startsWith(redirectUrl!!)) {
                 val accessToken = url.split("=")
-                val token = accessToken[1]
-                presenter.getUserInfo(token.dropLast(11), accessToken[4])
+                val token = accessToken[2]
+                presenter.getUserInfo(token.dropLast(4), accessToken[4])
             }
         }
 

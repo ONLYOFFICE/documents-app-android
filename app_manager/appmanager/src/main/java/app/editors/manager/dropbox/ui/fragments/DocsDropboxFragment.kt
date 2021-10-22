@@ -74,6 +74,10 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
         }
     }
 
+    override fun setVisibilityActionButton(isShow: Boolean) {
+        activity?.showActionButton(isShow)
+    }
+
     private fun disableMenu() {
         menu?.let {
             deleteItem?.isEnabled = false

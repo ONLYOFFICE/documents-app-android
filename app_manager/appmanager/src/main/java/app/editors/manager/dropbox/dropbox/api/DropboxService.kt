@@ -1,7 +1,7 @@
 package app.editors.manager.dropbox.dropbox.api
 
 import app.documents.core.network.ApiContract
-import app.editors.manager.dropbox.dropbox.login.DropboxLoginService
+import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
 import io.reactivex.Single
@@ -28,4 +28,10 @@ interface DropboxService {
     )
     @POST("${API_VERSION}files/download")
     fun download(@Body request: ExplorerRequest): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/delete_v2")
+    fun delete(@Body request: DeleteRequest): Single<Response<ResponseBody>>
 }

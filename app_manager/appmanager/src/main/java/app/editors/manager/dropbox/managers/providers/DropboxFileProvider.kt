@@ -9,6 +9,7 @@ import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
+import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
 import app.editors.manager.managers.providers.BaseFileProvider
@@ -27,6 +28,7 @@ import io.reactivex.schedulers.Schedulers
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.ResponseBody
+import retrofit2.HttpException
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -71,7 +73,7 @@ class DropboxFileProvider : BaseFileProvider {
         for(item in items) {
             if(item.tag == "file") {
                 val file = CloudFile()
-                file.id = item.id
+                file.id = item.path_display
                 file.title = item.name
                 file.pureContentLength = item.size.toLong()
                 file.fileExst = StringUtils.getExtensionFromPath(item.name.toLowerCase())
@@ -114,7 +116,25 @@ class DropboxFileProvider : BaseFileProvider {
         items: MutableList<Item>?,
         from: CloudFolder?
     ): Observable<MutableList<Operation>> {
-        TODO("Not yet implemented")
+        return items?.size?.let {
+            Observable.fromIterable(items).map { item -> api.delete(DeleteRequest(item.id)).blockingGet() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { response ->
+                    if(response.isSuccessful && response.code() == 200) {
+                        return@map response
+                    } else {
+                        throw HttpException(response)
+                    }
+                }.buffer(it)
+                .map {
+                    val operations: MutableList<Operation> = ArrayList()
+                    val operation = Operation()
+                    operation.progress = 100
+                    operations.add(operation)
+                    return@map operations
+                }
+        }!!
     }
 
     override fun transfer(
@@ -144,7 +164,9 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     override fun getStatusOperation(): ResponseOperation {
-        TODO("Not yet implemented")
+        val responseOperation = ResponseOperation()
+        responseOperation.response = ArrayList()
+        return responseOperation
     }
 
     override fun download(items: MutableList<Item>?): Observable<Int> {
