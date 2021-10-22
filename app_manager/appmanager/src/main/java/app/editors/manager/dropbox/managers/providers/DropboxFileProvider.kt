@@ -9,9 +9,11 @@ import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
+import app.editors.manager.dropbox.mvp.models.request.CreateFolderRequest
 import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
+import app.editors.manager.dropbox.mvp.models.response.MetadataResponse
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
@@ -20,6 +22,8 @@ import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
+import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
+import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -40,7 +44,7 @@ class DropboxFileProvider : BaseFileProvider {
     private var api: IDropboxServiceProvider = App.getApp().getDropboxComponent()
 
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer> {
-        val request = id?.let { ExplorerRequest(path = it) }
+        val request = if(id?.isEmpty() == true) ExplorerRequest(path = "/ ") else id?.let { ExplorerRequest(path = it) }
         return Observable.fromCallable {
             request?.let { api.getFiles(it).blockingGet() }
         }
@@ -49,7 +53,7 @@ class DropboxFileProvider : BaseFileProvider {
             .map { dropboxResponse ->
                 when(dropboxResponse) {
                     is DropboxResponse.Success -> {
-                        return@map getExplorer((dropboxResponse.response as ExplorerResponse).entries)
+                        return@map getExplorer((dropboxResponse.response as ExplorerResponse).entries, id)
                     }
                     is DropboxResponse.Error -> {
                         throw dropboxResponse.error
@@ -58,44 +62,61 @@ class DropboxFileProvider : BaseFileProvider {
             }
     }
 
-    private fun getExplorer(items: List<DropboxItem>): Explorer {
+    private fun getExplorer(items: List<DropboxItem>, id: String?): Explorer {
         val explorer = Explorer()
         val files: MutableList<CloudFile> = mutableListOf()
         val folders: MutableList<CloudFolder> = mutableListOf()
 
-        val parentFolder = CloudFolder().apply {
-            this.id = items[0].path_display.substring(0, items[0].path_display.lastIndexOf('/'))
-            this.title = items[0].path_display.split('/').run {
-                this[this.size - 2]
+        if(items.isNotEmpty()) {
+            val parentFolder = CloudFolder().apply {
+                this.id = items[0].path_display.substring(0, items[0].path_display.lastIndexOf('/'))
+                this.title = items[0].path_display.split('/').run {
+                    this[this.size - 2]
+                }
             }
-        }
 
-        for(item in items) {
-            if(item.tag == "file") {
-                val file = CloudFile()
-                file.id = item.path_display
-                file.title = item.name
-                file.pureContentLength = item.size.toLong()
-                file.fileExst = StringUtils.getExtensionFromPath(item.name.toLowerCase())
-                file.updated = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.client_modified)
-                files.add(file)
-            } else {
-                val folder = CloudFolder()
-                folder.id = item.path_display
-                folder.title = item.name
-                //folder.updated = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.client_modified)
-                folders.add(folder)
+            for (item in items) {
+                if (item.tag == "file") {
+                    val file = CloudFile()
+                    file.id = item.path_display
+                    file.title = item.name
+                    file.pureContentLength = item.size.toLong()
+                    file.fileExst = StringUtils.getExtensionFromPath(item.name.toLowerCase())
+                    file.updated = SimpleDateFormat(
+                        "yyyy-MM-dd'T'HH:mm:ss",
+                        Locale.getDefault()
+                    ).parse(item.client_modified)
+                    files.add(file)
+                } else {
+                    val folder = CloudFolder()
+                    folder.id = item.path_display
+                    folder.title = item.name
+                    //folder.updated = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.client_modified)
+                    folders.add(folder)
+                }
             }
-        }
-        val current = Current()
-        current.filesCount = files.size.toString()
-        current.foldersCount = files.size.toString()
-        current.title = if(parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT_TITLE else parentFolder.title
-        current.id = if(parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT else parentFolder.id
+            val current = Current()
+            current.filesCount = files.size.toString()
+            current.foldersCount = files.size.toString()
+            current.title =
+                if (parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT_TITLE else parentFolder.title
+            current.id =
+                if (parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT else "${parentFolder.id}/"
 
-        explorer.current = current
-        explorer.files = files
-        explorer.folders = folders
+            explorer.current = current
+            explorer.files = files
+            explorer.folders = folders
+        } else {
+            val current = Current()
+
+            current.id = if(id.equals(DropboxUtils.DROPBOX_ROOT)) DropboxUtils.DROPBOX_ROOT else "$id/"
+            current.filesCount = 0.toString()
+            current.foldersCount = 0.toString()
+
+            explorer.current = current
+            explorer.files = emptyList()
+            explorer.folders = emptyList()
+        }
 
         return explorer
     }
@@ -105,7 +126,32 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     override fun createFolder(folderId: String?, body: RequestCreate?): Observable<CloudFolder> {
-        TODO("Not yet implemented")
+        val createFolderRequest = folderId?.let {
+            CreateFolderRequest(
+                path = "$it${body?.title}",
+                autorename = false
+            )
+        }
+        return Observable.fromCallable { createFolderRequest?.let { api.createFolder(it).blockingGet() } }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                when (response) {
+                    is DropboxResponse.Success -> {
+                        val folder = CloudFolder()
+                        folder.id = (response.response as MetadataResponse).metadata?.path_display
+                        folder.title = response.response.metadata?.name
+                        folder.updated = Date()
+                        return@map folder
+                    }
+                    is DropboxResponse.Error -> {
+                        throw response.error
+                    }
+                    else -> {
+                        return@map null
+                    }
+                }
+            }
     }
 
     override fun rename(item: Item?, newName: String?, version: Int?): Observable<Item> {

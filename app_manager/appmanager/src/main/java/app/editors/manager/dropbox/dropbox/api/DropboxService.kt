@@ -1,9 +1,11 @@
 package app.editors.manager.dropbox.dropbox.api
 
 import app.documents.core.network.ApiContract
+import app.editors.manager.dropbox.mvp.models.request.CreateFolderRequest
 import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
+import app.editors.manager.dropbox.mvp.models.response.MetadataResponse
 import io.reactivex.Single
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -34,4 +36,10 @@ interface DropboxService {
     )
     @POST("${API_VERSION}files/delete_v2")
     fun delete(@Body request: DeleteRequest): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/create_folder_v2")
+    fun createFolder(@Body request: CreateFolderRequest): Single<Response<MetadataResponse>>
 }

@@ -189,6 +189,6 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
     }
 
     override fun onActionClick() {
-        TODO("Not yet implemented")
+        viewState.onActionDialog(false, true)
     }
 }

@@ -1,6 +1,7 @@
 package app.editors.manager.dropbox.dropbox.api
 
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
+import app.editors.manager.dropbox.mvp.models.request.CreateFolderRequest
 import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
 import com.jakewharton.rxrelay2.BehaviorRelay
@@ -32,6 +33,13 @@ class DropboxServiceProvider(
 
     override fun delete(request: DeleteRequest): Single<Response<ResponseBody>> {
         return dropBoxService.delete(request)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun createFolder(request: CreateFolderRequest): Single<DropboxResponse> {
+        return dropBoxService.createFolder(request)
+            .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
