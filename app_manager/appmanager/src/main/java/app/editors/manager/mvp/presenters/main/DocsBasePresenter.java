@@ -14,6 +14,9 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +41,7 @@ import app.documents.core.settings.NetworkSettings;
 import app.editors.manager.R;
 import app.editors.manager.managers.exceptions.NoConnectivityException;
 import app.editors.manager.managers.providers.BaseFileProvider;
+import app.editors.manager.managers.providers.CloudFileProvider;
 import app.editors.manager.managers.providers.ProviderError;
 import app.editors.manager.managers.providers.WebDavFileProvider;
 import app.editors.manager.managers.services.DownloadService;
@@ -225,14 +229,27 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         setPlaceholderType(PlaceholderViews.Type.LOAD);
         final String id = mModelExplorerStack.getCurrentId();
         if (id != null) {
-            mDisposable.add(mFileProvider.getFiles(id, getArgs(mFilteringValue))
-                    .subscribe(explorer -> {
-                        mModelExplorerStack.refreshStack(explorer);
-                        updateViewsState();
-                        getViewState().onDocsRefresh(getListWithHeaders(mModelExplorerStack.last(), true));
-                    }, this::fetchError));
-            getViewState().onSwipeEnable(true);
-            return true;
+            if(mFilteringValue.isEmpty()) {
+                mDisposable.add(mFileProvider.getFiles(id, getArgs(mFilteringValue))
+                        .subscribe(explorer -> {
+                            mModelExplorerStack.refreshStack(explorer);
+                            updateViewsState();
+                            getViewState().onDocsRefresh(getListWithHeaders(mModelExplorerStack.last(), true));
+                        }, this::fetchError));
+                getViewState().onSwipeEnable(true);
+                return true;
+            } else if(mIsFilteringMode && mFileProvider instanceof CloudFileProvider) {
+                mDisposable.add(((CloudFileProvider)mFileProvider).search(mFilteringValue)
+                        .subscribe(items -> {
+                            mModelExplorerStack.refreshStack(getSearchExplorer(items));
+                            setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
+                            updateViewsState();
+                            getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
+                        }, this::fetchError)
+                );
+                getViewState().onSwipeEnable(true);
+                return true;
+            }
         }
 
         return false;
@@ -269,21 +286,65 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             if (id != null) {
 
                 mFilteringValue = value;
-                mDisposable.add(mFileProvider.getFiles(id, getArgs(value))
-                        .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
-                        .subscribe(explorer -> {
-                            mModelExplorerStack.setFilter(explorer);
-                            setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
-                            updateViewsState();
-                            getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
-                        }, this::fetchError));
-
-                getViewState().onSwipeEnable(true);
-                return true;
+                if(!(mFileProvider instanceof CloudFileProvider)) {
+                    mDisposable.add(mFileProvider.getFiles(id, getArgs(value))
+                            .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
+                            .subscribe(explorer -> {
+                                mModelExplorerStack.setFilter(explorer);
+                                setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
+                                updateViewsState();
+                                getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
+                            }, this::fetchError));
+                } else {
+                    mDisposable.add(((CloudFileProvider)mFileProvider).search(value)
+                            .subscribe(items -> {
+                                mModelExplorerStack.setFilter(getSearchExplorer(items));
+                                setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
+                                updateViewsState();
+                                getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
+                            }, this::fetchError)
+                    );
+                }
             }
         }
 
         return false;
+    }
+
+
+    private Explorer getSearchExplorer(String items) throws JSONException {
+        List<CloudFile> files = new ArrayList();
+        List<CloudFolder> folders = new ArrayList();
+        Explorer explorer = new Explorer();
+        for(Item item : getSearchResult(items)) {
+            if(item instanceof CloudFile) {
+                files.add((CloudFile) item);
+            } else {
+                folders.add((CloudFolder)item);
+            }
+        }
+        explorer.setFiles(files);
+        explorer.setFolders(folders);
+        return explorer;
+    }
+
+    private List<Item> getSearchResult(String response) throws JSONException {
+        final JSONObject jsonObjectResponse = StringUtils.getJsonObject(response);
+        if(jsonObjectResponse != null) {
+            String result = jsonObjectResponse.getString("response");
+            Gson gson = new Gson();
+            JsonArray jsonArrayItems = new JsonParser().parse(result).getAsJsonArray();
+            List<Item> items = new ArrayList();
+            for(JsonElement json: jsonArrayItems) {
+                if(json.toString().contains("parentId")) {
+                    items.add(gson.fromJson(json, CloudFolder.class));
+                } else {
+                    items.add(gson.fromJson(json, CloudFile.class));
+                }
+            }
+            return items;
+        }
+        return null;
     }
 
     public void filterWait(@NonNull final String value) {

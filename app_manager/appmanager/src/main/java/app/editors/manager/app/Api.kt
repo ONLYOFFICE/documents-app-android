@@ -61,6 +61,14 @@ interface Api {
         @QueryMap options: Map<String, String>?
     ): Observable<Response<ResponseExplorer>>
 
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/@search/{query}" + ApiContract.RESPONSE_FORMAT)
+    fun search(@Path(value = "query") query: String): Observable<Response<ResponseBody>>
+
     /*
      * Create docs file
      * */

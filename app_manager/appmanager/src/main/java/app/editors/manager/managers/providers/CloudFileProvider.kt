@@ -41,6 +41,21 @@ class CloudFileProvider : BaseFileProvider {
             }
     }
 
+    override fun search(query: String?): Observable<String>? {
+        return query?.let {
+            api.search(it)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { responseSearchResponse ->
+                    if (responseSearchResponse.isSuccessful && responseSearchResponse.body() != null) {
+                        return@map responseSearchResponse.body()!!.string()
+                    } else {
+                        throw HttpException(responseSearchResponse)
+                    }
+                }
+        }
+    }
+
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
         return api.createDocs(folderId, body)
             .subscribeOn(Schedulers.io())
@@ -163,7 +178,7 @@ class CloudFileProvider : BaseFileProvider {
         return null
     }
 
-    override fun upload(folderId: String, uri: List<Uri>): Observable<Int>? {
+    override fun upload(folderId: String, uri: List<Uri?>): Observable<Int>? {
         return null
     }
 
@@ -222,8 +237,8 @@ class CloudFileProvider : BaseFileProvider {
             }
     }
 
-    override fun fileInfo(item: Item): Observable<CloudFile> {
-        return api.getFileInfo(item.id)
+    override fun fileInfo(item: Item?): Observable<CloudFile> {
+        return api.getFileInfo(item?.id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseFile: Response<ResponseFile> ->

@@ -60,7 +60,7 @@ class OneDriveFileProvider : BaseFileProvider {
         api = getApp().getOneDriveComponent()
     }
 
-    override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer>? {
+    override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.fromCallable {
             if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
                 id?.let {
@@ -156,10 +156,10 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     @SuppressLint("MissingPermission")
-    override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
+    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
         return Observable.fromCallable {
-            body?.title?.let { title ->
-                folderId?.let { folderId ->
+            body.title?.let { title ->
+                folderId.let { folderId ->
                     api.createFile(
                         folderId,
                         title,
@@ -189,7 +189,7 @@ class OneDriveFileProvider : BaseFileProvider {
                                 getExtensionFromPath(title)
                             )
                         }
-                        upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
+                        upload(folderId, mutableListOf(Uri.fromFile(temp)))?.subscribe()
                         val file = CloudFile()
                         file.webUrl = Uri.fromFile(temp).toString()
                         file.pureContentLength = temp?.length() ?: 0
@@ -209,13 +209,15 @@ class OneDriveFileProvider : BaseFileProvider {
             }
     }
 
-    override fun createFolder(folderId: String?, body: RequestCreate?): Observable<CloudFolder>? {
+    override fun search(query: String?): Observable<String>? = null
+
+    override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
         val request = CreateFolderRequest(
-            name = body?.title!!,
+            name = body.title,
             folder = DriveItemFolder(),
             conflictBehavior = OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME
         )
-        return Observable.fromCallable { api.createFolder(folderId!!, request).blockingGet() }
+        return Observable.fromCallable { api.createFolder(folderId, request).blockingGet() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
@@ -237,16 +239,16 @@ class OneDriveFileProvider : BaseFileProvider {
             }
     }
 
-    override fun rename(item: Item?, newName: String?, version: Int?): Observable<Item> {
+    override fun rename(item: Item, newName: String, version: Int?): Observable<Item> {
         val correctName = if (item is CloudFile) {
             StringUtils.getEncodedString(newName) + item.fileExst
         } else {
             newName
         }
-        val request = correctName?.let { RenameRequest(it) }
+        val request = RenameRequest(correctName)
         return Observable.fromCallable {
-            item?.id?.let { id ->
-                request?.let { request ->
+            item.id?.let { id ->
+                request.let { request ->
                     api.renameItem(
                         id,
                         request
@@ -258,8 +260,8 @@ class OneDriveFileProvider : BaseFileProvider {
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
                 if (response.isSuccessful) {
-                    item?.updated = Date()
-                    item?.title = newName
+                    item.updated = Date()
+                    item.title = newName
                     return@map item
                 } else {
                     throw HttpException(response)
@@ -268,10 +270,10 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     override fun delete(
-        items: MutableList<Item>?,
+        items: List<Item>,
         from: CloudFolder?
     ): Observable<List<Operation>> {
-        return items?.size?.let {
+        return items.size.let {
             Observable.fromIterable(items).map { item -> api.deleteItem(item.id).blockingGet() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -293,20 +295,20 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     override fun transfer(
-        items: MutableList<Item>?,
+        items: List<Item>,
         to: CloudFolder?,
         conflict: Int,
         isMove: Boolean,
         isOverwrite: Boolean
-    ): Observable<MutableList<Operation>> {
+    ): Observable<List<Operation>>? {
         return if(isMove) {
-            to?.id?.let { moveItem(items, it, isOverwrite) }!!
+            to?.id?.let { moveItem(items, it, isOverwrite) }
         } else {
-            to?.id?.let { copyItem(items, it, isOverwrite) }!!
+            to?.id?.let { copyItem(items, it, isOverwrite) }
         }
     }
 
-    private fun copyItem(items: MutableList<Item>?, to: String, isOverwrite: Boolean): Observable<MutableList<Operation>> {
+    private fun copyItem(items: List<Item>?, to: String, isOverwrite: Boolean): Observable<List<Operation>> {
         return Observable.fromIterable(items)
             .flatMap { item ->
                 val request = CopyItemRequest(parentReference = DriveItemParentReference(driveId = "", driveType = "", id = to, name = item.title, path = ""), name = item.title)
@@ -325,7 +327,7 @@ class OneDriveFileProvider : BaseFileProvider {
             }
     }
 
-    private fun moveItem(items: MutableList<Item>?, to: String, isOverwrite: Boolean): Observable<MutableList<Operation>> {
+    private fun moveItem(items: List<Item>?, to: String, isOverwrite: Boolean): Observable<List<Operation>> {
         return Observable.fromIterable(items)
             .flatMap { item ->
                 val request = CopyItemRequest(parentReference = DriveItemParentReference(driveId = "", driveType = "", id = to, name = item.title, path = ""), name = item.title)
@@ -344,15 +346,15 @@ class OneDriveFileProvider : BaseFileProvider {
             }
     }
 
-    override fun fileInfo(item: Item?): Observable<CloudFile?> {
-        return Observable.create { emitter: ObservableEmitter<CloudFile?> ->
-            val outputFile = item?.let { checkDirectory(it) }
+    override fun fileInfo(item: Item?): Observable<CloudFile> {
+        return Observable.create { emitter: ObservableEmitter<CloudFile> ->
+            val outputFile = checkDirectory(item)
             if (outputFile != null && outputFile.exists()) {
                 if (item is CloudFile) {
                     if (item.pureContentLength != outputFile.length()) {
                         download(emitter, item, outputFile)
                     } else {
-                        setFile(item, outputFile)?.let { emitter.onNext(it) }
+                        setFile(item, outputFile).let { emitter.onNext(it) }
                         emitter.onComplete()
                     }
                 }
@@ -382,11 +384,9 @@ class OneDriveFileProvider : BaseFileProvider {
         return responseOperation
     }
 
-    override fun download(items: MutableList<Item>?): Observable<Int> {
-        TODO("Not yet implemented")
-    }
+    override fun download(items: List<Item>): Observable<Int>? = null
 
-    override fun upload(folderId: String?, uris: MutableList<Uri>?): Observable<Int> {
+    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? {
         return Observable.fromIterable(uris)
             .flatMap {
                 val data = Data.Builder()
@@ -430,11 +430,9 @@ class OneDriveFileProvider : BaseFileProvider {
     }
 
     override fun share(
-        id: String?,
-        requestExternal: RequestExternal?
-    ): Observable<ResponseExternal> {
-        TODO("Not yet implemented")
-    }
+        id: String,
+        requestExternal: RequestExternal
+    ): Observable<ResponseExternal>? = null
 
     fun share(id: String, request: ExternalLinkRequest): Observable<ExternalLinkResponse>? {
         return Observable.fromCallable { api.getExternalLink(id, request).blockingGet() }
@@ -455,20 +453,14 @@ class OneDriveFileProvider : BaseFileProvider {
             }
     }
 
-    override fun terminate(): Observable<MutableList<Operation>> {
-        TODO("Not yet implemented")
-    }
+    override fun terminate(): Observable<List<Operation>>? = null
 
-    override fun addToFavorites(requestFavorites: RequestFavorites?): Observable<Base> {
-        TODO("Not yet implemented")
-    }
+    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
 
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites?): Observable<Base> {
-        TODO("Not yet implemented")
-    }
+    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
 
     @SuppressLint("MissingPermission")
-    private fun checkDirectory(item: Item): File? {
+    private fun checkDirectory(item: Item?): File? {
         val file = item as CloudFile
         when (getExtension(file.fileExst)) {
             StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH, StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
