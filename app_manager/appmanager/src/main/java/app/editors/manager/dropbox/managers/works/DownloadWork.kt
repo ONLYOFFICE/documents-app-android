@@ -1,27 +1,22 @@
-package app.editors.manager.onedrive.managers.works
+package app.editors.manager.dropbox.managers.works
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import app.documents.core.network.ApiContract
-import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.getOneDriveServiceProvider
-import app.editors.manager.onedrive.onedrive.OneDriveResponse
+import app.editors.manager.app.getDropboxServiceProvider
 import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.managers.works.DownloadWork
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
-import okhttp3.ResponseBody
-import org.json.JSONException
 
 class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker(context, workerParameters) {
 
@@ -37,6 +32,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
         private const val LOAD_PROGRESS_UPDATE = 15
 
         const val DOWNLOAD_ZIP_NAME = "download.zip"
+
     }
 
     private val notificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)
@@ -47,9 +43,10 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
     override fun doWork(): Result {
         getArgs()
-        val response = id?.let { applicationContext.getOneDriveServiceProvider().download(it).blockingGet() }
-        if (response is OneDriveResponse.Success) {
-            FileUtils.writeFromResponseBody((response.response as ResponseBody), to!!, applicationContext, object: FileUtils.Progress {
+        val map = mapOf("path" to id)
+        val response = applicationContext.getDropboxServiceProvider().download(Json.encodeToString(map)).blockingGet()
+        response.body()?.let { response ->
+            FileUtils.writeFromResponseBody(response, to!!, applicationContext, object: FileUtils.Progress {
                 override fun onProgress(total: Long, progress: Long): Boolean {
                     showProgress(total, progress, false)
                     return isStopped
@@ -82,12 +79,15 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
                     file?.delete()
                 }
             })
-        } else if(response is OneDriveResponse.Error){
-            throw response.error
         }
-
-
         return Result.success()
+    }
+
+    private fun getArgs() {
+        val data = inputData
+        to = Uri.parse(data.getString(FILE_URI_KEY))
+        file = DocumentFile.fromSingleUri(applicationContext, to!!)
+        id = data.getString(FILE_ID_KEY)
     }
 
     private fun showProgress(total: Long, progress: Long, isArchiving: Boolean) {
@@ -105,55 +105,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
         }
     }
 
-    private fun onError(responseBody: ResponseBody?) {
-        val errorMessage: String
-        var responseMessage: String? = null
-        responseMessage = try {
-            responseBody?.string()
-        } catch (e: Exception) {
-            sendBroadcastUnknownError(id, "", file!!.name)
-            file?.delete()
-            return
-        }
-        if (responseMessage != null) {
-            val jsonObject = StringUtils.getJsonObject(responseMessage)
-            if (jsonObject != null) {
-                try {
-                    errorMessage = jsonObject.getJSONObject(KEY_ERROR_INFO).getString(
-                        KEY_ERROR_INFO_MESSAGE
-                    )
-                    DownloadWork.sendBroadcastError(id, "", file?.name, errorMessage)
-                } catch (e: JSONException) {
-                    Log.e(TAG, "onErrorHandle()", e)
-                    FirebaseUtils.addCrash(e)
-                }
-            } else {
-                DownloadWork.sendBroadcastUnknownError(id, "", file?.name)
-                file?.delete()
-                return
-            }
-        }
-    }
-
-    private fun onError(errorMessage: String) {
-        when (errorMessage) {
-            ApiContract.Errors.EXCEED_FILE_SIZE_100 -> DownloadWork.sendBroadcastError(
-                id,
-                "",
-                file?.name,
-                applicationContext.getString(R.string.download_manager_exceed_size_100)
-            )
-            ApiContract.Errors.EXCEED_FILE_SIZE_25 -> DownloadWork.sendBroadcastError(
-                id,
-                "",
-                file?.name,
-                applicationContext.getString(R.string.download_manager_exceed_size_25)
-            )
-            else -> DownloadWork.sendBroadcastError(id, "", file?.name, errorMessage)
-        }
-    }
-
-    private fun sendBroadcastDownloadComplete(
+    fun sendBroadcastDownloadComplete(
         id: String?, url: String?, title: String?,
         path: String?, mime: String?
     ) {
@@ -166,7 +118,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 
-    private fun sendBroadcastUnknownError(id: String?, url: String?, title: String?) {
+    fun sendBroadcastUnknownError(id: String?, url: String?, title: String?) {
         val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
@@ -181,12 +133,5 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_ERROR, error)
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
-    }
-
-    private fun getArgs() {
-        val data = inputData
-        to = Uri.parse(data.getString(FILE_URI_KEY))
-        file = DocumentFile.fromSingleUri(applicationContext, to!!)
-        id = data.getString(FILE_ID_KEY)
     }
 }

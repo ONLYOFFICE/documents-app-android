@@ -235,3 +235,9 @@ fun Context.getOneDriveServiceProvider(): IOneDriveServiceProvider {
         else -> this.applicationContext.getOneDriveServiceProvider()
     }
 }
+fun Context.getDropboxServiceProvider(): IDropboxServiceProvider {
+    return when(this) {
+        is App -> this.getDropboxComponent()
+        else -> this.applicationContext.getDropboxServiceProvider()
+    }
+}

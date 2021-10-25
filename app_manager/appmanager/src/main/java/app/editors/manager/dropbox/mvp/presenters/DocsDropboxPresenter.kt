@@ -1,8 +1,11 @@
 package app.editors.manager.dropbox.mvp.presenters
 
-import android.util.Log
+import android.net.Uri
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import app.documents.core.account.Recent
-import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.dropbox.dropbox.api.DropboxService
@@ -26,11 +29,19 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import java.util.*
+import app.editors.manager.dropbox.managers.works.*
+import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.receivers.UploadReceiver
 
-class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
+class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
 
     private var downloadDisposable: Disposable? = null
     private var tempFile: CloudFile? = null
+
+    private val workManager = WorkManager.getInstance()
+
+    private val uploadReceiver: UploadReceiver
+    private val downloadReceiver: DownloadReceiver
 
     init {
         App.getApp().appComponent.inject(this)
@@ -41,22 +52,22 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
         mIsFilteringMode = false
         mIsSelectionMode = false
         mIsFoldersMode = false
-        //uploadReceiver = UploadReceiver()
-        //downloadReceiver = DownloadReceiver()
+        uploadReceiver = UploadReceiver()
+        downloadReceiver = DownloadReceiver()
     }
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        //uploadReceiver.setOnUploadListener(this)
-        //LocalBroadcastManager.getInstance(mContext).registerReceiver(uploadReceiver, uploadReceiver.filter)
-        //downloadReceiver.setOnDownloadListener(this)
-        //LocalBroadcastManager.getInstance(mContext).registerReceiver(downloadReceiver, downloadReceiver.filter)
+        uploadReceiver.setOnUploadListener(this)
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(uploadReceiver, uploadReceiver.filter)
+        downloadReceiver.setOnDownloadListener(this)
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(downloadReceiver, downloadReceiver.filter)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        //LocalBroadcastManager.getInstance(mContext).unregisterReceiver(uploadReceiver)
-        //LocalBroadcastManager.getInstance(mContext).unregisterReceiver(downloadReceiver)
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(uploadReceiver)
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(downloadReceiver)
     }
 
     fun getProvider() {
@@ -85,6 +96,20 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
                 }
             }
         }
+    }
+
+    override fun download(downloadTo: Uri) {
+        setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
+        val data = Data.Builder()
+            .putString(DownloadWork.FILE_ID_KEY, mItemClicked?.id)
+            .putString(DownloadWork.FILE_URI_KEY, downloadTo.toString())
+            .build()
+
+        val request = OneTimeWorkRequest.Builder(DownloadWork::class.java)
+            .setInputData(data)
+            .build()
+
+        workManager.enqueue(request)
     }
 
     override fun refresh(): Boolean {
@@ -222,5 +247,75 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
     private fun setBaseUrl(baseUrl: String) {
         networkSettings.setBaseUrl(baseUrl)
         (mFileProvider as DropboxFileProvider).refreshInstance()
+    }
+
+    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?) {
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onDownloadProgress(id: String?, total: Int, progress: Int) {
+        viewState.onDialogProgress(total, progress)
+    }
+
+    override fun onDownloadComplete(
+        id: String?,
+        url: String?,
+        title: String?,
+        info: String?,
+        path: String?,
+        mime: String?,
+        uri: Uri?
+    ) {
+        viewState.onDialogClose()
+        viewState.onSnackBarWithAction(
+            """
+    $info
+    $title
+    """.trimIndent(), mContext.getString(R.string.download_manager_open)
+        ) { showDownloadFolderActivity(uri) }
+    }
+
+    override fun onDownloadCanceled(id: String?, info: String?) {
+        viewState.onDialogClose()
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onDownloadRepeat(id: String?, title: String?, info: String?) {
+        viewState.onDialogClose()
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onUploadError(path: String?, info: String?, file: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onUploadComplete(
+        path: String?,
+        info: String?,
+        title: String?,
+        file: CloudFile?,
+        id: String?
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onUploadCanceled(path: String?, info: String?, id: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onUploadRepeat(path: String?, info: String?) {
+        TODO("Not yet implemented")
+    }
+
+    private fun showDownloadFolderActivity(uri: Uri?) {
+        viewState.onDownloadActivity(uri)
     }
 }
