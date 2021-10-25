@@ -2,6 +2,7 @@ package app.editors.manager.dropbox.di.module
 
 import android.content.Context
 import app.documents.core.account.CloudAccount
+import app.documents.core.settings.NetworkSettings
 import app.editors.manager.dropbox.dropbox.api.DropboxService
 import app.editors.manager.dropbox.dropbox.api.DropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
@@ -37,9 +38,9 @@ class DropboxModule() {
 
     @Provides
     @DropboxScope
-    fun provideDropboxService(okHttpClient: OkHttpClient): DropboxService = Retrofit.Builder()
+    fun provideDropboxService(okHttpClient: OkHttpClient, settings: NetworkSettings): DropboxService = Retrofit.Builder()
         .client(okHttpClient)
-        .baseUrl("https://api.dropboxapi.com/")
+        .baseUrl(settings.getBaseUrl())
         .addConverterFactory(Json {
             isLenient = true
             ignoreUnknownKeys = true

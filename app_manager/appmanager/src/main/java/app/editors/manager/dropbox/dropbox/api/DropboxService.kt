@@ -10,6 +10,7 @@ import io.reactivex.Single
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
@@ -17,6 +18,8 @@ interface DropboxService {
 
     companion object {
         const val API_VERSION = "2/"
+        const val DROPBOX_BASE_URL = "https://api.dropboxapi.com/"
+        const val DROPBOX_BASE_URL_CONTENT = "https://content.dropboxapi.com/"
     }
 
     @Headers(
@@ -29,7 +32,7 @@ interface DropboxService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
     )
     @POST("${API_VERSION}files/download")
-    fun download(@Body request: ExplorerRequest): Single<Response<ResponseBody>>
+    fun download(@Header("Dropbox-API-Arg") request: String): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE

@@ -4,6 +4,7 @@ import android.accounts.Account
 import app.documents.core.account.CloudAccount
 import app.editors.manager.app.App
 import app.editors.manager.app.dropboxLoginService
+import app.editors.manager.dropbox.dropbox.api.DropboxService
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.models.request.AccountRequest
@@ -51,7 +52,7 @@ class DropboxSignInPresenter: BasePresenter<DropboxSignInView>() {
     }
 
     private fun createUser(user: UserResponse, accessToken: String) {
-        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_BASE_URL)
+        networkSettings.setBaseUrl(DropboxService.DROPBOX_BASE_URL)
         val cloudAccount = CloudAccount(
             id = user.account_id,
             isWebDav = false,

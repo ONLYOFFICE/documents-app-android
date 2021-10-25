@@ -3,6 +3,7 @@ package app.editors.manager.dropbox.managers.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 
 import app.editors.manager.app.App
 import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
@@ -29,6 +30,8 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.ResponseBody
@@ -244,11 +247,11 @@ class DropboxFileProvider : BaseFileProvider {
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
-        val request = ExplorerRequest(path = (item as CloudFile).id)
-        val result = api.download(request).blockingGet()
-        if(result is DropboxResponse.Success) {
+        val map = mapOf("path" to (item as CloudFile).id)
+        val result = api.download(Json.encodeToString(map)).blockingGet()
+        result.body()?.let { file ->
             try {
-                (result.response as ResponseBody).byteStream().use { inputStream ->
+                file.byteStream().use { inputStream ->
                     FileOutputStream(outputFile).use { outputStream ->
                         val buffer = ByteArray(4096)
                         var count: Int
@@ -263,8 +266,6 @@ class DropboxFileProvider : BaseFileProvider {
             } catch (error: IOException) {
                 emitter.onError(error)
             }
-        } else if(result is DropboxResponse.Error) {
-            throw result.error
         }
     }
 
@@ -297,6 +298,10 @@ class DropboxFileProvider : BaseFileProvider {
             id = ""
             webUrl = Uri.fromFile(outputFile).toString()
         }
+    }
+
+    fun refreshInstance() {
+        api = App.getApp().getDropboxComponent()
     }
 
 }

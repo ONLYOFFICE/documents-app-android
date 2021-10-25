@@ -24,9 +24,9 @@ class DropboxServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun download(request: ExplorerRequest): Single<DropboxResponse> {
+    override fun download(request: String): Single<Response<ResponseBody>> {
         return dropBoxService.download(request)
-            .map { fetchResponse(it) }
+            //.map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

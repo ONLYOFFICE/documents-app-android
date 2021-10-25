@@ -1,8 +1,11 @@
 package app.editors.manager.dropbox.mvp.presenters
 
 import android.util.Log
+import app.documents.core.account.Recent
+import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.dropbox.dropbox.api.DropboxService
 import app.editors.manager.dropbox.managers.providers.DropboxFileProvider
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.views.DocsDropboxView
@@ -22,6 +25,7 @@ import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
+import java.util.*
 
 class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
 
@@ -60,6 +64,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                     withContext(Dispatchers.Main) {
+                        setBaseUrl(DropboxService.DROPBOX_BASE_URL)
                         getItemsById(DropboxUtils.DROPBOX_ROOT)
                     }
 
@@ -71,6 +76,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
                     AccountUtils.getAccount(mContext, cloudAccount.getAccountName())?.let {
                         mFileProvider = DropboxFileProvider()
                         withContext(Dispatchers.Main) {
+                            setBaseUrl(DropboxService.DROPBOX_BASE_URL)
                             getItemsById(DropboxUtils.DROPBOX_ROOT)
                         }
                     }
@@ -79,6 +85,11 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
                 }
             }
         }
+    }
+
+    override fun refresh(): Boolean {
+        setBaseUrl(DropboxService.DROPBOX_BASE_URL)
+        return super.refresh()
     }
 
 
@@ -100,6 +111,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
             }
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
+        setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
         downloadDisposable = mFileProvider.fileInfo(mItemClicked)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -112,8 +124,23 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
             ) { throwable: Throwable? -> fetchError(throwable) }
     }
 
-    override fun addRecent(file: CloudFile?) {
-        TODO("Not yet implemented")
+    override fun addRecent(file: CloudFile) {
+        CoroutineScope(Dispatchers.Default).launch {
+            accountDao.getAccountOnline()?.let {
+                recentDao.addRecent(
+                    Recent(
+                        idFile = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
+                        path = file.webUrl,
+                        name = file.title,
+                        size = file.pureContentLength,
+                        isLocal = false,
+                        isWebDav = true,
+                        date = Date().time,
+                        ownerId = it.id
+                    )
+                )
+            }
+        }
     }
 
     override fun delete(): Boolean {
@@ -190,5 +217,10 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>() {
 
     override fun onActionClick() {
         viewState.onActionDialog(false, true)
+    }
+
+    private fun setBaseUrl(baseUrl: String) {
+        networkSettings.setBaseUrl(baseUrl)
+        (mFileProvider as DropboxFileProvider).refreshInstance()
     }
 }
