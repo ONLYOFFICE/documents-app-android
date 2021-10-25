@@ -544,7 +544,7 @@
     <string name="auth_info_screen_3">Copy the key and paste it to your authenticator app </string>
     <string name="auth_header_screen_4">Type the code</string>
     <string name="auth_info_screen_4">Type the code from your authenticator app to the input field</string>
-    <string name="auth_step_title">Step %d of %d</string>
+    <string name="auth_step_title">Step %1$d of %2$d</string>
     <string name="auth_install_button">Install</string>
     <string name="auth_confirm_button">Confirm</string>
     <string name="auth_clipboard_key_copied">Key copied to clipboard</string>
