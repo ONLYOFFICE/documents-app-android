@@ -32,6 +32,10 @@ import java.util.*
 import app.editors.manager.dropbox.managers.works.*
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
+import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.onedrive.mvp.models.request.ExternalLinkRequest
+import lib.toolkit.base.managers.utils.KeyboardUtils
 
 class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
 
@@ -42,6 +46,31 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     private val uploadReceiver: UploadReceiver
     private val downloadReceiver: DownloadReceiver
+
+
+    val externalLink : Unit
+        get() {
+            mItemClicked?.let {
+                (mFileProvider as DropboxFileProvider).share(it.id)?.let { externalLinkResponse ->
+                    mDisposable.add(externalLinkResponse
+                        .subscribe( {response ->
+                            it.shared = !it.shared
+                            response.link.let { link ->
+                                KeyboardUtils.setDataToClipboard(
+                                    mContext,
+                                    link,
+                                    mContext.getString(R.string.share_clipboard_external_link_label)
+                                )
+                            }
+                            viewState.onDocsAccess(
+                                true,
+                                mContext.getString(R.string.share_clipboard_external_copied)
+                            )
+                        }) {throwable: Throwable -> fetchError(throwable)}
+                    )
+                }
+            }
+        }
 
     init {
         App.getApp().appComponent.inject(this)

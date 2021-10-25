@@ -93,7 +93,7 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
         super.onContextButtonClick(buttons)
         when(buttons) {
             ContextBottomDialog.Buttons.EXTERNAL -> {
-                //presenter.externalLink
+                presenter.externalLink
             }
             ContextBottomDialog.Buttons.EDIT -> {
                 presenter.getFileInfo()

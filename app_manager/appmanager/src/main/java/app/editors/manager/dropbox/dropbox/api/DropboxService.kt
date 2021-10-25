@@ -5,6 +5,7 @@ import app.editors.manager.dropbox.mvp.models.request.CreateFolderRequest
 import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
+import app.editors.manager.dropbox.mvp.models.response.ExternalLinkResponse
 import app.editors.manager.dropbox.mvp.models.response.MetadataResponse
 import io.reactivex.Single
 import okhttp3.ResponseBody
@@ -45,4 +46,10 @@ interface DropboxService {
     )
     @POST("${API_VERSION}files/create_folder_v2")
     fun createFolder(@Body request: CreateFolderRequest): Single<Response<MetadataResponse>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/get_temporary_link")
+    fun getExternalLink(@Body request: DeleteRequest): Single<Response<ExternalLinkResponse>>
 }

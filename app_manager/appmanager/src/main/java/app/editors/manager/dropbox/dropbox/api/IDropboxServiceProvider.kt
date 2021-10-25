@@ -13,4 +13,5 @@ interface IDropboxServiceProvider {
     fun download(request: String): Single<Response<ResponseBody>>
     fun delete(request: DeleteRequest): Single<Response<ResponseBody>>
     fun createFolder(request: CreateFolderRequest): Single<DropboxResponse>
+    fun getExternalLink(request: DeleteRequest): Single<DropboxResponse>
 }

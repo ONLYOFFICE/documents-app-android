@@ -44,6 +44,13 @@ class DropboxServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun getExternalLink(request: DeleteRequest): Single<DropboxResponse> {
+        return dropBoxService.getExternalLink(request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     private fun <T> fetchResponse(response: Response<T>): DropboxResponse {
         return if (response.isSuccessful && response.body() != null) {
             DropboxResponse.Success(response.body()!!)

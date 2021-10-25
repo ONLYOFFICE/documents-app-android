@@ -14,6 +14,7 @@ import app.editors.manager.dropbox.mvp.models.request.CreateFolderRequest
 import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
+import app.editors.manager.dropbox.mvp.models.response.ExternalLinkResponse
 import app.editors.manager.dropbox.mvp.models.response.MetadataResponse
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.mvp.models.base.Base
@@ -231,6 +232,23 @@ class DropboxFileProvider : BaseFileProvider {
         requestExternal: RequestExternal?
     ): Observable<ResponseExternal> {
         TODO("Not yet implemented")
+    }
+
+    fun share(id: String): Observable<ExternalLinkResponse>? {
+        val request = DeleteRequest(path = id)
+        return Observable.fromCallable { api.getExternalLink(request).blockingGet() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { externalLinkResponse ->
+                when(externalLinkResponse) {
+                    is DropboxResponse.Success -> {
+                        return@map (externalLinkResponse.response as ExternalLinkResponse)
+                    }
+                    is DropboxResponse.Error -> {
+                        throw externalLinkResponse.error
+                    }
+                }
+            }
     }
 
     override fun terminate(): Observable<MutableList<Operation>> {
