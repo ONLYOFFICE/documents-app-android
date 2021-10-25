@@ -479,7 +479,9 @@
 
     <style name="MainAppBar" parent="Widget.MaterialComponents.AppBarLayout.Surface" />
 
-    <style name="MainBottomBar" parent="Widget.MaterialComponents.BottomNavigationView.Colored" />
+    <style name="MainBottomBar" parent="Widget.MaterialComponents.BottomNavigationView.Colored" >
+        <item name="android:background">@color/colorPrimaryDark</item>
+    </style>
 
     <style name="MainToolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
         <item name="colorOnPrimary">@color/colorPrimary</item>
