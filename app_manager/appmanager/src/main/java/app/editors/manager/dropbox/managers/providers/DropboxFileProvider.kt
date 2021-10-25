@@ -3,7 +3,6 @@ package app.editors.manager.dropbox.managers.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 
 import app.editors.manager.app.App
 import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
@@ -13,6 +12,7 @@ import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
 import app.editors.manager.dropbox.mvp.models.request.CreateFolderRequest
 import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
+import app.editors.manager.dropbox.mvp.models.request.MoveRequest
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
 import app.editors.manager.dropbox.mvp.models.response.ExternalLinkResponse
 import app.editors.manager.dropbox.mvp.models.response.MetadataResponse
@@ -24,8 +24,6 @@ import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
-import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
-import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -35,7 +33,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
-import okhttp3.ResponseBody
 import retrofit2.HttpException
 import java.io.File
 import java.io.FileOutputStream
@@ -159,7 +156,34 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     override fun rename(item: Item?, newName: String?, version: Int?): Observable<Item> {
-        TODO("Not yet implemented")
+        val correctName = if (item is CloudFile) {
+            StringUtils.getEncodedString(newName) + item.fileExst
+        } else {
+            newName
+        }
+        val toPath = item?.id?.removeRange(item.id.lastIndexOf("/") + 1, item.id.length) + correctName
+        val request = MoveRequest(
+            from_path = item?.id!!,
+            to_path = toPath,
+            allow_shared_folder = false,
+            allow_ownership_transfer = false,
+            autorename = true
+        )
+        return Observable.fromCallable { api.move(request).blockingGet() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                when(response) {
+                    is DropboxResponse.Success -> {
+                        item.updated = Date()
+                        item.title = newName
+                        return@map item
+                    }
+                    is DropboxResponse.Error -> {
+                        throw response.error
+                    }
+                }
+            }
     }
 
     override fun delete(

@@ -4,6 +4,7 @@ import app.editors.manager.dropbox.dropbox.login.DropboxResponse
 import app.editors.manager.dropbox.mvp.models.request.CreateFolderRequest
 import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
+import app.editors.manager.dropbox.mvp.models.request.MoveRequest
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,6 +47,13 @@ class DropboxServiceProvider(
 
     override fun getExternalLink(request: DeleteRequest): Single<DropboxResponse> {
         return dropBoxService.getExternalLink(request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun move(request: MoveRequest): Single<DropboxResponse> {
+        return dropBoxService.move(request)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
