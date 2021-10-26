@@ -169,6 +169,11 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
         workManager.enqueue(request)
     }
 
+    override fun filter(value: String, isSubmitted: Boolean): Boolean {
+        setBaseUrl(DropboxService.DROPBOX_BASE_URL)
+        return super.filter(value, isSubmitted)
+    }
+
     override fun refresh(): Boolean {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL)
         return super.refresh()

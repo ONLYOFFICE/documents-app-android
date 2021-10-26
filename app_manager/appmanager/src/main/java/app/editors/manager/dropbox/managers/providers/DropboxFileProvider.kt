@@ -3,19 +3,17 @@ package app.editors.manager.dropbox.managers.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
-
+import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
-import app.editors.manager.dropbox.mvp.models.request.CreateFolderRequest
-import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
-import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
-import app.editors.manager.dropbox.mvp.models.request.MoveRequest
+import app.editors.manager.dropbox.mvp.models.request.*
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
 import app.editors.manager.dropbox.mvp.models.response.ExternalLinkResponse
 import app.editors.manager.dropbox.mvp.models.response.MetadataResponse
+import app.editors.manager.dropbox.mvp.models.response.SearchResponse
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
@@ -45,16 +43,42 @@ class DropboxFileProvider : BaseFileProvider {
     private var api: IDropboxServiceProvider = App.getApp().getDropboxComponent()
 
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer> {
-        val request = if(id?.isEmpty() == true) ExplorerRequest(path = "/ ") else id?.let { ExplorerRequest(path = it) }
+
+        val req =
+            if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
+                if (id?.isEmpty() == true) ExplorerRequest(path = DropboxUtils.DROPBOX_ROOT) else id?.let {
+                    ExplorerRequest(
+                        path = it
+                    )
+                }
+            } else {
+                SearchRequest(query = filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!)
+            }
+
+        var isSearch = false
+
         return Observable.fromCallable {
-            request?.let { api.getFiles(it).blockingGet() }
+            if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
+                req?.let { api.getFiles(it as ExplorerRequest).blockingGet() }
+            } else {
+                isSearch = true
+                api.search(req as SearchRequest).blockingGet()
+            }
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { dropboxResponse ->
                 when(dropboxResponse) {
                     is DropboxResponse.Success -> {
-                        return@map getExplorer((dropboxResponse.response as ExplorerResponse).entries, id)
+                        if(!isSearch) {
+                            return@map getExplorer((dropboxResponse.response as ExplorerResponse).entries, id)
+                        } else {
+                            val items = mutableListOf<DropboxItem>()
+                            (dropboxResponse.response as SearchResponse).matches.forEach { searchMetadata ->
+                                searchMetadata.metadata?.metadata?.let { items.add(it) }
+                            }
+                            return@map getExplorer(items, id)
+                        }
                     }
                     is DropboxResponse.Error -> {
                         throw dropboxResponse.error
