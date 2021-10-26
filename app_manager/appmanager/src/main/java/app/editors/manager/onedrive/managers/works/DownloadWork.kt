@@ -36,7 +36,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
         private const val LOAD_PROGRESS_UPDATE = 15
 
-        const val DOWNLOAD_ZIP_NAME = "download.zip"
+        const val DOWNLOAD_ZIP_NAME = "onedrive.zip"
     }
 
     private val notificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)

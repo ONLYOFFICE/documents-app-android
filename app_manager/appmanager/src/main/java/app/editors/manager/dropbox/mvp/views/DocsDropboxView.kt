@@ -6,5 +6,5 @@ import moxy.viewstate.strategy.StateStrategyType
 
 @StateStrategyType(OneExecutionStateStrategy::class)
 interface DocsDropboxView : DocsBaseView{
-
+    fun onChooseDownloadFolder()
 }

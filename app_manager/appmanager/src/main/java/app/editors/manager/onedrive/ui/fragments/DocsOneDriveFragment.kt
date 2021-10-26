@@ -167,6 +167,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
             moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
             copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
             downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
+            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
             setAccountEnable(false)
         }
     }

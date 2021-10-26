@@ -25,13 +25,17 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
         const val FILE_ID_KEY = "FILE_ID_KEY"
         const val FILE_URI_KEY = "FILE_URI_KEY"
+        const val DOWNLOADABLE_ITEM_KEY = "DOWNLOADABLE_ITEM_KEY"
+
+        const val DOWNLOADABLE_ITEM_FILE = "file"
+        const val DOWNLOADABLE_ITEM_FOLDER = "folder"
 
         private const val KEY_ERROR_INFO = "error"
         private const val KEY_ERROR_INFO_MESSAGE = "message"
 
         private const val LOAD_PROGRESS_UPDATE = 15
 
-        const val DOWNLOAD_ZIP_NAME = "download.zip"
+        const val DOWNLOAD_ZIP_NAME = "dropbox.zip"
 
     }
 
@@ -40,11 +44,16 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
     private var id: String? = null
     private var to: Uri? = null
     private var timeMark = 0L
+    private var downloadableItem = ""
 
     override fun doWork(): Result {
         getArgs()
         val map = mapOf("path" to id)
-        val response = applicationContext.getDropboxServiceProvider().download(Json.encodeToString(map)).blockingGet()
+        val response = if (downloadableItem == DOWNLOADABLE_ITEM_FILE)
+            applicationContext.getDropboxServiceProvider().download(Json.encodeToString(map))
+                .blockingGet() else
+            applicationContext.getDropboxServiceProvider().downloadFolder(Json.encodeToString(map))
+                .blockingGet()
         response.body()?.let { response ->
             FileUtils.writeFromResponseBody(response, to!!, applicationContext, object: FileUtils.Progress {
                 override fun onProgress(total: Long, progress: Long): Boolean {
@@ -88,6 +97,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
         to = Uri.parse(data.getString(FILE_URI_KEY))
         file = DocumentFile.fromSingleUri(applicationContext, to!!)
         id = data.getString(FILE_ID_KEY)
+        downloadableItem = data.getString(DOWNLOADABLE_ITEM_KEY).toString()
     }
 
     private fun showProgress(total: Long, progress: Long, isArchiving: Boolean) {

@@ -1,6 +1,8 @@
 package app.editors.manager.dropbox.ui.fragments
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import app.documents.core.account.CloudAccount
@@ -125,8 +127,20 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
             }
             moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
             copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
-            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
+            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(true)
+            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
             setAccountEnable(false)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                11000023 -> {
+                    data?.data?.let { presenter.download(it) }
+                }
+            }
         }
     }
 
@@ -134,6 +148,14 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
         super.onStateEmptyBackStack()
         loadFiles()
         swipeRefreshLayout?.isRefreshing = true
+    }
+
+    override fun onChooseDownloadFolder() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        //intent.addCategory(Intent.CATEGORY_OPENABLE)
+        //intent.type = StringUtils.getMimeTypeFromPath(name)
+        //intent.putExtra(Intent.EXTRA_TITLE, name)
+        startActivityForResult(intent, 11000023)
     }
 
     override fun onError(message: String?) {

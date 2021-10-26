@@ -1,6 +1,7 @@
 package app.editors.manager.dropbox.dropbox.api
 
 import app.documents.core.network.ApiContract
+import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.models.request.CreateFolderRequest
 import app.editors.manager.dropbox.mvp.models.request.DeleteRequest
 import app.editors.manager.dropbox.mvp.models.request.ExplorerRequest
@@ -34,7 +35,13 @@ interface DropboxService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
     )
     @POST("${API_VERSION}files/download")
-    fun download(@Header("Dropbox-API-Arg") request: String): Single<Response<ResponseBody>>
+    fun download(@Header(DropboxUtils.DROPBOX_API_ARG_HEADER) request: String): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/download_zip")
+    fun downloadFolder(@Header(DropboxUtils.DROPBOX_API_ARG_HEADER) request: String): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE

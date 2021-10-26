@@ -32,6 +32,12 @@ class DropboxServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun downloadFolder(request: String): Single<Response<ResponseBody>> {
+        return dropBoxService.downloadFolder(request)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     override fun delete(request: DeleteRequest): Single<Response<ResponseBody>> {
         return dropBoxService.delete(request)
             .subscribeOn(Schedulers.io())

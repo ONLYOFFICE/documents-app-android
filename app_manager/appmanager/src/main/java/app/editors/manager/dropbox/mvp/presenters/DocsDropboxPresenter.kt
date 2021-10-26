@@ -1,6 +1,7 @@
 package app.editors.manager.dropbox.mvp.presenters
 
 import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
@@ -32,9 +33,7 @@ import java.util.*
 import app.editors.manager.dropbox.managers.works.*
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
-import app.editors.manager.onedrive.managers.utils.OneDriveUtils
-import app.editors.manager.onedrive.mvp.models.request.ExternalLinkRequest
+import app.editors.manager.mvp.models.explorer.CloudFolder
 import lib.toolkit.base.managers.utils.KeyboardUtils
 
 class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
@@ -127,11 +126,40 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
         }
     }
 
+    override fun createDownloadFile() {
+        if(mModelExplorerStack.countSelectedItems <= 1) {
+            if (mItemClicked is CloudFolder) {
+                viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
+            } else if (mItemClicked is CloudFile) {
+                viewState.onCreateDownloadFile((mItemClicked as CloudFile).title)
+            }
+        } else {
+            viewState.onChooseDownloadFolder()
+        }
+    }
+
     override fun download(downloadTo: Uri) {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
+        if(mModelExplorerStack.countSelectedItems <= 1) {
+            startDownload(downloadTo, mItemClicked)
+        } else {
+            val itemList: MutableList<Item> = (mModelExplorerStack.selectedFiles + mModelExplorerStack.selectedFolders).toMutableList()
+            itemList.forEach { item ->
+                val fileName = if(item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
+                val doc = DocumentFile.fromTreeUri(mContext, downloadTo)?.createFile("*/*", fileName)
+                startDownload(doc?.uri!!, item)
+            }
+        }
+    }
+
+    private fun startDownload(downloadTo: Uri, item: Item?) {
         val data = Data.Builder()
-            .putString(DownloadWork.FILE_ID_KEY, mItemClicked?.id)
+            .putString(DownloadWork.FILE_ID_KEY, item?.id)
             .putString(DownloadWork.FILE_URI_KEY, downloadTo.toString())
+            .putString(
+                DownloadWork.DOWNLOADABLE_ITEM_KEY,
+                if (item is CloudFile) DownloadWork.DOWNLOADABLE_ITEM_FILE else DownloadWork.DOWNLOADABLE_ITEM_FOLDER
+            )
             .build()
 
         val request = OneTimeWorkRequest.Builder(DownloadWork::class.java)
