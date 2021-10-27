@@ -2,10 +2,12 @@ package lib.toolkit.base.managers.tools
 
 import android.content.Context
 import android.net.Uri
+import android.text.Spanned
 import androidx.annotation.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import java.io.File
 import javax.inject.Inject
 
@@ -40,5 +42,14 @@ class ResourcesProvider @Inject constructor(val context: Context) {
     }
 
     fun getFileNameByUri(uri: Uri): String = ContentResolverUtils.getName(context, uri)
+
+    fun getHtmlSpanned(@StringRes resource: Int, vararg args: String): Spanned {
+        return StringUtils.getHtmlSpanned(
+            context.getString(
+                resource,
+                *args
+            )
+        )
+    }
 
 }

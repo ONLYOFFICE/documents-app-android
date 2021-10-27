@@ -4,12 +4,15 @@ import android.accounts.Account
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.fragment.app.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginPersonalPortalBinding
 import app.editors.manager.mvp.presenters.login.PersonalLoginPresenter
 import app.editors.manager.mvp.views.login.CommonSignInView
@@ -26,6 +29,7 @@ import app.editors.manager.ui.fragments.login.AuthPagerFragment.Companion.KEY_FO
 import app.editors.manager.ui.views.custom.SocialViews
 import app.editors.manager.ui.views.custom.SocialViews.OnSocialNetworkCallbacks
 import app.editors.manager.ui.views.edits.BaseWatcher
+import app.editors.manager.viewModels.login.RemoteUrlViewModel
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
 
@@ -47,6 +51,8 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     @InjectPresenter
     lateinit var personalSignInPresenter: PersonalLoginPresenter
 
+    private val urlsViewModel: RemoteUrlViewModel by viewModels()
+
     private var viewBinding: FragmentLoginPersonalPortalBinding? = null
 
     private var portalsActivity: PortalsActivity? = null
@@ -57,6 +63,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     override fun onAttach(context: Context) {
         super.onAttach(context)
         App.getApp().appComponent.inject(this)
+        context.appComponent.inject(urlsViewModel)
         portalsActivity = try {
             context as PortalsActivity
         } catch (e: ClassCastException) {
@@ -251,6 +258,12 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         viewBinding?.loginPersonalPortalEmailEdit?.clearFocus()
         viewBinding?.loginPersonalSigninButton?.isEnabled = false
         restoreValues(savedInstanceState)
+        urlsViewModel.remoteUrls.observe(viewLifecycleOwner) { text ->
+            text?.let {
+                viewBinding?.termsTextView?.movementMethod = LinkMovementMethod.getInstance()
+                viewBinding?.termsTextView?.text = text
+            }
+        }
     }
 
     private fun initListeners() {

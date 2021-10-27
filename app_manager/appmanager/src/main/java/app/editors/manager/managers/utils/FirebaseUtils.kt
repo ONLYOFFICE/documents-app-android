@@ -1,6 +1,8 @@
 package app.editors.manager.managers.utils
 
 import android.os.Bundle
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
@@ -11,10 +13,10 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 
 object FirebaseUtils {
 
-    private const val KEY_BETA = "android_documents_20_beta_enabled"
-    private const val KEY_VERSION = "android_documents_20_beta_version"
     private const val KEY_RATING = "android_documents_rating"
     private const val KEY_CAPTCHA = "recaptcha_for_portal_registration"
+    private const val KEY_TERMS_OF_SERVICE = "link_terms_of_service"
+    private const val KEY_PRIVACY_POLICY = "link_privacy_policy"
     private const val TIME_FETCH: Long = 3600
 
     private var firebaseAnalytics: FirebaseAnalytics? = null
@@ -34,17 +36,13 @@ object FirebaseUtils {
     }
 
     private fun getRemoteConfig(): FirebaseRemoteConfig? {
-        return if (getApp().isAnalyticEnable) {
-            FirebaseRemoteConfig.getInstance().apply {
-                setConfigSettingsAsync(
-                    FirebaseRemoteConfigSettings.Builder()
-                        .setFetchTimeoutInSeconds(3600L)
-                        .build()
-                )
-                setDefaultsAsync(R.xml.remote_config_defaults)
-            }
-        } else {
-            null
+        return FirebaseRemoteConfig.getInstance().apply {
+            setConfigSettingsAsync(
+                FirebaseRemoteConfigSettings.Builder()
+                    .setFetchTimeoutInSeconds(3600L)
+                    .build()
+            )
+            setDefaultsAsync(R.xml.remote_config_defaults)
         }
     }
 
@@ -68,7 +66,7 @@ object FirebaseUtils {
     fun isCaptchaEnable(block: (isEnable: Boolean) -> Unit) {
         if (getApp().isAnalyticEnable) {
             getRemoteConfig()?.let { config ->
-                config.fetch(TIME_FETCH).addOnCompleteListener { task ->
+                config.fetch(if (BuildConfig.DEBUG) 0 else TIME_FETCH).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         config.activate()
                         block(config.getBoolean(KEY_CAPTCHA))
@@ -76,6 +74,20 @@ object FirebaseUtils {
                 }
             }
         }
+    }
+
+    fun getServiceUrls(): LiveData<Array<String>?> {
+        val liveData = MutableLiveData<Array<String>>(null)
+        getRemoteConfig()?.let { config ->
+            config.fetch(if (BuildConfig.DEBUG) 0 else TIME_FETCH).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    config.activate()
+                    liveData.value =
+                        arrayOf(config.getString(KEY_TERMS_OF_SERVICE), config.getString(KEY_PRIVACY_POLICY))
+                }
+            }
+        }
+        return liveData
     }
 
     private fun addAnalytics(event: String, bundle: Bundle) {
