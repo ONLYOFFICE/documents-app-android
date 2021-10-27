@@ -14,6 +14,7 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
 class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropboxView {
@@ -24,6 +25,7 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
         const val KEY_ACCOUNT = "KEY_ACCOUNT"
         const val KEY_UPLOAD = "KEY_UPLOAD"
         const val KEY_UPDATE = "KEY_UPDATE"
+        const val KEY_CREATE = "KEY_CREATE"
 
         const val KEY_MODIFIED = "EXTRA_IS_MODIFIED"
 
@@ -139,6 +141,24 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
             when(requestCode) {
                 11000023 -> {
                     data?.data?.let { presenter.download(it) }
+                }
+                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let {
+                    if(data.getBooleanExtra(KEY_MODIFIED, false)) {
+                        presenter.upload(
+                            it,
+                            null,
+                            KEY_UPDATE
+                        )
+                    }
+                }
+                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let {
+                    presenter.upload(
+                        null,
+                        it,
+                        KEY_UPLOAD
+                    )
+                }.run {
+                    presenter.upload(data?.data, null, KEY_UPLOAD)
                 }
             }
         }

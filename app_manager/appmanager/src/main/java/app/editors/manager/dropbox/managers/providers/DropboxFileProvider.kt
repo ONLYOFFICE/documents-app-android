@@ -3,17 +3,22 @@ package app.editors.manager.dropbox.managers.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
+import app.editors.manager.dropbox.managers.works.UploadWork
 import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
 import app.editors.manager.dropbox.mvp.models.request.*
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
 import app.editors.manager.dropbox.mvp.models.response.ExternalLinkResponse
 import app.editors.manager.dropbox.mvp.models.response.MetadataResponse
 import app.editors.manager.dropbox.mvp.models.response.SearchResponse
+import app.editors.manager.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
@@ -40,7 +45,14 @@ import java.util.*
 
 class DropboxFileProvider : BaseFileProvider {
 
+    companion object {
+        private const val PATH_TEMPLATES = "templates/"
+        private const val TAG_FILE = "file"
+        private const val TAG_FOLDER = "folder"
+    }
+
     private var api: IDropboxServiceProvider = App.getApp().getDropboxComponent()
+    private val workManager = WorkManager.getInstance()
 
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer> {
 
@@ -101,10 +113,11 @@ class DropboxFileProvider : BaseFileProvider {
             }
 
             for (item in items) {
-                if (item.tag == "file") {
+                if (item.tag == TAG_FILE) {
                     val file = CloudFile()
                     file.id = item.path_display
                     file.title = item.name
+                    file.versionGroup = item.rev
                     file.pureContentLength = item.size.toLong()
                     file.fileExst = StringUtils.getExtensionFromPath(item.name.toLowerCase())
                     file.updated = SimpleDateFormat(
@@ -147,7 +160,31 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
-        TODO("Not yet implemented")
+        val title = body?.title
+        val path = PATH_TEMPLATES + title?.lowercase()
+            .let { StringUtils.getExtensionFromPath(it!!) }.let {
+                FileUtils.getTemplates(
+                    App.getApp(), App.getLocale(),
+                    it
+                )
+            }
+        val temp = title.let { StringUtils.getNameWithoutExtension(it!!) }.let {
+            FileUtils.createTempAssetsFile(
+                App.getApp(),
+                path,
+                it,
+                StringUtils.getExtensionFromPath(title!!)
+            )
+        }
+        upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
+        val file = CloudFile()
+        file.webUrl = Uri.fromFile(temp).toString()
+        file.pureContentLength = temp?.length() ?: 0
+        file.updated = Date()
+        file.id = folderId + title
+        file.title = title
+        file.fileExst = title?.split(".")?.get(1)
+        return Observable.just(file)
     }
 
     override fun createFolder(folderId: String?, body: RequestCreate?): Observable<CloudFolder> {
@@ -215,7 +252,7 @@ class DropboxFileProvider : BaseFileProvider {
         from: CloudFolder?
     ): Observable<MutableList<Operation>> {
         return items?.size?.let {
-            Observable.fromIterable(items).map { item -> api.delete(DeleteRequest(item.id)).blockingGet() }
+            Observable.fromIterable(items).map { item -> api.delete(PathRequest(item.id)).blockingGet() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { response ->
@@ -272,7 +309,21 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     override fun upload(folderId: String?, uris: MutableList<Uri>?): Observable<Int> {
-        TODO("Not yet implemented")
+        return Observable.fromIterable(uris)
+            .flatMap {
+                val data = Data.Builder()
+                    .putString(UploadWork.TAG_FOLDER_ID, folderId)
+                    .putString(UploadWork.TAG_UPLOAD_FILES, it.toString())
+                    .putString(UploadWork.KEY_TAG, DocsDropboxFragment.KEY_CREATE)
+                    .build()
+
+                val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
+                    .setInputData(data)
+                    .build()
+
+                workManager.enqueue(request)
+                return@flatMap Observable.just(1)
+            }
     }
 
     override fun share(
@@ -283,7 +334,7 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     fun share(id: String): Observable<ExternalLinkResponse>? {
-        val request = DeleteRequest(path = id)
+        val request = PathRequest(path = id)
         return Observable.fromCallable { api.getExternalLink(request).blockingGet() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

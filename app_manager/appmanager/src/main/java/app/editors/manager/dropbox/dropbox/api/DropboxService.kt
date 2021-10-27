@@ -2,18 +2,17 @@ package app.editors.manager.dropbox.dropbox.api
 
 import app.documents.core.network.ApiContract
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
+import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
 import app.editors.manager.dropbox.mvp.models.request.*
 import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
 import app.editors.manager.dropbox.mvp.models.response.ExternalLinkResponse
 import app.editors.manager.dropbox.mvp.models.response.MetadataResponse
 import app.editors.manager.dropbox.mvp.models.response.SearchResponse
 import io.reactivex.Single
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.Header
-import retrofit2.http.Headers
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface DropboxService {
 
@@ -45,7 +44,7 @@ interface DropboxService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
     )
     @POST("${API_VERSION}files/delete_v2")
-    fun delete(@Body request: DeleteRequest): Single<Response<ResponseBody>>
+    fun delete(@Body request: PathRequest): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
@@ -57,7 +56,7 @@ interface DropboxService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
     )
     @POST("${API_VERSION}files/get_temporary_link")
-    fun getExternalLink(@Body request: DeleteRequest): Single<Response<ExternalLinkResponse>>
+    fun getExternalLink(@Body request: PathRequest): Single<Response<ExternalLinkResponse>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
@@ -70,4 +69,9 @@ interface DropboxService {
     )
     @POST("${API_VERSION}files/search_v2")
     fun search(@Body request: SearchRequest): Single<Response<SearchResponse>>
+
+    @Multipart
+    @Headers("Content-Type:application/octet-stream")
+    @POST("${API_VERSION}files/upload")
+    fun upload(@Header(DropboxUtils.DROPBOX_API_ARG_HEADER) request: String , @Part part: MultipartBody.Part): Single<Response<DropboxItem>>
 }

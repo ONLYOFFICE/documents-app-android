@@ -9,6 +9,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.getDropboxServiceProvider
+import app.editors.manager.dropbox.mvp.models.request.PathRequest
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.managers.works.DownloadWork
@@ -48,11 +49,11 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
     override fun doWork(): Result {
         getArgs()
-        val map = mapOf("path" to id)
+        val request = id?.let { PathRequest( path = it) }
         val response = if (downloadableItem == DOWNLOADABLE_ITEM_FILE)
-            applicationContext.getDropboxServiceProvider().download(Json.encodeToString(map))
+            applicationContext.getDropboxServiceProvider().download(Json.encodeToString(request))
                 .blockingGet() else
-            applicationContext.getDropboxServiceProvider().downloadFolder(Json.encodeToString(map))
+            applicationContext.getDropboxServiceProvider().downloadFolder(Json.encodeToString(request))
                 .blockingGet()
         response.body()?.let { response ->
             FileUtils.writeFromResponseBody(response, to!!, applicationContext, object: FileUtils.Progress {

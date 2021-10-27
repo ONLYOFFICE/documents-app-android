@@ -6,6 +6,7 @@ import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
@@ -35,7 +36,7 @@ class DropboxServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun delete(request: DeleteRequest): Single<Response<ResponseBody>> {
+    override fun delete(request: PathRequest): Single<Response<ResponseBody>> {
         return dropBoxService.delete(request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -48,7 +49,7 @@ class DropboxServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getExternalLink(request: DeleteRequest): Single<DropboxResponse> {
+    override fun getExternalLink(request: PathRequest): Single<DropboxResponse> {
         return dropBoxService.getExternalLink(request)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
@@ -64,6 +65,13 @@ class DropboxServiceProvider(
 
     override fun search(request: SearchRequest): Single<DropboxResponse> {
         return dropBoxService.search(request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun upload(request: String, part: MultipartBody.Part): Single<DropboxResponse> {
+        return dropBoxService.upload(request, part)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

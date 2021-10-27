@@ -1,5 +1,6 @@
 package app.editors.manager.dropbox.mvp.presenters
 
+import android.content.ClipData
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -34,6 +35,7 @@ import app.editors.manager.dropbox.managers.works.*
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.request.RequestCreate
 import lib.toolkit.base.managers.utils.KeyboardUtils
 
 class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
@@ -185,7 +187,50 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun createDocs(title: String) {
-        TODO("Not yet implemented")
+        setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
+        val id = mModelExplorerStack.currentId
+        id?.let {
+            val requestCreate = RequestCreate()
+            requestCreate.title = title
+            mDisposable.add(mFileProvider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
+                addFile(file)
+                setPlaceholderType(PlaceholderViews.Type.NONE)
+                viewState.onDialogClose()
+                viewState.onOpenLocalFile(file)
+            }) { throwable: Throwable? -> fetchError(throwable) })
+            showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+        }
+    }
+
+
+    fun upload(uri: Uri?, uris: ClipData?, tag: String) {
+        setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
+        val uploadUris = mutableListOf<Uri>()
+        var index = 0
+
+        if(uri != null) {
+            uploadUris.add(uri)
+        } else if(uris != null) {
+            while(index != uris.itemCount) {
+                uploadUris.add(uris.getItemAt(index).uri)
+                index++
+            }
+        }
+
+        for (uri in uploadUris) {
+            val data = Data.Builder()
+                .putString(UploadWork.TAG_FOLDER_ID, mModelExplorerStack.currentId)
+                .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                .putString(UploadWork.KEY_TAG, tag)
+                .build()
+
+            val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
+                .setInputData(data)
+                .build()
+
+            workManager.enqueue(request)
+        }
+
     }
 
     override fun getFileInfo() {
@@ -231,6 +276,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun delete(): Boolean {
+        setBaseUrl(DropboxService.DROPBOX_BASE_URL)
         if (mModelExplorerStack.countSelectedItems > 0) {
             viewState.onDialogQuestion(
                 mContext.getString(R.string.dialogs_question_delete), null,
@@ -348,7 +394,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun onUploadError(path: String?, info: String?, file: String?) {
-        TODO("Not yet implemented")
+        info?.let { viewState.onSnackBar(it) }
     }
 
     override fun onUploadComplete(
@@ -358,7 +404,9 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
         file: CloudFile?,
         id: String?
     ) {
-        TODO("Not yet implemented")
+        info?.let { viewState.onSnackBar(it) }
+        refresh()
+        viewState.onDeleteUploadFile(id)
     }
 
     override fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?) {
@@ -366,15 +414,23 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        TODO("Not yet implemented")
+        if (mModelExplorerStack.currentId == folderId) {
+            viewState.onUploadFileProgress(progress, id)
+        }
     }
 
     override fun onUploadCanceled(path: String?, info: String?, id: String?) {
-        TODO("Not yet implemented")
+        info?.let { viewState.onSnackBar(it) }
+        viewState.onDeleteUploadFile(id)
+        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(mModelExplorerStack.currentId)?.isEmpty() == true) {
+            viewState.onRemoveUploadHead()
+            getListWithHeaders(mModelExplorerStack.last(), true)
+        }
     }
 
     override fun onUploadRepeat(path: String?, info: String?) {
-        TODO("Not yet implemented")
+        viewState.onDialogClose()
+        info?.let { viewState.onSnackBar(it) }
     }
 
     private fun showDownloadFolderActivity(uri: Uri?) {
