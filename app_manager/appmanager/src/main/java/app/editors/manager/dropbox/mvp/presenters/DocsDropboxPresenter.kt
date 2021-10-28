@@ -8,6 +8,7 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.account.Recent
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.dropbox.dropbox.api.DropboxService
@@ -231,6 +232,23 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
             workManager.enqueue(request)
         }
 
+    }
+
+    override fun move(): Boolean {
+        return if (super.move()) {
+            transfer(ApiContract.Operation.DUPLICATE, true)
+            true
+        } else {
+            false
+        }
+    }
+    override fun copy(): Boolean {
+        return if (super.move()) {
+            transfer(ApiContract.Operation.DUPLICATE, false)
+            true
+        } else {
+            false
+        }
     }
 
     override fun getFileInfo() {

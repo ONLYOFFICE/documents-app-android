@@ -13,11 +13,10 @@ import app.editors.manager.dropbox.dropbox.login.DropboxResponse
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.managers.works.UploadWork
 import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
+import app.editors.manager.dropbox.mvp.models.operations.MoveCopyBatchCheck
+import app.editors.manager.dropbox.mvp.models.operations.MoveCopyPaths
 import app.editors.manager.dropbox.mvp.models.request.*
-import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
-import app.editors.manager.dropbox.mvp.models.response.ExternalLinkResponse
-import app.editors.manager.dropbox.mvp.models.response.MetadataResponse
-import app.editors.manager.dropbox.mvp.models.response.SearchResponse
+import app.editors.manager.dropbox.mvp.models.response.*
 import app.editors.manager.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.mvp.models.base.Base
@@ -49,6 +48,7 @@ class DropboxFileProvider : BaseFileProvider {
         private const val PATH_TEMPLATES = "templates/"
         private const val TAG_FILE = "file"
         private const val TAG_FOLDER = "folder"
+        private const val TAG_COMPLETE_OPERATION = "complete"
     }
 
     private var api: IDropboxServiceProvider = App.getApp().getDropboxComponent()
@@ -181,7 +181,7 @@ class DropboxFileProvider : BaseFileProvider {
         file.webUrl = Uri.fromFile(temp).toString()
         file.pureContentLength = temp?.length() ?: 0
         file.updated = Date()
-        file.id = folderId + title
+        file.id = folderId?.trim() + title
         file.title = title
         file.fileExst = title?.split(".")?.get(1)
         return Observable.just(file)
@@ -279,7 +279,57 @@ class DropboxFileProvider : BaseFileProvider {
         isMove: Boolean,
         isOverwrite: Boolean
     ): Observable<MutableList<Operation>> {
-        TODO("Not yet implemented")
+        val listItem: MutableList<MoveCopyPaths> = mutableListOf()
+        items?.forEach {
+            listItem.add(MoveCopyPaths(
+                from_path = it.id,
+                to_path = to?.id?.trim() + it.title)
+            )
+        }
+        val request = MoveCopyBatchRequest(
+            entries = listItem,
+            autorename = true
+         )
+        return Observable.fromCallable {
+            if(isMove)
+                api.moveBatch(request).blockingGet() else
+                api.copyBatch(request).blockingGet()
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .flatMap { response ->
+                when(response) {
+                    is DropboxResponse.Success -> {
+                        getStatusOperation((response.response as MoveCopyBatchResponse).async_job_id, isMove)
+                    }
+                    is DropboxResponse.Error -> {
+                        throw response.error
+                    }
+                }
+            }
+            .map {
+                val operation = Operation()
+                operation.progress = 100
+                return@map mutableListOf(operation)
+
+            }
+    }
+
+    private fun getStatusOperation(id: String, isMove: Boolean): Observable<String> {
+        val request = MoveCopyBatchCheck(async_job_id = id)
+        return Observable.create<String>{ emitter ->
+            while(true) {
+                val response = if(isMove)
+                    api.moveBatchCheck(request).blockingGet() else
+                    api.copyBatchCheck(request).blockingGet()
+                if(response.body()?.string()?.contains(TAG_COMPLETE_OPERATION) == true) {
+                    emitter.onComplete()
+                    break
+                }
+            }
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     override fun fileInfo(item: Item?): Observable<CloudFile?> {

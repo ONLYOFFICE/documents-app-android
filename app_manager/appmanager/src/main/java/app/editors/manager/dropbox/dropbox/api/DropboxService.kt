@@ -3,11 +3,9 @@ package app.editors.manager.dropbox.dropbox.api
 import app.documents.core.network.ApiContract
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
+import app.editors.manager.dropbox.mvp.models.operations.MoveCopyBatchCheck
 import app.editors.manager.dropbox.mvp.models.request.*
-import app.editors.manager.dropbox.mvp.models.response.ExplorerResponse
-import app.editors.manager.dropbox.mvp.models.response.ExternalLinkResponse
-import app.editors.manager.dropbox.mvp.models.response.MetadataResponse
-import app.editors.manager.dropbox.mvp.models.response.SearchResponse
+import app.editors.manager.dropbox.mvp.models.response.*
 import io.reactivex.Single
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -63,6 +61,36 @@ interface DropboxService {
     )
     @POST("${API_VERSION}files/move_v2")
     fun move(@Body request: MoveRequest): Single<Response<MetadataResponse>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/move_batch_v2")
+    fun moveBatch(@Body request: MoveCopyBatchRequest): Single<Response<MoveCopyBatchResponse>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/copy_v2")
+    fun copy(@Body request: MoveRequest): Single<Response<MetadataResponse>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/copy_batch_v2")
+    fun copyBatch(@Body request: MoveCopyBatchRequest): Single<Response<MoveCopyBatchResponse>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/copy_batch/check_v2")
+    fun copyBatchCheck(@Body request: MoveCopyBatchCheck): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/move_batch/check_v2")
+    fun moveBatchCheck(@Body request: MoveCopyBatchCheck): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE

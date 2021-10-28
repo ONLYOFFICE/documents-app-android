@@ -1,6 +1,7 @@
 package app.editors.manager.dropbox.dropbox.api
 
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
+import app.editors.manager.dropbox.mvp.models.operations.MoveCopyBatchCheck
 import app.editors.manager.dropbox.mvp.models.request.*
 import io.reactivex.Single
 import okhttp3.MultipartBody
@@ -15,6 +16,11 @@ interface IDropboxServiceProvider {
     fun createFolder(request: CreateFolderRequest): Single<DropboxResponse>
     fun getExternalLink(request: PathRequest): Single<DropboxResponse>
     fun move(request: MoveRequest): Single<DropboxResponse>
+    fun moveBatch(request: MoveCopyBatchRequest): Single<DropboxResponse>
+    fun copy(request: MoveRequest): Single<DropboxResponse>
+    fun copyBatch(request: MoveCopyBatchRequest): Single<DropboxResponse>
+    fun copyBatchCheck(request: MoveCopyBatchCheck): Single<Response<ResponseBody>>
+    fun moveBatchCheck(request: MoveCopyBatchCheck): Single<Response<ResponseBody>>
     fun search(request: SearchRequest): Single<DropboxResponse>
     fun upload(request: String, part: MultipartBody.Part): Single<DropboxResponse>
 }

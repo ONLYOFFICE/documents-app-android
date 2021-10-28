@@ -1,6 +1,7 @@
 package app.editors.manager.dropbox.dropbox.api
 
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
+import app.editors.manager.dropbox.mvp.models.operations.MoveCopyBatchCheck
 import app.editors.manager.dropbox.mvp.models.request.*
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
@@ -59,6 +60,39 @@ class DropboxServiceProvider(
     override fun move(request: MoveRequest): Single<DropboxResponse> {
         return dropBoxService.move(request)
             .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun moveBatch(request: MoveCopyBatchRequest): Single<DropboxResponse> {
+        return dropBoxService.moveBatch(request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun copy(request: MoveRequest): Single<DropboxResponse> {
+        return dropBoxService.copy(request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun copyBatch(request: MoveCopyBatchRequest): Single<DropboxResponse> {
+        return dropBoxService.copyBatch(request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun copyBatchCheck(request: MoveCopyBatchCheck): Single<Response<ResponseBody>> {
+        return dropBoxService.copyBatchCheck(request)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun moveBatchCheck(request: MoveCopyBatchCheck): Single<Response<ResponseBody>> {
+        return dropBoxService.moveBatchCheck(request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
