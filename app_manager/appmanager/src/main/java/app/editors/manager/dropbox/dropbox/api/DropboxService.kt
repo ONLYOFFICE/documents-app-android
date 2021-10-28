@@ -29,6 +29,12 @@ interface DropboxService {
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
     )
+    @POST("${API_VERSION}files/list_folder/continue")
+    fun getNextFileList(@Body request: ExplorerContinueRequest): Single<Response<ExplorerResponse>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
     @POST("${API_VERSION}files/download")
     fun download(@Header(DropboxUtils.DROPBOX_API_ARG_HEADER) request: String): Single<Response<ResponseBody>>
 
@@ -97,6 +103,12 @@ interface DropboxService {
     )
     @POST("${API_VERSION}files/search_v2")
     fun search(@Body request: SearchRequest): Single<Response<SearchResponse>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+    )
+    @POST("${API_VERSION}files/search/continue_v2")
+    fun searchNextList(@Body request: ExplorerContinueRequest): Single<Response<SearchResponse>>
 
     @Multipart
     @Headers("Content-Type:application/octet-stream")

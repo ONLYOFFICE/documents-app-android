@@ -24,6 +24,13 @@ class DropboxServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun getNextFileList(request: ExplorerContinueRequest): Single<DropboxResponse> {
+        return dropBoxService.getNextFileList(request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     override fun download(request: String): Single<Response<ResponseBody>> {
         return dropBoxService.download(request)
             //.map { fetchResponse(it) }
@@ -99,6 +106,13 @@ class DropboxServiceProvider(
 
     override fun search(request: SearchRequest): Single<DropboxResponse> {
         return dropBoxService.search(request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun searchNextList(request: ExplorerContinueRequest): Single<DropboxResponse> {
+        return dropBoxService.searchNextList(request)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

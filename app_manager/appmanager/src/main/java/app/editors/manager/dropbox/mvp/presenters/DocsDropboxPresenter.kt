@@ -36,6 +36,7 @@ import app.editors.manager.dropbox.managers.works.*
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.request.RequestCreate
 import lib.toolkit.base.managers.utils.KeyboardUtils
 
@@ -184,7 +185,15 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
 
     override fun getNextList() {
-        TODO("Not yet implemented")
+        val id = mModelExplorerStack.currentId
+        val args = getArgs(mFilteringValue)
+        mDisposable.add(mFileProvider.getFiles(id, args).subscribe({ explorer: Explorer? ->
+            mModelExplorerStack.addOnNext(explorer)
+            val last = mModelExplorerStack.last()
+            if (last != null) {
+                viewState.onDocsNext(getListWithHeaders(last, true))
+            }
+        }) { throwable: Throwable? -> fetchError(throwable) })
     }
 
     override fun createDocs(title: String) {
@@ -232,6 +241,20 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
             workManager.enqueue(request)
         }
 
+    }
+
+    override fun getArgs(filteringValue: String?): MutableMap<String, String?> {
+        val args = mutableMapOf<String, String?>()
+        if(mModelExplorerStack?.last()?.current?.providerItem == true) {
+            args[DropboxUtils.DROPBOX_CONTINUE_CURSOR] =
+                mModelExplorerStack?.last()?.current?.parentId
+        }
+        if(mModelExplorerStack?.last()?.current?.providerItem == true && mFilteringValue?.isNotEmpty() == true) {
+            args[DropboxUtils.DROPBOX_SEARCH_CURSOR] =
+                mModelExplorerStack?.last()?.current?.parentId
+        }
+        args.putAll(super.getArgs(filteringValue))
+        return args
     }
 
     override fun move(): Boolean {

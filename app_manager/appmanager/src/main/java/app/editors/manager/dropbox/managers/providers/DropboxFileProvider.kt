@@ -57,24 +57,29 @@ class DropboxFileProvider : BaseFileProvider {
     override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer> {
 
         val req =
-            if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
-                if (id?.isEmpty() == true) ExplorerRequest(path = DropboxUtils.DROPBOX_ROOT) else id?.let {
-                    ExplorerRequest(
-                        path = it
-                    )
-                }
-            } else {
+            if ((filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) && (filter[DropboxUtils.DROPBOX_SEARCH_CURSOR] == null || filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isEmpty() == true)) {
                 SearchRequest(query = filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!)
+            } else if((filter?.get(DropboxUtils.DROPBOX_CONTINUE_CURSOR) != null && filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]?.isNotEmpty() == true) || (filter?.get(DropboxUtils.DROPBOX_SEARCH_CURSOR) != null && filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isNotEmpty() == true)) {
+                ExplorerContinueRequest(cursor = filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]!!)
+            } else {
+                if (id?.isEmpty() == true) ExplorerRequest(path = DropboxUtils.DROPBOX_ROOT) else id?.let {
+                    ExplorerRequest(path = it)
+                }
             }
 
         var isSearch = false
 
         return Observable.fromCallable {
-            if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
-                req?.let { api.getFiles(it as ExplorerRequest).blockingGet() }
-            } else {
+            if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) {
                 isSearch = true
                 api.search(req as SearchRequest).blockingGet()
+            } else if(filter?.get(DropboxUtils.DROPBOX_CONTINUE_CURSOR) != null && filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]?.isNotEmpty() == true) {
+                api.getNextFileList(req as ExplorerContinueRequest).blockingGet()
+            } else if(filter?.get(DropboxUtils.DROPBOX_SEARCH_CURSOR) != null && filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isNotEmpty() == true) {
+                isSearch = true
+                api.searchNextList(req as ExplorerContinueRequest).blockingGet()
+            } else {
+                req?.let { api.getFiles(it as ExplorerRequest).blockingGet() }
             }
         }
             .subscribeOn(Schedulers.io())
@@ -83,13 +88,13 @@ class DropboxFileProvider : BaseFileProvider {
                 when(dropboxResponse) {
                     is DropboxResponse.Success -> {
                         if(!isSearch) {
-                            return@map getExplorer((dropboxResponse.response as ExplorerResponse).entries, id)
+                            return@map getExplorer((dropboxResponse.response as ExplorerResponse).entries, id, dropboxResponse.response.cursor, dropboxResponse.response.has_more)
                         } else {
                             val items = mutableListOf<DropboxItem>()
                             (dropboxResponse.response as SearchResponse).matches.forEach { searchMetadata ->
                                 searchMetadata.metadata?.metadata?.let { items.add(it) }
                             }
-                            return@map getExplorer(items, id)
+                            return@map getExplorer(items, id, dropboxResponse.response.cursor, dropboxResponse.response.has_more)
                         }
                     }
                     is DropboxResponse.Error -> {
@@ -99,7 +104,7 @@ class DropboxFileProvider : BaseFileProvider {
             }
     }
 
-    private fun getExplorer(items: List<DropboxItem>, id: String?): Explorer {
+    private fun getExplorer(items: List<DropboxItem>, id: String?, cursor: String, hasMore: Boolean): Explorer {
         val explorer = Explorer()
         val files: MutableList<CloudFile> = mutableListOf()
         val folders: MutableList<CloudFolder> = mutableListOf()
@@ -140,6 +145,8 @@ class DropboxFileProvider : BaseFileProvider {
                 if (parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT_TITLE else parentFolder.title
             current.id =
                 if (parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT else "${parentFolder.id}/"
+            current.parentId = cursor
+            current.providerItem = hasMore
 
             explorer.current = current
             explorer.files = files

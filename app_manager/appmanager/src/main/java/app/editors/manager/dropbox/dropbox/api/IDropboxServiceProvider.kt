@@ -10,6 +10,7 @@ import retrofit2.Response
 
 interface IDropboxServiceProvider {
     fun getFiles(request: ExplorerRequest): Single<DropboxResponse>
+    fun getNextFileList(request: ExplorerContinueRequest): Single<DropboxResponse>
     fun download(request: String): Single<Response<ResponseBody>>
     fun downloadFolder(request: String): Single<Response<ResponseBody>>
     fun delete(request: PathRequest): Single<Response<ResponseBody>>
@@ -22,5 +23,6 @@ interface IDropboxServiceProvider {
     fun copyBatchCheck(request: MoveCopyBatchCheck): Single<Response<ResponseBody>>
     fun moveBatchCheck(request: MoveCopyBatchCheck): Single<Response<ResponseBody>>
     fun search(request: SearchRequest): Single<DropboxResponse>
+    fun searchNextList(request: ExplorerContinueRequest): Single<DropboxResponse>
     fun upload(request: String, part: MultipartBody.Part): Single<DropboxResponse>
 }
