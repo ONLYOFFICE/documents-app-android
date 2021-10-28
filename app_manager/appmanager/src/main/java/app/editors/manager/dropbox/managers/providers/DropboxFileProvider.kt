@@ -84,17 +84,17 @@ class DropboxFileProvider : BaseFileProvider {
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { dropboxResponse ->
+            .flatMap { dropboxResponse ->
                 when(dropboxResponse) {
                     is DropboxResponse.Success -> {
                         if(!isSearch) {
-                            return@map getExplorer((dropboxResponse.response as ExplorerResponse).entries, id, dropboxResponse.response.cursor, dropboxResponse.response.has_more)
+                            getExplorer((dropboxResponse.response as ExplorerResponse).entries, id, dropboxResponse.response.cursor, dropboxResponse.response.has_more)
                         } else {
                             val items = mutableListOf<DropboxItem>()
                             (dropboxResponse.response as SearchResponse).matches.forEach { searchMetadata ->
                                 searchMetadata.metadata?.metadata?.let { items.add(it) }
                             }
-                            return@map getExplorer(items, id, dropboxResponse.response.cursor, dropboxResponse.response.has_more)
+                            getExplorer(items, id, dropboxResponse.response.cursor, dropboxResponse.response.has_more)
                         }
                     }
                     is DropboxResponse.Error -> {
@@ -102,9 +102,12 @@ class DropboxFileProvider : BaseFileProvider {
                     }
                 }
             }
+            .map { explorer ->
+                return@map sortExplorer(explorer, filter)
+            }
     }
 
-    private fun getExplorer(items: List<DropboxItem>, id: String?, cursor: String, hasMore: Boolean): Explorer {
+    private fun getExplorer(items: List<DropboxItem>, id: String?, cursor: String, hasMore: Boolean): Observable<Explorer> {
         val explorer = Explorer()
         val files: MutableList<CloudFile> = mutableListOf()
         val folders: MutableList<CloudFolder> = mutableListOf()
@@ -163,7 +166,7 @@ class DropboxFileProvider : BaseFileProvider {
             explorer.folders = emptyList()
         }
 
-        return explorer
+        return Observable.just(explorer)
     }
 
     override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
@@ -353,6 +356,43 @@ class DropboxFileProvider : BaseFileProvider {
                 }
             }
         }
+    }
+
+    private fun sortExplorer(explorer: Explorer, filter: Map<String, String>?): Explorer? {
+        val folders = explorer.folders
+        val files = explorer.files
+        if (filter != null) {
+            val sort = filter[ApiContract.Parameters.ARG_SORT_BY]
+            val order = filter[ApiContract.Parameters.ARG_SORT_ORDER]
+            if (sort != null && order != null) {
+                when (sort) {
+                    ApiContract.Parameters.VAL_SORT_BY_UPDATED -> folders.sortWith(Comparator { o1: CloudFolder, o2: CloudFolder ->
+                        o1.updated.compareTo(o2.updated)
+                    })
+                    ApiContract.Parameters.VAL_SORT_BY_TITLE -> {
+                        folders.sortWith(Comparator { o1: CloudFolder, o2: CloudFolder ->
+                            o1.title.toLowerCase().compareTo(o2.title.toLowerCase())
+                        })
+                        files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
+                            o1.title.toLowerCase().compareTo(o2.title.toLowerCase())
+                        })
+                    }
+                    ApiContract.Parameters.VAL_SORT_BY_SIZE -> files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
+                        o1.pureContentLength.compareTo(o2.pureContentLength)
+                    })
+                    ApiContract.Parameters.VAL_SORT_BY_TYPE -> files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
+                        o1.fileExst.compareTo(o2.fileExst)
+                    })
+                }
+                if (order == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
+                    folders.reverse()
+                    files.reverse()
+                }
+            }
+        }
+        explorer.folders = folders
+        explorer.files = files
+        return explorer
     }
 
     override fun getStatusOperation(): ResponseOperation {
