@@ -54,7 +54,7 @@ class DropboxFileProvider : BaseFileProvider {
     private var api: IDropboxServiceProvider = App.getApp().getDropboxComponent()
     private val workManager = WorkManager.getInstance()
 
-    override fun getFiles(id: String?, filter: MutableMap<String, String>?): Observable<Explorer> {
+    override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
 
         val req =
             if ((filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) && (filter[DropboxUtils.DROPBOX_SEARCH_CURSOR] == null || filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isEmpty() == true)) {
@@ -62,9 +62,7 @@ class DropboxFileProvider : BaseFileProvider {
             } else if((filter?.get(DropboxUtils.DROPBOX_CONTINUE_CURSOR) != null && filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]?.isNotEmpty() == true) || (filter?.get(DropboxUtils.DROPBOX_SEARCH_CURSOR) != null && filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isNotEmpty() == true)) {
                 ExplorerContinueRequest(cursor = filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]!!)
             } else {
-                if (id?.isEmpty() == true) ExplorerRequest(path = DropboxUtils.DROPBOX_ROOT) else id?.let {
-                    ExplorerRequest(path = it)
-                }
+                if (id.isEmpty()) ExplorerRequest(path = DropboxUtils.DROPBOX_ROOT) else ExplorerRequest(path = id)
             }
 
         var isSearch = false
@@ -79,7 +77,7 @@ class DropboxFileProvider : BaseFileProvider {
                 isSearch = true
                 api.searchNextList(req as ExplorerContinueRequest).blockingGet()
             } else {
-                req?.let { api.getFiles(it as ExplorerRequest).blockingGet() }
+                req.let { api.getFiles(it as ExplorerRequest).blockingGet() }
             }
         }
             .subscribeOn(Schedulers.io())
@@ -169,8 +167,8 @@ class DropboxFileProvider : BaseFileProvider {
         return Observable.just(explorer)
     }
 
-    override fun createFile(folderId: String?, body: RequestCreate?): Observable<CloudFile> {
-        val title = body?.title
+    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
+        val title = body.title
         val path = PATH_TEMPLATES + title?.lowercase()
             .let { StringUtils.getExtensionFromPath(it!!) }.let {
                 FileUtils.getTemplates(
@@ -197,14 +195,18 @@ class DropboxFileProvider : BaseFileProvider {
         return Observable.just(file)
     }
 
-    override fun createFolder(folderId: String?, body: RequestCreate?): Observable<CloudFolder> {
-        val createFolderRequest = folderId?.let {
+    override fun search(query: String?): Observable<String>? {
+        TODO("Not yet implemented")
+    }
+
+    override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
+        val createFolderRequest = folderId.let {
             CreateFolderRequest(
-                path = "$it${body?.title}",
+                path = "$it${body.title}",
                 autorename = false
             )
         }
-        return Observable.fromCallable { createFolderRequest?.let { api.createFolder(it).blockingGet() } }
+        return Observable.fromCallable { createFolderRequest.let { api.createFolder(it).blockingGet() } }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
@@ -226,15 +228,15 @@ class DropboxFileProvider : BaseFileProvider {
             }
     }
 
-    override fun rename(item: Item?, newName: String?, version: Int?): Observable<Item> {
+    override fun rename(item: Item, newName: String, version: Int?): Observable<Item> {
         val correctName = if (item is CloudFile) {
             StringUtils.getEncodedString(newName) + item.fileExst
         } else {
             newName
         }
-        val toPath = item?.id?.removeRange(item.id.lastIndexOf("/") + 1, item.id.length) + correctName
+        val toPath = item.id?.removeRange(item.id.lastIndexOf("/") + 1, item.id.length) + correctName
         val request = MoveRequest(
-            from_path = item?.id!!,
+            from_path = item.id,
             to_path = toPath,
             allow_shared_folder = false,
             allow_ownership_transfer = false,
@@ -258,10 +260,10 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     override fun delete(
-        items: MutableList<Item>?,
+        items: List<Item>,
         from: CloudFolder?
-    ): Observable<MutableList<Operation>> {
-        return items?.size?.let {
+    ): Observable<List<Operation>> {
+        return items.size.let {
             Observable.fromIterable(items).map { item -> api.delete(PathRequest(item.id)).blockingGet() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -279,18 +281,18 @@ class DropboxFileProvider : BaseFileProvider {
                     operations.add(operation)
                     return@map operations
                 }
-        }!!
+        }
     }
 
     override fun transfer(
-        items: MutableList<Item>?,
+        items: List<Item>,
         to: CloudFolder?,
         conflict: Int,
         isMove: Boolean,
         isOverwrite: Boolean
-    ): Observable<MutableList<Operation>> {
+    ): Observable<List<Operation>>? {
         val listItem: MutableList<MoveCopyPaths> = mutableListOf()
-        items?.forEach {
+        items.forEach {
             listItem.add(MoveCopyPaths(
                 from_path = it.id,
                 to_path = to?.id?.trim() + it.title)
@@ -342,15 +344,15 @@ class DropboxFileProvider : BaseFileProvider {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun fileInfo(item: Item?): Observable<CloudFile?> {
-        return Observable.create { emitter: ObservableEmitter<CloudFile?> ->
+    override fun fileInfo(item: Item?): Observable<CloudFile> {
+        return Observable.create { emitter: ObservableEmitter<CloudFile> ->
             val outputFile = item?.let { checkDirectory(it) }
             if (outputFile != null && outputFile.exists()) {
                 if (item is CloudFile) {
                     if (item.pureContentLength != outputFile.length()) {
                         download(emitter, item, outputFile)
                     } else {
-                        setFile(item, outputFile)?.let { emitter.onNext(it) }
+                        setFile(item, outputFile).let { emitter.onNext(it) }
                         emitter.onComplete()
                     }
                 }
@@ -401,11 +403,11 @@ class DropboxFileProvider : BaseFileProvider {
         return responseOperation
     }
 
-    override fun download(items: MutableList<Item>?): Observable<Int> {
+    override fun download(items: List<Item>): Observable<Int>? {
         TODO("Not yet implemented")
     }
 
-    override fun upload(folderId: String?, uris: MutableList<Uri>?): Observable<Int> {
+    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
         return Observable.fromIterable(uris)
             .flatMap {
                 val data = Data.Builder()
@@ -424,9 +426,9 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     override fun share(
-        id: String?,
-        requestExternal: RequestExternal?
-    ): Observable<ResponseExternal> {
+        id: String,
+        requestExternal: RequestExternal
+    ): Observable<ResponseExternal>? {
         TODO("Not yet implemented")
     }
 
@@ -447,15 +449,15 @@ class DropboxFileProvider : BaseFileProvider {
             }
     }
 
-    override fun terminate(): Observable<MutableList<Operation>> {
+    override fun terminate(): Observable<List<Operation>>? {
         TODO("Not yet implemented")
     }
 
-    override fun addToFavorites(requestFavorites: RequestFavorites?): Observable<Base> {
+    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? {
         TODO("Not yet implemented")
     }
 
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites?): Observable<Base> {
+    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? {
         TODO("Not yet implemented")
     }
 

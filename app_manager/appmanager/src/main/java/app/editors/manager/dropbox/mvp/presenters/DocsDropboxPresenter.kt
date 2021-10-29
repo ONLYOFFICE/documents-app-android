@@ -187,7 +187,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     override fun getNextList() {
         val id = mModelExplorerStack.currentId
         val args = getArgs(mFilteringValue)
-        mDisposable.add(mFileProvider.getFiles(id, args).subscribe({ explorer: Explorer? ->
+        mDisposable.add(mFileProvider.getFiles(id!!, args).subscribe({ explorer: Explorer? ->
             mModelExplorerStack.addOnNext(explorer)
             val last = mModelExplorerStack.last()
             if (last != null) {
@@ -243,15 +243,15 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     }
 
-    override fun getArgs(filteringValue: String?): MutableMap<String, String?> {
-        val args = mutableMapOf<String, String?>()
+    override fun getArgs(filteringValue: String?): Map<String, String> {
+        val args = mutableMapOf<String, String>()
         if(mModelExplorerStack?.last()?.current?.providerItem == true) {
             args[DropboxUtils.DROPBOX_CONTINUE_CURSOR] =
-                mModelExplorerStack?.last()?.current?.parentId
+                mModelExplorerStack?.last()?.current?.parentId!!
         }
         if(mModelExplorerStack?.last()?.current?.providerItem == true && mFilteringValue?.isNotEmpty() == true) {
             args[DropboxUtils.DROPBOX_SEARCH_CURSOR] =
-                mModelExplorerStack?.last()?.current?.parentId
+                mModelExplorerStack?.last()?.current?.parentId!!
         }
         args.putAll(super.getArgs(filteringValue))
         return args
