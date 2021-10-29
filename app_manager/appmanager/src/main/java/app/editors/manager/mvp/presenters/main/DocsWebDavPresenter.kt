@@ -283,7 +283,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             id = "$id/"
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        mUploadDisposable = mFileProvider.upload(id, uriList)
+        mUploadDisposable = mFileProvider.upload(id, uriList)!!
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ }, { throwable: Throwable? ->
