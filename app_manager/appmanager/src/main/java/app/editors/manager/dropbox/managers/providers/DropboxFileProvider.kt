@@ -57,23 +57,37 @@ class DropboxFileProvider : BaseFileProvider {
     override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
 
         val req =
-            if ((filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) && (filter[DropboxUtils.DROPBOX_SEARCH_CURSOR] == null || filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isEmpty() == true)) {
+            if (
+                (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) &&
+                (filter[DropboxUtils.DROPBOX_SEARCH_CURSOR] == null || filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isEmpty() == true)
+            ) {
                 SearchRequest(query = filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!)
-            } else if((filter?.get(DropboxUtils.DROPBOX_CONTINUE_CURSOR) != null && filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]?.isNotEmpty() == true) || (filter?.get(DropboxUtils.DROPBOX_SEARCH_CURSOR) != null && filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isNotEmpty() == true)) {
+            } else if (
+                (filter?.get(DropboxUtils.DROPBOX_CONTINUE_CURSOR) != null && filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]?.isNotEmpty() == true) ||
+                (filter?.get(DropboxUtils.DROPBOX_SEARCH_CURSOR) != null && filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isNotEmpty() == true)
+            ) {
                 ExplorerContinueRequest(cursor = filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]!!)
             } else {
-                if (id.isEmpty()) ExplorerRequest(path = DropboxUtils.DROPBOX_ROOT) else ExplorerRequest(path = id)
+                if (id.isEmpty()) ExplorerRequest(path = DropboxUtils.DROPBOX_ROOT) else ExplorerRequest(
+                    path = id
+                )
             }
 
         var isSearch = false
 
         return Observable.fromCallable {
-            if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) {
+            if (
+                (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) &&
+                (filter[DropboxUtils.DROPBOX_SEARCH_CURSOR] == null || filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isEmpty() == true)
+            ) {
                 isSearch = true
                 api.search(req as SearchRequest).blockingGet()
-            } else if(filter?.get(DropboxUtils.DROPBOX_CONTINUE_CURSOR) != null && filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]?.isNotEmpty() == true) {
+            } else if ((filter?.get(DropboxUtils.DROPBOX_CONTINUE_CURSOR) != null && filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]?.isNotEmpty() == true) || (filter?.get(
+                    DropboxUtils.DROPBOX_SEARCH_CURSOR
+                ) != null && filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isNotEmpty() == true)
+            ) {
                 api.getNextFileList(req as ExplorerContinueRequest).blockingGet()
-            } else if(filter?.get(DropboxUtils.DROPBOX_SEARCH_CURSOR) != null && filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isNotEmpty() == true) {
+            } else if (filter?.get(DropboxUtils.DROPBOX_SEARCH_CURSOR) != null && filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isNotEmpty() == true) {
                 isSearch = true
                 api.searchNextList(req as ExplorerContinueRequest).blockingGet()
             } else {
