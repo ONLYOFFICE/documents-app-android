@@ -153,10 +153,6 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
 
     }
 
-    protected fun onGetToken(token: String?, sqlData: AccountsSqlData?) {
-//        mPreferenceTool.token = token
-    }
-
     /*
      * Get user config
      * */

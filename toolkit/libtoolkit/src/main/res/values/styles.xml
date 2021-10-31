@@ -58,64 +58,14 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="SignInTheme" parent="NoActionBarTheme">
-        <item name="colorControlActivated">@color/colorPrimaryLight</item>
-        <item name="searchViewStyle">@style/SearchViewEditHint</item>
-    </style>
-
-    <style name="MainActivityTheme" parent="NoActionBarTheme">
-        <!-- Workaround for status bar color -->
-        <!--        <item name="colorPrimaryDark">@android:color/transparent</item>-->
-        <!--        <item name="android:statusBarColor">@color/colorPrimaryDark</item>-->
-        <item name="searchViewStyle">@style/SearchViewEditHint</item>
-    </style>
-
-    <style name="NavigationTheme" parent="MainActivityTheme">
-        <item name="android:colorBackground">@color/colorWhite</item>
-    </style>
-
-    <style name="WebDavTheme" parent="NoActionBarTheme">
-        <item name="colorControlActivated">@color/colorPrimaryLight</item>
-    </style>
-
     <style name="DialogCommonTheme" parent="NoActionBarTheme">
         <item name="android:windowIsTranslucent">true</item>
-    </style>
-
-    <style name="DialogShareTheme" parent="NoActionBarTheme">
-        <item name="colorControlActivated">@color/colorPrimaryLight</item>
-        <item name="searchViewStyle">@style/SearchViewEditHint</item>
-    </style>
-
-    <style name="OnBoardingTheme" parent="NoActionBarTheme">
-        <item name="android:statusBarColor">@color/colorGrey</item>
     </style>
 
     <style name="MediaTheme" parent="NoActionBarTheme">
         <item name="android:windowEnableSplitTouch">true</item>
         <item name="android:splitMotionEvents">true</item>
     </style>
-
-    <style name="SplashTheme" parent="NoActionBarTheme">
-        <item name="colorPrimaryDark">@android:color/transparent</item>
-        <item name="android:statusBarColor">@color/colorBackground</item>
-    </style>
-
-    <style name="PortalTheme" parent="NoActionBarTheme">
-        <item name="colorControlActivated">@color/colorPrimaryLight</item>
-    </style>
-
-    <style name="DialogStoreTheme" parent="DialogCommonTheme">
-        <item name="colorControlActivated">@color/colorPrimaryLight</item>
-    </style>
-
-    <style name="DialogOperationTheme" parent="NoActionBarTheme" />
-
-    <style name="DialogAboutTheme" parent="NoActionBarTheme" />
-
-    <style name="DialogAccountsTheme" parent="DialogCommonTheme" />
-
-    <style name="WebViewerTheme" parent="NoActionBarTheme" />
 
     <!-- ======================================================================================= -->
     <!-- Search views -->
@@ -156,14 +106,6 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="CloudImageView" parent="CommonImageView"/>
-
-    <style name="CommonImageButton" parent="AppTheme" />
-
-    <style name="CommonWebView" parent="AppTheme" />
-
-    <style name="CommonRecycleView" parent="AppTheme" />
-
     <!-- ======================================================================================= -->
     <!-- Selectable background -->
     <style name="WhiteColorControlHighlight">
@@ -176,7 +118,7 @@
         <item name="android:alpha">@dimen/alpha_medium</item>
     </style>
 
-    <style name="AlphaImageButton" parent="CommonImageButton">
+    <style name="AlphaImageButton" parent="AppTheme">
         <item name="android:alpha">@dimen/alpha_medium</item>
     </style>
 
@@ -222,7 +164,7 @@
 
     <!-- Collapse toolbar text -->
     <style name="CommonCollapseTextView" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textColor">@color/colorDark</item>
+        <item name="android:textColor">@color/colorOnBackground</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
@@ -416,7 +358,7 @@
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:paddingLeft">@dimen/screen_margin_large</item>
         <item name="android:paddingRight">@dimen/screen_margin_large</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:clickable">true</item>
     </style>
@@ -435,11 +377,6 @@
         <item name="android:layout_gravity">center_vertical</item>
     </style>
 
-    <style name="ContextDrawerListText" parent="ContextListMediumText">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">@dimen/fonts_size_small</item>
-    </style>
-
     <style name="ContextListAccountsLayout" parent="ContextListLayout">
         <item name="android:layout_height">@dimen/item_two_line_height</item>
     </style>
@@ -450,10 +387,6 @@
         <item name="android:padding">@dimen/image_padding_icon</item>
     </style>
 
-    <style name="ContextListAccountSmallText" parent="ContextDrawerListText">
-        <item name="android:layout_marginLeft">@dimen/screen_margin_large</item>
-    </style>
-
     <!-- Popup menu -->
     <style name="PopupLayout" parent="ContextListLayout">
         <item name="android:layout_width">@dimen/popup_width_context</item>
@@ -462,19 +395,6 @@
     <style name="PopupText" parent="ContextListMediumText">
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:textAllCaps">false</item>
-    </style>
-
-    <!-- Operation layout copy/move -->
-    <style name="OperationLayout" parent="ContextListLayout">
-        <item name="android:layout_height">@dimen/item_two_line_height</item>
-    </style>
-
-    <style name="OperationImage" parent="ContextListImage">
-        <item name="android:layout_marginLeft">0dp</item>
-    </style>
-
-    <style name="ContextLineSeparator">
-        <item name="android:layout_marginLeft">@dimen/line_separator_left_margin</item>
     </style>
 
     <style name="MainAppBar" parent="Widget.MaterialComponents.AppBarLayout.Surface" />

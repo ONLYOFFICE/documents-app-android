@@ -5,7 +5,6 @@
     android:layout_height="match_parent">
 
     <WebView
-        style="@style/CommonWebView"
         android:id="@+id/license_webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

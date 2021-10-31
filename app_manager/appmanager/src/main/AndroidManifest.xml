@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="${permissionId}.permission.WRITE" />
     <uses-permission android:name="${permissionId}.permission.READ" />
 
@@ -66,12 +66,12 @@
         <activity
             android:name=".ui.activities.login.PortalsActivity"
             android:launchMode="standard"
-            android:theme="@style/PortalTheme"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".ui.activities.login.SignInActivity"
             android:launchMode="singleTask"
-            android:theme="@style/SignInTheme"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateUnchanged">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -84,43 +84,47 @@
             android:supportsPictureInPicture="true"
             android:theme="@style/AppTheme.Launcher"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
-<!--            <intent-filter android:label="@string/upload_to_portal">-->
-<!--                <action android:name="android.intent.action.SEND" />-->
+            <!--            <intent-filter android:label="@string/upload_to_portal">-->
+            <!--                <action android:name="android.intent.action.SEND" />-->
 
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
+            <!--                <category android:name="android.intent.category.DEFAULT" />-->
 
-<!--                <data-->
-<!--                    android:host="*"-->
-<!--                    android:mimeType="application/*" />-->
-<!--            </intent-filter>-->
-<!--            <intent-filter android:label="@string/upload_to_portal">-->
-<!--                <action android:name="android.intent.action.SEND" />-->
+            <!--                <data-->
+            <!--                    android:host="*"-->
+            <!--                    android:mimeType="application/*" />-->
+            <!--            </intent-filter>-->
+            <!--            <intent-filter android:label="@string/upload_to_portal">-->
+            <!--                <action android:name="android.intent.action.SEND" />-->
 
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
+            <!--                <category android:name="android.intent.category.DEFAULT" />-->
 
-<!--                <data-->
-<!--                    android:host="*"-->
-<!--                    android:mimeType="video/*" />-->
-<!--            </intent-filter>-->
-<!--            <intent-filter android:label="@string/upload_to_portal">-->
-<!--                <action android:name="android.intent.action.SEND" />-->
+            <!--                <data-->
+            <!--                    android:host="*"-->
+            <!--                    android:mimeType="video/*" />-->
+            <!--            </intent-filter>-->
+            <!--            <intent-filter android:label="@string/upload_to_portal">-->
+            <!--                <action android:name="android.intent.action.SEND" />-->
 
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
+            <!--                <category android:name="android.intent.category.DEFAULT" />-->
 
-<!--                <data-->
-<!--                    android:host="*"-->
-<!--                    android:mimeType="image/*" />-->
-<!--            </intent-filter>-->
+            <!--                <data-->
+            <!--                    android:host="*"-->
+            <!--                    android:mimeType="image/*" />-->
+            <!--            </intent-filter>-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="oodocuments" android:host="openfile"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="openfile"
+                    android:scheme="oodocuments" />
             </intent-filter>
         </activity>
         <activity
@@ -128,7 +132,7 @@
             android:configChanges="screenSize"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:theme="@style/DialogShareTheme"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -148,7 +152,7 @@
             android:name=".ui.activities.main.OperationActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:theme="@style/DialogOperationTheme"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -162,18 +166,19 @@
             android:launchMode="singleTask"
             android:process=":WebViewerActivity"
             android:supportsPictureInPicture="true"
-            android:theme="@style/WebViewerTheme"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
-        <activity android:name=".ui.activities.login.NextCloudLoginActivity"
+        <activity
+            android:name=".ui.activities.login.NextCloudLoginActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation|locale|layoutDirection"
             android:hardwareAccelerated="true"
             android:launchMode="singleTask"
-            android:theme="@style/WebViewerTheme"/>
+            android:theme="@style/NoActionBarTheme" />
         <activity
             android:name=".ui.activities.main.MediaActivity"
             android:alwaysRetainTaskState="true"
@@ -190,7 +195,7 @@
             android:name=".ui.activities.main.AboutActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:theme="@style/DialogAboutTheme"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -200,7 +205,7 @@
             android:name=".ui.activities.main.OnBoardingActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:theme="@style/OnBoardingTheme"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".ui.activities.login.AuthAppActivity"
@@ -214,7 +219,7 @@
         <activity
             android:name=".ui.activities.login.WebDavLoginActivity"
             android:launchMode="singleTop"
-            android:theme="@style/WebDavTheme"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".ui.activities.main.CloudsActivity"
@@ -228,25 +233,16 @@
             android:name=".ui.activities.main.SettingsActivity"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
-
         <service
-            android:name=".managers.services.DownloadService"
-            android:enabled="true" />
-         <service
-             android:name=".managers.services.AuthenticatorService"
-             android:exported="false">
-             <intent-filter>
-                 <action android:name="android.accounts.AccountAuthenticator" />
-             </intent-filter>
-             <meta-data
-                 android:name="android.accounts.AccountAuthenticator"
-                 android:resource="@xml/authenticator" />
-         </service>
-        <service
-            android:name=".managers.services.UploadService"
-            android:enabled="true"
-            android:exported="false"
-            android:stopWithTask="false" />
+            android:name=".managers.services.AuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
 
         <provider
             android:name="androidx.core.content.FileProvider"
