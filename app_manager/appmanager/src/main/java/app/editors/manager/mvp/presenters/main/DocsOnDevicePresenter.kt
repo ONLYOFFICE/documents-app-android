@@ -301,7 +301,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun openFile(uri: Uri, ext: String) {
         when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> viewState.onShowDocs(uri)
+            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK -> viewState.onShowDocs(uri)
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
