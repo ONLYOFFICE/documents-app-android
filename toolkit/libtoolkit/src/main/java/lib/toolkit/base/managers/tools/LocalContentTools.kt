@@ -27,6 +27,8 @@ class LocalContentTools @Inject constructor(val context: Context) {
         const val DOCX_EXTENSION = "docx"
         const val DOC_EXTENSION = "doc"
         const val DOTX_EXTENSION = "dotx"
+        const val DOCXF_EXTENSION = "docxf"
+        const val OFORM_EXTENSION = "oform"
         const val ODT_EXTENSION = "odt"
         const val TXT_EXTENSION = "txt"
         const val RTF_EXTENSION = "rtf"
