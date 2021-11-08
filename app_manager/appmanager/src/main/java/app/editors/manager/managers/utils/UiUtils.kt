@@ -10,6 +10,7 @@ import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.mvp.models.explorer.CloudFolder
+import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 
@@ -69,6 +70,14 @@ object ManagerUiUtils {
             StringUtils.Extension.DOC -> {
                 resId = R.drawable.ic_type_text_document
                 colorId = lib.toolkit.base.R.color.colorDocTint
+            }
+            StringUtils.Extension.FORM -> {
+                resId = if (ext == LocalContentTools.OFORM_EXTENSION) {
+                    R.drawable.ic_format_oform
+                } else {
+                    R.drawable.ic_format_docxf
+                }
+                colorId = lib.toolkit.base.R.color.colorTransparent
             }
             StringUtils.Extension.SHEET -> {
                 resId = R.drawable.ic_type_spreadsheet
