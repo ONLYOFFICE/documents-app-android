@@ -5,9 +5,11 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import android.text.InputType
 import android.view.View
+import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 
@@ -15,11 +17,11 @@ import android.widget.EditText
 object KeyboardUtils {
 
     @JvmField
-    val TAG = KeyboardUtils::class.java.simpleName
+    val TAG: String = KeyboardUtils::class.java.simpleName
 
-    val TAG_TEXT = "TAG_TEXT"
-    val TAG_HTML = "TAG_HTML"
-    val TAG_INTENT = "TAG_INTENT"
+    private const val TAG_TEXT: String = "TAG_TEXT"
+    private const val TAG_HTML = "TAG_HTML"
+    const val TAG_INTENT = "TAG_INTENT"
 
 
     @JvmOverloads
@@ -64,9 +66,13 @@ object KeyboardUtils {
     @JvmStatic
     fun hideKeyboard(view: View?) {
         view?.let {
-            (view.context.getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager)?.let { manager ->
-                view.clearFocus()
-                manager.hideSoftInputFromWindow(view.windowToken, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                view.windowInsetsController?.hide(WindowInsets.Type.ime())
+            } else {
+                (view.context.getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager)?.let { manager ->
+                    view.clearFocus()
+                    manager.hideSoftInputFromWindow(view.windowToken, 0)
+                }
             }
         }
     }
