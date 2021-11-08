@@ -27,6 +27,8 @@ class AppSettingsViewModel : ViewModel() {
     val analyticState: LiveData<Boolean> = _analyticState
     private val _wifiState = MutableLiveData<Boolean>()
     val wifiState: LiveData<Boolean> = _wifiState
+    private val _passcodeState = MutableLiveData<Boolean>()
+    val passcodeState: LiveData<Boolean> = _passcodeState
 
     val message = SingleLiveEvent<String>()
 
@@ -37,6 +39,7 @@ class AppSettingsViewModel : ViewModel() {
             FileUtils.getSize(resourcesProvider.getCacheDir(true)) + FileUtils.getSize(
                 resourcesProvider.getCacheDir(false)
             )
+        _passcodeState.value = preferencesTool.isPasscodeLockEnable
     }
 
     fun setAnalytic(isEnable: Boolean) {

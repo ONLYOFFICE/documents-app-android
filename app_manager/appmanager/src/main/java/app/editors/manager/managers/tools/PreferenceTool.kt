@@ -33,6 +33,9 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_WIFI_STATE = "KEY_WIFI_STATE"
         private const val KEY_ANALYTIC = "KEY_ANALYTIC"
         private const val KEY_STORAGE_ACCESS = "KEY_STORAGE_ACCESS"
+        private const val KEY_PASSCODE_LOCK = "KEY_PASSCODE_LOCK"
+        private const val KEY_FINGERPRINT = "KEY_FINGERPRINT"
+        private const val KEY_PASSCODE = "KEY_PASSCODE"
 
         private val PERSONAL_ADDRESSES: Set<String> = object : TreeSet<String>() {
             init {
@@ -184,6 +187,24 @@ class PreferenceTool @Inject constructor(val context: Context) {
         get() = sharedPreferences.getBoolean(KEY_STORAGE_ACCESS, true)
         set(isShow) {
             sharedPreferences.edit().putBoolean(KEY_STORAGE_ACCESS, isShow).apply()
+        }
+
+    var isPasscodeLockEnable: Boolean
+        get() = sharedPreferences.getBoolean(KEY_PASSCODE_LOCK, false)
+        set(isEnable) {
+            sharedPreferences.edit().putBoolean(KEY_PASSCODE_LOCK, isEnable).apply()
+        }
+
+    var isFingerprintEnable: Boolean
+        get() = sharedPreferences.getBoolean(KEY_FINGERPRINT, false)
+        set(isEnable) {
+            sharedPreferences.edit().putBoolean(KEY_FINGERPRINT, isEnable). apply()
+        }
+
+    var passcode: String?
+        get() = sharedPreferences.getString(KEY_PASSCODE, "")
+        set(passcode) {
+            sharedPreferences.edit().putString(KEY_PASSCODE, passcode).apply()
         }
 
 }

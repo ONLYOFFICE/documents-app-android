@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.login
 
+import android.content.Context
 import android.content.res.Resources
 import android.os.Bundle
 import android.view.InflateException
@@ -8,15 +9,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import app.editors.manager.R
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentSplashBinding
+import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.fragments.main.EnterPasscodeFragment
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class SplashFragment : BaseAppFragment() {
 
@@ -34,6 +39,14 @@ class SplashFragment : BaseAppFragment() {
     private var viewBinding: FragmentSplashBinding? = null
 
     private var disposable: Disposable? = null
+
+    @Inject
+    lateinit var preferencesTool: PreferenceTool
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        requireContext().appComponent.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,8 +84,12 @@ class SplashFragment : BaseAppFragment() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                MainActivity.show(requireContext())
-                requireActivity().finish()
+                if(!preferencesTool.isPasscodeLockEnable) {
+                    MainActivity.show(requireContext())
+                    requireActivity().finish()
+                } else {
+                    showFragment(EnterPasscodeFragment.newInstance(), EnterPasscodeFragment.TAG, false)
+                }
             }
     }
 }

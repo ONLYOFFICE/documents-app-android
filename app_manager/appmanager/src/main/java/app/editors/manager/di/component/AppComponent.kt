@@ -44,6 +44,7 @@ import app.editors.manager.viewModels.login.EnterpriseCreateValidateViewModel
 import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModel
+import app.editors.manager.viewModels.main.SetPasscodeViewModel
 import dagger.BindsInstance
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
@@ -102,6 +103,7 @@ interface AppComponent {
     fun inject(webDavInterceptor: WebDavInterceptor?)
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
     fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
+    fun inject(splashFragment: SplashFragment?)
 
     /*
     * Main
@@ -161,6 +163,7 @@ interface AppComponent {
     fun inject(webDavSignInPresenter: WebDavSignInPresenter?)
 
     fun inject(viewModel: AppSettingsViewModel)
+    fun inject(viewModel: SetPasscodeViewModel)
     fun inject(viewModel: EnterprisePhoneViewModel)
     fun inject(viewModel: EnterprisePortalViewModel)
     fun inject(viewModel: EnterpriseCreateValidateViewModel)
