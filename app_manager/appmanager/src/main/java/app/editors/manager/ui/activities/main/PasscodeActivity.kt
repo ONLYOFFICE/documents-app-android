@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.compose.fragments.main.PasscodeFragmentCompose
@@ -74,7 +75,7 @@ class PasscodeActivity: BaseAppActivity() {
                 )
             }
             composable(PasscodeScreens.SetPasscode.screen) {
-                PasscodeOperationCompose.PasscodeOperation(viewModel,"Enter a passcode", "Choose passcode to unlock app", { codeDigit ->
+                PasscodeOperationCompose.PasscodeOperation(viewModel,getString(R.string.app_settings_passcode_enter_title), getString(R.string.app_settings_passcode_enter_subtitle), { codeDigit ->
                     viewModel.checkPasscode(codeDigit.toString())
                 }) { state ->
                     when(state) {
@@ -89,9 +90,9 @@ class PasscodeActivity: BaseAppActivity() {
                 }
             }
             composable(PasscodeScreens.ConfirmPasscode.screen) {
-                PasscodeOperationCompose.PasscodeOperation(viewModel,"Confirm passcode", "Enter passcode one more time",
+                PasscodeOperationCompose.PasscodeOperation(viewModel, getString(R.string.app_settings_passcode_confirm_title), getString(R.string.app_settings_passcode_confirm_subtitle),
                     { codeDigit ->
-                        viewModel.checkConfirmPasscode(codeDigit.toString(), "Passcodes do not match")
+                        viewModel.checkConfirmPasscode(codeDigit.toString(), getString(R.string.app_settings_passcode_confirm_error))
                     }) { state ->
                     when(state) {
                         is PasscodeLockState.ConfirmPasscode -> {
@@ -112,8 +113,8 @@ class PasscodeActivity: BaseAppActivity() {
                 }
             }
             composable(PasscodeScreens.ChangePasscode.screen) {
-                PasscodeOperationCompose.PasscodeOperation(viewModel,"Enter your current passcode", "", { codeDigit ->
-                    viewModel.checkConfirmPasscode(codeDigit.toString(), "Incorrect passcode entered")
+                PasscodeOperationCompose.PasscodeOperation(viewModel, getString(R.string.app_settings_passcode_change_disable_title), "", { codeDigit ->
+                    viewModel.checkConfirmPasscode(codeDigit.toString(), getString(R.string.app_settings_passcode_change_disable_error))
                 }) { state ->
                     when(state) {
                         is PasscodeLockState.ConfirmPasscode -> {
@@ -130,8 +131,8 @@ class PasscodeActivity: BaseAppActivity() {
                 }
             }
             composable(PasscodeScreens.DisablePasscode.screen) {
-                PasscodeOperationCompose.PasscodeOperation(viewModel,"Enter your current passcode", "", { codeDigit ->
-                    viewModel.checkConfirmPasscode(codeDigit.toString(), "Incorrect passcode entered")
+                PasscodeOperationCompose.PasscodeOperation(viewModel,getString(R.string.app_settings_passcode_change_disable_title), "", { codeDigit ->
+                    viewModel.checkConfirmPasscode(codeDigit.toString(), getString(R.string.app_settings_passcode_change_disable_error))
                 }) { state ->
                     when(state) {
                         is PasscodeLockState.ConfirmPasscode -> {

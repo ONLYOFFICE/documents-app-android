@@ -591,10 +591,22 @@
     <string name="app_settings_analytic">Share app analytics</string>
     <string name="app_manage_files_title">Access manage files</string>
     <string name="app_manage_files_description">Need to grant access to the files. If access is denied all files after lost applications will be deleted.</string>
+    //passcode
     <string name="app_settings_security">Security</string>
     <string name="app_settings_passcode">Passcode lock</string>
     <string name="app_settings_disable">Disable</string>
     <string name="app_settings_enable">Enable</string>
+    <string name="app_Settings_passcode_enable">Enable passcode</string>
+    <string name="app_settings_passcode_change">Change passcode</string>
+    <string name="app_settings_passcode_fingerprint">Use fingerprint to unlock</string>
+    <string name="app_settings_passcode_enter_title">Enter a passcode</string>
+    <string name="app_settings_passcode_enter_subtitle">Choose passcode to unlock app</string>
+    <string name="app_settings_passcode_confirm_title">Confirm passcode</string>
+    <string name="app_settings_passcode_confirm_subtitle">Enter passcode one more time</string>
+    <string name="app_settings_passcode_confirm_error">Passcodes do not match</string>
+    <string name="app_settings_passcode_change_disable_title">Enter your current passcode</string>
+    <string name="app_settings_passcode_change_disable_error">Incorrect passcode entered</string>
+    <string name="app_settings_passcode_description"> - this is code which requested at application start.\n\nPay attention! If you forget passcode you have to remove or reinstall application. All documents on device will be lost. </string>
 
     <string name="app_internal_error">Internal error</string>
     <string name="app_fragment_crash_error">Please close this app and try again</string>

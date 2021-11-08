@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -53,7 +54,7 @@ class PasscodeFragmentCompose {
 
                     PasscodeSwitchItem(
                         isEnable = isEnablePasscode,
-                        text = "Enable passcode",
+                        text = stringResource(id = app.editors.manager.R.string.app_Settings_passcode_enable),
                         onCheckedChange = { state ->
                             if(state) {
                                 navController.navigate(PasscodeScreens.SetPasscode.screen)
@@ -74,7 +75,7 @@ class PasscodeFragmentCompose {
                                 .fillMaxSize()
                         ) {
                             Text(
-                                text = "Change passcode",
+                                text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_change),
                                 modifier = Modifier
                                     .align(Alignment.CenterVertically)
                                     .padding(start = 16.dp),
@@ -91,11 +92,9 @@ class PasscodeFragmentCompose {
                     Text(
                         buildAnnotatedString {
                             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                append("Passсode Lock")
+                                append(stringResource(id = app.editors.manager.R.string.app_settings_passcode))
                             }
-                            append(" - это код, который запрашивается, при запуске приложения.\n" +
-                                    "\n" +
-                                    "Обратите внимание, если вы забудете код доступа, вам понадобится удалить или переустановить приложение. Все локальные документы будут утеряны.")
+                            append(stringResource(id = app.editors.manager.R.string.app_settings_passcode_description))
                         },
                         modifier = Modifier.padding(
                             start = dimensionResource(id = R.dimen.default_margin_medium),
@@ -110,7 +109,7 @@ class PasscodeFragmentCompose {
 
                         PasscodeSwitchItem(
                             isEnable = isEnableFingerprint,
-                            text = "Use Fingerprint to unlock",
+                            text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_fingerprint),
                             onCheckedChange = {
                                 viewModel.setFingerprintState(!isEnableFingerprint)
                             }
