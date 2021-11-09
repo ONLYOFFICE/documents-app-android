@@ -610,14 +610,14 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     public void createDownloadFile() {
         if (!mModelExplorerStack.getSelectedFiles().isEmpty() || !mModelExplorerStack.getSelectedFolders().isEmpty()) {
-            if(mModelExplorerStack.getSelectedFiles().size() == 1) {
+            if (mModelExplorerStack.getSelectedFiles().size() == 1) {
                 getViewState().onCreateDownloadFile(mModelExplorerStack.getSelectedFiles().get(0).getTitle());
             } else {
                 getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
             }
         } else if (mItemClicked instanceof CloudFile) {
             getViewState().onCreateDownloadFile(mItemClicked.getTitle());
-        } else if( mItemClicked instanceof CloudFolder ) {
+        } else if (mItemClicked instanceof CloudFolder) {
             getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
         }
     }
@@ -1457,7 +1457,8 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     @SuppressLint({"StringFormatInvalid", "StringFormatMatches"})
-    protected void fetchError(Throwable throwable) { if (throwable.getMessage().equals(ProviderError.INTERRUPT)) {
+    protected void fetchError(Throwable throwable) {
+        if (throwable.getMessage().equals(ProviderError.INTERRUPT)) {
             checkStatusOperation();
             return;
         } else if (throwable.getMessage().equals(ProviderError.FORBIDDEN)) {
