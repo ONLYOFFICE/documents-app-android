@@ -13,6 +13,13 @@ object Moxy {
     const val moxyCompiler = "com.github.moxy-community:moxy-compiler:$version"
 }
 
+object Koin {
+    private const val version = "3.1.2"
+
+    const val koinAndroid = "io.insert-koin:koin-android:$version"
+    const val koinCompose = "io.insert-koin:koin-androidx-compose:$version"
+}
+
 object AndroidX {
     const val composeVersion = "1.0.1"
     private const val androidxVersion = "1.3.1"
