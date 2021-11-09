@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -75,10 +74,14 @@ class PasscodeActivity: BaseAppActivity() {
                 )
             }
             composable(PasscodeScreens.SetPasscode.screen) {
-                PasscodeOperationCompose.PasscodeOperation(viewModel,getString(R.string.app_settings_passcode_enter_title), getString(R.string.app_settings_passcode_enter_subtitle), { codeDigit ->
-                    viewModel.checkPasscode(codeDigit.toString())
-                }) { state ->
-                    when(state) {
+                PasscodeOperationCompose.PasscodeOperation(
+                    viewModel = viewModel,
+                    title = getString(R.string.app_settings_passcode_enter_title),
+                    subtitle = getString(R.string.app_settings_passcode_enter_subtitle),
+                    onEnterCode = { codeDigit ->
+                        viewModel.checkPasscode(codeDigit.toString())
+                    }) { state ->
+                    when (state) {
                         is PasscodeLockState.SetPasscode -> {
                             viewModel.setNullState()
                             Handler(Looper.getMainLooper()).postDelayed({
@@ -90,8 +93,11 @@ class PasscodeActivity: BaseAppActivity() {
                 }
             }
             composable(PasscodeScreens.ConfirmPasscode.screen) {
-                PasscodeOperationCompose.PasscodeOperation(viewModel, getString(R.string.app_settings_passcode_confirm_title), getString(R.string.app_settings_passcode_confirm_subtitle),
-                    { codeDigit ->
+                PasscodeOperationCompose.PasscodeOperation(
+                    viewModel = viewModel,
+                    title = getString(R.string.app_settings_passcode_confirm_title),
+                    subtitle = getString(R.string.app_settings_passcode_confirm_subtitle),
+                    onEnterCode = { codeDigit ->
                         viewModel.checkConfirmPasscode(codeDigit.toString(), getString(R.string.app_settings_passcode_confirm_error))
                     }) { state ->
                     when(state) {
@@ -113,8 +119,11 @@ class PasscodeActivity: BaseAppActivity() {
                 }
             }
             composable(PasscodeScreens.ChangePasscode.screen) {
-                PasscodeOperationCompose.PasscodeOperation(viewModel, getString(R.string.app_settings_passcode_change_disable_title), "", { codeDigit ->
-                    viewModel.checkConfirmPasscode(codeDigit.toString(), getString(R.string.app_settings_passcode_change_disable_error))
+                PasscodeOperationCompose.PasscodeOperation(
+                    viewModel = viewModel,
+                    title = getString(R.string.app_settings_passcode_change_disable_title),
+                    onEnterCode = { codeDigit ->
+                        viewModel.checkConfirmPasscode(codeDigit.toString(), getString(R.string.app_settings_passcode_change_disable_error))
                 }) { state ->
                     when(state) {
                         is PasscodeLockState.ConfirmPasscode -> {
@@ -131,8 +140,11 @@ class PasscodeActivity: BaseAppActivity() {
                 }
             }
             composable(PasscodeScreens.DisablePasscode.screen) {
-                PasscodeOperationCompose.PasscodeOperation(viewModel,getString(R.string.app_settings_passcode_change_disable_title), "", { codeDigit ->
-                    viewModel.checkConfirmPasscode(codeDigit.toString(), getString(R.string.app_settings_passcode_change_disable_error))
+                PasscodeOperationCompose.PasscodeOperation(
+                    viewModel = viewModel,
+                    title = getString(R.string.app_settings_passcode_change_disable_title),
+                    onEnterCode = { codeDigit ->
+                        viewModel.checkConfirmPasscode(codeDigit.toString(), getString(R.string.app_settings_passcode_change_disable_error))
                 }) { state ->
                     when(state) {
                         is PasscodeLockState.ConfirmPasscode -> {

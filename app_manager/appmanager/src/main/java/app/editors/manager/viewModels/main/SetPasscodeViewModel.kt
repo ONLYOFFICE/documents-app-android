@@ -1,6 +1,5 @@
 package app.editors.manager.viewModels.main
 
-import android.util.Base64
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +8,7 @@ import app.editors.manager.managers.utils.KeyStoreUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.SingleLiveEvent
 import javax.inject.Inject
 
 sealed class PasscodeLockState() {
@@ -18,7 +18,7 @@ sealed class PasscodeLockState() {
 }
 
 
-class SetPasscodeViewModel: ViewModel() {
+class SetPasscodeViewModel: ViewModel(){
 
     companion object {
         const val KEY_PASSCODE = "AndroidKeyStore"
@@ -44,6 +44,8 @@ class SetPasscodeViewModel: ViewModel() {
 
     private val _isPasscodeEnable = MutableLiveData<Boolean>()
     val isPasscodeEnable: LiveData<Boolean> = _isPasscodeEnable
+
+    val biometric = SingleLiveEvent<Boolean>()
 
     private var code: String = ""
 
@@ -116,6 +118,10 @@ class SetPasscodeViewModel: ViewModel() {
 
     fun setCode(value: String) {
         code = value
+    }
+
+    fun openBiometricDialog() {
+        biometric.value = true
     }
 
 }

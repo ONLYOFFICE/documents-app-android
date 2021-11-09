@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
+import app.editors.manager.managers.utils.BiometricsUtils
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.compose.fragments.main.PasscodeOperationCompose
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -44,11 +45,16 @@ class EnterPasscodeFragment: BaseAppFragment() {
         setActionBarTitle(getString(R.string.app_settings_passcode))
         return ComposeView(requireContext()).apply {
             setContent {
-                PasscodeOperationCompose.PasscodeOperation(viewModel,"Enter passcode to unlock app", "", { codeDigit ->
-                    viewModel.checkConfirmPasscode(codeDigit.toString(), "Incorrect passcode entered")
-                }, {
-                    viewModel.codeBackspace()
-                })
+                PasscodeOperationCompose.PasscodeOperation(
+                    viewModel = viewModel,
+                    title = getString(R.string.app_settings_passscode_enter_full_title),
+                    isEnterCodeFragment = true,
+                    onEnterCode = { codeDigit ->
+                        viewModel.checkConfirmPasscode(
+                            codeDigit.toString(),
+                            getString(R.string.app_settings_passcode_change_disable_error)
+                        )
+                    })
             }
         }
     }
@@ -62,7 +68,6 @@ class EnterPasscodeFragment: BaseAppFragment() {
     private fun init() {
         viewModel.passcodeLockState.observe(viewLifecycleOwner) { state ->
             when(state) {
-
                 is PasscodeLockState.ConfirmPasscode -> {
                     MainActivity.show(requireContext())
                     requireActivity().finish()
@@ -75,6 +80,33 @@ class EnterPasscodeFragment: BaseAppFragment() {
 
             }
         }
+
+        viewModel.biometric.observe(viewLifecycleOwner) { isBiometric ->
+            if (isBiometric) {
+                BiometricsUtils.biometricAuthenticate(
+                    BiometricsUtils.initBiometricDialog(
+                        title = getString(R.string.app_settings_passcode_fingerprint_title),
+                        negative = getString(R.string.dialogs_common_cancel_button)
+                    ),
+                    this@EnterPasscodeFragment,
+                    {
+                        onBiometricSuccess()
+                    }) { errorMessage ->
+                    onBiometricError(errorMessage)
+                }
+            }
+        }
+
+    }
+
+    private fun onBiometricSuccess() {
+        MainActivity.show(requireContext())
+        requireActivity().finish()
+    }
+
+    private fun onBiometricError(errorMsg: String) {
+        showSnackBar(errorMsg)
+        viewModel.biometric.value = false
     }
 
 }

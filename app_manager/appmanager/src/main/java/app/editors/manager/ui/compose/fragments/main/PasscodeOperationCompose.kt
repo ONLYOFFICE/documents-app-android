@@ -1,9 +1,5 @@
 package app.editors.manager.ui.compose.fragments.main
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -45,7 +40,8 @@ class PasscodeOperationCompose {
         fun PasscodeOperation(
             viewModel: SetPasscodeViewModel,
             title: String,
-            subtitle: String,
+            subtitle: String = "",
+            isEnterCodeFragment: Boolean = false,
             onEnterCode: (Int) -> Unit,
             onState: ((PasscodeLockState) -> Unit)? = null
         ) {
@@ -60,6 +56,7 @@ class PasscodeOperationCompose {
             var codeCount by remember { mutableStateOf(-1) }
             val isError by viewModel.error.observeAsState(initial = false)
             val passcodeState by viewModel.passcodeLockState.observeAsState()
+            val fingerprintState by viewModel.isFingerprintEnable.observeAsState()
 
             passcodeState?.let { onState?.invoke(it) }
 
@@ -150,11 +147,13 @@ class PasscodeOperationCompose {
                         items(lastRow) { item ->
                             when (item) {
                                 is KeyboardLastRow.FingerprintImage -> {
-                                    IconButton(onClick = { /*TODO*/ }) {
-                                        Icon(
-                                            painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
-                                            contentDescription = "fingerprint_icon"
-                                        )
+                                    if(fingerprintState == true && isEnterCodeFragment) {
+                                        IconButton(onClick = { viewModel.openBiometricDialog() }) {
+                                            Icon(
+                                                painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
+                                                contentDescription = "fingerprint_icon"
+                                            )
+                                        }
                                     }
                                 }
                                 is KeyboardLastRow.ImageItem -> {

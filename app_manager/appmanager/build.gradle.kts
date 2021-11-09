@@ -218,6 +218,7 @@ dependencies {
     // Androidx
     implementation(AndroidX.appCompat)
     implementation(AndroidX.appCompatResources)
+    implementation(AndroidX.biometric)
     // RecyclerView
     implementation(AndroidX.recyclerView)
     implementation(AndroidX.recyclerViewSelection)
