@@ -211,6 +211,7 @@ dependencies {
     implementation(Firebase.firebaseCore)
     implementation(Firebase.firebaseConfig)
     implementation(Firebase.firebaseCrashlytics)
+    implementation(Firebase.firebaseMessaging)
     implementation(Google.playCore)
     implementation(Google.playServiceAuth)
     implementation(Google.material)
