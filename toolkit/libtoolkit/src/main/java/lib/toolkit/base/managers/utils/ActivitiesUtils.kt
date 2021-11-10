@@ -164,6 +164,12 @@ object ActivitiesUtils {
         activity.startActivity(Intent.createChooser(intent, chooseTitle))
     }
 
+    fun getBrowserIntent(url: String): Intent {
+        return Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(url)
+        }
+    }
+
     @JvmStatic
     fun showPlayMarket(context: Context, packageId: String) {
         try {
