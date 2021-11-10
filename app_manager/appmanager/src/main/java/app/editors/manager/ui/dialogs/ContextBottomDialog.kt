@@ -160,8 +160,8 @@ class ContextBottomDialog : BaseBottomDialog() {
             binding.listExplorerContextRename.isVisible = state.isItemEditable
 
             /** Item can share */
-            binding.viewLineSeparatorShare.root.isVisible = state.isCanShare && !state.isOneDrive
-            binding.listExplorerContextShare.isVisible = state.isCanShare && !state.isOneDrive
+            binding.viewLineSeparatorShare.root.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox
+            binding.listExplorerContextShare.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox
 
             /** Only for share section, instead of delete */
             binding.listExplorerContextShareDelete.isVisible = state.isDeleteShare
@@ -310,7 +310,8 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isWebDav: Boolean = false,
         var isTrash: Boolean = false,
         var isFavorite: Boolean = false,
-        var isOneDrive: Boolean = false
+        var isOneDrive: Boolean = false,
+        var isDropBox: Boolean = false
     ) : Serializable
 }
 

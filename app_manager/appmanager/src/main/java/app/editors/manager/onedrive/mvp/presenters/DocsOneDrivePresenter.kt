@@ -196,7 +196,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         if (id != null && loadPosition > 0) {
             val args = getArgs(mFilteringValue)
             args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
-            mDisposable.add(mFileProvider.getFiles(id, args).subscribe({ explorer: Explorer? ->
+            mDisposable.add(mFileProvider.getFiles(id, args)!!.subscribe({ explorer: Explorer? ->
                 mModelExplorerStack.addOnNext(explorer)
                 val last = mModelExplorerStack.last()
                 if (last != null) {
@@ -231,7 +231,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
             }
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        downloadDisposable = mFileProvider.fileInfo(mItemClicked)
+        downloadDisposable = mFileProvider.fileInfo(mItemClicked!!)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(

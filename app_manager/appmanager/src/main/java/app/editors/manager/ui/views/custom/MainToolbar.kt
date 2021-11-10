@@ -68,12 +68,11 @@ class MainToolbar @JvmOverloads constructor(
             context,
             account?.getAccountName() ?: ""
         )?.let {
-            val url =
-                if (cloudAccount.avatarUrl?.contains("static") == true || cloudAccount.avatarUrl?.contains("default") == true) {
-                    cloudAccount.avatarUrl
-                } else {
-                    cloudAccount.scheme + cloudAccount.portal + cloudAccount.avatarUrl
-                }
+            val url = if (cloudAccount.avatarUrl?.contains("static") == true || cloudAccount.avatarUrl?.contains("default") == true || cloudAccount.isDropbox) {
+                cloudAccount.avatarUrl
+            } else {
+                cloudAccount.scheme + cloudAccount.portal + cloudAccount.avatarUrl
+            }
             Glide.with(context)
                 .load(GlideUtils.getCorrectLoad(url ?: "", it))
                 .apply(GlideUtils.avatarOptions)

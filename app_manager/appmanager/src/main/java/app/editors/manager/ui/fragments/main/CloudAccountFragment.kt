@@ -11,9 +11,11 @@ import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import app.documents.core.account.CloudAccount
+import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
+import app.editors.manager.dropbox.ui.fragments.DropboxSignInFragment
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
@@ -315,6 +317,15 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onAccountLogin(portal: String, login: String) {
         SignInActivity.showPortalSignIn(this, portal, login)
+    }
+
+    override fun onDropboxLogin() {
+        val storage = Storage(
+            ApiContract.Storage.DROPBOX,
+            Constants.DropBox.COM_CLIENT_ID,
+            Constants.DropBox.COM_REDIRECT_URL
+        )
+        showFragment(newInstance(storage), DropboxSignInFragment.TAG, false)
     }
 
     override fun onOneDriveLogin() {

@@ -12,6 +12,7 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.ActivityMainBinding
+import app.editors.manager.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
@@ -464,12 +465,19 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     private fun showOnCloudFragment(account: CloudAccount? = null) {
         account?.let {
-            if (it.isWebDav) {
-                showWebDavFragment(it)
-            } else if (it.isOneDrive) {
-                showOneDriveFragment(account)
-            } else {
-                showCloudFragment(account)
+            when {
+                it.isWebDav -> {
+                    showWebDavFragment(it)
+                }
+                it.isOneDrive -> {
+                    showOneDriveFragment(account)
+                }
+                it.isDropbox -> {
+                    showDropboxFragment(account)
+                }
+                else -> {
+                    showCloudFragment(account)
+                }
             }
         } ?: run {
             FragmentUtils.showFragment(
@@ -513,6 +521,18 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             FragmentUtils.showFragment(
                 supportFragmentManager,
                 DocsOneDriveFragment.newInstance(Json.encodeToString(account)),
+                R.id.frame_container
+            )
+        }
+    }
+
+    private fun showDropboxFragment(account: CloudAccount) {
+        supportFragmentManager.findFragmentByTag(DocsDropboxFragment.TAG)?.let {
+            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
+        } ?: run {
+            FragmentUtils.showFragment(
+                supportFragmentManager,
+                DocsDropboxFragment.newInstance(Json.encodeToString(account)),
                 R.id.frame_container
             )
         }
