@@ -15,4 +15,5 @@ interface AccountsView : BaseView {
     fun showWaitingDialog()
     fun onWebDavLogin(account: CloudAccount)
     fun onOneDriveLogin()
+    fun onDropboxLogin()
 }

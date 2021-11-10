@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentChooseCloudsBinding
+import app.editors.manager.dropbox.ui.fragments.DropboxSignInFragment
 import app.editors.manager.managers.utils.Constants
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
@@ -94,6 +97,18 @@ class CloudsFragment : BaseAppFragment() {
                 Constants.OneDrive.COM_REDIRECT_URL
             )
             showFragment(OneDriveSignInFragment.newInstance(storage), OneDriveSignInFragment.TAG, false)
+        }
+
+        viewBinding?.cloudsItemDropbox?.bind(
+            R.drawable.ic_storage_dropbox,
+            R.string.storage_select_drop_box
+        ) {
+            val storage = Storage(
+                ApiContract.Storage.DROPBOX,
+                Constants.DropBox.COM_CLIENT_ID,
+                Constants.DropBox.COM_REDIRECT_URL
+            )
+            showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
         }
 
         viewBinding?.cloudsItemYandex?.isVisible = false

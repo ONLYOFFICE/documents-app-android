@@ -132,7 +132,7 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             iconSelectableImage.setOneDriveImage()
         } else {
             accountName.visibility = View.VISIBLE
-            val url: String = if (account.avatarUrl?.contains("static") == true) {
+            val url: String = if (account.avatarUrl?.contains("static") == true || account.isDropbox) {
                 account.avatarUrl ?: ""
             } else {
                 account.scheme + account.portal + account.avatarUrl

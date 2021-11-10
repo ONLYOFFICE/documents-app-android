@@ -125,6 +125,8 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             AccountUtils.getAccount(context, account.getAccountName())?.let {
                 if (account.isWebDav) {
                     AccountUtils.setPassword(context, it, null)
+                } else if(account.isDropbox || account.isOneDrive) {
+                    AccountUtils.setToken(context, it, "")
                 } else {
                     AccountUtils.setToken(context, it, null)
                 }

@@ -10,6 +10,7 @@ import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityOperationBinding
+import app.editors.manager.dropbox.ui.fragments.operations.DocsDropboxOperationFragment
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.onedrive.ui.fragments.operations.DocsOneDriveOperationFragment
@@ -119,6 +120,8 @@ class OperationActivity : BaseAppActivity(){
                         )
                     } else if(account.isOneDrive) {
                         showFragment(DocsOneDriveOperationFragment.newInstance(), null)
+                    } else if(account.isDropbox) {
+                        showFragment(DocsDropboxOperationFragment.newInstance(), null)
                     } else {
                         if (account.portal?.contains(ApiContract.PERSONAL_SUBDOMAIN) == true) {
                             showFragment(DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER), null)

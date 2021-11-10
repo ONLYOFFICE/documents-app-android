@@ -36,37 +36,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
         private const val LOAD_PROGRESS_UPDATE = 15
 
-        const val DOWNLOAD_ZIP_NAME = "download.zip"
-
-        fun sendBroadcastDownloadComplete(
-            id: String?, url: String?, title: String?,
-            path: String?, mime: String?
-        ) {
-            val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_COMPLETE)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_PATH, path)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_MIME_TYPE, mime)
-            LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
-        }
-
-        fun sendBroadcastUnknownError(id: String?, url: String?, title: String?) {
-            val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
-            LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
-        }
-
-        fun sendBroadcastError(id: String?, url: String?, title: String?, error: String?) {
-            val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
-            intent.putExtra(DownloadReceiver.EXTRAS_KEY_ERROR, error)
-            LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
-        }
+        const val DOWNLOAD_ZIP_NAME = "onedrive.zip"
     }
 
     private val notificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)
@@ -181,6 +151,36 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
             )
             else -> DownloadWork.sendBroadcastError(id, "", file?.name, errorMessage)
         }
+    }
+
+    private fun sendBroadcastDownloadComplete(
+        id: String?, url: String?, title: String?,
+        path: String?, mime: String?
+    ) {
+        val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_COMPLETE)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_PATH, path)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_MIME_TYPE, mime)
+        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
+    }
+
+    private fun sendBroadcastUnknownError(id: String?, url: String?, title: String?) {
+        val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
+        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
+    }
+
+    fun sendBroadcastError(id: String?, url: String?, title: String?, error: String?) {
+        val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_ERROR, error)
+        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 
     private fun getArgs() {

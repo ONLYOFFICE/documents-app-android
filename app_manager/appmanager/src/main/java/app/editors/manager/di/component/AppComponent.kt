@@ -9,6 +9,9 @@ import app.documents.core.settings.NetworkSettings
 import app.documents.core.settings.WebDavInterceptor
 import app.editors.manager.app.MigrateDb
 import app.editors.manager.di.module.AppModule
+import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
+import app.editors.manager.dropbox.mvp.presenters.DocsDropboxPresenter
+import app.editors.manager.dropbox.mvp.presenters.DropboxSignInPresenter
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.PreferenceTool
@@ -80,6 +83,7 @@ interface AppComponent {
     val accountsDao: AccountDao
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider
+    val dropboxLoginService: IDropboxLoginServiceProvider
     val oneDriveAuthService: IOneDriveAuthServiceProvider
     val accountOnline: CloudAccount?
 
@@ -102,6 +106,7 @@ interface AppComponent {
     fun inject(webDavInterceptor: WebDavInterceptor?)
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
     fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
+    fun inject(dropboxSignInPresenter: DropboxSignInPresenter?)
 
     /*
     * Main
@@ -119,7 +124,8 @@ interface AppComponent {
     fun inject(mediaAdapter: MediaAdapter?)
     fun inject(accountsPresenter: CloudAccountPresenter?)
     fun inject(mainPagerPresenter: MainPagerPresenter?)
-    fun inject(docsOneDrivePresenter: DocsOneDrivePresenter)
+    fun inject(docsOneDrivePresenter: DocsOneDrivePresenter?)
+    fun inject(docsDropboxPresenter: DocsDropboxPresenter?)
 
     /*
     * Media

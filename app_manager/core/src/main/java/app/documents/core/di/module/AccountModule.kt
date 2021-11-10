@@ -23,6 +23,7 @@ class AccountModule {
     fun providesAccountDataBase(roomCallback: RoomDatabase.Callback, context: Context): AccountsDataBase {
         val builder = Room.databaseBuilder(context, AccountsDataBase::class.java, AccountsDataBase.TAG)
             .addMigrations(AccountsDataBase.MIGRATION_1_2)
+            .addMigrations(AccountsDataBase.MIGRATION_2_3)
         builder.addCallback(roomCallback)
         return builder.build()
     }
