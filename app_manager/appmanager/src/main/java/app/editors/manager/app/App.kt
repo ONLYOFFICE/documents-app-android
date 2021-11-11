@@ -13,6 +13,9 @@ import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
+import app.editors.manager.dropbox.di.component.DaggerDropboxComponent
+import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
+import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
 import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
 import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
 import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
@@ -161,6 +164,11 @@ class App : Application() {
             .oneDriveServiceProvider
     }
 
+    fun getDropboxComponent(): IDropboxServiceProvider {
+        return DaggerDropboxComponent.builder().appComponent(appComponent)
+            .build()
+            .dropboxServiceProvider
+    }
 }
 
 val Context.accountOnline: CloudAccount?
@@ -186,6 +194,12 @@ val Context.oneDriveLoginService: IOneDriveLoginServiceProvider
     get() = when(this) {
         is App -> this.appComponent.oneDriveLoginService
         else -> applicationContext.appComponent.oneDriveLoginService
+    }
+
+val Context.dropboxLoginService: IDropboxLoginServiceProvider
+    get() = when(this) {
+        is App -> this.appComponent.dropboxLoginService
+        else -> applicationContext.appComponent.dropboxLoginService
     }
 
 val Context.oneDriveAuthService: IOneDriveAuthServiceProvider
@@ -219,5 +233,11 @@ fun Context.getOneDriveServiceProvider(): IOneDriveServiceProvider {
     return when(this) {
         is App -> this.getOneDriveComponent()
         else -> this.applicationContext.getOneDriveServiceProvider()
+    }
+}
+fun Context.getDropboxServiceProvider(): IDropboxServiceProvider {
+    return when(this) {
+        is App -> this.getDropboxComponent()
+        else -> this.applicationContext.getDropboxServiceProvider()
     }
 }

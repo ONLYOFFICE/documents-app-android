@@ -76,21 +76,34 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
             viewState.onError(context.getString(R.string.errors_sign_in_account_already_use))
             return
         }
-        if (clickedAccount.isWebDav) {
-            loginWebDav()
-            return
-        } else if(clickedAccount.isOneDrive) {
-            AccountUtils.getToken(context, clickedAccount.getAccountName())?.let {token ->
-                if(token.isNotEmpty()) {
-                    setAccount()
-                } else {
-                    viewState.onOneDriveLogin()
-                }
+        when {
+            clickedAccount.isWebDav -> {
+                loginWebDav()
+                return
             }
-            return
+            clickedAccount.isOneDrive -> {
+                AccountUtils.getToken(context, clickedAccount.getAccountName())?.let {token ->
+                    if(token.isNotEmpty()) {
+                        setAccount()
+                    } else {
+                        viewState.onOneDriveLogin()
+                    }
+                }
+                return
+            }
+            clickedAccount.isDropbox -> {
+                AccountUtils.getToken(context, clickedAccount.getAccountName())?.let {token ->
+                    if(token.isNotEmpty()) {
+                        setAccount()
+                    } else {
+                        viewState.onDropboxLogin()
+                    }
+                }
+                return
+            }
+            else -> login()
         }
 
-        login()
     }
 
     private fun loginWebDav() {

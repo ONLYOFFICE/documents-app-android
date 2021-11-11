@@ -57,7 +57,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
             activity = context as IMainActivity
         } catch (e: ClassCastException) {
             throw RuntimeException(
-                DocsOnDeviceFragment::class.java.simpleName + " - must implement - " +
+                DocsOneDriveFragment::class.java.simpleName + " - must implement - " +
                         IMainActivity::class.java.simpleName
             )
         }
@@ -89,6 +89,9 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
                         KEY_UPLOAD)
                 }.run {
                     presenter.upload(data?.data, null, KEY_UPLOAD)
+                }
+                BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
+                    onRefresh()
                 }
             }
         }
@@ -167,6 +170,7 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
             moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
             copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
             downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
+            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
             setAccountEnable(false)
         }
     }

@@ -23,9 +23,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
 
         val TAG = DocsCloudOperationFragment::class.java.simpleName
 
-        fun newInstance(): DocsOneDriveOperationFragment {
-            return DocsOneDriveOperationFragment()
-        }
+        fun newInstance(): DocsOneDriveOperationFragment = DocsOneDriveOperationFragment()
     }
 
 
@@ -49,7 +47,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
             operationActivity?.setOnActionClickListener(this)
         } catch (e: ClassCastException) {
             throw RuntimeException(
-                DocsCloudOperationFragment::class.java.simpleName + " - must implement - " +
+                DocsOneDriveOperationFragment::class.java.simpleName + " - must implement - " +
                         OperationActivity::class.java.simpleName
             )
         }

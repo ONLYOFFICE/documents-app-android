@@ -120,7 +120,9 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
                 outputStream.write(buffer, 0, bytesRead)
                 count += bytesRead
                 if(tag == DocsOneDriveFragment.KEY_UPLOAD) {
-                    count.toLong().let { file?.length()?.let { it1 -> showProgress(it1, it) } }
+                    count.toLong().let { progress ->
+                        file?.length()?.let { total -> showProgress(total, progress) }
+                    }
                 }
             }
             if(connection.responseCode == 200 || connection.responseCode == 201) {

@@ -102,7 +102,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             contextAccount?.let { account ->
                 if (account.isWebDav) {
                     AccountUtils.setToken(context, account.getAccountName(), null)
-                } else if(account.isOneDrive) {
+                } else if(account.isOneDrive || account.isDropbox) {
                     AccountUtils.setToken(context, account.getAccountName(), "")
                 } else {
                     AccountUtils.setPassword(context, account.getAccountName(), null)
@@ -177,6 +177,14 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         loginSuccess(account)
                     } else {
                         viewState.onOneDriveLogin()
+                    }
+                }
+            } else if(account.isDropbox) {
+                AccountUtils.getToken(context, account.getAccountName())?.let {token ->
+                    if(token.isNotEmpty()) {
+                        loginSuccess(account)
+                    } else {
+                        viewState.onDropboxLogin()
                     }
                 }
             } else {

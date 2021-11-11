@@ -24,6 +24,7 @@ data class CloudAccount(
     val isOnline: Boolean = false,
     val isWebDav: Boolean = false,
     val isOneDrive: Boolean = false,
+    val isDropbox: Boolean = false,
     val webDavProvider: String? = null,
     val webDavPath: String? = null,
     val isAdmin: Boolean = false,
