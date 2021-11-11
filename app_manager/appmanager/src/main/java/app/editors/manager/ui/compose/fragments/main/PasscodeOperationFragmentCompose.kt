@@ -42,6 +42,7 @@ class PasscodeOperationCompose {
             title: String,
             subtitle: String = "",
             isEnterCodeFragment: Boolean = false,
+            isConfirmCode: Boolean = true,
             onEnterCode: (Int) -> Unit,
             onState: ((PasscodeLockState) -> Unit)? = null
         ) {
@@ -52,8 +53,7 @@ class PasscodeOperationCompose {
                 KeyboardLastRow.NumberItem(),
                 KeyboardLastRow.ImageItem()
             )
-
-            var codeCount by remember { mutableStateOf(-1) }
+            val codeCount by viewModel.codeCount.observeAsState(-1)
             val isError by viewModel.error.observeAsState(initial = false)
             val passcodeState by viewModel.passcodeLockState.observeAsState()
             val fingerprintState by viewModel.isFingerprintEnable.observeAsState()
@@ -72,8 +72,6 @@ class PasscodeOperationCompose {
                         .fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
-
                     Text(text = title, fontSize = 20.sp)
 
                     Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
@@ -82,7 +80,7 @@ class PasscodeOperationCompose {
                         Text(text = subtitle, fontSize = 14.sp)
                     } else {
                         Text(text = (passcodeState as PasscodeLockState.Error).errorMessage, fontSize = 14.sp, color = colorResource(id = R.color.colorLightRed))
-                        codeCount = -1
+                        viewModel.resetCodeCount()
                     }
 
                     Spacer(size = dimensionResource(id = R.dimen.default_margin_xxlarge))
@@ -116,10 +114,6 @@ class PasscodeOperationCompose {
                         items(keyboard.size) {
                             Button(
                                 onClick = {
-                                    codeCount++
-                                    if (codeCount >= MAX_PASSCODE_LENGTH) {
-                                        codeCount = -1
-                                    }
                                     onEnterCode.invoke(it + 1)
                                 },
                                 colors = ButtonDefaults.textButtonColors(
@@ -148,19 +142,22 @@ class PasscodeOperationCompose {
                             when (item) {
                                 is KeyboardLastRow.FingerprintImage -> {
                                     if(fingerprintState == true && isEnterCodeFragment) {
-                                        IconButton(onClick = { viewModel.openBiometricDialog() }) {
+                                        IconButton(onClick = { viewModel.openBiometricDialog() }, enabled = !isError,) {
                                             Icon(
                                                 painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
-                                                contentDescription = "fingerprint_icon"
+                                                contentDescription = "fingerprint_icon",
+                                                tint = colorResource(id = R.color.colorPrimary)
                                             )
                                         }
                                     }
                                 }
                                 is KeyboardLastRow.ImageItem -> {
-                                    IconButton(onClick = {
-                                        if(codeCount > -1) codeCount-- else codeCount = -1
-                                        viewModel.codeBackspace()
-                                    }) {
+                                    IconButton(
+                                        onClick = {
+                                            if(isConfirmCode) viewModel.confirmCodeBackSpace() else viewModel.codeBackspace()
+                                        },
+                                        enabled = !isError,
+                                    ) {
                                         Icon(
                                             painter = painterResource(id = app.editors.manager.R.drawable.ic_backspace),
                                             contentDescription = "backspace_icon"
@@ -170,12 +167,9 @@ class PasscodeOperationCompose {
                                 is KeyboardLastRow.NumberItem -> {
                                     Button(
                                         onClick = {
-                                            codeCount++
-                                            if (codeCount >= MAX_PASSCODE_LENGTH) {
-                                                codeCount = -1
-                                            }
                                             onEnterCode.invoke(0)
                                         },
+                                        enabled = !isError,
                                         colors = ButtonDefaults.textButtonColors(
                                             backgroundColor = colorResource(
                                                 id = R.color.colorTransparent

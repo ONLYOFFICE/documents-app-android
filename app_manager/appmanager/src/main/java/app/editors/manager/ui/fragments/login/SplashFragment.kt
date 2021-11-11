@@ -14,8 +14,8 @@ import app.editors.manager.databinding.FragmentSplashBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.ui.activities.main.MainActivity
+import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.fragments.main.EnterPasscodeFragment
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -88,7 +88,7 @@ class SplashFragment : BaseAppFragment() {
                     MainActivity.show(requireContext())
                     requireActivity().finish()
                 } else {
-                    showFragment(EnterPasscodeFragment.newInstance(), EnterPasscodeFragment.TAG, false)
+                    PasscodeActivity.show(requireContext(), true)
                 }
             }
     }

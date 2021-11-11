@@ -1,7 +1,7 @@
 package app.editors.manager.managers.utils
 
 import androidx.biometric.BiometricPrompt
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 
 
 object BiometricsUtils {
@@ -19,7 +19,7 @@ object BiometricsUtils {
 
     fun biometricAuthenticate(
         promtInfo: BiometricPrompt.PromptInfo,
-        fragment: Fragment,
+        fragment: FragmentActivity,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {

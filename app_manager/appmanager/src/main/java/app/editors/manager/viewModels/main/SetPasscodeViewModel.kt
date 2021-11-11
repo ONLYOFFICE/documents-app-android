@@ -8,6 +8,7 @@ import app.editors.manager.managers.utils.KeyStoreUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.SingleLiveEvent
 import javax.inject.Inject
 
@@ -21,20 +22,17 @@ sealed class PasscodeLockState() {
 class SetPasscodeViewModel: ViewModel(){
 
     companion object {
-        const val KEY_PASSCODE = "AndroidKeyStore"
+        private const val MAX_PASSCODE_LENGTH = 4
     }
 
     @Inject
     lateinit var preferencesTool: PreferenceTool
 
     private val _passcode: MutableLiveData<String> = MutableLiveData()
-    val passcode: LiveData<String> = _passcode
+    private val passcode: LiveData<String> = _passcode
 
     private val _passcodeLockState: MutableLiveData<PasscodeLockState> = MutableLiveData()
     val passcodeLockState: LiveData<PasscodeLockState> = _passcodeLockState
-
-    private val _error: MutableLiveData<Boolean> = MutableLiveData()
-    val error: LiveData<Boolean> = _error
 
     private val _errorMessage: MutableLiveData<String> = MutableLiveData()
     val errorMessage: LiveData<String> = _errorMessage
@@ -45,9 +43,14 @@ class SetPasscodeViewModel: ViewModel(){
     private val _isPasscodeEnable = MutableLiveData<Boolean>()
     val isPasscodeEnable: LiveData<Boolean> = _isPasscodeEnable
 
+    private val _codeCount = MutableLiveData(-1)
+    val codeCount: LiveData<Int> = _codeCount
+
     val biometric = SingleLiveEvent<Boolean>()
+    val error = SingleLiveEvent<Boolean>()
 
     private var code: String = ""
+    private var confirmCode = ""
 
     fun getData() {
         KeyStoreUtils.init()
@@ -60,13 +63,17 @@ class SetPasscodeViewModel: ViewModel(){
         _isFingerprintEnable.value = preferencesTool.isFingerprintEnable
     }
 
-    fun setPasscode(code: String) {
-        preferencesTool.passcode = KeyStoreUtils.encryptData(code)
-        _passcode.value = KeyStoreUtils.decryptData(preferencesTool.passcode!!)
+    fun setPasscode() {
+        CoroutineScope(Dispatchers.Default).launch {
+            preferencesTool.passcode = KeyStoreUtils.encryptData(confirmCode)
+            withContext(Dispatchers.Main) {
+                _passcode.value = KeyStoreUtils.decryptData(preferencesTool.passcode!!)
+            }
+        }
     }
 
     fun setError(isError: Boolean) {
-        _error.value = isError
+        error.value = isError
     }
 
     fun setFingerprintState(isEnable: Boolean) {
@@ -80,27 +87,27 @@ class SetPasscodeViewModel: ViewModel(){
     }
 
     fun checkPasscode(digit: String) {
-        if(code.length < 4) {
+        incrementCodeCount()
+        if(code.length < MAX_PASSCODE_LENGTH) {
             code += digit
-            if(code.length == 4) {
-                setPasscode(code)
-                code = ""
+            if(code.length == MAX_PASSCODE_LENGTH) {
                 _passcodeLockState.value = PasscodeLockState.SetPasscode()
             }
         }
     }
 
     fun checkConfirmPasscode(digit: String, error: String) {
-        if(code.length < 4) {
-            code += digit
-            if(code.length == 4 ) {
-                if(code == passcode.value) {
-                    setPasscode(code)
+        incrementCodeCount()
+        if(confirmCode.length < MAX_PASSCODE_LENGTH) {
+            confirmCode += digit
+            if(confirmCode.length == MAX_PASSCODE_LENGTH ) {
+                if(confirmCode == if(code.isEmpty()) passcode.value else code) {
                     code = ""
                     _passcodeLockState.value = PasscodeLockState.ConfirmPasscode()
                 } else {
                     setError(true)
                     code = ""
+                    confirmCode = ""
                     _passcodeLockState.value = PasscodeLockState.Error(error)
                 }
             }
@@ -109,19 +116,46 @@ class SetPasscodeViewModel: ViewModel(){
 
     fun codeBackspace() {
         code = code.dropLast(1)
+        decrementCodeCount()
     }
 
+    fun confirmCodeBackSpace () {
+        confirmCode = confirmCode.dropLast(1)
+        decrementCodeCount()
+    }
 
     fun setNullState() {
         _passcodeLockState.value = null
-    }
-
-    fun setCode(value: String) {
-        code = value
     }
 
     fun openBiometricDialog() {
         biometric.value = true
     }
 
+    private fun incrementCodeCount() {
+        _codeCount.value = codeCount.value?.plus(1)
+        if(codeCount.value!! >= MAX_PASSCODE_LENGTH)
+            resetCodeCount()
+    }
+
+    private fun decrementCodeCount () {
+        if(codeCount.value!! > -1) {
+            _codeCount.value = codeCount.value?.minus(1)
+        } else
+            resetCodeCount()
+    }
+
+    fun resetCodeCount() {
+        _codeCount.value = -1
+    }
+
+    fun resetConfirmCode() {
+        confirmCode = ""
+        resetCodeCount()
+    }
+
+    fun resetErrorState() {
+        setError(false)
+        setNullState()
+    }
 }
