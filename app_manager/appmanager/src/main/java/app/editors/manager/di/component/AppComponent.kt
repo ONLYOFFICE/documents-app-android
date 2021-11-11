@@ -47,6 +47,7 @@ import app.editors.manager.viewModels.login.EnterpriseCreateValidateViewModel
 import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModel
+import app.editors.manager.viewModels.main.SetPasscodeViewModel
 import dagger.BindsInstance
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
@@ -84,6 +85,7 @@ interface AppComponent {
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider
     val oneDriveAuthService: IOneDriveAuthServiceProvider
+    val dropboxLoginService: IDropboxLoginServiceProvider
     val accountOnline: CloudAccount?
 
     /*
@@ -170,4 +172,5 @@ interface AppComponent {
     fun inject(viewModel: EnterprisePhoneViewModel)
     fun inject(viewModel: EnterprisePortalViewModel)
     fun inject(viewModel: EnterpriseCreateValidateViewModel)
+    fun inject(viewModel: SetPasscodeViewModel)
 }
