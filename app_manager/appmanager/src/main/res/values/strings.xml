@@ -6,7 +6,7 @@
     <!-- Google -->
     <string name="google_scope" translatable="false">oauth2:profile email</string>
     <string name="google_user_agent" translatable="false">
-        Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36
+        Mozilla/5.0 (Windows NT 6.1) Gecko/20100101 Firefox/94.0 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36
     </string>
 
     <!-- About -->
