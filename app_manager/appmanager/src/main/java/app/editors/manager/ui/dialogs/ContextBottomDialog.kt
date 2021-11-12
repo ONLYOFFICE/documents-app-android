@@ -2,6 +2,7 @@ package app.editors.manager.ui.dialogs
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -239,20 +240,20 @@ class ContextBottomDialog : BaseBottomDialog() {
         viewBinding?.listExplorerContextExternalLink?.isEnabled = isEnable
     }
 
-    fun showMessage(message: String) {
-        val snackBar: Snackbar = UiUtils.getShortSnackBar(viewBinding?.root!!)
+    fun showMessage(message: String, view: View) {
+        val snackBar: Snackbar = UiUtils.getShortSnackBar(view)
         if (state.isShared) {
-            showSendLinkButton(snackBar)
+            showSendLinkButton(snackBar, view.context)
         }
         snackBar.setText(message).show()
     }
 
-    private fun showSendLinkButton(snackBar: Snackbar) {
+    private fun showSendLinkButton(snackBar: Snackbar, context: Context) {
         snackBar.setAction(R.string.operation_snackbar_send_link) {
-            startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+            context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                 type = "message/rfc822"
                 putExtra(Intent.EXTRA_TEXT, KeyboardUtils.getTextFromClipboard(App.getApp()))
-            }, getString(R.string.operation_snackbar_send_link)))
+            }, context.getString(R.string.operation_snackbar_send_link)))
         }
     }
 
