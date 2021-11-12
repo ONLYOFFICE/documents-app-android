@@ -29,6 +29,7 @@ import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceP
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
+import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
 import app.editors.manager.ui.dialogs.AccountBottomDialog
@@ -172,5 +173,5 @@ interface AppComponent {
     fun inject(viewModel: EnterprisePhoneViewModel)
     fun inject(viewModel: EnterprisePortalViewModel)
     fun inject(viewModel: EnterpriseCreateValidateViewModel)
-    fun inject(viewModel: SetPasscodeViewModel)
+    fun inject(passcodeActivity: PasscodeActivity?)
 }

@@ -28,100 +28,150 @@ sealed class KeyboardLastRow {
     class FingerprintImage(): KeyboardLastRow()
 }
 
-class PasscodeOperationCompose {
+private const val MAX_PASSCODE_LENGTH = 4
+private const val KEYBOARD_COLUMN_VALUE = 3
 
-    companion object {
+@ExperimentalFoundationApi
+@Composable
+fun PasscodeOperation(
+    viewModel: SetPasscodeViewModel,
+    title: String,
+    subtitle: String = "",
+    isEnterCodeFragment: Boolean = false,
+    isConfirmCode: Boolean = true,
+    onEnterCode: (Int) -> Unit,
+    onState: ((PasscodeLockState) -> Unit)? = null
+) {
+    val keyboard = (1..9).map { it.toString() }
 
-        private const val MAX_PASSCODE_LENGTH = 4
-        private const val KEYBOARD_COLUMN_VALUE = 3
+    val lastRow: List<KeyboardLastRow> = listOf(
+        KeyboardLastRow.FingerprintImage(),
+        KeyboardLastRow.NumberItem(),
+        KeyboardLastRow.ImageItem()
+    )
 
-        @ExperimentalFoundationApi
-        @Composable
-        fun PasscodeOperation(
-            viewModel: SetPasscodeViewModel,
-            title: String,
-            subtitle: String = "",
-            isEnterCodeFragment: Boolean = false,
-            isConfirmCode: Boolean = true,
-            onEnterCode: (Int) -> Unit,
-            onState: ((PasscodeLockState) -> Unit)? = null
+    val codeCount by viewModel.codeCount.observeAsState(-1)
+    val isError by viewModel.error.observeAsState(initial = false)
+    val passcodeState by viewModel.passcodeLockState.observeAsState()
+    val fingerprintState by viewModel.isFingerprintEnable.observeAsState()
+
+    passcodeState?.let { onState?.invoke(it) }
+
+    AppManagerTheme {
+        Column(
+            modifier = Modifier
+                .background(color = colorResource(id = R.color.colorLight))
+                .padding(
+                    start = dimensionResource(id = R.dimen.screen_left_right_padding),
+                    end = dimensionResource(id = R.dimen.screen_left_right_padding),
+                    top = 170.dp
+                )
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val keyboard = (1..9).map { it.toString() }
+            Text(text = title, fontSize = 20.sp)
 
-            val lastRow: List<KeyboardLastRow> = listOf(
-                KeyboardLastRow.FingerprintImage(),
-                KeyboardLastRow.NumberItem(),
-                KeyboardLastRow.ImageItem()
-            )
-            val codeCount by viewModel.codeCount.observeAsState(-1)
-            val isError by viewModel.error.observeAsState(initial = false)
-            val passcodeState by viewModel.passcodeLockState.observeAsState()
-            val fingerprintState by viewModel.isFingerprintEnable.observeAsState()
+            Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
 
-            passcodeState?.let { onState?.invoke(it) }
+            if(!isError) {
+                Text(text = subtitle, fontSize = 14.sp)
+            } else {
+                Text(text = (passcodeState as PasscodeLockState.Error).errorMessage, fontSize = 14.sp, color = colorResource(id = R.color.colorLightRed))
+                viewModel.resetCodeCount()
+            }
 
-            AppManagerTheme {
-                Column(
-                    modifier = Modifier
-                        .background(color = colorResource(id = R.color.colorLight))
-                        .padding(
-                            start = dimensionResource(id = R.dimen.screen_left_right_padding),
-                            end = dimensionResource(id = R.dimen.screen_left_right_padding),
-                            top = 170.dp
-                        )
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = title, fontSize = 20.sp)
+            Spacer(size = dimensionResource(id = R.dimen.default_margin_xxlarge))
 
-                    Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
-
+            LazyVerticalGrid(cells = GridCells.Fixed(4)) {
+                items(MAX_PASSCODE_LENGTH) {
                     if(!isError) {
-                        Text(text = subtitle, fontSize = 14.sp)
+                        if (it <= codeCount) {
+                            Image(
+                                painter = painterResource(id = app.editors.manager.R.drawable.passcode_filled_dot),
+                                contentDescription = "filled_dot"
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(id = app.editors.manager.R.drawable.passcode_normal_dot),
+                                contentDescription = "normal_dot"
+                            )
+                        }
                     } else {
-                        Text(text = (passcodeState as PasscodeLockState.Error).errorMessage, fontSize = 14.sp, color = colorResource(id = R.color.colorLightRed))
-                        viewModel.resetCodeCount()
+                        Image(
+                            painter = painterResource(id = app.editors.manager.R.drawable.passcode_error_dot),
+                            contentDescription = "error_dot"
+                        )
                     }
+                }
+            }
 
-                    Spacer(size = dimensionResource(id = R.dimen.default_margin_xxlarge))
+            Spacer(size = dimensionResource(id = R.dimen.passcode_keyboard_margin))
 
-                    LazyVerticalGrid(cells = GridCells.Fixed(4)) {
-                        items(MAX_PASSCODE_LENGTH) {
-                            if(!isError) {
-                                if (it <= codeCount) {
-                                    Image(
-                                        painter = painterResource(id = app.editors.manager.R.drawable.passcode_filled_dot),
-                                        contentDescription = "filled_dot"
-                                    )
-                                } else {
-                                    Image(
-                                        painter = painterResource(id = app.editors.manager.R.drawable.passcode_normal_dot),
-                                        contentDescription = "normal_dot"
+            LazyVerticalGrid(cells = GridCells.Fixed(KEYBOARD_COLUMN_VALUE)) {
+                items(keyboard.size) {
+                    Button(
+                        onClick = {
+                            onEnterCode.invoke(it + 1)
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            backgroundColor = colorResource(
+                                id = R.color.colorTransparent
+                            )
+                        ),
+                        enabled = !isError,
+                        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
+                        modifier = Modifier
+                            .padding(bottom = dimensionResource(id = R.dimen.default_margin_xlarge))
+                            .width(68.dp)
+                            .height(58.dp)
+                    ) {
+                        Text(
+                            text = "${keyboard[it]}",
+                            fontSize = 20.sp,
+                            color = colorResource(id = R.color.colorBlack)
+                        )
+                    }
+                }
+            }
+
+            LazyVerticalGrid(cells = GridCells.Fixed(KEYBOARD_COLUMN_VALUE)) {
+                items(lastRow) { item ->
+                    when (item) {
+                        is KeyboardLastRow.FingerprintImage -> {
+                            if(fingerprintState == true && isEnterCodeFragment) {
+                                IconButton(onClick = { viewModel.openBiometricDialog() }, enabled = !isError,) {
+                                    Icon(
+                                        painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
+                                        contentDescription = "fingerprint_icon",
+                                        tint = colorResource(id = R.color.colorPrimary)
                                     )
                                 }
-                            } else {
-                                Image(
-                                    painter = painterResource(id = app.editors.manager.R.drawable.passcode_error_dot),
-                                    contentDescription = "error_dot"
+                            }
+                        }
+                        is KeyboardLastRow.ImageItem -> {
+                            IconButton(
+                                onClick = {
+                                    if(isConfirmCode) viewModel.confirmCodeBackSpace() else viewModel.codeBackspace()
+                                },
+                                enabled = !isError,
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = app.editors.manager.R.drawable.ic_backspace),
+                                    contentDescription = "backspace_icon"
                                 )
                             }
                         }
-                    }
-
-                    Spacer(size = dimensionResource(id = R.dimen.passcode_keyboard_margin))
-
-                    LazyVerticalGrid(cells = GridCells.Fixed(KEYBOARD_COLUMN_VALUE)) {
-                        items(keyboard.size) {
+                        is KeyboardLastRow.NumberItem -> {
                             Button(
                                 onClick = {
-                                    onEnterCode.invoke(it + 1)
+                                    onEnterCode.invoke(0)
                                 },
+                                enabled = !isError,
                                 colors = ButtonDefaults.textButtonColors(
                                     backgroundColor = colorResource(
                                         id = R.color.colorTransparent
                                     )
                                 ),
-                                enabled = !isError,
                                 elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
                                 modifier = Modifier
                                     .padding(bottom = dimensionResource(id = R.dimen.default_margin_xlarge))
@@ -129,71 +179,16 @@ class PasscodeOperationCompose {
                                     .height(58.dp)
                             ) {
                                 Text(
-                                    text = "${keyboard[it]}",
+                                    text = "0",
                                     fontSize = 20.sp,
                                     color = colorResource(id = R.color.colorBlack)
                                 )
                             }
                         }
                     }
-
-                    LazyVerticalGrid(cells = GridCells.Fixed(KEYBOARD_COLUMN_VALUE)) {
-                        items(lastRow) { item ->
-                            when (item) {
-                                is KeyboardLastRow.FingerprintImage -> {
-                                    if(fingerprintState == true && isEnterCodeFragment) {
-                                        IconButton(onClick = { viewModel.openBiometricDialog() }, enabled = !isError,) {
-                                            Icon(
-                                                painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
-                                                contentDescription = "fingerprint_icon",
-                                                tint = colorResource(id = R.color.colorPrimary)
-                                            )
-                                        }
-                                    }
-                                }
-                                is KeyboardLastRow.ImageItem -> {
-                                    IconButton(
-                                        onClick = {
-                                            if(isConfirmCode) viewModel.confirmCodeBackSpace() else viewModel.codeBackspace()
-                                        },
-                                        enabled = !isError,
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = app.editors.manager.R.drawable.ic_backspace),
-                                            contentDescription = "backspace_icon"
-                                        )
-                                    }
-                                }
-                                is KeyboardLastRow.NumberItem -> {
-                                    Button(
-                                        onClick = {
-                                            onEnterCode.invoke(0)
-                                        },
-                                        enabled = !isError,
-                                        colors = ButtonDefaults.textButtonColors(
-                                            backgroundColor = colorResource(
-                                                id = R.color.colorTransparent
-                                            )
-                                        ),
-                                        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-                                        modifier = Modifier
-                                            .padding(bottom = dimensionResource(id = R.dimen.default_margin_xlarge))
-                                            .width(68.dp)
-                                            .height(58.dp)
-                                    ) {
-                                        Text(
-                                            text = "0",
-                                            fontSize = 20.sp,
-                                            color = colorResource(id = R.color.colorBlack)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
-
             }
         }
+
     }
 }

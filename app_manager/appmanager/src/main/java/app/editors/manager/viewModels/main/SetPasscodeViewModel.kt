@@ -1,8 +1,6 @@
 package app.editors.manager.viewModels.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.KeyStoreUtils
 import kotlinx.coroutines.CoroutineScope
@@ -10,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.SingleLiveEvent
-import javax.inject.Inject
 
 sealed class PasscodeLockState() {
     class SetPasscode(): PasscodeLockState()
@@ -19,15 +16,11 @@ sealed class PasscodeLockState() {
 }
 
 
-class SetPasscodeViewModel: ViewModel(){
+class SetPasscodeViewModel(private val preferencesTool: PreferenceTool): ViewModel(){
 
     companion object {
         private const val MAX_PASSCODE_LENGTH = 4
     }
-
-    @Inject
-    lateinit var preferencesTool: PreferenceTool
-
     private val _passcode: MutableLiveData<String> = MutableLiveData()
     private val passcode: LiveData<String> = _passcode
 
