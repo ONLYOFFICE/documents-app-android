@@ -47,22 +47,16 @@ class SetPasscodeViewModel(private val preferencesTool: PreferenceTool): ViewMod
 
     fun getData() {
         KeyStoreUtils.init()
-        CoroutineScope(Dispatchers.Main).launch {
-            if(preferencesTool.passcode?.isEmpty() == true)
-                preferencesTool.passcode = KeyStoreUtils.encryptData("")
-            _passcode.value = preferencesTool.passcode?.let { KeyStoreUtils.decryptData(it) }
-        }
+        if(preferencesTool.passcode?.isEmpty() == true)
+            preferencesTool.passcode = KeyStoreUtils.encryptData("")
+        _passcode.value = preferencesTool.passcode?.let { KeyStoreUtils.decryptData(it) }
         _isPasscodeEnable.value = preferencesTool.isPasscodeLockEnable
         _isFingerprintEnable.value = preferencesTool.isFingerprintEnable
     }
 
     fun setPasscode() {
-        CoroutineScope(Dispatchers.Default).launch {
-            preferencesTool.passcode = KeyStoreUtils.encryptData(confirmCode)
-            withContext(Dispatchers.Main) {
-                _passcode.value = KeyStoreUtils.decryptData(preferencesTool.passcode!!)
-            }
-        }
+        preferencesTool.passcode = KeyStoreUtils.encryptData(confirmCode)
+        _passcode.value = KeyStoreUtils.decryptData(preferencesTool.passcode!!)
     }
 
     fun setError(isError: Boolean) {
