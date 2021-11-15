@@ -4,11 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.compose.activities.main.PasscodeActivity
+import app.editors.manager.viewModels.base.SetPasscodeViewModelFactory
+import app.editors.manager.viewModels.main.SetPasscodeViewModel
 import javax.inject.Inject
 
 

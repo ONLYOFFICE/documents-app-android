@@ -3,10 +3,6 @@ package app.editors.manager.viewModels.main
 import androidx.lifecycle.*
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.KeyStoreUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.SingleLiveEvent
 
 sealed class PasscodeLockState() {
@@ -46,7 +42,6 @@ class SetPasscodeViewModel(private val preferencesTool: PreferenceTool): ViewMod
     private var confirmCode = ""
 
     fun getData() {
-        KeyStoreUtils.init()
         if(preferencesTool.passcode?.isEmpty() == true)
             preferencesTool.passcode = KeyStoreUtils.encryptData("")
         _passcode.value = preferencesTool.passcode?.let { KeyStoreUtils.decryptData(it) }

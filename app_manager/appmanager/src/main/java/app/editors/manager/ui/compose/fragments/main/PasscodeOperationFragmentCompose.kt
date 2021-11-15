@@ -82,7 +82,7 @@ fun PasscodeOperation(
 
             Spacer(size = dimensionResource(id = R.dimen.default_margin_xxlarge))
 
-            LazyVerticalGrid(cells = GridCells.Fixed(4)) {
+            LazyVerticalGrid(cells = GridCells.Fixed(MAX_PASSCODE_LENGTH)) {
                 items(MAX_PASSCODE_LENGTH) {
                     if(!isError) {
                         if (it <= codeCount) {

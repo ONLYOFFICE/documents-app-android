@@ -13,6 +13,7 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentSplashBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
+import app.editors.manager.managers.utils.KeyStoreUtils
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -20,6 +21,9 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -79,6 +83,9 @@ class SplashFragment : BaseAppFragment() {
         } catch (e: Resources.NotFoundException) {
             FirebaseUtils.addCrash("Inflate error when start")
             e.printStackTrace()
+        }
+        CoroutineScope(Dispatchers.Default).launch {
+            KeyStoreUtils.init()
         }
         disposable = Observable.just(1).delay(DELAY_SPLASH.toLong(), TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())

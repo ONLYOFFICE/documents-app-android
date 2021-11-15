@@ -2,11 +2,11 @@ package app.editors.manager.ui.compose.activities.main
 
 import android.os.Handler
 import android.os.Looper
-import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -40,7 +40,7 @@ fun PasscodeActivity(preferenceTool: PreferenceTool) {
     val activity = LocalContext.current as PasscodeActivity
     val isEnterPasscode = activity.isEnterPasscode
 
-    val viewModel by activity.viewModels<SetPasscodeViewModel> { SetPasscodeViewModelFactory(preferenceTool = preferenceTool) }
+    val viewModel: SetPasscodeViewModel = viewModel( factory = SetPasscodeViewModelFactory(preferenceTool = preferenceTool) )
 
     viewModel.getData()
 
