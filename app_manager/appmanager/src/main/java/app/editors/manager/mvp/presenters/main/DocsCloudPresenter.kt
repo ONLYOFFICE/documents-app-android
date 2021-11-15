@@ -265,6 +265,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isOneDrive = false
         state.isTrash = isTrash
         state.isFavorite = isClickedItemFavorite
+        state.isPersonalAccount = account.isPersonal()
         if (!isClickedItemFile) {
             if((itemClicked as CloudFolder).providerKey.isEmpty()) {
                 state.iconResId = R.drawable.ic_type_folder
@@ -679,7 +680,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 mItemClicked?.access == ApiContract.ShareCode.COMMENT)
 
     private val isItemShareable: Boolean
-        get() = isItemEditable && (!isCommonSection || isAdmin) && !account.isPersonal() && !isProjectsSection
+        get() = isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection
                 && !isBunchSection && isItemReadWrite
 
     private val isClickedItemStorage: Boolean

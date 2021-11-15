@@ -166,9 +166,10 @@ class ContextBottomDialog : BaseBottomDialog() {
             /** Only for share section, instead of delete */
             binding.listExplorerContextShareDelete.isVisible = state.isDeleteShare
 
-            if (preferenceTool.isPersonalPortal && !state.isFolder) {
-                binding.viewLineSeparatorShare.root.isVisible = true
-                binding.listExplorerContextExternalLink.isVisible = true
+            if (state.isPersonalAccount) {
+                binding.listExplorerContextShare.isVisible = !state.isFolder
+                binding.viewLineSeparatorShare.root.isVisible = !state.isFolder
+                binding.listExplorerContextExternalLink.isVisible = false
             }
         }
     }
@@ -311,7 +312,8 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isTrash: Boolean = false,
         var isFavorite: Boolean = false,
         var isOneDrive: Boolean = false,
-        var isDropBox: Boolean = false
+        var isDropBox: Boolean = false,
+        var isPersonalAccount: Boolean = false
     ) : Serializable
 }
 

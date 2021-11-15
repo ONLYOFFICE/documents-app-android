@@ -15,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import androidx.transition.TransitionManager
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentShareSettingsListBinding
 import app.editors.manager.databinding.IncludeButtonPopupBinding
 import app.editors.manager.databinding.IncludeShareSettingsHeaderBinding
@@ -43,7 +44,6 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     @InjectPresenter
     lateinit var settingsPresenter: SettingsPresenter
 
-    private var shareItem: MenuItem? = null
     private var sharePopup: SharePopup? = null
     private var shareActivity: ShareActivity? = null
     private var shareSettingsAdapter: ShareAdapter? = null
@@ -120,7 +120,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.share_settings, menu)
-        shareItem = menu.findItem(R.id.menu_share_settings)
+        menu.findItem(R.id.menu_share_settings).isVisible = !settingsPresenter.isPersonalAccount
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -207,12 +207,14 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     }
 
     override fun onPlaceholderState(type: PlaceholderViews.Type) {
-        placeholderViews?.setTemplatePlaceholder(type)
+        if (!settingsPresenter.isPersonalAccount) {
+            placeholderViews?.setTemplatePlaceholder(type)
+        }
     }
 
     override fun onActionButtonState(isVisible: Boolean) {
         viewBinding?.let { binding ->
-            if (isVisible) {
+            if (isVisible && !settingsPresenter.isPersonalAccount) {
                 binding.shareSettingsAddItem.show()
             } else {
                 binding.shareSettingsAddItem.hide()
