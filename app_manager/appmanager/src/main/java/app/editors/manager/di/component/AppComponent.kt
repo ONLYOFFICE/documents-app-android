@@ -12,6 +12,8 @@ import app.editors.manager.di.module.AppModule
 import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
 import app.editors.manager.dropbox.mvp.presenters.DocsDropboxPresenter
 import app.editors.manager.dropbox.mvp.presenters.DropboxSignInPresenter
+import app.editors.manager.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
+import app.editors.manager.googledrive.mvp.presenters.GoogleDriveSignInPresenter
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.PreferenceTool
@@ -84,6 +86,7 @@ interface AppComponent {
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider
     val dropboxLoginService: IDropboxLoginServiceProvider
+    val googleDriveLoginService: IGoogleDriveLoginServiceProvider
     val oneDriveAuthService: IOneDriveAuthServiceProvider
     val accountOnline: CloudAccount?
 
@@ -107,6 +110,7 @@ interface AppComponent {
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
     fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
     fun inject(dropboxSignInPresenter: DropboxSignInPresenter?)
+    fun inject(googleDriveSignInPresenter: GoogleDriveSignInPresenter?)
 
     /*
     * Main
