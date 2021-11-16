@@ -16,6 +16,7 @@ import app.editors.manager.di.component.*
 import app.editors.manager.dropbox.di.component.DaggerDropboxComponent
 import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
+import app.editors.manager.managers.utils.KeyStoreUtils
 import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
 import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
 import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
@@ -113,6 +114,7 @@ class App : Application() {
         }
         isAnalyticEnable = appComponent.preference.isAnalyticEnable
         initCrashlytics()
+        KeyStoreUtils.init()
     }
 
     private fun getProcess(): String {
