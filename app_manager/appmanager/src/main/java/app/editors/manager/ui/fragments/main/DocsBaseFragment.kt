@@ -982,7 +982,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     private fun setContextDialogExternalLinkSwitch(isCheck: Boolean, message: String) {
         contextBottomDialog?.let { dialog ->
             dialog.setItemSharedState(isCheck)
-            dialog.showMessage(message)
+            dialog.showMessage(message, requireView())
         }
     }
 
