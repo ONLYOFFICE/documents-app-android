@@ -38,9 +38,9 @@ class GoogleDriveModule {
 
     @Provides
     @GoogleDriveScope
-    fun provideGoogleDriveService(okHttpClient: OkHttpClient, settings: NetworkSettings): GoogleDriveService = Retrofit.Builder()
+    fun provideGoogleDriveService(okHttpClient: OkHttpClient): GoogleDriveService = Retrofit.Builder()
         .client(okHttpClient)
-        .baseUrl(settings.getBaseUrl())
+        .baseUrl("https://www.googleapis.com/")
         .addConverterFactory(Json {
             isLenient = true
             ignoreUnknownKeys = true

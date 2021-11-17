@@ -101,6 +101,16 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
                 }
                 return
             }
+            clickedAccount.isGoogleDrive -> {
+                AccountUtils.getToken(context, clickedAccount.getAccountName())?.let {token ->
+                    if(token.isNotEmpty()) {
+                        setAccount()
+                    } else {
+                        viewState.onGoogleDriveLogin()
+                    }
+                }
+                return
+            }
             else -> login()
         }
 

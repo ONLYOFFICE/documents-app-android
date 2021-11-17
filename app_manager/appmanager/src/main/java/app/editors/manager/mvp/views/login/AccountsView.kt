@@ -16,4 +16,5 @@ interface AccountsView : BaseView {
     fun onWebDavLogin(account: CloudAccount)
     fun onOneDriveLogin()
     fun onDropboxLogin()
+    fun onGoogleDriveLogin()
 }

@@ -157,8 +157,8 @@ class GoogleDriveSignInFragment: BaseAppFragment(), SwipeRefreshLayout.OnRefresh
             super.onPageStarted(view, url, favicon)
             if (url.startsWith(redirectUrl!!)) {
                 val accessToken = url.split("=")
-                val token = accessToken[2]
-                presenter.getUserInfo(token.dropLast(6))
+                val token = accessToken[1]
+                presenter.getUserInfo(token.dropLast(11))
             }
         }
 

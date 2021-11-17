@@ -13,6 +13,7 @@ import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
 import app.editors.manager.dropbox.mvp.presenters.DocsDropboxPresenter
 import app.editors.manager.dropbox.mvp.presenters.DropboxSignInPresenter
 import app.editors.manager.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
+import app.editors.manager.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.googledrive.mvp.presenters.GoogleDriveSignInPresenter
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
@@ -130,6 +131,7 @@ interface AppComponent {
     fun inject(mainPagerPresenter: MainPagerPresenter?)
     fun inject(docsOneDrivePresenter: DocsOneDrivePresenter?)
     fun inject(docsDropboxPresenter: DocsDropboxPresenter?)
+    fun inject(docsGoogleDrivePresenter: DocsGoogleDrivePresenter?)
 
     /*
     * Media

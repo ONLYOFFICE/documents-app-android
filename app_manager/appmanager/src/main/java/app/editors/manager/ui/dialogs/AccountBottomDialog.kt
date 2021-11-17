@@ -15,6 +15,7 @@ import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.googledrive.ui.fragments.GoogleDriveSignInFragment
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.login.AccountsPresenter
@@ -154,6 +155,15 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
             Constants.DropBox.COM_REDIRECT_URL
         )
         fragmentManager?.let { showFragment(fragmentManager = it,DropboxSignInFragment.newInstance(storage), R.id.frame_container, DropboxSignInFragment.TAG, false) }
+    }
+
+    override fun onGoogleDriveLogin() {
+        val storage = Storage(
+            ApiContract.Storage.GOOGLEDRIVE,
+            Constants.Google.COM_CLIENT_ID,
+            Constants.Google.COM_REDIRECT_URL
+        )
+        fragmentManager?.let { showFragment(fragmentManager = it, GoogleDriveSignInFragment.newInstance(storage), R.id.frame_container, GoogleDriveSignInFragment.TAG, false) }
     }
 
     override fun onError(message: String?) {
