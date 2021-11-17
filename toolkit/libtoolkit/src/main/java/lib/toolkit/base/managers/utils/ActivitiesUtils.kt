@@ -8,10 +8,14 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import lib.toolkit.base.managers.utils.ActivitiesUtils.IMAGE_TYPE
 
 
 object ActivitiesUtils {
@@ -160,6 +164,12 @@ object ActivitiesUtils {
         activity.startActivity(Intent.createChooser(intent, chooseTitle))
     }
 
+    fun getBrowserIntent(url: String): Intent {
+        return Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(url)
+        }
+    }
+
     @JvmStatic
     fun showPlayMarket(context: Context, packageId: String) {
         try {
@@ -242,6 +252,19 @@ object ActivitiesUtils {
         intent.type = StringUtils.getMimeTypeFromPath(name)
         intent.putExtra(Intent.EXTRA_TITLE, name)
         fragment?.startActivityForResult(intent, code)
+    }
+}
+
+class ImagePicker(
+    private val activityResultRegistry: ActivityResultRegistry,
+    private val callback: (imageUri: Uri?) -> Unit
+) {
+
+    private val getContent: ActivityResultLauncher<String> =
+        activityResultRegistry.register("Image", ActivityResultContracts.GetContent(), callback)
+
+    fun pickImage() {
+        getContent.launch(IMAGE_TYPE)
     }
 
 }

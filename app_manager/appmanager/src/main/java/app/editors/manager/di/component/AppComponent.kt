@@ -46,6 +46,7 @@ import app.editors.manager.ui.fragments.storage.WebTokenFragment
 import app.editors.manager.viewModels.login.EnterpriseCreateValidateViewModel
 import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
+import app.editors.manager.viewModels.login.RemoteUrlViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import dagger.BindsInstance
 import dagger.Component
@@ -170,4 +171,5 @@ interface AppComponent {
     fun inject(viewModel: EnterprisePhoneViewModel)
     fun inject(viewModel: EnterprisePortalViewModel)
     fun inject(viewModel: EnterpriseCreateValidateViewModel)
+    fun inject(viewModel: RemoteUrlViewModel)
 }

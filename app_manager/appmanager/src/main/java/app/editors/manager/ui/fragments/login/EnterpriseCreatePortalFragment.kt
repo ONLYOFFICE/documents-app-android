@@ -50,9 +50,9 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         viewBinding = FragmentLoginEnterpriseCreatePortalBinding.inflate(inflater)
         return viewBinding?.root
@@ -95,8 +95,8 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
     private fun onValidatePortalSuccess(email: String?, first: String?, last: String?) {
         hideDialog()
         showFragment(
-                EnterpriseCreateSignInFragment.newInstance(email, first, last),
-                EnterpriseCreateSignInFragment.TAG, false
+            EnterpriseCreateSignInFragment.newInstance(email, first, last),
+            EnterpriseCreateSignInFragment.TAG, false
         )
     }
 
@@ -119,7 +119,7 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
 
     private fun onRegionDomain(domain: String) {
         val textWidth = measureTextSizes(
-                domain + "X", viewBinding?.loginCreatePortalAddressHintEnd?.textSize?.toInt() ?: -1
+            domain + "X", viewBinding?.loginCreatePortalAddressHintEnd?.textSize?.toInt() ?: -1
         ).x
         viewBinding?.loginCreatePortalAddressHintEnd?.apply {
             layoutParams.width = textWidth
@@ -157,9 +157,9 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
             when (state) {
                 is CreatePortalState.Success -> {
                     onValidatePortalSuccess(
-                            state.portalModel.email,
-                            state.portalModel.firstName,
-                            state.portalModel.lastName
+                        state.portalModel.email,
+                        state.portalModel.firstName,
+                        state.portalModel.lastName
                     )
                 }
                 is CreatePortalState.Error -> {
@@ -219,10 +219,10 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
             viewBinding?.loginCreatePortalAddressHintEnd?.apply {
                 visibility = View.VISIBLE
                 setPadding(
-                        paddingLeft,
-                        paddingTop,
-                        paddingRight,
-                        paddingBottom
+                    paddingLeft,
+                    paddingTop,
+                    paddingRight,
+                    paddingBottom
                 )
             }
         } else {
@@ -258,21 +258,21 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
                     viewBinding?.loginSigninCreatePortalButton?.isEnabled = false
                 }
                 else -> viewBinding?.loginSigninCreatePortalButton?.isEnabled =
-                        "" != address && "" != email && "" != first && "" != last && isAlphaNumeric(
-                                address
-                        )
+                    "" != address && "" != email && "" != first && "" != last && isAlphaNumeric(
+                        address
+                    )
             }
         }
     }
 
     private inner class FieldsFilter : BaseInputFilter() {
         override fun filter(
-                source: CharSequence,
-                start: Int,
-                end: Int,
-                dest: Spanned,
-                dstart: Int,
-                dend: Int
+            source: CharSequence,
+            start: Int,
+            end: Int,
+            dest: Spanned,
+            dstart: Int,
+            dend: Int
         ): CharSequence? {
             super.filter(source, start, end, dest, dstart, dend)
             if (viewModel.checkPhrase(mResultString)) {
@@ -280,7 +280,7 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
             }
             return if (!isAlphaNumeric(mResultString)) {
                 viewBinding?.loginCreatePortalAddressEditLayout?.error =
-                        getString(R.string.login_api_portal_name_content)
+                    getString(R.string.login_api_portal_name_content)
                 source
             } else {
                 viewBinding?.loginCreatePortalAddressEditLayout?.isErrorEnabled = false

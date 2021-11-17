@@ -116,7 +116,7 @@ platform :android do
 
     # creates a bump version commit 
     git_commit(
-      path: "app_manager/appmanager/build.gradle",
+      path: "app_manager/appmanager/build.gradle.kts",
       message: "Version bumped to v#{versionName}(#{versionCode})"
     )
 

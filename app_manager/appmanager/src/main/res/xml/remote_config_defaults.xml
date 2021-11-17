@@ -12,4 +12,16 @@
         <key>android_documents_20_beta_version</key>
         <value>45</value>
     </entry>
+    <entry>
+        <key>recaptcha_for_portal_registration</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>link_terms_of_service</key>
+        <value>https://help.onlyoffice.com/products/files/doceditor.aspx?fileid=5048471&amp;doc=bXJ6UmJacDVnVDMxV01oMHhrUlpwaGFBcXJUUUE3VHRuTGZrRUF5a1NKVT0_IjUwNDg0NzEi0</value>
+    </entry>
+    <entry>
+        <key>link_privacy_policy</key>
+        <value>https://help.onlyoffice.com/products/files/doceditor.aspx?fileid=5048502&amp;doc=SXhWMEVzSEYxNlVVaXJJeUVtS0kyYk14YWdXTEFUQmRWL250NllHNUFGbz0_IjUwNDg1MDIi0</value>
+    </entry>
 </defaultsMap>

@@ -75,7 +75,6 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title))
             disposable = context.webDavApi()
                 .capabilities(Credentials.basic(login, password), webUrl.path)
-                .doOnSubscribe { viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title)) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ response ->

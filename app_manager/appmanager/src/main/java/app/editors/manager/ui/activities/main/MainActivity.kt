@@ -62,19 +62,12 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         val TAG: String = MainActivity::class.java.simpleName
 
         private const val ACCOUNT_KEY = "ACCOUNT_KEY"
+        private const val URL_KEY = "url"
 
-        @JvmStatic
         fun show(context: Context) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             })
-        }
-
-        @JvmStatic
-        fun getIntent(context: Context): Intent {
-            return Intent(context, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            }
         }
     }
 
@@ -132,6 +125,13 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 }
                 return
             }
+        }
+
+        if (isNotification()) {
+            intent?.extras?.getString(URL_KEY)?.let {
+                showBrowser(it)
+            }
+            return
         }
 
         var fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
@@ -194,6 +194,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(lib.toolkit.base.R.style.NoActionBarTheme)
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
@@ -205,6 +206,12 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         initToolbar()
         setAppBarStates()
         checkState(savedInstanceState)
+
+        if (isNotification()) {
+            intent.extras?.getString(URL_KEY)?.let {
+                showBrowser(it)
+            }
+        }
     }
 
     private fun initViews() {
@@ -573,5 +580,8 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             viewBinding.appBarTabs.collapse()
         }
     }
+
+    private fun isNotification(): Boolean =
+        intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) == true && intent.extras?.containsKey(URL_KEY) == true
 
 }

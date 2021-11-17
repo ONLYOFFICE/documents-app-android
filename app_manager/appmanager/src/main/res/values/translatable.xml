@@ -544,7 +544,7 @@
     <string name="auth_info_screen_3">Copy the key and paste it to your authenticator app </string>
     <string name="auth_header_screen_4">Type the code</string>
     <string name="auth_info_screen_4">Type the code from your authenticator app to the input field</string>
-    <string name="auth_step_title">Step %d of %d</string>
+    <string name="auth_step_title">Step %1$d of %2$d</string>
     <string name="auth_install_button">Install</string>
     <string name="auth_confirm_button">Confirm</string>
     <string name="auth_clipboard_key_copied">Key copied to clipboard</string>
@@ -595,4 +595,12 @@
     <string name="app_internal_error">Internal error</string>
     <string name="app_fragment_crash_error">Please close this app and try again</string>
     <string name="item_owner_self">Me</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           By proceeding, you agree to the
+            <a href="%1$s">Privacy Policy</a>
+            and the
+            <a href="%2$s">Terms of Service</a>
+        ]]>
+    </string>
 </resources>

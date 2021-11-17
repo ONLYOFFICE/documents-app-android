@@ -569,9 +569,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             val file = mItemClicked as CloudFile
             val extension = file.fileExst
             when (StringUtils.getExtension(extension)) {
-                StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF -> {
+                StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
                     addRecent(mItemClicked as CloudFile)
-                    file.isReadOnly = true
+                    //TODO open write mode
+//                    file.isReadOnly = true
                     viewState.onFileWebView(file)
                 }
                 StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
@@ -595,8 +596,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
             .subscribe({ file: CloudFile ->
                 mItemClicked = file
-                when (StringUtils.getExtension(file?.fileExst)) {
-                    StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF -> {
+                when (StringUtils.getExtension(file.fileExst)) {
+                    StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
                         viewState.onFileWebView(file)
                     }
                     StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
