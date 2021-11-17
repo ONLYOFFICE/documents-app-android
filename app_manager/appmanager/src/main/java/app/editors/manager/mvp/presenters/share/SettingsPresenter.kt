@@ -4,6 +4,7 @@ import android.content.Intent
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.share.Share
 import app.documents.core.network.models.share.request.RequestExternal
+import app.documents.core.network.models.share.request.RequestExternalAccess
 import app.documents.core.network.models.share.request.RequestShare
 import app.documents.core.network.models.share.request.RequestShareItem
 import app.documents.core.share.ShareService
@@ -36,13 +37,13 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         private const val TAG_FOLDER_PATH = "/products/files/#"
     }
 
-    private var accessType: String? = null
-
     /*
      * Getters/Setters
      * */
     var item: Item? = null
     var externalLink: String? = null
+    val isPersonalAccount: Boolean
+        get() = App.getApp().appComponent.accountOnline?.isPersonal() ?: false
 
     private var shareItem: ShareUi? = null
     var sharePosition = 0
@@ -89,6 +90,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 getShareList(it.response)
+                externalLink = it.response[0].sharedTo.shareLink
             }, { error ->
                 fetchError(error)
             })
@@ -161,19 +163,31 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         }
 
     fun getExternalLink(share: String?) {
-        accessType = share
-        disposable = sharedService
-            .getExternalLink(item?.id ?: "", RequestExternal(share = accessType ?: ""))
-            .subscribeOn(Schedulers.io())
-            .map { it.body()?.response }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                externalLink = it
-                val code = ApiContract.ShareType.getCode(accessType)
-                item?.access = code
-                item?.shared = isShared(code)
-                viewState.onExternalAccess(code, true)
-            }
+        val code = ApiContract.ShareType.getCode(share)
+        if (!isPersonalAccount) {
+            disposable = sharedService
+                .getExternalLink(item?.id ?: "", RequestExternal(share = share ?: ""))
+                .subscribeOn(Schedulers.io())
+                .map { it.body()?.response }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    externalLink = it
+                    item?.access = code
+                    item?.shared = isShared(code)
+                    viewState.onExternalAccess(code, true)
+                }
+        } else {
+            disposable = sharedService
+                .setExternalLinkAccess(item?.id ?: "", RequestExternalAccess(code))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                        item?.access = code
+                        item?.shared = isShared(code)
+                        viewState.onExternalAccess(code, true)
+                    }, { error -> fetchError(error) }
+                )
+        }
     }
 
     fun setItemAccess(accessCode: Int) {
