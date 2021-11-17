@@ -142,7 +142,7 @@
             android:name=".ui.activities.main.StorageActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:theme="@style/DialogStoreTheme"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -141,8 +141,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
      * */
     private inner class WebViewCallbacks : WebViewClient() {
         
-        override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
-            super.onPageStarted(view, url, favicon)
+        override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             if (url.startsWith(redirectUrl!!)) {
                 val uri = Uri.parse(url)
                 val token = uri.getQueryParameter(StorageUtils.ARG_CODE)
