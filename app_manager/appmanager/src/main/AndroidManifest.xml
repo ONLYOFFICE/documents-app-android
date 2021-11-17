@@ -201,6 +201,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
+
+        <activity
+            android:name=".ui.activities.main.PasscodeActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|stateHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="app.editors.manager.ui.activities.main.MainActivity" />
+        </activity>
         <activity
             android:name=".ui.activities.main.OnBoardingActivity"
             android:excludeFromRecents="true"

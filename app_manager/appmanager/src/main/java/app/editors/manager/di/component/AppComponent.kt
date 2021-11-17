@@ -29,6 +29,7 @@ import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceP
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
+import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
 import app.editors.manager.ui.dialogs.AccountBottomDialog
@@ -48,6 +49,7 @@ import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModel
+import app.editors.manager.viewModels.main.SetPasscodeViewModel
 import dagger.BindsInstance
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
@@ -84,8 +86,8 @@ interface AppComponent {
     val accountsDao: AccountDao
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider
-    val dropboxLoginService: IDropboxLoginServiceProvider
     val oneDriveAuthService: IOneDriveAuthServiceProvider
+    val dropboxLoginService: IDropboxLoginServiceProvider
     val accountOnline: CloudAccount?
 
     /*
@@ -107,6 +109,7 @@ interface AppComponent {
     fun inject(webDavInterceptor: WebDavInterceptor?)
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
     fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
+    fun inject(splashFragment: SplashFragment?)
     fun inject(dropboxSignInPresenter: DropboxSignInPresenter?)
 
     /*
@@ -172,4 +175,5 @@ interface AppComponent {
     fun inject(viewModel: EnterprisePortalViewModel)
     fun inject(viewModel: EnterpriseCreateValidateViewModel)
     fun inject(viewModel: RemoteUrlViewModel)
+    fun inject(passcodeActivity: PasscodeActivity?)
 }

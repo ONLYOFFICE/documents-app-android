@@ -34,6 +34,7 @@ object AndroidX {
     const val cardView = "androidx.cardview:cardview:1.0.0"
     const val constraint = "androidx.constraintlayout:constraintlayout:2.0.4"
     const val ktx = "androidx.core:core-ktx:$kotlinKtxVersion"
+    const val biometric = "androidx.biometric:biometric:1.1.0"
 
 }
 

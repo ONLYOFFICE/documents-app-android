@@ -221,6 +221,7 @@ dependencies {
     // Androidx
     implementation(AndroidX.appCompat)
     implementation(AndroidX.appCompatResources)
+    implementation(AndroidX.biometric)
     // RecyclerView
     implementation(AndroidX.recyclerView)
     implementation(AndroidX.recyclerViewSelection)
@@ -277,6 +278,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:${AndroidX.composeVersion}")
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
     implementation("androidx.activity:activity-compose:1.3.1")
+    implementation( "androidx.compose.runtime:runtime-livedata:${AndroidX.composeVersion}")
 
 }
 
