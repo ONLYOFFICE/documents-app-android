@@ -201,9 +201,11 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         }
     }
 
-    fun checkOnBoarding() {
+    fun checkOnBoarding(isCode: Boolean? = null) {
         if (!preferenceTool.onBoarding) {
             viewState.onShowOnBoarding()
+        } else if (preferenceTool.isPasscodeLockEnable && isCode == null) {
+            viewState.onCodeActivity()
         }
     }
 

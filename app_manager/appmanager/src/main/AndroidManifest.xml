@@ -206,7 +206,6 @@
             android:name=".ui.activities.main.PasscodeActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

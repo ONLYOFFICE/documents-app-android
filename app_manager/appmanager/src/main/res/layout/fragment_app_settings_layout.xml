@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -110,13 +111,13 @@
                 android:backgroundTint="@color/colorSurface"
                 android:clickable="true"
                 android:focusable="true"
-                tools:ignore="UselessParent"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UselessParent">
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <ImageView
+                    android:id="@+id/passcodeImageView"
                     android:layout_width="@dimen/image_default_size"
                     android:layout_height="@dimen/image_default_size"
-                    android:id="@+id/passcodeImageView"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentBottom="true"
@@ -124,7 +125,9 @@
                     android:layout_marginStart="@dimen/default_margin_xlarge"
                     android:layout_marginTop="23dp"
                     android:layout_marginBottom="25dp"
-                    android:src="@drawable/ic_settings_passcode_lock" />
+                    android:src="@drawable/ic_settings_passcode_lock"
+                    app:tint="@color/colorOnSurface"
+                    tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/passcodeTextView"

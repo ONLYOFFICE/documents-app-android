@@ -63,10 +63,12 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
         private const val ACCOUNT_KEY = "ACCOUNT_KEY"
         private const val URL_KEY = "url"
+        const val KEY_CODE = "code"
 
-        fun show(context: Context) {
+        fun show(context: Context, isCode: Boolean = true) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                putExtra(KEY_CODE, isCode)
             })
         }
     }
@@ -238,7 +240,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
         }
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-        presenter.checkOnBoarding()
+        if (intent.extras?.containsKey(KEY_CODE) == true) {
+            presenter.checkOnBoarding(true)
+        } else {
+            presenter.checkOnBoarding()
+        }
     }
 
     private fun setAppBarStates() {
@@ -308,6 +314,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun openFile(account: CloudAccount, fileData: String) {
         showCloudFragment(account = account, fileData = fileData)
+    }
+
+    override fun onCodeActivity() {
+        PasscodeActivity.show(this, true)
+        finish()
     }
 
     override fun showActionButton(isShow: Boolean) {

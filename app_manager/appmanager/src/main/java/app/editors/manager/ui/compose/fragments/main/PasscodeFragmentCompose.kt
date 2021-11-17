@@ -3,6 +3,7 @@ package app.editors.manager.ui.compose.fragments.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
@@ -21,12 +22,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import app.editors.manager.compose.ui.theme.AppManagerTheme
 import app.editors.manager.compose.ui.theme.Typography
 import app.editors.manager.ui.compose.activities.main.PasscodeScreens
+import app.editors.manager.ui.compose.base.Spacer
 import app.editors.manager.viewModels.main.SetPasscodeViewModel
 import lib.toolkit.base.R
-import app.editors.manager.ui.compose.base.Spacer
 
 
 @Composable
@@ -34,117 +34,117 @@ fun PasscodeLock(
     viewModel: SetPasscodeViewModel,
     navController: NavController
 ) {
-    AppManagerTheme {
+    val isEnablePasscode by viewModel.isPasscodeEnable.observeAsState(initial = false)
+    val isEnableFingerprint by viewModel.isFingerprintEnable.observeAsState(initial = false)
 
-        val isEnablePasscode by viewModel.isPasscodeEnable.observeAsState(initial = false)
-        val isEnableFingerprint by viewModel.isFingerprintEnable.observeAsState(initial = false)
-
-        Column(modifier = Modifier
-            .background(color = colorResource(id = R.color.colorLight))
+    Column(
+        modifier = Modifier
             .padding(
                 start = dimensionResource(id = R.dimen.screen_left_right_padding),
                 end = dimensionResource(id = R.dimen.screen_left_right_padding)
             )
             .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
+
+        PasscodeSwitchItem(
+            isEnable = isEnablePasscode,
+            text = stringResource(id = app.editors.manager.R.string.app_Settings_passcode_enable),
+            onCheckedChange = { state ->
+                if (state) {
+                    navController.navigate(PasscodeScreens.SetPasscode.screen) {
+                        navController.graph.startDestinationRoute?.let {
+                            popUpTo(it) {
+                                saveState = false
+                            }
+                        }
+                        launchSingleTop = true
+                    }
+                } else {
+                    navController.navigate(PasscodeScreens.DisablePasscode.screen) {
+                        navController.graph.startDestinationRoute?.let {
+                            popUpTo(it) {
+                                saveState = false
+                            }
+                        }
+                        launchSingleTop = true
+                    }
+                }
+            }
+        )
+
+        if (isEnablePasscode) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.item_one_line_height))
+                    .clickable(onClick = {
+                        navController.navigate(PasscodeScreens.ChangePasscode.screen)
+                    })
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_change),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(start = 16.dp),
+                    style = TextStyle(
+                        color = colorResource(id = R.color.colorLink)
+
+                    )
+                )
+            }
+        }
+
+        Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
+
+        Text(
+            buildAnnotatedString {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(stringResource(id = app.editors.manager.R.string.app_settings_passcode))
+                }
+                append(stringResource(id = app.editors.manager.R.string.app_settings_passcode_description))
+            },
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.default_margin_medium),
+                end = dimensionResource(id = R.dimen.default_margin_medium)
+            ),
+            style = Typography.subtitle2,
+            color = MaterialTheme.colors.onBackground
+        )
+
+        if (isEnablePasscode) {
 
             Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
 
             PasscodeSwitchItem(
-                isEnable = isEnablePasscode,
-                text = stringResource(id = app.editors.manager.R.string.app_Settings_passcode_enable),
-                onCheckedChange = { state ->
-                    if(state) {
-                        navController.navigate(PasscodeScreens.SetPasscode.screen) {
-                            navController.graph.startDestinationRoute?.let {
-                                popUpTo(it) {
-                                    saveState = false
-                                }
-                            }
-                            launchSingleTop = true
-                        }
-                    } else {
-                        navController.navigate(PasscodeScreens.DisablePasscode.screen) {
-                            navController.graph.startDestinationRoute?.let {
-                                popUpTo(it) {
-                                    saveState = false
-                                }
-                            }
-                            launchSingleTop = true
-                        }
-                    }
+                isEnable = isEnableFingerprint,
+                text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_fingerprint),
+                onCheckedChange = {
+                    viewModel.setFingerprintState(!isEnableFingerprint)
                 }
             )
-
-            if(isEnablePasscode) {
-                Row(horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .height(dimensionResource(id = lib.editors.gbase.R.dimen.default_one_line_height))
-                        .background(color = colorResource(id = R.color.colorWhite))
-                        .clickable(onClick = {
-                            navController.navigate(PasscodeScreens.ChangePasscode.screen)
-                        })
-                        .fillMaxSize()
-                ) {
-                    Text(
-                        text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_change),
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .padding(start = 16.dp),
-                        style = TextStyle(
-                            color = colorResource(id = R.color.colorLink)
-
-                        )
-                    )
-                }
-            }
-
-            Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
-
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(id = app.editors.manager.R.string.app_settings_passcode))
-                    }
-                    append(stringResource(id = app.editors.manager.R.string.app_settings_passcode_description))
-                },
-                modifier = Modifier.padding(
-                    start = dimensionResource(id = R.dimen.default_margin_medium),
-                    end = dimensionResource(id = R.dimen.default_margin_medium)
-                ),
-                style = Typography.subtitle2
-            )
-
-            if(isEnablePasscode) {
-
-                Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
-
-                PasscodeSwitchItem(
-                    isEnable = isEnableFingerprint,
-                    text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_fingerprint),
-                    onCheckedChange = {
-                        viewModel.setFingerprintState(!isEnableFingerprint)
-                    }
-                )
-            }
         }
     }
-
 }
 
 @Composable
 fun PasscodeSwitchItem(isEnable: Boolean, text: String, onCheckedChange: (Boolean) -> Unit) {
-    Row(horizontalArrangement = Arrangement.SpaceBetween,
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .height(dimensionResource(id = lib.editors.gbase.R.dimen.default_one_line_height))
-            .background(color = colorResource(id = R.color.colorWhite))
+            .height(dimensionResource(id = R.dimen.item_one_line_height))
+            .background(color = MaterialTheme.colors.surface)
             .fillMaxSize()
     ) {
         Text(
             text = text,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .padding(start = 16.dp)
+                .padding(start = 16.dp),
+            color = MaterialTheme.colors.onSurface
         )
         Switch(
             checked = isEnable,
