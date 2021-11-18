@@ -799,26 +799,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     public void uploadToMy(final Uri uri) {
-//        if (mAccountSqlTool.getAccountOnline() != null) {
-//            if (mPreferenceTool.getUploadWifiState() && !NetworkUtils.isWifiEnable(mContext)) {
-//                getViewState().onSnackBar(mContext.getString(R.string.upload_error_wifi));
-//                return;
-//            }
-//            if (ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE) {
-//                getViewState().onSnackBar(mContext.getString(R.string.upload_manager_error_file_size));
-//                return;
-//            }
-//            if (mAccountSqlTool.getAccountOnline().isWebDav()) {
-//                return;
-//            }
-//
-//            final Data workData = new Data.Builder()
-//                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
-//                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
-//                    .putString(UploadWork.TAG_FOLDER_ID, null)
-//                    .build();
-//            startUpload(workData);
-//        }
+        // Stub
     }
 
     private void addUploadFiles(ArrayList<Uri> uriList, String id) {
@@ -856,7 +837,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         }
     }
 
-    private void startUpload(Data data) {
+    protected void startUpload(Data data) {
         final OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(UploadWork.class)
                 .addTag(data.getString(UploadWork.TAG_UPLOAD_FILES))
                 .setInputData(data)

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import androidx.work.Data
 import app.documents.core.account.Recent
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
@@ -12,6 +13,7 @@ import app.editors.manager.app.webDavApi
 import app.editors.manager.managers.providers.LocalFileProvider
 import app.editors.manager.managers.providers.ProviderError
 import app.editors.manager.managers.providers.WebDavFileProvider
+import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
@@ -209,7 +211,28 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                 }
             }
         } else {
-            super.uploadToMy(uri)
+            CoroutineScope(Dispatchers.Default).launch {
+                accountDao.getAccountOnline()?.let { account ->
+                    when {
+                        mPreferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(mContext) -> {
+                            viewState.onSnackBar(mContext.getString(R.string.upload_error_wifi))
+                        }
+                        ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE -> {
+                            viewState.onSnackBar(mContext.getString(R.string.upload_manager_error_file_size))
+                        }
+                        else -> {
+                            if (!account.isWebDav) {
+                                val workData = Data.Builder()
+                                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
+                                    .putString(UploadWork.TAG_FOLDER_ID, null)
+                                    .build()
+                                startUpload(workData)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
