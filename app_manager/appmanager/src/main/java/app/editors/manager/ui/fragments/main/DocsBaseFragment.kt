@@ -954,12 +954,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * BottomSheetFragmentDialogs context/action
      * */
     private fun setDialogs() {
-        contextBottomDialog = contextBottomDialog?.let {
-            parentFragmentManager.findFragmentByTag(ContextBottomDialog.TAG) as ContextBottomDialog
+        contextBottomDialog = parentFragmentManager.findFragmentByTag(ContextBottomDialog.TAG)?.let {
+            it as ContextBottomDialog?
         } ?: ContextBottomDialog.newInstance()
 
-        actionBottomDialog = actionBottomDialog?.let {
-            parentFragmentManager.findFragmentByTag(ActionBottomDialog.TAG) as ActionBottomDialog
+        actionBottomDialog = parentFragmentManager.findFragmentByTag(ActionBottomDialog.TAG)?.let {
+             it as ActionBottomDialog?
         } ?: ActionBottomDialog.newInstance()
 
         moveCopyDialog = parentFragmentManager.findFragmentByTag(MoveCopyDialog.TAG) as MoveCopyDialog?
