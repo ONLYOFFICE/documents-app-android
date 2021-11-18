@@ -9,12 +9,15 @@ import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
+import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.TimeUtils
 
 class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
 
@@ -101,8 +104,48 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
         }
     }
 
+    override fun delete(): Boolean {
+        if (mModelExplorerStack.countSelectedItems > 0) {
+            viewState.onDialogQuestion(
+                mContext.getString(R.string.dialogs_question_delete), null,
+                TAG_DIALOG_BATCH_DELETE_SELECTED
+            )
+        } else {
+            deleteItems()
+        }
+        return true
+    }
+
     override fun onContextClick(item: Item?, position: Int, isTrash: Boolean) {
-        TODO("Not yet implemented")
+        onClickEvent(item, position)
+        mIsContextClick = true
+        val state = ContextBottomDialog.State()
+        state.title = itemClickedTitle
+        state.info = TimeUtils.formatDate(itemClickedDate)
+        state.isFolder = !isClickedItemFile
+        state.isDocs = isClickedItemDocs
+        state.isWebDav = false
+        state.isOneDrive = false
+        state.isDropBox = false
+        state.isGoogleDrive = true
+        state.isTrash = isTrash
+        state.isItemEditable = true
+        state.isContextEditable = true
+        state.isCanShare = true
+        if (!isClickedItemFile) {
+            state.iconResId = R.drawable.ic_type_folder
+        } else {
+            state.iconResId = getIconContext(
+                StringUtils.getExtensionFromPath(
+                    itemClickedTitle
+                )
+            )
+        }
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
+        }
+        viewState.onItemContext(state)
     }
 
     override fun onActionClick() {

@@ -368,6 +368,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
         state.isDocs = isClickedItemDocs
         state.isWebDav = false
         state.isOneDrive = false
+        state.isGoogleDrive = false
         state.isDropBox = true
         state.isTrash = isTrash
         state.isItemEditable = true

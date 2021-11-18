@@ -306,6 +306,8 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         state.isDocs = isClickedItemDocs
         state.isWebDav = false
         state.isOneDrive = true
+        state.isGoogleDrive = false
+        state.isDropBox = false
         state.isTrash = isTrash
         state.isItemEditable = true
         state.isContextEditable = true

@@ -2,6 +2,7 @@ package app.editors.manager.googledrive.managers.providers
 
 import android.net.Uri
 import app.editors.manager.app.App
+import app.editors.manager.dropbox.mvp.models.request.PathRequest
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
 import app.editors.manager.googledrive.mvp.models.GoogleDriveFile
 import app.editors.manager.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
@@ -17,6 +18,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import lib.toolkit.base.managers.utils.StringUtils
+import retrofit2.HttpException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -122,7 +124,25 @@ class GoogleDriveFileProvider: BaseFileProvider {
     }
 
     override fun delete(items: List<Item>, from: CloudFolder?): Observable<List<Operation>> {
-        TODO("Not yet implemented")
+        return items.size.let {
+            Observable.fromIterable(items).map { item -> api.delete(item.id).blockingGet() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { response ->
+                    if(response.isSuccessful && response.code() == 204) {
+                        return@map response
+                    } else {
+                        throw HttpException(response)
+                    }
+                }.buffer(it)
+                .map {
+                    val operations: MutableList<Operation> = ArrayList()
+                    val operation = Operation()
+                    operation.progress = 100
+                    operations.add(operation)
+                    return@map operations
+                }
+        }
     }
 
     override fun transfer(
@@ -140,7 +160,9 @@ class GoogleDriveFileProvider: BaseFileProvider {
     }
 
     override fun getStatusOperation(): ResponseOperation? {
-        TODO("Not yet implemented")
+        val responseOperation = ResponseOperation()
+        responseOperation.response = ArrayList()
+        return responseOperation
     }
 
     override fun download(items: List<Item>): Observable<Int>? {

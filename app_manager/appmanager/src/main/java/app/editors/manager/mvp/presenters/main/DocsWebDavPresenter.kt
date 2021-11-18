@@ -195,6 +195,8 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         state.isFolder = item is CloudFolder
         state.isWebDav = true
         state.isOneDrive = false
+        state.isGoogleDrive = false
+        state.isDropBox = false
         state.isTrash = isTrash
         if (!isClickedItemFile) {
             state.iconResId = R.drawable.ic_type_folder

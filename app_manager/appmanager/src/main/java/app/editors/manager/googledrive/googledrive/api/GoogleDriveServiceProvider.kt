@@ -5,6 +5,7 @@ import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
 
@@ -16,6 +17,22 @@ class GoogleDriveServiceProvider(
     override fun getFiles(map: Map<String, String>): Single<GoogleDriveResponse> {
         return googleDriveServiceProvider.getFiles(map)
             .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun getFileInfo(
+        fileId: String,
+        map: Map<String, String>
+    ): Single<GoogleDriveResponse> {
+        return googleDriveServiceProvider.getFileInfo(fileId, map)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun delete(fileId: String): Single<Response<ResponseBody>> {
+        return googleDriveServiceProvider.deleteItem(fileId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
