@@ -100,6 +100,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 moveItem = menu.findItem(R.id.toolbar_selection_move)
                     .setVisible(cloudPresenter.isContextItemEditable)
                 restoreItem = menu.findItem(R.id.toolbar_selection_restore)
+                    .setVisible(cloudPresenter.isTrashMode)
                 copyItem = menu.findItem(R.id.toolbar_selection_copy)
                 downloadItem = menu.findItem(R.id.toolbar_selection_download)
                     .setVisible(!cloudPresenter.isTrashMode)
