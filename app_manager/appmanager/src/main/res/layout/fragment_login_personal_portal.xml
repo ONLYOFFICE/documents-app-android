@@ -141,6 +141,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/login_personal_signup_button"
+            app:layout_constraintVertical_bias="1.0"
             tools:text="By proceeding, you agree to the Privacy Policy and the Terms of Service." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
