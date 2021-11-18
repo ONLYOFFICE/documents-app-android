@@ -8,9 +8,7 @@ import android.webkit.WebView
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -110,6 +108,8 @@ private fun AboutScreen(
     itemClick: (item: AboutClickedItem) -> Unit,
     backPressed: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     AppManagerTheme {
         Scaffold(topBar = {
             AppBar(title = R.string.about_title, icon = R.drawable.ic_toolbar_close) {
@@ -122,6 +122,7 @@ private fun AboutScreen(
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .padding(top = 48.dp)
+                    .verticalScroll(state = scrollState, enabled = true)
             ) {
                 Image(painter = painterResource(id = R.drawable.image_onlyoffice_text), contentDescription = null)
                 Text(
