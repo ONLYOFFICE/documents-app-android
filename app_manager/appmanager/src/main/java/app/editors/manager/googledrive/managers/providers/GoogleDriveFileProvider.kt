@@ -2,9 +2,12 @@ package app.editors.manager.googledrive.managers.providers
 
 import android.net.Uri
 import app.editors.manager.app.App
+import app.editors.manager.dropbox.dropbox.login.DropboxResponse
+import app.editors.manager.dropbox.mvp.models.request.MoveRequest
 import app.editors.manager.dropbox.mvp.models.request.PathRequest
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
 import app.editors.manager.googledrive.mvp.models.GoogleDriveFile
+import app.editors.manager.googledrive.mvp.models.request.RenameRequest
 import app.editors.manager.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.mvp.models.base.Base
@@ -120,7 +123,29 @@ class GoogleDriveFileProvider: BaseFileProvider {
     }
 
     override fun rename(item: Item, newName: String, version: Int?): Observable<Item> {
-        TODO("Not yet implemented")
+        val correctName = if (item is CloudFile) {
+            StringUtils.getEncodedString(newName) + item.fileExst
+        } else {
+            newName
+        }
+        val request = RenameRequest(
+            name = correctName
+        )
+        return Observable.fromCallable { api.rename(item.id, request).blockingGet() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                when(response) {
+                    is GoogleDriveResponse.Success -> {
+                        item.updated = Date()
+                        item.title = newName
+                        return@map item
+                    }
+                    is GoogleDriveResponse.Error -> {
+                        throw response.error
+                    }
+                }
+            }
     }
 
     override fun delete(items: List<Item>, from: CloudFolder?): Observable<List<Operation>> {

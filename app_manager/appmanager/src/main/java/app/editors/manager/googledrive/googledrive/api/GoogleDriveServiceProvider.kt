@@ -1,6 +1,7 @@
 package app.editors.manager.googledrive.googledrive.api
 
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
+import app.editors.manager.googledrive.mvp.models.request.RenameRequest
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -33,6 +34,13 @@ class GoogleDriveServiceProvider(
 
     override fun delete(fileId: String): Single<Response<ResponseBody>> {
         return googleDriveServiceProvider.deleteItem(fileId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun rename(fileId: String, request: RenameRequest): Single<GoogleDriveResponse> {
+        return googleDriveServiceProvider.rename(fileId, request)
+            .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

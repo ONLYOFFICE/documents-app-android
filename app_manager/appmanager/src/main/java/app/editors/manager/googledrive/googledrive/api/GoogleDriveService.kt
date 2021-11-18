@@ -2,6 +2,7 @@ package app.editors.manager.googledrive.googledrive.api
 
 import app.documents.core.network.ApiContract
 import app.editors.manager.googledrive.mvp.models.GoogleDriveFile
+import app.editors.manager.googledrive.mvp.models.request.RenameRequest
 import app.editors.manager.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
 import io.reactivex.Single
 import okhttp3.ResponseBody
@@ -32,4 +33,11 @@ interface GoogleDriveService {
     @GET("drive/v3/files/{fileId}")
     fun getFileInfo(@Path(value = "fileId") fileId: String, @QueryMap map: Map<String, String>): Single<Response<GoogleDriveFile>>
 
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PATCH("drive/v3/files/{fileId}")
+    fun rename(@Path(value = "fileId") fileId: String,  @Body request: RenameRequest): Single<Response<GoogleDriveFile>>
 }
