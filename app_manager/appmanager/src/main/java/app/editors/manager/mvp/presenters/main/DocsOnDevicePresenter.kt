@@ -9,6 +9,7 @@ import app.documents.core.account.Recent
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.webDavApi
 import app.editors.manager.managers.providers.LocalFileProvider
 import app.editors.manager.managers.providers.ProviderError
@@ -203,35 +204,28 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun uploadToMy(uri: Uri) {
-        if (webDavFileProvider != null) {
-            CoroutineScope(Dispatchers.Default).launch {
-                val id = accountDao.getAccountOnline()?.webDavPath
-                withContext(Dispatchers.Main) {
-                    uploadWebDav(id ?: "", listOf(uri))
-                }
-            }
-        } else {
-            CoroutineScope(Dispatchers.Default).launch {
-                accountDao.getAccountOnline()?.let { account ->
-                    when {
-                        mPreferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(mContext) -> {
-                            viewState.onSnackBar(mContext.getString(R.string.upload_error_wifi))
-                        }
-                        ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE -> {
-                            viewState.onSnackBar(mContext.getString(R.string.upload_manager_error_file_size))
-                        }
-                        else -> {
-                            if (!account.isWebDav) {
-                                val workData = Data.Builder()
-                                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
-                                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
-                                    .putString(UploadWork.TAG_FOLDER_ID, null)
-                                    .build()
-                                startUpload(workData)
-                            }
+        mContext.accountOnline?.let { account ->
+            if (webDavFileProvider == null) {
+                when {
+                    mPreferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(mContext) -> {
+                        viewState.onSnackBar(mContext.getString(R.string.upload_error_wifi))
+                    }
+                    ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE -> {
+                        viewState.onSnackBar(mContext.getString(R.string.upload_manager_error_file_size))
+                    }
+                    else -> {
+                        if (!account.isWebDav) {
+                            val workData = Data.Builder()
+                                .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                                .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
+                                .putString(UploadWork.TAG_FOLDER_ID, null)
+                                .build()
+                            startUpload(workData)
                         }
                     }
                 }
+            } else {
+                uploadWebDav(account.webDavPath ?: "", listOf(uri))
             }
         }
     }
