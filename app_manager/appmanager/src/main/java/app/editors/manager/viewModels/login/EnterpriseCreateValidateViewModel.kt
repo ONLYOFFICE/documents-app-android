@@ -18,6 +18,7 @@ import java.util.*
 import javax.inject.Inject
 
 sealed class CreatePortalState {
+    object None: CreatePortalState()
     object Progress : CreatePortalState()
     class Success(val portalModel: PortalModel): CreatePortalState()
     class Error(@StringRes val res: Int? = null) : CreatePortalState()
@@ -113,6 +114,7 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
     private fun onSuccessRequest(portalName: String, model: PortalModel) {
         networkSettings.setBaseUrl(portalName + domain)
         _stateLiveData.value = CreatePortalState.Success(model)
+        _stateLiveData.value = CreatePortalState.None
     }
 
     private fun checkError(error: Throwable) {
