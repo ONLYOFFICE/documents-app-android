@@ -1,5 +1,6 @@
 package app.editors.manager.googledrive.mvp.presenters
 
+import app.documents.core.account.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.googledrive.managers.providers.GoogleDriveFileProvider
@@ -8,7 +9,6 @@ import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
-import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
+import java.util.*
 
 class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
 
@@ -38,7 +39,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                     withContext(Dispatchers.Main) {
-                        getItemsById(null)
+                        getItemsById("root")
                     }
 
                 }
@@ -49,7 +50,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
                     AccountUtils.getAccount(mContext, cloudAccount.getAccountName())?.let {
                         mFileProvider = GoogleDriveFileProvider()
                         withContext(Dispatchers.Main) {
-                            getItemsById(null)
+                            getItemsById("root")
                         }
                     }
                 } ?: run {
@@ -68,11 +69,26 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
     }
 
     override fun getFileInfo() {
-        TODO("Not yet implemented")
+
     }
 
-    override fun addRecent(file: CloudFile?) {
-        TODO("Not yet implemented")
+    override fun addRecent(file: CloudFile) {
+        CoroutineScope(Dispatchers.Default).launch {
+            accountDao.getAccountOnline()?.let {
+                recentDao.addRecent(
+                    Recent(
+                        idFile = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
+                        path = file.webUrl,
+                        name = file.title,
+                        size = file.pureContentLength,
+                        isLocal = false,
+                        isWebDav = true,
+                        date = Date().time,
+                        ownerId = it.id
+                    )
+                )
+            }
+        }
     }
 
     override fun updateViewsState() {

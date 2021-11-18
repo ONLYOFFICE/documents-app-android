@@ -7,8 +7,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.googledrive.mvp.views.DocsGoogleDriveView
-import app.editors.manager.mvp.presenters.main.DocsBasePresenter
-import app.editors.manager.mvp.views.main.DocsBaseView
+import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
@@ -119,6 +118,10 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
         super.onStateEmptyBackStack()
         loadFiles()
         swipeRefreshLayout?.isRefreshing = true
+    }
+
+    override fun onFileWebView(file: CloudFile) {
+        showViewerActivity(file)
     }
 
     override fun onError(message: String?) {

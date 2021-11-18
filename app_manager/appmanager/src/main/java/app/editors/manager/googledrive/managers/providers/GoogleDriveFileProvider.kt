@@ -2,9 +2,6 @@ package app.editors.manager.googledrive.managers.providers
 
 import android.net.Uri
 import app.editors.manager.app.App
-import app.editors.manager.dropbox.dropbox.login.DropboxResponse
-import app.editors.manager.dropbox.mvp.models.request.MoveRequest
-import app.editors.manager.dropbox.mvp.models.request.PathRequest
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
 import app.editors.manager.googledrive.mvp.models.GoogleDriveFile
 import app.editors.manager.googledrive.mvp.models.request.RenameRequest
@@ -31,7 +28,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         val map = mapOf(
-            "q" to "\"root\" in parents",
+            "q" to "\"$id\" in parents",
             "fields" to "nextPageToken, files/id, files/name, files/mimeType, files/description, files/parents, files/webViewLink, files/webContentLink, files/modifiedTime, files/createdTime, files/capabilities/canDelete, files/size"
         )
         return Observable.fromCallable { api.getFiles(map).blockingGet() }
@@ -75,6 +72,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
                     file.title = item.name
                     file.folderId = item.parents[0]
                     file.pureContentLength = item.size.toLong()
+                    file.webUrl = item.webViewLink
                     file.fileExst = StringUtils.getExtensionFromPath(file.title.toLowerCase())
                     file.created =
                         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.createdTime)
