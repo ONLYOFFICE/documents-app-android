@@ -128,26 +128,34 @@ class AccountContextDialog : BaseBottomDialog() {
     }
 
     private fun initProfileItem() {
-        viewBinding?.profileItem?.let {
-            it.itemImage.setImageDrawable(ContextCompat
-                .getDrawable(requireContext(),R.drawable.ic_list_item_share_user_icon))
-            it.itemText.text = getString(R.string.fragment_profile_title)
-            it.itemLayout.setOnClickListener{
-                mClickListener?.onProfileClick(account)
-                dismiss()
+        arguments?.getString(KEY_TOKEN)?.let {
+            viewBinding?.profileItem?.let {
+                it.itemImage.setImageDrawable(ContextCompat
+                    .getDrawable(requireContext(),R.drawable.ic_list_item_share_user_icon))
+                it.itemText.text = getString(R.string.fragment_profile_title)
+                it.itemLayout.setOnClickListener{
+                    mClickListener?.onProfileClick(account)
+                    dismiss()
+                }
             }
+        } ?: run {
+            viewBinding?.profileItem?.root?.isVisible = false
         }
     }
 
     private fun initLogoutItem() {
-        viewBinding?.logoutItem?.let {
-            it.itemImage.setImageDrawable(ContextCompat
-                .getDrawable(requireContext(), R.drawable.ic_account_logout))
-            it.itemText.text = getString(R.string.navigation_drawer_menu_logout)
-            it.itemLayout.setOnClickListener {
-                mClickListener?.onLogOutClick()
-                dismiss()
+        arguments?.getString(KEY_TOKEN)?.let {
+            viewBinding?.logoutItem?.let {
+                it.itemImage.setImageDrawable(ContextCompat
+                    .getDrawable(requireContext(), R.drawable.ic_account_logout))
+                it.itemText.text = getString(R.string.navigation_drawer_menu_logout)
+                it.itemLayout.setOnClickListener {
+                    mClickListener?.onLogOutClick()
+                    dismiss()
+                }
             }
+        } ?: run {
+            viewBinding?.logoutItem?.root?.isVisible = false
         }
     }
 
