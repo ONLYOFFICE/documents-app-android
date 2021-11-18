@@ -188,6 +188,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
             moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
             copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
+            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
             downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
             activity?.showNavigationButton(true)
         }
