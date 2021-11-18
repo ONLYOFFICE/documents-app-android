@@ -133,6 +133,11 @@ class SignInActivity : BaseAppActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         mSocialFragment?.onActivityResult(requestCode, resultCode, data)
