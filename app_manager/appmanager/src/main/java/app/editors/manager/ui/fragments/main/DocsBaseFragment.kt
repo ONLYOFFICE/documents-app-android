@@ -41,6 +41,7 @@ import app.editors.manager.ui.dialogs.MoveCopyDialog.DialogButtonOnClick
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.ActivitiesUtils.createFile
+import lib.toolkit.base.managers.utils.ActivitiesUtils.getExternalStoragePermission
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.StringUtils
@@ -123,6 +124,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 REQUEST_PRESENTATION -> removeCommonDialog()
                 REQUEST_DOWNLOAD ->
                     data?.let {
+                        activity?.let { activity -> it.data?.let { uri ->
+                                getExternalStoragePermission(activity, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                            }
+                        }
                         presenter.download(it.data!!)
                     }
                 BaseActivity.REQUEST_ACTIVITY_MEDIA -> {
