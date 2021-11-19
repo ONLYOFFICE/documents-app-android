@@ -255,8 +255,13 @@ object ActivitiesUtils {
     }
 
     @JvmStatic
-    fun getExternalStoragePermission(activity: Activity, uri: Uri, flag: Int) {
-        activity.contentResolver?.takePersistableUriPermission(uri, flag)
+    fun getExternalStoragePermission(context: Context, uri: Uri, flag: Int) {
+        context.contentResolver?.takePersistableUriPermission(uri, flag)
+    }
+
+    @JvmStatic
+    fun releaseExternalStoragePermission(context: Context, uri: Uri, flag: Int) {
+        context.contentResolver.releasePersistableUriPermission(uri, flag)
     }
 }
 

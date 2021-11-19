@@ -23,7 +23,7 @@ import java.util.*
 
 class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : BaseFileProvider {
 
-    override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
+    override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(mLocalContentTools.createRootDir())
             .map<List<File?>> { file: File ->
                 if (file.exists()) {

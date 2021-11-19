@@ -40,6 +40,7 @@ import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog.DialogButtonOnClick
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.ActivitiesUtils.createFile
 import lib.toolkit.base.managers.utils.ActivitiesUtils.getExternalStoragePermission
 import lib.toolkit.base.managers.utils.EditorsContract
@@ -528,6 +529,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onDocsAccess(isAccess: Boolean, message: String) {
         setContextDialogExternalLinkEnable(true)
         setContextDialogExternalLinkSwitch(isAccess, message)
+    }
+
+    override fun onFinishDownload(uri: Uri?) {
+        activity?.let { activity ->
+            uri?.let { uri ->
+                ActivitiesUtils.releaseExternalStoragePermission( activity, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            }
+        }
     }
 
     override fun onDocsBatchOperation() {

@@ -43,10 +43,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
 import java.util.*
 
@@ -296,7 +293,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     /*
      * Loading callbacks
      * */
-    override fun onDownloadError(id: String?, url: String?, title: String, info: String) {
+    override fun onDownloadError(id: String?, url: String?, title: String, info: String, uri: Uri) {
+
         viewState.onDialogClose()
         viewState.onSnackBar(info)
     }
@@ -314,6 +312,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         mime: String,
         uri: Uri
     ) {
+        viewState.onFinishDownload(uri)
         viewState.onDialogClose()
         viewState.onSnackBarWithAction(
             """

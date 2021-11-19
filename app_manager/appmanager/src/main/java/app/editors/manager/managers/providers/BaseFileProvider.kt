@@ -11,7 +11,7 @@ import app.editors.manager.mvp.models.response.ResponseOperation
 import io.reactivex.Observable
 
 interface BaseFileProvider {
-    fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer>
+    fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer>
     fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile>
     fun search(query: String?): Observable<String>?
     fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder>
