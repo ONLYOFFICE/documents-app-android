@@ -73,6 +73,7 @@ class EnterprisePortalFragment : BaseAppFragment(),
         if (tag != null) {
             if (TAG_DIALOG_HTTP == tag) {
                 if (httpUrl.isNotEmpty()) {
+                    viewModel.cancel()
                     onSuccessPortal(httpUrl, providers ?: emptyArray())
                 }
             }
