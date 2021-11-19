@@ -12,8 +12,6 @@ import app.editors.manager.googledrive.mvp.views.GoogleDriveSignInView
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.presenters.base.BasePresenter
-import app.editors.manager.onedrive.managers.utils.OneDriveUtils
-import app.editors.manager.onedrive.onedrive.OneDriveService
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

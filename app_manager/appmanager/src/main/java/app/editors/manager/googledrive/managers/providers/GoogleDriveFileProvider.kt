@@ -32,7 +32,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
         var queryString = "\"$id\" in parents"
 
         if(filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) {
-            queryString += ", \"${filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!}\" in name"
+            queryString = "name contains \'${filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!}\'"
         }
 
         val map = mapOf(
