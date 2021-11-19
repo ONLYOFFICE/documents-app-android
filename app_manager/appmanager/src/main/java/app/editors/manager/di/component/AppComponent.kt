@@ -91,7 +91,6 @@ interface AppComponent {
     val oneDriveLoginService: IOneDriveLoginServiceProvider
     val oneDriveAuthService: IOneDriveAuthServiceProvider
     val dropboxLoginService: IDropboxLoginServiceProvider
-    val dropboxLoginService: IDropboxLoginServiceProvider
     val googleDriveLoginService: IGoogleDriveLoginServiceProvider
     val accountOnline: CloudAccount?
 
@@ -116,6 +115,7 @@ interface AppComponent {
     fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
     fun inject(splashFragment: SplashFragment?)
     fun inject(dropboxSignInPresenter: DropboxSignInPresenter?)
+    fun inject(googleDriveSignInPresenter: GoogleDriveSignInPresenter?)
 
     /*
     * Main

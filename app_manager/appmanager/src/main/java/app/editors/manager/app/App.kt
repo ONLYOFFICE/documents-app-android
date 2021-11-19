@@ -174,6 +174,11 @@ class App : Application() {
             .build()
             .dropboxServiceProvider
     }
+    fun getGoogleDriveComponent(): IGoogleDriveServiceProvider {
+        return DaggerGoogleDriveComponent.builder().appComponent(appComponent)
+            .build()
+            .googleDriveServiceProvider
+    }
 }
 
 val Context.accountOnline: CloudAccount?
@@ -213,6 +218,12 @@ val Context.oneDriveAuthService: IOneDriveAuthServiceProvider
         else -> applicationContext.appComponent.oneDriveAuthService
     }
 
+val Context.googleDriveLoginService: IGoogleDriveLoginServiceProvider
+    get() = when(this) {
+        is App -> this.appComponent.googleDriveLoginService
+        else -> applicationContext.appComponent.googleDriveLoginService
+    }
+
 fun Context.api(): Api {
     return when (this) {
         is App -> this.getApi()
@@ -244,5 +255,11 @@ fun Context.getDropboxServiceProvider(): IDropboxServiceProvider {
     return when(this) {
         is App -> this.getDropboxComponent()
         else -> this.applicationContext.getDropboxServiceProvider()
+    }
+}
+fun Context.getGoogleDriveServiceProvider(): IGoogleDriveServiceProvider {
+    return when(this) {
+        is App -> this.getGoogleDriveComponent()
+        else -> this.applicationContext.getGoogleDriveServiceProvider()
     }
 }
