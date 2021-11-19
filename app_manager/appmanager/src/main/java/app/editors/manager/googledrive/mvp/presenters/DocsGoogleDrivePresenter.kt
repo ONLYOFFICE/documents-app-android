@@ -3,9 +3,12 @@ package app.editors.manager.googledrive.mvp.presenters
 import app.documents.core.account.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.googledrive.managers.providers.GoogleDriveFileProvider
+import app.editors.manager.googledrive.managers.utils.GoogleDriveUtils
 import app.editors.manager.googledrive.mvp.views.DocsGoogleDriveView
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -61,7 +64,25 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
     }
 
     override fun getNextList() {
-        TODO("Not yet implemented")
+        val id = mModelExplorerStack.currentId
+        val args = getArgs(mFilteringValue)
+        mDisposable.add(mFileProvider.getFiles(id!!, args).subscribe({ explorer: Explorer? ->
+            mModelExplorerStack.addOnNext(explorer)
+            val last = mModelExplorerStack.last()
+            if (last != null) {
+                viewState.onDocsNext(getListWithHeaders(last, true))
+            }
+        }) { throwable: Throwable? -> fetchError(throwable) })
+    }
+
+    override fun getArgs(filteringValue: String?): MutableMap<String, String> {
+        val args = mutableMapOf<String, String>()
+        if(mModelExplorerStack?.last()?.current?.providerItem == true) {
+            args[GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN] =
+                mModelExplorerStack?.last()?.current?.parentId!!
+        }
+        args.putAll(super.getArgs(filteringValue))
+        return args
     }
 
     override fun createDocs(title: String) {

@@ -1,8 +1,10 @@
 package app.editors.manager.googledrive.managers.providers
 
 import android.net.Uri
+import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
+import app.editors.manager.googledrive.managers.utils.GoogleDriveUtils
 import app.editors.manager.googledrive.mvp.models.GoogleDriveFile
 import app.editors.manager.googledrive.mvp.models.request.RenameRequest
 import app.editors.manager.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
@@ -27,9 +29,15 @@ class GoogleDriveFileProvider: BaseFileProvider {
     private val api = App.getApp().getGoogleDriveComponent()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
+        var queryString = "\"$id\" in parents"
+
+        if(filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) {
+            queryString += ", \"${filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!}\" in name"
+        }
+
         val map = mapOf(
-            "q" to "\"$id\" in parents",
-            "fields" to "nextPageToken, files/id, files/name, files/mimeType, files/description, files/parents, files/webViewLink, files/webContentLink, files/modifiedTime, files/createdTime, files/capabilities/canDelete, files/size"
+            GoogleDriveUtils.GOOGLE_DRIVE_QUERY to queryString,
+            GoogleDriveUtils.GOOGLE_DRIVE_FIELDS to GoogleDriveUtils.GOOGLE_DRIVE_FIELDS_VALUES
         )
         return Observable.fromCallable { api.getFiles(map).blockingGet() }
             .subscribeOn(Schedulers.io())
@@ -37,7 +45,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
             .map { googleDriveResponse ->
                 when(googleDriveResponse) {
                     is GoogleDriveResponse.Success -> {
-                        return@map getExplorer((googleDriveResponse.response as GoogleDriveExplorerResponse).files)
+                        return@map getExplorer((googleDriveResponse.response as GoogleDriveExplorerResponse).files, googleDriveResponse.response.nexPageToken)
                     }
                     is GoogleDriveResponse.Error -> {
                         throw googleDriveResponse.error
@@ -47,7 +55,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
     }
 
-    private fun getExplorer(items: List<GoogleDriveFile>): Explorer {
+    private fun getExplorer(items: List<GoogleDriveFile>, cursor: String): Explorer {
         val explorer = Explorer()
         val files: MutableList<CloudFile> = mutableListOf()
         val folders: MutableList<CloudFolder> = mutableListOf()
@@ -87,6 +95,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
             current.filesCount = files.size.toString()
             current.foldersCount = files.size.toString()
             current.title = parentFolder.title
+            current.parentId = cursor
 
             explorer.current = current
             explorer.files = files
