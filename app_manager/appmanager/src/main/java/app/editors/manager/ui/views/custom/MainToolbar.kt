@@ -26,11 +26,11 @@ class MainToolbar @JvmOverloads constructor(
 
     val toolbar: Toolbar = findViewById(R.id.toolbar)
 
-    private val accountContainer = findViewById<ConstraintLayout>(R.id.accountContainer)
-    private val arrowIcon = findViewById<ImageView>(R.id.toolbarArrowIcon)
-    private val toolbarIcon = findViewById<ImageView>(R.id.toolbarIcon)
-    private val title = findViewById<AppCompatTextView>(R.id.toolbarTitle)
-    private val subtitle = findViewById<AppCompatTextView>(R.id.toolbarSubTitle)
+    private val accountContainer by lazy { findViewById<ConstraintLayout>(R.id.accountContainer) }
+    private val arrowIcon by lazy { findViewById<ImageView>(R.id.toolbarArrowIcon) }
+    private val toolbarIcon by lazy { findViewById<ImageView>(R.id.toolbarIcon) }
+    private val title by lazy { findViewById<AppCompatTextView>(R.id.toolbarTitle) }
+    private val subtitle by lazy { findViewById<AppCompatTextView>(R.id.toolbarSubTitle) }
 
 
     var account: CloudAccount? = null
@@ -68,7 +68,7 @@ class MainToolbar @JvmOverloads constructor(
             context,
             account?.getAccountName() ?: ""
         )?.let {
-            val url = if (cloudAccount.avatarUrl?.contains("static") == true || cloudAccount.isDropbox || cloudAccount.isGoogleDrive) {
+            val url = if (cloudAccount.avatarUrl?.contains("static") == true || cloudAccount.avatarUrl?.contains("default") == true || cloudAccount.isDropbox || cloudAccount.isGoogleDrive) {
                 cloudAccount.avatarUrl
             } else {
                 cloudAccount.scheme + cloudAccount.portal + cloudAccount.avatarUrl

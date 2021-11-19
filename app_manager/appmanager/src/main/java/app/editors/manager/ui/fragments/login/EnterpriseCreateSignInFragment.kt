@@ -8,12 +8,15 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import app.editors.manager.R
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginEnterpriseCreateSigninBinding
+import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.presenters.login.EnterpriseCreateLoginPresenter
 import app.editors.manager.mvp.views.login.EnterpriseCreateSignInView
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
+import com.google.android.gms.safetynet.SafetyNet
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
 
@@ -37,7 +40,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
     }
 
     @InjectPresenter
-    lateinit  var signInPortalPresenter: EnterpriseCreateLoginPresenter
+    lateinit var signInPortalPresenter: EnterpriseCreateLoginPresenter
 
     private var fieldsWatcher: FieldsWatcher? = null
     private var viewBinding: FragmentLoginEnterpriseCreateSigninBinding? = null
@@ -58,7 +61,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        init(savedInstanceState)
+        init()
     }
 
     private fun onSignInClick() {
@@ -66,18 +69,26 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         val password = viewBinding?.loginSigninPasswordEdit?.text.toString()
         val repeat = viewBinding?.loginSigninRepeatEdit?.text.toString()
         if (password != repeat) {
-            viewBinding?.loginSigninRepeatLayout?.error =
-                getString(R.string.login_create_signin_passwords_mismatch)
+            viewBinding?.loginSigninRepeatLayout?.error = getString(R.string.login_create_signin_passwords_mismatch)
             return
         }
-        showWaitingDialog(getString(R.string.dialogs_wait_title))
-        email?.let { first?.let { it1 ->
-            last?.let { it2 ->
-                signInPortalPresenter.createPortal(password, it,
-                    it1, it2
-                )
+
+        SafetyNet.getClient(requireContext())
+            .verifyWithRecaptcha(if (requireContext().appComponent.networkSettings.isPortalInfo) Constants.Captcha.PUBLIC_KEY_INFO else Constants.Captcha.PUBLIC_KEY_COM)
+            .addOnSuccessListener { result ->
+                if (result.tokenResult?.isNotEmpty() == true) {
+                    signInPortalPresenter.createPortal(
+                        password = password,
+                        email = checkNotNull(email),
+                        first = checkNotNull(first),
+                        last = checkNotNull(last),
+                        recaptcha = checkNotNull(result.tokenResult)
+                    )
+                }
             }
-        } }
+            .addOnFailureListener { error ->
+                onError(error.message)
+            }
     }
 
     override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
@@ -99,6 +110,10 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         return false
     }
 
+    override fun onShowProgress() {
+        showWaitingDialog(getString(R.string.dialogs_wait_title))
+    }
+
     override fun onError(message: String?) {
         hideDialog()
         showSnackBar(message!!)
@@ -112,7 +127,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
 
     override fun onTwoFactorAuth(phoneNoise: String?, request: String?) {
         hideDialog()
-       if (phoneNoise != null && phoneNoise.isNotEmpty()) {
+        if (phoneNoise != null && phoneNoise.isNotEmpty()) {
             showFragment(EnterprisePhoneFragment.newInstance(request), EnterprisePhoneFragment.TAG, false)
         } else {
             showFragment(
@@ -123,7 +138,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         }
     }
 
-    private fun init(savedInstanceState: Bundle?) {
+    private fun init() {
         fieldsWatcher = FieldsWatcher()
         initListeners()
         setActionBarTitle(getString(R.string.login_create_signin_title))

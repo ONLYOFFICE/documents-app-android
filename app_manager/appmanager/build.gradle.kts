@@ -60,7 +60,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 307
+        versionCode = 316
         versionName = "5.3.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -185,6 +185,7 @@ android {
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_XPSFILE")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_FB2FILE")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_EPUBFILE")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL_NETWORK")}.so")
         }
     }
     composeOptions {
@@ -210,14 +211,17 @@ dependencies {
     implementation(Firebase.firebaseCore)
     implementation(Firebase.firebaseConfig)
     implementation(Firebase.firebaseCrashlytics)
+    implementation(Firebase.firebaseMessaging)
     implementation(Google.playCore)
     implementation(Google.playServiceAuth)
     implementation(Google.material)
     implementation(Google.gson)
+    implementation(Google.safetynet)
 
     // Androidx
     implementation(AndroidX.appCompat)
     implementation(AndroidX.appCompatResources)
+    implementation(AndroidX.biometric)
     // RecyclerView
     implementation(AndroidX.recyclerView)
     implementation(AndroidX.recyclerViewSelection)
@@ -274,6 +278,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:${AndroidX.composeVersion}")
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
     implementation("androidx.activity:activity-compose:1.3.1")
+    implementation( "androidx.compose.runtime:runtime-livedata:${AndroidX.composeVersion}")
 
 }
 

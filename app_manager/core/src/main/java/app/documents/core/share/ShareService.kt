@@ -4,9 +4,11 @@ import app.documents.core.network.ApiContract
 import app.documents.core.network.models.Base
 import app.documents.core.network.models.share.request.RequestDeleteShare
 import app.documents.core.network.models.share.request.RequestExternal
+import app.documents.core.network.models.share.request.RequestExternalAccess
 import app.documents.core.network.models.share.request.RequestShare
 import app.documents.core.network.models.share.response.*
 import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -44,6 +46,19 @@ interface ShareService {
         @Path(value = "file_id") fileId: String,
         @Body body: RequestExternal
     ): Observable<Response<ResponseExternal>>
+
+    /*
+     * Set external link access
+     * */
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/{file_id}/setacelink" + ApiContract.RESPONSE_FORMAT)
+    fun setExternalLinkAccess(
+        @Path(value = "file_id") fileId: String,
+        @Body body: RequestExternalAccess
+    ): Single<Base>
 
     /*
      * Set access for folder

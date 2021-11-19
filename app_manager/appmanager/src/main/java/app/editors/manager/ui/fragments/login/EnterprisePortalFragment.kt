@@ -2,6 +2,8 @@ package app.editors.manager.ui.fragments.login
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +17,7 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.viewModels.login.EnterprisePortalState
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
+import app.editors.manager.viewModels.login.RemoteUrlViewModel
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 
@@ -32,6 +35,7 @@ class EnterprisePortalFragment : BaseAppFragment(),
     }
 
     private val viewModel: EnterprisePortalViewModel by viewModels()
+    private val urlsViewModel: RemoteUrlViewModel by viewModels()
 
     private var viewBinding: FragmentLoginEnterprisePortalBinding? = null
 
@@ -41,6 +45,7 @@ class EnterprisePortalFragment : BaseAppFragment(),
     override fun onAttach(context: Context) {
         super.onAttach(context)
         requireContext().appComponent.inject(viewModel)
+        requireContext().appComponent.inject(urlsViewModel)
     }
 
     override fun onBackPressed(): Boolean {
@@ -147,6 +152,12 @@ class EnterprisePortalFragment : BaseAppFragment(),
                         onError(state.message)
                     }
                 }
+            }
+        }
+        urlsViewModel.remoteUrls.observe(viewLifecycleOwner) { text: Spanned? ->
+            text?.let {
+                viewBinding?.termsTextView?.movementMethod = LinkMovementMethod.getInstance()
+                viewBinding?.termsTextView?.text = text
             }
         }
     }

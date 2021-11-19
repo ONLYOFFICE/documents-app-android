@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp">
+    android:paddingTop="@dimen/default_margin_large"
+    android:paddingBottom="@dimen/default_margin_large">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,13 +13,14 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:background="@color/colorSurface"
-            android:foreground="?attr/selectableItemBackground"
             android:id="@+id/operation_sections_my"
-            style="@style/OperationLayout">
+            style="@style/ContextListLayout"
+            android:layout_height="@dimen/item_two_line_height"
+            android:background="@color/colorSurface"
+            android:foreground="?attr/selectableItemBackground">
 
             <ImageView
-                style="@style/OperationImage"
+                style="@style/ContextListImage"
                 app:srcCompat="@drawable/ic_drawer_menu_my_docs"
                 tools:ignore="ContentDescription" />
 
@@ -29,13 +30,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:background="@color/colorSurface"
-            android:foreground="?attr/selectableItemBackground"
             android:id="@+id/operation_sections_share"
-            style="@style/OperationLayout">
+            style="@style/ContextListLayout"
+            android:layout_height="@dimen/item_two_line_height"
+            android:background="@color/colorSurface"
+            android:foreground="?attr/selectableItemBackground">
 
             <ImageView
-                style="@style/OperationImage"
+                style="@style/ContextListImage"
                 app:srcCompat="@drawable/ic_share_docs"
                 tools:ignore="ContentDescription" />
 
@@ -45,13 +47,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:background="@color/colorSurface"
-            android:foreground="?attr/selectableItemBackground"
             android:id="@+id/operation_sections_common"
-            style="@style/OperationLayout">
+            style="@style/ContextListLayout"
+            android:layout_height="@dimen/item_two_line_height"
+            android:background="@color/colorSurface"
+            android:foreground="?attr/selectableItemBackground">
 
             <ImageView
-                style="@style/OperationImage"
+                style="@style/ContextListImage"
                 app:srcCompat="@drawable/ic_drawer_menu_common_docs"
                 tools:ignore="ContentDescription" />
 
@@ -61,13 +64,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:background="@color/colorSurface"
-            android:foreground="?attr/selectableItemBackground"
             android:id="@+id/operation_sections_projects"
-            style="@style/OperationLayout">
+            style="@style/ContextListLayout"
+            android:layout_height="@dimen/item_two_line_height"
+            android:background="@color/colorSurface"
+            android:foreground="?attr/selectableItemBackground">
 
             <ImageView
-                style="@style/OperationImage"
+                style="@style/ContextListImage"
                 app:srcCompat="@drawable/ic_drawer_menu_projects"
                 tools:ignore="ContentDescription" />
 

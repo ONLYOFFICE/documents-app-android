@@ -105,7 +105,9 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     override fun onAccountLogin() {
         hideDialog()
         if (context != null && activity != null) {
-            val intent = Intent(context, MainActivity::class.java)
+            val intent = Intent(context, MainActivity::class.java).apply {
+                putExtra(MainActivity.KEY_CODE, true)
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && requireActivity().isInMultiWindowMode) {
                 intent.flags =
                     Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT

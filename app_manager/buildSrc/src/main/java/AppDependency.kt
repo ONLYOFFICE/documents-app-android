@@ -6,8 +6,4 @@ object AppDependency {
 
     const val NDK_VERSION = "21.3.6528147"
 
-    object BuildType {
-        const val DEBUG = "debug"
-        const val RELEASE = "release"
-    }
 }

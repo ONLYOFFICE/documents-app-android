@@ -8,7 +8,6 @@
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/login_social_facebook_button"
-        style="@style/CommonImageButton"
         android:layout_width="@dimen/image_social_size"
         android:layout_height="@dimen/image_social_size"
         android:background="?attr/selectableItemBackgroundBorderless"
@@ -21,7 +20,6 @@
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/login_social_google_button"
-        style="@style/CommonImageButton"
         android:layout_width="@dimen/image_social_size"
         android:layout_height="@dimen/image_social_size"
         android:layout_margin="8dp"
@@ -34,7 +32,6 @@
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/login_social_twitter_button"
-        style="@style/CommonImageButton"
         android:layout_width="@dimen/image_social_size"
         android:layout_height="@dimen/image_social_size"
         android:background="?attr/selectableItemBackgroundBorderless"
@@ -47,7 +44,6 @@
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/login_social_linkedin_button"
-        style="@style/CommonImageButton"
         android:layout_width="@dimen/image_social_size"
         android:layout_height="@dimen/image_social_size"
         android:layout_margin="8dp"

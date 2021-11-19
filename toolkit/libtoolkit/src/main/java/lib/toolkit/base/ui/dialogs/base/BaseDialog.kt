@@ -107,10 +107,13 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
         }
     }
 
+    //TODO check do not crash
     override fun onBackPressed(): Boolean {
-        mCloseHandler.postDelayed({
+        if (requireActivity().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && isAdded) {
             dismiss()
-        }, 100)
+        } else {
+            dismissAllowingStateLoss()
+        }
         return false
     }
 
@@ -131,7 +134,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     }
 
     protected fun getCustomDialog(): Dialog {
-        return object : Dialog(context!!, theme) {
+        return object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
                 this@BaseDialog.onBackPressed()
             }
@@ -178,7 +181,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     protected fun setDialogAnchorPosition() {
         if (mAnchorView != null && dialog != null) {
             val offset = Point(mMarginOffset, mMarginOffset)
-            val restrict = UiUtils.getWindowVisibleRect(activity!!.window.decorView)
+            val restrict = UiUtils.getWindowVisibleRect(requireActivity().window.decorView)
             val position = UiUtils.getOverlapViewRect(anchorSize!!, dialogSize!!, restrict, offset)
 
             dialog?.window?.let { window ->
@@ -186,7 +189,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
                 window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
                 window.attributes = dialog!!.window!!.attributes.apply {
                     x = position.left
-                    y = position.top - UiUtils.getStatusBarHeightMeasure(activity!!)
+                    y = position.top - UiUtils.getStatusBarHeightMeasure(requireActivity())
                 }
                 if (window.decorView.isInvisible) {
                     window.decorView.isInvisible = false
@@ -208,11 +211,11 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     }
 
     protected fun isTablet(): Boolean {
-        return UiUtils.isTablet(context!!)
+        return UiUtils.isTablet(requireContext())
     }
 
     protected fun isLandscape(): Boolean {
-        return UiUtils.isLandscape(context!!)
+        return UiUtils.isLandscape(requireContext())
     }
 
     protected fun showFragmentIsEmpty() {

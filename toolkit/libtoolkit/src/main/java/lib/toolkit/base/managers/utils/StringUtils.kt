@@ -42,8 +42,9 @@ object StringUtils {
     private val EXT_VIDEO = "$EXT_VIDEO_SUPPORT|3g2|3gpp|asf|avi|divx|f4v|flv|h264|ifo|m2ts|m4v|mod|mov|mpeg|mpg|mswmm|mts|mxf|ogv|rm|swf|ts|vep|vob|wlmp|wmv"
 
     private val PATTERN_EXT_DOC = "^(doc|docx|docm|doct|dot|dotm|dotx|odt|ott|fodt|rtf|epub|txt|html|mht)$"
+    private val PATTERN_EXT_FORM = "^(oform|docxf)$"
     private val PATTERN_EXT_SHEET = "^(xlst|xlsx|xlsm|xls|xlt|xltm|xltx|ods|fods|ots|csv)$"
-    private val PATTERN_EXT_PRESENTATION = "^(ppt|pptt|pptx|ppsx|pps|odp|fodp|otp|pot|potm|potx|pps|ppsm|ppsx)$"
+    private val PATTERN_EXT_PRESENTATION = "^(ppt|pptt|pptx|pps|odp|fodp|otp|pot|potm|potx|ppsm|ppsx)$"
     private val PATTERN_EXT_HTML = "^(mht|html|htm)$"
     private val PATTERN_EXT_IMAGE = "^(png|jpeg|jpg|ico)$"
     private val PATTERN_EXT_IMAGE_GIF = "^(gif)$"
@@ -59,6 +60,7 @@ object StringUtils {
     enum class Extension {
         UNKNOWN,
         DOC,
+        FORM,
         SHEET,
         PRESENTATION,
         HTML,
@@ -76,6 +78,7 @@ object StringUtils {
     fun getExtension(extension: String): Extension {
         var ext = extension.replace(".", "")
         return when {
+            Pattern.matches(PATTERN_EXT_FORM, ext) -> Extension.FORM
             Pattern.matches(PATTERN_EXT_DOC, ext) -> Extension.DOC
             Pattern.matches(PATTERN_EXT_SHEET, ext) -> Extension.SHEET
             Pattern.matches(PATTERN_EXT_PRESENTATION, ext) -> Extension.PRESENTATION

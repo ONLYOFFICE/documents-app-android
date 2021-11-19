@@ -12,6 +12,7 @@ import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentAppSettingsLayoutBinding
 import app.editors.manager.ui.activities.main.AboutActivity
+import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import lib.toolkit.base.managers.utils.ActivitiesUtils.showEmail
@@ -64,6 +65,11 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
         viewModel.getData()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.getData()
+    }
+
     private fun init() {
         setActionBarTitle(getString(R.string.settings_item_title))
         viewModel.cacheLiveData.observe(viewLifecycleOwner) { size: Long? ->
@@ -74,6 +80,9 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
         }
         viewModel.wifiState.observe(viewLifecycleOwner) { isChecked ->
             viewBinding?.wifiSwitch?.isChecked = isChecked
+        }
+        viewModel.passcodeState.observe(viewLifecycleOwner) { isPasscodeEnabled ->
+            viewBinding?.passcodeSubTextView?.text = if(isPasscodeEnabled) getString(R.string.app_settings_enable) else getString(R.string.app_settings_disable)
         }
         viewModel.message.observe(viewLifecycleOwner) { message ->
             showSnackBar(message)
@@ -88,6 +97,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
             binding.settingSupportItem.root.setOnClickListener(this)
             binding.wifiSwitch.setOnClickListener(this)
             binding.analyticSwitch.setOnClickListener(this)
+            binding.passcodeLayout.setOnClickListener(this)
 
             binding.settingAboutItem.settingIcon.setImageResource(R.drawable.ic_drawer_menu_about)
             binding.settingAboutItem.settingText.text = getString(R.string.about_title)
@@ -142,6 +152,9 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
             }
             R.id.analyticSwitch -> {
                 viewModel.setAnalytic(viewBinding?.analyticSwitch?.isChecked ?: false)
+            }
+            R.id.passcodeLayout -> {
+                PasscodeActivity.show(requireContext())
             }
         }
     }

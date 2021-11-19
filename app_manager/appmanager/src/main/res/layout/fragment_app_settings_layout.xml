@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -89,6 +90,68 @@
                 android:gravity="center" />
 
         </RelativeLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/ItemMediumGreyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/screen_margin_large"
+            android:text="@string/app_settings_security" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_two_line_height"
+            android:background="@color/colorSurface">
+
+            <RelativeLayout
+                android:id="@+id/passcodeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_two_line_height"
+                android:background="?attr/selectableItemBackground"
+                android:backgroundTint="@color/colorSurface"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="horizontal"
+                tools:ignore="UselessParent">
+
+                <ImageView
+                    android:id="@+id/passcodeImageView"
+                    android:layout_width="@dimen/image_default_size"
+                    android:layout_height="@dimen/image_default_size"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="center|start"
+                    android:layout_marginStart="@dimen/default_margin_xlarge"
+                    android:layout_marginTop="23dp"
+                    android:layout_marginBottom="25dp"
+                    android:src="@drawable/ic_settings_passcode_lock"
+                    app:tint="@color/colorOnSurface"
+                    tools:ignore="ContentDescription" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/passcodeTextView"
+                    style="@style/ItemMediumBlackText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/default_margin_xlarge"
+                    android:layout_marginTop="@dimen/default_margin_large"
+                    android:layout_toEndOf="@+id/passcodeImageView"
+                    android:text="@string/app_settings_passcode" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/passcodeSubTextView"
+                    style="@style/ItemMediumGreyText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/passcodeTextView"
+                    android:layout_marginStart="@dimen/default_margin_xlarge"
+                    android:layout_toEndOf="@+id/passcodeImageView"
+                    android:text="@string/app_settings_disable" />
+
+            </RelativeLayout>
+        </FrameLayout>
+
 
         <com.google.android.material.textview.MaterialTextView
             style="@style/ItemMediumGreyText"

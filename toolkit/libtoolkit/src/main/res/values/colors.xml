@@ -18,6 +18,7 @@
     <color name="colorBackgroundSecond">#F4F4F4</color>
     <color name="colorOutline">#D8D8D8</color>
     <color name="colorBgDescription">#F1F3F8</color>
+    <color name="colorLink">#2388AA</color>
 
     <!-- Common -->
     <color name="colorBlack">#000000</color>

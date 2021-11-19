@@ -93,7 +93,7 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
             copyItem?.isVisible = false
         } else {
             setActionBarTitle("")
-            setMenuItemTint(requireContext(), emptyTrashItem!!, lib.toolkit.base.R.color.colorWhite)
+            setMenuItemTint(requireContext(), emptyTrashItem!!, lib.toolkit.base.R.color.colorPrimary)
         }
     }
 
@@ -117,7 +117,8 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
             ContextBottomDialog.Buttons.RESTORE -> cloudPresenter.moveContext()
-            else -> { }
+            else -> {
+            }
         }
         contextBottomDialog?.dismiss()
     }

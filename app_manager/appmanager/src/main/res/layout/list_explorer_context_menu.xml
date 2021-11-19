@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--TODO need refactoring-->
+<?xml version="1.0" encoding="utf-8"?><!--TODO need refactoring-->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -85,10 +84,10 @@
 
                 <include
                     android:id="@+id/view_line_separator_edit"
-                    style="@style/ContextLineSeparator"
                     layout="@layout/view_line_separator"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/line_separator_height"
+                    android:layout_marginStart="@dimen/line_separator_left_margin"
                     android:layout_marginTop="@dimen/line_separator_group_top"
                     android:layout_marginBottom="@dimen/line_separator_group_bottom"
                     android:visibility="gone" />
@@ -131,10 +130,10 @@
 
                 <include
                     android:id="@+id/view_line_separator_share"
-                    style="@style/ContextLineSeparator"
                     layout="@layout/view_line_separator"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/line_separator_height"
+                    android:layout_marginStart="@dimen/line_separator_left_margin"
                     android:layout_marginTop="@dimen/line_separator_group_top"
                     android:layout_marginBottom="@dimen/line_separator_group_bottom"
                     android:visibility="gone" />
@@ -171,10 +170,10 @@
 
                 <include
                     android:id="@+id/view_line_separator_favorites"
-                    style="@style/ContextLineSeparator"
                     layout="@layout/view_line_separator"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/line_separator_height"
+                    android:layout_marginStart="@dimen/line_separator_left_margin"
                     android:layout_marginTop="@dimen/line_separator_group_top"
                     android:layout_marginBottom="@dimen/line_separator_group_bottom"
                     android:visibility="gone" />
@@ -243,10 +242,10 @@
 
                 <include
                     android:id="@+id/view_line_separator_delete"
-                    style="@style/ContextLineSeparator"
                     layout="@layout/view_line_separator"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/line_separator_height"
+                    android:layout_marginStart="@dimen/line_separator_left_margin"
                     android:layout_marginTop="@dimen/line_separator_group_top"
                     android:layout_marginBottom="@dimen/line_separator_group_bottom"
                     android:visibility="gone" />

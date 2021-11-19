@@ -30,10 +30,6 @@
         <item name="colorControlActivated">@color/colorPrimaryLight</item>
     </style>
 
-    <style name="DialogShareTheme" parent="NoActionBarTheme">
-        <item name="searchViewStyle">@style/SearchViewEditHint</item>
-    </style>
-
     <style name="DialogAccountsTheme" parent="DialogCommonTheme">
         <item name="android:windowCloseOnTouchOutside">false</item>
     </style>

@@ -1,5 +1,5 @@
 object Dagger {
-    private const val version = "2.35.1"
+    private const val version = "2.39.1"
 
     const val dagger = "com.google.dagger:dagger:$version"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$version"
@@ -13,12 +13,19 @@ object Moxy {
     const val moxyCompiler = "com.github.moxy-community:moxy-compiler:$version"
 }
 
+object Koin {
+    private const val version = "3.1.2"
+
+    const val koinAndroid = "io.insert-koin:koin-android:$version"
+    const val koinCompose = "io.insert-koin:koin-androidx-compose:$version"
+}
+
 object AndroidX {
     const val composeVersion = "1.0.1"
     private const val androidxVersion = "1.3.1"
-    private const val recyclerViewVersion = "1.2.0"
+    private const val recyclerViewVersion = "1.2.1"
     private const val recyclerViewSelectionVersion = "1.1.0"
-    private const val kotlinKtxVersion = "1.6.0"
+    private const val kotlinKtxVersion = "1.7.0"
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
@@ -27,6 +34,7 @@ object AndroidX {
     const val cardView = "androidx.cardview:cardview:1.0.0"
     const val constraint = "androidx.constraintlayout:constraintlayout:2.0.4"
     const val ktx = "androidx.core:core-ktx:$kotlinKtxVersion"
+    const val biometric = "androidx.biometric:biometric:1.1.0"
 
 }
 
@@ -45,7 +53,7 @@ object Kotlin {
     const val version = "1.5.21"
     const val pluginVersion = "1.5.21"
     private const val coroutinesVersion = "1.5.0"
-    private const val serializationVersion = "1.2.2"
+    private const val serializationVersion = "1.3.0"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
     const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -54,25 +62,31 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "19.0.0"
-    private const val playCoreVersion = "1.10.0"
+    private const val playServicesAuthVersion = "19.2.0"
+    private const val playCoreVersion = "1.10.2"
     private const val materialVersion = "1.4.0"
     private const val gsonVersion = "2.8.6"
+    private const val safetynetVersion = "17.0.1"
+
 
     const val playServiceAuth = "com.google.android.gms:play-services-auth:$playServicesAuthVersion"
     const val playCore = "com.google.android.play:core:$playCoreVersion"
     const val material = "com.google.android.material:material:$materialVersion"
     const val gson = "com.google.code.gson:gson:$gsonVersion"
+    const val safetynet = "com.google.android.gms:play-services-safetynet:$safetynetVersion"
+
 }
 
 object Firebase {
-    private const val firebaseCoreVersion = "19.0.0"
+    private const val firebaseCoreVersion = "20.0.0"
     private const val firebaseConfigVersion = "21.0.0"
-    private const val firebaseCrashlyticsVersion = "18.0.0"
+    private const val firebaseMessagingVersion = "23.0.0"
+    private const val firebaseCrashlyticsVersion = "18.2.4"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"
     const val firebaseCrashlytics = "com.google.firebase:firebase-crashlytics:$firebaseCrashlyticsVersion"
+    const val firebaseMessaging = "com.google.firebase:firebase-messaging-ktx:$firebaseMessagingVersion"
 }
 
 object Room {

@@ -24,4 +24,7 @@
 
     <dimen name="design_bottom_navigation_text_size" tools:override="true">10sp</dimen>
     <dimen name="design_bottom_navigation_active_text_size" tools:override="true">10sp</dimen>
+
+
+    <dimen name="passcode_keyboard_margin">75dp</dimen>
 </resources>

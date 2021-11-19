@@ -33,114 +33,118 @@ public class NewNotificationUtils {
     private static final String CANCEL_GROUP = "CANCEL_GROUP";
     private static final String UPLOAD_GROUP = "UPLOAD_GROUP";
 
-    private String mServiceName;
-    private Context mContext;
-    private NotificationManager mNotificationManager;
+    private String serviceName;
+    private Context context;
+    private NotificationManager notificationManager;
 
     public NewNotificationUtils(Context context, String serviceName) {
-        this.mServiceName = serviceName;
-        this.mContext = context;
+        this.serviceName = serviceName;
+        this.context = context;
         init();
     }
 
     private void init() {
-        mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Need for Oreo, else doesn't work
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(mServiceName, mContext.getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel(serviceName, context.getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT);
             channel.enableVibration(false);
-            mNotificationManager.createNotificationChannel(channel);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 
+    public void show(int id, Notification notification) {
+        notificationManager.notify(id, notification);
+    }
+
     private NotificationCompat.Builder getDownloadNotificationBuilder(@NonNull String title) {
-        return new NotificationCompat.Builder(App.getApp(), mServiceName)
+        return new NotificationCompat.Builder(App.getApp(), serviceName)
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .setOngoing(true)
                 .setContentTitle(title)
                 .setSmallIcon(R.drawable.ic_notify)
-                .setContentText(mContext.getString(R.string.download_manager_progress_title))
-                .setTicker(mContext.getString(R.string.app_name))
+                .setContentText(context.getString(R.string.download_manager_progress_title))
+                .setTicker(context.getString(R.string.app_name))
                 .setOnlyAlertOnce(true)
-                .setChannelId(mServiceName)
+                .setChannelId(serviceName)
                 .setGroup(DOWNLOAD_GROUP)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
     }
 
     private NotificationCompat.Builder getArchivingNotificationBuilder(@NonNull String title) {
-        return new NotificationCompat.Builder(App.getApp(), mServiceName)
+        return new NotificationCompat.Builder(App.getApp(), serviceName)
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .setOngoing(true)
                 .setContentTitle(title)
                 .setSmallIcon(R.drawable.ic_notify)
-                .setContentText(mContext.getString(R.string.download_manager_archiving_progress))
-                .setTicker(mContext.getString(R.string.app_name))
+                .setContentText(context.getString(R.string.download_manager_archiving_progress))
+                .setTicker(context.getString(R.string.app_name))
                 .setOnlyAlertOnce(true)
-                .setChannelId(mServiceName)
+                .setChannelId(serviceName)
                 .setGroup(DOWNLOAD_GROUP)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
     }
     private NotificationCompat.Builder getUploadNotificationBuilder(@NonNull String title) {
-        return new NotificationCompat.Builder(App.getApp(), mServiceName)
+        return new NotificationCompat.Builder(App.getApp(), serviceName)
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .setOngoing(true)
                 .setContentTitle(title)
                 .setSmallIcon(R.drawable.ic_notify)
-                .setContentText(mContext.getString(R.string.upload_manager_progress_title))
-                .setTicker(mContext.getString(R.string.app_name))
+                .setContentText(context.getString(R.string.upload_manager_progress_title))
+                .setTicker(context.getString(R.string.app_name))
                 .setOnlyAlertOnce(true)
-                .setChannelId(mServiceName)
+                .setChannelId(serviceName)
                 .setGroup(UPLOAD_GROUP)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
     }
 
-    private NotificationCompat.Builder getNotification(String title, @Nullable String group, @Nullable String info) {
-        return new NotificationCompat.Builder(App.getApp(), mServiceName)
+    public NotificationCompat.Builder getNotification(String title, @Nullable String group, @Nullable String info) {
+        return new NotificationCompat.Builder(App.getApp(), serviceName)
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .setOngoing(false)
                 .setContentTitle(title)
                 .setContentText(info)
                 .setSmallIcon(R.drawable.ic_notify)
-                .setTicker(mContext.getString(R.string.app_name))
+                .setTicker(context.getString(R.string.app_name))
                 .setOnlyAlertOnce(false)
                 .setGroup(group)
-                .setChannelId(mServiceName)
+                .setChannelId(serviceName)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
     }
 
     public void showProgressNotification(int id, @NonNull String tag, @NonNull String title, int progress) {
         Notification notification = getDownloadNotificationBuilder(title)
-                .addAction(R.drawable.drawable_ic_cancel_download_upload, mContext.getString(R.string.operation_panel_cancel_button), getDownloadIntent(tag))
+                .addAction(R.drawable.drawable_ic_cancel_download_upload, context.getString(R.string.operation_panel_cancel_button), getDownloadIntent(tag))
                 .setProgress(100, progress, false)
                 .build();
-        mNotificationManager.notify(id, notification);
+        notificationManager.notify(id, notification);
     }
 
     public void showArchivingProgressNotification(int id, @NonNull String tag, @NonNull String title, int progress) {
         Notification notification = getArchivingNotificationBuilder(title)
-                .addAction(R.drawable.drawable_ic_cancel_download_upload, mContext.getString(R.string.operation_panel_cancel_button), getDownloadIntent(tag))
+                .addAction(R.drawable.drawable_ic_cancel_download_upload, context.getString(R.string.operation_panel_cancel_button), getDownloadIntent(tag))
                 .setProgress(100, progress, false)
                 .build();
-        mNotificationManager.notify(id, notification);
+        notificationManager.notify(id, notification);
     }
 
     public void showUploadProgressNotification(int id, @NonNull String tag, @NonNull String title, int progress) {
         Notification notification = getUploadNotificationBuilder(title)
-                .addAction(R.drawable.drawable_ic_cancel_download_upload, mContext.getString(R.string.operation_panel_cancel_button), getUploadIntent(tag))
+                .addAction(R.drawable.drawable_ic_cancel_download_upload, context.getString(R.string.operation_panel_cancel_button), getUploadIntent(tag))
                 .setProgress(100, progress, false)
                 .build();
-        mNotificationManager.notify(id, notification);
+        notificationManager.notify(id, notification);
     }
 
     public void showErrorNotification(int id, @Nullable String title) {
-        NotificationCompat.Builder builder = getNotification(title, ERROR_GROUP, mContext.getString(R.string.download_manager_error));
-        mNotificationManager.notify(id, builder.build());
+        NotificationCompat.Builder builder = getNotification(title, ERROR_GROUP, context.getString(R.string.download_manager_error));
+        notificationManager.notify(id, builder.build());
     }
 
     public void showUploadErrorNotification(int id, @Nullable String title) {
-        NotificationCompat.Builder builder = getNotification(title, ERROR_GROUP, mContext.getString(R.string.upload_manager_error));
-        mNotificationManager.notify(id, builder.build());
+        NotificationCompat.Builder builder = getNotification(title, ERROR_GROUP, context.getString(R.string.upload_manager_error));
+        notificationManager.notify(id, builder.build());
     }
 
     public void showCompleteNotification(int id, @Nullable String title, Uri uri) {
@@ -152,42 +156,42 @@ public class NewNotificationUtils {
     }
 
     public void showCanceledNotification(int id, @Nullable String title) {
-        NotificationCompat.Builder builder = getNotification(title, CANCEL_GROUP, mContext.getString(R.string.download_manager_cancel));
-        mNotificationManager.notify(id, builder.build());
+        NotificationCompat.Builder builder = getNotification(title, CANCEL_GROUP, context.getString(R.string.download_manager_cancel));
+        notificationManager.notify(id, builder.build());
     }
     public void showCanceledUploadNotification(int id, @Nullable String title) {
-        NotificationCompat.Builder builder = getNotification(title, CANCEL_GROUP, mContext.getString(R.string.upload_manager_cancel));
-        mNotificationManager.notify(id, builder.build());
+        NotificationCompat.Builder builder = getNotification(title, CANCEL_GROUP, context.getString(R.string.upload_manager_cancel));
+        notificationManager.notify(id, builder.build());
     }
 
     public void removeNotification(int id) {
-        mNotificationManager.cancel(id);
+        notificationManager.cancel(id);
     }
 
     private void showDownloadedAction(final int id, final String title, final Uri uri) {
         // Add file to default downloadFile manager
 
-        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, ActivitiesUtils.getDownloadsViewerIntent(uri), 0);
+        final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, ActivitiesUtils.getDownloadsViewerIntent(uri), 0);
 
-        NotificationCompat.Builder builder = getNotification(title, null, mContext.getString(R.string.download_manager_complete))
+        NotificationCompat.Builder builder = getNotification(title, null, context.getString(R.string.download_manager_complete))
                 .setGroupSummary(false)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true);
-        mNotificationManager.notify(id, builder.build());
+        notificationManager.notify(id, builder.build());
     }
 
     private void showUploadedAction(final int id, final String title) {
 
-        Intent mainActivityIntent = new Intent(mContext, MainActivity.class);
+        Intent mainActivityIntent = new Intent(context, MainActivity.class);
 
-        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, mainActivityIntent, 0);
+        final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, mainActivityIntent, 0);
 
-        NotificationCompat.Builder builder = getNotification(title, null, mContext.getString(R.string.upload_manager_complete))
+        NotificationCompat.Builder builder = getNotification(title, null, context.getString(R.string.upload_manager_complete))
                 .setGroupSummary(false)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setContentIntent(contentIntent);
-        mNotificationManager.notify(id, builder.build());
+        notificationManager.notify(id, builder.build());
     }
 
     private PendingIntent getDownloadIntent(String id) {

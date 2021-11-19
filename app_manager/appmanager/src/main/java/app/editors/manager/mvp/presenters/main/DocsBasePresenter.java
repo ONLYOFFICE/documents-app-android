@@ -44,8 +44,6 @@ import app.editors.manager.managers.providers.BaseFileProvider;
 import app.editors.manager.managers.providers.CloudFileProvider;
 import app.editors.manager.managers.providers.ProviderError;
 import app.editors.manager.managers.providers.WebDavFileProvider;
-import app.editors.manager.managers.services.DownloadService;
-import app.editors.manager.managers.services.UploadService;
 import app.editors.manager.managers.tools.PreferenceTool;
 import app.editors.manager.managers.utils.FirebaseUtils;
 import app.editors.manager.managers.works.DownloadWork;
@@ -673,14 +671,14 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
     public void createDownloadFile() {
         if (!mModelExplorerStack.getSelectedFiles().isEmpty() || !mModelExplorerStack.getSelectedFolders().isEmpty()) {
-            if(mModelExplorerStack.getSelectedFiles().size() == 1) {
+            if (mModelExplorerStack.getSelectedFiles().size() == 1) {
                 getViewState().onCreateDownloadFile(mModelExplorerStack.getSelectedFiles().get(0).getTitle());
             } else {
                 getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
             }
         } else if (mItemClicked instanceof CloudFile) {
             getViewState().onCreateDownloadFile(mItemClicked.getTitle());
-        } else if( mItemClicked instanceof CloudFolder ) {
+        } else if (mItemClicked instanceof CloudFolder) {
             getViewState().onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME);
         }
     }
@@ -773,10 +771,6 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         if (mDownloadDisposable != null && !mDownloadDisposable.isDisposed()) {
             mDownloadDisposable.dispose();
             return;
-        }
-        if (mItemClicked instanceof CloudFile) {
-            final CloudFile file = (CloudFile) mItemClicked;
-            DownloadService.cancelDownload(file.getId());
         }
     }
 
@@ -886,10 +880,6 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         if (mDownloadDisposable != null && !mDownloadDisposable.isDisposed()) {
             mDownloadDisposable.dispose();
             return;
-        }
-
-        if (mUploadUri != null) {
-            UploadService.cancelUpload(mUploadUri, "");
         }
     }
 
