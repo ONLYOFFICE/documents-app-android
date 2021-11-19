@@ -87,8 +87,8 @@ class ActionBottomDialog : BaseBottomDialog() {
         viewBinding = ListExplorerActionMenuBinding.inflate(layoutInflater).apply {
             dialog.setContentView(root)
             dialog.setCanceledOnTouchOutside(true)
-            setViewState()
         }
+        setViewState()
         initListeners()
     }
 
@@ -101,7 +101,7 @@ class ActionBottomDialog : BaseBottomDialog() {
             it.listExplorerActionPresentation.isVisible = !isDocs || isLocal
             it.listExplorerActionSheet.isVisible = !isDocs || isLocal
 
-            it.listExplorerActionUpload.isVisible = isLocal && isWebDav
+            it.listExplorerActionUpload.isVisible = !isLocal || isWebDav
         }
     }
 
