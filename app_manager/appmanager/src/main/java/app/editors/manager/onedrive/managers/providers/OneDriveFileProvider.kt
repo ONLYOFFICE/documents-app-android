@@ -60,7 +60,7 @@ class OneDriveFileProvider : BaseFileProvider {
         api = getApp().getOneDriveComponent()
     }
 
-    override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
+    override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.fromCallable {
             if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
                 id?.let {

@@ -253,6 +253,16 @@ object ActivitiesUtils {
         intent.putExtra(Intent.EXTRA_TITLE, name)
         fragment?.startActivityForResult(intent, code)
     }
+
+    @JvmStatic
+    fun getExternalStoragePermission(context: Context, uri: Uri, flag: Int) {
+        context.contentResolver?.takePersistableUriPermission(uri, flag)
+    }
+
+    @JvmStatic
+    fun releaseExternalStoragePermission(context: Context, uri: Uri, flag: Int) {
+        context.contentResolver.releasePersistableUriPermission(uri, flag)
+    }
 }
 
 class ImagePicker(
