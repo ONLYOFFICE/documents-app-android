@@ -36,7 +36,7 @@
             app:tabGravity="fill"
             app:tabMaxWidth="0dp"
             app:tabTextAppearance="@style/ViewPagerTabsText"
-            app:tabSelectedTextColor="@color/colorWhite"
+            app:tabSelectedTextColor="@color/colorPrimary"
             app:tabIndicatorColor="@color/colorSecondary"/>
     </com.google.android.material.appbar.AppBarLayout>
 
