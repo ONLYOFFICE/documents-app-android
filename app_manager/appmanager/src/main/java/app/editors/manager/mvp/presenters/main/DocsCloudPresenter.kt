@@ -253,6 +253,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isFolder = !isClickedItemFile
         state.isShared = isClickedItemShared
         state.isCanShare = isItemShareable
+        state.isCanRename = isItemReadWrite
         state.isDocs = isClickedItemDocs
         state.isContextEditable = isContextItemEditable
         state.isItemEditable = isItemEditable
@@ -645,7 +646,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = StringUtils.equals(mModelExplorerStack.currentFolderOwnerId, account.id)
 
     private val isContextReadWrite: Boolean
-        get() = isContextOwner || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
+        get() = isContextOwner || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE ||
+                mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
 
     val isUserSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
@@ -663,30 +665,31 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = currentSectionType == ApiContract.SectionType.CLOUD_BUNCH
 
     private val isClickedItemShared: Boolean
-        get() = mItemClicked != null && mItemClicked!!.shared
+        get() = mItemClicked?.shared == true
 
     private val isClickedItemFavorite: Boolean
-        get() = mItemClicked != null && mItemClicked!!.favorite
+        get() = mItemClicked?.favorite == true
 
     private val isItemOwner: Boolean
-        get() = mItemClicked != null && StringUtils.equals(mItemClicked!!.createdBy.id, account.id)
+        get() = StringUtils.equals(mItemClicked?.createdBy?.id, account.id)
 
     private val isItemReadWrite: Boolean
-        get() = mItemClicked != null && (mItemClicked!!.access == ApiContract.ShareCode.READ_WRITE || mItemClicked!!.access == ApiContract.ShareCode.NONE || mItemClicked!!.access == ApiContract.ShareCode.REVIEW)
+        get() = mItemClicked?.access == ApiContract.ShareCode.READ_WRITE ||
+                mItemClicked?.access == ApiContract.ShareCode.NONE
+
     private val isItemEditable: Boolean
-        get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite  ||
-                mItemClicked?.access == ApiContract.ShareCode.REVIEW ||
-                mItemClicked?.access == ApiContract.ShareCode.FILL_FORMS ||
-                mItemClicked?.access == ApiContract.ShareCode.COMMENT)
+        get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
+                        mItemClicked?.access == ApiContract.ShareCode.REVIEW ||
+                        mItemClicked?.access == ApiContract.ShareCode.FILL_FORMS ||
+                        mItemClicked?.access == ApiContract.ShareCode.COMMENT)
 
     private val isItemShareable: Boolean
         get() = isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection
                 && !isBunchSection && isItemReadWrite
 
     private val isClickedItemStorage: Boolean
-        get() = mItemClicked != null && mItemClicked!!.providerItem
+        get() = mItemClicked?.providerItem == true
 
-    //            getViewState().onActionBarTitle(mContext.getString(R.string.main_pager_docs_trash));
     var isTrashMode: Boolean
         get() = mIsTrashMode
         set(trashMode) {
