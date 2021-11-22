@@ -158,7 +158,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             setDeleteVisibility(state.isContextEditable)
 
             /** Item can edit */
-            binding.listExplorerContextRename.isVisible = state.isItemEditable
+            binding.listExplorerContextRename.isVisible = state.isCanRename
 
             /** Item can share */
             binding.viewLineSeparatorShare.root.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox
@@ -301,6 +301,7 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isFolder: Boolean = false,
         var isShared: Boolean = false,
         var isCanShare: Boolean = false,
+        var isCanRename: Boolean = false,
         var isDocs: Boolean = false,
         var isStorage: Boolean = false,
         var isItemEditable: Boolean = false,
