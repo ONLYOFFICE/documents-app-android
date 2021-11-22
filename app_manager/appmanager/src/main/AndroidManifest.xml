@@ -235,6 +235,7 @@
         <activity
             android:name=".ui.activities.main.CloudsActivity"
             android:theme="@style/NoActionBarTheme"
+            android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".ui.activities.main.ProfileActivity"
