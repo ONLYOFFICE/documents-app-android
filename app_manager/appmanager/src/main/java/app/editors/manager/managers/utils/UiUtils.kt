@@ -6,10 +6,13 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.managers.utils.ManagerUiUtils.setOneDriveImage
 import app.editors.manager.mvp.models.explorer.CloudFolder
+import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
@@ -59,6 +62,22 @@ object ManagerUiUtils {
                 R.drawable.ic_storage_onedrive
             )
         )
+    }
+
+    fun ImageView.setDropboxImage(account: CloudAccount) {
+        if(account.avatarUrl?.isNotEmpty() == true) {
+            Glide.with(this)
+                .load(GlideUtils.getCorrectLoad(account.avatarUrl!!, account.token ?: ""))
+                .apply(GlideUtils.avatarOptions)
+                .into(this)
+        } else {
+            this.setImageDrawable(
+                ContextCompat.getDrawable(
+                    this.context,
+                    R.drawable.ic_storage_dropbox
+                )
+            )
+        }
     }
 
     @JvmStatic
