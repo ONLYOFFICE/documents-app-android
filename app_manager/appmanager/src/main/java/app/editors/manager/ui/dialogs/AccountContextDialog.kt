@@ -13,6 +13,8 @@ import app.editors.manager.R
 import app.editors.manager.databinding.AccountContextLayoutBinding
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils.setDropboxImage
+import app.editors.manager.managers.utils.ManagerUiUtils.setOneDriveImage
 import app.editors.manager.managers.utils.isVisible
 import com.bumptech.glide.Glide
 import kotlinx.serialization.decodeFromString
@@ -102,6 +104,10 @@ class AccountContextDialog : BaseBottomDialog() {
                     ManagerUiUtils.setWebDavImage(
                         acc.webDavProvider,
                         binding.selectableLayout.viewIconSelectableImage)
+                } else if(account?.isOneDrive == true) {
+                    binding.selectableLayout.viewIconSelectableImage.setOneDriveImage()
+                } else if(account?.isDropbox == true) {
+                    binding.selectableLayout.viewIconSelectableImage.setDropboxImage(account!!)
                 } else {
                     loadAvatar(binding.selectableLayout.viewIconSelectableImage)
                 }
