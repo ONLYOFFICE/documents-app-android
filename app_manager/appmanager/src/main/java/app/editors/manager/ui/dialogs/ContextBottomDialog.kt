@@ -285,7 +285,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     companion object {
         @JvmField
-        val TAG = ContextBottomDialog::class.java.simpleName
+        val TAG: String = ContextBottomDialog::class.java.simpleName
         private const val TAG_STATE = "TAG_STATE"
 
         @JvmStatic

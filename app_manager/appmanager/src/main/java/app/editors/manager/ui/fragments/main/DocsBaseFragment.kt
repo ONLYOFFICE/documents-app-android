@@ -13,6 +13,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
@@ -60,7 +63,7 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
 
 abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnItemClickListener,
     OnItemContextListener, BaseAdapter.OnItemLongClickListener, ContextBottomDialog.OnClickListener,
-    ActionBottomDialog.OnClickListener, SearchView.OnQueryTextListener, DialogButtonOnClick {
+    ActionBottomDialog.OnClickListener, SearchView.OnQueryTextListener, DialogButtonOnClick, LifecycleObserver {
 
     protected enum class EditorsType {
         DOCS, CELLS, PRESENTATION, PDF
@@ -109,6 +112,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         setHasOptionsMenu(true)
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onDialogListener() {
+        contextBottomDialog?.onClickListener = this
+        actionBottomDialog?.onClickListener = this
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(savedInstanceState)
@@ -125,7 +134,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 REQUEST_PRESENTATION -> removeCommonDialog()
                 REQUEST_DOWNLOAD ->
                     data?.let {
-                        activity?.let { activity -> it.data?.let { uri ->
+                        activity?.let { activity ->
+                            it.data?.let { uri ->
                                 getExternalStoragePermission(activity, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                             }
                         }
@@ -243,7 +253,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onListEnd() {
         super.onListEnd()
-        if(!presenter.isFilteringMode) {
+        if (!presenter.isFilteringMode) {
             explorerAdapter?.isLoading(true)
             presenter.getNextList()
         }
@@ -341,7 +351,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
                 onSnackBar(getString(R.string.download_manager_complete))
             }
-            else -> { }
+            else -> {
+            }
         }
     }
 
@@ -357,7 +368,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     getString(R.string.dialogs_edit_hint),
                     DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
                     getString(R.string.dialogs_edit_accept_rename),
-                    getString(R.string.dialogs_common_cancel_button))
+                    getString(R.string.dialogs_common_cancel_button)
+                )
             } else {
                 showEditDialogRename(
                     getString(R.string.dialogs_edit_rename_title),
@@ -365,7 +377,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     getString(R.string.dialogs_edit_hint),
                     DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
                     getString(R.string.dialogs_edit_accept_rename),
-                    getString(R.string.dialogs_common_cancel_button))
+                    getString(R.string.dialogs_common_cancel_button)
+                )
             }
             ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
                 getString(R.string.dialogs_question_delete),
@@ -428,13 +441,20 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME -> presenter.rename(value)
                     DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER -> presenter.createFolder(value)
                     DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> presenter.deleteItems()
-                    DocsBasePresenter.TAG_DIALOG_ACTION_SHEET -> presenter.createDocs(value
-                            + "." + ApiContract.Extension.XLSX.lowercase())
-                    DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION -> presenter.createDocs(value
-                            + "." + ApiContract.Extension.PPTX.lowercase())
-                    DocsBasePresenter.TAG_DIALOG_ACTION_DOC -> presenter.createDocs(value
-                            + "." + ApiContract.Extension.DOCX.lowercase())
-                    else -> { }
+                    DocsBasePresenter.TAG_DIALOG_ACTION_SHEET -> presenter.createDocs(
+                        value
+                                + "." + ApiContract.Extension.XLSX.lowercase()
+                    )
+                    DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION -> presenter.createDocs(
+                        value
+                                + "." + ApiContract.Extension.PPTX.lowercase()
+                    )
+                    DocsBasePresenter.TAG_DIALOG_ACTION_DOC -> presenter.createDocs(
+                        value
+                                + "." + ApiContract.Extension.DOCX.lowercase()
+                    )
+                    else -> {
+                    }
                 }
             }
         }
@@ -534,7 +554,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onFinishDownload(uri: Uri?) {
         activity?.let { activity ->
             uri?.let { uri ->
-                ActivitiesUtils.releaseExternalStoragePermission( activity, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                ActivitiesUtils.releaseExternalStoragePermission(activity, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             }
         }
     }
@@ -616,7 +636,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                         searchCloseButton = findViewById(androidx.appcompat.R.id.search_close_btn)
                         searchCloseButton?.isVisible = false
                         searchCloseButton?.setOnClickListener {
-                            if(!isSearchViewClear)
+                            if (!isSearchViewClear)
                                 onBackPressed()
                         }
 
@@ -625,8 +645,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     }
 
                     // Init order by
-                    menu.findItem(if (isAsc) R.id.toolbar_sort_item_asc else
-                        R.id.toolbar_sort_item_desc).isChecked = true
+                    menu.findItem(
+                        if (isAsc) R.id.toolbar_sort_item_asc else
+                            R.id.toolbar_sort_item_desc
+                    ).isChecked = true
 
                     when (sortBy) {
                         ApiContract.Parameters.VAL_SORT_BY_UPDATED -> menu.findItem(R.id.toolbar_sort_item_date_update)
@@ -725,7 +747,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             dialog.onClickListener = this
             dialog.isThirdParty = isThirdParty
             dialog.isDocs = isDocs
-            dialog.show(requireFragmentManager(), ActionBottomDialog.TAG)
+            dialog.show(parentFragmentManager, ActionBottomDialog.TAG)
         }
     }
 
@@ -756,7 +778,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onSwipeEnable(isSwipeEnable: Boolean) {
-        swipeRefreshLayout?.setRefreshing(isSwipeEnable)
+        swipeRefreshLayout?.isRefreshing = isSwipeEnable
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
@@ -973,23 +995,18 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         } ?: ContextBottomDialog.newInstance()
 
         actionBottomDialog = parentFragmentManager.findFragmentByTag(ActionBottomDialog.TAG)?.let {
-             it as ActionBottomDialog?
+            it as ActionBottomDialog?
         } ?: ActionBottomDialog.newInstance()
 
         moveCopyDialog = parentFragmentManager.findFragmentByTag(MoveCopyDialog.TAG) as MoveCopyDialog?
         moveCopyDialog?.dialogButtonOnClick = this
-
-        if (userVisibleHint) {
-            contextBottomDialog?.onClickListener = this
-            actionBottomDialog?.onClickListener = this
-        }
     }
 
     private fun showContextDialog(state: ContextBottomDialog.State) {
         contextBottomDialog?.let { dialog ->
             dialog.state = state
             dialog.onClickListener = this
-            dialog.show(requireFragmentManager(), ContextBottomDialog.TAG)
+            dialog.show(parentFragmentManager, ContextBottomDialog.TAG)
         }
     }
 
@@ -1078,8 +1095,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     open val isActivePage: Boolean
-         get() {
-             return when (val fragment = parentFragment) {
+        get() {
+            return when (val fragment = parentFragment) {
                 is MainPagerFragment -> fragment.isActivePage(this)
                 null -> true
                 else -> true

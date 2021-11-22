@@ -2,6 +2,7 @@ package app.editors.manager.ui.fragments.main
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
@@ -36,6 +37,11 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         val account = getApp().appComponent.accountOnline
         return account?.let { DocsCloudPresenter(it) }
             ?: throw RuntimeException("Cloud account can't be null")
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycle.addObserver(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -134,7 +140,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun showMoveCopyDialog(names: ArrayList<String>, action: String, titleFolder: String) {
         moveCopyDialog = newInstance(names, action, titleFolder)
         moveCopyDialog?.dialogButtonOnClick = this
-        moveCopyDialog?.show(requireFragmentManager(), MoveCopyDialog.TAG)
+        moveCopyDialog?.show(parentFragmentManager, MoveCopyDialog.TAG)
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {

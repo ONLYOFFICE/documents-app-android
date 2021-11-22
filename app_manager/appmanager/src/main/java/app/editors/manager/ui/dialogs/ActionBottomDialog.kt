@@ -107,13 +107,12 @@ class ActionBottomDialog : BaseBottomDialog() {
 
     companion object {
 
-        @JvmField
-        val TAG = ActionBottomDialog::class.java.simpleName
+        val TAG: String = ActionBottomDialog::class.java.simpleName
+
         private const val TAG_THIRD_PARTY = "TAG_THIRD_PARTY"
         private const val TAG_DOCS = "TAG_DOCS"
         private const val TAG_LOCAL = "TAG_LOCAL"
 
-        @JvmStatic
         fun newInstance(): ActionBottomDialog {
             return ActionBottomDialog()
         }
