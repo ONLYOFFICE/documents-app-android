@@ -51,6 +51,7 @@ class OneDriveSingInPresenter : BasePresenter<OneDriveSignInView>() {
         var refreshToken = ""
         disposable = App.getApp().oneDriveAuthService.getToken(map)
             .map { oneDriveResponse ->
+                viewState.onStartLogin()
                 when(oneDriveResponse) {
                     is OneDriveResponse.Success -> {
                         accessToken = (oneDriveResponse.response as AuthResponse).access_token
