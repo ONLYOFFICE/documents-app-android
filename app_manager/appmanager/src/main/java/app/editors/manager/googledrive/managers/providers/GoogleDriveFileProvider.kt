@@ -32,7 +32,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
     private val api = App.getApp().getGoogleDriveComponent()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        var queryString = "\"$id\" in parents"
+        var queryString = "\"$id\" in parents and trashed = false"
 
         if(filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) {
             queryString = "name contains \'${filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!}\'"
