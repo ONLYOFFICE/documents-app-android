@@ -30,6 +30,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         var queryString = "\"$id\" in parents"
+        var sortString = GoogleDriveUtils.getSortBy(filter)
 
         if(filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) {
             queryString = "name contains \'${filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!}\'"
@@ -37,7 +38,8 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
         val map = mapOf(
             GoogleDriveUtils.GOOGLE_DRIVE_QUERY to queryString,
-            GoogleDriveUtils.GOOGLE_DRIVE_FIELDS to GoogleDriveUtils.GOOGLE_DRIVE_FIELDS_VALUES
+            GoogleDriveUtils.GOOGLE_DRIVE_FIELDS to GoogleDriveUtils.GOOGLE_DRIVE_FIELDS_VALUES,
+            GoogleDriveUtils.GOOGLE_DRIVE_SORT to GoogleDriveUtils.getSortBy(filter)
         )
         return Observable.fromCallable { api.getFiles(map).blockingGet() }
             .subscribeOn(Schedulers.io())

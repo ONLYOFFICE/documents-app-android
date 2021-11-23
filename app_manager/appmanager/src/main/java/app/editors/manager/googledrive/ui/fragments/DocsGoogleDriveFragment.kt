@@ -89,6 +89,7 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
         super.onStateMenuDefault(sortBy, isAsc)
         menu?.findItem(R.id.toolbar_sort_item_type)?.isVisible = false
         menu?.findItem(R.id.toolbar_sort_item_owner)?.isVisible = false
+        menu?.findItem(R.id.toolbar_sort_item_size)?.isVisible = false
         searchCloseButton?.setOnClickListener { v: View? ->
             onBackPressed()
         }
