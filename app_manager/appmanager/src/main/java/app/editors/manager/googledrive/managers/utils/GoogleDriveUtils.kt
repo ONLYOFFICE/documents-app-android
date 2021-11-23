@@ -1,6 +1,7 @@
 package app.editors.manager.googledrive.managers.utils
 
 import app.documents.core.network.ApiContract
+import lib.toolkit.base.managers.utils.StringUtils
 
 object GoogleDriveUtils {
     const val GOOGLE_DRIVE_NEXT_PAGE_TOKEN = "pageToken"
@@ -13,6 +14,11 @@ object GoogleDriveUtils {
     private const val VAL_SORT_NAME = "name"
     private const val VAL_SORT_UPDATED = "modifiedTime"
 
+
+    const val FOLDER_MIMETYPE = "application/vnd.google-apps.folder"
+    private const val DOC_MIMETYPE = "application/vnd.google-apps.document"
+    private const val SLIDES_MIMETYPE = "application/vnd.google-apps.presentation"
+    private const val CELLS_MIMETYPE = "application/vnd.google-apps.spreadsheet"
 
     fun getSortBy(filter: Map<String, String>?): String {
         return when(filter?.get(ApiContract.Parameters.ARG_SORT_BY)) {
@@ -27,6 +33,21 @@ object GoogleDriveUtils {
             ApiContract.Parameters.VAL_SORT_ORDER_ASC -> VAL_SORT_ASC
             ApiContract.Parameters.VAL_SORT_ORDER_DESC -> VAL_SORT_DESC
             else -> VAL_SORT_ASC
+        }
+    }
+
+    fun getFileMimeType(ext: String): String {
+        return when (StringUtils.getExtension(ext)) {
+            StringUtils.Extension.DOC -> {
+                DOC_MIMETYPE
+            }
+            StringUtils.Extension.SHEET -> {
+                CELLS_MIMETYPE
+            }
+            StringUtils.Extension.PRESENTATION -> {
+                SLIDES_MIMETYPE
+            }
+            else -> FOLDER_MIMETYPE
         }
     }
 

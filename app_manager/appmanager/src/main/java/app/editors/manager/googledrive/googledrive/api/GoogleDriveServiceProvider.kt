@@ -1,6 +1,7 @@
 package app.editors.manager.googledrive.googledrive.api
 
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
+import app.editors.manager.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.googledrive.mvp.models.request.RenameRequest
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
@@ -40,6 +41,13 @@ class GoogleDriveServiceProvider(
 
     override fun rename(fileId: String, request: RenameRequest): Single<GoogleDriveResponse> {
         return googleDriveServiceProvider.rename(fileId, request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun create(request: CreateItemRequest): Single<GoogleDriveResponse> {
+        return googleDriveServiceProvider.createItem(request)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

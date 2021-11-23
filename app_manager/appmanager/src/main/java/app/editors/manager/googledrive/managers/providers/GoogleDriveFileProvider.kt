@@ -6,6 +6,7 @@ import app.editors.manager.app.App
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
 import app.editors.manager.googledrive.managers.utils.GoogleDriveUtils
 import app.editors.manager.googledrive.mvp.models.GoogleDriveFile
+import app.editors.manager.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.googledrive.mvp.models.request.RenameRequest
 import app.editors.manager.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
 import app.editors.manager.managers.providers.BaseFileProvider
@@ -16,6 +17,8 @@ import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
+import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
+import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -30,7 +33,6 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         var queryString = "\"$id\" in parents"
-        var sortString = GoogleDriveUtils.getSortBy(filter)
 
         if(filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) {
             queryString = "name contains \'${filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!}\'"
@@ -47,7 +49,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
             .map { googleDriveResponse ->
                 when(googleDriveResponse) {
                     is GoogleDriveResponse.Success -> {
-                        return@map getExplorer((googleDriveResponse.response as GoogleDriveExplorerResponse).files, googleDriveResponse.response.nexPageToken)
+                        return@map getExplorer((googleDriveResponse.response as GoogleDriveExplorerResponse).files, googleDriveResponse.response.nexPageToken, id!!)
                     }
                     is GoogleDriveResponse.Error -> {
                         throw googleDriveResponse.error
@@ -57,7 +59,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
     }
 
-    private fun getExplorer(items: List<GoogleDriveFile>, cursor: String): Explorer {
+    private fun getExplorer(items: List<GoogleDriveFile>, cursor: String, id: String): Explorer {
         val explorer = Explorer()
         val files: MutableList<CloudFile> = mutableListOf()
         val folders: MutableList<CloudFolder> = mutableListOf()
@@ -102,25 +104,47 @@ class GoogleDriveFileProvider: BaseFileProvider {
             explorer.current = current
             explorer.files = files
             explorer.folders = folders
+        } else {
+            val current = Current()
+            current.id = id
+            current.filesCount = 0.toString()
+            current.foldersCount = 0.toString()
+
+            explorer.current = current
+            explorer.files = emptyList()
+            explorer.folders = emptyList()
         }
-//        else {
-//            val current = Current()
-//
-//            val context = response.context.split("/")
-//
-//            current.id = context[6].split("'")[1].replace("%21", "!")
-//            current.filesCount = 0.toString()
-//            current.foldersCount = 0.toString()
-//
-//            explorer.current = current
-//            explorer.files = emptyList()
-//            explorer.folders = emptyList()
-//        }
         return explorer
     }
 
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
-        TODO("Not yet implemented")
+        val request = CreateItemRequest(
+            name = body.title,
+            mimeType = GoogleDriveUtils.getFileMimeType(body.title.split(".")[1]),
+            parents = listOf(folderId)
+        )
+        return Observable.fromCallable { api.create(request).blockingGet() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                when (response) {
+                    is GoogleDriveResponse.Success -> {
+                        val file = CloudFile()
+                        file.webUrl = (response.response as GoogleDriveFile).webViewLink
+                        file.updated = Date()
+                        file.id = response.response.id
+                        file.title = response.response.name
+                        file.fileExst = response.response.name.split(".")[1]
+                        return@map file
+                    }
+                    is GoogleDriveResponse.Error -> {
+                        throw response.error
+                    }
+                    else -> {
+                        return@map null
+                    }
+                }
+            }
     }
 
     override fun search(query: String?): Observable<String>? {
@@ -128,7 +152,32 @@ class GoogleDriveFileProvider: BaseFileProvider {
     }
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
-        TODO("Not yet implemented")
+        val request = CreateItemRequest(
+            name = body.title,
+            mimeType = GoogleDriveUtils.FOLDER_MIMETYPE,
+            parents = listOf(folderId)
+        )
+        return Observable.fromCallable { api.create(request).blockingGet() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                when (response) {
+                    is GoogleDriveResponse.Success -> {
+                        val folder = CloudFolder()
+                        folder.id = (response.response as GoogleDriveFile).id
+                        folder.title = response.response.name
+                        folder.updated = Date()
+                        return@map folder
+                    }
+                    is GoogleDriveResponse.Error -> {
+                        throw response.error
+                    }
+                    else -> {
+                        return@map null
+                    }
+                }
+            }
+
     }
 
     override fun rename(item: Item, newName: String, version: Int?): Observable<Item> {

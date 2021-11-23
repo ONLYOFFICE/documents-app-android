@@ -11,6 +11,7 @@ import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
+import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -86,7 +87,18 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
     }
 
     override fun createDocs(title: String) {
-        TODO("Not yet implemented")
+        val id = mModelExplorerStack.currentId
+        id?.let {
+            val requestCreate = RequestCreate()
+            requestCreate.title = title
+            mDisposable.add(mFileProvider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
+                addFile(file)
+                setPlaceholderType(PlaceholderViews.Type.NONE)
+                viewState.onDialogClose()
+                viewState.onOpenLocalFile(file)
+            }) { throwable: Throwable? -> fetchError(throwable) })
+            showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+        }
     }
 
     override fun getFileInfo() {
@@ -186,6 +198,6 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
     }
 
     override fun onActionClick() {
-        TODO("Not yet implemented")
+        viewState.onActionDialog(false, true)
     }
 }
