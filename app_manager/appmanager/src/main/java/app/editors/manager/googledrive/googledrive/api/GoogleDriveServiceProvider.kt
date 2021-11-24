@@ -4,6 +4,7 @@ import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
 import app.editors.manager.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.googledrive.mvp.models.request.RenameRequest
 import com.jakewharton.rxrelay2.BehaviorRelay
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -50,6 +51,20 @@ class GoogleDriveServiceProvider(
 
     override fun rename(fileId: String, request: RenameRequest): Single<GoogleDriveResponse> {
         return googleDriveServiceProvider.rename(fileId, request)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun move(fileId: String, map: Map<String, String?>): Single<GoogleDriveResponse> {
+        return googleDriveServiceProvider.move(fileId, map)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun copy(fileId: String): Single<GoogleDriveResponse> {
+        return googleDriveServiceProvider.copy(fileId)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

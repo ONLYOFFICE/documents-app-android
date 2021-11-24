@@ -13,6 +13,8 @@ object GoogleDriveUtils {
     private const val VAL_SORT_DESC = " desc"
     private const val VAL_SORT_NAME = "name"
     private const val VAL_SORT_UPDATED = "modifiedTime"
+    const val MOVE_ADD_PARENTS = "addParents"
+    const val MOVE_REMOVE_PARENTS = "removeParents"
 
 
     const val FOLDER_MIMETYPE = "application/vnd.google-apps.folder"

@@ -4,17 +4,24 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.googledrive.mvp.views.DocsGoogleDriveView
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
+import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
+import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
 open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, DocsGoogleDriveView {
@@ -59,6 +66,9 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
                 REQUEST_MULTIPLE_FILES_DOWNLOAD -> {
                     data?.data?.let { presenter.download(it) }
                 }
+                BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
+                    onRefresh()
+                }
             }
         }
     }
@@ -72,6 +82,44 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
     override fun setToolbarState(isVisible: Boolean) {
         activity?.showAccount(isVisible)
         activity?.showNavigationButton(!isVisible)
+    }
+
+    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
+        when (buttons) {
+            ContextBottomDialog.Buttons.MOVE -> presenter.moveContext()
+            ContextBottomDialog.Buttons.COPY -> presenter.copy()
+            ContextBottomDialog.Buttons.DOWNLOAD -> onFileDownloadPermission()
+            ContextBottomDialog.Buttons.RENAME -> if (presenter.itemClicked is CloudFile) {
+                showEditDialogRename(
+                    getString(R.string.dialogs_edit_rename_title),
+                    StringUtils.getNameWithoutExtension(presenter.itemTitle),
+                    getString(R.string.dialogs_edit_hint),
+                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
+                    getString(R.string.dialogs_edit_accept_rename),
+                    getString(R.string.dialogs_common_cancel_button))
+            } else {
+                showEditDialogRename(
+                    getString(R.string.dialogs_edit_rename_title),
+                    presenter.itemTitle,
+                    getString(R.string.dialogs_edit_hint),
+                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
+                    getString(R.string.dialogs_edit_accept_rename),
+                    getString(R.string.dialogs_common_cancel_button))
+            }
+            ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
+                getString(R.string.dialogs_question_delete),
+                presenter.itemTitle,
+                getString(R.string.dialogs_question_accept_remove),
+                getString(R.string.dialogs_common_cancel_button),
+                DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
+            )
+        }
+    }
+
+    override fun onDocsBatchOperation() {
+        onDialogClose()
+        onSnackBar(getString(R.string.operation_complete_message))
+        onRefresh()
     }
 
     override fun onActionBarTitle(title: String) {

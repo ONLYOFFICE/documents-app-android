@@ -129,6 +129,7 @@ class ContextBottomDialog : BaseBottomDialog() {
                 }
                 binding.listExplorerContextDownload.isVisible = !state.isOneDrive
                 binding.listExplorerContextExternalLink.isVisible = state.isOneDrive
+                binding.listExplorerContextCopy.isVisible = !state.isGoogleDrive
             } else {
                 /** File can downloaded */
                 binding.listExplorerContextDownload.isVisible = true

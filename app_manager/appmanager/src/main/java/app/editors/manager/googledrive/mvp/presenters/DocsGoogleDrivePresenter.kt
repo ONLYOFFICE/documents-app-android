@@ -2,10 +2,12 @@ package app.editors.manager.googledrive.mvp.presenters
 
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.account.Recent
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.googledrive.managers.works.DownloadWork
@@ -134,6 +136,36 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
                     viewState.onOpenLocalFile(file)
                 }
             ) { throwable: Throwable? -> fetchError(throwable) }
+    }
+
+    override fun move(): Boolean {
+        return if (super.move()) {
+            transfer(ApiContract.Operation.DUPLICATE, true)
+            true
+        } else {
+            false
+        }
+    }
+
+    override fun copy(): Boolean {
+        val itemList = mutableListOf<Item>()
+        if(mModelExplorerStack.countSelectedItems <= 1) {
+            mItemClicked?.let { itemList.add(it) }
+        } else {
+            itemList.addAll(mModelExplorerStack?.selectedFiles!!)
+        }
+        showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+        mDisposable.add((mFileProvider as GoogleDriveFileProvider).copy(itemList, mModelExplorerStack.currentId!!)
+            .subscribe ({},{}, {
+                viewState.onDocsBatchOperation()
+                true
+            })
+        )
+        return false
+    }
+
+    override fun copySelected() {
+        copy()
     }
 
     override fun addRecent(file: CloudFile) {

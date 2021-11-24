@@ -241,7 +241,54 @@ class GoogleDriveFileProvider: BaseFileProvider {
         isMove: Boolean,
         isOverwrite: Boolean
     ): Observable<List<Operation>>? {
-        TODO("Not yet implemented")
+        return items.size.let {
+            Observable.fromIterable(items)
+                .flatMap { item ->
+                    val map = mapOf(
+                        GoogleDriveUtils.MOVE_ADD_PARENTS to to?.id,
+                        GoogleDriveUtils.MOVE_REMOVE_PARENTS to if (item is CloudFile) item.folderId else (item as CloudFolder).parentId
+                    )
+                    Observable.fromCallable { api.move(item.id, map).blockingGet() }
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { response ->
+                    when(response) {
+                        is GoogleDriveResponse.Success -> {
+                            return@map response.response
+                        }
+                        is GoogleDriveResponse.Error -> {
+                            throw response.error
+                        }
+                    }
+                }.buffer(it)
+                .map {
+                    val operation = Operation()
+                    operation.progress = 100
+                    return@map mutableListOf(operation)
+                }
+        }
+    }
+
+    fun copy(items: List<Item>, dest: String): Observable<Boolean> {
+        return items.size.let {
+            Observable.fromIterable(items)
+                .map { item ->
+                    api.copy(item.id).blockingGet()
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { response ->
+                    when(response) {
+                        is GoogleDriveResponse.Success -> {
+                            true
+                        }
+                        is GoogleDriveResponse.Error -> {
+                            throw response.error
+                        }
+                    }
+                }
+        }
     }
 
     override fun fileInfo(item: Item?): Observable<CloudFile> {
