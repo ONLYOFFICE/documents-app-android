@@ -8,4 +8,5 @@ import moxy.viewstate.strategy.StateStrategyType
 @StateStrategyType(OneExecutionStateStrategy::class)
 interface DocsGoogleDriveView: DocsBaseView {
     fun onFileWebView(file: CloudFile)
+    fun onChooseDownloadFolder()
 }

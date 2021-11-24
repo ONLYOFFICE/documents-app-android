@@ -100,6 +100,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         const val REQUEST_PDF = 10004
         const val REQUEST_DOWNLOAD = 10005
         const val REQUEST_STORAGE_ACCESS = 10006
+        const val REQUEST_MULTIPLE_FILES_DOWNLOAD = 11000023
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

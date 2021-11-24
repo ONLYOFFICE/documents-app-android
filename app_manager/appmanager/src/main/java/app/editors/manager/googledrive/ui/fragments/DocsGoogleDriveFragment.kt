@@ -1,6 +1,8 @@
 package app.editors.manager.googledrive.ui.fragments
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import app.editors.manager.R
@@ -47,6 +49,17 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
                 DocsOneDriveFragment::class.java.simpleName + " - must implement - " +
                         IMainActivity::class.java.simpleName
             )
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                REQUEST_MULTIPLE_FILES_DOWNLOAD -> {
+                    data?.data?.let { presenter.download(it) }
+                }
+            }
         }
     }
 
@@ -109,7 +122,7 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
             }
             moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
             copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
-            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
+            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(true)
             restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
             setAccountEnable(false)
         }
@@ -123,6 +136,11 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
 
     override fun onFileWebView(file: CloudFile) {
         showViewerActivity(file)
+    }
+
+    override fun onChooseDownloadFolder() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        startActivityForResult(intent, REQUEST_MULTIPLE_FILES_DOWNLOAD)
     }
 
     override fun onError(message: String?) {

@@ -239,7 +239,33 @@ class GoogleDriveFileProvider: BaseFileProvider {
     }
 
     override fun fileInfo(item: Item?): Observable<CloudFile> {
-        TODO("Not yet implemented")
+        val map = mapOf(
+            GoogleDriveUtils.GOOGLE_DRIVE_FIELDS to GoogleDriveUtils.GOOGLE_DRIVE_FIELDS_VALUES
+        )
+        return Observable.fromCallable { item?.id?.let { api.getFileInfo(it, map).blockingGet() } }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                when(response) {
+                    is GoogleDriveResponse.Success -> {
+                        return@map CloudFile().apply {
+                            id = (response.response as GoogleDriveFile).id
+                            title = response.response.name
+                            folderId = response.response.parents[0]
+                            pureContentLength = response.response.size.toLong()
+                            webUrl = response.response.webViewLink
+                            fileExst = StringUtils.getExtensionFromPath(title.toLowerCase())
+                            created =
+                                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(response.response.createdTime)
+                            updated =
+                                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(response.response.modifiedTime)
+                        }
+                    }
+                    is GoogleDriveResponse.Error -> {
+                        throw response.error
+                    }
+                }
+            }
     }
 
     override fun getStatusOperation(): ResponseOperation? {

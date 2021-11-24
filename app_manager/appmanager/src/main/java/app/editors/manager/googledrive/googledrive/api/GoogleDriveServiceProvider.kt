@@ -33,6 +33,15 @@ class GoogleDriveServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun download(
+        fileId: String,
+        map: Map<String, String>
+    ): Single<Response<ResponseBody>> {
+        return googleDriveServiceProvider.download(fileId, map)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     override fun delete(fileId: String): Single<Response<ResponseBody>> {
         return googleDriveServiceProvider.deleteItem(fileId)
             .subscribeOn(Schedulers.io())

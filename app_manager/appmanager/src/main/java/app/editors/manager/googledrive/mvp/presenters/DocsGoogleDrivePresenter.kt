@@ -1,13 +1,19 @@
 package app.editors.manager.googledrive.mvp.presenters
 
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import app.documents.core.account.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.dropbox.managers.utils.DropboxUtils
+import app.editors.manager.googledrive.managers.works.DownloadWork
 import app.editors.manager.googledrive.managers.providers.GoogleDriveFileProvider
 import app.editors.manager.googledrive.managers.utils.GoogleDriveUtils
 import app.editors.manager.googledrive.mvp.views.DocsGoogleDriveView
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
@@ -15,6 +21,9 @@ import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,6 +34,11 @@ import lib.toolkit.base.managers.utils.TimeUtils
 import java.util.*
 
 class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
+
+
+    private var downloadDisposable: Disposable? = null
+    private var tempFile: CloudFile? = null
+    private val workManager = WorkManager.getInstance()
 
     init {
         App.getApp().appComponent.inject(this)
@@ -102,7 +116,25 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
     }
 
     override fun getFileInfo() {
-
+        if (mItemClicked != null && mItemClicked is CloudFile) {
+            val file = mItemClicked as CloudFile
+            val extension = file.fileExst
+            if (StringUtils.isImage(extension)) {
+                addRecent(file)
+                return
+            }
+        }
+        showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
+        downloadDisposable = mFileProvider.fileInfo(mItemClicked!!)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { file: CloudFile? ->
+                    tempFile = file
+                    viewState.onDialogClose()
+                    viewState.onOpenLocalFile(file)
+                }
+            ) { throwable: Throwable? -> fetchError(throwable) }
     }
 
     override fun addRecent(file: CloudFile) {
@@ -151,6 +183,49 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
             viewState.onStateAdapterRoot(true)
             viewState.onStateUpdateRoot(true)
         }
+    }
+
+
+    override fun createDownloadFile() {
+        if(mModelExplorerStack.countSelectedItems <= 1) {
+            if (mItemClicked is CloudFolder) {
+                viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
+            } else if (mItemClicked is CloudFile) {
+                viewState.onCreateDownloadFile((mItemClicked as CloudFile).title)
+            }
+        } else {
+            viewState.onChooseDownloadFolder()
+        }
+    }
+
+    override fun download(downloadTo: Uri) {
+        if(mModelExplorerStack.countSelectedItems <= 1) {
+            startDownload(downloadTo, mItemClicked)
+        } else {
+            val itemList: MutableList<Item> = (mModelExplorerStack.selectedFiles + mModelExplorerStack.selectedFolders).toMutableList()
+            itemList.forEach { item ->
+                val fileName = if(item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
+                val doc = DocumentFile.fromTreeUri(mContext, downloadTo)?.createFile("*/*", fileName)
+                startDownload(doc?.uri!!, item)
+            }
+        }
+    }
+
+    private fun startDownload(downloadTo: Uri, item: Item?) {
+        val data = Data.Builder()
+            .putString(DownloadWork.FILE_ID_KEY, item?.id)
+            .putString(DownloadWork.FILE_URI_KEY, downloadTo.toString())
+            .putString(
+                DownloadWork.DOWNLOADABLE_ITEM_KEY,
+                if (item is CloudFile) DownloadWork.DOWNLOADABLE_ITEM_FILE else DownloadWork.DOWNLOADABLE_ITEM_FOLDER
+            )
+            .build()
+
+        val request = OneTimeWorkRequest.Builder(DownloadWork::class.java)
+            .setInputData(data)
+            .build()
+
+        workManager.enqueue(request)
     }
 
     override fun delete(): Boolean {
