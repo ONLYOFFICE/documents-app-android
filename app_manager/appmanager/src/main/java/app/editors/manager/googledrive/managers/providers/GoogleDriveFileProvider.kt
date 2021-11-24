@@ -1,6 +1,8 @@
 package app.editors.manager.googledrive.managers.providers
 
+import android.annotation.SuppressLint
 import android.net.Uri
+import android.os.Environment
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
@@ -17,13 +19,17 @@ import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
-import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
-import app.editors.manager.onedrive.onedrive.OneDriveResponse
+import io.reactivex.Emitter
 import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import retrofit2.HttpException
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -239,33 +245,73 @@ class GoogleDriveFileProvider: BaseFileProvider {
     }
 
     override fun fileInfo(item: Item?): Observable<CloudFile> {
-        val map = mapOf(
-            GoogleDriveUtils.GOOGLE_DRIVE_FIELDS to GoogleDriveUtils.GOOGLE_DRIVE_FIELDS_VALUES
-        )
-        return Observable.fromCallable { item?.id?.let { api.getFileInfo(it, map).blockingGet() } }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { response ->
-                when(response) {
-                    is GoogleDriveResponse.Success -> {
-                        return@map CloudFile().apply {
-                            id = (response.response as GoogleDriveFile).id
-                            title = response.response.name
-                            folderId = response.response.parents[0]
-                            pureContentLength = response.response.size.toLong()
-                            webUrl = response.response.webViewLink
-                            fileExst = StringUtils.getExtensionFromPath(title.toLowerCase())
-                            created =
-                                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(response.response.createdTime)
-                            updated =
-                                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(response.response.modifiedTime)
-                        }
-                    }
-                    is GoogleDriveResponse.Error -> {
-                        throw response.error
+        return Observable.create { emitter: ObservableEmitter<CloudFile> ->
+            val outputFile = item?.let { checkDirectory(it) }
+            if (outputFile != null && outputFile.exists()) {
+                if (item is CloudFile) {
+                    if (item.pureContentLength != outputFile.length()) {
+                        download(emitter, item, outputFile)
+                    } else {
+                        setFile(item, outputFile).let { emitter.onNext(it) }
+                        emitter.onComplete()
                     }
                 }
             }
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
+        val result = api.download(item.id).blockingGet()
+        result.body()?.let { file ->
+            try {
+                file.byteStream().use { inputStream ->
+                    FileOutputStream(outputFile).use { outputStream ->
+                        val buffer = ByteArray(4096)
+                        var count: Int
+                        while (inputStream.read(buffer).also { count = it } != -1) {
+                            outputStream.write(buffer, 0, count)
+                        }
+                        outputStream.flush()
+                        emitter.onNext(setFile(item, outputFile))
+                        emitter.onComplete()
+                    }
+                }
+            } catch (error: IOException) {
+                emitter.onError(error)
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun checkDirectory(item: Item): File? {
+        val file = item as CloudFile
+        when (StringUtils.getExtension(file.fileExst)) {
+            StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH, StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
+                val parent =
+                    File(Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice")
+                return FileUtils.createFile(parent, file.title)
+            }
+        }
+        val local = File(Uri.parse(file.webUrl).path)
+        return if (local.exists()) {
+            local
+        } else {
+            FileUtils.createCacheFile(App.getApp(), item.getTitle())
+        }
+    }
+
+    private fun setFile(item: Item, outputFile: File): CloudFile {
+        val originFile = item as CloudFile
+        return CloudFile().apply {
+            folderId = originFile.folderId
+            title = originFile.title
+            pureContentLength = outputFile.length()
+            fileExst = originFile.fileExst
+            viewUrl = originFile.id
+            id = ""
+            webUrl = Uri.fromFile(outputFile).toString()
+        }
     }
 
     override fun getStatusOperation(): ResponseOperation? {

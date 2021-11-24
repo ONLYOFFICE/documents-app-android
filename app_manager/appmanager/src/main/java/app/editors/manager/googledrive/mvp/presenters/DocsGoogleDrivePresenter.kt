@@ -124,7 +124,6 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
                 return
             }
         }
-        showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         downloadDisposable = mFileProvider.fileInfo(mItemClicked!!)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
