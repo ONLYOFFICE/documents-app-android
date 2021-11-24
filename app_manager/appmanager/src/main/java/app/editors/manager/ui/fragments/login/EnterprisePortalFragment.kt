@@ -161,6 +161,9 @@ class EnterprisePortalFragment : BaseAppFragment(),
                 viewBinding?.termsTextView?.text = text
             }
         }
+        viewBinding?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
+            viewBinding?.loginEnterpriseNextButton?.isEnabled = isChecked
+        }
     }
 
     private fun restoreValue(savedInstanceState: Bundle?) {

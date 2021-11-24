@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/default_bottom_panel_height"
     card_view:cardElevation="@dimen/default_bottom_panel_elevation">
@@ -32,7 +33,8 @@
                 android:imeOptions="actionDone"
                 android:importantForAutofill="noExcludeDescendants"
                 android:inputType="none"
-                android:maxLines="1" />
+                android:maxLines="1"
+                tools:ignore="KeyboardInaccessibleWidget" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton
@@ -45,10 +47,11 @@
             android:clickable="false"
             android:padding="@dimen/image_padding_icon"
             android:src="@drawable/ic_access_panel_close"
-            android:tint="@color/colorOnSurface"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout"
+            app:tint="@color/colorOnSurface"
+            tools:ignore="ContentDescription" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/share_panel_count_selected_text"
@@ -64,7 +67,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toEndOf="@+id/share_panel_reset_button"
-            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout"
+            tools:ignore="HardcodedText" />
 
         <include
             android:id="@+id/button_popup_layout"
@@ -85,12 +89,14 @@
             android:layout_marginStart="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
+            android:focusable="true"
             android:padding="@dimen/image_padding_icon"
-            android:src="@drawable/ic_access_panel_message"
-            android:tint="@color/colorOnSurface"
+            android:src="@drawable/ic_access_comment"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/button_popup_layout"
-            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout"
+            app:tint="@color/colorOnSurface"
+            tools:ignore="ContentDescription" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_panel_add_button"
@@ -100,6 +106,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="@dimen/screen_margin_large"
             android:clickable="true"
+            android:focusable="true"
             android:text="@string/share_panel_button_add"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

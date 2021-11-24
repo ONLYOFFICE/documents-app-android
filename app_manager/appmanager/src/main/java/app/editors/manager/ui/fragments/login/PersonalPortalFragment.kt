@@ -264,6 +264,9 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
                 viewBinding?.termsTextView?.text = text
             }
         }
+        viewBinding?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
+            viewBinding?.loginPersonalSigninButton?.isEnabled = isChecked
+        }
     }
 
     private fun initListeners() {
