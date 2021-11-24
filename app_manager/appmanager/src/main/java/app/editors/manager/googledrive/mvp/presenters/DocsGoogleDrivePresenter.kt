@@ -149,15 +149,33 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
 
     override fun copy(): Boolean {
         val itemList = mutableListOf<Item>()
-        if(mModelExplorerStack.countSelectedItems <= 1) {
-            mItemClicked?.let { itemList.add(it) }
-        } else {
-            itemList.addAll(mModelExplorerStack?.selectedFiles!!)
+        when {
+            mModelExplorerStack?.selectedFiles?.isNotEmpty() == true -> {
+                itemList.addAll(mModelExplorerStack?.selectedFiles!!)
+            }
+            mModelExplorerStack.selectedFolders.isNotEmpty() -> {
+                viewState.onSnackBar(mContext.getString(R.string.storage_google_drive_copy_folder_error))
+                itemList.addAll(mModelExplorerStack?.selectedFiles!!)
+            }
+            else -> {
+                mItemClicked?.let { itemList.add(it) }
+            }
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         mDisposable.add((mFileProvider as GoogleDriveFileProvider).copy(itemList, mModelExplorerStack.currentId!!)
-            .subscribe ({},{}, {
+            .subscribe ({},{
+                fetchError(it)
+                if (mIsSelectionMode) {
+                    setSelection(false)
+                    updateViewsState()
+                }
+                false
+            }, {
                 viewState.onDocsBatchOperation()
+                if (mIsSelectionMode) {
+                    setSelection(false)
+                    updateViewsState()
+                }
                 true
             })
         )
