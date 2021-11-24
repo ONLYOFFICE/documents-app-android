@@ -27,11 +27,13 @@ class OnBoardingActivity : BaseAppActivity() {
     }
 
     companion object {
-        val TAG = OnBoardingActivity::class.java.simpleName
+        val TAG: String = OnBoardingActivity::class.java.simpleName
 
         fun show(activity: Activity) {
-            val intent = Intent(activity, OnBoardingActivity::class.java)
-            activity.startActivityForResult(intent, REQUEST_ACTIVITY_ONBOARDING)
+            activity.startActivityForResult(
+                Intent(activity, OnBoardingActivity::class.java),
+                REQUEST_ACTIVITY_ONBOARDING
+            )
         }
     }
 }

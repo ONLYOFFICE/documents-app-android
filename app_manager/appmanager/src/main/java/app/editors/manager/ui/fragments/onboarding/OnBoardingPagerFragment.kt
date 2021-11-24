@@ -135,7 +135,7 @@ class OnBoardingPagerFragment : BaseAppFragment() {
     }
 
     companion object {
-        val TAG = OnBoardingPagerFragment::class.java.simpleName
+        val TAG: String = OnBoardingPagerFragment::class.java.simpleName
 
         fun newInstance(): OnBoardingPagerFragment {
             return OnBoardingPagerFragment()

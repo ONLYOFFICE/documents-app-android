@@ -62,7 +62,7 @@ class OnBoardingPageFragment : BaseAppFragment() {
     }
 
     companion object {
-        val TAG = OnBoardingPageFragment::class.java.simpleName
+        val TAG: String = OnBoardingPageFragment::class.java.simpleName
         const val TAG_HEADER = "TAG_HEADER"
         const val TAG_INFO = "TAG_INFO"
         const val TAG_IMAGE = "TAG_IMAGE"
