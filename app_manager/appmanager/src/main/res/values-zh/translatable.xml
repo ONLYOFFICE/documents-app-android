@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">文档</string>
-    <string name="app_name_full">ONLYOFFICE文档</string>
+    <string name="app_name">Documents</string>
+    <string name="app_name_full">ONLYOFFICE Documents</string>
     <!-- ======================================================================================= -->
     <!-- Permissions -->
     <string name="permission_account_write_label" translatable="false">账户写入权限标签</string>
