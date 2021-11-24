@@ -4,7 +4,7 @@
     <string name="about_license">Лицензионное соглашение</string>
     <string name="about_policy">Конфиденциальность</string>
     <string name="about_terms">Условия использования</string>
-    <string name="about_title">О программе</string>
+    <string name="about_title">О приложении</string>
     <string name="about_website">Сайт ONLYOFFICE</string>
     <string name="actionbar_title_main">Документы</string>
     <string name="app_name">Документы</string>
@@ -242,7 +242,6 @@
     <string name="media_image_share_chooser">Выберите приложение, чтобы поделиться</string>
     <string name="media_video_error">Неизвестная ошибка воспроизведения: %1$s</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
-    <string name="navigation_drawer_menu_about">О программе</string>
     <string name="navigation_drawer_menu_add_account">Добавить аккаунт</string>
     <string name="navigation_drawer_menu_common">Общие</string>
     <string name="navigation_drawer_menu_feedback">Обратная связь и поддержка</string>
