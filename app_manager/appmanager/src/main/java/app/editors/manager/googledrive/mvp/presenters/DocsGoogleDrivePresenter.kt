@@ -205,7 +205,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
             val itemList: MutableList<Item> = (mModelExplorerStack.selectedFiles + mModelExplorerStack.selectedFolders).toMutableList()
             itemList.forEach { item ->
                 val fileName = if(item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
-                val doc = DocumentFile.fromTreeUri(mContext, downloadTo)?.createFile("*/*", fileName)
+                val doc = DocumentFile.fromTreeUri(mContext, downloadTo)?.createFile(StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName)
                 startDownload(doc?.uri!!, item)
             }
         }
