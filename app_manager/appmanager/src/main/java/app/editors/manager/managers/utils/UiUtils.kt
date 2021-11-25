@@ -14,7 +14,6 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
-import app.editors.manager.managers.utils.ManagerUiUtils.setOneDriveImage
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
@@ -95,7 +94,7 @@ object ManagerUiUtils {
                 colorId = lib.toolkit.base.R.color.colorDocTint
             }
             StringUtils.Extension.FORM -> {
-                resId = if (ext == LocalContentTools.OFORM_EXTENSION) {
+                resId = if (ext == ".${LocalContentTools.OFORM_EXTENSION}") {
                     R.drawable.ic_format_oform
                 } else {
                     R.drawable.ic_format_docxf
