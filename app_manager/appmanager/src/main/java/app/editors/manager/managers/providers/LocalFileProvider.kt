@@ -235,7 +235,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
                 tempExplorer = getExplorer(files, File(id))
             }
             if (item.isDirectory) {
-                tempExplorer = search(value, item.absolutePath)
+                tempExplorer.add(search(value, item.absolutePath))
             }
             resultExplorer.add(tempExplorer)
         }
