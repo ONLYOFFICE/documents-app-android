@@ -1,8 +1,9 @@
 package app.editors.manager.googledrive.mvp.presenters
 
+import android.content.ClipData
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -13,7 +14,10 @@ import app.editors.manager.app.App
 import app.editors.manager.googledrive.managers.works.DownloadWork
 import app.editors.manager.googledrive.managers.providers.GoogleDriveFileProvider
 import app.editors.manager.googledrive.managers.utils.GoogleDriveUtils
+import app.editors.manager.googledrive.managers.works.UploadWork
 import app.editors.manager.googledrive.mvp.views.DocsGoogleDriveView
+import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
@@ -35,12 +39,14 @@ import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import java.util.*
 
-class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
+class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
 
 
     private var downloadDisposable: Disposable? = null
     private var tempFile: CloudFile? = null
     private val workManager = WorkManager.getInstance()
+    private val uploadReceiver: UploadReceiver
+    private val downloadReceiver: DownloadReceiver
 
     init {
         App.getApp().appComponent.inject(this)
@@ -51,6 +57,8 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
         mIsFilteringMode = false
         mIsSelectionMode = false
         mIsFoldersMode = false
+        uploadReceiver = UploadReceiver()
+        downloadReceiver = DownloadReceiver()
     }
 
 
@@ -78,6 +86,20 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
                 }
             }
         }
+    }
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        uploadReceiver.setOnUploadListener(this)
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(uploadReceiver, uploadReceiver.filter)
+        downloadReceiver.setOnDownloadListener(this)
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(downloadReceiver, downloadReceiver.filter)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(uploadReceiver)
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(downloadReceiver)
     }
 
     override fun getNextList() {
@@ -289,6 +311,35 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
         return true
     }
 
+    fun upload(uri: Uri?, uris: ClipData?, tag: String) {
+        val uploadUris = mutableListOf<Uri>()
+        var index = 0
+
+        if(uri != null) {
+            uploadUris.add(uri)
+        } else if(uris != null) {
+            while(index != uris.itemCount) {
+                uploadUris.add(uris.getItemAt(index).uri)
+                index++
+            }
+        }
+
+        for (uri in uploadUris) {
+            val data = Data.Builder()
+                .putString(UploadWork.KEY_FOLDER_ID, mModelExplorerStack.currentId)
+                .putString(UploadWork.KEY_FROM, uri.toString())
+                .putString(UploadWork.KEY_TAG, tag)
+                .build()
+
+            val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
+                .setInputData(data)
+                .build()
+
+            workManager.enqueue(request)
+        }
+
+    }
+
     override fun onContextClick(item: Item?, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
         mIsContextClick = true
@@ -323,5 +374,84 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>() {
 
     override fun onActionClick() {
         viewState.onActionDialog(false, true)
+    }
+
+    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?) {
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onDownloadProgress(id: String?, total: Int, progress: Int) {
+        viewState.onDialogProgress(total, progress)
+    }
+
+    override fun onDownloadComplete(
+        id: String?,
+        url: String?,
+        title: String?,
+        info: String?,
+        path: String?,
+        mime: String?,
+        uri: Uri?
+    ) {
+        viewState.onDialogClose()
+        viewState.onSnackBarWithAction(
+            """
+    $info
+    $title
+    """.trimIndent(), mContext.getString(R.string.download_manager_open)
+        ) { showDownloadFolderActivity(uri) }
+    }
+
+    override fun onDownloadCanceled(id: String?, info: String?) {
+        viewState.onDialogClose()
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onDownloadRepeat(id: String?, title: String?, info: String?) {
+        viewState.onDialogClose()
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onUploadError(path: String?, info: String?, file: String?) {
+        info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun onUploadComplete(
+        path: String?,
+        info: String?,
+        title: String?,
+        file: CloudFile?,
+        id: String?
+    ) {
+        info?.let { viewState.onSnackBar(it) }
+        refresh()
+        viewState.onDeleteUploadFile(id)
+    }
+
+    override fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
+        if (mModelExplorerStack.currentId == folderId) {
+            viewState.onUploadFileProgress(progress, id)
+        }
+    }
+
+    override fun onUploadCanceled(path: String?, info: String?, id: String?) {
+        info?.let { viewState.onSnackBar(it) }
+        viewState.onDeleteUploadFile(id)
+        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(mModelExplorerStack.currentId)?.isEmpty() == true) {
+            viewState.onRemoveUploadHead()
+            getListWithHeaders(mModelExplorerStack.last(), true)
+        }
+    }
+
+    override fun onUploadRepeat(path: String?, info: String?) {
+        viewState.onDialogClose()
+        info?.let { viewState.onSnackBar(it) }
+    }
+    private fun showDownloadFolderActivity(uri: Uri?) {
+        viewState.onDownloadActivity(uri)
     }
 }

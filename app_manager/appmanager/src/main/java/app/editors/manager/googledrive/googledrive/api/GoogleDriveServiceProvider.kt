@@ -77,6 +77,12 @@ class GoogleDriveServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun upload(request: CreateItemRequest, map: Map<String, String>): Single<Response<ResponseBody>> {
+        return googleDriveServiceProvider.upload(request, map)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     private fun <T> fetchResponse(response: Response<T>): GoogleDriveResponse {
         return if (response.isSuccessful && response.body() != null) {
             GoogleDriveResponse.Success(response.body()!!)

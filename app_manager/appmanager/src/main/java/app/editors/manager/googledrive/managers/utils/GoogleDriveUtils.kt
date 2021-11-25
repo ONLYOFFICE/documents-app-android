@@ -18,9 +18,9 @@ object GoogleDriveUtils {
 
 
     const val FOLDER_MIMETYPE = "application/vnd.google-apps.folder"
-    private const val DOC_MIMETYPE = "application/vnd.google-apps.document"
-    private const val SLIDES_MIMETYPE = "application/vnd.google-apps.presentation"
-    private const val CELLS_MIMETYPE = "application/vnd.google-apps.spreadsheet"
+    private const val DOC_MIMETYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    private const val SLIDES_MIMETYPE = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    private const val CELLS_MIMETYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     fun getSortBy(filter: Map<String, String>?): String {
         return when(filter?.get(ApiContract.Parameters.ARG_SORT_BY)) {

@@ -18,4 +18,5 @@ interface IGoogleDriveServiceProvider {
     fun move(fileId: String, map: Map<String, String?>): Single<GoogleDriveResponse>
     fun copy(fileId: String): Single<GoogleDriveResponse>
     fun create(request: CreateItemRequest): Single<GoogleDriveResponse>
+    fun upload(request: CreateItemRequest, map: Map<String, String> = mapOf("uploadType" to "resumable")): Single<Response<ResponseBody>>
 }

@@ -3,14 +3,19 @@ package app.editors.manager.googledrive.managers.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
 import app.editors.manager.googledrive.managers.utils.GoogleDriveUtils
+import app.editors.manager.googledrive.managers.works.UploadWork
 import app.editors.manager.googledrive.mvp.models.GoogleDriveFile
 import app.editors.manager.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.googledrive.mvp.models.request.RenameRequest
 import app.editors.manager.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
+import app.editors.manager.googledrive.ui.fragments.DocsGoogleDriveFragment
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
@@ -19,6 +24,10 @@ import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
+import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.onedrive.mvp.models.explorer.DriveItemValue
+import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -35,7 +44,13 @@ import java.util.*
 
 class GoogleDriveFileProvider: BaseFileProvider {
 
+    companion object {
+        private const val PATH_TEMPLATES = "templates/"
+    }
+
     private val api = App.getApp().getGoogleDriveComponent()
+
+    private val workManager = WorkManager.getInstance()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         var queryString = "\"$id\" in parents and trashed = false"
@@ -124,32 +139,33 @@ class GoogleDriveFileProvider: BaseFileProvider {
     }
 
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
-        val request = CreateItemRequest(
-            name = body.title,
-            mimeType = GoogleDriveUtils.getFileMimeType(body.title.split(".")[1]),
-            parents = listOf(folderId)
-        )
-        return Observable.fromCallable { api.create(request).blockingGet() }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { response ->
-                when (response) {
-                    is GoogleDriveResponse.Success -> {
-                        val file = CloudFile()
-                        file.webUrl = (response.response as GoogleDriveFile).webViewLink
-                        file.updated = Date()
-                        file.id = response.response.id
-                        file.title = response.response.name
-                        file.fileExst = response.response.name.split(".")[1]
-                        return@map file
+        return Observable.just(1) {
+        }
+            .map { _ ->
+                val title = body.title
+                val path = PATH_TEMPLATES + body.title.lowercase()
+                    .let { StringUtils.getExtensionFromPath(it) }.let {
+                        FileUtils.getTemplates(
+                            App.getApp(), App.getLocale(),
+                            it
+                        )
                     }
-                    is GoogleDriveResponse.Error -> {
-                        throw response.error
-                    }
-                    else -> {
-                        return@map null
-                    }
+                val temp = title.let { StringUtils.getNameWithoutExtension(it) }.let {
+                    FileUtils.createTempAssetsFile(
+                        App.getApp(),
+                        path,
+                        it,
+                        StringUtils.getExtensionFromPath(title)
+                    )
                 }
+                upload(folderId, mutableListOf(Uri.fromFile(temp)))?.subscribe()
+                val file = CloudFile()
+                file.webUrl = Uri.fromFile(temp).toString()
+                file.pureContentLength = temp?.length() ?: 0
+                file.updated = Date()
+                file.title = body.title
+                file.fileExst = body.title.split(".")[1]
+                return@map file
             }
     }
 
@@ -372,7 +388,21 @@ class GoogleDriveFileProvider: BaseFileProvider {
     }
 
     override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? {
-        TODO("Not yet implemented")
+        return Observable.fromIterable(uris)
+            .map {
+                val data = Data.Builder()
+                    .putString(UploadWork.KEY_FOLDER_ID, folderId)
+                    .putString(UploadWork.KEY_FROM, it.toString())
+                    .putString(UploadWork.KEY_TAG, DocsGoogleDriveFragment.KEY_UPDATE)
+                    .build()
+
+                val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
+                    .setInputData(data)
+                    .build()
+
+                workManager.enqueue(request)
+                1
+            }
     }
 
     override fun share(

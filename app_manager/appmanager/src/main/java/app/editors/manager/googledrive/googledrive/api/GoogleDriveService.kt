@@ -69,4 +69,11 @@ interface GoogleDriveService {
     )
     @POST("drive/v3/files")
     fun createItem(@Body request: CreateItemRequest): Single<Response<GoogleDriveFile>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("upload/drive/v3/files")
+    fun upload(@Body  request: CreateItemRequest, @QueryMap map: Map<String, String>): Single<Response<ResponseBody>>
 }

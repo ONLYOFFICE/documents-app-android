@@ -29,6 +29,10 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
     companion object {
         val TAG = DocsGoogleDriveFragment::class.java.simpleName
 
+        const val KEY_UPLOAD = "KEY_UPLOAD"
+        const val KEY_UPDATE = "KEY_UPDATE"
+        const val KEY_MODIFIED = "EXTRA_IS_MODIFIED"
+
         fun newInstance(): DocsGoogleDriveFragment = DocsGoogleDriveFragment()
 
     }
@@ -68,6 +72,24 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
                 }
                 BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
                     onRefresh()
+                }
+                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let {
+                    if(data.getBooleanExtra(KEY_MODIFIED, false)) {
+                        presenter.upload(
+                            it,
+                            null,
+                            KEY_UPDATE
+                        )
+                    }
+                }
+                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let {
+                    presenter.upload(
+                        null,
+                        it,
+                        KEY_UPLOAD
+                    )
+                }.run {
+                    presenter.upload(data?.data, null, KEY_UPLOAD)
                 }
             }
         }
