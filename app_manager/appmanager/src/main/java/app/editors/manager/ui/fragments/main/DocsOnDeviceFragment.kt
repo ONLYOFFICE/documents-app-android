@@ -290,7 +290,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         actionBottomDialog?.let {
             it.onClickListener = this
             it.isLocal = true
-            it.show(requireFragmentManager(), ActionBottomDialog.TAG)
+            it.show(parentFragmentManager, ActionBottomDialog.TAG)
         }
     }
 

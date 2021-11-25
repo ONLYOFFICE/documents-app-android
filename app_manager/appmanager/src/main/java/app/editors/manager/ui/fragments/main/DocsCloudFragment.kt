@@ -39,11 +39,6 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             ?: throw RuntimeException("Cloud account can't be null")
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        lifecycle.addObserver(this)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
