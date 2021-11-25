@@ -133,7 +133,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
                 addFile(file)
                 setPlaceholderType(PlaceholderViews.Type.NONE)
                 viewState.onDialogClose()
-                viewState.onOpenLocalFile(file)
+                //viewState.onOpenLocalFile(file)
             }) { throwable: Throwable? -> fetchError(throwable) })
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
@@ -329,6 +329,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
                 .putString(UploadWork.KEY_FOLDER_ID, mModelExplorerStack.currentId)
                 .putString(UploadWork.KEY_FROM, uri.toString())
                 .putString(UploadWork.KEY_TAG, tag)
+                .putString(UploadWork.KEY_FILE_ID, mItemClicked?.id)
                 .build()
 
             val request = OneTimeWorkRequest.Builder(UploadWork::class.java)

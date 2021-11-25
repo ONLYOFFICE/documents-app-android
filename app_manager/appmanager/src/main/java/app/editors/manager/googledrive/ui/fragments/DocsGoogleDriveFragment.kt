@@ -31,6 +31,7 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
 
         const val KEY_UPLOAD = "KEY_UPLOAD"
         const val KEY_UPDATE = "KEY_UPDATE"
+        const val KEY_CREATE = "KEY_CREATE"
         const val KEY_MODIFIED = "EXTRA_IS_MODIFIED"
 
         fun newInstance(): DocsGoogleDriveFragment = DocsGoogleDriveFragment()

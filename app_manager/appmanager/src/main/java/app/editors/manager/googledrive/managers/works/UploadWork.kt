@@ -10,6 +10,7 @@ import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.getGoogleDriveServiceProvider
 import app.editors.manager.googledrive.mvp.models.request.CreateItemRequest
+import app.editors.manager.googledrive.ui.fragments.DocsGoogleDriveFragment.Companion.KEY_CREATE
 import app.editors.manager.googledrive.ui.fragments.DocsGoogleDriveFragment.Companion.KEY_UPDATE
 import app.editors.manager.googledrive.ui.fragments.DocsGoogleDriveFragment.Companion.KEY_UPLOAD
 import app.editors.manager.managers.receivers.UploadReceiver
@@ -32,6 +33,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
         const val KEY_FROM = "KEY_FROM"
         const val KEY_FOLDER_ID = "KEY_FOLDER_ID"
         const val KEY_TAG = "KEY_TAG"
+        const val KEY_FILE_ID = "KEY_FILE_ID"
         const val HEADER_LOCATION = "Location"
 
         private const val HEADER_NAME = "Content-Disposition"
@@ -45,6 +47,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
     private var file: DocumentFile? = null
     private var tag = ""
     private var fileName = ""
+    private var fileId: String? = null
 
     override fun doWork(): Result {
         getArgs()
@@ -53,7 +56,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
             KEY_UPLOAD -> {
                 fileName = file?.name!!
             }
-            KEY_UPDATE -> {
+            KEY_UPDATE, KEY_CREATE -> {
                 fileName = path?.let { FileUtils.getFileName(it, true) }!!
             }
         }
@@ -63,9 +66,13 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
             parents = listOf(folderId!!)
         )
 
-        val response = applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
+        val response = when(tag) {
+            KEY_UPLOAD, KEY_CREATE -> applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
+            KEY_UPDATE -> fileId?.let { applicationContext.getGoogleDriveServiceProvider().update(it).blockingGet() }
+            else -> applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
+        }
 
-        if(response.isSuccessful) {
+        if(response?.isSuccessful == true) {
             from?.let { from -> response.headers().get(HEADER_LOCATION)?.let { url -> uploadSession(url, from) } }
         } else {
             mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
@@ -169,6 +176,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
             from = Uri.parse(it.getString(KEY_FROM))
             folderId = it.getString(KEY_FOLDER_ID)
             tag = it.getString(KEY_TAG)!!
+            fileId = it.getString(KEY_FILE_ID)
         }
         file = from?.let { DocumentFile.fromSingleUri(applicationContext, it) }
         path = from?.let { PathUtils.getPath(applicationContext, it) }

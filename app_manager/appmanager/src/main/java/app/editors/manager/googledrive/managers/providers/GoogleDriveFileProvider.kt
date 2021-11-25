@@ -139,8 +139,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
     }
 
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
-        return Observable.just(1) {
-        }
+        return Observable.just(1)
             .map { _ ->
                 val title = body.title
                 val path = PATH_TEMPLATES + body.title.lowercase()
@@ -393,7 +392,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
                 val data = Data.Builder()
                     .putString(UploadWork.KEY_FOLDER_ID, folderId)
                     .putString(UploadWork.KEY_FROM, it.toString())
-                    .putString(UploadWork.KEY_TAG, DocsGoogleDriveFragment.KEY_UPDATE)
+                    .putString(UploadWork.KEY_TAG, DocsGoogleDriveFragment.KEY_CREATE)
                     .build()
 
                 val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
