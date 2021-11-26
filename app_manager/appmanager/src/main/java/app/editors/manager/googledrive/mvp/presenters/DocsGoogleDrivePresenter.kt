@@ -298,7 +298,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
 
 
     override fun createDownloadFile() {
-        if(mModelExplorerStack.countSelectedItems <= 1) {
+        if(mModelExplorerStack.countSelectedItems == 0) {
             if (mItemClicked is CloudFolder) {
                 viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
             } else if (mItemClicked is CloudFile) {
@@ -310,7 +310,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
     }
 
     override fun download(downloadTo: Uri) {
-        if(mModelExplorerStack.countSelectedItems <= 1) {
+        if(mModelExplorerStack.countSelectedItems == 0) {
             startDownload(downloadTo, mItemClicked)
         } else {
             val itemList: MutableList<Item> = (mModelExplorerStack.selectedFiles + mModelExplorerStack.selectedFolders).toMutableList()
