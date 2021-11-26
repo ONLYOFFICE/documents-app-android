@@ -19,10 +19,7 @@ import app.editors.manager.googledrive.mvp.models.request.ShareRequest
 import app.editors.manager.googledrive.mvp.views.DocsGoogleDriveView
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.explorer.Item
+import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -73,6 +70,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
                 role = "reader",
                 type = "anyone"
             )
+            val externalLink = if (mItemClicked is CloudFile) (mItemClicked as CloudFile).webUrl else if(mItemClicked is GoogleDriveFolder) (mItemClicked as GoogleDriveFolder).webUrl else ""
             mDisposable.add(
                 mItemClicked?.id?.let { id ->
                     (mFileProvider as GoogleDriveFileProvider).share(id, request)
@@ -80,7 +78,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
                             if(response) {
                                 KeyboardUtils.setDataToClipboard(
                                     mContext,
-                                    (mItemClicked as CloudFile).webUrl,
+                                    externalLink,
                                     mContext.getString(R.string.share_clipboard_external_link_label)
                                 )
                                 viewState.onDocsAccess(

@@ -94,9 +94,10 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
             for (item in items) {
                 if (item.mimeType.contains("folder")) {
-                    val folder = CloudFolder()
+                    val folder = GoogleDriveFolder()
                     folder.id = item.id
                     folder.title = item.name
+                    folder.webUrl = item.webViewLink
                     folder.parentId = item.parents[0]
                     folder.updated =
                         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.modifiedTime)

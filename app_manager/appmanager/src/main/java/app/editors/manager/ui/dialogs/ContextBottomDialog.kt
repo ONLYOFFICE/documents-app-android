@@ -128,7 +128,7 @@ class ContextBottomDialog : BaseBottomDialog() {
                         getString(R.string.list_context_delete)
                 }
                 binding.listExplorerContextDownload.isVisible = !state.isOneDrive
-                binding.listExplorerContextExternalLink.isVisible = state.isOneDrive
+                binding.listExplorerContextExternalLink.isVisible = state.isOneDrive || state.isGoogleDrive
                 binding.listExplorerContextCopy.isVisible = !state.isGoogleDrive
             } else {
                 /** File can downloaded */
