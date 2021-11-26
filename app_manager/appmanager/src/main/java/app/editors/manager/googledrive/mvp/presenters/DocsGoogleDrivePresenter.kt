@@ -15,6 +15,7 @@ import app.editors.manager.googledrive.managers.works.DownloadWork
 import app.editors.manager.googledrive.managers.providers.GoogleDriveFileProvider
 import app.editors.manager.googledrive.managers.utils.GoogleDriveUtils
 import app.editors.manager.googledrive.managers.works.UploadWork
+import app.editors.manager.googledrive.mvp.models.request.ShareRequest
 import app.editors.manager.googledrive.mvp.views.DocsGoogleDriveView
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
@@ -25,6 +26,9 @@ import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
+import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.onedrive.mvp.models.request.ExternalLinkRequest
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -35,6 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import java.util.*
@@ -61,6 +66,41 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
         downloadReceiver = DownloadReceiver()
     }
 
+
+    val externalLink : Unit
+        get() {
+            val request = ShareRequest(
+                role = "reader",
+                type = "anyone"
+            )
+            mDisposable.add(
+                mItemClicked?.id?.let { id ->
+                    (mFileProvider as GoogleDriveFileProvider).share(id, request)
+                        .subscribe({ response ->
+                            if(response) {
+                                KeyboardUtils.setDataToClipboard(
+                                    mContext,
+                                    (mItemClicked as CloudFile).webUrl,
+                                    mContext.getString(R.string.share_clipboard_external_link_label)
+                                )
+                                viewState.onDocsAccess(
+                                    true,
+                                    mContext.getString(R.string.share_clipboard_external_copied)
+                                )
+                            } else {
+                                viewState.onDocsAccess(
+                                    false,
+                                    mContext.getString(R.string.errors_client_forbidden)
+                                )
+                            }
+                        },
+                            {throwable: Throwable -> fetchError(throwable)}
+                        )
+                }!!
+            )
+
+
+        }
 
     fun getProvider() {
         mFileProvider?.let {

@@ -3,6 +3,7 @@ package app.editors.manager.googledrive.googledrive.api
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
 import app.editors.manager.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.googledrive.mvp.models.request.RenameRequest
+import app.editors.manager.googledrive.mvp.models.request.ShareRequest
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.ResponseBody
@@ -20,4 +21,5 @@ interface IGoogleDriveServiceProvider {
     fun create(request: CreateItemRequest): Single<GoogleDriveResponse>
     fun upload(request: CreateItemRequest, map: Map<String, String> = mapOf("uploadType" to "resumable")): Single<Response<ResponseBody>>
     fun update(fileId: String, map: Map<String, String> = mapOf("uploadType" to "resumable")): Single<Response<ResponseBody>>
+    fun share(fileId: String, request: ShareRequest): Single<Response<ResponseBody>>
 }

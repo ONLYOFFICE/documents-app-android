@@ -3,6 +3,7 @@ package app.editors.manager.googledrive.managers.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -14,6 +15,7 @@ import app.editors.manager.googledrive.managers.works.UploadWork
 import app.editors.manager.googledrive.mvp.models.GoogleDriveFile
 import app.editors.manager.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.googledrive.mvp.models.request.RenameRequest
+import app.editors.manager.googledrive.mvp.models.request.ShareRequest
 import app.editors.manager.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
 import app.editors.manager.googledrive.ui.fragments.DocsGoogleDriveFragment
 import app.editors.manager.managers.providers.BaseFileProvider
@@ -409,6 +411,15 @@ class GoogleDriveFileProvider: BaseFileProvider {
         requestExternal: RequestExternal
     ): Observable<ResponseExternal>? {
         TODO("Not yet implemented")
+    }
+
+    fun share(fileId: String, request: ShareRequest): Observable<Boolean> {
+        return Observable.fromCallable { api.share(fileId, request).blockingGet() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                response.isSuccessful
+            }
     }
 
     override fun terminate(): Observable<List<Operation>>? {

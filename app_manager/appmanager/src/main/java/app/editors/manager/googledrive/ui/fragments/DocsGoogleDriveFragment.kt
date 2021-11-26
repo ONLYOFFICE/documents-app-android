@@ -136,6 +136,12 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
                 getString(R.string.dialogs_common_cancel_button),
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
+            ContextBottomDialog.Buttons.EXTERNAL -> {
+                presenter.externalLink
+            }
+            ContextBottomDialog.Buttons.EDIT -> {
+                presenter.getFileInfo()
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package app.editors.manager.googledrive.googledrive.api
 import app.editors.manager.googledrive.googledrive.login.GoogleDriveResponse
 import app.editors.manager.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.googledrive.mvp.models.request.RenameRequest
+import app.editors.manager.googledrive.mvp.models.request.ShareRequest
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -88,6 +89,12 @@ class GoogleDriveServiceProvider(
         map: Map<String, String>
     ): Single<Response<ResponseBody>> {
         return googleDriveServiceProvider.update(fileId, map)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun share(fileId: String, request: ShareRequest): Single<Response<ResponseBody>> {
+        return googleDriveServiceProvider.share(fileId, request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

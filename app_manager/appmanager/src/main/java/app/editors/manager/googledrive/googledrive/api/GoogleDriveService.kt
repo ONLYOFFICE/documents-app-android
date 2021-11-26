@@ -4,6 +4,7 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.googledrive.mvp.models.GoogleDriveFile
 import app.editors.manager.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.googledrive.mvp.models.request.RenameRequest
+import app.editors.manager.googledrive.mvp.models.request.ShareRequest
 import app.editors.manager.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -48,6 +49,13 @@ interface GoogleDriveService {
     )
     @PATCH("drive/v3/files/{fileId}")
     fun rename(@Path(value = "fileId") fileId: String, @Body request: RenameRequest): Single<Response<GoogleDriveFile>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("drive/v3/files/{fileId}/permissions")
+    fun share(@Path(value = "fileId") fileId: String, @Body request: ShareRequest): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
