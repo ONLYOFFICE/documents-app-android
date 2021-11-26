@@ -1,5 +1,6 @@
 package app.documents.core.account
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
@@ -7,6 +8,9 @@ abstract class RecentDao {
 
     @Query("SELECT * FROM Recent")
     abstract suspend fun getRecents(): List<Recent>
+
+    @Query("SELECT * FROM Recent")
+    abstract fun getRecentsLiveData(): LiveData<List<Recent>>
 
     @Query("SELECT * FROM Recent WHERE ownerId =:ownerId")
     abstract suspend fun getRecentsByOwnerId(ownerId: String): List<Recent>

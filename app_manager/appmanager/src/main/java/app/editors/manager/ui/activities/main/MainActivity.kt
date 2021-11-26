@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
 import app.documents.core.account.CloudAccount
@@ -22,6 +23,7 @@ import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.viewModels.main.RecentViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewInfo
@@ -76,6 +78,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     @InjectPresenter
     lateinit var presenter: MainActivityPresenter
 
+    private val recentViewModel: RecentViewModel by viewModels()
     private lateinit var viewBinding: ActivityMainBinding
 
     private val navigationListener: (item: MenuItem) -> Boolean = { item ->
@@ -213,6 +216,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             intent.extras?.getString(URL_KEY)?.let {
                 showBrowser(it)
             }
+        }
+        recentViewModel.isRecent.observe(this) { recents ->
+            viewBinding.bottomNavigation.menu.getItem(0).isEnabled = recents.isNotEmpty()
         }
     }
 
