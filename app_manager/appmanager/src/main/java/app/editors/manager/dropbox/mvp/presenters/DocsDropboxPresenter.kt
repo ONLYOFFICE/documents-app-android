@@ -131,7 +131,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun createDownloadFile() {
-        if(mModelExplorerStack.countSelectedItems <= 1) {
+        if(mModelExplorerStack.countSelectedItems == 0) {
             if (mItemClicked is CloudFolder) {
                 viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
             } else if (mItemClicked is CloudFile) {
@@ -144,7 +144,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     override fun download(downloadTo: Uri) {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
-        if(mModelExplorerStack.countSelectedItems <= 1) {
+        if(mModelExplorerStack.countSelectedItems == 0) {
             startDownload(downloadTo, mItemClicked)
         } else {
             val itemList: MutableList<Item> = (mModelExplorerStack.selectedFiles + mModelExplorerStack.selectedFolders).toMutableList()
