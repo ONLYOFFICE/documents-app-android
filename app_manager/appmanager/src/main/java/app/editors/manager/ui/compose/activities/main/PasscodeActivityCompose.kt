@@ -34,7 +34,10 @@ enum class PasscodeScreens(val screen: String){
 
 @ExperimentalFoundationApi
 @Composable
-fun PasscodeActivity(preferenceTool: PreferenceTool) {
+fun PasscodeActivity(
+    preferenceTool: PreferenceTool,
+    backPressed: () -> Unit
+) {
 
     val navController = rememberNavController()
     val activity = LocalContext.current as PasscodeActivity
@@ -52,7 +55,7 @@ fun PasscodeActivity(preferenceTool: PreferenceTool) {
             EnterPasscode(navController = navController, viewModel)
         }
         composable(PasscodeScreens.Common.screen) {
-            CommonPasscode(navController = navController, viewModel)
+            CommonPasscode(navController = navController, viewModel, backPressed)
         }
         composable(PasscodeScreens.SetPasscode.screen) {
             SetPasscode(navController = navController, viewModel)
@@ -71,7 +74,10 @@ fun PasscodeActivity(preferenceTool: PreferenceTool) {
 
 @ExperimentalFoundationApi
 @Composable
-private fun EnterPasscode(navController: NavController, viewModel: SetPasscodeViewModel) {
+private fun EnterPasscode(
+    navController: NavController,
+    viewModel: SetPasscodeViewModel
+) {
 
     val fingerprintTitle = stringResource(R.string.app_settings_passcode_fingerprint_title)
     val fingerprintCancelButton = stringResource(R.string.dialogs_common_cancel_button)
@@ -132,16 +138,24 @@ private fun EnterPasscode(navController: NavController, viewModel: SetPasscodeVi
 
 
 @Composable
-private fun CommonPasscode(navController: NavController, viewModel: SetPasscodeViewModel) {
+private fun CommonPasscode(
+    navController: NavController,
+    viewModel: SetPasscodeViewModel,
+    backPressed: () -> Unit
+) {
     PasscodeLock(
         viewModel = viewModel,
-        navController = navController
+        navController = navController,
+        backPressed = backPressed
     )
 }
 
 @ExperimentalFoundationApi
 @Composable
-private fun SetPasscode(navController: NavController, viewModel: SetPasscodeViewModel) {
+private fun SetPasscode(
+    navController: NavController,
+    viewModel: SetPasscodeViewModel
+) {
     viewModel.resetConfirmCode()
 
     PasscodeOperation(
@@ -174,7 +188,10 @@ private fun SetPasscode(navController: NavController, viewModel: SetPasscodeView
 
 @ExperimentalFoundationApi
 @Composable
-private fun ConfirmPasscode(navController: NavController, viewModel: SetPasscodeViewModel) {
+private fun ConfirmPasscode(
+    navController: NavController,
+    viewModel: SetPasscodeViewModel
+) {
     viewModel.resetConfirmCode()
     val errorMessage = stringResource(R.string.app_settings_passcode_confirm_error)
 
@@ -218,7 +235,10 @@ private fun ConfirmPasscode(navController: NavController, viewModel: SetPasscode
 
 @ExperimentalFoundationApi
 @Composable
-private fun ChangePasscode(navController: NavController, viewModel: SetPasscodeViewModel) {
+private fun ChangePasscode(
+    navController: NavController,
+    viewModel: SetPasscodeViewModel
+) {
     viewModel.resetConfirmCode()
     val errorMessage = stringResource(R.string.app_settings_passcode_change_disable_error)
 
@@ -259,7 +279,10 @@ private fun ChangePasscode(navController: NavController, viewModel: SetPasscodeV
 
 @ExperimentalFoundationApi
 @Composable
-private fun DisablePasscode(navController: NavController, viewModel: SetPasscodeViewModel) {
+private fun DisablePasscode(
+    navController: NavController,
+    viewModel: SetPasscodeViewModel
+) {
     viewModel.resetConfirmCode()
     val errorMessage = stringResource(R.string.app_settings_passcode_change_disable_error)
 
