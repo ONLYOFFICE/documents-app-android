@@ -12,6 +12,7 @@ import androidx.work.WorkManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.managers.receivers.DownloadReceiver
@@ -243,7 +244,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             viewBinding.appBarToolbar.bind(Json.decodeFromString(it.getString(ACCOUNT_KEY) ?: ""))
         } ?: run {
             presenter.init()
-            viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+            accountOnline?.let {
+                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+            } ?: run {
+                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
+            }
         }
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
         if (intent.extras?.containsKey(KEY_CODE) == true) {

@@ -80,7 +80,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
                 }
             } ?: run {
                 withContext(Dispatchers.Main) {
-                    viewState.onRender(MainActivityState.CloudState())
+                    viewState.onRender(MainActivityState.OnDeviceState)
                 }
             }
         }
