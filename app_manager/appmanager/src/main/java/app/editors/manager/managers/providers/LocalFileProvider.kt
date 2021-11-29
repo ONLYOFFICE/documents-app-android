@@ -166,15 +166,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
 
     override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
 
-
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? {
-        val folder = File(folderId)
-        return Observable.fromIterable(uris).map { uri ->
-            val file = File(uri.path)
-            mLocalContentTools.moveFiles(file, folder, true)
-            1
-        }
-    }
+    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
 
     fun import(context: Context, folderId: String, uris: List<Uri?>):Observable<Int> {
         val folder = File(folderId)

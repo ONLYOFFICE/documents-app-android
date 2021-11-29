@@ -300,16 +300,16 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             }
         }
 
-        (mFileProvider as LocalFileProvider).import(mContext, mModelExplorerStack.currentId!!, uploadUris).subscribe {
+        mDisposable.add((mFileProvider as LocalFileProvider).import(mContext, mModelExplorerStack.currentId!!, uploadUris).subscribe {
             refresh()
             viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
             if(uploadUris.size == 1) {
                 openFromChooser(uploadUris[0])
             }
-        }
+        })
     }
 
-    fun openFromChooser(uri: Uri) {
+    private fun openFromChooser(uri: Uri) {
         val fileName = ContentResolverUtils.getName(mContext, uri)
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
         addRecent(uri)
