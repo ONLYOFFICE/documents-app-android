@@ -78,9 +78,12 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                         }
                     }
                 }
-                REQUEST_OPEN_FILE -> {
+                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> {
+                    data?.clipData?.let {
+                        presenter.upload(null, it)
+                    }
                     data?.data?.let {
-                        presenter.openFromChooser(it)
+                        presenter.upload(it, null)
                     }
                 }
             }
@@ -158,7 +161,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
             R.id.toolbar_selection_deselect -> presenter.deselectAll()
             R.id.toolbar_selection_select_all -> presenter.selectAll()
-            R.id.toolbar_item_open -> showSingleFragmentFilePicker()
         }
         return true
     }
@@ -220,6 +222,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             if (checkCameraPermission()) {
                 makePhoto()
             }
+        } else if(buttons == ActionBottomDialog.Buttons.IMPORT) {
+            presenter.uploadPermission()
         }
     }
 

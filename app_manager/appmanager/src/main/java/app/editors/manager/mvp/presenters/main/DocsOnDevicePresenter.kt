@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
@@ -19,6 +20,7 @@ import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -282,6 +284,28 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             }
         } catch (e: Exception) {
             catchTransferError(e)
+        }
+    }
+
+    override fun upload(uri: Uri?, uris: ClipData?) {
+        val uploadUris = mutableListOf<Uri>()
+        var index = 0
+
+        if(uri != null) {
+            uploadUris.add(uri)
+        } else if(uris != null) {
+            while(index != uris.itemCount) {
+                uploadUris.add(uris.getItemAt(index).uri)
+                index++
+            }
+        }
+
+        (mFileProvider as LocalFileProvider).import(mContext, mModelExplorerStack.currentId!!, uploadUris).subscribe {
+            refresh()
+            viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
+            if(uploadUris.size == 1) {
+                openFromChooser(uploadUris[0])
+            }
         }
     }
 

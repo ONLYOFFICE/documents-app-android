@@ -593,7 +593,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     sortItem = menu.findItem(R.id.toolbar_item_sort)
                     mainItem = menu.findItem(R.id.toolbar_item_main)
                     selectItem = menu.findItem(R.id.toolbar_main_item_options)
-                    openItem = menu.findItem(R.id.toolbar_item_open)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
                     searchView = (searchItem?.actionView as SearchView).apply {
                         setOnQueryTextListener(this@DocsBaseFragment)

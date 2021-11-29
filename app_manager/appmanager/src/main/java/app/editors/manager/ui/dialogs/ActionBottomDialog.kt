@@ -12,7 +12,7 @@ import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 class ActionBottomDialog : BaseBottomDialog() {
 
     enum class Buttons {
-        NONE, SHEET, PRESENTATION, DOC, FOLDER, PHOTO, UPLOAD, STORAGE
+        NONE, SHEET, PRESENTATION, DOC, FOLDER, PHOTO, UPLOAD, STORAGE, IMPORT
     }
 
     interface OnClickListener {
@@ -65,6 +65,7 @@ class ActionBottomDialog : BaseBottomDialog() {
             it.listExplorerActionStorage.setOnClickListener(Buttons.STORAGE)
             it.listExplorerActionSheet.setOnClickListener(Buttons.SHEET)
             it.listExplorerActionPresentation.setOnClickListener(Buttons.PRESENTATION)
+            it.listExplorerActionImport.setOnClickListener(Buttons.IMPORT)
         }
     }
 
@@ -87,8 +88,8 @@ class ActionBottomDialog : BaseBottomDialog() {
         viewBinding = ListExplorerActionMenuBinding.inflate(layoutInflater).apply {
             dialog.setContentView(root)
             dialog.setCanceledOnTouchOutside(true)
-            setViewState()
         }
+        setViewState()
         initListeners()
     }
 
@@ -101,7 +102,8 @@ class ActionBottomDialog : BaseBottomDialog() {
             it.listExplorerActionPresentation.isVisible = !isDocs || isLocal
             it.listExplorerActionSheet.isVisible = !isDocs || isLocal
 
-            it.listExplorerActionUpload.isVisible = isLocal && isWebDav
+            it.listExplorerActionUpload.isVisible = !isLocal || isWebDav
+            it.listExplorerActionImport.isVisible = isLocal
         }
     }
 
