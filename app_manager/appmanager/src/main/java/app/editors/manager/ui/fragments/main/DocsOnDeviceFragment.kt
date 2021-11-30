@@ -78,12 +78,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                         }
                     }
                 }
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> {
-                    data?.clipData?.let {
-                        presenter.upload(null, it)
-                    }
+                REQUEST_OPEN_FILE -> {
                     data?.data?.let {
-                        presenter.upload(it, null)
+                        presenter.openFromChooser(it)
                     }
                 }
             }
@@ -223,7 +220,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 makePhoto()
             }
         } else if(buttons == ActionBottomDialog.Buttons.IMPORT) {
-            presenter.uploadPermission()
+            showSingleFragmentFilePicker()
         }
     }
 

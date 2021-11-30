@@ -287,33 +287,16 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
-    override fun upload(uri: Uri?, uris: ClipData?) {
-        val uploadUris = mutableListOf<Uri>()
-        var index = 0
-
-        if(uri != null) {
-            uploadUris.add(uri)
-        } else if(uris != null) {
-            while(index != uris.itemCount) {
-                uploadUris.add(uris.getItemAt(index).uri)
-                index++
-            }
-        }
-
-        mDisposable.add((mFileProvider as LocalFileProvider).import(mContext, mModelExplorerStack.currentId!!, uploadUris).subscribe {
-            refresh()
-            viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
-            if(uploadUris.size == 1) {
-                openFromChooser(uploadUris[0])
-            }
-        })
-    }
-
-    private fun openFromChooser(uri: Uri) {
+    fun openFromChooser(uri: Uri) {
         val fileName = ContentResolverUtils.getName(mContext, uri)
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
-        addRecent(uri)
-        openFile(uri, ext)
+
+        mDisposable.add((mFileProvider as LocalFileProvider).import(mContext, mModelExplorerStack.currentId!!, listOf(uri)).subscribe {
+            refresh()
+            viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
+            addRecent(uri)
+            openFile(uri, ext)
+        })
     }
 
     private fun openFile(file: CloudFile) {
