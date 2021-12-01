@@ -18,6 +18,7 @@ public interface DocsOnDeviceView extends DocsBaseView {
     void onRemoveItems(List<Item> items);
     void onShowCamera(Uri photoUri);
     void onShowFolderChooser();
+    void onShowPortals();
     void onOpenMedia(OpenState.Media state);
 
     //Open file

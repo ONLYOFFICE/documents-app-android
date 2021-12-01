@@ -23,6 +23,7 @@ import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
+import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MediaActivity
@@ -341,6 +342,10 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onOpenMedia(state: OpenState.Media) {
         MediaActivity.show(this, state.explorer, state.isWebDav)
+    }
+
+    override fun onShowPortals() {
+        PortalsActivity.showPortals(this)
     }
 
     override fun setVisibilityActionButton(isShow: Boolean) {
