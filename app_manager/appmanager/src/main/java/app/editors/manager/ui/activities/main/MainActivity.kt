@@ -68,10 +68,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         private const val URL_KEY = "url"
         const val KEY_CODE = "code"
 
-        fun show(context: Context, isCode: Boolean = true) {
+        fun show(context: Context, isCode: Boolean? = true) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                putExtra(KEY_CODE, isCode)
+                isCode?.let { putExtra(KEY_CODE, isCode) }
             })
         }
     }
@@ -200,7 +200,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(lib.toolkit.base.R.style.NoActionBarTheme)
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
@@ -252,9 +251,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
         if (intent.extras?.containsKey(KEY_CODE) == true) {
-            presenter.checkOnBoarding(true)
+            presenter.checkPassCode(true)
         } else {
-            presenter.checkOnBoarding()
+            presenter.checkPassCode()
         }
     }
 

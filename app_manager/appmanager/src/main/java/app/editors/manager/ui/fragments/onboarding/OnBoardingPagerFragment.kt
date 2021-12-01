@@ -12,6 +12,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentOnBoardingPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import com.rd.animation.type.AnimationType
@@ -60,6 +61,7 @@ class OnBoardingPagerFragment : BaseAppFragment() {
     private fun finishWithOkCode() {
         requireActivity().setResult(Activity.RESULT_OK)
         requireActivity().finish()
+        MainActivity.show(requireContext(), null)
     }
 
     private fun init() {

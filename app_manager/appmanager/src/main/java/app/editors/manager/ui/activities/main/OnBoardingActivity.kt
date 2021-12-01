@@ -3,8 +3,7 @@ package app.editors.manager.ui.activities.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import app.editors.manager.R
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ActivityOnBoardingBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.OnBoardingActivity
@@ -14,6 +13,7 @@ class OnBoardingActivity : BaseAppActivity() {
     private var viewBinding: ActivityOnBoardingBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(lib.toolkit.base.R.style.NoActionBarTheme)
         super.onCreate(savedInstanceState)
         viewBinding = ActivityOnBoardingBinding.inflate(layoutInflater)
         setContentView(viewBinding?.root)
@@ -21,9 +21,14 @@ class OnBoardingActivity : BaseAppActivity() {
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        savedInstanceState ?: run {
-            showFragment(OnBoardingPagerFragment.newInstance(), null)
+        if (!appComponent.preference.onBoarding) {
+            savedInstanceState ?: run {
+                showFragment(OnBoardingPagerFragment.newInstance(), null)
+            }
+        } else {
+            MainActivity.show(this, null)
         }
+
     }
 
     companion object {
