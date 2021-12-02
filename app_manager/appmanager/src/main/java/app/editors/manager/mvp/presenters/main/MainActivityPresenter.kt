@@ -70,7 +70,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         disposable.dispose()
     }
 
-    fun init() {
+    fun init(isPortal: Boolean = false) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
                 cloudAccount = it
@@ -80,7 +80,11 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
                 }
             } ?: run {
                 withContext(Dispatchers.Main) {
-                    viewState.onRender(MainActivityState.OnDeviceState)
+                    if (isPortal) {
+                        viewState.onRender(MainActivityState.CloudState())
+                    } else {
+                        viewState.onRender(MainActivityState.OnDeviceState)
+                    }
                 }
             }
         }

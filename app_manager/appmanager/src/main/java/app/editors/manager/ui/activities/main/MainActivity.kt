@@ -182,7 +182,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                     }
                 }
                 REQUEST_ACTIVITY_PORTAL -> {
-                    presenter.init()
+                    presenter.init(true)
                 }
             }
             if (data != null && data.extras != null) {
