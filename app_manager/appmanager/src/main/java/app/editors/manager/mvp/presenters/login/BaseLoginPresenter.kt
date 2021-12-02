@@ -16,7 +16,6 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.mvp.models.account.AccountsSqlData
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseView
 import com.google.android.gms.auth.GoogleAuthUtil
@@ -25,6 +24,7 @@ import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.*
 import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getUrlWithoutScheme
 import lib.toolkit.base.managers.utils.StringUtils.isValidUrl
 import java.net.ConnectException
@@ -103,7 +103,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         val accountData = AccountData(
             portal = networkSettings.getPortal(),
             scheme = networkSettings.getScheme(),
-            displayName = user.displayName,
+            displayName = StringUtils.getHtmlString(user.displayName),
             userId = user.id,
             provider = provider,
             accessToken = accessToken,
@@ -128,7 +128,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                 login = login,
                 portal = portal,
                 scheme = networkSettings.getScheme(),
-                name = user.displayName,
+                name = StringUtils.getHtmlString(user.displayName),
                 provider = provider,
                 avatarUrl = user.avatarMedium,
                 serverVersion = networkSettings.serverVersion,
