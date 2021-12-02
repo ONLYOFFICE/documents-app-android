@@ -4,6 +4,8 @@
     package="app.editors.manager"
     android:installLocation="internalOnly">
 
+<!--    <permission android:name="com.onlyoffice.documents.ACCOUNTS" />-->
+
     <uses-permission android:name="${applicationId}.permission.WRITE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -201,8 +203,8 @@
             android:name=".ui.activities.main.PasscodeActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
@@ -235,8 +237,8 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".ui.activities.main.CloudsActivity"
-            android:theme="@style/NoActionBarTheme"
             android:configChanges="orientation|screenSize"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".ui.activities.main.ProfileActivity"
@@ -246,6 +248,7 @@
             android:name=".ui.activities.main.SettingsActivity"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
+
         <service
             android:name=".managers.services.AuthenticatorService"
             android:exported="false">
@@ -259,7 +262,7 @@
 
         <service
             android:name=".managers.services.MessageService"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
