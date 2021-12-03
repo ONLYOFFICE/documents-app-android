@@ -335,7 +335,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun onUploadError(path: String?, info: String, file: String) {
         viewState.onSnackBar(info)
-        //getViewState().onDeleteUploadFile(file);
+        viewState.onDeleteUploadFile(file)
     }
 
     override fun onUploadComplete(
