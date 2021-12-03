@@ -39,6 +39,7 @@ import app.documents.core.account.RecentDao;
 import app.documents.core.network.ApiContract;
 import app.documents.core.settings.NetworkSettings;
 import app.editors.manager.R;
+import app.editors.manager.app.App;
 import app.editors.manager.managers.exceptions.NoConnectivityException;
 import app.editors.manager.managers.providers.BaseFileProvider;
 import app.editors.manager.managers.providers.CloudFileProvider;
@@ -284,7 +285,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             if (id != null) {
 
                 mFilteringValue = value;
-                if(!(mFileProvider instanceof CloudFileProvider)) {
+                if(!(mFileProvider instanceof CloudFileProvider) || App.getApp().getAppComponent().getAccountOnline().isPersonal()) {
                     mDisposable.add(mFileProvider.getFiles(id, getArgs(value))
                             .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
                             .subscribe(explorer -> {
