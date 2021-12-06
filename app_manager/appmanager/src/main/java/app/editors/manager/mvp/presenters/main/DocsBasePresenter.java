@@ -241,7 +241,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             } else if(mIsFilteringMode && mFileProvider instanceof CloudFileProvider) {
                 mDisposable.add(((CloudFileProvider)mFileProvider).search(mFilteringValue)
                         .subscribe(items -> {
-                            mModelExplorerStack.refreshStack(getSearchExplorer(items, id));
+                            mModelExplorerStack.refreshStack(getSearchExplorer(items));
                             setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
                             updateViewsState();
                             getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
@@ -298,7 +298,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 } else {
                     mDisposable.add(((CloudFileProvider)mFileProvider).search(value)
                             .subscribe(items -> {
-                                mModelExplorerStack.setFilter(getSearchExplorer(items, id));
+                                mModelExplorerStack.setFilter(getSearchExplorer(items));
                                 setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
                                 updateViewsState();
                                 getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
@@ -312,23 +312,22 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
 
-    private Explorer getSearchExplorer(String items, String id) throws JSONException {
+    private Explorer getSearchExplorer(String items) throws JSONException {
         List<CloudFile> files = new ArrayList();
         List<CloudFolder> folders = new ArrayList();
 
-        Current current = new Current();
-
-        current.setId(id);
-
         Explorer explorer = new Explorer();
+        explorer.setCurrent(mModelExplorerStack.last().getCurrent());
+
         for(Item item : getSearchResult(items)) {
-            if(item instanceof CloudFile) {
-                files.add((CloudFile) item);
-            } else {
-                folders.add((CloudFolder)item);
+            if( Integer.valueOf(item.getRootFolderType()) == mModelExplorerStack.getRootFolderType()) {
+                if (item instanceof CloudFile) {
+                    files.add((CloudFile) item);
+                } else {
+                    folders.add((CloudFolder) item);
+                }
             }
         }
-        explorer.setCurrent(current);
         explorer.setFiles(files);
         explorer.setFolders(folders);
         return explorer;
