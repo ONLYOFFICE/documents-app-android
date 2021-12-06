@@ -27,6 +27,11 @@ class ActionBottomDialog : BaseBottomDialog() {
     var isWebDav = false
     var onClickListener: OnClickListener? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         restoreValues(savedInstanceState)
         return super.onCreateDialog(savedInstanceState)

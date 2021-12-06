@@ -46,6 +46,11 @@ class ContextBottomDialog : BaseBottomDialog() {
             setItemSharedState(state.isShared)
         }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         restoreValues(savedInstanceState)
         return super.onCreateDialog(savedInstanceState)
@@ -58,8 +63,8 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     @SuppressLint("RestrictedApi")
     override fun setupDialog(dialog: Dialog, style: Int) {
-        init(dialog)
         super.setupDialog(dialog, style)
+        init(dialog)
     }
 
     override fun onDestroyView() {
