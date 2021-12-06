@@ -52,6 +52,7 @@ import app.editors.manager.managers.works.UploadWork;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.CloudFolder;
+import app.editors.manager.mvp.models.explorer.Current;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.explorer.Operation;
@@ -240,7 +241,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             } else if(mIsFilteringMode && mFileProvider instanceof CloudFileProvider) {
                 mDisposable.add(((CloudFileProvider)mFileProvider).search(mFilteringValue)
                         .subscribe(items -> {
-                            mModelExplorerStack.refreshStack(getSearchExplorer(items));
+                            mModelExplorerStack.refreshStack(getSearchExplorer(items, id));
                             setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
                             updateViewsState();
                             getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
@@ -297,7 +298,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 } else {
                     mDisposable.add(((CloudFileProvider)mFileProvider).search(value)
                             .subscribe(items -> {
-                                mModelExplorerStack.setFilter(getSearchExplorer(items));
+                                mModelExplorerStack.setFilter(getSearchExplorer(items, id));
                                 setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
                                 updateViewsState();
                                 getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
@@ -311,9 +312,14 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
 
-    private Explorer getSearchExplorer(String items) throws JSONException {
+    private Explorer getSearchExplorer(String items, String id) throws JSONException {
         List<CloudFile> files = new ArrayList();
         List<CloudFolder> folders = new ArrayList();
+
+        Current current = new Current();
+
+        current.setId(id);
+
         Explorer explorer = new Explorer();
         for(Item item : getSearchResult(items)) {
             if(item instanceof CloudFile) {
@@ -322,6 +328,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 folders.add((CloudFolder)item);
             }
         }
+        explorer.setCurrent(current);
         explorer.setFiles(files);
         explorer.setFolders(folders);
         return explorer;
