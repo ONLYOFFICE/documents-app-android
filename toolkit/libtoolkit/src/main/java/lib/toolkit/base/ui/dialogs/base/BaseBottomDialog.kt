@@ -59,8 +59,10 @@ abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterfac
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setCanceledOnTouchOutside(true)
             setOnShowListener(this@BaseBottomDialog)
-            if (isTablet()) {
-                setVisibleView(window?.decorView)
+            if (isAdded) {
+                if (isTablet()) {
+                    setVisibleView(window?.decorView)
+                }
             }
         }
     }
