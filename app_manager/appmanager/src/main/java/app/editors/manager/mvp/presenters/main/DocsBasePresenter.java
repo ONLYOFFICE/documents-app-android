@@ -225,7 +225,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 .subscribe(this::loadSuccess, this::fetchError));
     }
 
-    public boolean refresh() {
+    public boolean refresh(){
         setPlaceholderType(PlaceholderViews.Type.LOAD);
         final String id = mModelExplorerStack.getCurrentId();
         if (id != null) {
@@ -241,7 +241,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             } else if(mIsFilteringMode && mFileProvider instanceof CloudFileProvider) {
                 mDisposable.add(((CloudFileProvider)mFileProvider).search(mFilteringValue)
                         .subscribe(items -> {
-                            mModelExplorerStack.refreshStack(getSearchExplorer(items));
+
+                            try {
+                                mModelExplorerStack.refreshStack(getSearchExplorer(items));
+                            } catch (JSONException e) {
+                                throw e;
+                            }
+
                             setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
                             updateViewsState();
                             getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
@@ -279,7 +285,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return refresh();
     }
 
-    public boolean filter(@NonNull final String value, boolean isSubmitted) {
+    public boolean filter(@NonNull final String value, boolean isSubmitted){
         if (mIsFilteringMode) {
             mIsSubmitted = isSubmitted;
             final String id = mModelExplorerStack.getCurrentId();
@@ -298,7 +304,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 } else {
                     mDisposable.add(((CloudFileProvider)mFileProvider).search(value)
                             .subscribe(items -> {
-                                mModelExplorerStack.setFilter(getSearchExplorer(items));
+
+                                try {
+                                    mModelExplorerStack.setFilter(getSearchExplorer(items));
+                                } catch (JSONException e) {
+                                    throw e;
+                                }
+
                                 setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
                                 updateViewsState();
                                 getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
@@ -320,7 +332,10 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         explorer.setCurrent(mModelExplorerStack.last().getCurrent());
 
         for(Item item : getSearchResult(items)) {
-            if( Integer.valueOf(item.getRootFolderType()) == mModelExplorerStack.getRootFolderType()) {
+            if(
+                    Integer.valueOf(item.getRootFolderType()) == mModelExplorerStack.getRootFolderType() &&
+                    item.getTitle().toLowerCase().contains(mFilteringValue)
+            ) {
                 if (item instanceof CloudFile) {
                     files.add((CloudFile) item);
                 } else {
