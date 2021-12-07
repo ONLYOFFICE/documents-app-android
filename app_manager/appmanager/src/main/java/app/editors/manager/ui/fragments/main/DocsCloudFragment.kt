@@ -218,7 +218,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override val isActivePage: Boolean
         get() = isResumed
 
-    override val presenter: DocsBasePresenter<out DocsBaseView?>
+    override val presenter: DocsBasePresenter<out DocsBaseView>
         get() = cloudPresenter
 
     override val isWebDav: Boolean

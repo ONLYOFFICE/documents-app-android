@@ -121,7 +121,7 @@ class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener 
     }
 
     private fun getDocs() {
-        webDavPresenter.setFoldersMode(true)
+        webDavPresenter.isFoldersMode = true
         webDavPresenter.getProvider()
     }
 
