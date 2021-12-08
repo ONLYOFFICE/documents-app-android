@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
@@ -262,6 +263,24 @@ object ActivitiesUtils {
     @JvmStatic
     fun releaseExternalStoragePermission(context: Context, uri: Uri, flag: Int) {
         context.contentResolver.releasePersistableUriPermission(uri, flag)
+    }
+}
+
+class CreateDocument : ActivityResultContract<String, Uri?>() {
+
+    override fun createIntent(context: Context, input: String): Intent {
+        return Intent(Intent.ACTION_CREATE_DOCUMENT)
+            .setType(StringUtils.getMimeTypeFromPath(input))
+            .putExtra(Intent.EXTRA_TITLE, input)
+    }
+
+    final override fun getSynchronousResult(
+        context: Context,
+        input: String
+    ): SynchronousResult<Uri?>? = null
+
+    final override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+        return intent.takeIf { resultCode == Activity.RESULT_OK }?.data
     }
 }
 
