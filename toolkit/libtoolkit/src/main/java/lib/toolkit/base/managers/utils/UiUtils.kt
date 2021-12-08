@@ -22,6 +22,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -611,7 +612,8 @@ object UiUtils {
         description: String? = null,
         acceptListener: (value: String) -> Unit,
         acceptTitle: String? = "Ok",
-        cancelTitle: String? = "Cancel"
+        cancelTitle: String? = "Cancel",
+        requireValue: Boolean = false
     ) {
         val container = FrameLayout(context)
         val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -640,6 +642,7 @@ object UiUtils {
             }
             .setView(container)
             .show()
+            .apply { if (requireValue) text.requireNotEmpty(getButton(AlertDialog.BUTTON_POSITIVE)) }
 
         KeyboardUtils.showKeyboard(text)
     }
@@ -674,6 +677,11 @@ object UiUtils {
             Configuration.UI_MODE_NIGHT_UNDEFINED -> false
             else -> false
         }
+    }
+
+    private fun EditText.requireNotEmpty(disableButton: Button) {
+        disableButton.isEnabled = text.trim().isNotEmpty()
+        doAfterTextChanged { disableButton.isEnabled = text.trim().isNotEmpty() }
     }
 
 }
