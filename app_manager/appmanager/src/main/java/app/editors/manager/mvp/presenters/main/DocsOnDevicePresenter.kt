@@ -8,6 +8,7 @@ import app.documents.core.account.Recent
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.webDavApi
 import app.editors.manager.managers.providers.LocalFileProvider
 import app.editors.manager.managers.providers.ProviderError
@@ -393,10 +394,16 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun upload() {
-        if (mItemClicked != null) {
-            val uri = Uri.fromFile(File(mItemClicked!!.id))
-            uri?.let { uploadToMy(it) }
+        mItemClicked?.let { item ->
+            mContext.accountOnline?.let {
+                Uri.fromFile(File(item.id))?.let { uri ->
+                    uploadToMy(uri)
+                }
+            } ?: run {
+                viewState.onShowPortals()
+            }
         }
+
     }
 
     @SuppressLint("MissingPermission")
