@@ -218,9 +218,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                             disposable.add(
                                 observable.subscribe({ items ->
                                     stack.refreshStack(getSearchExplorer(items))
-                                    viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
                                     setPlaceholderType( if (stack.isListEmpty)
                                         PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
+                                    updateViewsState()
+                                    viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
                                 }, this::fetchError)
                             )
                         }
@@ -679,41 +680,30 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun download(downloadTo: Uri) {
-        modelExplorerStack?.countSelectedItems?.let { count ->
-            if (preferenceTool.uploadWifiState && !isWifiEnable(context)) {
-                viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
-            } else if (count > 0) {
-                downloadSelected(downloadTo)
-            }
-            return
+        if (preferenceTool.uploadWifiState && !isWifiEnable(context)) {
+            viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
         }
-
-        itemClicked?.let { item ->
-            when (item) {
-                is CloudFolder -> {
-                    bulkDownload(null, listOf(item), downloadTo)
-                }
-                is CloudFile -> {
-                    startDownloadWork(downloadTo, item.id, item.viewUrl, null)
+        else if (modelExplorerStack?.countSelectedItems!! > 0) {
+            downloadSelected(downloadTo)
+        } else {
+            itemClicked?.let { item ->
+                when (item) {
+                    is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
+                    is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
                 }
             }
         }
     }
 
     private fun downloadSelected(downloadTo: Uri) {
-        modelExplorerStack?.let { stack ->
-            val files = stack.selectedFiles
-            val folders = stack.selectedFolders
+        val files = modelExplorerStack?.selectedFiles
+        val folders = modelExplorerStack?.selectedFolders
 
-            if (fileProvider is WebDavFileProvider && folders.isNotEmpty()) {
-                viewState.onError(context.getString(R.string.download_manager_folders_download))
-            } else {
-                bulkDownload(files, folders, downloadTo)
-            }
-
-            if (isSelectionMode) {
-                getBackStack()
-            }
+        if (fileProvider is WebDavFileProvider && folders?.isNotEmpty() == true) {
+            viewState.onError(context.getString(R.string.download_manager_folders_download))
+        } else {
+            bulkDownload(files, folders, downloadTo)
+            deselectAll()
         }
     }
 
@@ -1228,7 +1218,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun deselectAll() {
         viewState.onItemsSelection(modelExplorerStack?.setSelection(false).toString())
-        viewState.onStateUpdateSelection(true)
+        viewState.onStateUpdateSelection(false)
         getBackStack()
     }
 
@@ -1264,7 +1254,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    // TODO: 06.12.2021
     protected val isSelectedItemsEmpty: Boolean
         get() = modelExplorerStack?.let { stack ->
             if (stack.countSelectedItems <= 0) {
