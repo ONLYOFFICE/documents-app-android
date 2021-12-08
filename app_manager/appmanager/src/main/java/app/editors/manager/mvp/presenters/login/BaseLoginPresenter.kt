@@ -103,7 +103,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         val accountData = AccountData(
             portal = networkSettings.getPortal(),
             scheme = networkSettings.getScheme(),
-            displayName = StringUtils.getHtmlString(user.displayName),
+            displayName = user.getName(),
             userId = user.id,
             provider = provider,
             accessToken = accessToken,
@@ -128,7 +128,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                 login = login,
                 portal = portal,
                 scheme = networkSettings.getScheme(),
-                name = StringUtils.getHtmlString(user.displayName),
+                name = user.getName(),
                 provider = provider,
                 avatarUrl = user.avatarMedium,
                 serverVersion = networkSettings.serverVersion,
