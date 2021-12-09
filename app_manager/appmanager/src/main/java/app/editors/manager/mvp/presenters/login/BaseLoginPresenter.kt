@@ -137,7 +137,10 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                 isOnline = true,
                 isAdmin = user.isAdmin,
                 isVisitor = user.isVisitor
-            )
+            ).apply {
+                this.token = token.token ?: ""
+                this.password = password
+            }
             accountDao.addAccount(newAccount)
             withContext(Dispatchers.Main) {
                 onAccountCreateSuccess(newAccount)
