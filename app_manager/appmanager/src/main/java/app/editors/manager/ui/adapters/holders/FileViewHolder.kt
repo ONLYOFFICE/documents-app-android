@@ -47,6 +47,7 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             listExplorerFileName.text = file.title
             listExplorerFileInfo.text = filesInfo
             listExplorerFileContext.isVisible = true
+            listExplorerFileFavorite.isVisible = file.favorite
 
             viewIconSelectableLayout.viewIconSelectableImage.background = null
             viewIconSelectableLayout.viewIconSelectableMask.background = null
