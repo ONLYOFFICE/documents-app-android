@@ -168,10 +168,10 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
 
     override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
 
-    fun import(context: Context, folderId: String, uris: List<Uri?>):Observable<Int> {
+    fun import(context: Context, folderId: String, uri: Uri?):Observable<Int> {
         val folder = File(folderId)
-        return Observable.fromIterable(uris).map { uri ->
-            val path = PathUtils.getPath(context, uri)
+        return Observable.just(uri).map { file ->
+            val path = PathUtils.getPath(context, file)
             val file = File(Uri.parse(path).path)
             mLocalContentTools.moveFiles(file, folder, true)
             1
