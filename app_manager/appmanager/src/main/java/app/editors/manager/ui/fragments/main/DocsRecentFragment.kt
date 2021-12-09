@@ -126,6 +126,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         if (isFilter) {
             activity?.setAppBarStates(false)
             searchView?.setQuery(filterValue, true)
+            filterValue = ""
         } else {
             activity?.setAppBarStates(false)
             activity?.showNavigationButton(false)
