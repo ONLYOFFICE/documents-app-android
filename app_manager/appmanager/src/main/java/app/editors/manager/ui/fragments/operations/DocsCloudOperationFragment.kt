@@ -81,9 +81,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
         getDocs()
     }
 
-    override fun onRemoveItemFromFavorites() {
-        //stub
-    }
+    override fun onUpdateItemFavorites() { }
 
     override fun onActionClick() {
         when (operationType) {

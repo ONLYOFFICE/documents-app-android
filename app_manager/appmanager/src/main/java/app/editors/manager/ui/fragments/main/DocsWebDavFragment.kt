@@ -127,9 +127,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         setActionBarTitle(title)
     }
 
-    override fun onRemoveItemFromFavorites() {
-        //stub
-    }
+    override fun onUpdateItemFavorites() { }
 
     override fun onActionDialog() {
         actionBottomDialog?.isLocal = true

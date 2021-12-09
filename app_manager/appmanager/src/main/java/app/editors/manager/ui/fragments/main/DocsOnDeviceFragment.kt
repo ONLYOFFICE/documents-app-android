@@ -213,7 +213,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         setActionBarTitle(title)
     }
 
-    override fun onRemoveItemFromFavorites() {}
+    override fun onUpdateItemFavorites() { }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
         super.onActionButtonClick(buttons)

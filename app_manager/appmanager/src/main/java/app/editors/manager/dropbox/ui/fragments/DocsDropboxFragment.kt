@@ -201,8 +201,6 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
         presenter.getProvider()
     }
 
-    override fun onRemoveItemFromFavorites() {
-        TODO("Not yet implemented")
-    }
+    override fun onUpdateItemFavorites() { }
 
 }

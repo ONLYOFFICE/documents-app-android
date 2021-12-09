@@ -360,9 +360,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun onRemoveItemFromFavorites() {
-
-    }
+    override fun onUpdateItemFavorites() { }
 
     override val isWebDav: Boolean
         get() = false

@@ -145,7 +145,7 @@
 
                     <ImageView
                         style="@style/ContextListImage"
-                        app:srcCompat="@drawable/ic_list_context_not_favorites"
+                        app:srcCompat="@drawable/ic_favorites_outline"
                         tools:ignore="ContentDescription" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -159,8 +159,8 @@
                     android:visibility="gone">
 
                     <ImageView
-                        style="@style/ContextListImage"
-                        app:srcCompat="@drawable/ic_list_context_favorites"
+                        style="@style/ContextListImage.Favorite"
+                        app:srcCompat="@drawable/ic_favorites_fill"
                         tools:ignore="ContentDescription" />
 
                     <com.google.android.material.textview.MaterialTextView

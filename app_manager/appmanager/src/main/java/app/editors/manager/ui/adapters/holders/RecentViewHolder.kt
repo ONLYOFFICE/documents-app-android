@@ -8,6 +8,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerFilesBinding
 import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.isVisible
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import lib.toolkit.base.managers.utils.StringUtils.getFormattedSize
 import lib.toolkit.base.managers.utils.TimeUtils.getWeekDate
@@ -30,6 +31,7 @@ class RecentViewHolder(
                     getFormattedSize(view.context, recent.size)
             listExplorerFileName.text = recent.name
             listExplorerFileInfo.text = info
+            listExplorerFileFavorite.isVisible = false
             listExplorerFileLayout.setOnClickListener {
                 itemListener?.invoke(recent, absoluteAdapterPosition)
             }
