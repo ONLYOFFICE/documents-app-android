@@ -189,13 +189,13 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
             when (tag) {
                 TAG_DIALOG_RATE_FIRST -> {
                     preferenceTool.isRateOn = false
+                    viewState.onDialogClose()
                     viewState.onShowEditMultilineDialog(
                         context.getString(R.string.dialogs_edit_feedback_rate_title),
                         context.getString(R.string.dialogs_edit_feedback_rate_hint),
                         context.getString(R.string.dialogs_edit_feedback_rate_accept),
                         context.getString(R.string.dialogs_question_accept_no_thanks), TAG_DIALOG_RATE_FEEDBACK
                     )
-                    return
                 }
                 TAG_DIALOG_RATE_SECOND -> {
                     preferenceTool.isRateOn = false
@@ -266,7 +266,11 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let { account ->
                 Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query)).let { data ->
-                    if (data.portal?.equals(account.portal, ignoreCase = true) == true && data.email?.equals(account.login, ignoreCase = true) == true) {
+                    if (data.portal?.equals(
+                            account.portal,
+                            ignoreCase = true
+                        ) == true && data.email?.equals(account.login, ignoreCase = true) == true
+                    ) {
                         withContext(Dispatchers.Main) {
                             viewState.openFile(account, Json.encodeToString(data))
                         }

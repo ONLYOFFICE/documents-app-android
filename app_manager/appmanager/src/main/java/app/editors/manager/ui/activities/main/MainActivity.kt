@@ -386,11 +386,15 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun onQuestionDialog(title: String, tag: String, accept: String, cancel: String, question: String?) {
-        showQuestionDialog(title, tag, accept, cancel, question)
+        viewBinding.root.postDelayed({
+            showQuestionDialog(title, tag, accept, cancel, question)
+        }, 150)
     }
 
     override fun onShowEditMultilineDialog(title: String, hint: String, accept: String, cancel: String, tag: String) {
-        showEditMultilineDialog(title, hint, accept, cancel, tag)
+        viewBinding.root.postDelayed({
+            showEditMultilineDialog(title, hint, accept, cancel, tag)
+        }, 150)
     }
 
     override fun onShowPlayMarket(releaseId: String) {
