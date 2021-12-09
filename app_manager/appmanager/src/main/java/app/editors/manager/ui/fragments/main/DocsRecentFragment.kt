@@ -6,11 +6,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.account.Recent
-import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
@@ -96,12 +94,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         super.onPrepareOptionsMenu(menu)
         setMenuSearchEnabled(true)
         mainItem?.isVisible = false
-        sortItem?.let {
-            it.isVisible = true
-            it.isEnabled = true
-            it.subMenu.findItem(R.id.toolbar_sort_item_owner).isVisible = false
-            //mSortItem.getSubMenu().findItem(R.id.toolbar_sort_item_date_update).setChecked(true);
-        }
+        sortItem?.isVisible = false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -164,77 +157,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         presenter.loadMore(adapter?.itemCount)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        menu?.let { menu ->
-            val isAscending = menu.findItem(R.id.toolbar_sort_item_asc).isChecked
-            when (item.itemId) {
-                R.id.toolbar_item_sort -> {
-                    activity?.setAppBarStates(false)
-                    activity?.showNavigationButton(false)
-                }
-                R.id.toolbar_sort_item_title -> {
-                    if (item.isChecked) {
-                        presenter.reverseSortOrder(adapter!!.itemList)
-                    } else {
-                        presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, isAscending)
-                    }
-                    item.isChecked = true
-                }
-                R.id.toolbar_sort_item_date_update -> {
-                    if (item.isChecked) {
-                        presenter.reverseSortOrder(adapter!!.itemList)
-                    } else {
-                        presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, isAscending)
-                    }
-                    item.isChecked = true
-                }
-                R.id.toolbar_sort_item_owner -> {
-                    if (item.isChecked) {
-                        presenter.reverseSortOrder(adapter!!.itemList)
-                    } else {
-                        presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, isAscending)
-                    }
-                    item.isChecked = true
-                }
-                R.id.toolbar_sort_item_size -> {
-                    if (item.isChecked) {
-                        presenter.reverseSortOrder(adapter!!.itemList)
-                    } else {
-                        presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, isAscending)
-                    }
-                    item.isChecked = true
-                }
-                R.id.toolbar_sort_item_type -> {
-                    if (item.isChecked) {
-                        presenter.reverseSortOrder(adapter!!.itemList)
-                    } else {
-                        presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, isAscending)
-                    }
-                    item.isChecked = true
-                }
-                R.id.toolbar_sort_item_asc, R.id.toolbar_sort_item_desc -> presenter.reverseList(
-                    adapter!!.itemList,
-                    isAscending
-                )
-                else -> {}
-            }
-        }
-        item.isChecked = true
-        return false
-    }
-
-    override fun onReverseSortOrder(itemList: List<Recent>) {
-        adapter?.setData(itemList)
-        adapter?.notifyDataSetChanged()
-        menu?.let { menu ->
-            if (menu.findItem(R.id.toolbar_sort_item_desc)?.isChecked == true) {
-                menu.findItem(R.id.toolbar_sort_item_asc)?.isChecked = true
-            } else {
-                menu.findItem(R.id.toolbar_sort_item_desc)?.isChecked = true
-            }
-        }
-    }
-
     override fun updateFiles(files: List<Recent>) {
         if (files.isNotEmpty()) {
             adapter?.itemList?.let {
@@ -252,8 +174,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     private fun updateMenu(isEnable: Boolean) {
-        if (menu != null && sortItem != null && searchItem != null && deleteItem != null) {
-            sortItem?.isEnabled = isEnable
+        if (menu != null && searchItem != null && deleteItem != null) {
             searchItem?.isEnabled = isEnable
             deleteItem?.isVisible = isEnable
         }

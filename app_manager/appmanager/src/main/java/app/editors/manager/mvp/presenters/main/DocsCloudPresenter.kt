@@ -205,7 +205,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     isLocal = false,
                     isWebDav = account.isWebDav,
                     date = Date().time,
-                    ownerId = account.id
+                    ownerId = account.id,
+                    source = account.portal
                 )
             )
         }

@@ -26,9 +26,11 @@ class RecentViewHolder(
     @SuppressLint("SetTextI18n")
     fun bind(recent: Recent) {
         with(viewBinding) {
-            val info = getWeekDate(Date(recent.date)) + App.getApp()
-                .getString(R.string.placeholder_point) +
-                    getFormattedSize(view.context, recent.size)
+            val info = when {
+                recent.isLocal -> "This device"
+                else -> recent.source
+            }
+
             listExplorerFileName.text = recent.name
             listExplorerFileInfo.text = info
             listExplorerFileFavorite.isVisible = false

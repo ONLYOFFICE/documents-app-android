@@ -150,7 +150,8 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                         isLocal = false,
                         isWebDav = true,
                         date = Date().time,
-                        ownerId = it.id
+                        ownerId = it.id,
+                        source = it.portal
                     )
                 )
             }

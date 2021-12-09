@@ -103,7 +103,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     fun getRecentFiles() {
         CoroutineScope(Dispatchers.Default).launch {
             val list = recentDao.getRecents().filter { recent -> checkFiles(recent) }
-                .sortedByDescending { it.date }
             withContext(Dispatchers.Main) {
                 viewState.onRender(RecentState.RenderList(list))
             }
@@ -193,105 +192,10 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 //        mAccountsSqlData.getRecent()
     }
 
-    override fun sortBy(parameters: String, isAscending: Boolean): Boolean {
-        mPreferenceTool.sortBy = parameters
-        setOrder(isAscending)
-        when (parameters) {
-            ApiContract.Parameters.VAL_SORT_BY_CREATED -> sortByCreated()
-            ApiContract.Parameters.VAL_SORT_BY_TITLE -> sortByName(isAscending)
-            ApiContract.Parameters.VAL_SORT_BY_OWNER -> sortByOwner(isAscending)
-            ApiContract.Parameters.VAL_SORT_BY_UPDATED -> sortByUpdated(isAscending)
-            ApiContract.Parameters.VAL_SORT_BY_TYPE -> sortByType(isAscending)
-            ApiContract.Parameters.VAL_SORT_BY_SIZE -> sortBySize(isAscending)
-        }
-        return false
-    }
-
-    fun reverseSortOrder(itemList: List<Recent>) {
-        viewState.onReverseSortOrder(itemList.reversed())
-    }
-
-    private fun sortByCreated() {
-        CoroutineScope(Dispatchers.Default).launch {
-            val list = recentDao.getRecents().reversed()
-            withContext(Dispatchers.Main) {
-                viewState.updateFiles(list)
-            }
-        }
-    }
-
-    private fun sortBySize(isAscending: Boolean) {
-        CoroutineScope(Dispatchers.Default).launch {
-            var list = recentDao.getRecents().sortedBy { it.size }
-            if (!isAscending) {
-                list = list.reversed()
-            }
-            withContext(Dispatchers.Main) {
-                viewState.updateFiles(list)
-            }
-        }
-    }
-
-    private fun sortByType(isAscending: Boolean) {
-        CoroutineScope(Dispatchers.Default).launch {
-            var list = recentDao.getRecents().sortedBy { StringUtils.getExtensionFromPath(it.name) }
-            if (!isAscending) {
-                list = list.reversed()
-            }
-            withContext(Dispatchers.Main) {
-                viewState.updateFiles(list)
-            }
-        }
-    }
-
-    private fun sortByUpdated(isAscending: Boolean) {
-        CoroutineScope(Dispatchers.Default).launch {
-            var list = recentDao.getRecents().sortedBy { it.date }
-            if (!isAscending) {
-                list = list.reversed()
-            }
-            withContext(Dispatchers.Main) {
-                viewState.updateFiles(list)
-            }
-        }
-    }
-
-    private fun sortByOwner(isAscending: Boolean) {
-//        val list: List<Recent?> = mAccountsSqlData.getRecent()
-//        Collections.sort(list) { o1: Recent, o2: Recent ->
-//            if (o1.getAccountsSqlData() != null && o2.getAccountsSqlData() != null) {
-//                return@sort o1.getAccountsSqlData().getId().compareTo(o2.getAccountsSqlData().getId())
-//            } else {
-//                return@sort java.lang.Boolean.compare(o1.isLocal, o2.isLocal)
-//            }
-//        }
-//        if (isAscending) {
-//            Collections.reverse(list)
-//        }
-//        viewState.updateFiles(ArrayList<E>(list))
-    }
-
-    private fun sortByName(isAscending: Boolean) {
-        CoroutineScope(Dispatchers.Default).launch {
-            var list = recentDao.getRecents().sortedBy { it.name }
-            if (!isAscending) {
-                list = list.reversed()
-            }
-            withContext(Dispatchers.Main) {
-                viewState.updateFiles(list)
-            }
-        }
-    }
-
     private fun addRecent(recent: Recent) {
         CoroutineScope(Dispatchers.Default).launch {
             recentDao.updateRecent(recent.copy(date = Date().time))
         }
-    }
-
-    fun reverseList(itemList: List<Recent>, isAscending: Boolean) {
-        setOrder(isAscending)
-        viewState.updateFiles(itemList.reversed())
     }
 
     fun contextClick(recent: Recent, position: Int) {
@@ -436,7 +340,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     private fun openLocalFile(uri: Uri) {
         val name = getName(mContext, uri)
-        when (StringUtils.getExtension(StringUtils.getExtensionFromPath(name.toLowerCase(Locale.ROOT)))) {
+        when (StringUtils.getExtension(StringUtils.getExtensionFromPath(name.lowercase(Locale.ROOT)))) {
             StringUtils.Extension.DOC -> viewState.onOpenFile(OpenState.Docs(uri))
             StringUtils.Extension.SHEET -> viewState.onOpenFile(OpenState.Cells(uri))
             StringUtils.Extension.PRESENTATION -> viewState.onOpenFile(OpenState.Slide(uri))
@@ -496,15 +400,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    fun clearRecent() {
-//        val recents: MutableList<Recent> = mAccountSqlTool.recent
-//        for (recent in recents) {
-//            mAccountSqlTool.delete(recent)
-//        }
-//        recents.clear()
-//        viewState.updateFiles(ArrayList<E>(recents))
-    }
-
     override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         // stub
     }
@@ -539,14 +434,5 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
         temp = null
     }
-
-    private fun setOrder(isAsc: Boolean) {
-        if (isAsc) {
-            mPreferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
-        } else {
-            mPreferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
-        }
-    }
-
 
 }

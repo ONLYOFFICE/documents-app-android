@@ -15,7 +15,6 @@ interface DocsRecentView : DocsBaseView {
     fun onMoveElement(recent: Recent, position: Int)
     fun onContextShow(state: ContextBottomDialog.State)
     fun onDeleteItem(position: Int)
-    fun onReverseSortOrder(itemList: List<Recent>)
     fun onRecentGet(list: List<Recent>)
 
     fun onRender(state: RecentState)
