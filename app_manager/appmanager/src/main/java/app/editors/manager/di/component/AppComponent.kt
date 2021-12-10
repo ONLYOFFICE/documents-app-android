@@ -3,6 +3,7 @@ package app.editors.manager.di.component
 import android.content.Context
 import androidx.room.RoomDatabase
 import app.documents.core.account.AccountDao
+import app.documents.core.account.AccountsDataBase
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.RecentDao
 import app.documents.core.login.ILoginServiceProvider
@@ -84,6 +85,7 @@ interface AppComponent {
     val contentTools: LocalContentTools
     val glideTools: GlideTool
     val networkSettings: NetworkSettings
+    val accountsDataBase: AccountsDataBase
     val accountsDao: AccountDao
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider

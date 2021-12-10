@@ -1,5 +1,6 @@
 package app.editors.manager.managers.tools
 
+import android.accounts.Account
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.UriMatcher
@@ -12,6 +13,9 @@ import app.editors.manager.app.appComponent
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.R
+import lib.toolkit.base.managers.utils.AccountData
+import lib.toolkit.base.managers.utils.AccountUtils
 
 class AccountContentProvider : ContentProvider() {
 
@@ -20,22 +24,28 @@ class AccountContentProvider : ContentProvider() {
         const val AUTHORITY = "com.onlyoffice.accounts"
         const val PATH = "accounts"
         const val ID = "id"
+        const val TIME = "time"
 
-        const val ALL = 0
+        const val ALL_ID = 0
         const val ACCOUNT_ID = 1
+        const val TIME_ID = 2
 
         const val CLOUD_ACCOUNT_KEY = "account"
+        const val TIME_KEY = "time"
     }
 
     private val uriMatcher: UriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
-        addURI(AUTHORITY, PATH, ALL)
+        addURI(AUTHORITY, PATH, ALL_ID)
         addURI(AUTHORITY, "$PATH/*", ACCOUNT_ID)
+        addURI(AUTHORITY, TIME, TIME_ID)
     }
 
     private var dao: AccountDao? = null
+    private var pref: PreferenceTool? = null
 
     override fun onCreate(): Boolean {
         dao = context?.appComponent?.accountsDao
+        pref = context?.appComponent?.preference
         return true
     }
 
@@ -47,26 +57,39 @@ class AccountContentProvider : ContentProvider() {
         sortOrder: String?
     ): Cursor? {
         when (uriMatcher.match(uri)) {
-            ALL -> {
+            ALL_ID -> {
                 return dao?.getCursorAccounts()
             }
             ACCOUNT_ID -> {
                 return dao?.getCursorAccount(uri.lastPathSegment ?: "")
+            }
+            TIME_ID -> {
+                return dao?.getCursorAccounts()?.apply {
+                    extras = Bundle(1).apply {
+                        putLong(TIME_KEY, pref?.dbTimestamp ?: 0L)
+                    }
+                }
             }
         }
         return null
     }
 
     override fun getType(uri: Uri): String {
-        return "account"
+        return CLOUD_ACCOUNT_KEY
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        val account: CloudAccount = getAccount(values)
-        runBlocking {
-            dao?.addAccount(account)
+        val account: CloudAccount = if (values?.containsKey(CLOUD_ACCOUNT_KEY) == true) {
+            Json.decodeFromString(values.getAsString(CLOUD_ACCOUNT_KEY))
+        } else {
+            getAccount(values)
+
         }
-        return Uri.parse("content://content://com.onlyoffice.accounts/accounts/${account.id}")
+        runBlocking {
+            return@runBlocking dao?.addAccount(account)
+        }
+        addSystemAccount(account)
+        return Uri.parse("content://$AUTHORITY/$PATH/${account.id}")
     }
 
     override fun insert(uri: Uri, values: ContentValues?, extras: Bundle?): Uri? {
@@ -80,7 +103,7 @@ class AccountContentProvider : ContentProvider() {
                 }
             }
         }
-        return Uri.parse("content://content://com.onlyoffice.accounts/accounts/$id")
+        return Uri.parse("content://$AUTHORITY/$PATH/$id")
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
@@ -101,6 +124,30 @@ class AccountContentProvider : ContentProvider() {
         return runBlocking {
             return@runBlocking dao?.updateCursorAccount(getAccount(values)) ?: -1
         }
+    }
+
+    private fun addSystemAccount(cloudAccount: CloudAccount) {
+        val account = Account(cloudAccount.getAccountName(), context?.getString(R.string.account_type))
+        val accountData = AccountData(
+            portal = cloudAccount.portal ?: "",
+            scheme = cloudAccount.scheme ?: "",
+            displayName = cloudAccount.name ?: "",
+            userId = cloudAccount.id,
+            provider = cloudAccount.provider ?: "",
+            accessToken = "",
+            email = cloudAccount.login ?: "",
+            avatar = cloudAccount.avatarUrl,
+            expires = ""
+        )
+
+        val token = cloudAccount.token
+        val password = cloudAccount.password
+
+        if (!AccountUtils.addAccount(checkNotNull(context), account, password, accountData)) {
+            AccountUtils.setAccountData(checkNotNull(context), account, accountData)
+            AccountUtils.setPassword(checkNotNull(context), account, password)
+        }
+        AccountUtils.setToken(checkNotNull(context), account, token)
     }
 
     private fun getAccount(values: ContentValues?): CloudAccount {
