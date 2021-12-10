@@ -212,8 +212,6 @@
         </activity>
         <activity
             android:name=".ui.activities.main.OnBoardingActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
             android:theme="@style/AppTheme.Launcher"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
