@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [CloudAccount::class, Recent::class], version = 4)
+@Database(entities = [CloudAccount::class, Recent::class], version = 4, exportSchema = false)
 abstract class AccountsDataBase: RoomDatabase() {
 
     companion object {
