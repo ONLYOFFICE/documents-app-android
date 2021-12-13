@@ -1,47 +1,45 @@
 package app.editors.manager.ui.adapters.holders
 
-import android.annotation.SuppressLint
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.account.Recent
-import app.editors.manager.R
-import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerFilesBinding
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.isVisible
+import app.editors.manager.mvp.models.ui.RecentUI
+import app.editors.manager.mvp.models.ui.toRecent
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
-import lib.toolkit.base.managers.utils.StringUtils.getFormattedSize
-import lib.toolkit.base.managers.utils.TimeUtils.getWeekDate
+import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
+import lib.toolkit.base.ui.adapters.holder.ViewType
 import java.util.*
 
 class RecentViewHolder(
-    private val view: View,
+    view: View,
     private val itemListener: ((recent: Recent, position: Int) -> Unit)? = null,
     private val contextListener: ((recent: Recent, position: Int) -> Unit)? = null
-) :
-    RecyclerView.ViewHolder(view) {
+) : BaseViewHolder<ViewType>(view) {
 
     private val viewBinding = ListExplorerFilesBinding.bind(view)
 
-    @SuppressLint("SetTextI18n")
-    fun bind(recent: Recent) {
-        with(viewBinding) {
-            val info = when {
-                recent.isLocal -> "This device"
-                else -> recent.source
-            }
+    override fun bind(item: ViewType) {
+        if (item is RecentUI) {
+            with(viewBinding) {
+                val info = when {
+                    item.isLocal -> "This device"
+                    else -> item.source
+                }
 
-            listExplorerFileName.text = recent.name
-            listExplorerFileInfo.text = info
-            listExplorerFileFavorite.isVisible = false
-            listExplorerFileLayout.setOnClickListener {
-                itemListener?.invoke(recent, absoluteAdapterPosition)
+                listExplorerFileName.text = item.name
+                listExplorerFileInfo.text = info
+                listExplorerFileFavorite.isVisible = false
+                listExplorerFileLayout.setOnClickListener {
+                    itemListener?.invoke(item.toRecent(), absoluteAdapterPosition)
+                }
+                listExplorerFileContext.setOnClickListener {
+                    contextListener?.invoke(item.toRecent(), absoluteAdapterPosition)
+                }
+                ManagerUiUtils.setFileIcon(viewIconSelectableLayout.viewIconSelectableImage,
+                    getExtensionFromPath(item.name.lowercase(Locale.ROOT)))
             }
-            listExplorerFileContext.setOnClickListener {
-                contextListener?.invoke(recent, absoluteAdapterPosition)
-            }
-            ManagerUiUtils.setFileIcon(viewIconSelectableLayout.viewIconSelectableImage,
-                getExtensionFromPath(recent.name.lowercase(Locale.ROOT)))
         }
     }
 }

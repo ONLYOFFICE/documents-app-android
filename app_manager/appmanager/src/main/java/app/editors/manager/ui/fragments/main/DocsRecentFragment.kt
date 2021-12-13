@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
-import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.account.Recent
 import app.editors.manager.R
 import app.editors.manager.mvp.models.explorer.CloudFile
@@ -21,7 +20,7 @@ import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.activities.main.WebViewerActivity
 import app.editors.manager.ui.adapters.RecentAdapter
-import app.editors.manager.ui.adapters.diffutilscallback.RecentDiffUtilsCallback
+import app.editors.manager.ui.adapters.holders.factory.RecentHolderFactory
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.CoroutineScope
@@ -42,9 +41,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private var filterValue: CharSequence? = null
 
     private val recentListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
-            Debounce.perform(1000L) {
-                presenter.fileClick(recent, position)
-            }
+        presenter.fileClick(recent, position)
     }
 
     private val contextListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
@@ -132,7 +129,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             activity.showActionButton(false)
             activity.showAccount(false)
         }
-        adapter = RecentAdapter(requireContext(), recentListener, contextListener)
+        adapter = RecentAdapter(requireContext(), RecentHolderFactory(recentListener, contextListener))
         recyclerView?.let {
             it.adapter = adapter
             it.setPadding(
@@ -150,7 +147,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     override fun onRecentGet(list: List<Recent>) {
-        adapter?.setItems(list)
+        adapter?.setRecent(list)
     }
 
     override fun onListEnd() {
@@ -159,11 +156,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun updateFiles(files: List<Recent>) {
         if (files.isNotEmpty()) {
-            adapter?.itemList?.let {
-                updateDiffUtils(files)
+            adapter?.itemsList?.let {
+                adapter?.setRecent(files)
                 recyclerView?.scrollToPosition(0)
             } ?: run {
-                adapter?.setItems(files)
+                adapter?.setRecent(files)
             }
             placeholderViews?.setVisibility(false)
             updateMenu(true)
@@ -181,9 +178,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     private fun updateDiffUtils(files: List<Recent>) {
-        val diffUtils = RecentDiffUtilsCallback(files, adapter?.itemList)
-        val result = DiffUtil.calculateDiff(diffUtils)
-        adapter?.set(files, result)
+
     }
 
     override fun openFile(file: CloudFile) {
@@ -214,8 +209,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     override fun onMoveElement(recent: Recent, position: Int) {
-        adapter?.moveItem(position, 0)
-        recyclerView?.scrollToPosition(0)
+
     }
 
     override fun onContextShow(state: ContextBottomDialog.State) {
@@ -253,7 +247,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     private fun setRecents(recents: List<Recent>) {
         setMenuVisibility(true)
-        adapter?.setItems(recents)
+        adapter?.setRecent(recents)
     }
 
     private fun setEmpty() {

@@ -100,9 +100,13 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         disposable.clear()
     }
 
-    fun getRecentFiles() {
+    fun getRecentFiles(checkFiles: Boolean = true) {
         CoroutineScope(Dispatchers.Default).launch {
-            val list = recentDao.getRecents().filter { recent -> checkFiles(recent) }
+            val list = if (checkFiles) {
+                recentDao.getRecents().filter { recent -> checkFiles(recent) }
+            } else {
+                recentDao.getRecents()
+            }
             withContext(Dispatchers.Main) {
                 viewState.onRender(RecentState.RenderList(list))
             }
@@ -195,6 +199,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     private fun addRecent(recent: Recent) {
         CoroutineScope(Dispatchers.Default).launch {
             recentDao.updateRecent(recent.copy(date = Date().time))
+            getRecentFiles()
         }
     }
 
@@ -316,7 +321,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             checkCloudFile(recent, position)
         }
         addRecent(recent)
-        viewState.onMoveElement(recent, position)
     }
 
     private fun checkCloudFile(recent: Recent, position: Int) {
