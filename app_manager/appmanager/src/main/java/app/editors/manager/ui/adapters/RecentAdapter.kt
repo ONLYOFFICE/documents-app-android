@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.account.Recent
 import app.editors.manager.R
 import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.mvp.models.ui.RecentUI
 import app.editors.manager.mvp.models.ui.toRecentUI
 import app.editors.manager.ui.adapters.base.BaseViewTypeAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.RecentDiffUtilsCallback
@@ -18,6 +19,10 @@ class RecentAdapter(private val context: Context, factory: RecentHolderFactory) 
         val diffUtils = RecentDiffUtilsCallback(getListWithHeaders(list), itemsList)
         val result = DiffUtil.calculateDiff(diffUtils)
         super.set(getListWithHeaders(list), result)
+    }
+
+    fun isEmpty(): Boolean {
+        return itemsList.filterIsInstance(RecentUI::class.java).isNullOrEmpty()
     }
 
     private fun getListWithHeaders(list: List<Recent>): MutableList<ViewType> {

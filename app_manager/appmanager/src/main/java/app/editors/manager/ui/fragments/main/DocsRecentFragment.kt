@@ -41,7 +41,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private var filterValue: CharSequence? = null
 
     private val recentListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
-        presenter.fileClick(recent, position)
+        Debounce.perform(1000L) { presenter.fileClick(recent, position) }
     }
 
     private val contextListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
@@ -177,10 +177,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    private fun updateDiffUtils(files: List<Recent>) {
-
-    }
-
     override fun openFile(file: CloudFile) {
         val ext = file.fileExst
         if (StringUtils.isVideoSupport(ext) || StringUtils.isImage(ext)) {
@@ -208,10 +204,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         return false
     }
 
-    override fun onMoveElement(recent: Recent, position: Int) {
-
-    }
-
     override fun onContextShow(state: ContextBottomDialog.State) {
         parentFragmentManager.let {
             contextBottomDialog?.state = state
@@ -222,7 +214,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun onDeleteItem(position: Int) {
         adapter?.let { recentAdapter ->
             recentAdapter.removeItem(position)
-            if (recentAdapter.itemCount == 0) setEmpty()
+            if (recentAdapter.isEmpty()) setEmpty()
         }
     }
 

@@ -385,7 +385,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                                 temp = file
                                 viewState.onDialogClose()
                                 openLocalFile(Uri.parse(file.webUrl))
-                                viewState.onMoveElement(recent, position)
+                                getRecentFiles(checkFiles = false)
                             }, {
                                 fetchError(it)
                             })

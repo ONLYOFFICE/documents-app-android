@@ -12,7 +12,6 @@ import moxy.viewstate.strategy.StateStrategyType
 interface DocsRecentView : DocsBaseView {
     fun updateFiles(files: List<Recent>)
     fun openFile(response: CloudFile)
-    fun onMoveElement(recent: Recent, position: Int)
     fun onContextShow(state: ContextBottomDialog.State)
     fun onDeleteItem(position: Int)
     fun onRecentGet(list: List<Recent>)

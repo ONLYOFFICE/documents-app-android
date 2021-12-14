@@ -50,7 +50,3 @@ fun Recent.toRecentUI(): RecentUI {
         source = source
     )
 }
-
-fun List<Recent>.toRecentUI(): List<RecentUI> = this.map { it.toRecentUI() }
-
-fun List<RecentUI>.toRecent(): List<Recent> = this.map { it.toRecent() }
