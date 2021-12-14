@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.editors.manager.ui.compose.base.Spacer
@@ -69,7 +70,7 @@ fun PasscodeOperation(
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = title, style = MaterialTheme.typography.h6, color = MaterialTheme.colors.onBackground)
+        Text(text = title, style = MaterialTheme.typography.h6, color = MaterialTheme.colors.onBackground, textAlign = TextAlign.Center)
 
         Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
 
