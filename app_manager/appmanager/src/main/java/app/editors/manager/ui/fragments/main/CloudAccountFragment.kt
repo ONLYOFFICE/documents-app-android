@@ -250,6 +250,7 @@ class CloudAccountFragment : BaseAppFragment(),
 //             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //                 flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT
 //             }
+            putExtra(MainActivity.KEY_CODE, true)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         })
     }
