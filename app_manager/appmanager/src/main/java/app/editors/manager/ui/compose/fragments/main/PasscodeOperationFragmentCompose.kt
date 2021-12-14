@@ -75,7 +75,7 @@ fun PasscodeOperation(
         Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
 
         if (!isError) {
-            Text(text = subtitle, style = MaterialTheme.typography.body2)
+            Text(text = subtitle, style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onBackground)
         } else {
             Text(
                 text = (passcodeState as PasscodeLockState.Error).errorMessage,
