@@ -97,7 +97,7 @@ fun PasscodeLock(
                         text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_change),
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
-                            .padding(start = 16.dp),
+                            .padding(start = dimensionResource(id = R.dimen.default_margin_medium)),
                         style = TextStyle(
                             color = colorResource(id = R.color.colorLink)
 
@@ -144,7 +144,7 @@ fun PasscodeSwitchItem(isEnable: Boolean, text: String, onCheckedChange: (Boolea
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .height(dimensionResource(id = R.dimen.item_one_line_height))
+            .height(dimensionResource(id = R.dimen.item_onehalf_line_height))
             .background(color = MaterialTheme.colors.surface)
             .fillMaxSize()
     ) {
@@ -152,7 +152,8 @@ fun PasscodeSwitchItem(isEnable: Boolean, text: String, onCheckedChange: (Boolea
             text = text,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .padding(start = 16.dp),
+                .width(350.dp)
+                .padding(start = dimensionResource(id = R.dimen.default_margin_medium)),
             color = MaterialTheme.colors.onSurface
         )
         Switch(
@@ -160,7 +161,7 @@ fun PasscodeSwitchItem(isEnable: Boolean, text: String, onCheckedChange: (Boolea
             onCheckedChange = onCheckedChange,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .padding(end = 16.dp),
+                .padding(end = dimensionResource(id = R.dimen.default_margin_medium)),
             colors = SwitchDefaults.colors(
                 checkedThumbColor = colorResource(id = R.color.colorSecondary)
             )
