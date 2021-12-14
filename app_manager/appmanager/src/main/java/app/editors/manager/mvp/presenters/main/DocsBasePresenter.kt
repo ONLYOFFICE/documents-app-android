@@ -98,8 +98,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     @Inject
     lateinit var recentDao: RecentDao
 
-    protected var fileProvider: BaseFileProvider? = null
-
     /**
      * Handler for some common job
      * */
@@ -110,12 +108,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * Saved values
      * */
 
-    private var isSubmitted = false
+    protected var fileProvider: BaseFileProvider? = null
     protected var modelExplorerStack: ModelExplorerStack? = null
     protected var filteringValue: String? = null
     protected var placeholderViewType: PlaceholderViews.Type? = null
     protected var destFolderId: String? = null
     protected var operationStack: ExplorerStackMap? = null
+    private var isSubmitted = false
     private var uploadUri: Uri? = null
 
     /**
@@ -555,7 +554,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 batchDisposable = provider.transfer(items, destination, conflict, isMove, false)?.let { observable ->
                     observable.switchMap { status }
                         .subscribe(
-                            { progress: Int? -> viewState!!.onDialogProgress(100, progress ?: 0) },
+                            { progress: Int? -> viewState.onDialogProgress(100, progress ?: 0) },
                             this::fetchError
                         ) {
                             modelExplorerStack?.let { stack ->
@@ -1504,41 +1503,29 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
             // Add here new message for common errors
             when (responseCode) {
-                ApiContract.HttpCodes.CLIENT_UNAUTHORIZED -> {
-                    viewState.onError(context.getString(R.string.errors_client_unauthorized))
-                    return
-                }
+                ApiContract.HttpCodes.CLIENT_UNAUTHORIZED -> viewState.onError(context.getString(R.string.errors_client_unauthorized))
                 ApiContract.HttpCodes.CLIENT_FORBIDDEN -> {
-                    errorMessage?.let { message ->
-                        if (message.contains(ApiContract.Errors.DISK_SPACE_QUOTA)) {
-                            viewState.onError(errorMessage)
-                            return
-                        }
+                    if (errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true) {
+                        viewState.onError(errorMessage)
+                    } else {
+                        viewState.onError(context.getString(R.string.errors_client_forbidden))
                     }
-
-                    viewState.onError(context.getString(R.string.errors_client_forbidden))
-                    return
                 }
                 ApiContract.HttpCodes.CLIENT_NOT_FOUND -> {
                     viewState.onError(context.getString(R.string.errors_client_host_not_found))
-                    return
                 }
                 ApiContract.HttpCodes.CLIENT_PAYMENT_REQUIRED -> {
                     viewState.onError(context.getString(R.string.errors_client_payment_required))
-                    return
                 }
+                else -> viewState.onError(context.getString(R.string.errors_client_error) + responseCode)
             }
-            viewState.onError(context.getString(R.string.errors_client_error) + responseCode)
         } else if (responseCode >= ApiContract.HttpCodes.SERVER_ERROR) {
             // Add here new message for common errors
-            errorMessage?.let { message ->
-                if (message.contains(ApiContract.Errors.AUTH)) {
-                    viewState.onError(context.getString(R.string.errors_server_auth_error))
-                    return
-                }
+            if (errorMessage?.contains(ApiContract.Errors.AUTH) == true) {
+                viewState.onError(context.getString(R.string.errors_server_auth_error))
+            } else {
+                viewState.onError(context.getString(R.string.errors_server_error) + responseCode)
             }
-
-            viewState.onError(context.getString(R.string.errors_server_error) + responseCode)
         } // Delete this block -- END --
 
 //        // Uncomment this block, after added translation to server
