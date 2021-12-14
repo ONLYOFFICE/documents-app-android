@@ -152,8 +152,9 @@ fun PasscodeSwitchItem(isEnable: Boolean, text: String, onCheckedChange: (Boolea
             text = text,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .width(350.dp)
-                .padding(start = dimensionResource(id = R.dimen.default_margin_medium)),
+                .padding(start = dimensionResource(id = R.dimen.default_margin_medium))
+                .fillMaxWidth(0.75f)
+            ,
             color = MaterialTheme.colors.onSurface
         )
         Switch(
