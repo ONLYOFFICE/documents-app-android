@@ -148,20 +148,21 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
     }
 
     private fun getRegion(): String {
-        try {
-            val tm = serviceProvider.getTelephoneService()
-            val simCountry = tm?.simCountryIso
-            if (simCountry != null && simCountry.length == 2) {
-                return simCountry.uppercase()
-            } else if (tm?.phoneType != TelephonyManager.PHONE_TYPE_CDMA) {
-                val networkCountry = tm?.networkCountryIso
-                if (networkCountry != null && networkCountry.length == 2) {
-                    return networkCountry.uppercase()
-                }
-            }
-        } catch (e: Exception) {
-            // No need handle
-        }
+        //TODO bug 54085
+//        try {
+//            val tm = serviceProvider.getTelephoneService()
+//            val simCountry = tm?.simCountryIso
+//            if (simCountry != null && simCountry.length == 2) {
+//                return simCountry.uppercase()
+//            } else if (tm?.phoneType != TelephonyManager.PHONE_TYPE_CDMA) {
+//                val networkCountry = tm?.networkCountryIso
+//                if (networkCountry != null && networkCountry.length == 2) {
+//                    return networkCountry.uppercase()
+//                }
+//            }
+//        } catch (e: Exception) {
+//            // No need handle
+//        }
         return resourcesProvider.getLocale() ?: "EU"
     }
 
