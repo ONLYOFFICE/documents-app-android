@@ -51,14 +51,18 @@ class AccountContentProvider : ContentProvider() {
 
     override fun query(
         uri: Uri,
-        projection: Array<out String>?,
+        projection: Array<out String?>?,
         selection: String?,
-        selectionArgs: Array<out String>?,
+        selectionArgs: Array<out String?>?,
         sortOrder: String?
     ): Cursor? {
         when (uriMatcher.match(uri)) {
             ALL_ID -> {
-                return dao?.getCursorAccounts()
+                return selectionArgs?.get(0)?.let { arg ->
+                    dao?.getCursorAccountsByLogin(arg)
+                } ?: run {
+                    dao?.getCursorAccounts()
+                }
             }
             ACCOUNT_ID -> {
                 return dao?.getCursorAccount(uri.lastPathSegment ?: "")
