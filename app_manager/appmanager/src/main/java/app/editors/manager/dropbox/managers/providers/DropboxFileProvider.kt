@@ -54,7 +54,7 @@ class DropboxFileProvider : BaseFileProvider {
     private var api: IDropboxServiceProvider = App.getApp().getDropboxComponent()
     private val workManager = WorkManager.getInstance()
 
-    override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
+    override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
 
         val req =
             if (
@@ -68,8 +68,8 @@ class DropboxFileProvider : BaseFileProvider {
             ) {
                 ExplorerContinueRequest(cursor = filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]!!)
             } else {
-                if (id.isEmpty()) ExplorerRequest(path = DropboxUtils.DROPBOX_ROOT) else ExplorerRequest(
-                    path = id
+                if (id?.isEmpty() == true) ExplorerRequest(path = DropboxUtils.DROPBOX_ROOT) else ExplorerRequest(
+                    path = id!!
                 )
             }
 

@@ -4,6 +4,8 @@
     package="app.editors.manager"
     android:installLocation="internalOnly">
 
+    <!--    <permission android:name="com.onlyoffice.documents.ACCOUNTS" />-->
+
     <uses-permission android:name="${applicationId}.permission.WRITE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -66,6 +68,7 @@
         <activity
             android:name=".ui.activities.login.PortalsActivity"
             android:launchMode="standard"
+            android:exported="true"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
@@ -82,7 +85,7 @@
             android:finishOnTaskLaunch="true"
             android:launchMode="singleTask"
             android:supportsPictureInPicture="true"
-            android:theme="@style/AppTheme.Launcher"
+            android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
             <!--            <intent-filter android:label="@string/upload_to_portal">-->
             <!--                <action android:name="android.intent.action.SEND" />-->
@@ -111,11 +114,6 @@
             <!--                    android:host="*"-->
             <!--                    android:mimeType="image/*" />-->
             <!--            </intent-filter>-->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -166,7 +164,7 @@
             android:launchMode="singleTask"
             android:process=":WebViewerActivity"
             android:supportsPictureInPicture="true"
-            android:theme="@style/NoActionBarTheme"
+            android:theme="@style/WebViewerActivityStyle"
             android:windowSoftInputMode="adjustResize|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -206,6 +204,7 @@
             android:name=".ui.activities.main.PasscodeActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -213,10 +212,14 @@
         </activity>
         <activity
             android:name=".ui.activities.main.OnBoardingActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:theme="@style/NoActionBarTheme"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
+            android:theme="@style/AppTheme.Launcher"
+            android:windowSoftInputMode="adjustPan|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.activities.login.AuthAppActivity"
             android:launchMode="singleTop"
@@ -233,6 +236,7 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".ui.activities.main.CloudsActivity"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
@@ -243,6 +247,7 @@
             android:name=".ui.activities.main.SettingsActivity"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
+
         <service
             android:name=".managers.services.AuthenticatorService"
             android:exported="false">
@@ -256,7 +261,7 @@
 
         <service
             android:name=".managers.services.MessageService"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

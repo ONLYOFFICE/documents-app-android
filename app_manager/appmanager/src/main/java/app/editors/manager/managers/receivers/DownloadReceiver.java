@@ -35,7 +35,7 @@ public class DownloadReceiver extends BaseReceiver<Intent> {
 
 
     public interface OnDownloadListener {
-        void onDownloadError(String id, String url, String title, String info);
+        void onDownloadError(String id, String url, String title, String info, Uri uri);
         void onDownloadProgress(String id, int total, int progress);
         void onDownloadComplete(String id, String url, String title, String info, String path, String mime, Uri uri);
         void onDownloadCanceled(String id, String info);
@@ -59,17 +59,18 @@ public class DownloadReceiver extends BaseReceiver<Intent> {
                         final String url = intent.getStringExtra(EXTRAS_KEY_URL);
                         final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
                         final String info = intent.getStringExtra(EXTRAS_KEY_ERROR);//context.getString(R.string.download_manager_error);
+                        final Uri uri = Uri.parse(intent.getStringExtra(EXTRAS_KEY_URI));
                         if(info != null) {
-                            mOnDownloadListener.onDownloadError(id, url, title, info);
+                            mOnDownloadListener.onDownloadError(id, url, title, info, uri);
                         } else {
-                            mOnDownloadListener.onDownloadError(id, url, title, context.getString(R.string.download_manager_error));
+                            mOnDownloadListener.onDownloadError(id, url, title, context.getString(R.string.download_manager_error), uri);
                         }
                         break;
                     }
 
                     case DOWNLOAD_ACTION_ERROR_FREE_SPACE: {
                         final String info = context.getString(R.string.download_manager_error_free_space);
-                        mOnDownloadListener.onDownloadError(info, "", "", "");
+                        mOnDownloadListener.onDownloadError(info, "", "", "", null);
                         break;
                     }
 
@@ -78,7 +79,8 @@ public class DownloadReceiver extends BaseReceiver<Intent> {
                         final String url = intent.getStringExtra(EXTRAS_KEY_URL);
                         final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
                         final String info = context.getString(R.string.download_manager_error_url);
-                        mOnDownloadListener.onDownloadError(info, id, url, title);
+                        final Uri uri = Uri.parse(intent.getStringExtra(EXTRAS_KEY_URI));
+                        mOnDownloadListener.onDownloadError(info, id, url, title, uri);
                         break;
                     }
 

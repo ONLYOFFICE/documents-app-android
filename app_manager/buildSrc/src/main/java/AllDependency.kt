@@ -22,17 +22,18 @@ object Koin {
 
 object AndroidX {
     const val composeVersion = "1.0.1"
-    private const val androidxVersion = "1.3.1"
+    private const val androidxVersion = "1.4.0"
     private const val recyclerViewVersion = "1.2.1"
     private const val recyclerViewSelectionVersion = "1.1.0"
     private const val kotlinKtxVersion = "1.7.0"
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
+    const val composeActivity = "androidx.activity:activity-compose:$androidxVersion"
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     const val recyclerViewSelection = "androidx.recyclerview:recyclerview-selection:$recyclerViewSelectionVersion"
     const val cardView = "androidx.cardview:cardview:1.0.0"
-    const val constraint = "androidx.constraintlayout:constraintlayout:2.0.4"
+    const val constraint = "androidx.constraintlayout:constraintlayout:2.1.2"
     const val ktx = "androidx.core:core-ktx:$kotlinKtxVersion"
     const val biometric = "androidx.biometric:biometric:1.1.0"
 
@@ -109,7 +110,7 @@ object Libs {
     const val ormlite = "com.j256.ormlite:ormlite-android:5.1"
     const val facebookLogin = "com.facebook.android:facebook-login:4.31.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
-    const val glide = "com.github.bumptech.glide:glide:4.11.0"
+    const val glide = "com.github.bumptech.glide:glide:4.12.0"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
     const val androidWork = "android.arch.work:work-runtime:1.0.1"
     const val documentFile = "androidx.documentfile:documentfile:1.0.1"

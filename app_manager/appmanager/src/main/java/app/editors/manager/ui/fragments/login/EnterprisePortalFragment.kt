@@ -73,6 +73,7 @@ class EnterprisePortalFragment : BaseAppFragment(),
         if (tag != null) {
             if (TAG_DIALOG_HTTP == tag) {
                 if (httpUrl.isNotEmpty()) {
+                    viewModel.cancel()
                     onSuccessPortal(httpUrl, providers ?: emptyArray())
                 }
             }
@@ -159,6 +160,9 @@ class EnterprisePortalFragment : BaseAppFragment(),
                 viewBinding?.termsTextView?.movementMethod = LinkMovementMethod.getInstance()
                 viewBinding?.termsTextView?.text = text
             }
+        }
+        viewBinding?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
+            viewBinding?.loginEnterpriseNextButton?.isEnabled = isChecked
         }
     }
 

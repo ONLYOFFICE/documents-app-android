@@ -1,7 +1,6 @@
 package app.editors.manager.managers.providers
 
 import android.net.Uri
-import android.os.Build
 import app.editors.manager.managers.providers.ProviderError.Companion.throwErrorCreate
 import app.editors.manager.app.App.Companion.getLocale
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
@@ -20,14 +19,11 @@ import io.reactivex.Observable
 import java.io.File
 import java.io.IOException
 import java.lang.Exception
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.*
 
 class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : BaseFileProvider {
 
-    override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
+    override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(mLocalContentTools.createRootDir())
             .map<List<File?>> { file: File ->
                 if (file.exists()) {
@@ -227,36 +223,21 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
         }
     }
 
-    @Throws(IOException::class)
     private fun search(value: String?, id: String): Explorer {
         val files: MutableList<File?> = mutableListOf()
         var resultExplorer = Explorer()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Files.walk(Paths.get(id))
-                .filter { path: Path? -> Files.isReadable(path) }
-                .forEach { foundFile: Path ->
-                    if (foundFile.toFile().name.toLowerCase().contains(
-                            value?.toLowerCase().toString()
-                        )
-                    ) {
-                        files.add(foundFile.toFile())
-                    }
-                }
-            resultExplorer = getExplorer(files, File(id))
-        } else {
-            var tempExplorer = Explorer()
-            val root = File(id)
-            val listFiles = root.listFiles()
-            for (item in listFiles) {
-                if (item.name.toLowerCase().contains(value?.toLowerCase().toString())) {
-                    files.add(item)
-                    tempExplorer = getExplorer(files, File(id))
-                }
-                if (item.isDirectory) {
-                    tempExplorer = search(value, item.absolutePath)
-                }
-                resultExplorer.add(tempExplorer)
+        var tempExplorer = Explorer()
+        val root = File(id)
+        val listFiles = root.listFiles()
+        for (item in listFiles) {
+            if (item.name.toLowerCase().contains(value?.toLowerCase().toString())) {
+                files.add(item)
+                tempExplorer = getExplorer(files, File(id))
             }
+            if (item.isDirectory) {
+                tempExplorer.add(search(value, item.absolutePath))
+            }
+            resultExplorer.add(tempExplorer)
         }
         return resultExplorer
     }

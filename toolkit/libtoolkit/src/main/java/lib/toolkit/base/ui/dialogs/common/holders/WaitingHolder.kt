@@ -3,9 +3,9 @@ package lib.toolkit.base.ui.dialogs.common.holders
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ProgressBar
 import androidx.annotation.ColorRes
-import androidx.constraintlayout.widget.ConstraintLayout
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -21,8 +21,8 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         CIRCLE, HORIZONTAL
     }
 
-    private lateinit var mLayout: ConstraintLayout
-    private lateinit var mProgressBarView: ProgressBar
+    private lateinit var rootLayout: FrameLayout
+    private lateinit var progressBarView: ProgressBar
 
     @ColorRes
     private var mProgressColor = 0
@@ -34,8 +34,8 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         super.init()
         dialog.dialog?.setCanceledOnTouchOutside(false)
         dialog.view?.apply {
-            mLayout = findViewById(R.id.dialogCommonWaitingLayout)
-            mProgressBarView = when (mProgressType) {
+            rootLayout = findViewById(R.id.dialogCommonWaitingLayout)
+            progressBarView = when (mProgressType) {
                 ProgressType.CIRCLE -> {
                     findViewById(R.id.dialogCommonWaitingProgressBarCircle)
                 }
@@ -50,17 +50,17 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     @SuppressLint("ResourceType")
     override fun show() {
         super.show()
-        mLayout.visibility = View.VISIBLE
-        mProgressBarView.visibility = View.VISIBLE
+        rootLayout.visibility = View.VISIBLE
+        progressBarView.visibility = View.VISIBLE
 
         if (mProgressColor > 0) {
-            UiUtils.setProgressBarColorDrawable(mProgressBarView, mProgressColor)
+            UiUtils.setProgressBarColorDrawable(progressBarView, mProgressColor)
         }
     }
 
     override fun hide() {
         super.hide()
-        mLayout.visibility = View.GONE
+        rootLayout.visibility = View.GONE
     }
 
     override fun save(state: Bundle) {

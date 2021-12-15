@@ -28,17 +28,19 @@ class CloudFileProvider : BaseFileProvider {
 
     var api: Api = App.getApp().getApi()
 
-    override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
-        return api.getItemById(id, filter)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { responseExplorerResponse: Response<ResponseExplorer> ->
-                if (responseExplorerResponse.isSuccessful && responseExplorerResponse.body() != null) {
-                    return@map responseExplorerResponse.body()!!.response
-                } else {
-                    throw HttpException(responseExplorerResponse)
+    override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
+        return id?.let {
+            api.getItemById(it, filter)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { responseExplorerResponse: Response<ResponseExplorer> ->
+                    if (responseExplorerResponse.isSuccessful && responseExplorerResponse.body() != null) {
+                        return@map responseExplorerResponse.body()!!.response
+                    } else {
+                        throw HttpException(responseExplorerResponse)
+                    }
                 }
-            }
+        }!!
     }
 
     override fun search(query: String?): Observable<String>? {

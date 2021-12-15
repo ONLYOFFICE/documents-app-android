@@ -11,6 +11,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
+import app.documents.core.network.models.login.response.ResponseUser
 
 interface Api {
 
@@ -339,6 +340,9 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/@root" + ApiContract.RESPONSE_FORMAT)
-    fun getRootFolder(@QueryMap filterMap: Map<String, Int>, @QueryMap flagMap: Map<String, Boolean>): Observable<ResponseCloudTree>
+    fun getRootFolder(
+        @QueryMap filterMap: Map<String, Int>,
+        @QueryMap flagMap: Map<String, Boolean>
+    ): Observable<ResponseCloudTree>
 
 }

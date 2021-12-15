@@ -167,7 +167,6 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
                 val response = url.split("=")
                 val code = response[1]
                 presenter.getToken(code)
-                //presenter.checkOneDrive(token.removeRange(token.length - 11, token.length))
             }
         }
 
@@ -193,6 +192,11 @@ class OneDriveSignInFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLi
     override fun onLogin() {
         MainActivity.show(requireContext())
         requireActivity().finish()
+        viewBinding?.webStorageSwipe?.isRefreshing = false
+    }
+
+    override fun onStartLogin() {
+        viewBinding?.webStorageSwipe?.isRefreshing = true
     }
 
     override fun onError(message: String?) {

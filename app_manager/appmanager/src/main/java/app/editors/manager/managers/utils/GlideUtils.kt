@@ -61,7 +61,7 @@ object GlideUtils {
             ?: throw RuntimeException("Invalid drawable")
         context.accountOnline?.let { account ->
             val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
-            val url = if (account.avatarUrl?.contains("static") == true) {
+            val url = if (avatar.contains("http")) {
                 getCorrectLoad(avatar, token)
             } else {
                 getCorrectLoad(account.scheme + account.portal + avatar, token)

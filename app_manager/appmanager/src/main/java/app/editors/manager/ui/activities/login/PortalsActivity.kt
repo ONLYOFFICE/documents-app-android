@@ -1,6 +1,9 @@
 package app.editors.manager.ui.activities.login
 
+import android.accounts.AccountAuthenticatorResponse
+import android.accounts.AccountManager
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -15,6 +18,7 @@ import app.editors.manager.ui.activities.main.OnBoardingActivity
 import app.editors.manager.ui.fragments.login.PortalsPagerFragment
 import app.editors.manager.ui.fragments.main.CloudsFragment
 import com.google.android.material.tabs.TabLayout
+import lib.toolkit.base.managers.utils.AccountUtils
 import javax.inject.Inject
 
 class PortalsActivity : BaseAppActivity(), View.OnClickListener {
@@ -45,6 +49,19 @@ class PortalsActivity : BaseAppActivity(), View.OnClickListener {
             val intent = Intent(fragment.requireContext(), PortalsActivity::class.java)
             intent.putExtra(KEY_PORTALS, true)
             fragment.startActivityForResult(intent, REQUEST_ACTIVITY_PORTAL)
+        }
+
+        fun getAddAccountIntent(
+            context: Context,
+            accountType: String?,
+            authType: String?,
+            response: AccountAuthenticatorResponse?
+        ): Intent {
+            val intent = Intent(context, PortalsActivity::class.java)
+            intent.putExtra(AccountUtils.KEY_ACCOUNT_TYPE, accountType)
+            intent.putExtra(AccountUtils.KEY_AUTH_TYPE, authType)
+            intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
+            return intent
         }
     }
 
