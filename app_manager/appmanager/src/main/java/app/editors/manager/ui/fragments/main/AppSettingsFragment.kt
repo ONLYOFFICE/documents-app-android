@@ -82,7 +82,8 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
             viewBinding?.wifiSwitch?.isChecked = isChecked
         }
         viewModel.passcodeState.observe(viewLifecycleOwner) { isPasscodeEnabled ->
-            viewBinding?.passcodeSubTextView?.text = if(isPasscodeEnabled) getString(R.string.app_settings_enable) else getString(R.string.app_settings_disable)
+            //TODO make correct translate
+            viewBinding?.passcodeSubTextView?.text = if(!isPasscodeEnabled) getString(R.string.app_settings_enable) else getString(R.string.app_settings_disable)
         }
         viewModel.message.observe(viewLifecycleOwner) { message ->
             showSnackBar(message)

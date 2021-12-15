@@ -298,7 +298,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         explorerAdapter?.let {
             it.removeItem(item)
             it.checkHeaders()
-            setPlaceholder(it.itemList.size == 0)
+            setPlaceholder(it.itemList?.size == 0)
             onClearMenu()
         }
     }
@@ -307,7 +307,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         explorerAdapter?.let {
             it.removeItems(ArrayList<Entity>(items))
             it.checkHeaders()
-            setPlaceholder(it.itemList.size == 0)
+            setPlaceholder(it.itemList?.size == 0)
             onClearMenu()
         }
     }
