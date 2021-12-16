@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -70,6 +71,10 @@ class CloudAccountFragment : BaseAppFragment(),
 
     private var selectedTracker: SelectionTracker<String>? = null
 
+    private val launchProfile = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        presenter.getAccounts()
+    }
+
     private val selectionObserver: SelectionTracker.SelectionObserver<String> = object :
         SelectionTracker.SelectionObserver<String>() {
         override fun onItemStateChanged(key: String, selected: Boolean) {
@@ -107,11 +112,6 @@ class CloudAccountFragment : BaseAppFragment(),
     override fun onDestroyView() {
         super.onDestroyView()
         viewBinding = null
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        presenter.getAccounts()
     }
 
     override fun onAttach(context: Context) {
@@ -286,9 +286,9 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onProfileClick(account: CloudAccount?) {
-        startActivityForResult(Intent(context, ProfileActivity::class.java).apply {
+        launchProfile.launch(Intent(requireContext(), ProfileActivity::class.java).apply {
             putExtra(ProfileFragment.KEY_ACCOUNT, Json.encodeToString(account))
-        }, ProfileActivity.REQUEST_PROFILE)
+        })
     }
 
     override fun onLogOutClick() {
