@@ -295,6 +295,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 }
             }
             ) {
+                refresh()
                 deleteTempFile()
                 viewState.onDialogClose()
                 viewState.onSnackBar(mContext.getString(R.string.upload_manager_complete))

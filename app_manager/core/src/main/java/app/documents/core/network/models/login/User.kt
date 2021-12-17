@@ -1,6 +1,7 @@
 package app.documents.core.network.models.login
 
 import kotlinx.serialization.Serializable
+import lib.toolkit.base.managers.utils.StringUtils
 
 @Serializable
 data class User(
@@ -35,5 +36,7 @@ data class User(
     val avatarSmall: String = "",
     val profileUrl: String = "",
     val mobilePhone: String = ""
-)
+) {
+    fun getName() = StringUtils.getHtmlString(displayName)
+}
 

@@ -39,11 +39,11 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         protected const val PERMISSION_CAMERA = 3
     }
 
-    protected lateinit var mBaseActivity: BaseActivity
-    protected var mSnackBar: Snackbar? = null
-    protected var mToast: Toast? = null
+    protected lateinit var baseActivity: BaseActivity
+    protected var snackBar: Snackbar? = null
+    protected var toast: Toast? = null
 
-    protected var mToolbarTitle: String? = null
+    protected var toolbarTitle: String? = null
 
     @JvmField
     protected var mCameraUri: Uri? = null
@@ -56,7 +56,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mToolbarTitle?.let { outState.putString(TAG_TITLE, it) }
+        toolbarTitle?.let { outState.putString(TAG_TITLE, it) }
         mCameraUri?.let { outState.putParcelable(TAG_CAMERA, it) }
     }
 
@@ -66,26 +66,26 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mBaseActivity.removeOnDispatchTouchEvent(this)
-        mBaseActivity.removeDialogListener(this)
-        mToast = null
-        mSnackBar = null
+        baseActivity.removeOnDispatchTouchEvent(this)
+        baseActivity.removeDialogListener(this)
+        toast = null
+        snackBar = null
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent) {
-        if (mSnackBar != null) {
-            if (mSnackBar!!.isShown) {
-                UiUtils.hideSnackBarOnOutsideTouch(mSnackBar, ev)
+        if (snackBar != null) {
+            if (snackBar!!.isShown) {
+                UiUtils.hideSnackBarOnOutsideTouch(snackBar, ev)
             }
-            mSnackBar = null
+            snackBar = null
         }
     }
 
     protected open fun init(view: View, savedInstanceState: Bundle?) {
         if (lifecycle.currentState == Lifecycle.State.CREATED) {
-            mBaseActivity.addDialogListener(this)
+            baseActivity.addDialogListener(this)
         }
-        mToast = UiUtils.getToast(requireActivity())
+        toast = UiUtils.getToast(requireActivity())
         restoreStates(savedInstanceState)
     }
 
@@ -102,7 +102,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected open fun addOnDispatchTouchEvent() {
-        mBaseActivity.addOnDispatchTouchEvent(this)
+        baseActivity.addOnDispatchTouchEvent(this)
     }
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
@@ -115,7 +115,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected fun hideDialog() {
-        mBaseActivity.hideDialog()
+        baseActivity.hideDialog()
     }
 
     protected fun getEditDialogDialog(
@@ -127,8 +127,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         cancelTitle: String? = null,
         tag: String? = null
     ): EditLineHolder.Builder? {
-        mBaseActivity.addDialogListener(this)
-        return mBaseActivity.getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)
+        baseActivity.addDialogListener(this)
+        return baseActivity.getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)
     }
 
     protected fun getWaitingDialog(
@@ -136,8 +136,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         cancelTitle: String? = null,
         tag: String? = null
     ): WaitingHolder.Builder? {
-        mBaseActivity.addDialogListener(this)
-        return mBaseActivity.getWaitingDialog(topTitle, cancelTitle, tag)
+        baseActivity.addDialogListener(this)
+        return baseActivity.getWaitingDialog(topTitle, cancelTitle, tag)
     }
 
     protected fun getQuestionDialog(
@@ -147,8 +147,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         question: String? = null,
         tag: String? = null
     ): QuestionHolder.Builder? {
-        mBaseActivity.addDialogListener(this)
-        return mBaseActivity.getQuestionDialog(title, acceptTitle, cancelTitle, question, tag)
+        baseActivity.addDialogListener(this)
+        return baseActivity.getQuestionDialog(title, acceptTitle, cancelTitle, question, tag)
     }
 
     protected fun getInfoDialog(
@@ -157,8 +157,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         cancelTitle: String? = null,
         tag: String? = null
     ): InfoHolder.Builder? {
-        mBaseActivity.addDialogListener(this)
-        return mBaseActivity.getInfoDialog(title, info, cancelTitle, tag)
+        baseActivity.addDialogListener(this)
+        return baseActivity.getInfoDialog(title, info, cancelTitle, tag)
     }
 
     protected fun getEditMultilineDialog(
@@ -168,8 +168,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         cancelTitle: String? = null,
         tag: String? = null
     ): EditMultilineHolder.Builder? {
-        mBaseActivity.addDialogListener(this)
-        return mBaseActivity.getEditMultilineDialog(title, hint, acceptTitle, cancelTitle, tag)
+        baseActivity.addDialogListener(this)
+        return baseActivity.getEditMultilineDialog(title, hint, acceptTitle, cancelTitle, tag)
     }
 
     protected fun getProgressDialog(
@@ -177,23 +177,23 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         cancelTitle: String? = null,
         tag: String? = null
     ): ProgressHolder.Builder? {
-        mBaseActivity.addDialogListener(this)
-        return mBaseActivity.getProgressDialog(title, cancelTitle, tag)
+        baseActivity.addDialogListener(this)
+        return baseActivity.getProgressDialog(title, cancelTitle, tag)
     }
 
     protected fun showWaitingDialog(title: String) {
-        mBaseActivity.addDialogListener(this)
-        mBaseActivity.showWaitingDialog(title, null, WaitingHolder.ProgressType.HORIZONTAL, null)
+        baseActivity.addDialogListener(this)
+        baseActivity.showWaitingDialog(title, null, WaitingHolder.ProgressType.HORIZONTAL, null)
     }
 
     protected fun showWaitingDialog(title: String?, tag: String?) {
-        mBaseActivity.addDialogListener(this)
-        mBaseActivity.showWaitingDialog(title, null, WaitingHolder.ProgressType.HORIZONTAL, tag)
+        baseActivity.addDialogListener(this)
+        baseActivity.showWaitingDialog(title, null, WaitingHolder.ProgressType.HORIZONTAL, tag)
     }
 
     protected fun showWaitingDialog(title: String?, cancelButton: String?, tag: String?) {
-        mBaseActivity.addDialogListener(this)
-        mBaseActivity.showWaitingDialog(title, cancelButton, WaitingHolder.ProgressType.HORIZONTAL, tag)
+        baseActivity.addDialogListener(this)
+        baseActivity.showWaitingDialog(title, cancelButton, WaitingHolder.ProgressType.HORIZONTAL, tag)
     }
 
     protected fun showWaitingDialog(
@@ -204,8 +204,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         gravity: Int,
         color: Int
     ) {
-        mBaseActivity.addDialogListener(this)
-        mBaseActivity.showWaitingDialog(title, cancelButton, type, tag, color, color, gravity)
+        baseActivity.addDialogListener(this)
+        baseActivity.showWaitingDialog(title, cancelButton, type, tag, color, color, gravity)
     }
 
     protected fun showQuestionDialog(
@@ -215,8 +215,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         cancelButton: String?,
         tag: String
     ) {
-        mBaseActivity.addDialogListener(this)
-        mBaseActivity.showQuestionDialog(title, tag, acceptButton, cancelButton, string)
+        baseActivity.addDialogListener(this)
+        baseActivity.showQuestionDialog(title, tag, acceptButton, cancelButton, string)
     }
 
     protected fun showEditDialogCreate(
@@ -228,8 +228,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         acceptButton: String?,
         cancelButton: String?
     ) {
-        mBaseActivity.addDialogListener(this)
-        mBaseActivity.showEditDialog(title, null, value, hint, endHint, acceptButton, cancelButton, false, null, tag)
+        baseActivity.addDialogListener(this)
+        baseActivity.showEditDialog(title, null, value, hint, endHint, acceptButton, cancelButton, false, null, tag)
     }
 
     protected fun showEditDialogRename(
@@ -240,18 +240,18 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         acceptButton: String?,
         cancelButton: String?
     ) {
-        mBaseActivity.addDialogListener(this)
-        mBaseActivity.showEditDialog(title, null, value, hint, null, acceptButton, cancelButton, false, null, tag)
+        baseActivity.addDialogListener(this)
+        baseActivity.showEditDialog(title, null, value, hint, null, acceptButton, cancelButton, false, null, tag)
     }
 
 
     protected fun showProgressDialog(title: String?, isHideButton: Boolean, cancelTitle: String?, tag: String?) {
-        mBaseActivity.addDialogListener(this)
-        mBaseActivity.showProgressDialog(title, isHideButton, cancelTitle, tag)
+        baseActivity.addDialogListener(this)
+        baseActivity.showProgressDialog(title, isHideButton, cancelTitle, tag)
     }
 
     protected fun updateProgressDialog(total: Int, progress: Int) {
-        mBaseActivity.updateProgressDialog(total, progress)
+        baseActivity.updateProgressDialog(total, progress)
     }
 
     /*
@@ -271,7 +271,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         snackbar.setText(string)
         snackbar.setAction(null, null)
         snackbar.show()
-        mSnackBar = snackbar
+        snackBar = snackbar
         return snackbar
     }
 
@@ -283,7 +283,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         snackbar.setText(text)
         snackbar.setAction(button, onClickListener)
         snackbar.show()
-        mSnackBar = snackbar
+        snackBar = snackbar
         return snackbar
     }
 
@@ -302,8 +302,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected fun showToast(string: String) {
-        mToast?.setText(string)
-        mToast?.show()
+        toast?.setText(string)
+        toast?.show()
     }
 
     /*
@@ -326,8 +326,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
 
     protected fun setActionBarTitle(title: String?) {
         if (title != null) {
-            mToolbarTitle = title
-            supportActionBar?.title = mToolbarTitle
+            toolbarTitle = title
+            supportActionBar?.title = toolbarTitle
         }
     }
 
@@ -347,7 +347,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
-            mBaseActivity = context as BaseActivity
+            baseActivity = context as BaseActivity
             addOnDispatchTouchEvent()
         } catch (e: ClassCastException) {
             throw RuntimeException(

@@ -158,7 +158,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     }
 
     private val downloadFile = registerForActivityResult(CreateDocument()) { data: Uri? ->
-        downloadFile(data ?: Uri.EMPTY)
+        data?.let { downloadFile(data) }
     }
 
     private val imagePick = registerForActivityResult(ImagePick()) { data: Uri? ->
@@ -301,7 +301,11 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun init(savedInstanceState: Bundle?) {
-        UiUtils.setColorFilter(requireContext(), progressBar.indeterminateDrawable, lib.toolkit.base.R.color.colorSecondary)
+        UiUtils.setColorFilter(
+            requireContext(),
+            progressBar.indeterminateDrawable,
+            lib.toolkit.base.R.color.colorSecondary
+        )
         connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         isDesktopMode = UiUtils.checkDeXEnabled(resources.configuration)
         isPageLoad = false
@@ -388,7 +392,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             if (url.contains(ApiContract.PERSONAL_SUBDOMAIN)) {
                 setAcceptCookie(true)
                 setCookie(URL(url).protocol + "://" + URL(url).host, "asc_auth_key=$token")
-                setAcceptThirdPartyCookies(webView,true)
+                setAcceptThirdPartyCookies(webView, true)
             }
         }
         webView.loadUrl(url, headers)
@@ -520,25 +524,20 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     }
 
     private fun downloadUrl(url: String) {
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
-            if (result) {
-                // Get name without extension
-                val path = Uri.parse(url).path
-                val elements = path?.split("/")?.toTypedArray()
-                val length = elements?.size ?: 0
-                val fileName = elements?.get(if (length > 0) length - 1 else 0) ?: ""
-                val title = StringUtils.getNameWithoutExtension(cloudFile!!.title)
-                if (fileName.isNotEmpty() && !fileName.startsWith(title)) {
-                    FirebaseUtils.addCrash(WebViewDownload::class.java.simpleName + " - wrong file name!")
-                    FirebaseUtils.addCrash("Url: $url")
-                    FirebaseUtils.addCrash("File name: $fileName")
-                    showSnackBar(R.string.errors_viewer_download_name)
-                    return@registerForActivityResult
-                }
-                downloadUrl = url
-                downloadFile.launch(fileName)
-            }
-        }.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        // Get name without extension
+        val path = Uri.parse(url).path
+        val elements = path?.split("/")?.toTypedArray()
+        val length = elements?.size ?: 0
+        val fileName = elements?.get(if (length > 0) length - 1 else 0) ?: ""
+        val title = StringUtils.getNameWithoutExtension(cloudFile!!.title)
+        if (fileName.isNotEmpty() && !fileName.startsWith(title)) {
+            FirebaseUtils.addCrash(WebViewDownload::class.java.simpleName + " - wrong file name!")
+            FirebaseUtils.addCrash("Url: $url")
+            FirebaseUtils.addCrash("File name: $fileName")
+            showSnackBar(R.string.errors_viewer_download_name)
+        }
+        downloadUrl = url
+        downloadFile.launch(fileName)
     }
 
     private fun downloadFile(uri: Uri) {

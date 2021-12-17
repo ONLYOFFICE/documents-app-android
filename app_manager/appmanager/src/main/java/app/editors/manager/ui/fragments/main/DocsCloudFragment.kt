@@ -2,6 +2,7 @@ package app.editors.manager.ui.fragments.main
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
@@ -100,6 +101,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 moveItem = menu.findItem(R.id.toolbar_selection_move)
                     .setVisible(cloudPresenter.isContextItemEditable)
                 restoreItem = menu.findItem(R.id.toolbar_selection_restore)
+                    .setVisible(cloudPresenter.isTrashMode)
                 copyItem = menu.findItem(R.id.toolbar_selection_copy)
                 downloadItem = menu.findItem(R.id.toolbar_selection_download)
                     .setVisible(!cloudPresenter.isTrashMode)
@@ -133,7 +135,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun showMoveCopyDialog(names: ArrayList<String>, action: String, titleFolder: String) {
         moveCopyDialog = newInstance(names, action, titleFolder)
         moveCopyDialog?.dialogButtonOnClick = this
-        moveCopyDialog?.show(requireFragmentManager(), MoveCopyDialog.TAG)
+        moveCopyDialog?.show(parentFragmentManager, MoveCopyDialog.TAG)
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {

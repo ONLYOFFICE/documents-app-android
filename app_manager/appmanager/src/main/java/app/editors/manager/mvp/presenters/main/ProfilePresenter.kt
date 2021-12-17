@@ -5,7 +5,6 @@ import android.content.Context
 import app.documents.core.account.AccountDao
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.RecentDao
-import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
@@ -84,14 +83,14 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { it.response }
-            .subscribe({
+            .subscribe({ user ->
                 CoroutineScope(Dispatchers.Default).launch {
                     accountDao.updateAccount(
                         account.copy(
-                            avatarUrl = it.avatarMedium,
-                            name = it.displayName,
-                            isAdmin = it.isAdmin,
-                            isVisitor = it.isVisitor
+                            avatarUrl = user.avatarMedium,
+                            name = user.getName(),
+                            isAdmin = user.isAdmin,
+                            isVisitor = user.isVisitor
                         )
                     )
                 }

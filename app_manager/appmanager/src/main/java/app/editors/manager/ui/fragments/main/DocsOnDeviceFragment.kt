@@ -23,6 +23,7 @@ import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
+import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MediaActivity
@@ -188,6 +189,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
             moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
             copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
+            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
             downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
             activity?.showNavigationButton(true)
         }
@@ -289,7 +291,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         actionBottomDialog?.let {
             it.onClickListener = this
             it.isLocal = true
-            it.show(requireFragmentManager(), ActionBottomDialog.TAG)
+            it.show(parentFragmentManager, ActionBottomDialog.TAG)
         }
     }
 
@@ -297,7 +299,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         explorerAdapter?.let {
             it.removeItem(item)
             it.checkHeaders()
-            setPlaceholder(it.itemList.size == 0)
+            setPlaceholder(it.itemList?.size == 0)
             onClearMenu()
         }
     }
@@ -306,7 +308,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         explorerAdapter?.let {
             it.removeItems(ArrayList<Entity>(items))
             it.checkHeaders()
-            setPlaceholder(it.itemList.size == 0)
+            setPlaceholder(it.itemList?.size == 0)
             onClearMenu()
         }
     }
@@ -341,6 +343,10 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onOpenMedia(state: OpenState.Media) {
         MediaActivity.show(this, state.explorer, state.isWebDav)
+    }
+
+    override fun onShowPortals() {
+        PortalsActivity.showPortals(this)
     }
 
     override fun setVisibilityActionButton(isShow: Boolean) {

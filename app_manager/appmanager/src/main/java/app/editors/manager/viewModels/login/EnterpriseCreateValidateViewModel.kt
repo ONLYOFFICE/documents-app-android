@@ -18,6 +18,7 @@ import java.util.*
 import javax.inject.Inject
 
 sealed class CreatePortalState {
+    object None: CreatePortalState()
     object Progress : CreatePortalState()
     class Success(val portalModel: PortalModel): CreatePortalState()
     class Error(@StringRes val res: Int? = null) : CreatePortalState()
@@ -113,6 +114,7 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
     private fun onSuccessRequest(portalName: String, model: PortalModel) {
         networkSettings.setBaseUrl(portalName + domain)
         _stateLiveData.value = CreatePortalState.Success(model)
+        _stateLiveData.value = CreatePortalState.None
     }
 
     private fun checkError(error: Throwable) {
@@ -146,20 +148,21 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
     }
 
     private fun getRegion(): String {
-        try {
-            val tm = serviceProvider.getTelephoneService()
-            val simCountry = tm?.simCountryIso
-            if (simCountry != null && simCountry.length == 2) {
-                return simCountry.uppercase()
-            } else if (tm?.phoneType != TelephonyManager.PHONE_TYPE_CDMA) {
-                val networkCountry = tm?.networkCountryIso
-                if (networkCountry != null && networkCountry.length == 2) {
-                    return networkCountry.uppercase()
-                }
-            }
-        } catch (e: Exception) {
-            // No need handle
-        }
+        //TODO bug 54085
+//        try {
+//            val tm = serviceProvider.getTelephoneService()
+//            val simCountry = tm?.simCountryIso
+//            if (simCountry != null && simCountry.length == 2) {
+//                return simCountry.uppercase()
+//            } else if (tm?.phoneType != TelephonyManager.PHONE_TYPE_CDMA) {
+//                val networkCountry = tm?.networkCountryIso
+//                if (networkCountry != null && networkCountry.length == 2) {
+//                    return networkCountry.uppercase()
+//                }
+//            }
+//        } catch (e: Exception) {
+//            // No need handle
+//        }
         return resourcesProvider.getLocale() ?: "EU"
     }
 

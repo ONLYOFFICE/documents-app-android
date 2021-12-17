@@ -16,7 +16,6 @@ import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.NewNotificationUtils
-import app.editors.manager.managers.works.DownloadWork
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -66,7 +65,8 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
                         PathUtils.getPath(applicationContext, to ?: Uri.EMPTY),
                         StringUtils.getMimeTypeFromPath(
                             file?.name ?: ""
-                        )
+                        ),
+                        to
                     )
                 }
 
@@ -77,7 +77,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
                         notificationUtils.showCanceledNotification(id.hashCode(), file?.name)
                     } else {
                         notificationUtils.showErrorNotification(id.hashCode(), file?.name)
-                        sendBroadcastUnknownError(id, "", file?.name)
+                        sendBroadcastUnknownError(id, "", file?.name, to)
                     }
                     file?.delete()
                 }
@@ -111,7 +111,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
         responseMessage = try {
             responseBody?.string()
         } catch (e: Exception) {
-            sendBroadcastUnknownError(id, "", file!!.name)
+            sendBroadcastUnknownError(id, "", file!!.name, to)
             file?.delete()
             return
         }
@@ -122,13 +122,13 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
                     errorMessage = jsonObject.getJSONObject(KEY_ERROR_INFO).getString(
                         KEY_ERROR_INFO_MESSAGE
                     )
-                    DownloadWork.sendBroadcastError(id, "", file?.name, errorMessage)
+                   sendBroadcastError(id, "", file?.name, errorMessage)
                 } catch (e: JSONException) {
                     Log.e(TAG, "onErrorHandle()", e)
                     FirebaseUtils.addCrash(e)
                 }
             } else {
-                DownloadWork.sendBroadcastUnknownError(id, "", file?.name)
+                sendBroadcastUnknownError(id, "", file?.name, to)
                 file?.delete()
                 return
             }
@@ -137,25 +137,25 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
     private fun onError(errorMessage: String) {
         when (errorMessage) {
-            ApiContract.Errors.EXCEED_FILE_SIZE_100 -> DownloadWork.sendBroadcastError(
+            ApiContract.Errors.EXCEED_FILE_SIZE_100 -> sendBroadcastError(
                 id,
                 "",
                 file?.name,
                 applicationContext.getString(R.string.download_manager_exceed_size_100)
             )
-            ApiContract.Errors.EXCEED_FILE_SIZE_25 -> DownloadWork.sendBroadcastError(
+            ApiContract.Errors.EXCEED_FILE_SIZE_25 -> sendBroadcastError(
                 id,
                 "",
                 file?.name,
                 applicationContext.getString(R.string.download_manager_exceed_size_25)
             )
-            else -> DownloadWork.sendBroadcastError(id, "", file?.name, errorMessage)
+            else -> sendBroadcastError(id, "", file?.name, errorMessage)
         }
     }
 
     private fun sendBroadcastDownloadComplete(
         id: String?, url: String?, title: String?,
-        path: String?, mime: String?
+        path: String?, mime: String?, uri: Uri?
     ) {
         val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_COMPLETE)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
@@ -163,14 +163,16 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_PATH, path)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_MIME_TYPE, mime)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_URI, uri.toString())
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 
-    private fun sendBroadcastUnknownError(id: String?, url: String?, title: String?) {
+    private fun sendBroadcastUnknownError(id: String?, url: String?, title: String?, uri: Uri?) {
         val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_URI, uri.toString())
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 

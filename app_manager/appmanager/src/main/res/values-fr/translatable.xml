@@ -26,8 +26,8 @@
     <string name="bottom_sheet_cloud_title">Clouds</string>
     <string name="bottom_sheet_portal_title">Portail</string>
     <string name="chooser_activity_not_found">Impossible de trouver l’application pour cette action</string>
-    <string name="chooser_email_client">Choisissez un client de messagerie...</string>
-    <string name="chooser_web_browser">Choisissez le navigateur...</string>
+    <string name="chooser_email_client">Choisissez un client de messagerie…</string>
+    <string name="chooser_web_browser">Choisissez le navigateur…</string>
     <string name="countries_codes_title">Sélectionner le pays</string>
     <string name="device_path_file_error">Ce fichier n’existe pas.</string>
     <string name="device_trash_files_restore">Restaurer</string>
@@ -78,8 +78,8 @@
     <string name="dialog_question_delete_folder">Le dossier sera irrémédiablement supprimé.</string>
     <string name="dialogs_sign_in_portal_header_text">Se connecter au bureau dans les nuages</string>
     <string name="dialogs_sign_in_register_portal">Enregistrement du bureau dans les nuages</string>
-    <string name="dialogs_wait_title">Opération en cours...</string>
-    <string name="dialogs_wait_title_storage">Connexion au stockage...</string>
+    <string name="dialogs_wait_title">Opération en cours…</string>
+    <string name="dialogs_wait_title_storage">Connexion au stockage…</string>
     <string name="download_manager_cancel">Téléchargement annulé</string>
     <string name="download_manager_complete">Téléchargement terminé</string>
     <string name="download_manager_error">Erreur de téléchargement</string>
@@ -124,7 +124,6 @@
     <string name="fragment_on_device_title">Sur l’appareil</string>
     <string name="fragment_profile_title">Profil</string>
     <string name="fragment_recent_title">Récents</string>
-    <string name="item_owner_self">Moi</string>
     <string name="list_action_doc">Document texte</string>
     <string name="list_action_folder">Dossier</string>
     <string name="list_action_photo">Prendre une photo</string>
@@ -163,7 +162,7 @@
     <string name="login_api_init_error">Erreur d’initialisation</string>
     <string name="login_api_init_portal_error">Erreur de syntaxe du nom de bureau dans les nuages</string>
     <string name="login_api_portal_name">Nom du bureau dans les nuages erronée. Exemple: exemple.onlyoffice.com</string>
-    <string name="login_api_portal_name_content">Nom du compte doit être constitué de A-Z, a-z, 0-9</string>
+    <string name="login_api_portal_name_content">Nom du compte doit être constitué de A–Z, a–z, 0–9</string>
     <string name="login_api_portal_name_length">Le nom du compte doit comporter plus de 6 caractères</string>
     <string name="login_create_portal_address_hint">Nom du compte</string>
     <string name="login_create_portal_email_hint">E-mail</string>
@@ -267,7 +266,7 @@
     <string name="placeholder_access_denied">Accès refusé</string>
     <string name="placeholder_connection">Erreur de connexion</string>
     <string name="placeholder_empty">Dossier vide</string>
-    <string name="placeholder_loading_files">Chargement de fichiers...</string>
+    <string name="placeholder_loading_files">Chargement de fichiers…</string>
     <string name="placeholder_media_error">Impossible de charger média</string>
     <string name="placeholder_no_groups">Pas de groupes</string>
     <string name="placeholder_no_subfolders">Aucun sous-dossier</string>
@@ -344,10 +343,10 @@
     <string name="toolbar_menu_main_options">Options</string>
     <string name="toolbar_menu_main_remove_from_list">Retirer de la liste</string>
     <string name="toolbar_menu_main_rename">Renommer</string>
-    <string name="toolbar_menu_main_select">Sélectionner...</string>
+    <string name="toolbar_menu_main_select">Sélectionner…</string>
     <string name="toolbar_menu_main_select_all">Sélectionner tout</string>
     <string name="toolbar_menu_main_share">Partager</string>
-    <string name="toolbar_menu_search_hint">Rechercher...</string>
+    <string name="toolbar_menu_search_hint">Rechercher…</string>
     <string name="toolbar_menu_search_result">Résultat de recherche</string>
     <string name="toolbar_menu_sort_asc">Ascendant</string>
     <string name="toolbar_menu_sort_by">Trier par</string>
@@ -421,7 +420,52 @@
     <string name="login_password_recovery_success_hint">Si l\'utilisateur avec l\'email %1$s existe, l\'instruction de changement de mot de passe a été envoyée sur cet email.</string>
     <string name="login_password_recovery_toolbar_title">Récupération du mot de passe</string>
     <string name="download_manager_archiving_progress">Création d\'une archive</string>
-    <string name="download_manager_exceed_size_100">Le fichier dépasse la taille maximale de 100MB </string>
-    <string name="download_manager_exceed_size_25">Le fichier dépasse la taille maximale de 25MB </string>
-
+    <string name="download_manager_exceed_size_100">Le fichier dépasse la taille maximale de 100MB</string>
+    <string name="download_manager_exceed_size_25">Le fichier dépasse la taille maximale de 25MB</string>
+    <string name="snackbar_undo">ANNULER</string>
+    <string name="errors_server_auth_too_many_attempts">Trop de tentatives. Réessayez plus tard</string>
+    <string name="navigation_drawer_menu_feedback">Commentaires et assistance</string>
+    <string name="share_snackbar_remove_user">L\'utilisateur est supprimé</string>
+    <string name="share_group_admin">Admin</string>
+    <string name="share_group_everyone">Tout le monde</string>
+    <string name="storage_onedrive_error_opened">Le fichier est ouvert sur le portail</string>
+    <string name="storage_onedrive_error_exist">Le fichier avec le même nom existe déjà dans ce dossier.</string>
+    <string name="operation_panel_restore_button">Restaurer ici</string>
+    <string name="trash_snackbar_move_text">Vous pouvez restaurer les fichiers de la corbeille</string>
+    <string name="trash_snackbar_move_button">RESTAURER</string>
+    <string name="trash_popup_move">Restaurer vers</string>
+    <string name="on_boarding_back_button">RETOUR</string>
+    <string name="auth_header_screen_4">Entrez le code</string>
+    <string name="auth_info_screen_4">Entrez le code de votre application d\'authentification dans le champ de saisie</string>
+    <string name="auth_step_title">Étape %1$d de %2$d</string>
+    <string name="auth_install_button">Installer</string>
+    <string name="auth_confirm_button">Confirmer</string>
+    <string name="auth_clipboard_key_copied">Clé copiée dans le presse-papiers</string>
+    <string name="auth_edit_hint">Code</string>
+    <string name="app_settings_security">Sécurité</string>
+    <string name="app_settings_passcode">Code de Verrouillage</string>
+    <string name="app_settings_disable">Désactiver</string>
+    <string name="app_settings_enable">Activer</string>
+    <string name="app_Settings_passcode_enable">Activer le code d\'accès</string>
+    <string name="app_settings_passcode_change">Modifier le code d\'accès</string>
+    <string name="app_settings_passcode_fingerprint">Utiliser l\'empreinte digitale pour déverrouiller</string>
+    <string name="app_settings_passcode_enter_title">Entrez un code d\'accès</string>
+    <string name="app_settings_passscode_enter_full_title">Entrez le code d\'accès pour déverrouiller l\'application</string>
+    <string name="app_settings_passcode_enter_subtitle">Choisissez un code d\'accès pour déverrouiller l\'application</string>
+    <string name="app_settings_passcode_confirm_title">Confirmez le code d\'accès</string>
+    <string name="app_settings_passcode_confirm_subtitle">Saisissez à nouveau le code d\'accès</string>
+    <string name="app_settings_passcode_confirm_error">Les codes d\'accès ne correspondent pas</string>
+    <string name="app_settings_passcode_change_disable_title">Entrez votre code d\'accès actuel</string>
+    <string name="app_settings_passcode_change_disable_error">Un code d\'accès incorrect a été saisi</string>
+    <string name="app_settings_passcode_description"> - C\'est le code demandé au démarrage de l\'application. Attention ! Si vous oubliez le code d\'accès, vous devez supprimer ou réinstaller l\'application. Tous les documents présents sur l\'appareil seront perdus.</string>
+    <string name="app_settings_passcode_fingerprint_title">Accès aux Documents</string>
+    <string name="item_owner_self">Moi</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           En continuant, vous acceptez la
+            <a href="%1$s">Politique de confidentialité</a>
+            et les
+            <a href="%2$s">Conditions de service</a>
+        ]]>
+</string>
 </resources>

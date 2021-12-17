@@ -46,6 +46,11 @@ class ContextBottomDialog : BaseBottomDialog() {
             setItemSharedState(state.isShared)
         }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         restoreValues(savedInstanceState)
         return super.onCreateDialog(savedInstanceState)
@@ -58,8 +63,8 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     @SuppressLint("RestrictedApi")
     override fun setupDialog(dialog: Dialog, style: Int) {
-        init(dialog)
         super.setupDialog(dialog, style)
+        init(dialog)
     }
 
     override fun onDestroyView() {
@@ -159,7 +164,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             setDeleteVisibility(state.isContextEditable)
 
             /** Item can edit */
-            binding.listExplorerContextRename.isVisible = state.isItemEditable
+            binding.listExplorerContextRename.isVisible = state.isCanRename
 
             /** Item can share */
             binding.viewLineSeparatorShare.root.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox && !state.isGoogleDrive
@@ -286,7 +291,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     companion object {
         @JvmField
-        val TAG = ContextBottomDialog::class.java.simpleName
+        val TAG: String = ContextBottomDialog::class.java.simpleName
         private const val TAG_STATE = "TAG_STATE"
 
         @JvmStatic
@@ -302,6 +307,7 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isFolder: Boolean = false,
         var isShared: Boolean = false,
         var isCanShare: Boolean = false,
+        var isCanRename: Boolean = false,
         var isDocs: Boolean = false,
         var isStorage: Boolean = false,
         var isItemEditable: Boolean = false,
