@@ -78,7 +78,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                getShareList(it.response)
+                getShareList(it.response, true)
             }, { error ->
                 fetchError(error)
             })
@@ -120,7 +120,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             .map { it.response }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                getShareList(it)
+                getShareList(it, true)
             }, { fetchError(it) })
     }
 
@@ -278,12 +278,12 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
      * Callbacks for response
      * */
 
-    private fun getShareList(shareList: List<Share>) {
+    private fun getShareList(shareList: List<Share>, isFolder: Boolean = false) {
         isAccessDenied = false
-        val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() && !it.isOwner}
-            .map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
+        val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() && !it.isOwner || (it.isOwner && isFolder) }
+            .map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
         val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }
-            .map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
+            .map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
             .sortedWith(groupComparator())
 
         shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {

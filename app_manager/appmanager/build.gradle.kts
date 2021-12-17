@@ -60,7 +60,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 316
+        versionCode = 332
         versionName = "5.3.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -265,19 +265,19 @@ dependencies {
     implementation(Libs.androidWork)
 
     //TODO add to base module
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
 
-    implementation("androidx.fragment:fragment-ktx:1.3.6")
+    implementation("androidx.fragment:fragment-ktx:1.4.0")
 
     //Compose
     implementation("androidx.compose.ui:ui:${AndroidX.composeVersion}")
     implementation("androidx.compose.material:material:${AndroidX.composeVersion}")
     implementation("androidx.compose.ui:ui-tooling-preview:${AndroidX.composeVersion}")
     debugImplementation("androidx.compose.ui:ui-tooling:${AndroidX.composeVersion}")
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
-    implementation("androidx.activity:activity-compose:1.3.1")
+    implementation("androidx.navigation:navigation-compose:2.4.0-beta02")
+    implementation(AndroidX.composeActivity)
     implementation( "androidx.compose.runtime:runtime-livedata:${AndroidX.composeVersion}")
 
 }

@@ -55,7 +55,9 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     fun getState(fileData: Uri? = null) {
-        if (StringUtils.convertServerVersion(networkSetting.serverVersion) < 11) {
+        if (StringUtils.convertServerVersion(networkSetting.serverVersion) < 11 || networkSetting.getBaseUrl()
+                .contains(ApiContract.PERSONAL_SUBDOMAIN)
+        ) {
             accountJson?.let { jsonAccount ->
                 viewState.onFinishRequest()
                 Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
@@ -68,7 +70,9 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         } else {
             disposable = getPortalModules().subscribe({
                 viewState.onFinishRequest()
-                accountJson?.let { account -> viewState.onRender(account, sections) }
+                accountJson?.let { account ->
+                    viewState.onRender(account, sections)
+                }
             }) { throwable: Throwable -> fetchError(throwable) }
         }
     }
@@ -111,14 +115,16 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     private fun getPortalModules(): Observable<Boolean> {
-        return Observable.zip(api.getRootFolder(
-            mapOf("filterType" to 2),
-            mapOf(
-                "withsubfolders" to false,
-                "withoutTrash" to false,
-                "withoutAdditionalFolder" to false
-            )
-        ), api.getModules(listOf(Constants.Modules.PROJECT_ID)), { cloudTree, modules ->
+        return Observable.zip(
+            api.getRootFolder(
+                mapOf("filterType" to 2),
+                mapOf(
+                    "withsubfolders" to false,
+                    "withoutTrash" to false,
+                    "withoutAdditionalFolder" to false
+                )
+            ), api.getModules(listOf(Constants.Modules.PROJECT_ID))
+        ) { cloudTree, modules ->
             if (cloudTree.response != null && modules.response != null) {
                 preferenceTool.isProjectDisable = !modules.response[0].isEnable
                 sections = cloudTree.response
@@ -132,7 +138,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 }
             }
             return@zip true
-        })
+        }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -141,7 +147,11 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         fileData?.let { data ->
             if (data.scheme?.equals("oodocuments") == true && data.host.equals("openfile")) {
                 val dataModel = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(data.query))
-                if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(account.login, ignoreCase = true) == true) {
+                if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(
+                        account.login,
+                        ignoreCase = true
+                    ) == true
+                ) {
                     viewState.setFileData(Json.encodeToString(dataModel))
                 } else {
                     viewState.onError(R.string.error_recent_enter_account)

@@ -11,7 +11,7 @@ import app.documents.core.login.LoginResponse
 import app.documents.core.network.models.login.request.RequestSignIn
 import app.documents.core.network.models.login.response.ResponseSignIn
 import app.editors.manager.app.App
-import app.editors.manager.ui.activities.login.SignInActivity.Companion.getAddAccountIntent
+import app.editors.manager.ui.activities.login.PortalsActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -40,7 +40,7 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
         return Bundle().apply {
             putParcelable(
                 AccountManager.KEY_INTENT,
-                getAddAccountIntent(context, accountType, authTokenType, response)
+                PortalsActivity.getAddAccountIntent(context, accountType, authTokenType, response)
             )
         }
     }

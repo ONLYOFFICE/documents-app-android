@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom"
-        app:labelVisibilityMode="selected"
+        app:labelVisibilityMode="labeled"
         app:layout_behavior="app.editors.manager.ui.views.behaviors.BottomNavigationBehavior"
         app:layout_insetEdge="bottom"
         app:menu="@menu/bottom_navigation" />

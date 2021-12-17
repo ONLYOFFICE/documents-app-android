@@ -4,7 +4,7 @@
     <string name="about_license">Лицензионное соглашение</string>
     <string name="about_policy">Конфиденциальность</string>
     <string name="about_terms">Условия использования</string>
-    <string name="about_title">О программе</string>
+    <string name="about_title">О приложении</string>
     <string name="about_website">Сайт ONLYOFFICE</string>
     <string name="actionbar_title_main">Документы</string>
     <string name="app_name">Документы</string>
@@ -132,7 +132,6 @@
     <string name="fragment_on_device_title">На устройстве</string>
     <string name="fragment_profile_title">Профиль</string>
     <string name="fragment_recent_title">Недавние</string>
-    <string name="item_owner_self">Я</string>
     <string name="list_action_doc">Текстовый документ</string>
     <string name="list_action_folder">Папка</string>
     <string name="list_action_photo">Сделать фото</string>
@@ -242,7 +241,6 @@
     <string name="media_image_share_chooser">Выберите приложение, чтобы поделиться</string>
     <string name="media_video_error">Неизвестная ошибка воспроизведения: %1$s</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
-    <string name="navigation_drawer_menu_about">О программе</string>
     <string name="navigation_drawer_menu_add_account">Добавить аккаунт</string>
     <string name="navigation_drawer_menu_common">Общие</string>
     <string name="navigation_drawer_menu_feedback">Обратная связь и поддержка</string>
@@ -278,7 +276,8 @@
     <string name="operation_choose_section">Выбор раздела</string>
     <string name="operation_complete_message">Операция завершена</string>
     <string name="operation_delete_impossible">Невозможно удалить файл. Файл открыт на портале.</string>
-    <string name="operation_delete_multiple">. Один или несколько файлов не были удалены, так как открыты на портале</string>>
+    <string name="operation_delete_multiple">. Один или несколько файлов не были удалены, так как открыты на портале</string>
+    >
     <string name="operation_empty_lists_data">Выберите элементы для выполнения операции</string>
     <string name="operation_error_move_to_same">Нельзя переносить в ту же самую папку</string>
     <string name="operation_error_move_to_same_subfolder">Нельзя переносить в ту же самую подпапку</string>
@@ -441,5 +440,50 @@
     <string name="login_not_authorization_info_token">Время сеанса истекло</string>
     <string name="download_manager_exceed_size_100">Превышен максимальный размер файла (100МБ)</string>
     <string name="download_manager_exceed_size_25">Превышен максимальный размер файла (25МБ)</string>
+    <string name="snackbar_undo">ОТМЕНИТЬ</string>
+    <string name="errors_server_auth_too_many_attempts">Слишком много попыток. Повторите попытку позже</string>
+    <string name="share_snackbar_remove_user">Пользователь удален</string>
+    <string name="share_group_admin">Администратор</string>
+    <string name="share_group_everyone">Все</string>
+    <string name="storage_onedrive_error_opened">Файл открыт на портале</string>
+    <string name="storage_onedrive_error_exist">Файл с таким именем уже существует в этой папке</string>
+    <string name="operation_panel_restore_button">Восстановить здесь</string>
+    <string name="trash_snackbar_move_text">Вы можете восстановить файлы из КОРЗИНЫ</string>
+    <string name="trash_snackbar_move_button">ВОССТАНОВИТЬ</string>
+    <string name="trash_popup_move">Восстановить в</string>
+    <string name="on_boarding_back_button">НАЗАД</string>
+    <string name="auth_header_screen_4">Введите код</string>
+    <string name="auth_info_screen_4">Введите код из приложения для аутентификации в поле ввода</string>
+    <string name="auth_step_title">Шаг %1$ из %2$</string>
+    <string name="auth_install_button">Установить</string>
+    <string name="auth_confirm_button">Подтвердить</string>
+    <string name="auth_clipboard_key_copied">Ключ скопирован в буфер</string>
+    <string name="auth_edit_hint">Код</string>
+    <string name="app_settings_security">Безопасность</string>
+    <string name="app_settings_passcode">Код блокировки</string>
+    <string name="app_settings_disable">Отключить</string>
+    <string name="app_settings_enable">Включить</string>
+    <string name="app_Settings_passcode_enable">Включить код доступа</string>
+    <string name="app_settings_passcode_change">Изменить код доступа</string>
+    <string name="app_settings_passcode_fingerprint">Использовать отпечаток пальца для разблокировки</string>
+    <string name="app_settings_passcode_enter_title">Ввести код доступа</string>
+    <string name="app_settings_passscode_enter_full_title">Введите код доступа для разблокировки приложения</string>
+    <string name="app_settings_passcode_enter_subtitle">Выберите код доступа для разблокировки приложения</string>
+    <string name="app_settings_passcode_confirm_title">Подтвердите код доступа</string>
+    <string name="app_settings_passcode_confirm_subtitle">Введите код доступа еще раз</string>
+    <string name="app_settings_passcode_confirm_error">Коды доступа не совпадают</string>
+    <string name="app_settings_passcode_change_disable_title">Введите текущий код доступа</string>
+    <string name="app_settings_passcode_change_disable_error">Введен неверный код доступа</string>
+    <string name="app_settings_passcode_description"> - код, запрашиваемый при запуске приложения.\n\nВнимание! Если вы забыли код доступа, необходимо удалить или переустановить приложение. Все документы на устройстве будут потеряны. </string>
+    <string name="app_settings_passcode_fingerprint_title">Доступ к Документам</string>
+    <string name="item_owner_self">Я</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           Продолжая, вы соглашаетесь с
+            <a href="%1$s">Политикой конфиденциальности</a>
+            и
+            <a href="%2$s">Условиями использования</a>
+        ]]>
+    </string>
 
 </resources>

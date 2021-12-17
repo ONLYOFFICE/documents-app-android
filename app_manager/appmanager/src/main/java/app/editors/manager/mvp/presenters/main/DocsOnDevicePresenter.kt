@@ -5,14 +5,17 @@ import android.content.ClipData
 import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import androidx.work.Data
 import app.documents.core.account.Recent
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.webDavApi
 import app.editors.manager.managers.providers.LocalFileProvider
 import app.editors.manager.managers.providers.ProviderError
 import app.editors.manager.managers.providers.WebDavFileProvider
+import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
@@ -203,15 +206,29 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun uploadToMy(uri: Uri) {
-        if (webDavFileProvider != null) {
-            CoroutineScope(Dispatchers.Default).launch {
-                val id = accountDao.getAccountOnline()?.webDavPath
-                withContext(Dispatchers.Main) {
-                    uploadWebDav(id ?: "", listOf(uri))
+        mContext.accountOnline?.let { account ->
+            if (webDavFileProvider == null) {
+                when {
+                    mPreferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(mContext) -> {
+                        viewState.onSnackBar(mContext.getString(R.string.upload_error_wifi))
+                    }
+                    ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE -> {
+                        viewState.onSnackBar(mContext.getString(R.string.upload_manager_error_file_size))
+                    }
+                    else -> {
+                        if (!account.isWebDav) {
+                            val workData = Data.Builder()
+                                .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                                .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
+                                .putString(UploadWork.TAG_FOLDER_ID, null)
+                                .build()
+                            startUpload(workData)
+                        }
+                    }
                 }
+            } else {
+                uploadWebDav(account.webDavPath ?: "", listOf(uri))
             }
-        } else {
-            super.uploadToMy(uri)
         }
     }
 
@@ -400,10 +417,16 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun upload() {
-        if (mItemClicked != null) {
-            val uri = Uri.fromFile(File(mItemClicked!!.id))
-            uri?.let { uploadToMy(it) }
+        mItemClicked?.let { item ->
+            mContext.accountOnline?.let {
+                Uri.fromFile(File(item.id))?.let { uri ->
+                    uploadToMy(uri)
+                }
+            } ?: run {
+                viewState.onShowPortals()
+            }
         }
+
     }
 
     @SuppressLint("MissingPermission")

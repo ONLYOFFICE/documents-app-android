@@ -50,6 +50,7 @@
 
     <!-- Items -->
     <dimen name="item_one_line_height">48dp</dimen>
+    <dimen name="item_onehalf_line_height">64dp</dimen>
     <dimen name="item_two_line_height">72dp</dimen>
     <dimen name="item_three_line_height">96dp</dimen>
 

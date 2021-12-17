@@ -28,8 +28,6 @@ import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.holders.*
 import moxy.MvpAppCompatActivity
-import java.util.*
-import kotlin.collections.HashSet
 
 
 abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStackChangedListener {
@@ -91,7 +89,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     protected var mOnDispatchTouchEvent: MutableMap<Int, OnDispatchTouchEvent>? = null
     protected var mToast: Toast? = null
     protected var mSnackBar: Snackbar? = null
-    protected var mCommonDialog: CommonDialog? = null
+    protected var commonDialog: CommonDialog? = null
     protected var mOnDialogClickListener: CommonDialog.OnClickListener? = OnCommonDialogClick()
 
     val dialogListeners: HashSet<CommonDialog.OnClickListener> = hashSetOf()
@@ -112,7 +110,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     override fun onDestroy() {
         super.onDestroy()
         supportFragmentManager.removeOnBackStackChangedListener(this)
-        mCommonDialog = null
+        commonDialog = null
         mToast = null
         mSnackBar = null
         mOnDialogClickListener = null
@@ -216,13 +214,13 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     private fun setDialog() {
-        mCommonDialog = supportFragmentManager.findFragmentByTag(CommonDialog.TAG) as CommonDialog?
-        if (mCommonDialog == null) {
-            mCommonDialog = CommonDialog.newInstance()
+        commonDialog = supportFragmentManager.findFragmentByTag(CommonDialog.TAG) as CommonDialog?
+        if (commonDialog == null) {
+            commonDialog = CommonDialog.newInstance()
         }
 
-        mCommonDialog!!.setFragmentManager(supportFragmentManager)
-        mCommonDialog!!.setOnClickListener(mOnDialogClickListener!!)
+        commonDialog!!.setFragmentManager(supportFragmentManager)
+        commonDialog!!.setOnClickListener(mOnDialogClickListener!!)
     }
 
     fun addDialogListener(onDialogClickListener: CommonDialog.OnClickListener?) {
@@ -235,9 +233,9 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
 
     fun hideDialog() {
         if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-            mCommonDialog?.view?.post {
-                if (mCommonDialog?.isAdded == true) {
-                    mCommonDialog?.dismiss()
+            commonDialog?.view?.post {
+                if (commonDialog?.isAdded == true) {
+                    commonDialog?.dismiss()
                 }
             }
         }
@@ -314,7 +312,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         cancelTitle: String? = null,
         tag: String? = null
     ): EditLineHolder.Builder? {
-        return mCommonDialog?.editLine()?.apply {
+        return commonDialog?.editLine()?.apply {
             setTopTitle(title)
             setBottomTitle(bottomTitle)
             setEditValue(value)
@@ -330,7 +328,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         cancelTitle: String? = null,
         tag: String? = null
     ): WaitingHolder.Builder? {
-        return mCommonDialog?.waiting()?.apply {
+        return commonDialog?.waiting()?.apply {
             setTopTitle(topTitle)
             setCancelTitle(cancelTitle)
             setTag(tag)
@@ -344,7 +342,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         question: String? = null,
         tag: String? = null
     ): QuestionHolder.Builder? {
-        return mCommonDialog?.question()?.apply {
+        return commonDialog?.question()?.apply {
             setTopTitle(title)
             setQuestion(question)
             setAcceptTitle(acceptTitle)
@@ -359,7 +357,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         cancelTitle: String? = null,
         tag: String? = null
     ): InfoHolder.Builder? {
-        return mCommonDialog?.info()?.apply {
+        return commonDialog?.info()?.apply {
             setTopTitle(title)
             setBottomTitle(info)
             setCancelTitle(cancelTitle)
@@ -374,7 +372,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         cancelTitle: String? = null,
         tag: String? = null
     ): EditMultilineHolder.Builder? {
-        return mCommonDialog?.editMultiline()?.apply {
+        return commonDialog?.editMultiline()?.apply {
             setTopTitle(title)
             setEditHintValue(hint)
             setAcceptTitle(acceptTitle)
@@ -388,7 +386,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         cancelTitle: String? = null,
         tag: String? = null
     ): ProgressHolder.Builder? {
-        return mCommonDialog?.progress()?.apply {
+        return commonDialog?.progress()?.apply {
             setTopTitle(title)
             setCancelTitle(cancelTitle)
             setTag(tag)
@@ -491,7 +489,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     fun updateProgressDialog(total: Int, progress: Int) {
-        mCommonDialog?.progress()?.update(total, progress)
+        commonDialog?.progress()?.update(total, progress)
     }
 
 

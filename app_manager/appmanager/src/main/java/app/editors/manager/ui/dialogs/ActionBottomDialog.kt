@@ -27,6 +27,11 @@ class ActionBottomDialog : BaseBottomDialog() {
     var isWebDav = false
     var onClickListener: OnClickListener? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         restoreValues(savedInstanceState)
         return super.onCreateDialog(savedInstanceState)
@@ -98,24 +103,22 @@ class ActionBottomDialog : BaseBottomDialog() {
             it.viewLineSeparatorStorage.viewLineSeparator.isVisible = isThirdParty
             it.listExplorerActionStorage.isVisible = isThirdParty
 
-            it.listExplorerActionDocs.isVisible = !isDocs || isLocal
-            it.listExplorerActionPresentation.isVisible = !isDocs || isLocal
-            it.listExplorerActionSheet.isVisible = !isDocs || isLocal
+            it.listExplorerActionDocs.isVisible = isDocs || isLocal
+            it.listExplorerActionPresentation.isVisible = isDocs || isLocal
+            it.listExplorerActionSheet.isVisible = isDocs || isLocal
 
-            it.listExplorerActionUpload.isVisible = !isLocal || isWebDav
-            it.listExplorerActionImport.isVisible = isLocal
+            it.listExplorerActionUpload.isVisible = isLocal && isWebDav
         }
     }
 
     companion object {
 
-        @JvmField
-        val TAG = ActionBottomDialog::class.java.simpleName
+        val TAG: String = ActionBottomDialog::class.java.simpleName
+
         private const val TAG_THIRD_PARTY = "TAG_THIRD_PARTY"
         private const val TAG_DOCS = "TAG_DOCS"
         private const val TAG_LOCAL = "TAG_LOCAL"
 
-        @JvmStatic
         fun newInstance(): ActionBottomDialog {
             return ActionBottomDialog()
         }
