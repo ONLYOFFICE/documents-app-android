@@ -277,6 +277,12 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
+        <provider
+            android:name=".managers.tools.AccountContentProvider"
+            android:authorities="com.onlyoffice.accounts"
+            android:exported="true"
+            android:enabled="true"/>
+
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />

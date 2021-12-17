@@ -2,6 +2,8 @@ package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import app.documents.core.account.AccountDao
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.RecentDao
@@ -85,6 +87,14 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             .map { it.response }
             .subscribe({ user ->
                 CoroutineScope(Dispatchers.Default).launch {
+                    withContext(Dispatchers.Main) {
+                        AccountUtils.getAccount(context, account.getAccountName())?.let {
+                            if (account.getAccountName() != "${user.email}@${account.portal}") {
+                                AccountUtils.getAccountManager(context).renameAccount(it, "${user.email}@${account.portal}", {
+                                }, Handler(Looper.getMainLooper()))
+                            }
+                        }
+                    }
                     accountDao.updateAccount(
                         account.copy(
                             avatarUrl = user.avatarMedium,
@@ -93,6 +103,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                             isVisitor = user.isVisitor
                         )
                     )
+
                 }
             }, {
                 // Nothing
@@ -102,20 +113,17 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
 
     fun removeAccount() {
         CoroutineScope(Dispatchers.Default).launch {
-            if (AccountUtils.removeAccount(
-                    context,
-                    Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-                )
-            ) {
-                accountDao.deleteAccount(account)
-                recentDao.removeAllByOwnerId(account.id)
-                withContext(Dispatchers.Main) {
-                    viewState.onClose(false)
-                }
-            } else {
-                viewState.onError("Error delete account")
+            AccountUtils.removeAccount(
+                context,
+                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
+            )
+            accountDao.deleteAccount(account)
+            recentDao.removeAllByOwnerId(account.id)
+            withContext(Dispatchers.Main) {
+                viewState.onClose(false)
             }
         }
+
 
     }
 
@@ -124,7 +132,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             AccountUtils.getAccount(context, account.getAccountName())?.let {
                 if (account.isWebDav) {
                     AccountUtils.setPassword(context, it, null)
-                } else if(account.isDropbox || account.isOneDrive) {
+                } else if (account.isDropbox || account.isOneDrive) {
                     AccountUtils.setToken(context, it, "")
                 } else {
                     AccountUtils.setToken(context, it, null)

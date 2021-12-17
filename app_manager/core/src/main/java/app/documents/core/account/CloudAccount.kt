@@ -1,11 +1,10 @@
 package app.documents.core.account
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import app.documents.core.network.ApiContract
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import lib.toolkit.base.managers.utils.CryptUtils
 
 @Entity
 @Serializable
@@ -31,12 +30,23 @@ data class CloudAccount(
     val isVisitor: Boolean = false
 ) {
 
-    @Transient
-    @Ignore
-    var token: String? = null
+    var token: String = ""
+        set(value) {
+            field = CryptUtils.encryptAES128(value, id) ?: ""
+        }
+
+    var password: String = ""
+        set(value) {
+            field = CryptUtils.encryptAES128(value, id) ?: ""
+        }
+
 
     fun getAccountName() = "$login@$portal"
 
     fun isPersonal() = portal?.contains(ApiContract.PERSONAL_SUBDOMAIN) ?: false
+
+    fun getDecryptToken() = CryptUtils.decryptAES128(token, id)
+
+    fun getDecryptPassword() = CryptUtils.decryptAES128(password, id)
 
 }

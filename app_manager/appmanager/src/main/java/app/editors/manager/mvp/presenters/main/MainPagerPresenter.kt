@@ -17,7 +17,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -25,7 +24,6 @@ import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TabFragmentDictionary
 import moxy.InjectViewState
-import java.util.*
 import javax.inject.Inject
 
 sealed class MainPagerState {
@@ -61,8 +59,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             accountJson?.let { jsonAccount ->
                 viewState.onFinishRequest()
                 Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
-                    render(cloudAccount, jsonAccount)
-                    checkFileData(cloudAccount, fileData)
+                    render(cloudAccount, jsonAccount, fileData)
                 }
             } ?: run {
                 throw Exception("Need account")
@@ -72,12 +69,13 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 viewState.onFinishRequest()
                 accountJson?.let { account ->
                     viewState.onRender(account, sections)
+                    checkFileData(Json.decodeFromString(account), fileData)
                 }
             }) { throwable: Throwable -> fetchError(throwable) }
         }
     }
 
-    private fun render(cloudAccount: CloudAccount, jsonAccount: String) {
+    private fun render(cloudAccount: CloudAccount, jsonAccount: String, fileData: Uri?) {
         when {
             networkSetting.getPortal().contains(ApiContract.PERSONAL_SUBDOMAIN) -> {
                 viewState.onRender(
@@ -112,6 +110,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 )
             }
         }
+        checkFileData(cloudAccount, fileData)
     }
 
     private fun getPortalModules(): Observable<Boolean> {
