@@ -62,6 +62,9 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
         account = Json.decodeFromString(jsonAccount)
         if (account.isWebDav) {
             viewState.onRender(ProfileState.WebDavState(account))
+        } else if (account.isDropbox || account.isOneDrive) {
+            viewState.onRender(ProfileState.CloudState(account))
+            updateAccountInfo(account)
         } else {
             viewState.onRender(ProfileState.CloudState(account))
             getThirdparty(account)
