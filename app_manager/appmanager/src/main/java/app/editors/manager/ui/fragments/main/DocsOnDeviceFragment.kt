@@ -53,6 +53,10 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     private var preferenceTool: PreferenceTool? = null
 
     private val importFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) { data: Uri? ->
+        data?.let { presenter.import(it) }
+    }
+
+    private val openFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) { data: Uri? ->
         data?.let { presenter.openFromChooser(it) }
     }
 
@@ -160,6 +164,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
             R.id.toolbar_selection_deselect -> presenter.deselectAll()
             R.id.toolbar_selection_select_all -> presenter.selectAll()
+            R.id.toolbar_item_open -> showSingleFragmentFilePicker()
         }
         return true
     }
@@ -223,7 +228,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 makePhoto()
             }
         } else if(buttons == ActionBottomDialog.Buttons.IMPORT) {
-            showSingleFragmentFilePicker()
+            importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
         }
     }
 
@@ -365,7 +370,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     private fun showSingleFragmentFilePicker() {
         try {
-            importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
+            openFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
         } catch (e: ActivityNotFoundException) {
             onError(e.message)
         }
