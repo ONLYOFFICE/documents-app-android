@@ -7,9 +7,12 @@ import android.os.Looper
 import app.documents.core.account.AccountDao
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.RecentDao
+import app.documents.core.login.LoginResponse
+import app.documents.core.network.models.login.response.ResponseUser
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
+import app.editors.manager.app.loginService
 import app.editors.manager.mvp.models.user.Thirdparty
 import app.editors.manager.mvp.views.main.ProfileView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -51,6 +54,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
     private lateinit var account: CloudAccount
     private var disposable = CompositeDisposable()
     private val service: Api = context.api()
+    private val loginService = context.loginService
 
 
     override fun onDestroy() {
@@ -84,12 +88,13 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
     }
 
     private fun updateAccountInfo(account: CloudAccount) {
-        disposable.add(service.userInfo()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { it.response }
-            .subscribe({ user ->
-                CoroutineScope(Dispatchers.Default).launch {
+
+        CoroutineScope(Dispatchers.Default).launch {
+            val token = AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type)))
+
+            when (val response = token?.let { loginService.getUserInfo(it).blockingGet() }) {
+                is LoginResponse.Success -> {
+                    val user = (response.response as ResponseUser).response
                     withContext(Dispatchers.Main) {
                         AccountUtils.getAccount(context, account.getAccountName())?.let {
                             if (account.getAccountName() != "${user.email}@${account.portal}") {
@@ -106,12 +111,12 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                             isVisitor = user.isVisitor
                         )
                     )
-
                 }
-            }, {
-                // Nothing
-            })
-        )
+                is LoginResponse.Error -> {
+                    throw response.error
+                }
+            }
+        }
     }
 
     fun removeAccount() {
