@@ -105,6 +105,12 @@ class AccountContentProvider : ContentProvider() {
                 runBlocking {
                     dao?.addAccount(account = account)
                 }
+            } else {
+                val account: CloudAccount = getAccount(it)
+                id = account.id
+                runBlocking {
+                    dao?.addAccount(account = account)
+                }
             }
         }
         return Uri.parse("content://$AUTHORITY/$PATH/$id")
@@ -175,6 +181,30 @@ class AccountContentProvider : ContentProvider() {
         ).apply {
             token = values?.getAsString("token") ?: ""
             password = values?.getAsString("password") ?: ""
+        }
+    }
+
+    private fun getAccount(extras: Bundle): CloudAccount {
+        return CloudAccount(
+            id = extras.getString("id") ?: "",
+            login = extras.getString("login"),
+            portal = extras.getString("portal"),
+            serverVersion = extras.getString("server_version") ?: "",
+            scheme = extras.getString("scheme"),
+            name = extras.getString("name"),
+            provider = extras.getString("provider"),
+            avatarUrl = extras.getString("avatar_url"),
+            isSslCiphers = extras.getBoolean("ciphers", false),
+            isSslState = extras.getBoolean("ssl", true),
+            isOnline = false,
+            isWebDav = false,
+            isOneDrive = false,
+            isDropbox = false,
+            isAdmin = extras.getBoolean("admin", false),
+            isVisitor = extras.getBoolean("visitor", false)
+        ).apply {
+            token = extras.getString("token") ?: ""
+            password = extras.getString("password") ?: ""
         }
     }
 }
