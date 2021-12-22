@@ -87,7 +87,6 @@ class AccountContentProvider : ContentProvider() {
             Json.decodeFromString(values.getAsString(CLOUD_ACCOUNT_KEY))
         } else {
             getAccount(values)
-
         }
         runBlocking {
             return@runBlocking dao?.addAccount(account)
@@ -105,12 +104,14 @@ class AccountContentProvider : ContentProvider() {
                 runBlocking {
                     dao?.addAccount(account = account)
                 }
+                addSystemAccount(account)
             } else {
                 val account: CloudAccount = getAccount(it)
                 id = account.id
                 runBlocking {
                     dao?.addAccount(account = account)
                 }
+                addSystemAccount(account)
             }
         }
         return Uri.parse("content://$AUTHORITY/$PATH/$id")
