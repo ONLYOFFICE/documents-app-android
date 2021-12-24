@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
@@ -22,6 +23,7 @@ import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -305,8 +307,21 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     fun openFromChooser(uri: Uri) {
         val fileName = ContentResolverUtils.getName(mContext, uri)
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
+
         addRecent(uri)
         openFile(uri, ext)
+    }
+
+    fun import(uri: Uri) {
+        val fileName = ContentResolverUtils.getName(mContext, uri)
+        val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
+
+        mDisposable.add((mFileProvider as LocalFileProvider).import(mContext, mModelExplorerStack.currentId!!, uri).subscribe {
+            refresh()
+            viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
+            addRecent(uri)
+            openFile(uri, ext)
+        })
     }
 
     private fun openFile(file: CloudFile) {

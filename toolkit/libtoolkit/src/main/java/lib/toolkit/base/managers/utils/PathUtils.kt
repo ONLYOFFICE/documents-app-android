@@ -152,6 +152,14 @@ object PathUtils {
             }
         }
 
+        if ("home".equals(type, ignoreCase = true)) {
+            (Environment.getExternalStorageDirectory().toString() + "/Documents" + path)?.let {
+                if (File(it).exists()) {
+                    return it
+                }
+            }
+        }
+
         (System.getenv("EXTERNAL_STORAGE") + path)?.let {
             if (File(it).exists()) {
                 return it

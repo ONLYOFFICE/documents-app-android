@@ -1,5 +1,6 @@
 package app.editors.manager.managers.providers
 
+import android.content.Context
 import android.net.Uri
 import app.editors.manager.managers.providers.ProviderError.Companion.throwErrorCreate
 import app.editors.manager.app.App.Companion.getLocale
@@ -16,6 +17,7 @@ import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import io.reactivex.Observable
+import lib.toolkit.base.managers.utils.PathUtils
 import java.io.File
 import java.io.IOException
 import java.lang.Exception
@@ -149,9 +151,6 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
     override fun getStatusOperation(): ResponseOperation? = null
 
     override fun download(items: List<Item>): Observable<Int>? = null
-
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
-
     override fun share(
         id: String,
         requestExternal: RequestExternal
@@ -162,6 +161,18 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
     override fun addToFavorites(fileId: RequestFavorites): Observable<Base>? = null
 
     override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
+
+    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
+
+    fun import(context: Context, folderId: String, uri: Uri?):Observable<Int> {
+        val folder = File(folderId)
+        return Observable.just(uri).map { file ->
+            val path = PathUtils.getPath(context, file)
+            val file = File(Uri.parse(path).path)
+            mLocalContentTools.moveFiles(file, folder, true)
+            1
+        }
+    }
 
     @Throws(Exception::class)
     fun transfer(path: String?, clickedItem: Item?, isCopy: Boolean): Boolean {

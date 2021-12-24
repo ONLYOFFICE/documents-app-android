@@ -320,7 +320,7 @@
     <string name="list_action_photo">Make photo</string>
     <string name="list_action_upload">Upload file</string>
     <string name="list_action_storage">Connect third-party storage</string>
-
+    <string name="list_action_import">Import file</string>
     <!-- Dialog info -->
 
     <!-- Pager -->

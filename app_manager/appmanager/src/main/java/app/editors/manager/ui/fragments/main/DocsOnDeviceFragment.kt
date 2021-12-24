@@ -13,6 +13,8 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -50,6 +52,14 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     private var operation: Operation? = null
     private var preferenceTool: PreferenceTool? = null
 
+    private val importFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) { data: Uri? ->
+        data?.let { presenter.import(it) }
+    }
+
+    private val openFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) { data: Uri? ->
+        data?.let { presenter.openFromChooser(it) }
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
@@ -77,11 +87,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                         } else if (operation == Operation.COPY) {
                             presenter.moveFile(data.data, true)
                         }
-                    }
-                }
-                REQUEST_OPEN_FILE -> {
-                    data?.data?.let {
-                        presenter.openFromChooser(it)
                     }
                 }
             }
@@ -222,6 +227,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             if (checkCameraPermission()) {
                 makePhoto()
             }
+        } else if(buttons == ActionBottomDialog.Buttons.IMPORT) {
+            importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
         }
     }
 
@@ -363,7 +370,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     private fun showSingleFragmentFilePicker() {
         try {
-            ActivitiesUtils.showSingleFilePicker(this, REQUEST_OPEN_FILE)
+            openFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
         } catch (e: ActivityNotFoundException) {
             onError(e.message)
         }

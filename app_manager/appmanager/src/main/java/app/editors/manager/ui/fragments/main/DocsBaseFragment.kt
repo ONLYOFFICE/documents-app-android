@@ -626,9 +626,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 menuInflater?.let { inflater ->
                     inflater.inflate(R.menu.docs_main, menu)
                     sortItem = menu.findItem(R.id.toolbar_item_sort)
+                    openItem = menu.findItem(R.id.toolbar_item_open)
                     mainItem = menu.findItem(R.id.toolbar_item_main)
                     selectItem = menu.findItem(R.id.toolbar_main_item_options)
-                    openItem = menu.findItem(R.id.toolbar_item_open)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
                     searchView = (searchItem?.actionView as SearchView).apply {
                         setOnQueryTextListener(this@DocsBaseFragment)
