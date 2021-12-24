@@ -97,7 +97,7 @@ object StringUtils {
     @JvmStatic
     fun isDocument(extension: String): Boolean {
         return when (getExtension(extension)) {
-            Extension.SHEET, Extension.DOC, Extension.PRESENTATION, Extension.PDF -> true
+            Extension.SHEET, Extension.DOC, Extension.FORM, Extension.PRESENTATION, Extension.PDF -> true
             else -> false
         }
     }
@@ -341,7 +341,7 @@ object StringUtils {
         return try {
             val digest = MessageDigest.getInstance(MD5)
             val md5Data = BigInteger(1, digest.digest(value.toByteArray()))
-            String.format("%032X", md5Data).toLowerCase()
+            String.format("%032X", md5Data).lowercase(Locale.getDefault())
         } catch (e: NoSuchAlgorithmException) {
             null
         }
