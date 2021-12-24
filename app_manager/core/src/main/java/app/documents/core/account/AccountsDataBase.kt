@@ -27,6 +27,7 @@ abstract class AccountsDataBase: RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE CloudAccount ADD COLUMN token TEXT DEFAULT '' NOT NULL")
                 database.execSQL("ALTER TABLE CloudAccount ADD COLUMN password TEXT DEFAULT '' NOT NULL")
+                database.execSQL("ALTER TABLE CloudAccount ADD COLUMN expires TEXT DEFAULT '' NOT NULL")
             }
 
         }

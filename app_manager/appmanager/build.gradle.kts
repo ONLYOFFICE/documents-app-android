@@ -220,7 +220,6 @@ dependencies {
 
     // Androidx
     implementation(AndroidX.appCompat)
-    implementation(AndroidX.appCompatResources)
     implementation(AndroidX.biometric)
     // RecyclerView
     implementation(AndroidX.recyclerView)
@@ -255,9 +254,13 @@ dependencies {
     implementation(Rx.androidRx)
     implementation(Rx.rxRelay)
 
+    // Room
+    implementation(Room.roomRuntime)
+    implementation(Room.roomKtx)
+    kapt(Room.roomCompiler)
+
     // Other
     implementation(Libs.phoneNumber)
-    implementation(Libs.ormlite)
     implementation(Libs.facebookLogin)
     implementation(Libs.pageIndicator)
     implementation(Libs.glide)
@@ -276,7 +279,7 @@ dependencies {
     implementation("androidx.compose.material:material:${AndroidX.composeVersion}")
     implementation("androidx.compose.ui:ui-tooling-preview:${AndroidX.composeVersion}")
     debugImplementation("androidx.compose.ui:ui-tooling:${AndroidX.composeVersion}")
-    implementation("androidx.navigation:navigation-compose:2.4.0-beta02")
+    implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
     implementation(AndroidX.composeActivity)
     implementation( "androidx.compose.runtime:runtime-livedata:${AndroidX.composeVersion}")
 

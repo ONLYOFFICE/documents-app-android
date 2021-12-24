@@ -132,7 +132,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
     }
 
     private fun createRequestBody(uri: Uri?): ProgressRequestBody {
-        val requestBody = ProgressRequestBody(App.getApp(), uri)
+        val requestBody = ProgressRequestBody(App.getApp(), uri ?: Uri.EMPTY)
         requestBody.setOnUploadCallbacks { total: Long, progress: Long ->
             if (!isStopped) {
                 showProgress(total, progress)

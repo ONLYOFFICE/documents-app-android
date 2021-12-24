@@ -230,7 +230,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
         val root = File(id)
         val listFiles = root.listFiles()
         for (item in listFiles) {
-            if (item.name.toLowerCase().contains(value?.toLowerCase().toString())) {
+            if (item.name.lowercase(Locale.getDefault()).contains(value?.lowercase(Locale.getDefault()).toString())) {
                 files.add(item)
                 tempExplorer = getExplorer(files, File(id))
             }
@@ -256,10 +256,10 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
                 })
                 ApiContract.Parameters.VAL_SORT_BY_TITLE -> {
                     folders.sortWith(Comparator { o1: CloudFolder, o2: CloudFolder ->
-                        o1.title.toLowerCase().compareTo(o2.title.toLowerCase())
+                        o1.title.lowercase(Locale.getDefault()).compareTo(o2.title.lowercase(Locale.getDefault()))
                     })
                     files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
-                        o1.title.toLowerCase().compareTo(o2.title.toLowerCase())
+                        o1.title.lowercase(Locale.getDefault()).compareTo(o2.title.lowercase(Locale.getDefault()))
                     })
                 }
                 ApiContract.Parameters.VAL_SORT_BY_SIZE -> files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->

@@ -27,6 +27,7 @@ import io.reactivex.FlowableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.Unit;
 import lib.toolkit.base.managers.utils.ContentResolverUtils;
 import lib.toolkit.base.managers.utils.FileUtils;
 import okhttp3.Headers;
@@ -247,6 +248,7 @@ public class UploadService extends Service {
             if (deltaTime > FileUtils.LOAD_PROGRESS_UPDATE) {
                 emitter.onNext(getPercent(total, progress));
             }
+            return Unit.INSTANCE;
         });
         return requestBody;
     }

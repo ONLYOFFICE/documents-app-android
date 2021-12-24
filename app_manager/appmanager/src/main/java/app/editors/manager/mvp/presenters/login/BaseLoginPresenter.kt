@@ -140,6 +140,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
             ).apply {
                 this.token = token.token ?: ""
                 this.password = password
+                this.expires = token.expires ?: ""
             }
             accountDao.addAccount(newAccount)
             withContext(Dispatchers.Main) {

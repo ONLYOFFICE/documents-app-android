@@ -166,11 +166,11 @@ class AccountContentProvider : ContentProvider() {
             id = values?.getAsString("id") ?: "",
             login = values?.getAsString("login"),
             portal = values?.getAsString("portal"),
-            serverVersion = values?.getAsString("server_version") ?: "",
+            serverVersion = values?.getAsString("serverVersion") ?: "",
             scheme = values?.getAsString("scheme"),
             name = values?.getAsString("name"),
             provider = values?.getAsString("provider"),
-            avatarUrl = values?.getAsString("avatar_url"),
+            avatarUrl = values?.getAsString("avatarUrl"),
             isSslCiphers = values?.getAsBoolean("ciphers") ?: false,
             isSslState = values?.getAsBoolean("ssl") ?: true,
             isOnline = false,
@@ -182,6 +182,7 @@ class AccountContentProvider : ContentProvider() {
         ).apply {
             token = values?.getAsString("token") ?: ""
             password = values?.getAsString("password") ?: ""
+            expires = values?.getAsString("expires") ?: ""
         }
     }
 
@@ -190,11 +191,11 @@ class AccountContentProvider : ContentProvider() {
             id = extras.getString("id") ?: "",
             login = extras.getString("login"),
             portal = extras.getString("portal"),
-            serverVersion = extras.getString("server_version") ?: "",
+            serverVersion = extras.getString("serverVersion") ?: "",
             scheme = extras.getString("scheme"),
             name = extras.getString("name"),
             provider = extras.getString("provider"),
-            avatarUrl = extras.getString("avatar_url"),
+            avatarUrl = extras.getString("avatarUrl"),
             isSslCiphers = extras.getBoolean("ciphers", false),
             isSslState = extras.getBoolean("ssl", true),
             isOnline = false,
@@ -206,6 +207,7 @@ class AccountContentProvider : ContentProvider() {
         ).apply {
             token = extras.getString("token") ?: ""
             password = extras.getString("password") ?: ""
+            expires = extras.getString("expires") ?: ""
         }
     }
 }
