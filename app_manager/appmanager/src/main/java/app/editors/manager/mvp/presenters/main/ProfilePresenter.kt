@@ -27,6 +27,7 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
+import java.lang.RuntimeException
 import javax.inject.Inject
 
 sealed class ProfileState(val account: CloudAccount) {
@@ -53,7 +54,6 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
 
     private lateinit var account: CloudAccount
     private var disposable = CompositeDisposable()
-    private val service: Api = context.api()
     private val loginService = context.loginService
 
 
@@ -77,14 +77,19 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
     }
 
     private fun getThirdparty(account: CloudAccount) {
-        disposable.add(service
-            .thirdPartyList()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { it.response }
-            .subscribe({ list: List<Thirdparty> ->
-                viewState.onRender(ProfileState.ProvidersState(list, account))
-            }) { throwable: Throwable -> viewState.onError(throwable.message) })
+        try {
+            disposable.add(context.api()
+                .thirdPartyList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { it.response }
+                .subscribe({ list: List<Thirdparty> ->
+                    viewState.onRender(ProfileState.ProvidersState(list, account))
+                }) { throwable: Throwable -> viewState.onError(throwable.message) })
+        } catch (error: RuntimeException) {
+            //nothing
+        }
+
     }
 
     private fun updateAccountInfo(account: CloudAccount) {
