@@ -45,8 +45,8 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
         viewState.onSuccessLogin()
     }
 
-    override fun onGooglePermission(intent: Intent) {
-        viewState.onGooglePermission(intent)
+    override fun onGooglePermission(intent: Intent?) {
+        intent?.let { viewState.onGooglePermission(it) }
     }
 
     fun signInPortal(login: String, password: String, portal: String) {

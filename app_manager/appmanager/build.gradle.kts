@@ -189,7 +189,7 @@ android {
         }
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = AndroidX.composeVersion
+        kotlinCompilerExtensionVersion = Compose.version
     }
 }
 
@@ -268,20 +268,20 @@ dependencies {
     implementation(Libs.androidWork)
 
     //TODO add to base module
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+    implementation(Lifecycle.viewModel)
+    implementation(Lifecycle.liveData)
+    implementation(Lifecycle.runtime)
 
     implementation("androidx.fragment:fragment-ktx:1.4.0")
 
     //Compose
-    implementation("androidx.compose.ui:ui:${AndroidX.composeVersion}")
-    implementation("androidx.compose.material:material:${AndroidX.composeVersion}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${AndroidX.composeVersion}")
-    debugImplementation("androidx.compose.ui:ui-tooling:${AndroidX.composeVersion}")
-    implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
+    implementation(Compose.ui)
+    implementation(Compose.material)
+    implementation(Compose.preview)
+    debugImplementation(Compose.tooling)
+    implementation(Compose.navigation)
     implementation(AndroidX.composeActivity)
-    implementation( "androidx.compose.runtime:runtime-livedata:${AndroidX.composeVersion}")
+    implementation( Compose.liveData)
 
 }
 
