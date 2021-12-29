@@ -244,14 +244,14 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         view?.post {
             sharePopup = SharePopup(requireContext(), R.layout.popup_share_menu)
             sharePopup?.let { popup ->
-                popup.setContextListener(mListContextListener)
+                popup.setContextListener(listContextListener)
                 if (!isVisitor) {
                     if (settingsPresenter.item is CloudFolder) {
-                        popup.setIsFolder(true)
+                        popup.setIsFolder()
                     } else {
-                        val extension = getExtension(
-                            getExtensionFromPath(settingsPresenter.item?.title!!))
-                        popup.setIsDoc(extension == StringUtils.Extension.DOC)
+                        val ext = getExtensionFromPath(checkNotNull(settingsPresenter.item?.title))
+                        popup.extension = getExtension(ext).takeIf { it != StringUtils.Extension.FORM }
+                            ?: StringUtils.getFormExtension(ext)
                     }
                 } else {
                     popup.setIsVisitor()
@@ -406,14 +406,15 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     private fun showAccessPopup() {
         sharePopup = SharePopup(requireContext(), R.layout.popup_share_menu)
         sharePopup?.let { popup ->
-            popup.setContextListener(mExternalContextListener)
+            popup.setContextListener(externalContextListener)
             popup.setExternalLink()
             popup.setFullAccess(false)
             if (settingsPresenter.item is CloudFolder) {
-                popup.setIsFolder(true)
+                popup.setIsFolder()
             } else {
-                val extension = getExtension(getExtensionFromPath(settingsPresenter.item?.title!!))
-                popup.setIsDoc(extension === StringUtils.Extension.DOC)
+                val ext = getExtensionFromPath(checkNotNull(settingsPresenter.item?.title))
+                popup.extension = getExtension(ext).takeIf { it != StringUtils.Extension.FORM }
+                    ?: StringUtils.getFormExtension(ext)
             }
             popup.showDropAt(
                 headerBinding?.shareSettingsAccessButtonLayout?.root!!,
@@ -426,27 +427,32 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         startActivity(Intent.createChooser(intent, getString(R.string.operation_share_send_link)))
     }
 
-    private val mListContextListener = SharePopup.PopupContextListener { v, sharePopup ->
-        sharePopup.hide()
-        when (v.id) {
-            R.id.popup_share_access_full -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ_WRITE)
-            R.id.popup_share_access_review -> settingsPresenter.setItemAccess(ApiContract.ShareCode.REVIEW)
-            R.id.popup_share_access_read -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ)
-            R.id.popup_share_access_deny -> settingsPresenter.setItemAccess(ApiContract.ShareCode.RESTRICT)
-            R.id.popup_share_access_remove -> settingsPresenter.setItemAccess(ApiContract.ShareCode.NONE)
-            R.id.popup_share_access_comment -> settingsPresenter.setItemAccess(ApiContract.ShareCode.COMMENT)
-            R.id.popup_share_access_fill_forms -> settingsPresenter.setItemAccess(ApiContract.ShareCode.FILL_FORMS)
+    private val listContextListener = object : SharePopup.PopupContextListener {
+        override fun onContextClick(v: View, sharePopup: SharePopup) {
+            sharePopup.hide()
+            when (v.id) {
+                R.id.popup_share_access_full -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ_WRITE)
+                R.id.popup_share_access_review -> settingsPresenter.setItemAccess(ApiContract.ShareCode.REVIEW)
+                R.id.popup_share_access_read -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ)
+                R.id.popup_share_access_deny -> settingsPresenter.setItemAccess(ApiContract.ShareCode.RESTRICT)
+                R.id.popup_share_access_remove -> settingsPresenter.setItemAccess(ApiContract.ShareCode.NONE)
+                R.id.popup_share_access_comment -> settingsPresenter.setItemAccess(ApiContract.ShareCode.COMMENT)
+                R.id.popup_share_access_fill_forms -> settingsPresenter.setItemAccess(ApiContract.ShareCode.FILL_FORMS)
+            }
         }
     }
-    private val mExternalContextListener = SharePopup.PopupContextListener { v, sharePopup ->
-        sharePopup.hide()
-        when (v.id) {
-            R.id.popup_share_access_full -> settingsPresenter.getExternalLink(ApiContract.ShareType.READ_WRITE)
-            R.id.popup_share_access_review -> settingsPresenter.getExternalLink(ApiContract.ShareType.REVIEW)
-            R.id.popup_share_access_read -> settingsPresenter.getExternalLink(ApiContract.ShareType.READ)
-            R.id.popup_share_access_deny -> settingsPresenter.getExternalLink(ApiContract.ShareType.NONE)
-            R.id.popup_share_access_comment -> settingsPresenter.getExternalLink(ApiContract.ShareType.COMMENT)
-            R.id.popup_share_access_fill_forms -> settingsPresenter.getExternalLink(ApiContract.ShareType.FILL_FORMS)
+
+    private val externalContextListener = object : SharePopup.PopupContextListener {
+        override fun onContextClick(v: View, sharePopup: SharePopup) {
+            sharePopup.hide()
+            when (v.id) {
+                R.id.popup_share_access_full -> settingsPresenter.getExternalLink(ApiContract.ShareType.READ_WRITE)
+                R.id.popup_share_access_review -> settingsPresenter.getExternalLink(ApiContract.ShareType.REVIEW)
+                R.id.popup_share_access_read -> settingsPresenter.getExternalLink(ApiContract.ShareType.READ)
+                R.id.popup_share_access_deny -> settingsPresenter.getExternalLink(ApiContract.ShareType.NONE)
+                R.id.popup_share_access_comment -> settingsPresenter.getExternalLink(ApiContract.ShareType.COMMENT)
+                R.id.popup_share_access_fill_forms -> settingsPresenter.getExternalLink(ApiContract.ShareType.FILL_FORMS)
+            }
         }
     }
 
