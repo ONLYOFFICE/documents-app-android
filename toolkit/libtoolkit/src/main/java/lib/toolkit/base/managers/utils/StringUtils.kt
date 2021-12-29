@@ -43,6 +43,8 @@ object StringUtils {
 
     private val PATTERN_EXT_DOC = "^(doc|docx|docm|doct|dot|dotm|dotx|odt|ott|fodt|rtf|epub|txt|html|mht)$"
     private val PATTERN_EXT_FORM = "^(oform|docxf)$"
+    private val PATTERN_EXT_DOCXF = "^(docxf)$"
+    private val PATTERN_EXT_OFORM = "^(oform)$"
     private val PATTERN_EXT_SHEET = "^(xlst|xlsx|xlsm|xls|xlt|xltm|xltx|ods|fods|ots|csv)$"
     private val PATTERN_EXT_PRESENTATION = "^(ppt|pptt|pptx|pps|odp|fodp|otp|pot|potm|potx|ppsm|ppsx)$"
     private val PATTERN_EXT_HTML = "^(mht|html|htm)$"
@@ -61,6 +63,8 @@ object StringUtils {
         UNKNOWN,
         DOC,
         FORM,
+        DOCXF,
+        OFORM,
         SHEET,
         PRESENTATION,
         HTML,
@@ -91,6 +95,15 @@ object StringUtils {
             Pattern.matches(PATTERN_EXT_PDF, ext) -> Extension.PDF
             Pattern.matches(PATTERN_EXT_ARCH, ext) -> Extension.ARCH
             else -> Extension.UNKNOWN
+        }
+    }
+
+    fun getFormExtension(extension: String): Extension {
+        val ext = extension.replace(".", "")
+        return when {
+            Pattern.matches(PATTERN_EXT_DOCXF, ext) -> Extension.DOCXF
+            Pattern.matches(PATTERN_EXT_OFORM, ext) -> Extension.OFORM
+            else -> throw RuntimeException("Invalid form extension")
         }
     }
 
