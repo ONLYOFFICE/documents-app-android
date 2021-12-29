@@ -14,10 +14,17 @@ import app.editors.manager.app.App
 import app.editors.manager.dropbox.dropbox.api.DropboxService
 import app.editors.manager.dropbox.managers.providers.DropboxFileProvider
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
+import app.editors.manager.dropbox.managers.works.DownloadWork
+import app.editors.manager.dropbox.managers.works.UploadWork
 import app.editors.manager.dropbox.mvp.views.DocsDropboxView
+import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
+import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -29,16 +36,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import java.util.*
-import app.editors.manager.dropbox.managers.works.*
-import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.request.RequestCreate
-import lib.toolkit.base.managers.utils.KeyboardUtils
 
 class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
 
@@ -147,10 +148,10 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
         if (modelExplorerStack?.countSelectedItems!! == 0) {
             startDownload(downloadTo, itemClicked)
         } else {
-            val itemList: MutableList<Item> = (modelExplorerStack.selectedFiles + mModelExplorerStack.selectedFolders).toMutableList()
+            val itemList =  modelExplorerStack?.selectedFiles!! + modelExplorerStack?.selectedFolders!!
             itemList.forEach { item ->
-                val fileName = if(item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
-                val doc = DocumentFile.fromTreeUri(mContext, downloadTo)?.createFile(
+                val fileName = if (item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
+                val doc = DocumentFile.fromTreeUri(context, downloadTo)?.createFile(
                     StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName
                 )
                 startDownload(doc?.uri!!, item)

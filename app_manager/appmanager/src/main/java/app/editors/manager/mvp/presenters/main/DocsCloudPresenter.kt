@@ -43,7 +43,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.FileUtils
+import lib.toolkit.base.managers.utils.KeyboardUtils
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import java.util.*
 
@@ -654,8 +657,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = StringUtils.equals(modelExplorerStack?.currentFolderOwnerId, account.id)
 
     private val isContextReadWrite: Boolean
-        get() = isContextOwner || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE ||
-                mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
+        get() = isContextOwner || modelExplorerStack?.currentFolderAccess == ApiContract.ShareCode.READ_WRITE ||
+                modelExplorerStack?.currentFolderAccess == ApiContract.ShareCode.NONE
 
     val isUserSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
@@ -698,13 +701,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val isClickedItemStorage: Boolean
         get() = itemClicked?.providerItem == true
 
-    var isTrashMode: Boolean
-        get() = mIsTrashMode
-        set(trashMode) {
-            if (trashMode.also { mIsTrashMode = it }) {
-//            getViewState().onActionBarTitle(mContext.getString(R.string.main_pager_docs_trash));
-            }
-        }
 
     private fun showDownloadFolderActivity(uri: Uri) {
         viewState.onDownloadActivity(uri)

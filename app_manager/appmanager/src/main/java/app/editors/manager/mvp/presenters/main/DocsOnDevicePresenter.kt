@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.annotation.SuppressLint
-import android.content.ClipData
 import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
@@ -23,12 +22,10 @@ import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
@@ -212,14 +209,14 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun uploadToMy(uri: Uri) {
-        mContext.accountOnline?.let { account ->
+        context.accountOnline?.let { account ->
             if (webDavFileProvider == null) {
                 when {
-                    mPreferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(mContext) -> {
-                        viewState.onSnackBar(mContext.getString(R.string.upload_error_wifi))
+                    preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context) -> {
+                        viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
                     }
-                    ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE -> {
-                        viewState.onSnackBar(mContext.getString(R.string.upload_manager_error_file_size))
+                    ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE -> {
+                        viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
                     }
                     else -> {
                         if (!account.isWebDav) {
@@ -319,12 +316,12 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun import(uri: Uri) {
-        val fileName = ContentResolverUtils.getName(mContext, uri)
+        val fileName = ContentResolverUtils.getName(context, uri)
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
 
-        mDisposable.add((mFileProvider as LocalFileProvider).import(mContext, mModelExplorerStack.currentId!!, uri).subscribe {
+        disposable.add((fileProvider as LocalFileProvider).import(context, modelExplorerStack?.currentId!!, uri).subscribe {
             refresh()
-            viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
+            viewState.onSnackBar(context.getString(R.string.operation_complete_message))
             addRecent(uri)
             openFile(uri, ext)
         })
@@ -436,7 +433,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     fun upload() {
         itemClicked?.let { item ->
-            mContext.accountOnline?.let {
+            context.accountOnline?.let {
                 Uri.fromFile(File(item.id))?.let { uri ->
                     uploadToMy(uri)
                 }

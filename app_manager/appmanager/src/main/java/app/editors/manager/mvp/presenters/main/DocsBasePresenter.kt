@@ -14,6 +14,7 @@ import app.documents.core.account.RecentDao
 import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.managers.providers.CloudFileProvider
@@ -75,7 +76,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
-import kotlin.collections.ArrayList
+
 
 @InjectViewState
 abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
@@ -216,7 +217,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                         provider.search(filteringValue)?.let { observable ->
                             disposable.add(
                                 observable.subscribe({ items ->
-                                    stack.refreshStack(getSearchExplorer(items))
+                                    try {
+                                        stack.refreshStack(getSearchExplorer(items))
+                                    } catch (exception: JSONException) {
+                                        throw exception
+                                    }
                                     setPlaceholderType( if (stack.isListEmpty)
                                         PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
                                     updateViewsState()
@@ -263,13 +268,15 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                  stack.currentId?.let { id ->
                      filteringValue = value
                      fileProvider?.let { provider ->
-                         if (provider !is CloudFileProvider) {
+                         if (provider !is CloudFileProvider ||
+                             App.getApp().appComponent.accountOnline?.isPersonal() == true) {
                              disposable.add(
                                  provider.getFiles(id, getArgs(value))
                                      .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
                                      .subscribe({ explorer ->
                                          stack.setFilter(explorer)
-                                         setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
+                                         setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.SEARCH else
+                                             PlaceholderViews.Type.NONE)
                                          updateViewsState()
                                          viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
                                      }, this::fetchError)
@@ -278,8 +285,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                              provider.search(value)?.let { observable ->
                                  disposable.add(
                                      observable.subscribe({ items ->
-                                         stack.setFilter(getSearchExplorer(items))
-                                         setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
+                                         try {
+                                             stack.setFilter(getSearchExplorer(items))
+                                         } catch (exception: JSONException) {
+                                             throw exception
+                                         }
+                                         setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.SEARCH else
+                                             PlaceholderViews.Type.NONE)
                                          updateViewsState()
                                          viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
                                      }, this::fetchError)
@@ -296,20 +308,28 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     @Throws(JSONException::class)
     private fun getSearchExplorer(items: String): Explorer {
         return Explorer().apply {
-            getSearchResult(items)?.filterIsInstance<CloudFile>()?.let { files -> setFiles(files) }
-            getSearchResult(items)?.filterIsInstance<CloudFolder>()?.let { folders -> setFolders(folders) }
+            current = modelExplorerStack?.last()?.current
+            getSearchResult(items)?.filter(::checkFolderRootType)?.let { items ->
+                files = items.filterIsInstance<CloudFile>()
+                folders = items.filterIsInstance<CloudFolder>()
+            }
         }
+    }
+
+    private fun checkFolderRootType(item: Item): Boolean {
+        return item.rootFolderType.toInt() == modelExplorerStack?.rootFolderType
+                && item.title.contains(filteringValue.orEmpty(), true)
     }
 
     @Throws(JSONException::class)
     private fun getSearchResult(response: String): List<Item>? {
-        return getJsonObject(response)?.let { jsonObject ->
-            val gson = Gson()
-            val jsonArrayItems = JsonParser().parse(jsonObject.getString("response")).asJsonArray
-
-            return jsonArrayItems?.map {
-                if (it.toString().contains("parentId")) gson.fromJson(it, CloudFolder::class.java)
-                else gson.fromJson(it, CloudFile::class.java)
+        return StringUtils.getJsonObject(response)?.let { jsonObject ->
+            return JsonParser().parse(jsonObject.getString("response")).asJsonArray?.map {
+                if (it.toString().contains("parentId")) {
+                    Gson().fromJson(it, CloudFolder::class.java)
+                } else {
+                    Gson().fromJson(it, CloudFile::class.java)
+                }
             }
         }
     }
@@ -404,9 +424,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 }
             }
 
-            deleteRecent()
             showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
-
             fileProvider?.let { provider ->
                 batchDisposable = provider.delete(items, null)
                     .switchMap { status }
@@ -502,23 +520,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     }
                 }
         }
-    }
-
-    private fun deleteRecent() {
-//        List<CloudFile> files = mModelExplorerStack.getSelectedFiles();
-//        List<Recent> recents = mAccountSqlTool.getRecent();
-//        if (files != null) {
-//            for (CloudFile file : files) {
-//                for (Recent recent : recents) {
-//                    if (recent.getIdFile() != null && recent.getIdFile().equals(file.getId())) {
-//                        mAccountSqlTool.delete(recent);
-//                    } else if (mItemClicked != null && recent.getIdFile() != null &&
-//                            recent.getIdFile().equals(mItemClicked.getId())) {
-//                        mAccountSqlTool.delete(recent);
-//                    }
-//                }
-//            }
-//        }
     }
 
     open fun move(): Boolean {
@@ -769,26 +770,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun uploadToMy(uri: Uri) {
-//        if (mAccountSqlTool.getAccountOnline() != null) {
-//            if (mPreferenceTool.getUploadWifiState() && !NetworkUtils.isWifiEnable(mContext)) {
-//                getViewState().onSnackBar(mContext.getString(R.string.upload_error_wifi));
-//                return;
-//            }
-//            if (ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE) {
-//                getViewState().onSnackBar(mContext.getString(R.string.upload_manager_error_file_size));
-//                return;
-//            }
-//            if (mAccountSqlTool.getAccountOnline().isWebDav()) {
-//                return;
-//            }
-//
-//            final Data workData = new Data.Builder()
-//                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
-//                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
-//                    .putString(UploadWork.TAG_FOLDER_ID, null)
-//                    .build();
-//            startUpload(workData);
-//        }
+        // Stub
     }
 
     private fun addUploadFiles(uriList: List<Uri>, id: String) {
@@ -798,13 +780,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
                 continue
             }
-            uploadFiles.add(UploadFile().also {
-                it.progress = 0
-                it.uri = uri
-                it.folderId = id
-                it.id = uri.path
-                it.name = getName(context, uri)
-                it.size = setSize(uri)
+            uploadFiles.add(UploadFile().apply {
+                progress = 0
+                folderId = id
+                name = getName(context, uri)
+                size = setSize(uri)
+                setUri(uri)
+                setId(uri.path)
             })
         }
 
@@ -827,7 +809,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    private fun startUpload(data: Data) {
+    fun startUpload(data: Data) {
         data.getString(UploadWork.TAG_UPLOAD_FILES)?.let { tag ->
             val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
                 .addTag(tag)
