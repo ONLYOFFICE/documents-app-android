@@ -12,7 +12,7 @@ import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 class ActionBottomDialog : BaseBottomDialog() {
 
     enum class Buttons {
-        NONE, SHEET, PRESENTATION, DOC, FOLDER, PHOTO, UPLOAD, STORAGE
+        NONE, SHEET, PRESENTATION, DOC, FOLDER, PHOTO, UPLOAD, STORAGE, IMPORT
     }
 
     interface OnClickListener {
@@ -26,6 +26,11 @@ class ActionBottomDialog : BaseBottomDialog() {
     var isLocal = false
     var isWebDav = false
     var onClickListener: OnClickListener? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         restoreValues(savedInstanceState)
@@ -65,6 +70,7 @@ class ActionBottomDialog : BaseBottomDialog() {
             it.listExplorerActionStorage.setOnClickListener(Buttons.STORAGE)
             it.listExplorerActionSheet.setOnClickListener(Buttons.SHEET)
             it.listExplorerActionPresentation.setOnClickListener(Buttons.PRESENTATION)
+            it.listExplorerActionImport.setOnClickListener(Buttons.IMPORT)
         }
     }
 
@@ -87,8 +93,8 @@ class ActionBottomDialog : BaseBottomDialog() {
         viewBinding = ListExplorerActionMenuBinding.inflate(layoutInflater).apply {
             dialog.setContentView(root)
             dialog.setCanceledOnTouchOutside(true)
-            setViewState()
         }
+        setViewState()
         initListeners()
     }
 
@@ -97,9 +103,9 @@ class ActionBottomDialog : BaseBottomDialog() {
             it.viewLineSeparatorStorage.viewLineSeparator.isVisible = isThirdParty
             it.listExplorerActionStorage.isVisible = isThirdParty
 
-            it.listExplorerActionDocs.isVisible = !isDocs || isLocal
-            it.listExplorerActionPresentation.isVisible = !isDocs || isLocal
-            it.listExplorerActionSheet.isVisible = !isDocs || isLocal
+            it.listExplorerActionDocs.isVisible = isDocs || isLocal
+            it.listExplorerActionPresentation.isVisible = isDocs || isLocal
+            it.listExplorerActionSheet.isVisible = isDocs || isLocal
 
             it.listExplorerActionUpload.isVisible = isLocal && isWebDav
         }
@@ -107,13 +113,12 @@ class ActionBottomDialog : BaseBottomDialog() {
 
     companion object {
 
-        @JvmField
-        val TAG = ActionBottomDialog::class.java.simpleName
+        val TAG: String = ActionBottomDialog::class.java.simpleName
+
         private const val TAG_THIRD_PARTY = "TAG_THIRD_PARTY"
         private const val TAG_DOCS = "TAG_DOCS"
         private const val TAG_LOCAL = "TAG_LOCAL"
 
-        @JvmStatic
         fun newInstance(): ActionBottomDialog {
             return ActionBottomDialog()
         }

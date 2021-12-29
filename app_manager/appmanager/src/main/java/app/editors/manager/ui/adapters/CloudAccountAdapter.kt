@@ -17,6 +17,7 @@ import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils.setDropboxImage
 import app.editors.manager.managers.utils.ManagerUiUtils.setOneDriveImage
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.extensions.inflate
@@ -130,9 +131,11 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             ManagerUiUtils.setWebDavImage(account.webDavProvider, iconSelectableImage)
         } else if(account.isOneDrive) {
             iconSelectableImage.setOneDriveImage()
+        } else if(account.isDropbox) {
+            iconSelectableImage.setDropboxImage(account)
         } else {
             accountName.visibility = View.VISIBLE
-            val url: String = if (account.avatarUrl?.contains("static") == true || account.isDropbox) {
+            val url: String = if (account.avatarUrl?.contains("static") == true) {
                 account.avatarUrl ?: ""
             } else {
                 account.scheme + account.portal + account.avatarUrl

@@ -95,6 +95,8 @@ class GlideTool @Inject constructor(private val context: Context) {
     /*
     * Base methods
     * */
+    @SuppressLint("CheckResult")
+    @Suppress("UNCHECKED_CAST")
     private fun <T> load(into: Any, load: Any, options: RequestOptions, tClass: Class<T>, requestListener: RequestListener<T>?) {
         Glide.with(context).`as`(tClass).apply {
             load(load)

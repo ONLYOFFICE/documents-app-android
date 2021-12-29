@@ -1,17 +1,21 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import androidx.work.Data
 import app.documents.core.account.Recent
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.webDavApi
 import app.editors.manager.managers.providers.LocalFileProvider
 import app.editors.manager.managers.providers.ProviderError
 import app.editors.manager.managers.providers.WebDavFileProvider
+import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
@@ -19,6 +23,7 @@ import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -207,15 +212,29 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun uploadToMy(uri: Uri) {
-        if (webDavFileProvider != null) {
-            CoroutineScope(Dispatchers.Default).launch {
-                val id = accountDao.getAccountOnline()?.webDavPath
-                withContext(Dispatchers.Main) {
-                    uploadWebDav(id ?: "", listOf(uri))
+        mContext.accountOnline?.let { account ->
+            if (webDavFileProvider == null) {
+                when {
+                    mPreferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(mContext) -> {
+                        viewState.onSnackBar(mContext.getString(R.string.upload_error_wifi))
+                    }
+                    ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE -> {
+                        viewState.onSnackBar(mContext.getString(R.string.upload_manager_error_file_size))
+                    }
+                    else -> {
+                        if (!account.isWebDav) {
+                            val workData = Data.Builder()
+                                .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                                .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
+                                .putString(UploadWork.TAG_FOLDER_ID, null)
+                                .build()
+                            startUpload(workData)
+                        }
+                    }
                 }
+            } else {
+                uploadWebDav(account.webDavPath ?: "", listOf(uri))
             }
-        } else {
-            super.uploadToMy(uri)
         }
     }
 
@@ -294,8 +313,21 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     fun openFromChooser(uri: Uri) {
         val fileName = ContentResolverUtils.getName(context, uri)
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
+
         addRecent(uri)
         openFile(uri, ext)
+    }
+
+    fun import(uri: Uri) {
+        val fileName = ContentResolverUtils.getName(mContext, uri)
+        val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
+
+        mDisposable.add((mFileProvider as LocalFileProvider).import(mContext, mModelExplorerStack.currentId!!, uri).subscribe {
+            refresh()
+            viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
+            addRecent(uri)
+            openFile(uri, ext)
+        })
     }
 
     private fun openFile(file: CloudFile) {
@@ -403,10 +435,16 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun upload() {
-        if (itemClicked != null) {
-            val uri = Uri.fromFile(File(itemClicked!!.id))
-            uri?.let { uploadToMy(it) }
+        itemClicked?.let { item ->
+            mContext.accountOnline?.let {
+                Uri.fromFile(File(item.id))?.let { uri ->
+                    uploadToMy(uri)
+                }
+            } ?: run {
+                viewState.onShowPortals()
+            }
         }
+
     }
 
     @SuppressLint("MissingPermission")

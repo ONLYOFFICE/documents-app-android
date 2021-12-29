@@ -55,6 +55,10 @@ class MainToolbar @JvmOverloads constructor(
                 setWebDavAvatar(cloudAccount.webDavProvider ?: "")
             } else if (cloudAccount.isOneDrive) {
                 setOneDriveAvatar()
+            } else if(cloudAccount.isDropbox) {
+                if(it.avatarUrl?.isEmpty() == true) {
+                    setDropboxAvatar()
+                } else loadAvatar(it)
             } else {
                 loadAvatar(it)
             }
@@ -88,6 +92,15 @@ class MainToolbar @JvmOverloads constructor(
             ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_storage_onedrive
+            )
+        )
+    }
+
+    private fun setDropboxAvatar() {
+        toolbarIcon.setImageDrawable(
+            ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_storage_dropbox
             )
         )
     }

@@ -168,6 +168,9 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
                 is CreatePortalState.Progress -> {
                     onShowWaitingDialog(R.string.dialogs_wait_title)
                 }
+                else -> {
+                    // Nothing
+                }
             }
         }
         viewModel.getDomain()

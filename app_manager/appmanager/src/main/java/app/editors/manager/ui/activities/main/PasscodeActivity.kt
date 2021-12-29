@@ -42,7 +42,9 @@ class PasscodeActivity : BaseAppActivity() {
 
         setContent {
             AppManagerTheme() {
-                PasscodeActivity(preferencesTool)
+                PasscodeActivity(preferencesTool) {
+                    onBackPressed()
+                }
             }
         }
     }

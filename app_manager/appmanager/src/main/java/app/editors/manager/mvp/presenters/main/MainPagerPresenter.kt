@@ -17,7 +17,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -25,7 +24,6 @@ import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TabFragmentDictionary
 import moxy.InjectViewState
-import java.util.*
 import javax.inject.Inject
 
 sealed class MainPagerState {
@@ -55,12 +53,13 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     fun getState(fileData: Uri? = null) {
-        if (StringUtils.convertServerVersion(networkSetting.serverVersion) < 11) {
+        if (StringUtils.convertServerVersion(networkSetting.serverVersion) < 11 || networkSetting.getBaseUrl()
+                .contains(ApiContract.PERSONAL_SUBDOMAIN)
+        ) {
             accountJson?.let { jsonAccount ->
                 viewState.onFinishRequest()
                 Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
-                    render(cloudAccount, jsonAccount)
-                    checkFileData(cloudAccount, fileData)
+                    render(cloudAccount, jsonAccount, fileData)
                 }
             } ?: run {
                 throw Exception("Need account")
@@ -68,12 +67,15 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         } else {
             disposable = getPortalModules().subscribe({
                 viewState.onFinishRequest()
-                accountJson?.let { account -> viewState.onRender(account, sections) }
+                accountJson?.let { account ->
+                    viewState.onRender(account, sections)
+                    checkFileData(Json.decodeFromString(account), fileData)
+                }
             }) { throwable: Throwable -> fetchError(throwable) }
         }
     }
 
-    private fun render(cloudAccount: CloudAccount, jsonAccount: String) {
+    private fun render(cloudAccount: CloudAccount, jsonAccount: String, fileData: Uri?) {
         when {
             networkSetting.getPortal().contains(ApiContract.PERSONAL_SUBDOMAIN) -> {
                 viewState.onRender(
@@ -108,17 +110,20 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 )
             }
         }
+        checkFileData(cloudAccount, fileData)
     }
 
     private fun getPortalModules(): Observable<Boolean> {
-        return Observable.zip(api.getRootFolder(
-            mapOf("filterType" to 2),
-            mapOf(
-                "withsubfolders" to false,
-                "withoutTrash" to false,
-                "withoutAdditionalFolder" to false
-            )
-        ), api.getModules(listOf(Constants.Modules.PROJECT_ID)), { cloudTree, modules ->
+        return Observable.zip(
+            api.getRootFolder(
+                mapOf("filterType" to 2),
+                mapOf(
+                    "withsubfolders" to false,
+                    "withoutTrash" to false,
+                    "withoutAdditionalFolder" to false
+                )
+            ), api.getModules(listOf(Constants.Modules.PROJECT_ID))
+        ) { cloudTree, modules ->
             if (cloudTree.response != null && modules.response != null) {
                 preferenceTool.isProjectDisable = !modules.response[0].isEnable
                 sections = cloudTree.response
@@ -132,7 +137,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 }
             }
             return@zip true
-        })
+        }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -141,7 +146,11 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         fileData?.let { data ->
             if (data.scheme?.equals("oodocuments") == true && data.host.equals("openfile")) {
                 val dataModel = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(data.query))
-                if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(account.login, ignoreCase = true) == true) {
+                if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(
+                        account.login,
+                        ignoreCase = true
+                    ) == true
+                ) {
                     viewState.setFileData(Json.encodeToString(dataModel))
                 } else {
                     viewState.onError(R.string.error_recent_enter_account)

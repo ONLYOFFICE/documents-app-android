@@ -125,6 +125,7 @@ class WebDavFragment : BaseAppFragment(), ConnectView {
             it.storageWebDavPasswordEdit.addTextChangedListener(fieldsWatcher)
             it.storageWebDavUrlEdit.setText(url)
             it.storageWebDavTitleEdit.setText(title)
+            it.storageWebDavSaveButton.setOnClickListener { onSaveClick() }
             hideUrlLayout()
             it.storageWebDavTitleEdit.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {

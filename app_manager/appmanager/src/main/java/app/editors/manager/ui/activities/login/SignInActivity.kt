@@ -98,7 +98,7 @@ class SignInActivity : BaseAppActivity() {
             response: AccountAuthenticatorResponse?
         ): Intent {
             val intent = Intent(context, SignInActivity::class.java)
-            intent.putExtra(TAG_ACTION, TAG_PORTAL_SIGN_IN)
+            intent.putExtra(TAG_ACTION, TAG_PORTAL_CREATE)
             intent.putExtra(AccountUtils.KEY_ACCOUNT_TYPE, accountType)
             intent.putExtra(AccountUtils.KEY_AUTH_TYPE, authType)
             intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
@@ -131,6 +131,11 @@ class SignInActivity : BaseAppActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

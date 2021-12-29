@@ -34,7 +34,7 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
         bind(popupView)
     }
 
-    protected fun setPopup(context: Context, @LayoutRes resId: Int) {
+    protected open fun setPopup(context: Context, @LayoutRes resId: Int) {
         val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         popupView = layoutInflater.inflate(resId, null)
         popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)

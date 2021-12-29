@@ -8,6 +8,7 @@ import app.editors.manager.R
 import app.editors.manager.databinding.ListShareSettingsItemBinding
 import app.editors.manager.managers.utils.GlideUtils.setAvatar
 import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.ui.adapters.ShareAdapter
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
@@ -57,7 +58,12 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
             }
 
             // Access icons
-            ManagerUiUtils.setAccessIcon(contextButton, item.access)
+            if (item.isOwner) {
+                itemBinding.listShareSettingsOwner.isVisible = true
+            } else {
+                contextLayoutButton.isVisible = true
+                ManagerUiUtils.setAccessIcon(contextButton, item.access)
+            }
         }
     }
 }

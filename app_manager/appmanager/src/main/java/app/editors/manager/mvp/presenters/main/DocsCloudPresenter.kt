@@ -43,10 +43,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
 import java.util.*
 
@@ -258,6 +255,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isFolder = !isClickedItemFile
         state.isShared = isClickedItemShared
         state.isCanShare = isItemShareable
+        state.isCanRename = isItemReadWrite
         state.isDocs = isClickedItemDocs
         state.isContextEditable = isContextItemEditable
         state.isItemEditable = isItemEditable
@@ -298,7 +296,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     /*
      * Loading callbacks
      * */
-    override fun onDownloadError(id: String?, url: String?, title: String, info: String) {
+    override fun onDownloadError(id: String?, url: String?, title: String, info: String, uri: Uri) {
+
         viewState.onDialogClose()
         viewState.onSnackBar(info)
     }
@@ -316,6 +315,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         mime: String,
         uri: Uri
     ) {
+        viewState.onFinishDownload(uri)
         viewState.onDialogClose()
         viewState.onSnackBarWithAction(
             """
@@ -337,7 +337,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun onUploadError(path: String?, info: String, file: String) {
         viewState.onSnackBar(info)
-        //getViewState().onDeleteUploadFile(file);
+        viewState.onDeleteUploadFile(file)
     }
 
     override fun onUploadComplete(
@@ -398,9 +398,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 val deleteShare = RequestDeleteShare()
                 deleteShare.folderIds = stack.selectedFoldersIds
                 deleteShare.fileIds = stack.selectedFilesIds
-                disposable.add(Observable.fromCallable {
-                    api?.deleteShare(deleteShare)?.execute()
-                }
+                disposable.add(Observable
+                    .fromCallable { api?.deleteShare(deleteShare)?.execute() }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
@@ -655,8 +654,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = StringUtils.equals(modelExplorerStack?.currentFolderOwnerId, account.id)
 
     private val isContextReadWrite: Boolean
-        get() = isContextOwner || modelExplorerStack?.currentFolderAccess == ApiContract.ShareCode.READ_WRITE ||
-                modelExplorerStack?.currentFolderAccess == ApiContract.ShareCode.NONE
+        get() = isContextOwner || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE ||
+                mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
 
     val isUserSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
@@ -674,18 +673,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = currentSectionType == ApiContract.SectionType.CLOUD_BUNCH
 
     private val isClickedItemShared: Boolean
-        get() = itemClicked != null && itemClicked!!.shared
+        get() = itemClicked?.shared == true
 
     private val isClickedItemFavorite: Boolean
-        get() = itemClicked != null && itemClicked!!.favorite
+        get() = itemClicked?.favorite == true
 
     private val isItemOwner: Boolean
-        get() = itemClicked != null && StringUtils.equals(itemClicked!!.createdBy.id, account.id)
+        get() = StringUtils.equals(itemClicked?.createdBy?.id, account.id)
 
     private val isItemReadWrite: Boolean
-        get() = itemClicked != null && (itemClicked!!.access == ApiContract.ShareCode.READ_WRITE || itemClicked!!.access == ApiContract.ShareCode.NONE || itemClicked!!.access == ApiContract.ShareCode.REVIEW)
+        get() = itemClicked?.access == ApiContract.ShareCode.READ_WRITE ||
+                itemClicked?.access == ApiContract.ShareCode.NONE
+
     private val isItemEditable: Boolean
-        get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite  ||
+        get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
                 itemClicked?.access == ApiContract.ShareCode.REVIEW ||
                 itemClicked?.access == ApiContract.ShareCode.FILL_FORMS ||
                 itemClicked?.access == ApiContract.ShareCode.COMMENT)
@@ -695,7 +696,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 && !isBunchSection && isItemReadWrite
 
     private val isClickedItemStorage: Boolean
-        get() = itemClicked != null && itemClicked!!.providerItem
+        get() = itemClicked?.providerItem == true
+
+    var isTrashMode: Boolean
+        get() = mIsTrashMode
+        set(trashMode) {
+            if (trashMode.also { mIsTrashMode = it }) {
+//            getViewState().onActionBarTitle(mContext.getString(R.string.main_pager_docs_trash));
+            }
+        }
 
     private fun showDownloadFolderActivity(uri: Uri) {
         viewState.onDownloadActivity(uri)

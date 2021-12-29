@@ -73,7 +73,8 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
                         PathUtils.getPath(applicationContext, to ?: Uri.EMPTY),
                         StringUtils.getMimeTypeFromPath(
                             file?.name ?: ""
-                        )
+                        ),
+                        to
                     )
                 }
 
@@ -84,7 +85,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
                         notificationUtils.showCanceledNotification(id.hashCode(), file?.name)
                     } else {
                         notificationUtils.showErrorNotification(id.hashCode(), file?.name)
-                        sendBroadcastUnknownError(id, "", file?.name)
+                        sendBroadcastUnknownError(id, "", file?.name, to)
                     }
                     file?.delete()
                 }
@@ -118,7 +119,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
     fun sendBroadcastDownloadComplete(
         id: String?, url: String?, title: String?,
-        path: String?, mime: String?
+        path: String?, mime: String?, uri: Uri?
     ) {
         val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_COMPLETE)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
@@ -126,14 +127,16 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_PATH, path)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_MIME_TYPE, mime)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_URI, uri.toString())
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 
-    fun sendBroadcastUnknownError(id: String?, url: String?, title: String?) {
+    fun sendBroadcastUnknownError(id: String?, url: String?, title: String?, uri: Uri?) {
         val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
         intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
+        intent.putExtra(DownloadReceiver.EXTRAS_KEY_URI, uri.toString())
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 

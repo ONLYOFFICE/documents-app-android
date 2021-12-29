@@ -131,7 +131,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun createDownloadFile() {
-        if(modelExplorerStack?.countSelectedItems!! <= 1) {
+        if (modelExplorerStack?.countSelectedItems!! == 0) {
             if (itemClicked is CloudFolder) {
                 viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
             } else if (itemClicked is CloudFile) {
@@ -144,16 +144,16 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     override fun download(downloadTo: Uri) {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
-        modelExplorerStack?.let { stack ->
-            if(stack.countSelectedItems <= 1) {
-                startDownload(downloadTo, itemClicked)
-            } else {
-                val itemList: MutableList<Item> = (stack.selectedFiles + stack.selectedFolders).toMutableList()
-                itemList.forEach { item ->
-                    val fileName = if(item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
-                    val doc = DocumentFile.fromTreeUri(context, downloadTo)?.createFile("*/*", fileName)
-                    startDownload(doc?.uri!!, item)
-                }
+        if (modelExplorerStack?.countSelectedItems!! == 0) {
+            startDownload(downloadTo, itemClicked)
+        } else {
+            val itemList: MutableList<Item> = (modelExplorerStack.selectedFiles + mModelExplorerStack.selectedFolders).toMutableList()
+            itemList.forEach { item ->
+                val fileName = if(item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
+                val doc = DocumentFile.fromTreeUri(mContext, downloadTo)?.createFile(
+                    StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName
+                )
+                startDownload(doc?.uri!!, item)
             }
         }
     }
@@ -406,8 +406,9 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
         (fileProvider as DropboxFileProvider).refreshInstance()
     }
 
-    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?) {
+    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?, uri: Uri?) {
         info?.let { viewState.onSnackBar(it) }
+        viewState.onFinishDownload(uri)
     }
 
     override fun onDownloadProgress(id: String?, total: Int, progress: Int) {

@@ -2,10 +2,11 @@ package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import app.documents.core.account.AccountDao
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.RecentDao
-import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
@@ -84,16 +85,25 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { it.response }
-            .subscribe({
+            .subscribe({ user ->
                 CoroutineScope(Dispatchers.Default).launch {
+                    withContext(Dispatchers.Main) {
+                        AccountUtils.getAccount(context, account.getAccountName())?.let {
+                            if (account.getAccountName() != "${user.email}@${account.portal}") {
+                                AccountUtils.getAccountManager(context).renameAccount(it, "${user.email}@${account.portal}", {
+                                }, Handler(Looper.getMainLooper()))
+                            }
+                        }
+                    }
                     accountDao.updateAccount(
                         account.copy(
-                            avatarUrl = it.avatarMedium,
-                            name = it.displayName,
-                            isAdmin = it.isAdmin,
-                            isVisitor = it.isVisitor
+                            avatarUrl = user.avatarMedium,
+                            name = user.getName(),
+                            isAdmin = user.isAdmin,
+                            isVisitor = user.isVisitor
                         )
                     )
+
                 }
             }, {
                 // Nothing
@@ -103,20 +113,17 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
 
     fun removeAccount() {
         CoroutineScope(Dispatchers.Default).launch {
-            if (AccountUtils.removeAccount(
-                    context,
-                    Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-                )
-            ) {
-                accountDao.deleteAccount(account)
-                recentDao.removeAllByOwnerId(account.id)
-                withContext(Dispatchers.Main) {
-                    viewState.onClose(false)
-                }
-            } else {
-                viewState.onError("Error delete account")
+            AccountUtils.removeAccount(
+                context,
+                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
+            )
+            accountDao.deleteAccount(account)
+            recentDao.removeAllByOwnerId(account.id)
+            withContext(Dispatchers.Main) {
+                viewState.onClose(false)
             }
         }
+
 
     }
 
@@ -125,7 +132,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             AccountUtils.getAccount(context, account.getAccountName())?.let {
                 if (account.isWebDav) {
                     AccountUtils.setPassword(context, it, null)
-                } else if(account.isDropbox || account.isOneDrive) {
+                } else if (account.isDropbox || account.isOneDrive) {
                     AccountUtils.setToken(context, it, "")
                 } else {
                     AccountUtils.setToken(context, it, null)

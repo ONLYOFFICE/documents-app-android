@@ -1,15 +1,21 @@
 package app.editors.manager.managers.utils
 
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.PorterDuff
+import android.os.Build
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.mvp.models.explorer.CloudFolder
+import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
@@ -61,6 +67,22 @@ object ManagerUiUtils {
         )
     }
 
+    fun ImageView.setDropboxImage(account: CloudAccount) {
+        if (account.avatarUrl?.isNotEmpty() == true) {
+            Glide.with(this)
+                .load(GlideUtils.getCorrectLoad(account.avatarUrl!!, account.token ?: ""))
+                .apply(GlideUtils.avatarOptions)
+                .into(this)
+        } else {
+            this.setImageDrawable(
+                ContextCompat.getDrawable(
+                    this.context,
+                    R.drawable.ic_storage_dropbox
+                )
+            )
+        }
+    }
+
     @JvmStatic
     fun setFileIcon(view: ImageView, ext: String) {
         val extension = StringUtils.getExtension(ext)
@@ -72,7 +94,7 @@ object ManagerUiUtils {
                 colorId = lib.toolkit.base.R.color.colorDocTint
             }
             StringUtils.Extension.FORM -> {
-                resId = if (ext == LocalContentTools.OFORM_EXTENSION) {
+                resId = if (ext == ".${LocalContentTools.OFORM_EXTENSION}") {
                     R.drawable.ic_format_oform
                 } else {
                     R.drawable.ic_format_docxf
@@ -127,7 +149,7 @@ object ManagerUiUtils {
         @DrawableRes var resId = R.drawable.ic_type_folder
         if (folder.shared && folder.providerKey.isEmpty()) {
             resId = R.drawable.ic_type_folder_shared
-        } else if (isRoot && folder.providerItem && !folder.providerKey.isEmpty()) {
+        } else if (isRoot && folder.providerItem && folder.providerKey.isNotEmpty()) {
             when (folder.providerKey) {
                 ApiContract.Storage.BOXNET -> resId = R.drawable.ic_storage_box
                 ApiContract.Storage.DROPBOX -> resId = R.drawable.ic_storage_dropbox
@@ -152,6 +174,19 @@ object ManagerUiUtils {
         view.setImageResource(resId)
         view.alpha =
             UiUtils.getFloatResource(view.context, lib.toolkit.base.R.dimen.alpha_medium)
+        if (UiUtils.isDarkMode(view.context)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                view.colorFilter = BlendModeColorFilter(
+                    ContextCompat.getColor(view.context, lib.toolkit.base.R.color.colorOnSurface),
+                    BlendMode.SRC_ATOP
+                )
+            } else {
+                view.setColorFilter(
+                    ContextCompat.getColor(view.context, lib.toolkit.base.R.color.colorOnSurface),
+                    PorterDuff.Mode.SRC_ATOP
+                )
+            }
+        }
     }
 
     fun setAccessIcon(imageView: ImageView, accessCode: Int) {

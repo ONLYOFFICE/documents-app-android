@@ -564,5 +564,50 @@
     <string name="download_manager_archiving_progress">Vytváření archivu</string>
     <string name="download_manager_exceed_size_100">Překračuje maximální velikost souboru (100MB)</string>
     <string name="download_manager_exceed_size_25">Překračuje maximální velikost souboru (25MB)</string>
-    <string name="item_owner_self">Moje</string>
+    <string name="snackbar_undo">UNDO</string>
+    <string name="errors_server_auth_too_many_attempts">Příliš mnoho pokusů. Zkuste to později</string>
+    <string name="navigation_drawer_menu_feedback">Zpětná vazba a podpora</string>
+    <string name="share_snackbar_remove_user">Uživatel je odstraněn</string>
+    <string name="share_group_admin">Admin</string>
+    <string name="share_group_everyone">Všichni</string>
+    <string name="storage_onedrive_error_opened">Soubor je otevřen na portálu</string>
+    <string name="storage_onedrive_error_exist">Soubor se stejným názvem již v této složce existuje</string>
+    <string name="operation_panel_restore_button">Obnovit zde</string>
+    <string name="trash_snackbar_move_text">Můžete obnovit soubory z koše</string>
+    <string name="trash_snackbar_move_button">Obnovit</string>
+    <string name="trash_popup_move">Obnovit do</string>
+    <string name="on_boarding_back_button">ZPĚT</string>
+    <string name="auth_header_screen_4">Zadejte kód</string>
+    <string name="auth_info_screen_4">Do vstupního pole zadejte kód z aplikace autentizátoru</string>.
+    <string name="auth_step_title">Krok %1$d z %2$d</string>
+    <string name="auth_install_button">Install</string>
+    <string name="auth_confirm_button">Potvrdit</string>
+    <string name="auth_clipboard_key_copied">Klíč zkopírovaný do schránky</string>
+    <string name="auth_edit_hint">Kód</string>
+    <string name="app_settings_security">Zabezpečení</string>
+    <string name="app_settings_passcode">Zámek přístupového kódu</string>
+    <string name="app_settings_disable">Zakázat</string>
+    <string name="app_settings_enable">Povolit</string>
+    <string name="app_Settings_passcode_enable">Povolit přístupový kód</string>
+    <string name="app_settings_passcode_change">Změnit přístupový kód</string>
+    <string name="app_settings_passcode_fingerprint">Pro odemknutí použít otisk prstu</string>
+    <string name="app_settings_passcode_enter_title">Zadání přístupového kódu</string>
+    <string name="app_settings_passscode_enter_full_title">Zadejte přístupový kód pro odemknutí aplikace</string>
+    <string name="app_settings_passcode_enter_subtitle">Zvolte přístupový kód pro odemknutí aplikace</string>
+    <string name="app_settings_passcode_confirm_title">Potvrzení přístupového kódu</string>
+    <string name="app_settings_passcode_confirm_subtitle">Zadejte přístupový kód ještě jednou</string>
+    <string name="app_settings_passcode_confirm_error">Pasové kódy se neshodují</string>
+    <string name="app_settings_passcode_change_disable_title">Zadejte aktuální přístupový kód</string>
+    <string name="app_settings_passcode_change_disable_error">Zadán nesprávný přístupový kód</string>
+    <string name="app_settings_passcode_description"> - jedná se o kód, který je požadován při spuštění aplikace.\n\nPozor! Pokud zapomenete přístupový kód, musíte aplikaci odstranit nebo znovu nainstalovat. Všechny dokumenty v zařízení budou ztraceny. </string>
+    <string name="app_settings_passcode_fingerprint_title">Přístup k dokumentům</string>
+    <string name="item_owner_self">Já</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           Pokračováním vyjadřujete souhlas se
+            <a href="%1$s">Zásadami ochrany osobních údajů</a>
+            and the
+            <a href="%2$s">Podmínkami služby</a>
+        ]]>
+    </string>
 </resources>

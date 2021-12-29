@@ -92,6 +92,14 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
                 mNotificationUtils.showUploadCompleteNotification(id.hashCode(), title)
                 sendBroadcastUploadComplete(path, title!!, responseFile.response, path)
                 removeUploadFile(from)
+            } else {
+                mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                sendBroadcastUnknownError(title!!, path)
+                if (!NetworkUtils.isOnline(applicationContext)) {
+                    return Result.retry()
+                } else {
+                    removeUploadFile(from)
+                }
             }
         } catch (e: IOException) {
             if (isStopped) {

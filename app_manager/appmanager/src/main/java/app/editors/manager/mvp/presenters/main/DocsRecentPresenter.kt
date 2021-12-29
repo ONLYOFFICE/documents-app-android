@@ -161,7 +161,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                                     ApiContract.HttpCodes.CLIENT_FORBIDDEN ->
                                         viewState.onError(context.getString(R.string.error_recent_account))
                                     else ->
-                                        onErrorHandle(throwable.response()?.errorBody(),throwable.code())
+                                        onErrorHandle(throwable.response()?.errorBody(), throwable.code())
                                 }
                             } else {
                                 viewState.onError(context.getString(R.string.error_recent_account))
@@ -177,7 +177,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     private fun checkExt(file: CloudFile) {
         if (file.rootFolderType.toInt() != ApiContract.SectionType.CLOUD_TRASH) {
             when (StringUtils.getExtension(file.fileExst)) {
-                StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
+                StringUtils.Extension.DOC, StringUtils.Extension.FORM, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                     viewState.openFile(file)
                 }
                 else -> viewState.onError(context.getString(R.string.error_unsupported_format))
@@ -435,7 +435,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     private fun openLocalFile(uri: Uri) {
         val name = getName(context, uri)
         when (StringUtils.getExtension(StringUtils.getExtensionFromPath(name.toLowerCase(Locale.ROOT)))) {
-            StringUtils.Extension.DOC -> viewState.onOpenFile(OpenState.Docs(uri))
+            StringUtils.Extension.DOC, StringUtils.Extension.FORM -> viewState.onOpenFile(OpenState.Docs(uri))
             StringUtils.Extension.SHEET -> viewState.onOpenFile(OpenState.Cells(uri))
             StringUtils.Extension.PRESENTATION -> viewState.onOpenFile(OpenState.Slide(uri))
             StringUtils.Extension.PDF -> viewState.onOpenFile(OpenState.Pdf(uri))
