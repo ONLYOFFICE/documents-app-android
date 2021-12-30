@@ -30,6 +30,7 @@ class RecentViewHolder(
 
                 listExplorerFileName.text = item.name
                 listExplorerFileInfo.text = info
+                listExplorerFileInfo.isVisible = !info.isNullOrEmpty()
                 listExplorerFileFavorite.isVisible = false
                 listExplorerFileLayout.setOnClickListener {
                     itemListener?.invoke(item.toRecent(), absoluteAdapterPosition)
