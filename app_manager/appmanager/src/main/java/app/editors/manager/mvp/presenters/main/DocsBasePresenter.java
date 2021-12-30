@@ -39,6 +39,7 @@ import app.documents.core.account.RecentDao;
 import app.documents.core.network.ApiContract;
 import app.documents.core.settings.NetworkSettings;
 import app.editors.manager.R;
+import app.editors.manager.app.App;
 import app.editors.manager.managers.exceptions.NoConnectivityException;
 import app.editors.manager.managers.providers.BaseFileProvider;
 import app.editors.manager.managers.providers.CloudFileProvider;
@@ -51,6 +52,7 @@ import app.editors.manager.managers.works.UploadWork;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.CloudFolder;
+import app.editors.manager.mvp.models.explorer.Current;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.explorer.Operation;
@@ -223,7 +225,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 .subscribe(this::loadSuccess, this::fetchError));
     }
 
-    public boolean refresh() {
+    public boolean refresh(){
         setPlaceholderType(PlaceholderViews.Type.LOAD);
         final String id = mModelExplorerStack.getCurrentId();
         if (id != null) {
@@ -239,7 +241,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             } else if(mIsFilteringMode && mFileProvider instanceof CloudFileProvider) {
                 mDisposable.add(((CloudFileProvider)mFileProvider).search(mFilteringValue)
                         .subscribe(items -> {
-                            mModelExplorerStack.refreshStack(getSearchExplorer(items));
+
+                            try {
+                                mModelExplorerStack.refreshStack(getSearchExplorer(items));
+                            } catch (JSONException e) {
+                                throw e;
+                            }
+
                             setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
                             updateViewsState();
                             getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
@@ -277,14 +285,14 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return refresh();
     }
 
-    public boolean filter(@NonNull final String value, boolean isSubmitted) {
+    public boolean filter(@NonNull final String value, boolean isSubmitted){
         if (mIsFilteringMode) {
             mIsSubmitted = isSubmitted;
             final String id = mModelExplorerStack.getCurrentId();
             if (id != null) {
 
                 mFilteringValue = value;
-                if(!(mFileProvider instanceof CloudFileProvider)) {
+                if(!(mFileProvider instanceof CloudFileProvider) || App.getApp().getAppComponent().getAccountOnline().isPersonal()) {
                     mDisposable.add(mFileProvider.getFiles(id, getArgs(value))
                             .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
                             .subscribe(explorer -> {
@@ -296,7 +304,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
                 } else {
                     mDisposable.add(((CloudFileProvider)mFileProvider).search(value)
                             .subscribe(items -> {
-                                mModelExplorerStack.setFilter(getSearchExplorer(items));
+
+                                try {
+                                    mModelExplorerStack.setFilter(getSearchExplorer(items));
+                                } catch (JSONException e) {
+                                    throw e;
+                                }
+
                                 setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
                                 updateViewsState();
                                 getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
@@ -313,12 +327,20 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     private Explorer getSearchExplorer(String items) throws JSONException {
         List<CloudFile> files = new ArrayList();
         List<CloudFolder> folders = new ArrayList();
+
         Explorer explorer = new Explorer();
+        explorer.setCurrent(mModelExplorerStack.last().getCurrent());
+
         for(Item item : getSearchResult(items)) {
-            if(item instanceof CloudFile) {
-                files.add((CloudFile) item);
-            } else {
-                folders.add((CloudFolder)item);
+            if(
+                    Integer.valueOf(item.getRootFolderType()) == mModelExplorerStack.getRootFolderType() &&
+                    item.getTitle().toLowerCase().contains(mFilteringValue)
+            ) {
+                if (item instanceof CloudFile) {
+                    files.add((CloudFile) item);
+                } else {
+                    folders.add((CloudFolder) item);
+                }
             }
         }
         explorer.setFiles(files);
@@ -799,26 +821,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     }
 
     public void uploadToMy(final Uri uri) {
-//        if (mAccountSqlTool.getAccountOnline() != null) {
-//            if (mPreferenceTool.getUploadWifiState() && !NetworkUtils.isWifiEnable(mContext)) {
-//                getViewState().onSnackBar(mContext.getString(R.string.upload_error_wifi));
-//                return;
-//            }
-//            if (ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE) {
-//                getViewState().onSnackBar(mContext.getString(R.string.upload_manager_error_file_size));
-//                return;
-//            }
-//            if (mAccountSqlTool.getAccountOnline().isWebDav()) {
-//                return;
-//            }
-//
-//            final Data workData = new Data.Builder()
-//                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
-//                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
-//                    .putString(UploadWork.TAG_FOLDER_ID, null)
-//                    .build();
-//            startUpload(workData);
-//        }
+        // Stub
     }
 
     private void addUploadFiles(ArrayList<Uri> uriList, String id) {
@@ -856,7 +859,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         }
     }
 
-    private void startUpload(Data data) {
+    protected void startUpload(Data data) {
         final OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(UploadWork.class)
                 .addTag(data.getString(UploadWork.TAG_UPLOAD_FILES))
                 .setInputData(data)

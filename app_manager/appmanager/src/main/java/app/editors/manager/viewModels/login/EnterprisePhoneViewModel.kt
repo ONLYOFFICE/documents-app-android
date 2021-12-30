@@ -22,7 +22,7 @@ sealed class EnterprisePhoneState {
 
 class EnterprisePhoneViewModelFactory(private val loginService: ILoginServiceProvider) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return EnterprisePhoneViewModel(loginService) as T
     }
 

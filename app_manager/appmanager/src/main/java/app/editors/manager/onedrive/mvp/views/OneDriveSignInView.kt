@@ -7,4 +7,5 @@ import moxy.viewstate.strategy.StateStrategyType
 @StateStrategyType(OneExecutionStateStrategy::class)
 interface OneDriveSignInView : BaseView {
     fun onLogin()
+    fun onStartLogin()
 }

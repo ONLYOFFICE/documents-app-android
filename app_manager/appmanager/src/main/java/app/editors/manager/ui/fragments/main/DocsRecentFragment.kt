@@ -116,6 +116,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         if (isFilter) {
             activity?.setAppBarStates(false)
             searchView?.setQuery(filterValue, true)
+            filterValue = ""
         } else {
             activity?.setAppBarStates(false)
             activity?.showNavigationButton(false)
@@ -207,6 +208,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun onContextShow(state: ContextBottomDialog.State) {
         parentFragmentManager.let {
             contextBottomDialog?.state = state
+            contextBottomDialog?.onClickListener = this
             contextBottomDialog?.show(it, ContextBottomDialog.TAG)
         }
     }

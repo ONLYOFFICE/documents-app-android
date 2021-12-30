@@ -3,7 +3,9 @@ package app.editors.manager.di.component
 import android.content.Context
 import androidx.room.RoomDatabase
 import app.documents.core.account.AccountDao
+import app.documents.core.account.AccountsDataBase
 import app.documents.core.account.CloudAccount
+import app.documents.core.account.RecentDao
 import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.settings.NetworkSettings
 import app.documents.core.settings.WebDavInterceptor
@@ -83,12 +85,14 @@ interface AppComponent {
     val contentTools: LocalContentTools
     val glideTools: GlideTool
     val networkSettings: NetworkSettings
+    val accountsDataBase: AccountsDataBase
     val accountsDao: AccountDao
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider
     val oneDriveAuthService: IOneDriveAuthServiceProvider
     val dropboxLoginService: IDropboxLoginServiceProvider
     val accountOnline: CloudAccount?
+    val recentDao: RecentDao?
 
     /*
    * Login

@@ -49,7 +49,6 @@
         android:id="@+id/on_boarding_page_image_scroll"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/screen_on_boarding_layout_height"
-        android:background="@android:drawable/dialog_holo_dark_frame"
         android:fillViewport="true"
         android:overScrollMode="never"
         android:scrollbars="none"
@@ -71,7 +70,7 @@
 
                 <ImageView
                     android:id="@+id/on_boarding_page_image"
-                    style="@style/CommonImageView"
+                    style="@style/AppTheme"
                     android:layout_width="@dimen/screen_on_boarding_image_width"
                     android:layout_height="@dimen/screen_on_boarding_image_height"
                     android:layout_gravity="bottom"

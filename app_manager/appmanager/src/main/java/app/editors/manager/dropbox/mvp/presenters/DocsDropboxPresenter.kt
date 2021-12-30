@@ -131,7 +131,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun createDownloadFile() {
-        if(mModelExplorerStack.countSelectedItems <= 1) {
+        if(mModelExplorerStack.countSelectedItems == 0) {
             if (mItemClicked is CloudFolder) {
                 viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
             } else if (mItemClicked is CloudFile) {
@@ -144,13 +144,15 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     override fun download(downloadTo: Uri) {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
-        if(mModelExplorerStack.countSelectedItems <= 1) {
+        if(mModelExplorerStack.countSelectedItems == 0) {
             startDownload(downloadTo, mItemClicked)
         } else {
             val itemList: MutableList<Item> = (mModelExplorerStack.selectedFiles + mModelExplorerStack.selectedFolders).toMutableList()
             itemList.forEach { item ->
                 val fileName = if(item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
-                val doc = DocumentFile.fromTreeUri(mContext, downloadTo)?.createFile("*/*", fileName)
+                val doc = DocumentFile.fromTreeUri(mContext, downloadTo)?.createFile(
+                    StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName
+                )
                 startDownload(doc?.uri!!, item)
             }
         }
@@ -399,8 +401,9 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
         (mFileProvider as DropboxFileProvider).refreshInstance()
     }
 
-    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?) {
+    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?, uri: Uri?) {
         info?.let { viewState.onSnackBar(it) }
+        viewState.onFinishDownload(uri)
     }
 
     override fun onDownloadProgress(id: String?, total: Int, progress: Int) {

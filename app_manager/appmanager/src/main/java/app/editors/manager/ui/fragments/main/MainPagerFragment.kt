@@ -363,13 +363,15 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun setFileData(fileData: String) {
-        childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let { it ->
-            adapter?.let {
-                viewBinding?.mainViewPager?.currentItem = it.getByTitle(getString(R.string.main_pager_docs_projects))
+        viewBinding?.root?.postDelayed({
+            childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let { it ->
+                adapter?.let {
+                    viewBinding?.mainViewPager?.currentItem = it.getByTitle(getString(R.string.main_pager_docs_projects))
+                }
+                (it as DocsProjectsFragment).setFileData(fileData)
+                requireActivity().intent.data = null
             }
-            (it as DocsProjectsFragment).setFileData(fileData)
-            requireActivity().intent.data = null
-        }
+        }, 1000)
     }
 
     fun isRoot(): Boolean {

@@ -58,6 +58,12 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="WebViewerActivityStyle" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
     <style name="DialogCommonTheme" parent="NoActionBarTheme">
         <item name="android:windowIsTranslucent">true</item>
     </style>

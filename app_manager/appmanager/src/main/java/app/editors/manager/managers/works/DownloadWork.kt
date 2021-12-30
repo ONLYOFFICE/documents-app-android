@@ -62,11 +62,12 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
             LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
         }
 
-        fun sendBroadcastUnknownError(id: String?, url: String?, title: String?) {
+        fun sendBroadcastUnknownError(id: String?, url: String?, title: String?, uri: Uri?) {
             val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
+            intent.putExtra(DownloadReceiver.EXTRAS_KEY_URI, uri.toString())
             LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
         }
 
@@ -155,14 +156,14 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                                     )
                                 } else {
                                     notificationUtils.showErrorNotification(id.hashCode(), fileName)
-                                    sendBroadcastUnknownError(id, url, fileName)
+                                    sendBroadcastUnknownError(id, url, fileName, to)
                                 }
                                 file?.delete()
                             }
                         })
                 } else {
                     notificationUtils.showErrorNotification(id.hashCode(), fileName)
-                    sendBroadcastUnknownError(id, url, fileName)
+                    sendBroadcastUnknownError(id, url, fileName, to)
                     file?.delete()
                 }
             } catch (e: IOException) {
@@ -239,7 +240,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
         responseMessage = try {
             responseBody?.string()
         } catch (e: Exception) {
-            sendBroadcastUnknownError(id, url, fileName)
+            sendBroadcastUnknownError(id, url, fileName, to)
             file?.delete()
             return
         }
@@ -255,7 +256,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                     FirebaseUtils.addCrash(e)
                 }
             } else {
-                sendBroadcastUnknownError(id, url, fileName)
+                sendBroadcastUnknownError(id, url, fileName, to)
                 file?.delete()
                 return
             }

@@ -55,8 +55,8 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     private var batchItems: List<Item>? = null
     val uploadsFile: MutableList<CloudFile> = Collections.synchronizedList(ArrayList())
 
-    override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
-        return Observable.fromCallable { api.propfind(id).execute() }
+    override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
+        return Observable.fromCallable { id?.let { api.propfind(it).execute() } }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { modelResponse: Response<WebDavModel?> ->

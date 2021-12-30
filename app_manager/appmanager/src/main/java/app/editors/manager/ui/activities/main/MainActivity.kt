@@ -6,11 +6,13 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.managers.receivers.DownloadReceiver
@@ -22,6 +24,7 @@ import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.viewModels.main.RecentViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewInfo
@@ -65,10 +68,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         private const val URL_KEY = "url"
         const val KEY_CODE = "code"
 
-        fun show(context: Context, isCode: Boolean = true) {
+        fun show(context: Context, isCode: Boolean? = true) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                putExtra(KEY_CODE, isCode)
+                isCode?.let { putExtra(KEY_CODE, isCode) }
             })
         }
     }
@@ -76,6 +79,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     @InjectPresenter
     lateinit var presenter: MainActivityPresenter
 
+    private val recentViewModel: RecentViewModel by viewModels()
     private lateinit var viewBinding: ActivityMainBinding
 
     private val navigationListener: (item: MenuItem) -> Boolean = { item ->
@@ -178,7 +182,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                     }
                 }
                 REQUEST_ACTIVITY_PORTAL -> {
-                    presenter.init()
+                    presenter.init(true)
                 }
             }
             if (data != null && data.extras != null) {
@@ -196,7 +200,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(lib.toolkit.base.R.style.NoActionBarTheme)
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
@@ -213,6 +216,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             intent.extras?.getString(URL_KEY)?.let {
                 showBrowser(it)
             }
+        }
+        recentViewModel.isRecent.observe(this) { recents ->
+            viewBinding.bottomNavigation.menu.getItem(0).isEnabled = recents.isNotEmpty()
         }
     }
 
@@ -237,13 +243,17 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             viewBinding.appBarToolbar.bind(Json.decodeFromString(it.getString(ACCOUNT_KEY) ?: ""))
         } ?: run {
             presenter.init()
-            viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+            accountOnline?.let {
+                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+            } ?: run {
+                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
+            }
         }
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
         if (intent.extras?.containsKey(KEY_CODE) == true) {
-            presenter.checkOnBoarding(true)
+            presenter.checkPassCode(true)
         } else {
-            presenter.checkOnBoarding()
+            presenter.checkPassCode()
         }
     }
 
@@ -376,11 +386,15 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun onQuestionDialog(title: String, tag: String, accept: String, cancel: String, question: String?) {
-        showQuestionDialog(title, tag, accept, cancel, question)
+        viewBinding.root.postDelayed({
+            showQuestionDialog(title, tag, accept, cancel, question)
+        }, 150)
     }
 
     override fun onShowEditMultilineDialog(title: String, hint: String, accept: String, cancel: String, tag: String) {
-        showEditMultilineDialog(title, hint, accept, cancel, tag)
+        viewBinding.root.postDelayed({
+            showEditMultilineDialog(title, hint, accept, cancel, tag)
+        }, 150)
     }
 
     override fun onShowPlayMarket(releaseId: String) {

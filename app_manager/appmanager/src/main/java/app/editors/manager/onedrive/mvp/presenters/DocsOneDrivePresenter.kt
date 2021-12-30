@@ -440,8 +440,9 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         info?.let { viewState.onSnackBar(it) }
     }
 
-    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?) {
+    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?, uri: Uri?) {
         info?.let { viewState.onSnackBar(it) }
+        viewState.onFinishDownload(uri)
     }
 
     override fun onDownloadProgress(id: String?, total: Int, progress: Int) {

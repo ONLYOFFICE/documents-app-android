@@ -11,6 +11,13 @@
         android:layout_height="match_parent"
         android:padding="@dimen/screen_padding_medium_left_right">
 
+        <CheckBox
+            android:id="@+id/terms_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:ignore="MissingConstraints" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_personal_portal_email_layout"
             style="@style/CommonEditText"
@@ -141,6 +148,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/login_personal_signup_button"
+            app:layout_constraintVertical_bias="1.0"
             tools:text="By proceeding, you agree to the Privacy Policy and the Terms of Service." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
