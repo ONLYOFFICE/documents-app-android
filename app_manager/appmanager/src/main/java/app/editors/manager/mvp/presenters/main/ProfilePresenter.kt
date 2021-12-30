@@ -101,9 +101,9 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                 is LoginResponse.Success -> {
                     val user = (response.response as ResponseUser).response
                     withContext(Dispatchers.Main) {
-                        AccountUtils.getAccount(context, account.getAccountName())?.let {
-                            if (account.getAccountName() != "${user.email}@${account.portal}") {
-                                AccountUtils.getAccountManager(context).renameAccount(it, "${user.email}@${account.portal}", {
+                        AccountUtils.getAccount(context, account.getAccountName())?.let { systemAccount ->
+                            if (systemAccount.name != "${user.email}@${account.portal}") {
+                                AccountUtils.getAccountManager(context).renameAccount(systemAccount, "${user.email}@${account.portal}", {
                                 }, Handler(Looper.getMainLooper()))
                             }
                         }
