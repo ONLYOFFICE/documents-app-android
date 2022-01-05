@@ -43,6 +43,12 @@ platform :android do
       merge_commit_filtering: "exclude_merges"
     )
 
+    # Read changelog file
+    change_log_file = options[:changelog_file]
+    if(File.exist?(change_log_file))
+      change_log = File.read(change_log_file)
+    end
+
     # Cleanup and build
     cleanup
 
@@ -150,6 +156,12 @@ platform :android do
       merge_commit_filtering: "exclude_merges"
     )
 
+    # Read changelog file
+    change_log_file = options[:changelog_file]
+    if(File.exist?(change_log_file))
+      change_log = File.read(change_log_file)
+    end
+
     # Build
     gradle(
       task: 'bundle',
@@ -201,6 +213,12 @@ platform :android do
       match_lightweight_tag: false,
       merge_commit_filtering: "exclude_merges"
     )
+
+    # Read changelog file
+    change_log_file = options[:changelog_file]
+    if(File.exist?(change_log_file))
+      change_log = File.read(change_log_file)
+    end
 
     # Build
     gradle(
