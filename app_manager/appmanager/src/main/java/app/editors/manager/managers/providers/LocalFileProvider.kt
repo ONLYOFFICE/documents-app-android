@@ -239,6 +239,13 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
             }
             resultExplorer.add(tempExplorer)
         }
+
+        if(resultExplorer.count == 0) {
+            val current = Current()
+            current.id = id
+            resultExplorer.current = current
+        }
+
         return resultExplorer
     }
 
