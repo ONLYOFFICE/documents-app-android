@@ -9,7 +9,7 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.account.RecentDao
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.models.login.response.ResponseUser
-import app.editors.manager.app.Api
+import app.documents.core.settings.NetworkSettings
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.loginService
@@ -48,13 +48,16 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
     @Inject
     lateinit var recentDao: RecentDao
 
+    @Inject
+    lateinit var networkSettings: NetworkSettings
+
     init {
         App.getApp().appComponent.inject(this)
     }
 
     private lateinit var account: CloudAccount
     private var disposable = CompositeDisposable()
-    private val loginService = context.loginService
+    private var loginService = context.loginService
 
 
     override fun onDestroy() {
@@ -64,16 +67,24 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
 
     fun setAccount(jsonAccount: String) {
         account = Json.decodeFromString(jsonAccount)
+
+        updateBaseUrl(account)
+
         if (account.isWebDav) {
             viewState.onRender(ProfileState.WebDavState(account))
         } else if (account.isDropbox || account.isOneDrive) {
             viewState.onRender(ProfileState.CloudState(account))
-            updateAccountInfo(account)
         } else {
             viewState.onRender(ProfileState.CloudState(account))
-            getThirdparty(account)
+            //TODO will rework by next release
+            //getThirdparty(account)
             updateAccountInfo(account)
         }
+    }
+
+    private fun updateBaseUrl(account: CloudAccount) {
+        networkSettings.setBaseUrl(account.portal ?: "")
+        loginService = context.loginService
     }
 
     private fun getThirdparty(account: CloudAccount) {
@@ -93,7 +104,6 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
     }
 
     private fun updateAccountInfo(account: CloudAccount) {
-
         CoroutineScope(Dispatchers.Default).launch {
             val token = AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type)))
 
@@ -103,8 +113,13 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                     withContext(Dispatchers.Main) {
                         AccountUtils.getAccount(context, account.getAccountName())?.let { systemAccount ->
                             if (systemAccount.name != "${user.email}@${account.portal}") {
-                                AccountUtils.getAccountManager(context).renameAccount(systemAccount, "${user.email}@${account.portal}", {
-                                }, Handler(Looper.getMainLooper()))
+                                try {
+                                    AccountUtils.getAccountManager(context).renameAccount(systemAccount, "${user.email}@${account.portal}", {
+                                    }, Handler(Looper.getMainLooper()))
+                                } catch (exception: NullPointerException) {
+                                   viewState.onError(exception.message)
+                                }
+
                             }
                         }
                     }
@@ -118,7 +133,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                     )
                 }
                 is LoginResponse.Error -> {
-                    throw response.error
+                    viewState.onError(response.error.message)
                 }
             }
         }
