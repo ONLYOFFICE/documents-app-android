@@ -1,8 +1,11 @@
 package app.editors.manager.mvp.presenters.main;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -52,7 +55,6 @@ import app.editors.manager.managers.works.UploadWork;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.CloudFile;
 import app.editors.manager.mvp.models.explorer.CloudFolder;
-import app.editors.manager.mvp.models.explorer.Current;
 import app.editors.manager.mvp.models.explorer.Explorer;
 import app.editors.manager.mvp.models.explorer.Item;
 import app.editors.manager.mvp.models.explorer.Operation;
@@ -1651,6 +1653,7 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
     protected void onFailureHandle(Throwable t) {
         if (t instanceof NoConnectivityException) {
             getViewState().onError(mContext.getString(R.string.errors_connection_error));
+            onNetworkHandle();
         } else if (t instanceof UnknownHostException) {
             getViewState().onError(mContext.getString(R.string.errors_unknown_host_error));
         } else if (t instanceof SSLHandshakeException) {
@@ -1660,6 +1663,19 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             FirebaseUtils.addCrash(t);
             getViewState().onError(mContext.getString(R.string.errors_unknown_error));
         }
+    }
+
+    private void onNetworkHandle() {
+        mContext.registerReceiver(
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        if (NetworkUtils.isOnline(context)) {
+                            refresh();
+                            mContext.unregisterReceiver(this);
+                        }
+                    }
+                }, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     private void checkStatusOperation() {
