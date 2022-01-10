@@ -1,6 +1,7 @@
 package app.editors.manager.ui.views.popup
 
 import android.content.Context
+import android.view.Gravity
 import android.view.View
 import app.editors.manager.databinding.PopupShareMenuBinding
 import app.editors.manager.managers.utils.isVisible
@@ -80,6 +81,12 @@ class SharePopup(context: Context, layoutId: Int) : BasePopup(context, layoutId)
 
     fun setContextListener(contextListener: PopupContextListener) {
         this.contextListener = contextListener
+    }
+
+    fun showOverlap(view: View, viewHeight: Int) {
+        val offsetX = context.resources.getDimension(lib.toolkit.base.R.dimen.default_margin_medium).toInt()
+        val offsetY = context.resources.getDimension(lib.toolkit.base.R.dimen.default_margin_xlarge).toInt()
+        popupWindow.showAtLocation(view, Gravity.START or Gravity.BOTTOM, offsetX, viewHeight + offsetY)
     }
 
     interface PopupContextListener {
