@@ -151,8 +151,8 @@ class AccountContentProvider : ContentProvider() {
             expires = ""
         )
 
-        val token = cloudAccount.token
-        val password = cloudAccount.password
+        val token = cloudAccount.getDecryptToken()
+        val password = cloudAccount.getDecryptPassword() ?: ""
 
         if (!AccountUtils.addAccount(checkNotNull(context), account, password, accountData)) {
             AccountUtils.setAccountData(checkNotNull(context), account, accountData)
