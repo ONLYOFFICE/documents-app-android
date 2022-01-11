@@ -21,7 +21,7 @@ platform :android do
   end
 
   desc "Composit task (clean, incriment, build, deploy, commit) fo deploy a new internal testing build to Google Play Store"
-  lane :bundleRelease do
+  lane :bundleRelease do |options|
     versionCode = android_get_version_code(
       gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
@@ -90,11 +90,11 @@ platform :android do
 
 
   desc "Task for CI"
-  lane :publish_market_and_apk do
+  lane :publish_market_and_apk do |options|
     cleanup
     increment_build
-    deploy_playmarket
-    apk
+    deploy_playmarket(options)
+    apk(options)
     git_version_bumped
   end
 
@@ -142,7 +142,7 @@ platform :android do
 
 
   desc "Deploy a new internal testing build to Google Play Store"
-  lane :deploy_playmarket do
+  lane :deploy_playmarket do |options|
     versionCode = android_get_version_code(
       gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
@@ -200,7 +200,7 @@ platform :android do
 
 
   desc "Build the application as APK files for all platforms"
-  lane :apk do
+  lane :apk do |options|
     versionCode = android_get_version_code(
       gradle_file: "app_manager/appmanager/build.gradle.kts"
     )
