@@ -58,14 +58,18 @@ platform :android do
       project_dir: 'app_manager/'
     )
 
-    # Submit to Play Market
+    # Submit to Play Market with metadata
     upload_to_play_store(
-      track: 'internal',
-      skip_upload_metadata: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      skip_upload_changelogs: true
-    )
+          track: 'internal',
+          metadata_path: '../../mobile-store/documents-playmarket/metadata'
+          )
+#     upload_to_play_store(
+#       track: 'internal',
+#       skip_upload_metadata: true,
+#       skip_upload_images: true,
+#       skip_upload_screenshots: true,
+#       skip_upload_changelogs: true
+#     )
 
     git_version_bumped
 
