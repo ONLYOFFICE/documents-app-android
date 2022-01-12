@@ -13,6 +13,7 @@ import app.documents.core.settings.NetworkSettings
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.loginService
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.models.user.Thirdparty
 import app.editors.manager.mvp.views.main.ProfileView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -117,7 +118,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                                     AccountUtils.getAccountManager(context).renameAccount(systemAccount, "${user.email}@${account.portal}", {
                                     }, Handler(Looper.getMainLooper()))
                                 } catch (exception: NullPointerException) {
-                                   viewState.onError(exception.message)
+                                    exception.message?.let { FirebaseUtils.addCrash(it) }
                                 }
 
                             }
