@@ -24,6 +24,7 @@ import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceP
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import java.util.*
 
 class App : Application() {
@@ -112,6 +113,9 @@ class App : Application() {
                 WebView.setDataDirectorySuffix("cacheWebView")
             }
         }
+        if (ActivitiesUtils.isPackageExist(this, "com.onlyoffice.projects")) {
+            AddAccountHelper(this).copyData()
+        }
         isAnalyticEnable = appComponent.preference.isAnalyticEnable
         initCrashlytics()
         KeyStoreUtils.init()
@@ -180,6 +184,7 @@ class App : Application() {
             .build()
             .dropboxServiceProvider
     }
+
 }
 
 val Context.accountOnline: CloudAccount?

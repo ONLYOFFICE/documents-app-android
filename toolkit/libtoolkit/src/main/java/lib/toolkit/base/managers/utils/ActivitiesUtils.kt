@@ -2,6 +2,7 @@ package lib.toolkit.base.managers.utils
 
 import android.Manifest
 import android.app.Activity
+import android.app.Application
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -263,6 +264,15 @@ object ActivitiesUtils {
     @JvmStatic
     fun releaseExternalStoragePermission(context: Context, uri: Uri, flag: Int) {
         context.contentResolver.releasePersistableUriPermission(uri, flag)
+    }
+
+    fun isPackageExist(context: Application, packageName: String): Boolean {
+        return try {
+            context.packageManager.getPackageInfo(packageName, 0)
+            true
+        } catch (error: Throwable) {
+            false
+        }
     }
 }
 

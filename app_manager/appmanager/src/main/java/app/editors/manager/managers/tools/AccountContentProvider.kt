@@ -171,14 +171,14 @@ class AccountContentProvider : ContentProvider() {
             name = values?.getAsString("name"),
             provider = values?.getAsString("provider"),
             avatarUrl = values?.getAsString("avatarUrl"),
-            isSslCiphers = values?.getAsBoolean("ciphers") ?: false,
-            isSslState = values?.getAsBoolean("ssl") ?: true,
+            isSslCiphers = values?.getAsBoolean("isSslCiphers") ?: false,
+            isSslState = values?.getAsBoolean("isSslState") ?: true,
             isOnline = false,
             isWebDav = false,
             isOneDrive = false,
             isDropbox = false,
-            isAdmin = values?.getAsBoolean("admin") ?: false,
-            isVisitor = values?.getAsBoolean("visitor") ?: false
+            isAdmin = values?.getAsBoolean("isAdmin") ?: false,
+            isVisitor = values?.getAsBoolean("isVisitor") ?: false
         ).apply {
             token = values?.getAsString("token") ?: ""
             password = values?.getAsString("password") ?: ""
@@ -196,14 +196,14 @@ class AccountContentProvider : ContentProvider() {
             name = extras.getString("name"),
             provider = extras.getString("provider"),
             avatarUrl = extras.getString("avatarUrl"),
-            isSslCiphers = extras.getBoolean("ciphers", false),
-            isSslState = extras.getBoolean("ssl", true),
+            isSslCiphers = extras.getBoolean("isSslCiphers", false),
+            isSslState = extras.getBoolean("isSslState", true),
             isOnline = false,
             isWebDav = false,
             isOneDrive = false,
             isDropbox = false,
-            isAdmin = extras.getBoolean("admin", false),
-            isVisitor = extras.getBoolean("visitor", false)
+            isAdmin = extras.getBoolean("isAdmin", false),
+            isVisitor = extras.getBoolean("isVisitor", false)
         ).apply {
             token = extras.getString("token") ?: ""
             password = extras.getString("password") ?: ""
