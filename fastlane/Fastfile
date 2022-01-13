@@ -46,7 +46,7 @@ platform :android do
     # Read changelog file
     change_log_file = options[:changelog_file]
     if(File.exist?(change_log_file))
-      change_log = File.read(change_log_file)
+      changelog = File.read(change_log_file)
     end
 
     # Cleanup and build
@@ -159,7 +159,7 @@ platform :android do
     # Read changelog file
     change_log_file = options[:changelog_file]
     if(File.exist?(change_log_file))
-      change_log = File.read(change_log_file)
+      changelog = File.read(change_log_file)
     end
 
     # Build
@@ -217,7 +217,7 @@ platform :android do
     # Read changelog file
     change_log_file = options[:changelog_file]
     if(File.exist?(change_log_file))
-      change_log = File.read(change_log_file)
+      changelog = File.read(change_log_file)
     end
 
     # Build
