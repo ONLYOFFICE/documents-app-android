@@ -44,25 +44,25 @@ class AddAccountHelper(private val context: Application) {
 
     private fun parse(json: JSONObject): CloudAccount {
         return CloudAccount(
-            id = json.getString(CloudAccount::id.name),
-            login = json.getString(CloudAccount::login.name),
-            portal = json.getString(CloudAccount::portal.name),
-            serverVersion = json.getString(CloudAccount::serverVersion.name),
-            scheme = json.getString(CloudAccount::scheme.name),
-            name = json.getString(CloudAccount::name.name),
-            avatarUrl = json.getString(CloudAccount::avatarUrl.name),
-            isSslCiphers = json.getString(CloudAccount::isSslCiphers.name) == "1",
-            isSslState = json.getString(CloudAccount::isSslState.name) == "1",
-            isOnline = json.getString(CloudAccount::isOnline.name) == "1",
-            isWebDav = json.getString(CloudAccount::isWebDav.name) == "1",
-            isOneDrive = json.getString(CloudAccount::isOneDrive.name) == "1",
-            isDropbox = json.getString(CloudAccount::isDropbox.name) == "1",
-            isAdmin = json.getString(CloudAccount::isAdmin.name) == "1",
-            isVisitor = json.getString(CloudAccount::isVisitor.name) == "1",
+            id = json.optString(CloudAccount::id.name),
+            login = json.optString(CloudAccount::login.name),
+            portal = json.optString(CloudAccount::portal.name),
+            serverVersion = json.optString(CloudAccount::serverVersion.name),
+            scheme = json.optString(CloudAccount::scheme.name),
+            name = json.optString(CloudAccount::name.name),
+            avatarUrl = json.optString(CloudAccount::avatarUrl.name),
+            isSslCiphers = json.optString(CloudAccount::isSslCiphers.name) == "1",
+            isSslState = json.optString(CloudAccount::isSslState.name) == "1",
+            isOnline = json.optString(CloudAccount::isOnline.name) == "1",
+            isWebDav = json.optString(CloudAccount::isWebDav.name) == "1",
+            isOneDrive = json.optString(CloudAccount::isOneDrive.name) == "1",
+            isDropbox = json.optString(CloudAccount::isDropbox.name) == "1",
+            isAdmin = json.optString(CloudAccount::isAdmin.name) == "1",
+            isVisitor = json.optString(CloudAccount::isVisitor.name) == "1",
         ).apply {
-            token = json.getString(CloudAccount::token.name)
-            password = json.getString(CloudAccount::password.name)
-            expires = json.getString(CloudAccount::expires.name)
+            token = json.optString(CloudAccount::token.name)
+            password = json.optString(CloudAccount::password.name)
+            expires = json.optString(CloudAccount::expires.name)
         }
     }
 
