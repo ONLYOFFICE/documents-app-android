@@ -141,7 +141,7 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 account.scheme + account.portal + account.avatarUrl
             }
             Glide.with(iconSelectableImage)
-                .load(GlideUtils.getCorrectLoad(url, account.token ?: ""))
+                .load(GlideUtils.getCorrectLoad(url, account.getDecryptToken() ?: ""))
                 .apply(GlideUtils.avatarOptions)
                 .into(iconSelectableImage)
 

@@ -1,5 +1,6 @@
 package app.editors.manager.app
 
+import android.accounts.Account
 import android.app.Application
 import android.database.Cursor
 import android.net.Uri
@@ -7,22 +8,51 @@ import app.documents.core.account.CloudAccount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import lib.toolkit.base.R
+import lib.toolkit.base.managers.utils.AccountData
+import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.CryptUtils
 import org.json.JSONObject
 
 class AddAccountHelper(private val context: Application) {
 
     fun copyData() {
         CoroutineScope(Dispatchers.Default).launch {
-            val cursor = context.contentResolver.query(Uri.parse("content://com.onlyoffice.accounts/accounts"), null, null, null, null)
+            val cursor = context.contentResolver.query(Uri.parse("content://com.onlyoffice.projects.accounts/accounts"), null, null, null, null)
             val accounts = parseAccounts(cursor)
             val existAccounts = context.appComponent.accountsDao.getAccounts()
             accounts.forEach { account ->
                 existAccounts.find { account.id == it.id } ?: run {
                     context.appComponent.accountsDao.addAccount(account)
+                    addSystemAccount(account)
                 }
             }
             cursor?.close()
         }
+    }
+
+    private fun addSystemAccount(cloudAccount: CloudAccount) {
+        val account = Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
+        val accountData = AccountData(
+            portal = cloudAccount.portal ?: "",
+            scheme = cloudAccount.scheme ?: "",
+            displayName = cloudAccount.name ?: "",
+            userId = cloudAccount.id,
+            provider = cloudAccount.provider ?: "",
+            accessToken = "",
+            email = cloudAccount.login ?: "",
+            avatar = cloudAccount.avatarUrl,
+            expires = ""
+        )
+
+        val token = cloudAccount.getDecryptToken()
+        val password = cloudAccount.getDecryptPassword() ?: ""
+
+        if (!AccountUtils.addAccount(context, account, password, accountData)) {
+            AccountUtils.setAccountData(context, account, accountData)
+            AccountUtils.setPassword(context, account, password)
+        }
+        AccountUtils.setToken(context, account, token)
     }
 
     private fun parseAccounts(cursor: Cursor?): List<CloudAccount> {
@@ -60,8 +90,8 @@ class AddAccountHelper(private val context: Application) {
             isAdmin = json.optString(CloudAccount::isAdmin.name) == "1",
             isVisitor = json.optString(CloudAccount::isVisitor.name) == "1",
         ).apply {
-            token = json.optString(CloudAccount::token.name)
-            password = json.optString(CloudAccount::password.name)
+            token = CryptUtils.decryptAES128(json.optString(CloudAccount::token.name), this.id) ?: ""
+            password = CryptUtils.decryptAES128(json.optString(CloudAccount::password.name), this.id) ?: ""
             expires = json.optString(CloudAccount::expires.name)
         }
     }
