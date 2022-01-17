@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginEnterpriseCreateSigninBinding
@@ -68,7 +69,10 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         hideKeyboard(viewBinding?.loginSigninPasswordEdit)
         val password = viewBinding?.loginSigninPasswordEdit?.text.toString()
         val repeat = viewBinding?.loginSigninRepeatEdit?.text.toString()
-        if (password != repeat) {
+        if (password.length < 8 || password.length > 30) {
+            viewBinding?.loginSigninPasswordLayout?.error = getString(R.string.login_create_signin_passwords_length)
+            return
+        } else if (password != repeat) {
             viewBinding?.loginSigninRepeatLayout?.error = getString(R.string.login_create_signin_passwords_mismatch)
             return
         }
@@ -165,6 +169,10 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         }
 
         viewBinding?.loginSigninRepeatEdit?.addTextChangedListener(fieldsWatcher)
+
+        viewBinding?.loginSigninPasswordEdit?.addTextChangedListener {
+            viewBinding?.loginSigninPasswordLayout?.error = null
+        }
     }
 
     private val args: Unit
