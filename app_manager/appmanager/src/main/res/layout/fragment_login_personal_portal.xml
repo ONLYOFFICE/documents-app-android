@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
+    xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,8 +11,16 @@
         android:layout_height="match_parent"
         android:padding="@dimen/screen_padding_medium_left_right">
 
+        <CheckBox
+            android:id="@+id/terms_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:ignore="MissingConstraints" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_personal_portal_email_layout"
+            style="@style/CommonEditText"
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_top_bottom_padding"
@@ -22,7 +29,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_personal_portal_email_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -35,6 +42,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_personal_portal_password_layout"
+            style="@style/CommonEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -45,7 +53,7 @@
             app:layout_constraintTop_toBottomOf="@+id/login_personal_portal_email_layout"
             app:passwordToggleEnabled="true">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_personal_portal_password_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -55,9 +63,9 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_personal_signin_button"
-            style="@style/FixedAccentButtons"
+            style="@style/AccentButton"
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/default_margin_large"
             android:text="@string/login_personal_signin_button"
@@ -79,7 +87,7 @@
             app:layout_constraintTop_toBottomOf="@+id/login_personal_signin_button"
             app:layout_constraintVertical_chainStyle="spread_inside" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_personal_info_text"
             style="@style/ItemSmallGreyText"
             android:layout_width="@dimen/default_screen_width"
@@ -94,9 +102,9 @@
             app:layout_constraintTop_toBottomOf="@+id/social_network_layout"
             app:layout_constraintVertical_chainStyle="packed" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_personal_signup_button"
-            style="@style/FixedTransparentAccentButtons"
+            style="@style/AccentTextButton"
             android:layout_width="0dp"
             android:layout_marginTop="8dp"
             android:text="@string/login_personal_signup_button"
@@ -108,18 +116,41 @@
             app:layout_constraintStart_toStartOf="@+id/login_personal_portal_email_layout"
             app:layout_constraintTop_toBottomOf="@+id/login_personal_info_text" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_enterprise_forgot_pwd_button"
-            style="@style/FixedTransparentAccentButtonsNoCaps"
+            style="@style/AccentTextButtonSmall"
             android:layout_width="0dp"
             android:layout_height="20dp"
             android:layout_marginTop="@dimen/screen_margin_large"
             android:gravity="center"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:text="@string/login_enterprise_forgot_password"
             app:layout_constraintEnd_toEndOf="@+id/login_personal_portal_password_layout"
             app:layout_constraintStart_toStartOf="@+id/login_personal_portal_password_layout"
             app:layout_constraintTop_toBottomOf="@+id/login_personal_portal_password_layout"
             app:layout_constraintVertical_chainStyle="packed" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/termsTextView"
+            style="@style/ItemSmallGreyText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:lines="6"
+            android:linksClickable="true"
+            android:maxLines="6"
+            android:minLines="1"
+            android:singleLine="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/login_personal_signup_button"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="By proceeding, you agree to the Privacy Policy and the Terms of Service." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

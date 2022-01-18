@@ -7,14 +7,11 @@ import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.managers.exceptions.NoConnectivityException
-import app.editors.manager.managers.tools.AccountManagerTool
-import app.editors.manager.managers.tools.AccountSqlTool
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.base.BaseView
 import app.editors.manager.mvp.views.base.BaseViewExt
-import com.google.android.gms.common.api.Api
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
 import lib.toolkit.base.managers.utils.StringUtils.getJsonObject
@@ -41,9 +38,6 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
 
     @Inject
     lateinit var preferenceTool: PreferenceTool
-
-    @Inject
-    lateinit var accountSqlTool: AccountSqlTool
 
     @Inject
     lateinit var operationsState: OperationsState

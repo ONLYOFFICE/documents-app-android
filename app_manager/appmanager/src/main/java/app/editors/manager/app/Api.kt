@@ -11,6 +11,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
+import app.documents.core.network.models.login.response.ResponseUser
 
 interface Api {
 
@@ -60,6 +61,14 @@ interface Api {
         @Path(value = "item_id") folderId: String,
         @QueryMap options: Map<String, String>?
     ): Observable<Response<ResponseExplorer>>
+
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/@search/{query}" + ApiContract.RESPONSE_FORMAT)
+    fun search(@Path(value = "query") query: String): Observable<Response<ResponseBody>>
 
     /*
      * Create docs file
@@ -306,7 +315,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/settings/security" + ApiContract.RESPONSE_FORMAT)
-    fun getModules(@Query("ids") modulesIds: List<String>): Single<ResponseModules>
+    fun getModules(@Query("ids") modulesIds: List<String>): Observable<ResponseModules>
 
     @Headers(
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -325,4 +334,15 @@ interface Api {
         hasBody = true
     )
     fun deleteFromFavorites(@Body body: RequestFavorites): Observable<Response<Base>>
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/@root" + ApiContract.RESPONSE_FORMAT)
+    fun getRootFolder(
+        @QueryMap filterMap: Map<String, Int>,
+        @QueryMap flagMap: Map<String, Boolean>
+    ): Observable<ResponseCloudTree>
+
 }

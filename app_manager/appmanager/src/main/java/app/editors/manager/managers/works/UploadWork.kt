@@ -1,25 +1,22 @@
 package app.editors.manager.managers.works
 
-import android.accounts.Account
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.di.component.DaggerApiComponent
-import app.editors.manager.di.module.ApiModule
+import app.editors.manager.app.api
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.retrofit.ProgressRequestBody
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.UploadFile
 import app.editors.manager.mvp.models.response.ResponseFile
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.FileUtils
+import lib.toolkit.base.managers.utils.NetworkUtils
 import okhttp3.Headers
 import okhttp3.MultipartBody
 import retrofit2.Call
@@ -73,18 +70,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
     }
     private lateinit var call: Call<ResponseFile>
 
-    private val api = runBlocking(Dispatchers.Default) {
-        App.getApp().appComponent.accountsDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(applicationContext, Account(account.getAccountName(), applicationContext.getString(R.string.account_type)))?.let {
-                return@runBlocking DaggerApiComponent.builder().apiModule(ApiModule(it))
-                    .appComponent(App.getApp().appComponent)
-                    .build()
-                    .getApi()
-            }
-        } ?: run {
-            throw Error("No account")
-        }
-    }
+    private val api = applicationContext.api()
 
     override fun doWork(): Result {
         getArgs()
@@ -106,6 +92,14 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
                 mNotificationUtils.showUploadCompleteNotification(id.hashCode(), title)
                 sendBroadcastUploadComplete(path, title!!, responseFile.response, path)
                 removeUploadFile(from)
+            } else {
+                mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                sendBroadcastUnknownError(title!!, path)
+                if (!NetworkUtils.isOnline(applicationContext)) {
+                    return Result.retry()
+                } else {
+                    removeUploadFile(from)
+                }
             }
         } catch (e: IOException) {
             if (isStopped) {
@@ -138,7 +132,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
     }
 
     private fun createRequestBody(uri: Uri?): ProgressRequestBody {
-        val requestBody = ProgressRequestBody(App.getApp(), uri)
+        val requestBody = ProgressRequestBody(App.getApp(), uri ?: Uri.EMPTY)
         requestBody.setOnUploadCallbacks { total: Long, progress: Long ->
             if (!isStopped) {
                 showProgress(total, progress)

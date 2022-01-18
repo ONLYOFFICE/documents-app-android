@@ -146,4 +146,11 @@ public class Explorer implements Cloneable, Serializable {
         }
     }
 
+    public Explorer add (Explorer exp) {
+        this.getFolders().addAll(exp.getFolders());
+        this.getFiles().addAll(exp.getFiles());
+        this.current = exp.getCurrent();
+        return this;
+    }
+
 }

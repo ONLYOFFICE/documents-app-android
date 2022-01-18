@@ -7,19 +7,19 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
+import android.text.InputType
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import app.documents.core.network.models.login.request.RequestSignIn
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentAuthPageBinding
 import app.editors.manager.managers.receivers.SmsReceiver
+import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.presenters.login.EnterpriseAppAuthPresenter
 import app.editors.manager.mvp.views.login.EnterpriseAppView
 import app.editors.manager.ui.activities.login.AuthAppActivity
@@ -44,11 +44,12 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
         private const val GOOGLE_AUTHENTICATOR_URL = "com.google.android.apps.authenticator2"
         private const val CODE_PLACEHOLDER = "−"
         private const val PATTERN_CODE = "^[a-zA-Z0-9_-]*$"
+        private const val PLACEHOLDER_MASK = "−−− −−−"
 
         @JvmStatic
         fun newInstance(position: Int, request: String, key: String): AuthPageFragment {
             return AuthPageFragment().apply {
-                arguments = Bundle().apply {
+                arguments = Bundle(3).apply {
                     putInt(KEY_POSITION, position)
                     putString(AuthAppActivity.REQUEST_KEY, request)
                     putString(AuthAppActivity.TFA_KEY, key)
@@ -91,8 +92,8 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (supportActionBar != null && supportActionBar?.title != null) {
-            outState.putString(KEY_TITLE, supportActionBar?.title.toString())
+        supportActionBar?.let {
+            outState.putString(KEY_TITLE, it.title.toString())
         }
     }
 
@@ -110,8 +111,19 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
         initFragment(savedInstanceState)
     }
 
+    override fun onSuccessLogin() {
+        hideDialog()
+        MainActivity.show(requireContext())
+        requireActivity().finish()
+    }
+
+    override fun onError(message: String?) {
+        hideDialog()
+        message?.let { showSnackBar(it) }
+    }
+
     private fun initFragment(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_TITLE)) {
+        if (savedInstanceState?.containsKey(KEY_TITLE) == true) {
             setActionBarTitle(savedInstanceState.getString(KEY_TITLE))
         }
         when (fragmentPosition) {
@@ -123,106 +135,122 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
     }
 
     private fun initFirstFragment() {
-        viewBinding?.authPageHeader?.text = getString(R.string.auth_header_screen_1)
-        viewBinding?.authPageImage?.setImageDrawable(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.image_auth_screen_1
-            )
-        )
-
-        viewBinding?.authPageInfo?.text = getString(R.string.auth_info_screen_1)
-        viewBinding?.authSecretKeyLayout?.visibility = View.GONE
-        viewBinding?.confirmButton?.apply {
-            visibility = View.VISIBLE
-            text = getString(R.string.app_versions_without_release_accept)
-            setOnClickListener {
-                ActivitiesUtils.showPlayMarket(requireContext(), GOOGLE_AUTHENTICATOR_URL)
+        val fragmentCount = (parentFragment as AuthPagerFragment).fragmentCount
+        viewBinding?.let { binding ->
+            binding.authPageHeader.text = getString(R.string.auth_header_screen_1)
+            binding.authPageStep.text = getString(R.string.auth_step_title, 1, fragmentCount)
+            binding.authPageInfo.text = getString(R.string.auth_info_screen_1)
+            binding.authSecretKeyLayout.isVisible = false
+            binding.authPageImage
+                .setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_image_auth_screen_1))
+            binding.confirmButton.apply {
+                isVisible = true
+                text = context.getString(R.string.auth_install_button)
+                setOnClickListener {
+                    ActivitiesUtils.showPlayMarket(requireContext(), GOOGLE_AUTHENTICATOR_URL)
+                }
             }
         }
     }
 
     private fun initSecondFragment() {
-        viewBinding?.authPageHeader?.text = getString(R.string.auth_header_screen_2)
-        viewBinding?.authPageImage?.setImageDrawable(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.image_auth_screen_2
-            )
-        )
-        viewBinding?.authPageInfo?.text = getString(R.string.auth_info_screen_2)
-        viewBinding?.authSecretKeyLayout?.visibility = View.GONE
-        viewBinding?.confirmButton?.visibility = View.GONE
+        viewBinding?.let { binding ->
+            binding.authPageHeader.text = getString(R.string.auth_header_screen_2)
+            binding.authPageInfo.text = getString(R.string.auth_info_screen_2)
+            binding.authSecretKeyLayout.isVisible = false
+            binding.confirmButton.isVisible = false
+            binding.authPageImage
+                .setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_image_auth_screen_2))
+        }
     }
 
     private fun initThirdFragment() {
-        viewBinding?.authPageHeader?.text = getString(R.string.auth_header_screen_3)
-        viewBinding?.authPageImage?.setImageDrawable(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.image_auth_screen_3
-            )
-        )
-        viewBinding?.authPageInfo?.text = getString(R.string.auth_info_screen_3)
-        viewBinding?.confirmButton?.visibility = View.GONE
-        viewBinding?.authSecretKeyLayout?.visibility = View.VISIBLE
-        viewBinding?.authSecretKeyEditText?.setText(arguments?.getString(AuthAppActivity.TFA_KEY))
-        viewBinding?.authCopyButton?.setOnClickListener {
-            if (!viewBinding?.authSecretKeyEditText?.text.isNullOrEmpty()) {
-                KeyboardUtils.setDataToClipboard(
-                    requireContext(),
-                    viewBinding?.authSecretKeyEditText?.text.toString(),
-                    SECRET_LABEL
-                )
+        viewBinding?.let { binding ->
+            binding.authPageHeader.text = getString(R.string.auth_header_screen_3)
+            binding.authPageInfo.text = getString(R.string.auth_info_screen_3)
+            binding.confirmButton.isVisible = false
+            binding.authSecretKeyLayout.isVisible = true
+            binding.authPageImage
+                .setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_image_auth_screen_3))
+            binding.authSecretKeyEditText.apply {
+                arguments?.getString(AuthAppActivity.TFA_KEY)?.let { key ->
+                    setText(key.putSpace(4))
+                }
+                setTextIsSelectable(true)
+                keyListener = null
+            }
+            binding.authSecretKeyLayout.setEndIconOnClickListener {
+                if (!binding.authSecretKeyEditText.text.isNullOrEmpty()) {
+                    KeyboardUtils.setDataToClipboard(
+                        requireContext(),
+                        binding.authSecretKeyEditText.text.toString(), SECRET_LABEL
+                    )
+                    showToast(getString(R.string.auth_clipboard_key_copied))
+                }
             }
         }
     }
 
     private fun initFourthFragment() {
         codeListener = FieldsWatch()
-        viewBinding?.authPageHeader?.text = getString(R.string.auth_header_screen_4)
-        viewBinding?.authPageImage?.setImageDrawable(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.image_auth_screen_4
-            )
-        )
-        viewBinding?.authPageInfo?.text = getString(R.string.auth_info_screen_4)
-        viewBinding?.authCopyButton?.visibility = View.GONE
-        viewBinding?.authCodeEdit?.apply {
-            visibility = View.VISIBLE
-            addTextChangedListener(codeListener)
-            // Not work...
-//            setOnEditorActionListener { _: TextView, actionId: Int, _: KeyEvent ->
-//                if (actionId == EditorInfo.IME_ACTION_DONE && viewBinding?.confirmButton?.isEnabled == true) {
-//                    viewBinding?.confirmButton?.callOnClick()
-//                    return@setOnEditorActionListener true
-//                }
-//                false
-//            }
-        }
-
-        viewBinding?.authSecretKeyLayout?.visibility = View.GONE
-        viewBinding?.confirmButton?.apply {
-            visibility = View.VISIBLE
-            isEnabled = false
-            text = getString(R.string.on_boarding_next_button)
-            setOnClickListener {
-                showWaitingDialog(getString(R.string.dialogs_wait_title))
-                presenter.signInPortal(
-                    viewBinding?.authCodeEdit?.text.toString(),
-                    arguments?.getString(AuthAppActivity.REQUEST_KEY)
-                )
+        viewBinding?.let { binding ->
+            binding.authPageHeader.text = getString(R.string.auth_header_screen_4)
+            binding.authPageInfo.text = getString(R.string.auth_info_screen_4)
+            binding.authPageStep.isVisible = key.isNotEmpty()
+            binding.authPageImage
+                .setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_image_auth_screen_4))
+            binding.authSecretKeyLayout.apply {
+                endIconDrawable = null
+                isVisible = true
             }
-        }
-    }
 
-    fun onPageSelected(position: Int) {
-        this.position = position
-        if (position == AuthPagerFragment.KEY_FOURTH_FRAGMENT) {
-            checkCode()
-        } else if (position == AuthPagerFragment.KEY_THIRD_FRAGMENT) {
-            Handler(Looper.getMainLooper()).postDelayed({ openAuth() }, 1000)
+            binding.authSecretKeyEditText.apply {
+                var focused = false
+                isFocusableInTouchMode = false
+                inputType = InputType.TYPE_CLASS_NUMBER
+                setHintTextColor(requireContext().getColor(lib.toolkit.base.R.color.colorLightWhite))
+                addTextChangedListener(codeListener)
+                setText(PLACEHOLDER_MASK)
+
+                setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE && binding.confirmButton.isEnabled) {
+                        binding.confirmButton.callOnClick()
+                    }
+                    return@setOnEditorActionListener true
+                }
+
+                setOnClickListener {
+                    val indexOfPlaceholder = text.toString().indexOfFirst { it == '−' }
+                    if (!focused) {
+                        showKeyboard(this)
+                        if (indexOfPlaceholder != -1)
+                            setSelection(indexOfPlaceholder)
+                    } else {
+                        if (indexOfPlaceholder != -1)
+                            setSelection(indexOfPlaceholder)
+                    }
+                    isFocusableInTouchMode = true
+                    requestFocus()
+                }
+
+                setOnFocusChangeListener { _, isFocused ->
+                    focused = isFocused
+                    isFocusableInTouchMode = isFocused
+                }
+            }
+
+            binding.confirmButton.apply {
+                visibility = View.VISIBLE
+                isEnabled = false
+                text = getString(R.string.auth_confirm_button)
+                setOnClickListener {
+                    showWaitingDialog(getString(R.string.dialogs_wait_title))
+                    presenter.signInPortal(
+                        binding.authSecretKeyEditText.text.toString().replace(" ", ""),
+                        arguments?.getString(AuthAppActivity.REQUEST_KEY)
+                    )
+                }
+            }
         }
     }
 
@@ -242,21 +270,24 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
     private fun checkCode() {
         val code = KeyboardUtils.getTextFromClipboard(requireContext())
         if (code.isNotEmpty() && code.length == 6 && fragmentPosition == AuthPagerFragment.KEY_FOURTH_FRAGMENT) {
-            viewBinding?.authCodeEdit?.setText(code)
+            viewBinding?.authSecretKeyEditText?.setText(code)
             clearClipboard()
             Handler(Looper.getMainLooper()).postDelayed({ viewBinding?.confirmButton?.callOnClick() }, 500)
         }
     }
 
-    override fun onSuccessLogin() {
-        hideDialog()
-        MainActivity.show(requireContext())
-        requireActivity().finish()
-    }
+    private fun String.putSpace(count: Int) = mapIndexed { index, s ->
+        if (index % count == count - 1 && index < length - 1) "$s " else s
+    }.joinToString("")
 
-    override fun onError(message: String?) {
-        hideDialog()
-        showSnackBar(message!!)
+    fun onPageSelected(position: Int, count: Int) {
+        this.position = position
+        viewBinding?.authPageStep?.text = getString(R.string.auth_step_title, position + 1, count)
+        if (position == AuthPagerFragment.KEY_FOURTH_FRAGMENT) {
+            checkCode()
+        } else if (position == AuthPagerFragment.KEY_THIRD_FRAGMENT) {
+            Handler(Looper.getMainLooper()).postDelayed({ openAuth() }, 1000)
+        }
     }
 
     private inner class FieldsWatch : BaseWatcher() {
@@ -270,35 +301,53 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
         }
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            if (start < SmsReceiver.SMS_CODE_LENGTH && count <= SmsReceiver.SMS_CODE_LENGTH) {
+            if (start < SmsReceiver.SMS_CODE_LENGTH + 1 && count <= SmsReceiver.SMS_CODE_LENGTH + 1) {
+                val repeat = StringUtils.repeatString(CODE_PLACEHOLDER, before)
                 subString = s.subSequence(start, start + count).toString()
-                if ("" != subString) {
-                    selectPosition = if (count == 6) {
-                        0
+                subString?.let {
+                    if (it.isNotEmpty()) {
+                        if (count == SmsReceiver.SMS_CODE_LENGTH) {
+                            srcString?.clear()?.append(subString?.putSpace(3))
+                            selectPosition = 0
+                        } else {
+                            if (start == 3) {
+                                selectPosition = start + count + 1
+                                srcString?.replace(start + 1, start + count + 1, it)
+                            } else {
+                                srcString?.replace(start, start + count, it)
+                                selectPosition = start + count
+                            }
+                        }
                     } else {
-                        start + count
+                        if (before >= 6) {
+                            srcString?.clear()?.append(PLACEHOLDER_MASK)
+                            selectPosition = 0
+                        } else {
+                            if (start == 3) {
+                                selectPosition = start - 1
+                                srcString?.replace(start - 1, start, repeat)
+                                srcString?.replace(start, start + before, " ")
+                            } else {
+                                selectPosition = start
+                                srcString?.replace(start, start + before, repeat)
+                            }
+                        }
                     }
-                    srcString?.replace(start, start + count, subString ?: "")
-                } else {
-                    val repeat = StringUtils.repeatString(CODE_PLACEHOLDER, before)
-                    selectPosition = start
-                    srcString?.replace(start, start + before, repeat)
                 }
             }
         }
 
         override fun afterTextChanged(s: Editable) {
-            var resultString = srcString.toString()
-            if (resultString.length > 6) {
-                resultString = KeyboardUtils.getTextFromClipboard(context!!)
-            }
-            viewBinding?.authCodeEdit?.apply {
+            val resultString = srcString.toString()
+            viewBinding?.authSecretKeyEditText?.apply {
                 removeTextChangedListener(codeListener)
                 setText(resultString)
                 setSelection(selectPosition)
                 addTextChangedListener(codeListener)
             }
-            viewBinding?.confirmButton?.isEnabled = resultString.matches(PATTERN_CODE.toRegex())
+            viewBinding?.confirmButton?.isEnabled = resultString
+                .replace(" ", "")
+                .matches(PATTERN_CODE.toRegex())
         }
     }
 }

@@ -20,11 +20,9 @@
     <string name="auth_header_screen_1">Skonfiguruj aplikację generującą kody weryfikacyjne</string>
     <string name="auth_header_screen_2">Uruchom aplikację Google Authenticator</string>
     <string name="auth_header_screen_3">Dodaj tajny klucz</string>
-    <string name="auth_header_screen_4">Skopiuj kod</string>
     <string name="auth_info_screen_1">Uprzejmie prosimy o skonfigurowanie aplikacji generującej kody dostępu do portalu (np. Google Authenticator), aby kontynuować pracę w portalu</string>
     <string name="auth_info_screen_2">Kliknij ikonę nowe konto</string>
     <string name="auth_info_screen_3">Skopiuj klucz i wklej go w aplikacji Google Authenticator</string>
-    <string name="auth_info_screen_4">Skopiuj kod wygenerowany przez aplikację Google Authenticator i wklej go w wymaganym polu</string>
     <string name="bottom_sheet_cloud_title">Chmury</string>
     <string name="bottom_sheet_portal_title">Portal</string>
     <string name="chooser_activity_not_found">Nie znaleziono aplikacji dla danej akcji...</string>
@@ -124,7 +122,6 @@
     <string name="fragment_on_device_title">Na urządzeniu</string>
     <string name="fragment_profile_title">Profil</string>
     <string name="fragment_recent_title">Najnowsze</string>
-    <string name="item_owner_self">Ja</string>
     <string name="list_action_doc">Dokument Tekstowy</string>
     <string name="list_action_folder">Folder</string>
     <string name="list_action_photo">Zrób Zdjęcie</string>
@@ -227,7 +224,6 @@
     <string name="navigation_drawer_menu_about">O programie</string>
     <string name="navigation_drawer_menu_add_account">Dodaj konto</string>
     <string name="navigation_drawer_menu_common">Wspólne dokumenty</string>
-    <string name="navigation_drawer_menu_feedback">Opinie</string>
     <string name="navigation_drawer_menu_help">Pomoc</string>
     <string name="navigation_drawer_menu_logout">Wyloguj się</string>
     <string name="navigation_drawer_menu_my">Moje dokumenty</string>
@@ -362,9 +358,6 @@
     <string name="toolbar_menu_main_open">Otwórz</string>
     <string name="trash_dialog_empty_title">Opróżnić kosz?</string>
     <string name="trash_popup_delete">Usuń trwale</string>
-    <string name="trash_popup_move">Przenieś do</string>
-    <string name="trash_snackbar_move_button">PRZENIEŚ</string>
-    <string name="trash_snackbar_move_text">Możesz przenieść pliki z KOSZA</string>
     <string name="upload_error_wifi">Możesz przesyłać tylko, jeśli Wi-Fi jest włączone</string>
     <string name="upload_manager_cancel">Anulowano przesyłanie</string>
     <string name="upload_manager_complete">Wgrywanie zakończone</string>
@@ -429,4 +422,50 @@
     <string name="download_manager_archiving_progress">Tworzenie archiwum</string>
     <string name="download_manager_exceed_size_100">Przekroczono maksymalny rozmiar pliku (100MB)</string>
     <string name="download_manager_exceed_size_25">Przekroczono maksymalny rozmiar pliku (25MB)</string>
+    <string name="snackbar_undo">COFNIJ</string>
+    <string name="errors_server_auth_too_many_attempts">Zbyt wiele prób. Spróbuj ponownie później</string>
+    <string name="navigation_drawer_menu_feedback">Opinie i wsparcie</string>
+    <string name="share_snackbar_remove_user">Użytkownik został usunięty</string>
+    <string name="share_group_admin">Admin</string>
+    <string name="share_group_everyone">Wszyscy</string>
+    <string name="storage_onedrive_error_opened">Plik jest otwarty w portalu</string>
+    <string name="storage_onedrive_error_exist">Plik o tej samej nazwie istnieje już w tym folderze</string>
+    <string name="operation_panel_restore_button">Odzyskaj tutaj</string>
+    <string name="trash_snackbar_move_text">Możesz odzyskać pliki z KOSZA</string>
+    <string name="trash_snackbar_move_button">ODZYSKAJ</string>
+    <string name="trash_popup_move">Odzyskaj do</string>
+    <string name="on_boarding_back_button">WRÓĆ</string>
+    <string name="auth_header_screen_4">Wpisz kod</string>
+    <string name="auth_info_screen_4">Wpisz kod z aplikacji uwierzytelniającej w polu wprowadzania danych</string>
+    <string name="auth_step_title">Krok %1$d z %2$d</string>
+    <string name="auth_install_button">Zainstaluj</string>
+    <string name="auth_confirm_button">Potwierdź</string>
+    <string name="auth_clipboard_key_copied">Klucz został skopiowany do schowka</string>
+    <string name="auth_edit_hint">Kod</string>
+    <string name="app_settings_security">Bezpieczeństwo</string>
+    <string name="app_settings_passcode">Blokada z kodem dostępu</string>
+    <string name="app_settings_disable">Wyłącz</string>
+    <string name="app_settings_enable">Włącz</string>
+    <string name="app_Settings_passcode_enable">Włącz kod dostępu</string>
+    <string name="app_settings_passcode_change">Zmień kod dostępu</string>
+    <string name="app_settings_passcode_fingerprint">Użyj odcisku palca, aby odblokować</string>
+    <string name="app_settings_passcode_enter_title">Wpisz kod dostępu</string>
+    <string name="app_settings_passscode_enter_full_title">Wpisz kod dostępu, aby odblokować aplikację</string>
+    <string name="app_settings_passcode_enter_subtitle">Wybierz kod dostępu, aby odblokować aplikację</string>
+    <string name="app_settings_passcode_confirm_title">Potwierdź kod dostępu</string>
+    <string name="app_settings_passcode_confirm_subtitle">Wpisz kod dostępu jeszcze raz</string>
+    <string name="app_settings_passcode_confirm_error">Kody dostępu nie pasują do siebie</string>
+    <string name="app_settings_passcode_change_disable_title">Wpisz swój aktualny kod dostępu</string>
+    <string name="app_settings_passcode_change_disable_error">Wpisano nieprawidłowy kod dostępu</string>
+    <string name="app_settings_passcode_description"> - oto kod wymagany podczas uruchamiania aplikacji.\n\nUważaj! Jeśli zapomnisz swój kod dostępu, konieczne będzie usunięcie lub ponowna instalacja aplikacji. W takim przypadku wszystkie dokumenty na urządzeniu zostaną utracone. </string>
+    <string name="app_settings_passcode_fingerprint_title">Dostęp do dokumentów</string>
+    <string name="item_owner_self">Ja</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           Kontynuując, wyrażasz zgodę na zasady naszej
+            <a href="%1$s">Polityki Prywatności</a>
+            oraz
+            <a href="%2$s">Warunki użytkowania</a>
+        ]]>
+    </string>
 </resources>

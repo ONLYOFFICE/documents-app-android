@@ -7,47 +7,46 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
+        style="@style/MainAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="@dimen/default_elevation_height"
-        android:theme="@style/AppTheme.AppBarOverlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/app_bar_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_gravity="center"
             android:contentInsetStart="@dimen/screen_padding_medium_left_right"
             android:contentInsetLeft="@dimen/screen_padding_medium_left_right"
+            android:theme="@style/MainToolbar"
             app:contentInsetLeft="@dimen/screen_padding_medium_left_right"
             app:contentInsetStart="@dimen/screen_padding_medium_left_right"
             app:contentInsetStartWithNavigation="0dp"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="@string/login_pager_title" />
 
         <FrameLayout
             android:id="@+id/tab_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorWhite"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_layout"
+                style="@style/Widget.MaterialComponents.TabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/default_tab_layout_height"
                 android:layout_gravity="center"
-                android:theme="@style/ThemeOverlay.MaterialComponents.Light"
+                android:background="@color/colorTransparent"
+                android:theme="?attr/actionBarTheme"
                 app:tabGravity="fill"
-                app:tabIndicatorColor="@color/colorPrimaryLight"
                 app:tabMode="fixed"
-                app:tabSelectedTextColor="@color/colorPrimaryLight"
-                app:tabTextAppearance="@style/PortalsViewPagerTabsText" />
+                app:tabTextAppearance="@style/ViewPagerTabsText" />
         </FrameLayout>
     </com.google.android.material.appbar.AppBarLayout>
 

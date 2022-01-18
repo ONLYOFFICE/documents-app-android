@@ -9,7 +9,10 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import app.editors.manager.R
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
+import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerState
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -17,8 +20,12 @@ import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.fragments.factory.TabFragmentFactory
+import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import lib.toolkit.base.managers.utils.TabFragmentDictionary
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import java.util.*
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView {
@@ -27,6 +34,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
         val TAG: String = MainPagerFragment::class.java.simpleName
 
+        private const val TAG_SELECTED_PAGE = "TAG_SELECTED_PAGE"
         private const val TAG_VISIBLE = "TAG_VISIBLE"
         private const val TAG_SCROLL = "TAG_SCROLL"
         private const val OFFSCREEN_COUNT = 5
@@ -46,13 +54,19 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     @InjectPresenter
     lateinit var presenter: MainPagerPresenter
+    @ProvidePresenter
+    fun providePresenter() = MainPagerPresenter(arguments?.getString(KEY_ACCOUNT))
 
     private var adapter: ViewPagerAdapter? = null
     private var activity: IMainActivity? = null
     private var isScroll = true
     private var isVisibleRoot = true
+    private var selectedPage = 0
 
     private var viewBinding: FragmentMainPagerBinding? = null
+    private var placeholderViews: PlaceholderViews? = null
+
+    private var preferenceTool: PreferenceTool? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -60,6 +74,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             if (context is IMainActivity) {
                 activity = context
             }
+            preferenceTool = requireContext().appComponent.preference
         } catch (e: ClassCastException) {
             throw RuntimeException(
                 MainPagerFragment::class.java.simpleName + " - must implement - " +
@@ -69,7 +84,6 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
         viewBinding = FragmentMainPagerBinding.inflate(inflater, container, false)
         return viewBinding?.root
     }
@@ -82,6 +96,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(TAG_VISIBLE, isVisibleRoot)
         outState.putBoolean(TAG_SCROLL, isScroll)
+        outState.putInt(TAG_SELECTED_PAGE, selectedPage)
         super.onSaveInstanceState(outState)
     }
 
@@ -94,7 +109,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private fun init(savedInstanceState: Bundle?) {
         restoreStates(savedInstanceState)
-        presenter.getState(arguments?.getString(KEY_ACCOUNT), requireActivity().intent.data)
+        placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.placeholderLayout)
+        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
+        presenter.getState(requireActivity().intent.data)
     }
 
     private fun restoreStates(savedInstanceState: Bundle?) {
@@ -104,6 +121,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             }
             if (savedInstanceState.containsKey(TAG_SCROLL)) {
                 isScroll = savedInstanceState.getBoolean(TAG_SCROLL)
+            }
+            if (savedInstanceState.containsKey(TAG_SELECTED_PAGE)) {
+                selectedPage = savedInstanceState.getInt(TAG_SELECTED_PAGE)
             }
         }
     }
@@ -165,6 +185,68 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 }
             }
         }
+    }
+
+    override fun onRender(stringAccount: String, sections: List<Explorer>?) {
+        val fragments = arrayListOf<ViewPagerAdapter.Container>()
+        sections?.let {
+            for(section in sections) {
+                if(TabFragmentDictionary.Recent.contains(section.current?.title)) {
+                    continue
+                }
+                fragments.add(
+                    ViewPagerAdapter.Container(
+                        section.current?.title?.let { TabFragmentFactory.getSectionFragment(it, stringAccount) },
+                        context?.let { section.current?.title?.let { it1 ->
+                            TabFragmentFactory(it).getTabTitle(
+                                it1
+                            )
+                        } }
+                    )
+                )
+            }
+            if (preferenceTool?.isProjectDisable?.not() == true) {
+                fragments.add(
+                    ViewPagerAdapter.Container(
+                        DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
+                        getString(R.string.main_pager_docs_projects)
+                    )
+                )
+            }
+            val correctOrderTabs = setCorrectOrder(fragments)
+            setAdapter(correctOrderTabs.filterNotNull())
+            arguments?.getString(KEY_FILE_DATA)?.let {
+                childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
+                    viewBinding?.mainViewPager?.post {
+                        viewBinding?.mainViewPager?.currentItem =
+                            adapter?.getByTitle(getString(R.string.main_pager_docs_projects)) ?: -1
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setCorrectOrder(tabs: ArrayList<ViewPagerAdapter.Container>): ArrayList<ViewPagerAdapter.Container?> {
+        val tabOrder = arrayListOf<ViewPagerAdapter.Container?>(null, null, null, null, null, null)
+        for(tab in tabs) {
+            when {
+                TabFragmentDictionary.My.contains(tab.mTitle) -> tabOrder[0] = tab
+                TabFragmentDictionary.Shared.contains(tab.mTitle) -> tabOrder[1] = tab
+                TabFragmentDictionary.Favorites.contains(tab.mTitle) -> tabOrder[2] = tab
+                TabFragmentDictionary.Common.contains(tab.mTitle) -> tabOrder[3] = tab
+                TabFragmentDictionary.Trash.contains(tab.mTitle) -> tabOrder[5] = tab
+                else -> tabOrder[4] = tab
+            }
+        }
+        return tabOrder
+    }
+
+    override fun onFinishRequest() {
+        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
+    }
+
+    override fun onError(message: String?) {
+        message?.let { showSnackBar(it).show() }
     }
 
     override fun onError(@StringRes res: Int) {
@@ -231,12 +313,14 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 getString(R.string.main_pager_docs_common)
             )
         )
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
-                getString(R.string.main_pager_docs_projects)
+        if (preferenceTool?.isProjectDisable?.not() == true) {
+            fragments.add(
+                ViewPagerAdapter.Container(
+                    DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
+                    getString(R.string.main_pager_docs_projects)
+                )
             )
-        )
+        }
         setAdapter(fragments)
     }
 
@@ -250,7 +334,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 )
             )
         )
-        if (serverVersion >= 11) {
+        if (serverVersion >= 11 && preferenceTool?.isFavoritesEnabled == true) {
             fragments.add(
                 ViewPagerAdapter.Container(
                     DocsFavoritesFragment.newInstance(stringAccount),
@@ -267,7 +351,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         setAdapter(fragments)
     }
 
-    private fun setAdapter(fragments: ArrayList<ViewPagerAdapter.Container>) {
+    private fun setAdapter(fragments: List<ViewPagerAdapter.Container>) {
         adapter = AdapterForPages(childFragmentManager, fragments)
         viewBinding?.mainViewPager?.offscreenPageLimit = OFFSCREEN_COUNT
         viewBinding?.mainViewPager?.adapter = adapter
@@ -275,20 +359,27 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             viewBinding?.mainViewPager?.addOnPageChangeListener(it)
         }
         activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
+        adapter?.selectedPage = selectedPage
     }
 
     override fun setFileData(fileData: String) {
-        childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let { it ->
-            adapter?.let {
-                viewBinding?.mainViewPager?.currentItem = it.getByTitle(getString(R.string.main_pager_docs_projects))
+        viewBinding?.root?.postDelayed({
+            childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let { it ->
+                adapter?.let {
+                    viewBinding?.mainViewPager?.currentItem = it.getByTitle(getString(R.string.main_pager_docs_projects))
+                }
+                (it as DocsProjectsFragment).setFileData(fileData)
+                requireActivity().intent.data = null
             }
-            (it as DocsProjectsFragment).setFileData(fileData)
-            requireActivity().intent.data = null
-        }
+        }, 1000)
     }
 
     fun isRoot(): Boolean {
-        return (activeFragment as DocsCloudFragment).isRoot
+        return if (activeFragment != null && activeFragment is DocsCloudFragment) {
+            (activeFragment as DocsCloudFragment).isRoot
+        } else {
+            false
+        }
     }
 
     val position: Int?
@@ -308,6 +399,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
             activity?.showActionButton(false)
+            this@MainPagerFragment.selectedPage = mSelectedPage
             (getActiveFragment(viewBinding?.mainViewPager) as DocsCloudFragment).onScrollPage()
         }
     }

@@ -10,15 +10,15 @@ import java.io.*
 open class CacheTool(private val context: Context) {
 
     companion object {
-        private val CACHE_SUB_DIR = "files_cache"
+        private const val CACHE_SUB_DIR = "files_cache"
         private val MAX_MEMORY = Runtime.getRuntime().maxMemory()
-        private val CACHE_MEM_SIZE: Long = 10
-        private val CACHE_STORE_SIZE = (50 * 1024 * 1024).toLong()
+        private const val CACHE_MEM_SIZE: Long = 10
+        private const val CACHE_STORE_SIZE = (50 * 1024 * 1024).toLong()
         private val CACHE_SIZE = MAX_MEMORY / CACHE_MEM_SIZE
-        private val CACHE_STORE_COUNT = 1
+        private const val CACHE_STORE_COUNT = 1
     }
 
-    protected var mMemoryLruCache: LruCache<String, Any>
+    protected var mMemoryLruCache: LruCache<String, Any> = LruCache(CACHE_SIZE)
     protected var mStorageLruCache: DiskLruCache
 
     protected val storageCacheDir: File by lazy {
@@ -26,7 +26,6 @@ open class CacheTool(private val context: Context) {
     }
 
     init {
-        mMemoryLruCache = LruCache(CACHE_SIZE)
 
         val version = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode.toInt()

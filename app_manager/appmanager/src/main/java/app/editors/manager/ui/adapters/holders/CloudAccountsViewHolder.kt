@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.UiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils
 import com.bumptech.glide.Glide
 
 class CloudAccountsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -47,7 +47,7 @@ class CloudAccountsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
         if (account.isWebDav) {
             mAccountName.visibility = View.GONE
-            UiUtils.setWebDavImage(account.webDavProvider, mViewIconSelectableImage)
+            ManagerUiUtils.setWebDavImage(account.webDavProvider, mViewIconSelectableImage)
         } else {
             mAccountName.visibility = View.VISIBLE
             account.token?.let { token ->
@@ -58,7 +58,7 @@ class CloudAccountsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
                 Glide.with(mViewIconSelectableImage)
                     .load(GlideUtils.getCorrectLoad(url, token))
-                    .apply(GlideUtils.getAvatarOptions())
+                    .apply(GlideUtils.avatarOptions)
                     .into(mViewIconSelectableImage)
             }
 

@@ -13,6 +13,8 @@ import app.documents.core.settings.NetworkSettings
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
+import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.presenters.login.BaseLoginPresenter
 import app.editors.manager.mvp.views.main.CloudAccountView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -82,7 +84,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         val accountsWithToken = accounts.map { account ->
             AccountUtils.getToken(
                 context,
-                Account(account.getAccountName(), context.getString(R.string.account_type))
+                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
             )?.let { token ->
                 account.token = token
                 return@map account
@@ -100,6 +102,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             contextAccount?.let { account ->
                 if (account.isWebDav) {
                     AccountUtils.setToken(context, account.getAccountName(), null)
+                } else if(account.isOneDrive || account.isDropbox) {
+                    AccountUtils.setToken(context, account.getAccountName(), "")
                 } else {
                     AccountUtils.setPassword(context, account.getAccountName(), null)
                 }
@@ -116,16 +120,11 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     fun deleteAccount() {
         CoroutineScope(Dispatchers.Default).launch {
             contextAccount?.let { account ->
-                if (AccountUtils.removeAccount(context, account.getAccountName())) {
-                    accountDao.deleteAccount(account)
-                    accountDao.getAccounts().let {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
-                        }
-                    }
-                } else {
+                AccountUtils.removeAccount(context, account.getAccountName())
+                accountDao.deleteAccount(account)
+                accountDao.getAccounts().let {
                     withContext(Dispatchers.Main) {
-                        viewState.onError("Error delete")
+                        viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
                     }
                 }
             }
@@ -136,9 +135,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         CoroutineScope(Dispatchers.Default).launch {
             selection?.forEach {
                 accountDao.getAccount(it)?.let { account ->
-                    if (AccountUtils.removeAccount(context, account.getAccountName())) {
-                        accountDao.deleteAccount(account)
-                    }
+                    AccountUtils.removeAccount(context, account.getAccountName())
+                    accountDao.deleteAccount(account)
                 }
             }
             accountDao.getAccounts().let {
@@ -167,6 +165,22 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
                     )
                 }
+            } else if(account.isOneDrive) {
+                AccountUtils.getToken(context, account.getAccountName())?.let {token ->
+                    if(token.isNotEmpty()) {
+                        loginSuccess(account)
+                    } else {
+                        viewState.onOneDriveLogin()
+                    }
+                }
+            } else if(account.isDropbox) {
+                AccountUtils.getToken(context, account.getAccountName())?.let {token ->
+                    if(token.isNotEmpty()) {
+                        loginSuccess(account)
+                    } else {
+                        viewState.onDropboxLogin()
+                    }
+                }
             } else {
                 AccountUtils.getToken(context, account.getAccountName())?.let { token ->
                     if (token.isNotEmpty()) {
@@ -176,7 +190,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     }
                 } ?: run {
                     networkSettings.setBaseUrl(account.portal ?: "")
-                    disposable = App.getApp().loginComponent.loginService.capabilities().subscribe({response ->
+                    disposable = context.loginService.capabilities().subscribe({ response ->
                         if (response is LoginResponse.Success) {
                             if (response.response is ResponseCapabilities) {
                                 val capability = (response.response as ResponseCapabilities).response
@@ -189,7 +203,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         } else {
                             fetchError((response as LoginResponse.Error).error)
                         }
-                    }) {throwable: Throwable -> checkError(throwable, account)}
+                    }) { throwable: Throwable -> checkError(throwable, account) }
 
                 }
             }
@@ -197,6 +211,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             viewState.onError(context.getString(R.string.errors_sign_in_account_already_use))
         }
     }
+
     fun checkContextLogin() {
         contextAccount?.let {
             checkLogin(it)
@@ -207,8 +222,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun login(account: CloudAccount, token: String) {
         setSettings(account)
-        disposable = App.getApp().loginComponent
-            .loginService
+        disposable = context.loginService
             .getUserInfo(token)
             .map {
                 when (it) {
@@ -225,7 +239,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun webDavLogin(account: CloudAccount, password: String) {
         setSettings(account)
-        disposable = App.getApp().getWebDavApi(account.login, password)
+        disposable = context.webDavApi()
             .capabilities(Credentials.basic(account.login ?: "", password), account.webDavPath)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

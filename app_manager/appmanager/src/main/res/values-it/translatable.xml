@@ -20,11 +20,9 @@
     <string name="auth_header_screen_1">Configurare un’applicazione per generare i codici di autenticazione</string>
     <string name="auth_header_screen_2">Avvia Google Authenticator</string>
     <string name="auth_header_screen_3">Aggiungi una chiave segreta</string>
-    <string name="auth_header_screen_4">Copia il codice</string>
     <string name="auth_info_screen_1">Configurare un’applicazione per generare i codici per l’accesso al portale (ad esempio Google Authenticator) per continuare il lavoro sul portale</string>
     <string name="auth_info_screen_2">Esegui l’applicazione e tocca l’icona del nuovo account</string>
     <string name="auth_info_screen_3">Copia la chiave e incollala nell’applicazione Google Authenticator</string>
-    <string name="auth_info_screen_4">Copia il codice generato dall’applicazione Google Authenticator e inseriscilo nel campo di immissione</string>
     <string name="bottom_sheet_cloud_title">Cloud</string>
     <string name="bottom_sheet_portal_title">Portale</string>
     <string name="chooser_activity_not_found">Impossibile trovare alcuna applicazione per questa azione...</string>
@@ -124,7 +122,6 @@
     <string name="fragment_on_device_title">Nel dispositivo</string>
     <string name="fragment_profile_title">Profilo</string>
     <string name="fragment_recent_title">Recente</string>
-    <string name="item_owner_self">Io</string>
     <string name="list_action_doc">Documento di testo</string>
     <string name="list_action_folder">Cartella</string>
     <string name="list_action_photo">Fai foto</string>
@@ -227,7 +224,6 @@
     <string name="navigation_drawer_menu_about">Informazioni su</string>
     <string name="navigation_drawer_menu_add_account">Aggiungi account</string>
     <string name="navigation_drawer_menu_common">Documenti comuni</string>
-    <string name="navigation_drawer_menu_feedback">Feedback</string>
     <string name="navigation_drawer_menu_help">Guida</string>
     <string name="navigation_drawer_menu_logout">Esci</string>
     <string name="navigation_drawer_menu_my">I miei documenti</string>
@@ -362,9 +358,6 @@
     <string name="toolbar_menu_main_open">Apri</string>
     <string name="trash_dialog_empty_title">Svuotare il cestino?</string>
     <string name="trash_popup_delete">Elimina definitivamente</string>
-    <string name="trash_popup_move">Sposta in</string>
-    <string name="trash_snackbar_move_button">Sposta</string>
-    <string name="trash_snackbar_move_text">È possibile spostare i file dal cestino</string>
     <string name="upload_error_wifi">Puoi caricare solo quando il Wi-Fi è abilitato</string>
     <string name="upload_manager_cancel">Upload annullato</string>
     <string name="upload_manager_complete">Upload completato</string>
@@ -429,5 +422,50 @@
     <string name="download_manager_archiving_progress">Creare archivio</string>
     <string name="download_manager_exceed_size_100">Supera la dimensione massima consentita per il file (100MB)</string>
     <string name="download_manager_exceed_size_25">Supera la dimensione massima consentita per il file (25MB)</string>
-
+    <string name="snackbar_undo">DISFARE</string>
+    <string name="errors_server_auth_too_many_attempts">Troppi tentativi. Riprova più tardi</string>
+    <string name="navigation_drawer_menu_feedback">Feedback e supporto</string>
+    <string name="share_snackbar_remove_user">L\'utente è stato eliminato</string>
+    <string name="share_group_admin">Amministratore</string>
+    <string name="share_group_everyone">Ognuno</string>
+    <string name="storage_onedrive_error_opened">Il file è aperto sul portale</string>
+    <string name="storage_onedrive_error_exist">Il file con lo stesso nome esiste già nella cartella</string>
+    <string name="operation_panel_restore_button">Recupera qui</string>
+    <string name="trash_snackbar_move_text">Puoi recuperare i file dal CESTINO</string>
+    <string name="trash_snackbar_move_button">RECUPERARE</string>
+    <string name="trash_popup_move">Recuperare in</string>
+    <string name="on_boarding_back_button">INDIETRO</string>
+    <string name="auth_header_screen_4">Digita il codice</string>
+    <string name="auth_info_screen_4">Digita il codice dalla tua app di autenticazione nel campo di input</string>
+    <string name="auth_step_title">Passo %1$d di %2$d</string>
+    <string name="auth_install_button">Installare</string>
+    <string name="auth_confirm_button">Confermare</string>
+    <string name="auth_clipboard_key_copied">Chiave è copiata negli appunti</string>
+    <string name="auth_edit_hint">Codice</string>
+    <string name="app_settings_security">Sicurezza</string>
+    <string name="app_settings_passcode">Codice di accesso</string>
+    <string name="app_settings_disable">Disattivare</string>
+    <string name="app_settings_enable">Attivare</string>
+    <string name="app_Settings_passcode_enable">Attivare codice di accesso</string>
+    <string name="app_settings_passcode_change">Cambiare codice di accesso</string>
+    <string name="app_settings_passcode_fingerprint">Usa l\'impronta digitale per sbloccare</string>
+    <string name="app_settings_passcode_enter_title">Inserire codice di accesso</string>
+    <string name="app_settings_passscode_enter_full_title">Inserisci il codice di accesso per sbloccare l\'app</string>
+    <string name="app_settings_passcode_enter_subtitle">Scegli codice di accesso per sbloccare l\'app</string>
+    <string name="app_settings_passcode_confirm_title">Confermare codice di accesso</string>
+    <string name="app_settings_passcode_confirm_subtitle">Inserisci il codice di accesso ancora una volta</string>
+    <string name="app_settings_passcode_confirm_error">I codici di accesso non corrispondono</string>
+    <string name="app_settings_passcode_change_disable_title">Inserisci il tuo codice di accesso attuale</string>
+    <string name="app_settings_passcode_change_disable_error">È inserito codice di accesso errato</string>
+    <string name="app_settings_passcode_description"> - questo è il codice richiesto all\'avvio dell\'applicazione.\n\nAttenzione! Se dimentichi il codice di accesso, devi rimuovere o reinstallare l\'applicazione. Tutti i documenti sul dispositivo saranno persi.</string>
+    <string name="app_settings_passcode_fingerprint_title">Accesso ai Documenti</string>
+    <string name="item_owner_self">Io</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           By proceeding, you agree to the
+            <a href="%1$s">Privacy Policy</a>
+            and the
+            <a href="%2$s">Terms of Service</a>
+        ]]>
+    </string>
 </resources>

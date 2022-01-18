@@ -1,12 +1,15 @@
 package app.editors.manager.mvp.presenters.main
 
+import android.net.Uri
 import android.view.View
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
+import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.api
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
@@ -40,29 +43,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
 import java.util.*
 
 @InjectViewState
-class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudView>(),
+class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
     OnDownloadListener,
     OnUploadListener {
 
     private val mGetDisposable = HashMap<String, Disposable>()
     private var mExternalAccessType: String? = null
-    private var mIsTrashMode: Boolean
 
     private val downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver
 
-    private val account = Json.decodeFromString<CloudAccount>(stringAccount)
+    private var api: Api? = null
+
+    private var currentSectionType = ApiContract.SectionType.UNKNOWN
 
     init {
         App.getApp().appComponent.inject(this)
+        api = mContext.api()
         downloadReceiver = DownloadReceiver()
         uploadReceiver = UploadReceiver()
         mModelExplorerStack = ModelExplorerStack()
@@ -180,7 +182,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
 
     override fun getFileInfo() {
         if (mItemClicked != null) {
-            mDisposable.add(mFileProvider.fileInfo(mItemClicked)
+            mDisposable.add(mFileProvider.fileInfo(mItemClicked!!)
                 .subscribe({ onFileClickAction() }) { throwable: Throwable? ->
                     fetchError(
                         throwable
@@ -216,7 +218,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             viewState.onActionBarTitle(mContext.getString(R.string.toolbar_menu_search_result))
             viewState.onStateUpdateFilter(true, mFilteringValue)
             viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
-            viewState.onStateActionButton(isContextEditable)
+            viewState.onStateActionButton(false)
         } else if (!mModelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
@@ -246,35 +248,38 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         onClickEvent(item, position)
         mIsContextClick = true
         val state = ContextBottomDialog.State()
-        state.mTitle = itemClickedTitle
-        state.mInfo = TimeUtils.formatDate(itemClickedDate)
-        state.mIsFolder = !isClickedItemFile
-        state.mIsShared = isClickedItemShared
-        state.mIsCanShare = isItemShareable
-        state.mIsDocs = isClickedItemDocs
-        state.mIsContextEditable = isContextItemEditable
-        state.mIsItemEditable = isItemEditable
-        state.mIsStorage = isClickedItemStorage && isRoot
-        state.mIsDeleteShare = isShareSection
-        state.mIsWebDav = false
-        state.mIsTrash = isTrash
-        state.mIsFavorite = isClickedItemFavorite
+        state.title = itemClickedTitle
+        state.info = TimeUtils.formatDate(itemClickedDate)
+        state.isFolder = !isClickedItemFile
+        state.isShared = isClickedItemShared
+        state.isCanShare = isItemShareable
+        state.isCanRename = isItemReadWrite
+        state.isDocs = isClickedItemDocs
+        state.isContextEditable = isContextItemEditable
+        state.isItemEditable = isItemEditable
+        state.isStorage = isClickedItemStorage && isRoot
+        state.isDeleteShare = isShareSection
+        state.isWebDav = false
+        state.isOneDrive = false
+        state.isTrash = isTrash
+        state.isFavorite = isClickedItemFavorite
+        state.isPersonalAccount = account.isPersonal()
         if (!isClickedItemFile) {
             if((itemClicked as CloudFolder).providerKey.isEmpty()) {
-                state.mIconResId = R.drawable.ic_type_folder
+                state.iconResId = R.drawable.ic_type_folder
             } else {
-                state.mIconResId = StorageUtils.getStorageIcon((itemClicked as CloudFolder).providerKey)
+                state.iconResId = StorageUtils.getStorageIcon((itemClicked as CloudFolder).providerKey)
             }
         } else {
-            state.mIconResId = getIconContext(
+            state.iconResId = getIconContext(
                 StringUtils.getExtensionFromPath(
                     itemClickedTitle
                 )
             )
         }
-        state.mIsPdf = isPdf
-        if (state.mIsShared && state.mIsFolder) {
-            state.mIconResId = R.drawable.ic_type_folder_shared
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
     }
@@ -289,7 +294,8 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     /*
      * Loading callbacks
      * */
-    override fun onDownloadError(id: String?, url: String?, title: String, info: String) {
+    override fun onDownloadError(id: String?, url: String?, title: String, info: String, uri: Uri) {
+
         viewState.onDialogClose()
         viewState.onSnackBar(info)
     }
@@ -304,15 +310,17 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
         title: String,
         info: String,
         path: String,
-        mime: String
+        mime: String,
+        uri: Uri
     ) {
+        viewState.onFinishDownload(uri)
         viewState.onDialogClose()
         viewState.onSnackBarWithAction(
             """
     $info
     $title
     """.trimIndent(), mContext.getString(R.string.download_manager_open)
-        ) { showDownloadFolderActivity() }
+        ) { showDownloadFolderActivity(uri) }
     }
 
     override fun onDownloadCanceled(id: String, info: String) {
@@ -327,7 +335,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
 
     override fun onUploadError(path: String?, info: String, file: String) {
         viewState.onSnackBar(info)
-        //getViewState().onDeleteUploadFile(file);
+        viewState.onDeleteUploadFile(file)
     }
 
     override fun onUploadComplete(
@@ -388,19 +396,17 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             deleteShare.folderIds = mModelExplorerStack.selectedFoldersIds
             deleteShare.fileIds = mModelExplorerStack.selectedFilesIds
             mDisposable.add(Observable.fromCallable {
-//                mRetrofitTool.apiWithPreferences
-//                    .deleteShare(mToken, deleteShare).execute()
+                api?.deleteShare(deleteShare)?.execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-//                        baseResponse: Response<Base>? ->
-//                    mModelExplorerStack.removeSelected()
-//                    resetDatesHeaders()
-//                    setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-//                    viewState.onActionBarTitle("0")
-//                    viewState.onDeleteBatch(getListWithHeaders(mModelExplorerStack.last(), true))
-//                    onBatchOperations()
+                    mModelExplorerStack.removeSelected()
+                    resetDatesHeaders()
+                    setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    viewState.onActionBarTitle("0")
+                    viewState.onDeleteBatch(getListWithHeaders(mModelExplorerStack.last(), true))
+                    onBatchOperations()
                 }) { throwable: Throwable? -> fetchError(throwable) })
         }
     }
@@ -422,7 +428,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
                 mExternalAccessType = ApiContract.ShareType.READ
                 val requestExternal = RequestExternal()
                 requestExternal.share = mExternalAccessType
-                mDisposable.add(mFileProvider.share(mItemClicked!!.id, requestExternal)
+                mDisposable.add(mFileProvider.share(mItemClicked!!.id, requestExternal)!!
                     .subscribe({ responseExternal: ResponseExternal ->
                         mItemClicked!!.shared = !mItemClicked!!.shared
                         when (mExternalAccessType) {
@@ -449,7 +455,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     fun addToFavorite() {
         val requestFavorites = RequestFavorites()
         requestFavorites.fileIds = ArrayList(listOf(mItemClicked!!.id))
-        mDisposable.add(mFileProvider.addToFavorites(requestFavorites)
+        mDisposable.add(mFileProvider.addToFavorites(requestFavorites)!!
             .subscribe({ response: Base? ->
                 mItemClicked!!.favorite = !mItemClicked!!.favorite
                 viewState.onSnackBar(mContext.getString(R.string.operation_add_to_favorites))
@@ -459,7 +465,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
     fun deleteFromFavorite() {
         val requestFavorites = RequestFavorites()
         requestFavorites.fileIds = ArrayList(listOf(mItemClicked!!.id))
-        mDisposable.add(mFileProvider.deleteFromFavorites(requestFavorites)
+        mDisposable.add(mFileProvider.deleteFromFavorites(requestFavorites)!!
             .subscribe({ response: Base? ->
                 mItemClicked!!.favorite = !mItemClicked!!.favorite
                 viewState.onRemoveItemFromFavorites()
@@ -483,8 +489,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
                 deleteShare.fileIds = ArrayList(listOf(mItemClicked!!.id))
             }
             mDisposable.add(Observable.fromCallable {
-//                mRetrofitTool.apiWithPreferences
-//                    .deleteShare(mToken, deleteShare).execute()
+                api?.deleteShare(deleteShare)?.execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -564,9 +569,10 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             val file = mItemClicked as CloudFile
             val extension = file.fileExst
             when (StringUtils.getExtension(extension)) {
-                StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF -> {
+                StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
                     addRecent(mItemClicked as CloudFile)
-                    file.isReadOnly = true
+                    //TODO open write mode
+//                    file.isReadOnly = true
                     viewState.onFileWebView(file)
                 }
                 StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
@@ -591,7 +597,7 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             .subscribe({ file: CloudFile ->
                 mItemClicked = file
                 when (StringUtils.getExtension(file.fileExst)) {
-                    StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF -> {
+                    StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
                         viewState.onFileWebView(file)
                     }
                     StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
@@ -635,36 +641,55 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
      * */
     val isContextItemEditable: Boolean
         get() = isContextEditable && (!isVisitor && !isShareSection || isCommonSection || isItemOwner)
+
     private val isContextOwner: Boolean
         get() = StringUtils.equals(mModelExplorerStack.currentFolderOwnerId, account.id)
-    private val isContextReadWrite: Boolean
-        get() = isContextOwner || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
-    val isUserSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_USER
-    private val isShareSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_SHARE
-    private val isCommonSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_COMMON
-    private val isProjectsSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_PROJECTS
-    private val isBunchSection: Boolean
-        get() = mModelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_BUNCH
-    private val isClickedItemShared: Boolean
-        get() = mItemClicked != null && mItemClicked!!.shared
-    private val isClickedItemFavorite: Boolean
-        get() = mItemClicked != null && mItemClicked!!.favorite
-    private val isItemOwner: Boolean
-        get() = mItemClicked != null && StringUtils.equals(mItemClicked!!.createdBy.id, account.id)
-    private val isItemReadWrite: Boolean
-        get() = mItemClicked != null && (mItemClicked!!.access == ApiContract.ShareCode.READ_WRITE || mItemClicked!!.access == ApiContract.ShareCode.NONE || mItemClicked!!.access == ApiContract.ShareCode.REVIEW)
-    private val isItemEditable: Boolean
-        get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite)
-    private val isItemShareable: Boolean
-        get() = isItemEditable && (!isCommonSection || isAdmin) && !account.isPersonal() && !isProjectsSection && !isBunchSection && mItemClicked!!.access != ApiContract.ShareCode.REVIEW
-    private val isClickedItemStorage: Boolean
-        get() = mItemClicked != null && mItemClicked!!.providerItem
 
-    //            getViewState().onActionBarTitle(mContext.getString(R.string.main_pager_docs_trash));
+    private val isContextReadWrite: Boolean
+        get() = isContextOwner || mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE ||
+                mModelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
+
+    val isUserSection: Boolean
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
+
+    private val isShareSection: Boolean
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_SHARE
+
+    private val isCommonSection: Boolean
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_COMMON
+
+    private val isProjectsSection: Boolean
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_PROJECTS
+
+    private val isBunchSection: Boolean
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_BUNCH
+
+    private val isClickedItemShared: Boolean
+        get() = mItemClicked?.shared == true
+
+    private val isClickedItemFavorite: Boolean
+        get() = mItemClicked?.favorite == true
+
+    private val isItemOwner: Boolean
+        get() = StringUtils.equals(mItemClicked?.createdBy?.id, account.id)
+
+    private val isItemReadWrite: Boolean
+        get() = mItemClicked?.access == ApiContract.ShareCode.READ_WRITE ||
+                mItemClicked?.access == ApiContract.ShareCode.NONE
+
+    private val isItemEditable: Boolean
+        get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
+                        mItemClicked?.access == ApiContract.ShareCode.REVIEW ||
+                        mItemClicked?.access == ApiContract.ShareCode.FILL_FORMS ||
+                        mItemClicked?.access == ApiContract.ShareCode.COMMENT)
+
+    private val isItemShareable: Boolean
+        get() = isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection
+                && !isBunchSection && isItemReadWrite
+
+    private val isClickedItemStorage: Boolean
+        get() = mItemClicked?.providerItem == true
+
     var isTrashMode: Boolean
         get() = mIsTrashMode
         set(trashMode) {
@@ -673,8 +698,11 @@ class DocsCloudPresenter(stringAccount: String) : DocsBasePresenter<DocsCloudVie
             }
         }
 
-    private fun showDownloadFolderActivity() {
-        viewState.onDownloadActivity()
+    private fun showDownloadFolderActivity(uri: Uri) {
+        viewState.onDownloadActivity(uri)
     }
 
+    fun setSectionType(sectionType: Int) {
+        currentSectionType = sectionType
+    }
 }

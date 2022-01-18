@@ -42,6 +42,10 @@
                     android:visible="false"
                     android:orderInCategory="112"/>
                 <item
+                    android:id="@+id/toolbar_selection_restore"
+                    android:title="@string/device_trash_files_restore"
+                    android:orderInCategory="115"/>
+                <item
                     android:id="@+id/toolbar_selection_deselect"
                     android:title="@string/toolbar_menu_main_deselect"
                     android:orderInCategory="120"/>

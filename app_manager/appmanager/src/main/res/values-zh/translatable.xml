@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">文档</string>
-    <string name="app_name_full">ONLYOFFICE文档</string>
+    <string name="app_name">Documents</string>
+    <string name="app_name_full">ONLYOFFICE Documents</string>
     <!-- ======================================================================================= -->
     <!-- Permissions -->
     <string name="permission_account_write_label" translatable="false">账户写入权限标签</string>
@@ -67,7 +67,7 @@
     <string name="login_api_init_portal_error">门户名称语法错误</string>
     <string name="login_api_portal_name">错误的门户名称。示例：example.onlyoffice.com</string>
     <string name="login_api_portal_name_length">门户名称必须包含至少6个字符</string>
-    <string name="login_api_portal_name_content">门户名称必须由A-Z、a-z、0-9组成</string>
+    <string name="login_api_portal_name_content">门户名称必须由A–Z、a–z、0–9组成</string>
     <string name="login_retry">重试连接</string>
     <!-- Accounts -->
     <string name="login_accounts_select_title">选择账户</string>
@@ -102,9 +102,7 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <string name="login_personal_signup_title">注册个人门户</string>
     <string name="login_personal_signup_edit_info">确认链接将被发送至此地址</string>
     <string name="login_personal_signup_dialog_info">确认链接将被发送至邮箱：%1$s\n继续前请根据邮件中的链接操作</string>
-    <string name="login_personal_info">
-连接ONLYOFFICE个人以将文件保存至云端
-</string>
+    <string name="login_personal_info">连接ONLYOFFICE个人以将文件保存至云端</string>
     <string name="login_web_dav_title">连接至%1$s</string>
     <!-- Portal create-->
     <string name="login_create_portal_title">为组织创建门户</string>
@@ -119,9 +117,7 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <string name="login_create_signin_repeat">重复密码</string>
     <string name="login_create_signin_create_button">创建</string>
     <string name="login_create_signin_passwords_mismatch">密码不匹配</string>
-    <string name="login_create_signin_info">
-点击此按钮即代表您接受我们的服务条款
-</string>
+    <string name="login_create_signin_info">点击此按钮即代表您接受我们的服务条款</string>
     <!-- Portal SMS -->
     <string name="login_sms_code_label">我们已向此号码发送包含代码的文本消息</string>
     <string name="login_sms_send_again">再次发送</string>
@@ -225,7 +221,6 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <string name="navigation_drawer_menu_help">帮助</string>
     <string name="navigation_drawer_menu_logout">注销</string>
     <string name="navigation_drawer_menu_add_account">添加账户</string>
-    <string name="navigation_drawer_menu_feedback">反馈</string>
     <string name="settings_item_title">设置</string>
     <string name="settings_item_change_account">更改账户</string>
     <string name="settings_clear_cache">清除缓存</string>
@@ -386,9 +381,6 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <!-- ======================================================================================= -->
     <!-- Trash -->
     <string name="trash_dialog_empty_title">清空垃圾箱？</string>
-    <string name="trash_snackbar_move_text">您可从垃圾箱中移动文件</string>
-    <string name="trash_snackbar_move_button">移动</string>
-    <string name="trash_popup_move">移动至</string>
     <string name="trash_popup_delete">永久删除</string>
     <!-- ======================================================================================= -->
     <!-- Managers load -->
@@ -459,8 +451,6 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <string name="auth_info_screen_2">运行应用，然后点击新账户图标</string>
     <string name="auth_header_screen_3">添加密钥</string>
     <string name="auth_info_screen_3">复制密钥并将其粘贴至您的身份验证器应用中</string>
-    <string name="auth_header_screen_4">复制代码</string>
-    <string name="auth_info_screen_4">从您的身份验证器应用中复制代码并将其在下方插入</string>
     <string name="rename_file_exist">存在具有相同名称的文件</string>
     <string name="device_path_file_error">此文件不存在。</string>
     <string name="device_trash_files_restore">恢复</string>
@@ -516,4 +506,50 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <string name="download_manager_archiving_progress">创建存档</string>
     <string name="download_manager_exceed_size_100">超出最大文件大小（100MB）</string>
     <string name="download_manager_exceed_size_25">超出最大文件大小（25MB）</string>
+    <string name="snackbar_undo">撤消</string>
+    <string name="errors_server_auth_too_many_attempts">尝试次数过多。请稍后重试或 </string>
+    <string name="navigation_drawer_menu_feedback">反馈和支持</string>
+    <string name="share_snackbar_remove_user">用户被删除</string>
+    <string name="share_group_admin">管理员</string>
+    <string name="share_group_everyone">每个人</string>
+    <string name="storage_onedrive_error_opened">文件在门户网站上被打开</string>
+    <string name="storage_onedrive_error_exist">该文件夹中已经存在相同名称的文件。</string>
+    <string name="operation_panel_restore_button">在这里恢复</string>
+    <string name="trash_snackbar_move_text">您可以从TRASH中恢复文件</string>
+    <string name="trash_snackbar_move_button">恢复</string>
+    <string name="trash_popup_move">恢复到</string>
+    <string name="on_boarding_back_button">返回</string>
+    <string name="auth_header_screen_4">输入代码</string>
+    <string name="auth_info_screen_4">从您的认证器应用程序中输入代码到输入栏中</string>
+    <string name="auth_step_title">步骤 %1$d 的 %2$d</string>
+    <string name="auth_install_button">安装</string>
+    <string name="auth_confirm_button">确认</string>
+    <string name="auth_clipboard_key_copied">键被复制到剪贴板</string>
+    <string name="auth_edit_hint">代码</string>
+    <string name="app_settings_security">安全性</string>
+    <string name="app_settings_passcode">密码锁</string>
+    <string name="app_settings_disable">禁用</string>
+    <string name="app_settings_enable">启用</string>
+    <string name="app_Settings_passcode_enable">启用密码</string>
+    <string name="app_settings_passcode_change">更改密码</string>
+    <string name="app_settings_passcode_fingerprint">使用指纹解锁</string>
+    <string name="app_settings_passcode_enter_title">输入一个密码</string>
+    <string name="app_settings_passscode_enter_full_title">输入密码以解锁应用程序</string>
+    <string name="app_settings_passcode_enter_subtitle">选择密码来解锁应用程序</string>
+    <string name="app_settings_passcode_confirm_title">确认密码</string>
+    <string name="app_settings_passcode_confirm_subtitle">再输入一次密码</string>
+    <string name="app_settings_passcode_confirm_error">密码不匹配</string>
+    <string name="app_settings_passcode_change_disable_title">输入您当前的密码</string>
+    <string name="app_settings_passcode_change_disable_error">输入的密码不正确</string>
+    <string name="app_settings_passcode_description"> - 这是在应用程序开始时要求的代码。.\n\n请注意! 如果您忘记密码，您必须删除或重新安装应用程序。设备上的所有文件都将丢失。 </string>
+    <string name="app_settings_passcode_fingerprint_title">查阅文件</string>
+    <string name="item_owner_self">我</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           通过继续进行，您同意
+            <a href="%1$s">Privacy Policy</a>
+            和
+            <a href="%2$s">Terms of Service</a>
+        ]]>
+    </string>
 </resources>

@@ -250,7 +250,6 @@
     <string name="navigation_drawer_menu_help">ຊ່ວຍເຫຼືອ </string>
     <string name="navigation_drawer_menu_logout">ລະບົບ</string>
     <string name="navigation_drawer_menu_add_account">ເພີ່ມບັນຊີ</string>
-    <string name="navigation_drawer_menu_feedback">ຄຳຕິຊົມ</string>
     <string name="settings_item_title">ການຕັ້ງຄ່າ</string>
     <string name="settings_item_change_account">ປ່ຽນບັນຊີ </string>
     <string name="settings_clear_cache">ເຊັດຖານຄວາມຈຳ </string>
@@ -431,9 +430,6 @@
     <!-- ======================================================================================= -->
     <!-- Trash -->
     <string name="trash_dialog_empty_title">ລ້າງຖັງຂີ້ເຫຍື້ອບໍ?</string>
-    <string name="trash_snackbar_move_text">ທ່ານສາມາດຍ້າຍໄຟລ໌ຈາກ </string>
-    <string name="trash_snackbar_move_button">ຍ້າຍ</string>
-    <string name="trash_popup_move">ຍ້າຍໄປຫາ</string>
     <string name="trash_popup_delete">ລືບອອກເລີຍ</string>
 
     <!-- ======================================================================================= -->
@@ -515,8 +511,6 @@
     <string name="auth_info_screen_2">ດຳເນີນການແອັບ ແລະ ແຕະທີ່ໄອຄອນບັນຊີໃໝ່</string>
     <string name="auth_header_screen_3">ເພີ່ມເຄັດລັບທີ່ສຳ</string>
     <string name="auth_info_screen_3">ສຳເນົາກະແຈ ແລະ ວາງມັນໃສ່ແອັບ authentic ເຄື່ອງຮັບຮອງຂອງທ່ານ </string>
-    <string name="auth_header_screen_4">ສຳເນົາລະຫັດ</string>
-    <string name="auth_info_screen_4">ສຳເນົາລະຫັດຈາກໂປແກຼມກວດສອບຂອງທ່ານແລະໃສ່ມັນຢູ່ທາງລຸ່ມ</string>
 
     <string name="rename_file_exist">ແຟ້ມທີ່ມີຊື່ດຽວກັນ.</string>
     <string name="device_path_file_error">ບໍ່ມີເອກະສານນີ້.</string>

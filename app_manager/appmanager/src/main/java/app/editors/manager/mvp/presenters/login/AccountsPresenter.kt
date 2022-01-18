@@ -8,6 +8,8 @@ import app.documents.core.network.models.login.response.ResponseCapabilities
 import app.documents.core.network.models.login.response.ResponseSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
+import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.views.login.AccountsView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -61,7 +63,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
             accountDao.deleteAccount(clickedAccount)
             AccountUtils.removeAccount(
                 context,
-                Account(clickedAccount.getAccountName(), context.getString(R.string.account_type))
+                Account(clickedAccount.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
             )
             withContext(Dispatchers.Main) {
                 viewState.onAccountDelete(accountClickedPosition)
@@ -74,23 +76,45 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
             viewState.onError(context.getString(R.string.errors_sign_in_account_already_use))
             return
         }
-        if (clickedAccount.isWebDav) {
-            loginWebDav()
-            return
+        when {
+            clickedAccount.isWebDav -> {
+                loginWebDav()
+                return
+            }
+            clickedAccount.isOneDrive -> {
+                AccountUtils.getToken(context, clickedAccount.getAccountName())?.let {token ->
+                    if(token.isNotEmpty()) {
+                        setAccount()
+                    } else {
+                        viewState.onOneDriveLogin()
+                    }
+                }
+                return
+            }
+            clickedAccount.isDropbox -> {
+                AccountUtils.getToken(context, clickedAccount.getAccountName())?.let {token ->
+                    if(token.isNotEmpty()) {
+                        setAccount()
+                    } else {
+                        viewState.onDropboxLogin()
+                    }
+                }
+                return
+            }
+            else -> login()
         }
 
-        login()
     }
 
     private fun loginWebDav() {
         AccountUtils.getPassword(
             context,
-            Account(clickedAccount.getAccountName(), context.getString(R.string.account_type))
+            Account(clickedAccount.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
         )?.let { password ->
             val credential =
                 Credentials.basic(clickedAccount.login ?: "", password)
             setNetworkSettings()
-            disposable = App.getApp().getWebDavApi(clickedAccount.login, password)
+            disposable = context.webDavApi()
                 .capabilities(credential, clickedAccount.webDavPath)
                 .doOnSubscribe { viewState.showWaitingDialog() }
                 .subscribeOn(Schedulers.io())
@@ -113,10 +137,10 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
 
     private fun login() {
         AccountUtils.getToken(context, Account(clickedAccount.getAccountName(),
-            context.getString(R.string.account_type)))?.let { token ->
+            context.getString(lib.toolkit.base.R.string.account_type)))?.let { token ->
             if (token.isNotEmpty()) {
                 setNetworkSettings()
-                disposable = App.getApp().loginComponent.loginService.getUserInfo(token)
+                disposable = context.loginService.getUserInfo(token)
                     .doOnSubscribe { viewState.showWaitingDialog() }
                     .subscribe({ response ->
                         when (response) {
@@ -133,7 +157,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
             }
         } ?: run {
             networkSettings.setBaseUrl(clickedAccount.portal ?: "")
-            disposable = App.getApp().loginComponent.loginService.capabilities()
+            disposable = context.loginService.capabilities()
                 .doOnSubscribe { viewState.showWaitingDialog() }
                 .subscribe({ response ->
                     when (response) {
@@ -159,7 +183,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
             account?.let { accountDao.updateAccount(it) }
             accountDao.updateAccount(clickedAccount.copy(isOnline = true))
 
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 viewState.onAccountLogin()
             }
         }

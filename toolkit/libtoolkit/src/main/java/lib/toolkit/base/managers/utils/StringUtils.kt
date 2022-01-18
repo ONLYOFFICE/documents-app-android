@@ -23,14 +23,14 @@ import java.util.*
 import java.util.regex.Pattern
 
 object StringUtils {
-
     @JvmField
-    val TAG = StringUtils::class.java!!.simpleName
+    val TAG = StringUtils::class.java.simpleName
 
     val MD5 = "MD5"
     val COMMON_MIME_TYPE = "*/*"
     val URI_ALLOWED_CHARS = "@#&=*+-_.,:!?()/~'%"
     @JvmField val DIALOG_FORBIDDEN_SYMBOLS = "*+:\"<>?|\\/"
+    val DIALOG_FORBIDDEN_NAMES = arrayOf(".", "..")
     val PATTERN_FORBIDDEN_SYMBOLS = ".*([$DIALOG_FORBIDDEN_SYMBOLS]*).*"
     val PATTERN_ALPHA_NUMERIC = "^[a-zA-Z0-9-]*$"
     val PATTERN_R7_CLOUDS = ".*(\\.r7-).*"
@@ -42,8 +42,11 @@ object StringUtils {
     private val EXT_VIDEO = "$EXT_VIDEO_SUPPORT|3g2|3gpp|asf|avi|divx|f4v|flv|h264|ifo|m2ts|m4v|mod|mov|mpeg|mpg|mswmm|mts|mxf|ogv|rm|swf|ts|vep|vob|wlmp|wmv"
 
     private val PATTERN_EXT_DOC = "^(doc|docx|docm|doct|dot|dotm|dotx|odt|ott|fodt|rtf|epub|txt|html|mht)$"
+    private val PATTERN_EXT_FORM = "^(oform|docxf)$"
+    private val PATTERN_EXT_DOCXF = "^(docxf)$"
+    private val PATTERN_EXT_OFORM = "^(oform)$"
     private val PATTERN_EXT_SHEET = "^(xlst|xlsx|xlsm|xls|xlt|xltm|xltx|ods|fods|ots|csv)$"
-    private val PATTERN_EXT_PRESENTATION = "^(ppt|pptt|pptx|ppsx|pps|odp|fodp|otp|pot|potm|potx|pps|ppsm|ppsx)$"
+    private val PATTERN_EXT_PRESENTATION = "^(ppt|pptt|pptx|pps|odp|fodp|otp|pot|potm|potx|ppsm|ppsx)$"
     private val PATTERN_EXT_HTML = "^(mht|html|htm)$"
     private val PATTERN_EXT_IMAGE = "^(png|jpeg|jpg|ico)$"
     private val PATTERN_EXT_IMAGE_GIF = "^(gif)$"
@@ -59,6 +62,9 @@ object StringUtils {
     enum class Extension {
         UNKNOWN,
         DOC,
+        FORM,
+        DOCXF,
+        OFORM,
         SHEET,
         PRESENTATION,
         HTML,
@@ -76,6 +82,7 @@ object StringUtils {
     fun getExtension(extension: String): Extension {
         var ext = extension.replace(".", "")
         return when {
+            Pattern.matches(PATTERN_EXT_FORM, ext) -> Extension.FORM
             Pattern.matches(PATTERN_EXT_DOC, ext) -> Extension.DOC
             Pattern.matches(PATTERN_EXT_SHEET, ext) -> Extension.SHEET
             Pattern.matches(PATTERN_EXT_PRESENTATION, ext) -> Extension.PRESENTATION
@@ -91,10 +98,19 @@ object StringUtils {
         }
     }
 
+    fun getFormExtension(extension: String): Extension {
+        val ext = extension.replace(".", "")
+        return when {
+            Pattern.matches(PATTERN_EXT_DOCXF, ext) -> Extension.DOCXF
+            Pattern.matches(PATTERN_EXT_OFORM, ext) -> Extension.OFORM
+            else -> throw RuntimeException("Invalid form extension")
+        }
+    }
+
     @JvmStatic
     fun isDocument(extension: String): Boolean {
         return when (getExtension(extension)) {
-            Extension.SHEET, Extension.DOC, Extension.PRESENTATION, Extension.PDF -> true
+            Extension.SHEET, Extension.DOC, Extension.FORM, Extension.PRESENTATION, Extension.PDF -> true
             else -> false
         }
     }
@@ -211,6 +227,10 @@ object StringUtils {
         } else {
             null
         }
+    }
+
+    fun getAllowedName(source: String): Boolean {
+        return source.trim() in DIALOG_FORBIDDEN_NAMES
     }
 
     @JvmStatic
@@ -334,7 +354,7 @@ object StringUtils {
         return try {
             val digest = MessageDigest.getInstance(MD5)
             val md5Data = BigInteger(1, digest.digest(value.toByteArray()))
-            String.format("%032X", md5Data).toLowerCase()
+            String.format("%032X", md5Data).lowercase(Locale.getDefault())
         } catch (e: NoSuchAlgorithmException) {
             null
         }

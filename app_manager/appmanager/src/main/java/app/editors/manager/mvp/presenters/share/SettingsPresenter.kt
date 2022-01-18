@@ -1,34 +1,33 @@
 package app.editors.manager.mvp.presenters.share
 
-import android.accounts.Account
 import android.content.Intent
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.share.Share
 import app.documents.core.network.models.share.request.RequestExternal
+import app.documents.core.network.models.share.request.RequestExternalAccess
 import app.documents.core.network.models.share.request.RequestShare
 import app.documents.core.network.models.share.request.RequestShareItem
 import app.documents.core.share.ShareService
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.getShareApi
+import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
+import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
-import app.editors.manager.mvp.models.ui.ViewType
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.share.SettingsView
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
 import retrofit2.HttpException
-import java.util.*
-import kotlin.collections.ArrayList
 
 @InjectViewState
 class SettingsPresenter : BasePresenter<SettingsView>() {
@@ -38,13 +37,13 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         private const val TAG_FOLDER_PATH = "/products/files/#"
     }
 
-    private var accessType: String? = null
-
     /*
      * Getters/Setters
      * */
     var item: Item? = null
     var externalLink: String? = null
+    val isPersonalAccount: Boolean
+        get() = App.getApp().appComponent.accountOnline?.isPersonal() ?: false
 
     private var shareItem: ShareUi? = null
     var sharePosition = 0
@@ -69,18 +68,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         disposable?.dispose()
     }
 
-    private fun getApi(): ShareService = runBlocking {
-        accountDao.getAccountOnline()?.let { cloudAccount ->
-            AccountUtils.getToken(
-                context,
-                Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
-            )?.let {
-                return@runBlocking App.getApp().getShareService(it)
-            }
-        } ?: run {
-            throw Error("No account")
-        }
-    }
+    private fun getApi(): ShareService = context.getShareApi()
 
     /*
      * Requests
@@ -90,7 +78,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                getShareList(it.response)
+                getShareList(it.response, true)
             }, { error ->
                 fetchError(error)
             })
@@ -102,6 +90,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 getShareList(it.response)
+                externalLink = it.response[0].sharedTo.shareLink
             }, { error ->
                 fetchError(error)
             })
@@ -131,7 +120,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             .map { it.response }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                getShareList(it)
+                getShareList(it, true)
             }, { fetchError(it) })
     }
 
@@ -174,23 +163,35 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         }
 
     fun getExternalLink(share: String?) {
-        accessType = share
-        disposable = sharedService
-            .getExternalLink(item?.id ?: "", RequestExternal(share = accessType ?: ""))
-            .subscribeOn(Schedulers.io())
-            .map { it.body()?.response }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                externalLink = it
-                val code = ApiContract.ShareType.getCode(accessType)
-                item?.access = code
-                item?.shared = isShared(code)
-                viewState.onExternalAccess(code, true)
-            }
+        val code = ApiContract.ShareType.getCode(share)
+        if (!isPersonalAccount) {
+            disposable = sharedService
+                .getExternalLink(item?.id ?: "", RequestExternal(share = share ?: ""))
+                .subscribeOn(Schedulers.io())
+                .map { it.body()?.response }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    externalLink = it
+                    item?.access = code
+                    item?.shared = isShared(code)
+                    viewState.onExternalAccess(code, true)
+                }
+        } else {
+            disposable = sharedService
+                .setExternalLinkAccess(item?.id ?: "", RequestExternalAccess(code))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                        item?.access = code
+                        item?.shared = isShared(code)
+                        viewState.onExternalAccess(code, true)
+                    }, { error -> fetchError(error) }
+                )
+        }
     }
 
     fun setItemAccess(accessCode: Int) {
-        if (item != null && shareItem?.access != accessCode) {
+        if (item != null) {
             if (accessCode == ApiContract.ShareCode.NONE) {
                 shareItem?.let {
                     viewState.onRemove(ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor), sharePosition)
@@ -221,6 +222,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
      * */
     fun updateSharedListState() {
         viewState.onGetShare(commonList, item!!.access)
+        loadAvatars(commonList)
         if (isPopupShow) {
             isPopupShow = false
             shareItem?.isGuest?.let { viewState.onShowPopup(sharePosition, it) }
@@ -276,14 +278,13 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
      * Callbacks for response
      * */
 
-    private fun getShareList(shareList: List<Share>) {
+    private fun getShareList(shareList: List<Share>, isFolder: Boolean = false) {
         isAccessDenied = false
-        val userList = shareList.filter {
-            it.sharedTo.userName.isNotEmpty() && !it.isOwner
-        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
-        val groupList = shareList.filter {
-            it.sharedTo.name.isNotEmpty()
-        }.map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isLocked, it.sharedTo.isVisitor) }
+        val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() && !it.isOwner || (it.isOwner && isFolder) }
+            .map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
+        val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }
+            .map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
+            .sortedWith(groupComparator())
 
         shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {
             item?.access = it.access
@@ -305,7 +306,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
 
         if (isRemove) {
             if (commonList.isEmpty()) {
-                viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
+                viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
             }
             isRemove = false
             isShare = false
@@ -319,7 +320,39 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         } else {
             viewState.onGetShare(commonList, item?.access ?: -1)
         }
-        viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
+
+        if (commonList.isEmpty()) {
+            viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
+        } else {
+            viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
+        }
+
+        loadAvatars(commonList)
+    }
+
+    private fun loadAvatars(commonList: ArrayList<ViewType>) {
+        disposable = Observable.fromIterable(commonList).subscribeOn(Schedulers.io())
+            .filter { it is ShareUi && it.sharedTo.avatar.isNotEmpty() }
+            .map { user ->
+                user.also {
+                    (it as ShareUi).avatar = GlideUtils
+                        .loadAvatar((user as ShareUi).sharedTo.avatarMedium)
+                }
+            }.observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState.onUpdateAvatar(it as ShareUi)
+            }, { error ->
+                fetchError(error)
+            })
+    }
+
+    private fun groupComparator() = Comparator<ShareUi> { a, b ->
+        val list = listOf(GroupUi.GROUP_ADMIN_ID, GroupUi.GROUP_EVERYONE_ID)
+        when {
+            a.sharedTo.id in list -> -1
+            b.sharedTo.id in list -> 1
+            else -> a.sharedTo.displayName.compareTo(b.sharedTo.displayName)
+        }
     }
 
     override fun fetchError(throwable: Throwable) {

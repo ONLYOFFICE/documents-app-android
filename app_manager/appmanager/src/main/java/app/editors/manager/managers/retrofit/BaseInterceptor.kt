@@ -1,6 +1,8 @@
 package app.editors.manager.managers.retrofit
 
+import android.os.Build
 import app.documents.core.network.ApiContract
+import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
 import app.editors.manager.managers.exceptions.NoConnectivityException
 import lib.toolkit.base.managers.utils.NetworkUtils.isOnline
@@ -17,7 +19,7 @@ class BaseInterceptor(val token: String?) : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         checkConnection()
-        val token = if (chain.request().url().host().contains("personal") ) {
+        val token = if (chain.request().url().host().contains("personal")) {
             token
         } else {
             KEY_AUTH + token
@@ -26,7 +28,12 @@ class BaseInterceptor(val token: String?) : Interceptor {
             chain.request().newBuilder().addHeader(
                 ApiContract.HEADER_AUTHORIZATION,
                 token ?: ""
-            ).build()
+            )
+                .addHeader(
+                    ApiContract.HEADER_AGENT,
+                    "Android ONLYOFFICE Documents (id = ${BuildConfig.APPLICATION_ID}, SDK = ${Build.VERSION.SDK_INT}, build = ${BuildConfig.VERSION_CODE}, appName = ${BuildConfig.VERSION_NAME}"
+                )
+                .build()
         )
     }
 

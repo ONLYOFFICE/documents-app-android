@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,19 +8,26 @@
         android:id="@+id/frame_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center" />
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/app_bar_toolbar"
+    <com.google.android.material.appbar.AppBarLayout
+        style="@style/MainAppBar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorLightGrey"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:titleTextColor="@color/colorPrimary">
-        <FrameLayout
-            android:id="@+id/app_bar_toolbar_container"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/app_bar_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </androidx.appcompat.widget.Toolbar>
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorBlack"
+            android:theme="@style/MainToolbar">
+
+            <FrameLayout
+                android:id="@+id/app_bar_toolbar_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
 </FrameLayout>

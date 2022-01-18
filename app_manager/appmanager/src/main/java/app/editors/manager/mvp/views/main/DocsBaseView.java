@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.views.main;
 
+import android.net.Uri;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -92,7 +93,7 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onActionDialog(boolean isThirdParty, boolean isShowDocs);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDownloadActivity();
+    void onDownloadActivity(Uri uri);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onFileMedia(Explorer explorer, boolean isWebDav);
     @StateStrategyType(OneExecutionStateStrategy.class)
@@ -145,4 +146,7 @@ public interface DocsBaseView extends BaseViewExt {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onReverseSortOrder(String order);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onFinishDownload(Uri uri);
 }

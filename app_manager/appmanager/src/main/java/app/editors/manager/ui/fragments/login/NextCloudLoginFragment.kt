@@ -15,6 +15,7 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.NextCloudLoginLayoutBinding
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -203,7 +204,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
                 }
 
                 val cloudAccount = createCloudAccount(url, login)
-                val account = Account(cloudAccount.id, getString(R.string.account_type))
+                val account = Account(cloudAccount.id, getString(lib.toolkit.base.R.string.account_type))
 
                 val accountData = AccountData(
                     portal = cloudAccount.portal ?: "",
@@ -243,9 +244,9 @@ class NextCloudLoginFragment : BaseAppFragment() {
     )
 
     private fun addAccount(cloudAccount: CloudAccount) {
-        val accountDao = App.getApp().appComponent.accountsDao
+        val accountDao = requireContext().appComponent.accountsDao
         CoroutineScope(Dispatchers.Default).launch {
-            accountDao?.getAccountOnline()?.let {
+            accountDao.getAccountOnline()?.let {
                 accountDao.addAccount(it.copy(isOnline = false))
             }
             accountDao.addAccount(cloudAccount.copy(isOnline = true))

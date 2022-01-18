@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.views.login
 
 import app.documents.core.account.CloudAccount
-import app.editors.manager.mvp.models.account.AccountsSqlData
 import app.editors.manager.mvp.views.base.BaseView
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
@@ -14,4 +13,6 @@ interface AccountsView : BaseView {
     fun onSignIn(portal: String, login: String)
     fun showWaitingDialog()
     fun onWebDavLogin(account: CloudAccount)
+    fun onOneDriveLogin()
+    fun onDropboxLogin()
 }

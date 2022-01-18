@@ -11,10 +11,16 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.account.CloudAccount
+import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.login.AccountsPresenter
 import app.editors.manager.mvp.views.login.AccountsView
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
@@ -22,6 +28,7 @@ import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.adapters.BottomAccountAdapter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.utils.FragmentUtils.showFragment
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import moxy.presenter.InjectPresenter
@@ -46,7 +53,7 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, R.style.ContextMenuDialog)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
     }
 
     override fun onDestroyView() {
@@ -97,7 +104,9 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     override fun onAccountLogin() {
         hideDialog()
         if (context != null && activity != null) {
-            val intent = Intent(context, MainActivity::class.java)
+            val intent = Intent(context, MainActivity::class.java).apply {
+                putExtra(MainActivity.KEY_CODE, true)
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && requireActivity().isInMultiWindowMode) {
                 intent.flags =
                     Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT
@@ -129,6 +138,24 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
 
     override fun onWebDavLogin(account: CloudAccount) {
         WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.valueOf(account.webDavProvider ?: ""), Json.encodeToString(account))
+    }
+
+    override fun onOneDriveLogin() {
+        val storage = Storage(
+            OneDriveUtils.ONEDRIVE_STORAGE,
+            Constants.OneDrive.COM_CLIENT_ID,
+            Constants.OneDrive.COM_REDIRECT_URL
+        )
+        fragmentManager?.let { showFragment(fragmentManager = it,OneDriveSignInFragment.newInstance(storage), R.id.frame_container, OneDriveSignInFragment.TAG, false) }
+    }
+
+    override fun onDropboxLogin() {
+        val storage = Storage(
+            ApiContract.Storage.DROPBOX,
+            Constants.DropBox.COM_CLIENT_ID,
+            Constants.DropBox.COM_REDIRECT_URL
+        )
+        fragmentManager?.let { showFragment(fragmentManager = it,DropboxSignInFragment.newInstance(storage), R.id.frame_container, DropboxSignInFragment.TAG, false) }
     }
 
     override fun onError(message: String?) {

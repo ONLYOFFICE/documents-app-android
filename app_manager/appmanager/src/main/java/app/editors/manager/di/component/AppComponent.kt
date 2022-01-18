@@ -2,15 +2,16 @@ package app.editors.manager.di.component
 
 import android.content.Context
 import app.documents.core.account.AccountDao
-import app.documents.core.di.module.AccountModule
-import app.documents.core.di.module.RecentModule
-import app.documents.core.di.module.SettingsModule
+import app.documents.core.account.AccountsDataBase
+import app.documents.core.account.CloudAccount
+import app.documents.core.account.RecentDao
+import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.settings.NetworkSettings
 import app.documents.core.settings.WebDavInterceptor
-import app.editors.manager.app.MigrateDb
 import app.editors.manager.di.module.AppModule
-import app.editors.manager.di.module.ToolModule
-import app.editors.manager.managers.providers.AccountProvider
+import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
+import app.editors.manager.dropbox.mvp.presenters.DocsDropboxPresenter
+import app.editors.manager.dropbox.mvp.presenters.DropboxSignInPresenter
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.PreferenceTool
@@ -21,11 +22,16 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
+import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
+import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
+import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
+import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
+import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
+import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
-import app.editors.manager.ui.adapters.ShareAddAdapter
 import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.login.*
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
@@ -38,14 +44,30 @@ import app.editors.manager.ui.fragments.storage.ConnectFragment
 import app.editors.manager.ui.fragments.storage.SelectFragment
 import app.editors.manager.ui.fragments.storage.WebDavFragment
 import app.editors.manager.ui.fragments.storage.WebTokenFragment
+import app.editors.manager.viewModels.login.EnterpriseCreateValidateViewModel
+import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
+import app.editors.manager.viewModels.login.EnterprisePortalViewModel
+import app.editors.manager.viewModels.login.RemoteUrlViewModel
+import app.editors.manager.viewModels.main.AppSettingsViewModel
+import dagger.BindsInstance
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
 import lib.toolkit.base.managers.tools.LocalContentTools
 import javax.inject.Singleton
 
-@Component(modules = [AppModule::class, ToolModule::class, SettingsModule::class, AccountModule::class, RecentModule::class])
+@Component(modules = [AppModule::class])
 @Singleton
 interface AppComponent {
+
+    @Component.Builder
+    interface Builder{
+
+        @BindsInstance
+        fun context(context: Context): Builder
+
+        fun build(): AppComponent
+
+    }
     /*
     * TODO scopes!
     * */
@@ -57,21 +79,24 @@ interface AppComponent {
     val contentTools: LocalContentTools
     val glideTools: GlideTool
     val networkSettings: NetworkSettings
+    val accountsDataBase: AccountsDataBase
     val accountsDao: AccountDao
+    val loginService: ILoginServiceProvider
+    val oneDriveLoginService: IOneDriveLoginServiceProvider
+    val oneDriveAuthService: IOneDriveAuthServiceProvider
+    val dropboxLoginService: IDropboxLoginServiceProvider
+    val accountOnline: CloudAccount?
+    val recentDao: RecentDao?
 
     /*
    * Login
    * */
-    fun inject(enterprisePortalPresenter: EnterprisePortalPresenter?)
     fun inject(enterpriseSignInPresenter: EnterpriseLoginPresenter?)
     fun inject(enterpriseSmsPresenter: EnterpriseSmsPresenter?)
-    fun inject(enterprisePhonePresenter: EnterprisePhonePresenter?)
-    fun inject(enterpriseCreateValidatePresenter: EnterpriseCreateValidatePresenter?)
     fun inject(enterpriseCreateSignInPresenter: EnterpriseCreateLoginPresenter?)
     fun inject(personalSignInPresenter: PersonalLoginPresenter?)
     fun inject(personalSignUpPresenter: PersonalSignUpPresenter?)
     fun inject(enterpriseSSOPresenter: EnterpriseSSOPresenter?)
-    fun inject(migrateDb: MigrateDb?)
     fun inject(codesFragment: CountriesCodesFragment?)
     fun inject(phoneFragment: EnterprisePhoneFragment?)
     fun inject(portalFragment: EnterprisePortalFragment?)
@@ -80,6 +105,9 @@ interface AppComponent {
     fun inject(personalPortalFragment: PersonalPortalFragment?)
     fun inject(webDavInterceptor: WebDavInterceptor?)
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
+    fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
+    fun inject(splashFragment: SplashFragment?)
+    fun inject(dropboxSignInPresenter: DropboxSignInPresenter?)
 
     /*
     * Main
@@ -95,9 +123,10 @@ interface AppComponent {
     fun inject(docsOperationSectionFragment: DocsOperationSectionFragment?)
     fun inject(explorerAdapter: ExplorerAdapter?)
     fun inject(mediaAdapter: MediaAdapter?)
-    fun inject(settingsPresenter: AppSettingsPresenter?)
     fun inject(accountsPresenter: CloudAccountPresenter?)
     fun inject(mainPagerPresenter: MainPagerPresenter?)
+    fun inject(docsOneDrivePresenter: DocsOneDrivePresenter?)
+    fun inject(docsDropboxPresenter: DocsDropboxPresenter?)
 
     /*
     * Media
@@ -110,7 +139,6 @@ interface AppComponent {
     * */
     fun inject(settingsPresenter: SettingsPresenter?)
     fun inject(addPresenter: AddPresenter?)
-    fun inject(shareAddAdapter: ShareAddAdapter?)
 
     /*
     * Storage
@@ -130,12 +158,19 @@ interface AppComponent {
     /*
     * Content provider
     * */
-    fun inject(accountProvider: AccountProvider?)
     fun inject(settingsPresenter: ProfilePresenter?)
+    fun inject(oneDriveFileProvider: OneDriveFileProvider?)
     fun inject(docsRecentPresenter: DocsRecentPresenter?)
     fun inject(authPagerFragment: AuthPagerFragment?)
     fun inject(enterpriseAppAuthPresenter: EnterpriseAppAuthPresenter?)
     fun inject(selectPresenter: SelectPresenter?)
     fun inject(accountsBottomFragment: AccountBottomDialog?)
     fun inject(webDavSignInPresenter: WebDavSignInPresenter?)
+
+    fun inject(viewModel: AppSettingsViewModel)
+    fun inject(viewModel: EnterprisePhoneViewModel)
+    fun inject(viewModel: EnterprisePortalViewModel)
+    fun inject(viewModel: EnterpriseCreateValidateViewModel)
+    fun inject(viewModel: RemoteUrlViewModel)
+    fun inject(passcodeActivity: PasscodeActivity?)
 }

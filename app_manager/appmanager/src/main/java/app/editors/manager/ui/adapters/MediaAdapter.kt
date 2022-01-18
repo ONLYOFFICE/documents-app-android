@@ -35,7 +35,6 @@ import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setImageTint
 import lib.toolkit.base.managers.utils.UiUtils.setLayoutParams
-import java.util.*
 import javax.inject.Inject
 
 class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
@@ -68,7 +67,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
 
     private val token = runBlocking(Dispatchers.Default) {
         accountDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(R.string.account_type)))
+            AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type)))
                 ?.let { token ->
                     return@runBlocking token
                 }
@@ -148,7 +147,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                setImageTint(imageView, R.drawable.ic_media_error, R.color.colorLightWhite)
+                setImageTint(imageView, R.drawable.ic_media_error, lib.toolkit.base.R.color.colorLightWhite)
                 showImage()
                 return true
             }
@@ -170,7 +169,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
             setLayoutParams(imageLayout, cellSize, cellSize)
 
             imageView.isClickable = false
-            UiUtils.setColorFilter(progressBar.context, progressBar.indeterminateDrawable, R.color.colorAccent)
+            UiUtils.setColorFilter(progressBar.context, progressBar.indeterminateDrawable, lib.toolkit.base.R.color.colorSecondary)
 
             view.setOnClickListener { v: View? ->
                 mOnItemClickListener?.onItemClick(v, layoutPosition)
@@ -190,7 +189,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
                         else -> {
                             AccountUtils.getToken(
                                 view.context,
-                                Account(account.getAccountName(), view.context.getString(R.string.account_type))
+                                Account(account.getAccountName(), view.context.getString(lib.toolkit.base.R.string.account_type))
                             )?.let { token ->
                                 loadCloud(file, token)
                             }
@@ -221,9 +220,9 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
         private suspend fun loadWebDav(file: CloudFile?, account: CloudAccount) {
             AccountUtils.getPassword(
                 view.context,
-                Account(account.getAccountName(), view.context.getString(R.string.account_type))
+                Account(account.getAccountName(), view.context.getString(lib.toolkit.base.R.string.account_type))
             )?.let { pass ->
-                val url = GlideUtils.getWebDavUrl(file?.id, account, pass)
+                val url = GlideUtils.getWebDavUrl(file?.id!!, account, pass)
                 withContext(Dispatchers.Main) {
                     glideTool.load(imageView, url, false, Point(cellSize, cellSize), requestListener)
                 }
@@ -256,13 +255,13 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
 
         fun bind(file: CloudFile?) {
             viewIconBackgroundLayout.setBackgroundResource(R.drawable.drawable_media_background_video_play_light)
-            setImageTint(viewIconBackgroundImage, R.drawable.ic_media_play, R.color.colorPrimary)
+            setImageTint(viewIconBackgroundImage, R.drawable.ic_media_play, lib.toolkit.base.R.color.colorPrimary)
             if (file!!.id == "") {
                 cacheTool.getBitmap(file.webUrl) { bitmap: Bitmap? ->
                     if (bitmap == null) {
                         val b = ThumbnailUtils.createVideoThumbnail(file.webUrl, MediaStore.Images.Thumbnails.MINI_KIND)
                         videoView.setImageBitmap(b)
-                        cacheTool.addBitmap(file.webUrl, b!!, null)
+                        cacheTool.addBitmap(file.webUrl, checkNotNull(b), null)
                     } else {
                         videoView.setImageBitmap(bitmap)
                     }

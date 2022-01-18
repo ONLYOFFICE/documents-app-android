@@ -6,26 +6,26 @@ plugins {
 }
 
 android {
-    buildToolsVersion(AppDependency.BUILD_TOOLS_VERSION)
-    compileSdkVersion(AppDependency.COMPILE_SDK_VERSION)
+    buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
+    compileSdk = AppDependency.COMPILE_SDK_VERSION
 
     defaultConfig {
-        minSdkVersion(AppDependency.MIN_SDK_VERSION)
-        targetSdkVersion(AppDependency.TARGET_SDK_VERSION)
-        versionCode(1)
-        versionName("1.0")
+        minSdk = AppDependency.MIN_SDK_VERSION
+        targetSdk = AppDependency.TARGET_SDK_VERSION
     }
 
     buildTypes {
-        getByName("release") {
-            minifyEnabled(false)
+        release {
+            isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
-
-        getByName("debug") {
-            debuggable(true)
-            jniDebuggable(true)
+        debug {
+            isJniDebuggable = true
         }
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     compileOptions {
@@ -79,4 +79,8 @@ dependencies {
     // Other
     implementation(Libs.glide)
     implementation(Libs.documentFile)
+
+    // Rx
+    implementation(Rx.androidRx)
+    implementation(Rx.rxRelay)
 }

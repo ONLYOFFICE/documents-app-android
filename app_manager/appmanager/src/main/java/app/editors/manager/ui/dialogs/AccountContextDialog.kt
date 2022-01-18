@@ -6,19 +6,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
+import app.editors.manager.databinding.AccountContextLayoutBinding
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.UiUtils
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.Unbinder
+import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils.setDropboxImage
+import app.editors.manager.managers.utils.ManagerUiUtils.setOneDriveImage
+import app.editors.manager.managers.utils.isVisible
 import com.bumptech.glide.Glide
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -43,7 +40,7 @@ class AccountContextDialog : BaseBottomDialog() {
 
         fun newInstance(account: String, token: String?): AccountContextDialog {
             return AccountContextDialog().apply {
-                arguments = Bundle().apply {
+                arguments = Bundle(2).apply {
                     putString(KEY_ACCOUNT, account)
                     putString(KEY_TOKEN, token)
                 }
@@ -51,60 +48,18 @@ class AccountContextDialog : BaseBottomDialog() {
         }
     }
 
-
-    @JvmField
-    @BindView(R.id.headerItem)
-    var mHeaderItem: FrameLayout? = null
-
-    @JvmField
-    @BindView(R.id.view_icon_selectable_image)
-    var mAvatarImage: AppCompatImageView? = null
-
-    @JvmField
-    @BindView(R.id.imageCheck)
-    var mCheckImage: AppCompatImageView? = null
-
-    @JvmField
-    @BindView(R.id.accountItemName)
-    var mAccountName: AppCompatTextView? = null
-
-    @JvmField
-    @BindView(R.id.accountItemPortal)
-    var mAccountPortal: AppCompatTextView? = null
-
-    @JvmField
-    @BindView(R.id.accountItemEmail)
-    var mAccountEmail: AppCompatTextView? = null
-
-    @JvmField
-    @BindView(R.id.accountItemContext)
-    var mAccountContext: AppCompatImageButton? = null
-
-    @JvmField
-    @BindView(R.id.signInItem)
-    var mSignInItem: ConstraintLayout? = null
-
-    @JvmField
-    @BindView(R.id.profileItem)
-    var mProfileItem: ConstraintLayout? = null
-
-    @JvmField
-    @BindView(R.id.logoutItem)
-    var mLogoutItem: ConstraintLayout? = null
-
-    @JvmField
-    @BindView(R.id.removeItem)
-    var mRemoveItem: ConstraintLayout? = null
-    private var mAccount: CloudAccount? = null
+    private var account: CloudAccount? = null
     private var mClickListener: OnAccountContextClickListener? = null
-    private var mUnbinder: Unbinder? = null
+    private var viewBinding: AccountContextLayoutBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, R.style.ContextMenuDialog)
-        if (arguments != null && arguments!!.containsKey(KEY_ACCOUNT)) {
-             arguments?.getString(KEY_ACCOUNT)?.let { mAccount = Json.decodeFromString(it) }
-        } else {
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
+        arguments?.containsKey(KEY_ACCOUNT)?.let {
+            arguments?.getString(KEY_ACCOUNT)?.let { acc ->
+                account = Json.decodeFromString(acc)
+            }
+        } ?: run {
             Log.d(TAG, "onCreate: account error")
         }
     }
@@ -112,9 +67,7 @@ class AccountContextDialog : BaseBottomDialog() {
     override fun onDestroyView() {
         super.onDestroyView()
         mClickListener = null
-        if (mUnbinder != null) {
-            mUnbinder!!.unbind()
-        }
+        viewBinding = null
     }
 
     override fun onCreateView(
@@ -122,9 +75,9 @@ class AccountContextDialog : BaseBottomDialog() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.account_context_layout, container, false)
-        mUnbinder = ButterKnife.bind(this, view)
-        return view
+        viewBinding = AccountContextLayoutBinding
+            .inflate(LayoutInflater.from(context), container, false)
+        return viewBinding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -139,17 +92,25 @@ class AccountContextDialog : BaseBottomDialog() {
     }
 
     private fun initHeader() {
-        mCheckImage!!.visibility = View.GONE
-        mAccountContext!!.visibility = View.GONE
-        if (mAccount != null) {
-            mAccountName!!.text = mAccount!!.name
-            mAccountEmail!!.text = mAccount!!.login
-            mAccountPortal!!.text = mAccount!!.portal
-            if (mAccount!!.isWebDav) {
-                mAccountName!!.visibility = View.GONE
-                UiUtils.setWebDavImage(mAccount?.webDavProvider, mAvatarImage!!)
-            } else {
-                loadAvatar()
+        viewBinding?.headerItem?.let { binding ->
+            binding.imageCheck.isVisible = false
+            binding.accountItemContext.isVisible = false
+            account?.let { acc ->
+                binding.accountItemName.text = acc.name
+                binding.accountItemEmail.text = acc.login
+                binding.accountItemPortal.text = acc.portal
+                if (acc.isWebDav) {
+                    binding.accountItemName.isVisible = false
+                    ManagerUiUtils.setWebDavImage(
+                        acc.webDavProvider,
+                        binding.selectableLayout.viewIconSelectableImage)
+                } else if(account?.isOneDrive == true) {
+                    binding.selectableLayout.viewIconSelectableImage.setOneDriveImage()
+                } else if(account?.isDropbox == true) {
+                    binding.selectableLayout.viewIconSelectableImage.setDropboxImage(account!!)
+                } else {
+                    loadAvatar(binding.selectableLayout.viewIconSelectableImage)
+                }
             }
         }
     }
@@ -161,110 +122,103 @@ class AccountContextDialog : BaseBottomDialog() {
     }
 
     private fun initSignInItem() {
-        val image: AppCompatImageView = mSignInItem!!.findViewById(R.id.itemImage)
-        image.setImageDrawable(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.ic_list_item_share_user_icon
-            )
-        )
-        val text: AppCompatTextView = mSignInItem!!.findViewById(R.id.itemText)
-        text.text = getString(R.string.dialogs_sign_in_portal_header_text)
-        mSignInItem!!.setOnClickListener { v: View? ->
-            if (mClickListener != null) {
-                mClickListener!!.onSignInClick()
+        viewBinding?.signInItem?.let {
+            it.itemImage.setImageDrawable(ContextCompat
+                .getDrawable(requireContext(),R.drawable.ic_list_item_share_user_icon))
+            it.itemText.text = getString(R.string.dialogs_sign_in_portal_header_text)
+            it.itemLayout.setOnClickListener {
+                mClickListener?.onSignInClick()
+                dismiss()
             }
-            dismiss()
         }
     }
 
     private fun initProfileItem() {
-        val image: AppCompatImageView = mProfileItem!!.findViewById(R.id.itemImage)
-        image.setImageDrawable(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.ic_list_item_share_user_icon
-            )
-        )
-        val text: AppCompatTextView = mProfileItem!!.findViewById(R.id.itemText)
-        text.text = getString(R.string.fragment_profile_title)
-        mProfileItem!!.setOnClickListener { v: View? ->
-            if (mClickListener != null) {
-                mClickListener!!.onProfileClick(mAccount)
+        arguments?.getString(KEY_TOKEN)?.let {
+            viewBinding?.profileItem?.let {
+                it.itemImage.setImageDrawable(ContextCompat
+                    .getDrawable(requireContext(),R.drawable.ic_list_item_share_user_icon))
+                it.itemText.text = getString(R.string.fragment_profile_title)
+                it.itemLayout.setOnClickListener{
+                    mClickListener?.onProfileClick(account)
+                    dismiss()
+                }
             }
-            dismiss()
+        } ?: run {
+            viewBinding?.profileItem?.root?.isVisible = false
         }
     }
 
     private fun initLogoutItem() {
-        val image: AppCompatImageView = mLogoutItem!!.findViewById(R.id.itemImage)
-        image.setImageDrawable(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.ic_account_logout
-            )
-        )
-        val text: AppCompatTextView = mLogoutItem!!.findViewById(R.id.itemText)
-        text.text = getString(R.string.navigation_drawer_menu_logout)
-        mLogoutItem!!.setOnClickListener { v: View? ->
-            if (mClickListener != null) {
-                mClickListener!!.onLogOutClick()
+        arguments?.getString(KEY_TOKEN)?.let {
+            viewBinding?.logoutItem?.let {
+                it.itemImage.setImageDrawable(ContextCompat
+                    .getDrawable(requireContext(), R.drawable.ic_account_logout))
+                it.itemText.text = getString(R.string.navigation_drawer_menu_logout)
+                it.itemLayout.setOnClickListener {
+                    mClickListener?.onLogOutClick()
+                    dismiss()
+                }
             }
-            dismiss()
+        } ?: run {
+            viewBinding?.logoutItem?.root?.isVisible = false
         }
     }
 
     private fun initRemoveItem() {
-        val image: AppCompatImageView = mRemoveItem!!.findViewById(R.id.itemImage)
-        image.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_trash))
-        setImageTint(image, R.color.colorLightRed)
-        val text: AppCompatTextView = mRemoveItem!!.findViewById(R.id.itemText)
-        text.setText(R.string.dialog_remove_account_title)
-        text.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorLightRed))
-        mRemoveItem!!.setOnClickListener { v: View? ->
-            if (mClickListener != null) {
-                mClickListener!!.onRemoveClick(account = mAccount)
+        viewBinding?.removeItem?.let {
+            it.itemImage.setImageDrawable(ContextCompat
+                .getDrawable(requireContext(), R.drawable.ic_trash))
+            setImageTint(it.itemImage, lib.toolkit.base.R.color.colorLightRed)
+            it.itemText.text = getString(R.string.dialog_remove_account_title)
+            it.itemText.setTextColor(ContextCompat.getColor(requireContext(), lib.toolkit.base.R.color.colorLightRed))
+            it.itemLayout.setOnClickListener {
+                mClickListener?.onRemoveClick(account)
+                dismiss()
             }
-            dismiss()
+
         }
     }
 
     private fun setState() {
-        if (mAccount != null) {
-            val password = AccountUtils.getPassword(context!!, Account(mAccount!!.getAccountName(), context!!.getString(R.string.account_type)))
-            val token = AccountUtils.getToken(context!!, Account(mAccount!!.getAccountName(), context!!.getString(R.string.account_type)))
-            if (mAccount!!.isWebDav) {
-                if (mAccount!!.isOnline || password != null && password.isNotEmpty()
-                ) {
-                    mSignInItem!!.visibility = View.GONE
-                }
-                if (password == null || password.isEmpty()) {
-                    mLogoutItem!!.visibility = View.GONE
-                }
-                mProfileItem!!.visibility = View.GONE
-            } else {
-                if (mAccount!!.isOnline || token != null && token.isNotEmpty()) {
-                    mSignInItem!!.visibility = View.GONE
-                }
-                if (token == null || token.isEmpty()) {
-                    mLogoutItem!!.visibility = View.GONE
-                    mProfileItem!!.visibility = View.GONE
+        account?.let { account ->
+            val password = AccountUtils.getPassword(requireContext(),
+                Account(account.getAccountName(), requireContext().getString(lib.toolkit.base.R.string.account_type)))
+            val token = AccountUtils.getToken(requireContext(),
+                Account(account.getAccountName(), requireContext().getString(lib.toolkit.base.R.string.account_type)))
+            viewBinding?.let {
+                if (account.isWebDav) {
+                    if (account.isOnline || password?.isNotEmpty() == true) {
+                        it.signInItem.itemLayout.isVisible = false
+                    }
+                    if (password?.isEmpty() == true) {
+                        it.logoutItem.itemLayout.isVisible = false
+                    }
+                    it.profileItem.itemLayout.isVisible = false
+                } else {
+                    if (account.isOnline || token?.isNotEmpty() == true) {
+                        it.signInItem.itemLayout.isVisible = false
+                    }
+                    if (token?.isEmpty() == true) {
+                        it.logoutItem.itemLayout.isVisible = false
+                        it.profileItem.itemLayout.isVisible = false
+                    }
                 }
             }
         }
     }
 
-    private fun loadAvatar() {
-        if (mAccount != null) {
-            val url = if (mAccount?.avatarUrl?.contains("static") == true) {
-                 mAccount?.avatarUrl
+    private fun loadAvatar(imageView: ImageView) {
+        account?.let {
+            val url = if (it.avatarUrl?.contains("static") == true) {
+                it.avatarUrl
             } else {
-                 mAccount?.scheme + mAccount?.portal + mAccount?.avatarUrl
+                it.scheme + it.portal + it.avatarUrl
             }
-            Glide.with(mAvatarImage!!)
+            Glide.with(imageView)
                 .load(GlideUtils.getCorrectLoad(url ?: "", arguments?.getString(KEY_TOKEN) ?: ""))
-                .apply(GlideUtils.getAvatarOptions())
-                .into(mAvatarImage!!)
+                .apply(GlideUtils.avatarOptions)
+                .into(imageView)
         }
     }
 }

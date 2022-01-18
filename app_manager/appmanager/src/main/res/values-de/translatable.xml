@@ -174,7 +174,6 @@
     <string name="navigation_drawer_menu_help">Hilfe</string>
     <string name="navigation_drawer_menu_logout">Abmelden</string>
     <string name="navigation_drawer_menu_add_account">Konto hinzufügen</string>
-    <string name="navigation_drawer_menu_feedback">Feedback</string>
     <string name="settings_item_title">Einstellungen</string>
     <string name="settings_item_change_account">Konto wechseln</string>
     <string name="settings_clear_cache">Cache löschen</string>
@@ -315,9 +314,6 @@
     <string name="operation_snackbar_return">ZURÜCK</string>
     <string name="operation_share_send_link">SENDEN</string> <!-- ======================================================================================= --> <!-- Trash -->
     <string name="trash_dialog_empty_title">Papierkorb leeren?</string>
-    <string name="trash_snackbar_move_text">Sie können Dateien aus dem PAPIERKORB verschieben</string>
-    <string name="trash_snackbar_move_button">VERSCHIEBEN</string>
-    <string name="trash_popup_move">Verschieben nach</string>
     <string name="trash_popup_delete">Endgültig löschen</string> <!-- ======================================================================================= --> <!-- Managers load -->
     <string name="download_manager_title">ONLYOFFICE Downloads</string>
     <string name="download_manager_progress_title">Herunterladen wird ausgeführt</string>
@@ -370,8 +366,6 @@
     <string name="auth_info_screen_2">Führen Sie die Anwendung aus und tippen Sie auf das Symbol für ein neues Konto</string>
     <string name="auth_header_screen_3">Fügen Sie einen geheimen Schlüssel hinzu</string>
     <string name="auth_info_screen_3">Kopieren Sie den Schlüssel und fügen Sie diesen in Ihre Authentifizierungs-App ein</string>
-    <string name="auth_header_screen_4">Code kopieren</string>
-    <string name="auth_info_screen_4">Kopieren Sie den von der Authentifizierungs-App generierten Code und fügen Sie diesen in das Eingabefeld unten ein</string>
     <string name="rename_file_exist">Eine Datei mit demselben Namen existiert bereits.</string>
     <string name="device_path_file_error">Diese Datei existiert nicht.</string>
     <string name="device_trash_files_restore">Wiederherstellen</string>
@@ -431,6 +425,51 @@
     <string name="download_manager_archiving_progress">Archiv wird erstellt</string>
     <string name="download_manager_exceed_size_100">Die maximale Dateigröße ist überschritten (100MB)</string>
     <string name="download_manager_exceed_size_25">Die maximale Dateigröße ist überschritten (25MB)</string>
-
+    <string name="snackbar_undo">RÜCKGÄNGIG MACHEN</string>
+    <string name="errors_server_auth_too_many_attempts">Zu viele Versuche. Bitte versuchen Sie es später erneut.</string>
+    <string name="navigation_drawer_menu_feedback">Feedback und Support</string>
+    <string name="share_snackbar_remove_user">Benutzer wurde entfernt</string>
+    <string name="share_group_admin">Administrator</string>
+    <string name="share_group_everyone">Alle</string>
+    <string name="storage_onedrive_error_opened">Die Datei ist auf dem Portal geöffnet</string>
+    <string name="storage_onedrive_error_exist">In diesem Ordner gibt es schon eine Datei mit demselben Namen</string>
+    <string name="operation_panel_restore_button">Hier wiederherstellen</string>
+    <string name="trash_snackbar_move_text">Sie können Dateien aus dem PAPIERKORB wiederherstellen</string>
+    <string name="trash_snackbar_move_button">WIEDERHERSTELLEN</string>
+    <string name="trash_popup_move">Wiederherstellen in</string>
+    <string name="on_boarding_back_button">ZURÜCK</string>
+    <string name="auth_header_screen_4">Bitte den Code eingeben</string>
+    <string name="auth_info_screen_4">Geben Sie den Code aus Ihrer Authentifikator-App ein</string>
+    <string name="auth_step_title">Schritt %1$d von %2$d</string>
+    <string name="auth_install_button">Installieren</string>
+    <string name="auth_confirm_button">Bestätigen</string>
+    <string name="auth_clipboard_key_copied">Der Schlüssel ist in die Zwischenablage kopiert.</string>
+    <string name="auth_edit_hint">Code</string>
+    <string name="app_settings_security">Sicherheit</string>
+    <string name="app_settings_passcode">Passwortsperre</string>
+    <string name="app_settings_disable">Deaktivieren</string>
+    <string name="app_settings_enable">Aktivieren</string>
+    <string name="app_Settings_passcode_enable">Passcode aktivieren</string>
+    <string name="app_settings_passcode_change">Passcode ändern</string>
+    <string name="app_settings_passcode_fingerprint">Fingerabdruck zum Entsperren verwenden</string>
+    <string name="app_settings_passcode_enter_title">Passcode eingeben</string>
+    <string name="app_settings_passscode_enter_full_title">Zum Entsperren ist der Passcode erforderlich</string>
+    <string name="app_settings_passcode_enter_subtitle">Legen Sie den Passcode fest</string>
+    <string name="app_settings_passcode_confirm_title">Passcode bestätigen</string>
+    <string name="app_settings_passcode_confirm_subtitle">Bitte Passcode noch einmal eingeben</string>
+    <string name="app_settings_passcode_confirm_error">Passcodes stimmen nicht überein</string>
+    <string name="app_settings_passcode_change_disable_title">Geben Sie Ihren aktuellen Passcode ein</string>
+    <string name="app_settings_passcode_change_disable_error">Der Passcode ist ungültig</string>
+    <string name="app_settings_passcode_description"> - dieser Code ist beim Starten der App erforderlich.\n\nHinweis! Wenn Sie den Passcode vergessen, muss die App entfernt oder erneut installiert werden. Alle Dokumente auf dem Gerät gehen verloren. </string>
+    <string name="app_settings_passcode_fingerprint_title">Zugriff auf Dokumente</string>
+    <string name="item_owner_self">Ich</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           Wenn Sie fortsetzen, stimmen Sie der
+            <a href="%1$s">Datenschutzerklärung</a>
+            und den
+            <a href="%2$s">Nutzungsbedingungen</a> zu
+        ]]>
+    </string>
 
 </resources>

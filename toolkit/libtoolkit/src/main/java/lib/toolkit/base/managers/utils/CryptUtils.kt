@@ -100,4 +100,14 @@ object CryptUtils {
         }
     }
 
+    fun encodeBase64(value: String): String = Base64.encodeToString(value.encodeToByteArray(), Base64.DEFAULT)
+
+    fun decodeBase64(value: String): String {
+        return String(Base64.decode(value, Base64.DEFAULT), charset("utf-8"))
+    }
+
 }
+
+fun String.encodeBase64(): String = Base64.encodeToString(this.encodeToByteArray(), Base64.DEFAULT)
+
+fun String.decodeBase64(): String = String(Base64.decode(this, Base64.DEFAULT), charset("utf-8"))

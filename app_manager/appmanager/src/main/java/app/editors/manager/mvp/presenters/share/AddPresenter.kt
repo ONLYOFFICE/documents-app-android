@@ -1,12 +1,15 @@
 package app.editors.manager.mvp.presenters.share
 
-import android.accounts.Account
 import app.documents.core.account.CloudAccount
+import app.documents.core.network.ApiContract
 import app.documents.core.network.models.share.request.RequestShare
 import app.documents.core.network.models.share.request.RequestShareItem
 import app.documents.core.share.ShareService
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.appComponent
+import app.editors.manager.app.getShareApi
+import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
@@ -14,7 +17,6 @@ import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.UserUi
-import app.editors.manager.mvp.models.ui.ViewType
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.share.AddView
 import app.editors.manager.ui.fragments.share.AddFragment
@@ -22,11 +24,10 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
+import io.reactivex.subjects.PublishSubject
+import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
-import java.util.*
+import java.util.concurrent.TimeUnit
 
 @InjectViewState
 class AddPresenter : BasePresenter<AddView>() {
@@ -35,45 +36,32 @@ class AddPresenter : BasePresenter<AddView>() {
         val TAG: String = AddPresenter::class.java.simpleName
     }
 
-    private lateinit var item: Item
-    private lateinit var type: AddFragment.Type
-    private val shareStack: ModelShareStack
-    private var isCommon: Boolean
+    private val shareStack: ModelShareStack = ModelShareStack.getInstance()
+    private var isCommon: Boolean = false
     private var searchValue: String? = null
-
+    private var publishSearch: PublishSubject<String>? = null
     private var disposable: Disposable? = null
+
+    var item: Item? = null
+    var type: AddFragment.Type? = null
 
     init {
         App.getApp().appComponent.inject(this)
-        shareStack = ModelShareStack.getInstance()
-        isCommon = false
     }
 
-    private val shareService: ShareService = getApi()
-    private lateinit var account: CloudAccount
+    private val account: CloudAccount =
+        context.appComponent.accountOnline ?: throw RuntimeException("Account can't be null")
+    private val shareApi: ShareService = context.getShareApi()
 
     override fun onDestroy() {
         super.onDestroy()
         disposable = null
     }
 
-    private fun getApi(): ShareService = runBlocking(Dispatchers.Default) {
-        accountDao.getAccountOnline()?.let { cloudAccount ->
-            this@AddPresenter.account = cloudAccount
-            AccountUtils.getToken(
-                context,
-                Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
-            )?.let {
-                return@runBlocking App.getApp().getShareService(it)
-            }
-        } ?: run {
-            throw Error("No account")
-        }
-    }
 
     private fun getUsers() {
         isCommon = false
-        disposable = shareService.getUsers()
+        disposable = shareApi.getUsers()
             .subscribeOn(Schedulers.io())
             .map { response ->
                 response.response.filter { it.id != account.id }.map {
@@ -84,6 +72,7 @@ class AddPresenter : BasePresenter<AddView>() {
             .subscribe({ response ->
                 shareStack.addUsers(response)
                 viewState.onGetUsers(userListItems)
+                loadAvatars()
             }, { error ->
                 fetchError(error)
             })
@@ -91,12 +80,15 @@ class AddPresenter : BasePresenter<AddView>() {
 
     private fun getGroups() {
         isCommon = false
-        disposable = shareService.getGroups()
+        disposable = shareApi.getGroups()
             .subscribeOn(Schedulers.io())
-            .map { response -> response.response.map { GroupUi(it.id, it.name, it.manager) } }
+            .map { response -> response.response.map { GroupUi(it.id, it.name, it.manager ?: "null") } }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
-                shareStack.addGroups(response)
+                shareStack.addGroups(response.toMutableList().also {
+                    it.add(GroupUi(GroupUi.GROUP_ADMIN_ID, "", ""))
+                    it.add(GroupUi(GroupUi.GROUP_EVERYONE_ID, "", ""))
+                })
                 viewState.onGetGroups(groupListItems)
             }, { error ->
                 fetchError(error)
@@ -105,16 +97,53 @@ class AddPresenter : BasePresenter<AddView>() {
 
     fun getCommons() {
         isCommon = true
-        disposable = Observable.zip(shareService.getUsers(), shareService.getGroups(), { users, groups ->
-            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager) })
+        disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups()) { users, groups ->
+            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
                 UserUi(it.id, it.department, it.displayName, it.avatarMedium)
             })
             return@zip true
-        }).subscribeOn(Schedulers.io())
+        }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 viewState.onGetCommon(commonList)
+                loadAvatars()
+            }, { error ->
+                fetchError(error)
+            })
+    }
+
+    fun getFilter(searchValue: String) {
+        isCommon = true
+
+        disposable = Observable.zip(shareApi.getUsers(getOptions(searchValue)),
+            shareApi.getGroups(getOptions(searchValue, true))) { users, groups ->
+            shareStack.clearModel()
+            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
+            shareStack.addUsers(users.response.filter { it.id != account.id }.map {
+                UserUi(it.id, it.department, it.displayName, it.avatarMedium)
+            })
+            return@zip true
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState.onGetCommon(commonList)
+                loadAvatars()
+            }, { error ->
+                fetchError(error)
+            })
+    }
+
+    private fun loadAvatars() {
+        disposable = Observable.fromIterable(shareStack.userSet)
+            .subscribeOn(Schedulers.io())
+            .map { user ->
+                user.avatar = GlideUtils.loadAvatar(user.avatarUrl)
+                user
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState.onUpdateAvatar(it)
             }, { error ->
                 fetchError(error)
             })
@@ -122,7 +151,7 @@ class AddPresenter : BasePresenter<AddView>() {
 
     private fun shareFileTo(id: String) {
         requestShare?.let { request ->
-            disposable = shareService.setFileAccess(id, request)
+            disposable = shareApi.setFileAccess(id, request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
@@ -135,7 +164,7 @@ class AddPresenter : BasePresenter<AddView>() {
 
     private fun shareFolderTo(id: String) {
         requestShare?.let { request ->
-            disposable = shareService.setFolderAccess(id, request)
+            disposable = shareApi.setFolderAccess(id, request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
@@ -195,6 +224,22 @@ class AddPresenter : BasePresenter<AddView>() {
             return commonList
         }
 
+    private fun getOptions(value: String, isGroup: Boolean = false): Map<String, String> =
+        mapOf(
+            ApiContract.Parameters.ARG_FILTER_VALUE to value,
+            ApiContract.Parameters.ARG_FILTER_BY to if (isGroup) ApiContract.Parameters.VAL_SORT_BY_NAME else ApiContract.Parameters.VAL_SORT_BY_DISPLAY_NAME,
+            ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS
+        )
+
+    private fun groupComparator() = Comparator<GroupUi> { a, b ->
+        val list = listOf(GroupUi.GROUP_ADMIN_ID, GroupUi.GROUP_EVERYONE_ID)
+        when {
+            a.id in list -> -1
+            b.id in list -> 1
+            else -> a.name.lowercase().compareTo(b.name.lowercase())
+        }
+    }
+
     val shared: Unit
         get() {
             when (type) {
@@ -204,10 +249,22 @@ class AddPresenter : BasePresenter<AddView>() {
         }
 
     fun shareItem() {
-        if (item is CloudFolder) {
-            shareFolderTo(item.id)
-        } else if (item is CloudFile) {
-            shareFileTo(item.id)
+        item?.let {
+            when (it) {
+                is CloudFolder -> shareFolderTo(it.id)
+                is CloudFile -> shareFileTo(it.id)
+            }
+        }
+    }
+
+    fun startSearch() {
+        publishSearch = PublishSubject.create<String>().apply {
+            disposable = subscribeOn(Schedulers.io())
+                .debounce(350, TimeUnit.MILLISECONDS)
+                .distinctUntilChanged()
+                .doOnNext { value ->
+                    getFilter(value)
+                }.subscribe()
         }
     }
 
@@ -232,22 +289,35 @@ class AddPresenter : BasePresenter<AddView>() {
     /*
     * Getters/Setters
     * */
-    fun setItem(item: Item) {
-        this.item = item
-    }
 
-    fun setType(type: AddFragment.Type) {
-        this.type = type
-    }
+    private val userListItems: List<UserUi>
+        get() = shareStack.userSet.toMutableList().sortedBy { it.displayName }
 
-
-    private val userListItems: List<ViewType>
-        get() = shareStack.userSet.toMutableList()
-    private val groupListItems: List<ViewType>
-        get() = shareStack.groupSet.toMutableList()
+    private val groupListItems: List<GroupUi>
+        get() = shareStack.groupSet.toMutableList().sortedWith(groupComparator())
 
     val countChecked: Int
         get() = shareStack.countChecked
+
+    fun isSelectedAll(type: AddFragment.Type): Boolean {
+        return if (shareStack.userSet.size > 0 || shareStack.groupSet.size > 0) {
+            when (type) {
+                AddFragment.Type.USERS ->
+                    shareStack.userSet.filter { it.isSelected }.size == shareStack.userSet.size
+                AddFragment.Type.GROUPS ->
+                    shareStack.groupSet.filter { it.isSelected }.size == shareStack.groupSet.size
+            }
+        } else {
+            false
+        }
+    }
+
+    fun isSelected(type: AddFragment.Type): Boolean {
+        return when (type) {
+            AddFragment.Type.USERS -> shareStack.userSet.any { it.isSelected }
+            AddFragment.Type.GROUPS -> shareStack.groupSet.any { it.isSelected }
+        }
+    }
 
     fun resetChecked() {
         shareStack.resetChecked()
@@ -265,6 +335,9 @@ class AddPresenter : BasePresenter<AddView>() {
 
     fun setSearchValue(searchValue: String?) {
         this.searchValue = searchValue
-    }
 
+        searchValue?.let { value ->
+            publishSearch?.onNext(value)
+        }
+    }
 }

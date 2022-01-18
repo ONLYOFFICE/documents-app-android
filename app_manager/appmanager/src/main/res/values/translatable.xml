@@ -29,6 +29,7 @@
     <!-- ======================================================================================= -->
     <!-- Snackbar common -->
     <string name="snackbar_copied">Copied</string>
+    <string name="snackbar_undo">UNDO</string>
 
     <!-- ======================================================================================= -->
     <!-- About -->
@@ -257,7 +258,7 @@
     <string name="navigation_drawer_menu_help">Help</string>
     <string name="navigation_drawer_menu_logout">Log out</string>
     <string name="navigation_drawer_menu_add_account">Add account</string>
-    <string name="navigation_drawer_menu_feedback">Feedback</string>
+    <string name="navigation_drawer_menu_feedback">Feedback and support</string>
     <string name="settings_item_title">Settings</string>
     <string name="settings_item_change_account">Change account</string>
     <string name="settings_clear_cache">Clear cache</string>
@@ -372,9 +373,14 @@
     <string name="share_popup_access_review">Review</string>
     <string name="share_popup_access_read_only">Read only</string>
     <string name="share_popup_access_deny_access">Deny access</string>
-    <string name="share_popup_access_deny_remove">Remove</string>
+    <string name="share_popup_access_deny_remove">Remove user</string>
     <string name="share_popup_access_fill_forms">Fill forms</string>
     <string name="share_popup_access_comment">Comment</string>
+
+    <string name="share_snackbar_remove_user">User is removed</string>
+
+    <string name="share_group_admin">Admin</string>
+    <string name="share_group_everyone">Everyone</string>
 
     <!-- External link -->
     <string name="share_access_success">External access successful</string>
@@ -422,6 +428,9 @@
     <string name="storage_web_dav_settings_password">Password</string>
     <string name="storage_web_dav_settings_title">Input title for service</string>
 
+    <string name="storage_onedrive_error_opened">File is opened on portal</string>
+    <string name="storage_onedrive_error_exist">File with same name is already exist in this folder</string>
+
     <!-- ======================================================================================= -->
     <!-- Operations -->
     <string name="operation_title">Select folder</string>
@@ -431,6 +440,7 @@
     <string name="operation_delete_multiple">. One or more files haven`t been deleted due to open on the portal</string>
     <string name="operation_panel_move_button">Move here</string>
     <string name="operation_panel_copy_button">Copy here</string>
+    <string name="operation_panel_restore_button">Restore here</string>
     <string name="operation_panel_cancel_button">Cancel</string>
     <string name="operation_empty_lists_data">Select items for operation</string>
     <string name="operation_error_move_to_same">Can not be moved to the same folder</string>
@@ -444,9 +454,9 @@
     <!-- ======================================================================================= -->
     <!-- Trash -->
     <string name="trash_dialog_empty_title">Empty trash?</string>
-    <string name="trash_snackbar_move_text">You can move files from the TRASH</string>
-    <string name="trash_snackbar_move_button">MOVE</string>
-    <string name="trash_popup_move">Move to</string>
+    <string name="trash_snackbar_move_text">You can restore files from the TRASH</string>
+    <string name="trash_snackbar_move_button">RESTORE</string>
+    <string name="trash_popup_move">Restore to</string>
     <string name="trash_popup_delete">Delete forever</string>
 
     <!-- ======================================================================================= -->
@@ -491,6 +501,7 @@
     <!-- ======================================================================================= -->
     <!-- On boarding -->
     <string name="on_boarding_skip_button">SKIP</string>
+    <string name="on_boarding_back_button">BACK</string>
     <string name="on_boarding_next_button">NEXT</string>
     <string name="on_boarding_finish_button">DONE</string>
 
@@ -531,8 +542,13 @@
     <string name="auth_info_screen_2">Run the app and tap the new account icon</string>
     <string name="auth_header_screen_3">Add a secret key</string>
     <string name="auth_info_screen_3">Copy the key and paste it to your authenticator app </string>
-    <string name="auth_header_screen_4">Copy the code</string>
-    <string name="auth_info_screen_4">Copy the code from your authenticator app and insert it below</string>
+    <string name="auth_header_screen_4">Type the code</string>
+    <string name="auth_info_screen_4">Type the code from your authenticator app to the input field</string>
+    <string name="auth_step_title">Step %1$d of %2$d</string>
+    <string name="auth_install_button">Install</string>
+    <string name="auth_confirm_button">Confirm</string>
+    <string name="auth_clipboard_key_copied">Key copied to clipboard</string>
+    <string name="auth_edit_hint">Code</string>
 
     <string name="rename_file_exist">File with the same name exists.</string>
     <string name="device_path_file_error">This file does not exist.</string>
@@ -575,7 +591,34 @@
     <string name="app_settings_analytic">Share app analytics</string>
     <string name="app_manage_files_title">Access manage files</string>
     <string name="app_manage_files_description">Need to grant access to the files. If access is denied all files after lost applications will be deleted.</string>
+    //passcode
+    <string name="app_settings_security">Security</string>
+    <string name="app_settings_passcode">Passcode lock</string>
+    <string name="app_settings_disable">Disable</string>
+    <string name="app_settings_enable">Enable</string>
+    <string name="app_Settings_passcode_enable">Enable passcode</string>
+    <string name="app_settings_passcode_change">Change passcode</string>
+    <string name="app_settings_passcode_fingerprint">Use fingerprint to unlock</string>
+    <string name="app_settings_passcode_enter_title">Enter a passcode</string>
+    <string name="app_settings_passscode_enter_full_title">Enter passcode to unlock app</string>
+    <string name="app_settings_passcode_enter_subtitle">Choose passcode to unlock app</string>
+    <string name="app_settings_passcode_confirm_title">Confirm passcode</string>
+    <string name="app_settings_passcode_confirm_subtitle">Enter passcode one more time</string>
+    <string name="app_settings_passcode_confirm_error">Passcodes do not match</string>
+    <string name="app_settings_passcode_change_disable_title">Enter your current passcode</string>
+    <string name="app_settings_passcode_change_disable_error">Incorrect passcode entered</string>
+    <string name="app_settings_passcode_description"> - this is code which requested at application start.\n\nPay attention! If you forget passcode you have to remove or reinstall application. All documents on device will be lost. </string>
+    <string name="app_settings_passcode_fingerprint_title">Access to Documents</string>
 
     <string name="app_internal_error">Internal error</string>
     <string name="app_fragment_crash_error">Please close this app and try again</string>
+    <string name="item_owner_self">Me</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           By proceeding, you agree to the
+            <a href="%1$s">Privacy Policy</a>
+            and the
+            <a href="%2$s">Terms of Service</a>
+        ]]>
+    </string>
 </resources>

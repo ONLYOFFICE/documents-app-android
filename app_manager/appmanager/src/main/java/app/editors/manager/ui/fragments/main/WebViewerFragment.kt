@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
+import android.Manifest
 import android.accounts.Account
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
@@ -7,7 +8,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.ConnectivityManager
@@ -23,6 +23,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.*
 import android.widget.ProgressBar
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
@@ -40,7 +42,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.ui.activities.base.BaseActivity
 import org.json.JSONObject
 import java.net.URL
 import java.util.*
@@ -66,9 +67,9 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         private const val PATTERN_BACK_3 = ".*/Files/#.*"
         private const val PATTERN_BACK_2 = ".*projects.*\\d+#\\d+"
         private const val DESKTOP_USER_AGENT =
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36"
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36 AscAndroidWebView"
         private const val MOBILE_USER_AGENT =
-            "Mozilla/5.0 (Linux; U; Android 4.4; en-us; Nexus 4 Build/JOP24G) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"
+            "Mozilla/5.0 (Linux; U; Android 4.4; en-us; Nexus 4 Build/JOP24G) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 AscAndroidWebView"
 
         const val INTERFACE = "Android"
         const val KEY_EVENT = "event"
@@ -110,12 +111,12 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
                 "   } catch(e) {}" +
                 "}}, {once: false});"
 
-        private var sValueCallback: ValueCallback<Array<Uri>>? = null
+        private var valueCallback: ValueCallback<Array<Uri>>? = null
 
         @JvmStatic
         fun newInstance(file: CloudFile?): WebViewerFragment {
             return WebViewerFragment().apply {
-                arguments = Bundle().apply {
+                arguments = Bundle(1).apply {
                     putSerializable(TAG_FILE, file)
                 }
             }
@@ -137,7 +138,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     private lateinit var progressBar: ProgressBar
 
     private var cloudFile: CloudFile? = null
-    private var mUri: Uri? = null
+    private var uri: Uri? = null
     private var downloadUrl: String? = null
     private var isPageLoad = false
     private var errorCode = WebViewClient.ERROR_UNKNOWN
@@ -148,11 +149,31 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     private var isLostConnection = false
     private var connectivityManager: ConnectivityManager? = null
 
+    private val readPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
+        if (result) {
+            imagePick.launch(null)
+        } else {
+            setValueCallback(arrayOf())
+        }
+    }
+
+    private val downloadFile = registerForActivityResult(CreateDocument()) { data: Uri? ->
+        data?.let { downloadFile(data) }
+    }
+
+    private val imagePick = registerForActivityResult(ImagePick()) { data: Uri? ->
+        data?.let {
+            setValueCallback(arrayOf(data))
+        } ?: setValueCallback(arrayOf())
+
+
+    }
+
     private val token = runBlocking(Dispatchers.Default) {
         accountDao.getAccountOnline()?.let { account ->
             return@runBlocking AccountUtils.getToken(
                 App.getApp().applicationContext,
-                Account(account.getAccountName(), App.getApp().getString(R.string.account_type))
+                Account(account.getAccountName(), App.getApp().getString(lib.toolkit.base.R.string.account_type))
             )
         } ?: run {
             throw Exception("No account")
@@ -166,7 +187,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         )
     }
 
-    private val mConnectivityHandler: Handler = object : Handler(Looper.getMainLooper()) {
+    private val connectivityHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 MESSAGE_LOST -> post {
@@ -178,26 +199,26 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
                         isLostConnection = false
                         isDocumentReady = false
                         isHardBackOn = false
-                        loadWebView(mUri.toString())
+                        loadWebView(uri.toString())
                     }
                 }
             }
         }
     }
 
-    private val mNetworkCallback: NetworkCallback = object : NetworkCallback() {
+    private val networkCallback: NetworkCallback = object : NetworkCallback() {
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
             val message = Message()
             message.what = MESSAGE_AVAILABLE
-            mConnectivityHandler.handleMessage(message)
+            connectivityHandler.handleMessage(message)
         }
 
         override fun onLost(network: Network) {
             super.onLost(network)
             val message = Message()
             message.what = MESSAGE_LOST
-            mConnectivityHandler.handleMessage(message)
+            connectivityHandler.handleMessage(message)
         }
     }
 
@@ -224,46 +245,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(savedInstanceState)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            BaseActivity.REQUEST_ACTIVITY_IMAGE_PICKER -> {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    setValueCallback(arrayOf(data.data ?: Uri.EMPTY))
-                } else if (sValueCallback != null) {
-                    setValueCallback(arrayOf())
-                }
-            }
-            REQUEST_DOWNLOAD -> {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (data.data != null && downloadUrl != null) {
-                        downloadFile(data.data ?: Uri.EMPTY)
-                    }
-                }
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            PERMISSION_WRITE_STORAGE -> {
-                if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (downloadUrl != null) {
-                        downloadUrl(downloadUrl!!)
-                    }
-                }
-            }
-            PERMISSION_READ_STORAGE -> {
-                if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    showImagesPickerActivity()
-                } else {
-                    setValueCallback(arrayOf())
-                }
-            }
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -309,18 +290,22 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         webView.setDownloadListener(null)
         webView.webChromeClient = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && connectivityManager != null) {
-            connectivityManager?.unregisterNetworkCallback(mNetworkCallback)
+            connectivityManager?.unregisterNetworkCallback(networkCallback)
         }
     }
 
     override fun onRefresh() {
         swipeRefresh.isRefreshing = false
-        loadWebView(mUri.toString())
+        loadWebView(uri.toString())
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun init(savedInstanceState: Bundle?) {
-        UiUtils.setColorFilter(requireContext(), progressBar.indeterminateDrawable, R.color.colorAccent)
+        UiUtils.setColorFilter(
+            requireContext(),
+            progressBar.indeterminateDrawable,
+            lib.toolkit.base.R.color.colorSecondary
+        )
         connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         isDesktopMode = UiUtils.checkDeXEnabled(resources.configuration)
         isPageLoad = false
@@ -340,6 +325,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         webView.clearFormData()
         webView.addJavascriptInterface(webViewEventsInterface!!, INTERFACE)
         webView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.NORMAL
+//        webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
 
         if (isDesktopMode || UiUtils.isHuaweiDesktopMode(resources.configuration)) {
             webView.settings.userAgentString = DESKTOP_USER_AGENT
@@ -354,16 +340,16 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         val bundle = arguments
         cloudFile = bundle!!.getSerializable(TAG_FILE) as CloudFile?
         if (cloudFile?.isReadOnly == true) {
-            mUri = Uri.parse(cloudFile?.webUrl)
+            uri = Uri.parse(cloudFile?.webUrl)
             val im = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             im.hideSoftInputFromWindow(webView.windowToken, 0)
-            if (mUri?.getQueryParameter(ApiContract.Parameters.ARG_ACTION) == null) {
-                mUri = mUri?.buildUpon()
+            if (uri?.getQueryParameter(ApiContract.Parameters.ARG_ACTION) == null) {
+                uri = uri?.buildUpon()
                     ?.appendQueryParameter(ApiContract.Parameters.ARG_ACTION, ApiContract.Parameters.VAL_ACTION_VIEW)
                     ?.build()
             }
         } else {
-            mUri = Uri.parse(cloudFile?.webUrl)
+            uri = Uri.parse(cloudFile?.webUrl)
         }
     }
 
@@ -395,10 +381,10 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         } else {
             isDocumentReady = false
             isHardBackOn = false
-            loadWebView(mUri.toString())
+            loadWebView(uri.toString())
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && connectivityManager != null) {
-            connectivityManager!!.registerDefaultNetworkCallback(mNetworkCallback)
+            connectivityManager?.registerDefaultNetworkCallback(networkCallback)
         }
     }
 
@@ -407,7 +393,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             if (url.contains(ApiContract.PERSONAL_SUBDOMAIN)) {
                 setAcceptCookie(true)
                 setCookie(URL(url).protocol + "://" + URL(url).host, "asc_auth_key=$token")
-                setAcceptThirdPartyCookies(webView,true)
+                setAcceptThirdPartyCookies(webView, true)
             }
         }
         webView.loadUrl(url, headers)
@@ -417,10 +403,10 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     private fun setStatusBarColor() {
         when (StringUtils.getExtension(cloudFile?.fileExst ?: "")) {
-            StringUtils.Extension.DOC, StringUtils.Extension.PDF -> setStatusBarColor(R.color.colorStatusBarDocTint)
-            StringUtils.Extension.PRESENTATION -> setStatusBarColor(R.color.colorStatusBarPresentationTint)
-            StringUtils.Extension.SHEET -> setStatusBarColor(R.color.colorStatusBarSheetTint)
-            else -> setStatusBarColor(R.color.colorAccent)
+            StringUtils.Extension.DOC, StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarDocTint)
+            StringUtils.Extension.PRESENTATION -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarPresentationTint)
+            StringUtils.Extension.SHEET -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarSheetTint)
+            else -> setStatusBarColor(lib.toolkit.base.R.color.colorSecondary)
         }
     }
 
@@ -450,8 +436,8 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             if (request.url.toString().contains("/auth.aspx") || request.url.query?.contains("folder") == true) {
                 requireActivity().finish()
                 show(requireContext())
-            } else if (!StringUtils.equals(mUri?.host, request.url.host) && !StringUtils.equals(
-                    mUri?.path,
+            } else if (!StringUtils.equals(uri?.host, request.url.host) && !StringUtils.equals(
+                    uri?.path,
                     request.url.path
                 )
             ) {
@@ -465,8 +451,8 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             val uri = Uri.parse(url)
-            if (isPageLoad && StringUtils.equals(mUri?.host, uri.host) &&
-                (url.lowercase(Locale.ROOT).matches(Regex(PATTERN_BACK_1)) ||
+            if (isPageLoad && StringUtils.equals(this@WebViewerFragment.uri?.host, uri.host) &&
+                (url.lowercase().matches(Regex(PATTERN_BACK_1)) ||
                         url.lowercase(Locale.ROOT).matches(Regex(PATTERN_BACK_2)) ||
                         url.lowercase(Locale.ROOT).matches(Regex(PATTERN_BACK_3)))
             ) {
@@ -539,10 +525,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     }
 
     private fun downloadUrl(url: String) {
-        if (!checkWritePermission()) {
-            downloadUrl = url
-            return
-        }
         // Get name without extension
         val path = Uri.parse(url).path
         val elements = path?.split("/")?.toTypedArray()
@@ -554,18 +536,9 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             FirebaseUtils.addCrash("Url: $url")
             FirebaseUtils.addCrash("File name: $fileName")
             showSnackBar(R.string.errors_viewer_download_name)
-            return
         }
         downloadUrl = url
-        showSaveActivity(fileName)
-    }
-
-    private fun showSaveActivity(name: String) {
-        startActivityForResult(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = StringUtils.getMimeTypeFromPath(name)
-            putExtra(Intent.EXTRA_TITLE, name)
-        }, REQUEST_DOWNLOAD)
+        downloadFile.launch(fileName)
     }
 
     private fun downloadFile(uri: Uri) {
@@ -618,16 +591,14 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             uploadMsg: ValueCallback<Array<Uri>>,
             fileChooserParams: FileChooserParams
         ): Boolean {
-            if (checkReadPermission()) {
-                showImagesPickerActivity()
-            }
-            sValueCallback = uploadMsg
+            readPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            valueCallback = uploadMsg
             return true
         }
     }
 
     private fun setValueCallback(uris: Array<Uri>?) {
-        sValueCallback?.let { callback ->
+        valueCallback?.let { callback ->
             uris?.let {
                 callback.onReceiveValue(it)
             }
@@ -637,7 +608,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     /*
      * Events interface
      * */
-    inner class WebViewEventsInterface() {
+    inner class WebViewEventsInterface {
 
         @JavascriptInterface
         fun events(json: String) {
@@ -690,4 +661,33 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     }
 
 
+}
+
+internal class CreateDocument :
+    ActivityResultContract<String?, Uri?>() {
+
+    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+        return if (intent == null || resultCode != Activity.RESULT_OK) null else intent.data
+    }
+
+    override fun createIntent(context: Context, input: String?): Intent {
+        return Intent(Intent.ACTION_CREATE_DOCUMENT)
+            .setType(StringUtils.getMimeTypeFromPath(input ?: "*/*"))
+            .putExtra(Intent.EXTRA_TITLE, input)
+    }
+}
+
+internal class ImagePick :
+    ActivityResultContract<String?, Uri?>() {
+
+    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+        return if (intent == null || resultCode != Activity.RESULT_OK) null else intent.data
+    }
+
+    override fun createIntent(context: Context, input: String?): Intent {
+        return Intent(Intent.ACTION_GET_CONTENT).apply {
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            type = "image/*"
+        }
+    }
 }

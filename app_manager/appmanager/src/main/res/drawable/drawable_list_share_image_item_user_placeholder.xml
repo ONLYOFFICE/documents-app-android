@@ -12,7 +12,7 @@
         android:width="@dimen/image_size">
         <bitmap
             android:gravity="center"
-            android:tint="@color/colorGrey"
+            android:tint="@color/colorOnSurface"
             android:src="@drawable/ic_list_item_share_user_icon" />
     </item>
 </layer-list>

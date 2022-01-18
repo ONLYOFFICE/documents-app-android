@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/default_two_line_height"
-    android:background="?attr/selectableItemBackground"
+    android:layout_height="@dimen/item_two_line_height"
+    android:background="@color/colorSurface"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/settingIcon"
-        style="@style/CommonImageView"
+        style="@style/CloudImageView"
         android:layout_width="@dimen/image_default_size"
         android:layout_height="@dimen/image_default_size"
         android:layout_gravity="center"
@@ -22,7 +23,7 @@
         tools:ignore="ContentDescription" />
 
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settingText"
         style="@style/ItemMediumBlackText"
         android:layout_width="0dp"

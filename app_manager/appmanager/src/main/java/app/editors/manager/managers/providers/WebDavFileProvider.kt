@@ -55,8 +55,8 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     private var batchItems: List<Item>? = null
     val uploadsFile: MutableList<CloudFile> = Collections.synchronizedList(ArrayList())
 
-    override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
-        return Observable.fromCallable { api.propfind(id).execute() }
+    override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
+        return Observable.fromCallable { id?.let { api.propfind(it).execute() } }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { modelResponse: Response<WebDavModel?> ->
@@ -85,6 +85,10 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
             file.fileExst = getExtensionFromPath(body.title)
             file
         }
+    }
+
+    override fun search(query: String?): Observable<String> {
+        TODO("Not yet implemented")
     }
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
@@ -249,7 +253,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
             }
     }
 
-    override fun fileInfo(item: Item): Observable<CloudFile> {
+    override fun fileInfo(item: Item?): Observable<CloudFile> {
         return Observable.create { emitter: ObservableEmitter<CloudFile> ->
             val outputFile = checkDirectory(item)
 
@@ -326,7 +330,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     @SuppressLint("MissingPermission")
-    private fun checkDirectory(item: Item): File? {
+    private fun checkDirectory(item: Item?): File? {
         val file = item as CloudFile
         when (getExtension(file.fileExst)) {
             StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH, StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
@@ -446,21 +450,13 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
         return responseOperation
     }
 
-    override fun share(id: String?, requestExternal: RequestExternal?): Observable<ResponseExternal> {
-        TODO("Not yet implemented")
-    }
+    override fun share(id: String, requestExternal: RequestExternal): Observable<ResponseExternal>? = null
 
-    override fun terminate(): Observable<MutableList<Operation>> {
-        TODO("Not yet implemented")
-    }
+    override fun terminate(): Observable<List<Operation>>?  = null
 
-    override fun addToFavorites(requestFavorites: RequestFavorites?): Observable<Base> {
-        TODO("Not yet implemented")
-    }
+    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
 
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites?): Observable<Base> {
-        TODO("Not yet implemented")
-    }
+    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>?  = null
 
     @Throws(UnsupportedEncodingException::class)
     private fun getExplorer(responseBeans: List<WebDavModel.ResponseBean>, filter: Map<String, String>?): Explorer {
@@ -479,7 +475,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
                 folder.updated = bean.lastModifiedDate
                 folder.etag = bean.etag
                 if (filteringValue != null) {
-                    if (folder.title.lowercase().startsWith(filteringValue)) {
+                    if (folder.title.contains(filteringValue, true)) {
                         folders.add(folder)
                     }
                 } else {
@@ -495,7 +491,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
                 file.created = bean.lastModifiedDate
                 file.updated = bean.lastModifiedDate
                 if (filteringValue != null) {
-                    if (file.title.lowercase().startsWith(filteringValue)) {
+                    if (file.title.contains(filteringValue, true)) {
                         files.add(file)
                     }
                 } else {
@@ -525,7 +521,8 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     private fun getFolderTitle(href: String?): String {
-        return href!!.substring(href.lastIndexOf('/', href.length - 2) + 1, href.lastIndexOf('/'))
+        if (href.isNullOrEmpty()) return ""
+        return href.substring(href.lastIndexOf('/', href.length - 2) + 1, href.lastIndexOf('/'))
     }
 
     @Throws(UnsupportedEncodingException::class)

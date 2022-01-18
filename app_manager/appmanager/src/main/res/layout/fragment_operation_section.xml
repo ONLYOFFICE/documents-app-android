@@ -1,66 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp">
+    android:paddingTop="@dimen/default_margin_large"
+    android:paddingBottom="@dimen/default_margin_large">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/operation_sections_my"
-            style="@style/OperationLayout">
+            style="@style/ContextListLayout"
+            android:layout_height="@dimen/item_two_line_height"
+            android:background="@color/colorSurface"
+            android:foreground="?attr/selectableItemBackground">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                style="@style/OperationImage"
-                app:srcCompat="@drawable/ic_drawer_menu_my_docs" />
+            <ImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_drawer_menu_my_docs"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/ContextListMediumText"
                 android:text="@string/navigation_drawer_menu_my" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/operation_sections_share"
-            style="@style/OperationLayout">
+            style="@style/ContextListLayout"
+            android:layout_height="@dimen/item_two_line_height"
+            android:background="@color/colorSurface"
+            android:foreground="?attr/selectableItemBackground">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                style="@style/OperationImage"
-                app:srcCompat="@drawable/ic_share_docs" />
+            <ImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_share_docs"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/ContextListMediumText"
                 android:text="@string/navigation_drawer_menu_shared" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/operation_sections_common"
-            style="@style/OperationLayout">
+            style="@style/ContextListLayout"
+            android:layout_height="@dimen/item_two_line_height"
+            android:background="@color/colorSurface"
+            android:foreground="?attr/selectableItemBackground">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                style="@style/OperationImage"
-                app:srcCompat="@drawable/ic_drawer_menu_common_docs" />
+            <ImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_drawer_menu_common_docs"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/ContextListMediumText"
                 android:text="@string/navigation_drawer_menu_common" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/operation_sections_projects"
-            style="@style/OperationLayout">
+            style="@style/ContextListLayout"
+            android:layout_height="@dimen/item_two_line_height"
+            android:background="@color/colorSurface"
+            android:foreground="?attr/selectableItemBackground">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                style="@style/OperationImage"
-                app:srcCompat="@drawable/ic_drawer_menu_projects" />
+            <ImageView
+                style="@style/ContextListImage"
+                app:srcCompat="@drawable/ic_drawer_menu_projects"
+                tools:ignore="ContentDescription" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 style="@style/ContextListMediumText"
                 android:text="@string/navigation_drawer_menu_projects" />
         </LinearLayout>

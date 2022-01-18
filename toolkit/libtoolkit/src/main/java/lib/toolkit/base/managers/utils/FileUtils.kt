@@ -295,8 +295,8 @@ object FileUtils {
     @RequiresPermission(allOf = [WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE])
     @JvmStatic
     fun copyFile(from: String, to: String): Boolean {
-        BufferedInputStream(FileInputStream(from))?.use { input ->
-            BufferedOutputStream(FileOutputStream(to))?.use { output ->
+        BufferedInputStream(FileInputStream(from)).use { input ->
+            BufferedOutputStream(FileOutputStream(to)).use { output ->
                 output.write(input.readBytes())
                 output.flush()
                 return true
@@ -309,8 +309,8 @@ object FileUtils {
     @RequiresPermission(allOf = [WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE])
     @JvmStatic
     fun replaceFile(context: Context, item: Uri, replace: String): Boolean {
-        BufferedInputStream(FileInputStream(replace))?.use { input ->
-            BufferedOutputStream(context.contentResolver.openOutputStream(item))?.use { output ->
+        BufferedInputStream(FileInputStream(replace)).use { input ->
+            BufferedOutputStream(context.contentResolver.openOutputStream(item)).use { output ->
                 output.write(input.readBytes())
                 output.flush()
                 return true

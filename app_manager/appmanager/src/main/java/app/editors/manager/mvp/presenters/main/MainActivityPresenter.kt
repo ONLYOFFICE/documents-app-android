@@ -70,7 +70,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         disposable.dispose()
     }
 
-    fun init() {
+    fun init(isPortal: Boolean = false) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
                 cloudAccount = it
@@ -80,7 +80,11 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
                 }
             } ?: run {
                 withContext(Dispatchers.Main) {
-                    viewState.onRender(MainActivityState.CloudState())
+                    if (isPortal) {
+                        viewState.onRender(MainActivityState.CloudState())
+                    } else {
+                        viewState.onRender(MainActivityState.OnDeviceState)
+                    }
                 }
             }
         }
@@ -185,13 +189,13 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
             when (tag) {
                 TAG_DIALOG_RATE_FIRST -> {
                     preferenceTool.isRateOn = false
+                    viewState.onDialogClose()
                     viewState.onShowEditMultilineDialog(
                         context.getString(R.string.dialogs_edit_feedback_rate_title),
                         context.getString(R.string.dialogs_edit_feedback_rate_hint),
                         context.getString(R.string.dialogs_edit_feedback_rate_accept),
                         context.getString(R.string.dialogs_question_accept_no_thanks), TAG_DIALOG_RATE_FEEDBACK
                     )
-                    return
                 }
                 TAG_DIALOG_RATE_SECOND -> {
                     preferenceTool.isRateOn = false
@@ -201,9 +205,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         }
     }
 
-    fun checkOnBoarding() {
-        if (!preferenceTool.onBoarding) {
-            viewState.onShowOnBoarding()
+    fun checkPassCode(isCode: Boolean? = null) {
+        if (preferenceTool.isPasscodeLockEnable && isCode == null) {
+            viewState.onCodeActivity()
         }
     }
 
@@ -260,22 +264,29 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
 
     fun checkFileData(fileData: Uri) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccountOnline()?.let { account ->
-                Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query)).let { data ->
-                    if (data.portal?.equals(account.portal, ignoreCase = true) == true && data.email?.equals(account.login, ignoreCase = true) == true) {
-                        withContext(Dispatchers.Main) {
-                            viewState.openFile(account, Json.encodeToString(data))
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            viewState.onError(context.getString(R.string.error_recent_enter_account))
+            accountDao.getAccounts().let { accounts ->
+                val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query))
+                accounts.forEach { account ->
+                    if (data.portal?.equals(
+                            account.portal,
+                            ignoreCase = true
+                        ) == true &&
+                        data.email?.equals(account.login, ignoreCase = true) == true
+                    ) {
+                        AccountUtils.getPassword(context, account.getAccountName())?.let {
+                            withContext(Dispatchers.Main) {
+                                viewState.openFile(account, Json.encodeToString(data))
+                            }
+                            return@forEach
+                        } ?: run {
+                            withContext(Dispatchers.Main) {
+                                viewState.onError(context.getString(R.string.error_recent_enter_account))
+                            }
+                            return@forEach
                         }
                     }
                 }
-            } ?: run {
-                withContext(Dispatchers.Main) {
-                    viewState.onError(context.getString(R.string.error_recent_enter_account))
-                }
+
             }
         }
     }

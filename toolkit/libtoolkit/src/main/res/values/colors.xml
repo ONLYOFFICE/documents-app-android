@@ -2,14 +2,31 @@
 <resources>
 
     <!-- Primary -->
-    <color name="colorPrimary">#104071</color>
-    <color name="colorPrimaryDark">#10315A</color>
+    <color name="colorPrimary">#FF1565C0</color>
+    <color name="colorOnPrimary">@color/colorBlack</color>
+    <color name="colorPrimaryDark">#0F4071</color>
     <color name="colorPrimaryLight">#3E73A3</color>
-    <color name="colorAccent">#ED7208</color>
+    <color name="colorSecondary">#FFF77F00</color>
+    <color name="colorOnSecondary">@color/colorWhite</color>
+    <color name="colorError">#FFED0A34</color>
+    <color name="colorOnError">@color/colorBlack</color>
+    <color name="colorSurface">@color/colorWhite</color>
+    <color name="colorOnSurface">@color/colorBlack</color>
+    <color name="colorOnSurfaceSecond">@color/colorGrey</color>
+    <color name="colorBackground">@color/colorWhite</color>
+    <color name="colorOnBackground">@color/colorBlack</color>
+    <color name="colorBackgroundSecond">#F4F4F4</color>
+    <color name="colorOutline">#D8D8D8</color>
+    <color name="colorBgDescription">#F1F3F8</color>
+    <color name="colorLink">#2388AA</color>
 
     <!-- Common -->
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>
+
+    <color name="colorAppBar">@color/colorWhite</color>
+    <color name="colorBottomBar">#FF0D3F6D</color>
+
     <color name="colorDark">#de000000</color>
     <color name="colorDarkGrey">#b2000000</color>
     <color name="colorGrey">#8a000000</color>
@@ -40,4 +57,10 @@
     <color name="colorStatusBarSheetTint">#336B4A</color>
     <color name="colorStatusBarPresentationTint">#884242</color>
 
+    <!--    Clouds-->
+    <color name="colorCloudItem">#EDF9FF</color>
+
+    <color name="listItemColor">@color/colorSurface</color>
+    <color name="shadow_end">@color/colorLightWhite</color>
+    <color name="shadow_start">@color/colorWhiteLight</color>
 </resources>

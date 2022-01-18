@@ -4,17 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/app_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorWhite">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="@dimen/default_elevation_height"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        style="@style/MainAppBar">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/app_bar_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -24,7 +23,7 @@
             app:contentInsetStart="0dp"
             android:contentInsetLeft="0dp"
             android:contentInsetStart="0dp"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+            android:theme="@style/MainToolbar"/>
 
         <com.google.android.material.tabs.TabLayout
             style="@style/ViewPagerTabs"
@@ -37,8 +36,8 @@
             app:tabGravity="fill"
             app:tabMaxWidth="0dp"
             app:tabTextAppearance="@style/ViewPagerTabsText"
-            app:tabSelectedTextColor="@color/colorWhite"
-            app:tabIndicatorColor="@color/colorAccent"/>
+            app:tabSelectedTextColor="@color/colorPrimary"
+            app:tabIndicatorColor="@color/colorSecondary"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

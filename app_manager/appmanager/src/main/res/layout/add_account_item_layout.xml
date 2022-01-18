@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/accountsAddLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/colorSurface">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/fragment_accounts_add_account"
         style="@style/ContextListAccountsLayout">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             style="@style/ContextListAccountImage"
-            app:srcCompat="@drawable/ic_drawer_menu_account" />
+            app:srcCompat="@drawable/ic_drawer_menu_account"
+            app:tint="@color/colorOnSurface"
+            tools:ignore="ContentDescription" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/ContextListAccountSmallText"
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/ItemMediumBlackText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/default_margin_large"
             android:text="@string/login_accounts_select_add" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 

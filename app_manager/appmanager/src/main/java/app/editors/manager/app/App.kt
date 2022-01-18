@@ -7,20 +7,24 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Process
 import android.webkit.WebView
-import app.documents.core.di.module.AccountModule
-import app.documents.core.di.module.LoginModule
-import app.documents.core.di.module.RecentModule
-import app.documents.core.di.module.WebDavApiModule
+import androidx.room.InvalidationTracker
+import app.documents.core.account.CloudAccount
+import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
-import app.editors.manager.di.module.ApiModule
-import app.editors.manager.di.module.AppModule
-import app.editors.manager.di.module.ShareModule
-import app.editors.manager.di.module.ToolModule
+import app.editors.manager.dropbox.di.component.DaggerDropboxComponent
+import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
+import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
+import app.editors.manager.managers.utils.KeyStoreUtils
+import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
+import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
+import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
+import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import java.util.*
 
 class App : Application() {
@@ -56,10 +60,11 @@ class App : Application() {
             initCrashlytics()
         }
 
-    private lateinit var _appComponent: AppComponent
-
+    private var _appComponent: AppComponent? = null
     val appComponent: AppComponent
-        get() = _appComponent
+        get() = checkNotNull(_appComponent) {
+            "App component can't be null"
+        }
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
@@ -96,7 +101,6 @@ class App : Application() {
     }
 
     private fun init() {
-
         /*
          Only android >= pie.
          https://bugs.chromium.org/p/chromium/issues/detail?id=558377
@@ -109,8 +113,22 @@ class App : Application() {
                 WebView.setDataDirectorySuffix("cacheWebView")
             }
         }
-        isAnalyticEnable = _appComponent.preference.isAnalyticEnable
+        if (ActivitiesUtils.isPackageExist(this, "com.onlyoffice.projects")) {
+            AddAccountHelper(this).copyData()
+        }
+        isAnalyticEnable = appComponent.preference.isAnalyticEnable
         initCrashlytics()
+        KeyStoreUtils.init()
+        addDataBaseObserver()
+    }
+
+    private fun addDataBaseObserver() {
+        appComponent.accountsDataBase.invalidationTracker.addObserver(object :
+            InvalidationTracker.Observer(arrayOf(CloudAccount::class.java.simpleName)) {
+            override fun onInvalidated(tables: MutableSet<String>) {
+                appComponent.preference.dbTimestamp = System.currentTimeMillis()
+            }
+        })
     }
 
     private fun getProcess(): String {
@@ -125,10 +143,7 @@ class App : Application() {
 
     private fun initDagger() {
         _appComponent = DaggerAppComponent.builder()
-            .appModule(AppModule(this))
-            .accountModule(AccountModule(RoomCallback()))
-            .toolModule(ToolModule())
-            .recentModule(RecentModule())
+            .context(context = this)
             .build()
     }
 
@@ -139,35 +154,45 @@ class App : Application() {
         }
     }
 
-    fun getApi(token: String): Api {
+    fun getApi(): Api {
         return DaggerApiComponent.builder()
-            .appComponent(_appComponent)
-            .apiModule(ApiModule(token))
+            .appComponent(appComponent)
             .build()
-            .getApi()
+            .api
     }
 
-    val loginComponent: LoginComponent
-        get() = DaggerLoginComponent.builder().appComponent(_appComponent)
-            .loginModule(LoginModule())
-            .build()
-
-
-    fun getShareService(token: String): ShareService {
-        return DaggerShareComponent.builder().appComponent(_appComponent)
-            .shareModule(ShareModule(token))
+    fun getShareService(): ShareService {
+        return DaggerShareComponent.builder().appComponent(appComponent)
             .build()
             .shareService
     }
 
-    fun getWebDavApi(login: String?, password: String?): WebDavApi {
-        return DaggerWebDavComponent.builder().appComponent(_appComponent)
-            .webDavApiModule(WebDavApiModule(login, password))
+    fun getWebDavApi(): WebDavApi {
+        return DaggerWebDavComponent.builder().appComponent(appComponent)
             .build()
-            .getWebDavApi()
+            .webDavApi
+    }
+
+    fun getOneDriveComponent(): IOneDriveServiceProvider {
+        return DaggerOneDriveComponent.builder().appComponent(appComponent)
+            .build()
+            .oneDriveServiceProvider
+    }
+
+    fun getDropboxComponent(): IDropboxServiceProvider {
+        return DaggerDropboxComponent.builder().appComponent(appComponent)
+            .build()
+            .dropboxServiceProvider
     }
 
 }
+
+val Context.accountOnline: CloudAccount?
+    get() = when (this) {
+        is App -> this.appComponent.accountOnline
+        else -> this.applicationContext.appComponent.accountOnline
+    }
+
 
 val Context.appComponent: AppComponent
     get() = when (this) {
@@ -175,8 +200,61 @@ val Context.appComponent: AppComponent
         else -> this.applicationContext.appComponent
     }
 
-val Context.loginComponent: LoginComponent
+val Context.loginService: ILoginServiceProvider
     get() = when (this) {
-        is App -> this.loginComponent
-        else -> this.applicationContext.loginComponent
+        is App -> this.appComponent.loginService
+        else -> this.applicationContext.appComponent.loginService
     }
+
+val Context.oneDriveLoginService: IOneDriveLoginServiceProvider
+    get() = when (this) {
+        is App -> this.appComponent.oneDriveLoginService
+        else -> applicationContext.appComponent.oneDriveLoginService
+    }
+
+val Context.dropboxLoginService: IDropboxLoginServiceProvider
+    get() = when (this) {
+        is App -> this.appComponent.dropboxLoginService
+        else -> applicationContext.appComponent.dropboxLoginService
+    }
+
+val Context.oneDriveAuthService: IOneDriveAuthServiceProvider
+    get() = when (this) {
+        is App -> this.appComponent.oneDriveAuthService
+        else -> applicationContext.appComponent.oneDriveAuthService
+    }
+
+fun Context.api(): Api {
+    return when (this) {
+        is App -> this.getApi()
+        else -> this.applicationContext.api()
+    }
+}
+
+fun Context.webDavApi(): WebDavApi {
+    return when (this) {
+        is App -> this.getWebDavApi()
+        else -> this.applicationContext.webDavApi()
+    }
+}
+
+fun Context.getShareApi(): ShareService {
+    return when (this) {
+        is App -> this.getShareService()
+        else -> this.applicationContext.getShareApi()
+    }
+}
+
+fun Context.getOneDriveServiceProvider(): IOneDriveServiceProvider {
+    return when (this) {
+        is App -> this.getOneDriveComponent()
+        else -> this.applicationContext.getOneDriveServiceProvider()
+    }
+}
+
+fun Context.getDropboxServiceProvider(): IDropboxServiceProvider {
+    return when (this) {
+        is App -> this.getDropboxComponent()
+        else -> this.applicationContext.getDropboxServiceProvider()
+    }
+}

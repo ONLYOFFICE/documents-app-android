@@ -2,21 +2,28 @@ package app.editors.manager.ui.fragments.main
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import app.documents.core.account.CloudAccount
+import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
+import app.editors.manager.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.presenters.main.CloudAccountState
 import app.editors.manager.mvp.views.main.CloudAccountView
+import app.editors.manager.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
+import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment.Companion.newInstance
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
@@ -64,7 +71,11 @@ class CloudAccountFragment : BaseAppFragment(),
 
     private var selectedTracker: SelectionTracker<String>? = null
 
-    val selectionObserver: SelectionTracker.SelectionObserver<String> = object :
+    private val launchProfile = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        presenter.getAccounts()
+    }
+
+    private val selectionObserver: SelectionTracker.SelectionObserver<String> = object :
         SelectionTracker.SelectionObserver<String>() {
         override fun onItemStateChanged(key: String, selected: Boolean) {
             super.onItemStateChanged(key, selected)
@@ -101,11 +112,6 @@ class CloudAccountFragment : BaseAppFragment(),
     override fun onDestroyView() {
         super.onDestroyView()
         viewBinding = null
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        presenter.getAccounts()
     }
 
     override fun onAttach(context: Context) {
@@ -199,9 +205,9 @@ class CloudAccountFragment : BaseAppFragment(),
 
     private fun initRecyclerView(savedInstanceState: Bundle?) {
         (viewBinding?.accountsLayout?.layoutParams as FrameLayout.LayoutParams).setMargins(
-            resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
+            resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_left_right_padding),
             0,
-            resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
+            resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_left_right_padding),
             0
         )
 
@@ -243,6 +249,7 @@ class CloudAccountFragment : BaseAppFragment(),
 //             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //                 flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT
 //             }
+            putExtra(MainActivity.KEY_CODE, true)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         })
     }
@@ -269,7 +276,7 @@ class CloudAccountFragment : BaseAppFragment(),
             }.showDropAt(view, requireActivity())
         } else {
             AccountContextDialog.newInstance(Json.encodeToString(account), account.token)
-                .show(requireFragmentManager(), AccountContextDialog.TAG)
+                .show(parentFragmentManager, AccountContextDialog.TAG)
         }
     }
 
@@ -279,9 +286,9 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onProfileClick(account: CloudAccount?) {
-        startActivityForResult(Intent(context, ProfileActivity::class.java).apply {
+        launchProfile.launch(Intent(requireContext(), ProfileActivity::class.java).apply {
             putExtra(ProfileFragment.KEY_ACCOUNT, Json.encodeToString(account))
-        }, ProfileActivity.REQUEST_PROFILE)
+        })
     }
 
     override fun onLogOutClick() {
@@ -310,6 +317,24 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onAccountLogin(portal: String, login: String) {
         SignInActivity.showPortalSignIn(this, portal, login)
+    }
+
+    override fun onDropboxLogin() {
+        val storage = Storage(
+            ApiContract.Storage.DROPBOX,
+            Constants.DropBox.COM_CLIENT_ID,
+            Constants.DropBox.COM_REDIRECT_URL
+        )
+        showFragment(newInstance(storage), DropboxSignInFragment.TAG, false)
+    }
+
+    override fun onOneDriveLogin() {
+        val storage = Storage(
+            OneDriveUtils.ONEDRIVE_STORAGE,
+            Constants.OneDrive.COM_CLIENT_ID,
+            Constants.OneDrive.COM_REDIRECT_URL
+        )
+        showFragment(newInstance(storage), OneDriveSignInFragment.TAG, false)
     }
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {

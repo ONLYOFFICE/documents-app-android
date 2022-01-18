@@ -10,13 +10,15 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.models.login.request.RequestSignIn
 import app.documents.core.network.models.login.response.ResponseSignIn
-import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.ui.activities.login.SignInActivity.Companion.getAddAccountIntent
-import kotlinx.coroutines.*
+import app.editors.manager.ui.activities.login.PortalsActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.R as Toolkit
 
 class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthenticator(context) {
 
@@ -38,7 +40,7 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
         return Bundle().apply {
             putParcelable(
                 AccountManager.KEY_INTENT,
-                getAddAccountIntent(context, accountType, authTokenType, response)
+                PortalsActivity.getAddAccountIntent(context, accountType, authTokenType, response)
             )
         }
     }
@@ -59,7 +61,10 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
     ): Bundle {
         authTokenType?.let { tokenType ->
             options?.let { data ->
-                return if (tokenType == context.getString(R.string.account_auth_type) && data.containsKey(ACCOUNT_KEY)) {
+                return if (tokenType == context.getString(Toolkit.string.account_auth_type) && data.containsKey(
+                        ACCOUNT_KEY
+                    )
+                ) {
                     val cloudAccount = Json.decodeFromString<CloudAccount>(data.getString(ACCOUNT_KEY) ?: "")
                     getToken(cloudAccount, response, AccountUtils.getPassword(context, cloudAccount.getAccountName()))
                 } else {
@@ -78,7 +83,7 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
                     response?.onError(1, "need provider token")
                     return@async Bundle.EMPTY
                 } else {
-                    val signInResponse = App.getApp().loginComponent.loginService
+                    val signInResponse = App.getApp().appComponent.loginService
                         .signIn(
                             RequestSignIn(
                                 userName = cloudAccount.login ?: "",
@@ -105,7 +110,7 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
         }
 
     override fun getAuthTokenLabel(authTokenType: String?): String {
-        return context.getString(R.string.account_auth_type)
+        return context.getString(Toolkit.string.account_auth_type)
     }
 
     override fun updateCredentials(

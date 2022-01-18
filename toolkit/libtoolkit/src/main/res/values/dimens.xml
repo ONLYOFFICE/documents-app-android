@@ -23,7 +23,11 @@
     <item name="screen_on_boarding_layout_height" format="dimension" type="dimen">0dp</item>
 
     <dimen name="screen_auth_image_width">240dp</dimen>
-    <dimen name="screen_auth_image_height">180dp</dimen>
+    <dimen name="screen_auth_image_height">240dp</dimen>
+
+    <dimen name="screen_auth_login_accent_button_height">56dp</dimen>
+    <dimen name="screen_auth_accent_button_text_size">14sp</dimen>
+
 
     <!-- Margins/Padding -->
     <dimen name="default_margin_xxxlarge">48dp</dimen>
@@ -34,6 +38,7 @@
     <dimen name="default_margin_small">4dp</dimen>
     <dimen name="default_margin_micro">2dp</dimen>
     <dimen name="alert_dialog_start_end_margin">20dp</dimen>
+    <dimen name="passcode_keyboard_margin">80dp</dimen>
 
     <!-- Corners -->
     <dimen name="default_corner_radius_medium">8dp</dimen>
@@ -45,6 +50,7 @@
 
     <!-- Items -->
     <dimen name="item_one_line_height">48dp</dimen>
+    <dimen name="item_onehalf_line_height">64dp</dimen>
     <dimen name="item_two_line_height">72dp</dimen>
     <dimen name="item_three_line_height">96dp</dimen>
 
@@ -54,6 +60,7 @@
     <dimen name="context_popup_width">320dp</dimen>
 
     <!-- Alpha -->
+    <item name="alpha_small" format="float" type="dimen">0.87</item>
     <item name="alpha_medium" format="float" type="dimen">0.54</item>
 
     <!--Toolbar-->

@@ -15,7 +15,6 @@ import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.di.component.DaggerApiComponent
-import app.editors.manager.di.module.ApiModule
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.NewNotificationUtils
@@ -51,7 +50,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
 
         fun sendBroadcastDownloadComplete(
             id: String?, url: String?, title: String?,
-            path: String?, mime: String?
+            path: String?, mime: String?, uri: Uri?
         ) {
             val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_COMPLETE)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
@@ -59,14 +58,16 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_PATH, path)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_MIME_TYPE, mime)
+            intent.putExtra(DownloadReceiver.EXTRAS_KEY_URI, uri.toString())
             LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
         }
 
-        fun sendBroadcastUnknownError(id: String?, url: String?, title: String?) {
+        fun sendBroadcastUnknownError(id: String?, url: String?, title: String?, uri: Uri?) {
             val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
             intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
+            intent.putExtra(DownloadReceiver.EXTRAS_KEY_URI, uri.toString())
             LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
         }
 
@@ -92,11 +93,14 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
 
     private val api: Api = runBlocking(Dispatchers.Default) {
         App.getApp().appComponent.accountsDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(applicationContext, Account(account.getAccountName(), applicationContext.getString(R.string.account_type)))?.let {
+            AccountUtils.getToken(
+                applicationContext,
+                Account(account.getAccountName(), applicationContext.getString(lib.toolkit.base.R.string.account_type))
+            )?.let {
                 token = it
-                return@runBlocking DaggerApiComponent.builder().apiModule(ApiModule(it))
+                return@runBlocking DaggerApiComponent.builder()
                     .appComponent(App.getApp().appComponent)
-                    .build().getApi()
+                    .build().api
             }
         } ?: run {
             throw Error("No account")
@@ -129,7 +133,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                         object : Finish {
                             override fun onFinish() {
                                 notificationUtils.removeNotification(id.hashCode())
-                                notificationUtils.showCompleteNotification(id.hashCode(), fileName)
+                                notificationUtils.showCompleteNotification(id.hashCode(), fileName, file?.uri)
                                 sendBroadcastDownloadComplete(
                                     id,
                                     url,
@@ -137,7 +141,8 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                                     PathUtils.getPath(applicationContext, to ?: Uri.EMPTY),
                                     StringUtils.getMimeTypeFromPath(
                                         fileName ?: ""
-                                    )
+                                    ),
+                                    to
                                 )
                             }
                         },
@@ -151,14 +156,14 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                                     )
                                 } else {
                                     notificationUtils.showErrorNotification(id.hashCode(), fileName)
-                                    sendBroadcastUnknownError(id, url, fileName)
+                                    sendBroadcastUnknownError(id, url, fileName, to)
                                 }
                                 file?.delete()
                             }
                         })
                 } else {
                     notificationUtils.showErrorNotification(id.hashCode(), fileName)
-                    sendBroadcastUnknownError(id, url, fileName)
+                    sendBroadcastUnknownError(id, url, fileName, to)
                     file?.delete()
                 }
             } catch (e: IOException) {
@@ -235,7 +240,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
         responseMessage = try {
             responseBody?.string()
         } catch (e: Exception) {
-            sendBroadcastUnknownError(id, url, fileName)
+            sendBroadcastUnknownError(id, url, fileName, to)
             file?.delete()
             return
         }
@@ -251,7 +256,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                     FirebaseUtils.addCrash(e)
                 }
             } else {
-                sendBroadcastUnknownError(id, url, fileName)
+                sendBroadcastUnknownError(id, url, fileName, to)
                 file?.delete()
                 return
             }

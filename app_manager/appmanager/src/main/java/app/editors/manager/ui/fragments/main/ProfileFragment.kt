@@ -157,7 +157,6 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
                     getString(R.string.dialogs_common_cancel_button), TAG_LOGOUT
                 )
             }
-            UiUtils.setImageTint(viewBinding?.logoutItem?.itemImage ?: throw Error("Error inflate"), R.color.colorLight)
         }
     }
 
@@ -181,8 +180,8 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
             )
         )
         viewBinding?.removeItem?.itemText?.text = getString(R.string.dialog_remove_account_title)
-        viewBinding?.removeItem?.itemText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorLightRed))
-        UiUtils.setImageTint(viewBinding?.removeItem?.itemImage ?: throw Error("Error inflate"), R.color.colorLightRed)
+        viewBinding?.removeItem?.itemText?.setTextColor(ContextCompat.getColor(requireContext(), lib.toolkit.base.R.color.colorLightRed))
+        UiUtils.setImageTint(viewBinding?.removeItem?.itemImage ?: throw Error("Error inflate"), lib.toolkit.base.R.color.colorLightRed)
 
         viewBinding?.removeItem?.root?.setOnClickListener {
             showQuestionDialog(

@@ -5,18 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height">
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <ImageView
         android:id="@+id/image"
         style="@style/CommonImageView"
+        android:tint="@color/colorOnSurface"
         android:layout_width="@dimen/image_default_size"
         android:layout_height="@dimen/image_default_size"
         android:layout_marginStart="@dimen/default_margin_large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/colorGrey" />
+        tools:ignore="ContentDescription" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
         style="@style/ItemMediumBlackText"
         android:layout_width="0dp"
@@ -28,7 +29,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Title" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/text"
         style="@style/ItemSmallGreyText"
         android:layout_width="0dp"

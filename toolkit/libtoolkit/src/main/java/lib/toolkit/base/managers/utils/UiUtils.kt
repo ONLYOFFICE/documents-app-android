@@ -22,15 +22,12 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import lib.toolkit.base.BuildConfig
 import lib.toolkit.base.R
 import java.lang.ref.WeakReference
 import java.nio.IntBuffer
@@ -282,13 +279,8 @@ object UiUtils {
         val textView = view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.maxLines = 3
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            textView.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-        } else {
-            textView.gravity = Gravity.START or Gravity.CENTER_VERTICAL
-        }
+        textView.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
 
-        view.setBackgroundColor(ContextCompat.getColor(rootView.context, colorId))
         return snackbar
     }
 
@@ -297,7 +289,7 @@ object UiUtils {
         return getSnackBar(
             rootView,
             Snackbar.LENGTH_SHORT,
-            R.color.colorBlack
+            R.color.colorSurface
         )
     }
 
@@ -306,7 +298,7 @@ object UiUtils {
         return getSnackBar(
             activity.findViewById(android.R.id.content),
             Snackbar.LENGTH_SHORT,
-            R.color.colorBlack
+            R.color.colorSurface
         )
     }
 
@@ -475,11 +467,8 @@ object UiUtils {
     @JvmStatic
     fun getStatusBarHeightResource(context: Context): Int {
         return ceil(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                24
-            } else {
-                25
-            } * context.resources.displayMetrics.density
+            24
+                    * context.resources.displayMetrics.density
         ).toInt()
     }
 
@@ -503,19 +492,6 @@ object UiUtils {
     @JvmStatic
     fun pixelsToDp(pixel: Int, context: Context): Float {
         return pixel.toFloat() / (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT.toFloat())
-    }
-
-    @JvmStatic
-    fun removePaddingFromNavigationItem(view: BottomNavigationView) {
-        val menuView = view.getChildAt(0) as BottomNavigationMenuView
-
-        for (i in 0 until menuView.childCount) {
-            val item = menuView.getChildAt(i) as BottomNavigationItemView
-            val activeLabel = item.findViewById<View>(R.id.largeLabel)
-            if (activeLabel is TextView) {
-                activeLabel.setPadding(0, 0, 0, 0)
-            }
-        }
     }
 
     @JvmStatic
@@ -629,7 +605,8 @@ object UiUtils {
         description: String? = null,
         acceptListener: (value: String) -> Unit,
         acceptTitle: String? = "Ok",
-        cancelTitle: String? = "Cancel"
+        cancelTitle: String? = "Cancel",
+        requireValue: Boolean = false
     ) {
         val container = FrameLayout(context)
         val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -658,6 +635,7 @@ object UiUtils {
             }
             .setView(container)
             .show()
+            .apply { if (requireValue) text.requireNotEmpty(getButton(AlertDialog.BUTTON_POSITIVE)) }
 
         KeyboardUtils.showKeyboard(text)
     }
@@ -683,6 +661,20 @@ object UiUtils {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    fun isDarkMode(context: Context): Boolean {
+        return when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            Configuration.UI_MODE_NIGHT_NO -> false
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> false
+            else -> false
+        }
+    }
+
+    private fun EditText.requireNotEmpty(disableButton: Button) {
+        disableButton.isEnabled = text.trim().isNotEmpty()
+        doAfterTextChanged { disableButton.isEnabled = text.trim().isNotEmpty() }
     }
 
 }
@@ -713,11 +705,11 @@ class ActivityLayoutListener : ViewTreeObserver.OnGlobalLayoutListener {
     var activityBottomPadding: Int = 0
         private set
 
-    private var mWeakActivity: WeakReference<Activity>? = null
-    private var mWeakListener: WeakReference<OnActivityChangeListener>? = null
+    private var weakActivity: WeakReference<Activity>? = null
+    private var weakListener: WeakReference<OnActivityChangeListener>? = null
 
     override fun onGlobalLayout() {
-        mWeakActivity?.get()?.let { activity ->
+        weakActivity?.get()?.let { activity ->
             val screenSize = Point()
             activity.windowManager.defaultDisplay.getRealSize(screenSize)
 
@@ -732,43 +724,44 @@ class ActivityLayoutListener : ViewTreeObserver.OnGlobalLayoutListener {
             activityTopPadding = activityVisibleRect.top
             activityBottomPadding = screenSize.y - activityVisibleRect.bottom
 
-            mWeakListener?.get()?.onActivityChangeSize(
+            weakListener?.get()?.onActivityChangeSize(
                 activityTotalHeight,
                 activityVisibleHeight,
                 activityTopPadding,
                 activityBottomPadding
             )
-            mWeakListener?.get()?.onFinishDrawingActivity()
+            weakListener?.get()?.onFinishDrawingActivity()
         }
     }
 
     fun setActivity(activity: Activity) {
-        mWeakActivity = WeakReference(activity)
+        weakActivity = WeakReference(activity)
         activity.window.decorView.apply {
             viewTreeObserver.addOnGlobalLayoutListener(this@ActivityLayoutListener)
         }
     }
 
     fun removeActivity() {
-        mWeakActivity?.get()?.apply {
+        weakActivity?.get()?.apply {
             window.decorView.apply {
                 viewTreeObserver.removeOnGlobalLayoutListener(this@ActivityLayoutListener)
             }
         }
-        mWeakActivity = null
+        weakActivity = null
     }
 
     fun setListener(listener: OnActivityChangeListener) {
-        mWeakListener = WeakReference(listener)
+        weakListener = WeakReference(listener)
     }
 
     fun removeListener() {
-        mWeakListener = null
+        weakListener = null
     }
 
 }
 
-class SlidesLinearLayoutManager(context: Context, orientation: Int, reverseLayout: Boolean) : LinearLayoutManager(context, orientation, reverseLayout) {
+class SlidesLinearLayoutManager(context: Context, orientation: Int, reverseLayout: Boolean) :
+    LinearLayoutManager(context, orientation, reverseLayout) {
 
     private val SCROLL_SPEED = 150f
 

@@ -1,18 +1,24 @@
 package app.editors.manager.ui.fragments.login
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.StringRes
+import androidx.fragment.app.viewModels
 import app.editors.manager.R
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginPersonalSignupBinding
 import app.editors.manager.mvp.presenters.login.PersonalSignUpPresenter
 import app.editors.manager.mvp.views.login.PersonalRegisterView
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
+import app.editors.manager.viewModels.login.RemoteUrlViewModel
 import lib.toolkit.base.managers.utils.StringUtils.isEmailValid
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
@@ -33,9 +39,16 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
     @InjectPresenter
     lateinit var personalSignUpPresenter: PersonalSignUpPresenter
 
+    private val urlsViewModel: RemoteUrlViewModel by viewModels()
+
     private var fieldsWatcher: FieldsWatcher? = null
 
     private var viewBinding: FragmentLoginPersonalSignupBinding? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        context.appComponent.inject(urlsViewModel)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,7 +69,7 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
         super.onAcceptClick(dialogs, value, tag)
         if (tag != null) {
             when (tag) {
-                TAG_DIALOG_INFO -> activity!!.finish()
+                TAG_DIALOG_INFO -> requireActivity().finish()
             }
         }
     }
@@ -120,6 +133,12 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
         showKeyboard(viewBinding?.loginPersonalPortalEmailEdit)
         viewBinding?.loginPersonalSignupButton?.isEnabled = false
         setMessage(R.string.login_personal_signup_edit_info, false)
+        urlsViewModel.remoteUrls.observe(viewLifecycleOwner) { text: Spanned? ->
+            text?.let {
+                viewBinding?.termsTextView?.movementMethod = LinkMovementMethod.getInstance()
+                viewBinding?.termsTextView?.text = text
+            }
+        }
     }
 
     private fun initListeners() {
@@ -136,7 +155,7 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
 
     private fun setMessage(message: String?, isError: Boolean) {
         viewBinding?.loginPersonalPortalEmailLayout?.apply {
-            setErrorTextAppearance(if (isError) R.style.TextInputErrorRed else R.style.TextInputErrorGrey)
+            setErrorTextAppearance(if (isError) lib.toolkit.base.R.style.TextInputErrorRed else lib.toolkit.base.R.style.TextInputErrorGrey)
             error = message
         }
     }
@@ -148,7 +167,7 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
     private inner class FieldsWatcher : BaseWatcher() {
         override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
             viewBinding?.loginPersonalPortalEmailLayout?.apply {
-                setErrorTextAppearance(R.style.TextInputErrorGrey)
+                setErrorTextAppearance(lib.toolkit.base.R.style.TextInputErrorGrey)
                 error = getString(R.string.login_personal_signup_edit_info)
             }
             val email = viewBinding?.loginPersonalPortalEmailEdit?.text.toString()

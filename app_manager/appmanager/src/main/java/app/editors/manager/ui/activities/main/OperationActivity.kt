@@ -10,8 +10,10 @@ import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityOperationBinding
+import app.editors.manager.dropbox.ui.fragments.operations.DocsDropboxOperationFragment
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
+import app.editors.manager.onedrive.ui.fragments.operations.DocsOneDriveOperationFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
@@ -49,6 +51,14 @@ class OperationActivity : BaseAppActivity(){
         fun showMove(fragment: Fragment, explorer: Explorer) {
             val intent = Intent(fragment.context, OperationActivity::class.java)
             intent.putExtra(TAG_OPERATION_TYPE, OperationType.MOVE)
+            intent.putExtra(TAG_OPERATION_EXPLORER, explorer)
+            fragment.startActivityForResult(intent, REQUEST_ACTIVITY_OPERATION)
+        }
+
+        @JvmStatic
+        fun showRestore(fragment: Fragment, explorer: Explorer) {
+            val intent = Intent(fragment.context, OperationActivity::class.java)
+            intent.putExtra(TAG_OPERATION_TYPE, OperationType.RESTORE)
             intent.putExtra(TAG_OPERATION_EXPLORER, explorer)
             fragment.startActivityForResult(intent, REQUEST_ACTIVITY_OPERATION)
         }
@@ -108,9 +118,13 @@ class OperationActivity : BaseAppActivity(){
                                 )
                             ), null
                         )
+                    } else if(account.isOneDrive) {
+                        showFragment(DocsOneDriveOperationFragment.newInstance(), null)
+                    } else if(account.isDropbox) {
+                        showFragment(DocsDropboxOperationFragment.newInstance(), null)
                     } else {
                         if (account.portal?.contains(ApiContract.PERSONAL_SUBDOMAIN) == true) {
-                            showFragment(DocsCloudOperationFragment.newInstance(Json.encodeToString(account), ApiContract.SectionType.CLOUD_USER), null)
+                            showFragment(DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER), null)
                         } else {
                             showFragment(DocsOperationSectionFragment.newInstance(Json.encodeToString(account)), null)
                         }
@@ -134,6 +148,7 @@ class OperationActivity : BaseAppActivity(){
         when (actionOperationType) {
             OperationType.COPY -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_copy_button)
             OperationType.MOVE -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_move_button)
+            OperationType.RESTORE -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_restore_button)
             else -> {
             }
         }

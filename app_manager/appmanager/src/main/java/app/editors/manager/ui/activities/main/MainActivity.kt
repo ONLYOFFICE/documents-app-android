@@ -4,23 +4,27 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
+import app.editors.manager.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
+import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.viewModels.main.RecentViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewInfo
@@ -31,7 +35,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.PermissionUtils
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.views.animation.collapse
@@ -54,7 +57,7 @@ interface IMainActivity {
 }
 
 
-class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.OnNavigationItemSelectedListener,
+class MainActivity : BaseAppActivity(), MainActivityView,
     BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity {
 
     companion object {
@@ -62,26 +65,31 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         val TAG: String = MainActivity::class.java.simpleName
 
         private const val ACCOUNT_KEY = "ACCOUNT_KEY"
+        private const val URL_KEY = "url"
+        const val KEY_CODE = "code"
 
-        @JvmStatic
-        fun show(context: Context) {
+        fun show(context: Context, isCode: Boolean? = true) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                isCode?.let { putExtra(KEY_CODE, isCode) }
             })
-        }
-
-        @JvmStatic
-        fun getIntent(context: Context): Intent {
-            return Intent(context, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            }
         }
     }
 
     @InjectPresenter
     lateinit var presenter: MainActivityPresenter
 
+    private val recentViewModel: RecentViewModel by viewModels()
     private lateinit var viewBinding: ActivityMainBinding
+
+    private val navigationListener: (item: MenuItem) -> Boolean = { item ->
+        if (presenter.isDialogOpen) {
+            false
+        } else {
+            presenter.navigationItemClick(item.itemId)
+            true
+        }
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -123,6 +131,13 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
                 }
                 return
             }
+        }
+
+        if (isNotification()) {
+            intent?.extras?.getString(URL_KEY)?.let {
+                showBrowser(it)
+            }
+            return
         }
 
         var fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
@@ -167,7 +182,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
                     }
                 }
                 REQUEST_ACTIVITY_PORTAL -> {
-                    presenter.init()
+                    presenter.init(true)
                 }
             }
             if (data != null && data.extras != null) {
@@ -196,10 +211,18 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         initToolbar()
         setAppBarStates()
         checkState(savedInstanceState)
+
+        if (isNotification()) {
+            intent.extras?.getString(URL_KEY)?.let {
+                showBrowser(it)
+            }
+        }
+        recentViewModel.isRecent.observe(this) { recents ->
+            viewBinding.bottomNavigation.menu.getItem(0).isEnabled = recents.isNotEmpty()
+        }
     }
 
     private fun initViews() {
-        UiUtils.removePaddingFromNavigationItem(viewBinding.bottomNavigation)
         viewBinding.appFloatingActionButton.visibility = View.GONE
         viewBinding.appFloatingActionButton.setOnClickListener { onFloatingButtonClick() }
     }
@@ -220,10 +243,18 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
             viewBinding.appBarToolbar.bind(Json.decodeFromString(it.getString(ACCOUNT_KEY) ?: ""))
         } ?: run {
             presenter.init()
-            viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+            accountOnline?.let {
+                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+            } ?: run {
+                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
+            }
         }
-        viewBinding.bottomNavigation.setOnNavigationItemSelectedListener(this)
-        presenter.checkOnBoarding()
+        viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
+        if (intent.extras?.containsKey(KEY_CODE) == true) {
+            presenter.checkPassCode(true)
+        } else {
+            presenter.checkPassCode()
+        }
     }
 
     private fun setAppBarStates() {
@@ -295,13 +326,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
         showCloudFragment(account = account, fileData = fileData)
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        return if (presenter.isDialogOpen) {
-            false
-        } else {
-            presenter.navigationItemClick(item.itemId)
-            true
-        }
+    override fun onCodeActivity() {
+        PasscodeActivity.show(this, true)
+        finish()
     }
 
     override fun showActionButton(isShow: Boolean) {
@@ -359,11 +386,15 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
     }
 
     override fun onQuestionDialog(title: String, tag: String, accept: String, cancel: String, question: String?) {
-        showQuestionDialog(title, tag, accept, cancel, question)
+        viewBinding.root.postDelayed({
+            showQuestionDialog(title, tag, accept, cancel, question)
+        }, 150)
     }
 
     override fun onShowEditMultilineDialog(title: String, hint: String, accept: String, cancel: String, tag: String) {
-        showEditMultilineDialog(title, hint, accept, cancel, tag)
+        viewBinding.root.postDelayed({
+            showEditMultilineDialog(title, hint, accept, cancel, tag)
+        }, 150)
     }
 
     override fun onShowPlayMarket(releaseId: String) {
@@ -440,8 +471,10 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
     }
 
     private fun showOnDeviceFragment() {
-        supportFragmentManager.findFragmentByTag(DocsOnDeviceFragment.TAG)?.let {
-            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
+        supportFragmentManager.findFragmentByTag(DocsOnDeviceFragment.TAG)?.let { fragment ->
+            if (fragment is DocsOnDeviceFragment && fragment.isActivePage) {
+                fragment.showRoot()
+            }
         } ?: run {
             FragmentUtils.showFragment(supportFragmentManager, DocsOnDeviceFragment.newInstance(), R.id.frame_container)
         }
@@ -457,10 +490,19 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
 
     private fun showOnCloudFragment(account: CloudAccount? = null) {
         account?.let {
-            if (it.isWebDav) {
-                showWebDavFragment(it)
-            } else {
-                showCloudFragment(account)
+            when {
+                it.isWebDav -> {
+                    showWebDavFragment(it)
+                }
+                it.isOneDrive -> {
+                    showOneDriveFragment(account)
+                }
+                it.isDropbox -> {
+                    showDropboxFragment(account)
+                }
+                else -> {
+                    showCloudFragment(account)
+                }
             }
         } ?: run {
             FragmentUtils.showFragment(
@@ -492,6 +534,30 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
             FragmentUtils.showFragment(
                 supportFragmentManager,
                 MainPagerFragment.newInstance(Json.encodeToString(account), fileData),
+                R.id.frame_container
+            )
+        }
+    }
+
+    private fun showOneDriveFragment(account: CloudAccount) {
+        supportFragmentManager.findFragmentByTag(DocsOneDriveFragment.TAG)?.let {
+            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
+        } ?: run {
+            FragmentUtils.showFragment(
+                supportFragmentManager,
+                DocsOneDriveFragment.newInstance(Json.encodeToString(account)),
+                R.id.frame_container
+            )
+        }
+    }
+
+    private fun showDropboxFragment(account: CloudAccount) {
+        supportFragmentManager.findFragmentByTag(DocsDropboxFragment.TAG)?.let {
+            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
+        } ?: run {
+            FragmentUtils.showFragment(
+                supportFragmentManager,
+                DocsDropboxFragment.newInstance(Json.encodeToString(account)),
                 R.id.frame_container
             )
         }
@@ -539,5 +605,8 @@ class MainActivity : BaseAppActivity(), MainActivityView, BottomNavigationView.O
             viewBinding.appBarTabs.collapse()
         }
     }
+
+    private fun isNotification(): Boolean =
+        intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) == true && intent.extras?.containsKey(URL_KEY) == true
 
 }

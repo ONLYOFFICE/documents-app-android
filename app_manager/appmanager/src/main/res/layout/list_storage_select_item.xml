@@ -5,11 +5,12 @@
     android:id="@+id/storage_item_layout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/screen_storage_height"
-    android:background="?attr/selectableItemBackground"
+    android:background="@color/colorSurface"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <ImageView
         android:id="@+id/storage_item_image"
         style="@style/AlphaImageView"
         android:layout_width="@dimen/image_size"
@@ -19,9 +20,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/storage_item_title"
         style="@style/ItemLargeText"
         android:layout_width="0dp"

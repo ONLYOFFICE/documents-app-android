@@ -20,16 +20,14 @@
     <string name="auth_header_screen_1">Configure um aplicativo para gerar os códigos de autenticação</string>
     <string name="auth_header_screen_2">Inicie o aplicativo Google Authenticator</string>
     <string name="auth_header_screen_3">Adicione uma chave secreta</string>
-    <string name="auth_header_screen_4">Copie o código</string>
     <string name="auth_info_screen_1">Configure um aplicativo para gerar os códigos para o acesso ao portal (por ex., Google Authenticator) para continuar o trabalho no portal</string>
     <string name="auth_info_screen_2">Execute o aplicativo e toque no novo ícone de conta</string>
     <string name="auth_info_screen_3">Copie a chave e a cole no aplicativo Google Authenticator</string>
-    <string name="auth_info_screen_4">Copie o código gerado pelo aplicativo Google Authenticator e o insira no campo de entrada</string>
     <string name="bottom_sheet_cloud_title">Nuvens</string>
     <string name="bottom_sheet_portal_title">Portal</string>
-    <string name="chooser_activity_not_found">Não foi possível encontrar nenhum aplicativo para esta ação...</string>
-    <string name="chooser_email_client">Escolha o cliente de e-mail...</string>
-    <string name="chooser_web_browser">Escolha o navegador...</string>
+    <string name="chooser_activity_not_found">Não foi possível encontrar nenhum aplicativo para esta ação…</string>
+    <string name="chooser_email_client">Escolha o cliente de e-mail…</string>
+    <string name="chooser_web_browser">Escolha o navegador…</string>
     <string name="countries_codes_title">Selecione o país</string>
     <string name="device_path_file_error">Este arquivo não existe.</string>
     <string name="device_trash_files_restore">Restaurar</string>
@@ -78,8 +76,8 @@
     <string name="dialogs_question_share_remove">Remova o item selecionado da lista?</string>
     <string name="dialogs_sign_in_portal_header_text">Entrar no portal</string>
     <string name="dialogs_sign_in_register_portal">Registrar no portal</string>
-    <string name="dialogs_wait_title">Operação em progresso...</string>
-    <string name="dialogs_wait_title_storage">Conectando armazenamento...</string>
+    <string name="dialogs_wait_title">Operação em progresso…</string>
+    <string name="dialogs_wait_title_storage">Conectando armazenamento…</string>
     <string name="download_manager_cancel">Download cancelado</string>
     <string name="download_manager_complete">Download completo</string>
     <string name="download_manager_error">Erro no download</string>
@@ -124,7 +122,6 @@
     <string name="fragment_on_device_title">No dispositivo</string>
     <string name="fragment_profile_title">Perfil</string>
     <string name="fragment_recent_title">Recente</string>
-    <string name="item_owner_self">Me</string>
     <string name="list_action_doc">Documento de texto</string>
     <string name="list_action_folder">Pasta</string>
     <string name="list_action_photo">Tirar foto</string>
@@ -163,7 +160,7 @@
     <string name="login_api_init_error">Erro de inicialização</string>
     <string name="login_api_init_portal_error">Erro de sintaxe no nome do portal</string>
     <string name="login_api_portal_name">Nome do portal errado. Exemplo: example.onlyoffice.com</string>
-    <string name="login_api_portal_name_content">Nome do portal deve consistir em A-Z, a-z, 0-9</string>
+    <string name="login_api_portal_name_content">Nome do portal deve consistir em A–Z, a–z, 0–9</string>
     <string name="login_api_portal_name_length">Nome do portal deve consistir em pelo menos 6 caracteres</string>
     <string name="login_create_portal_address_hint">Endereço do portal</string>
     <string name="login_create_portal_email_hint">E-mail</string>
@@ -227,7 +224,6 @@
     <string name="navigation_drawer_menu_about">Sobre</string>
     <string name="navigation_drawer_menu_add_account">Adicionar conta</string>
     <string name="navigation_drawer_menu_common">Documentos comuns</string>
-    <string name="navigation_drawer_menu_feedback">Feedback</string>
     <string name="navigation_drawer_menu_help">Ajuda</string>
     <string name="navigation_drawer_menu_logout">Sair</string>
     <string name="navigation_drawer_menu_my">Meus documentos</string>
@@ -268,7 +264,7 @@
     <string name="placeholder_access_denied">Acesso negado</string>
     <string name="placeholder_connection">Erro de conexão</string>
     <string name="placeholder_empty">Pasta vazia</string>
-    <string name="placeholder_loading_files">Carregando arquivos...</string>
+    <string name="placeholder_loading_files">Carregando arquivos…</string>
     <string name="placeholder_media_error">Incapaz de carregar mídia</string>
     <string name="placeholder_no_groups">Nenhum grupo</string>
     <string name="placeholder_no_subfolders">Nenhuma subpasta</string>
@@ -345,10 +341,10 @@
     <string name="toolbar_menu_main_options">Opções</string>
     <string name="toolbar_menu_main_remove_from_list">Remover da lista</string>
     <string name="toolbar_menu_main_rename">Renomear</string>
-    <string name="toolbar_menu_main_select">Selecionar...</string>
+    <string name="toolbar_menu_main_select">Selecionar…</string>
     <string name="toolbar_menu_main_select_all">Selecionar tudo</string>
     <string name="toolbar_menu_main_share">Compartilhar</string>
-    <string name="toolbar_menu_search_hint">Busca...</string>
+    <string name="toolbar_menu_search_hint">Busca…</string>
     <string name="toolbar_menu_search_result">Resultado da busca</string>
     <string name="toolbar_menu_sort_asc">Ascendente</string>
     <string name="toolbar_menu_sort_by">Ordenar por</string>
@@ -362,9 +358,6 @@
     <string name="toolbar_menu_main_open">Abrir</string>
     <string name="trash_dialog_empty_title">Esvaziar lixeira?</string>
     <string name="trash_popup_delete">EXCLUIR definitivamente</string>
-    <string name="trash_popup_move">Mover para</string>
-    <string name="trash_snackbar_move_button">MOVER</string>
-    <string name="trash_snackbar_move_text">Você pode mover arquivos da LIXEIRA</string>
     <string name="upload_error_wifi">Você pode fazer upload apenas quando Wi-Fi estiver habilitada</string>
     <string name="upload_manager_cancel">Upload cancelado</string>
     <string name="upload_manager_complete">Upload completo</string>
@@ -429,4 +422,50 @@
     <string name="download_manager_archiving_progress">Criar arquivo morto</string>
     <string name="download_manager_exceed_size_100">Excede o tamanho de arquivo máximo (100 MB)</string>
     <string name="download_manager_exceed_size_25">Excede o tamanho de arquivo máximo (25 MB)</string>
+    <string name="snackbar_undo">DESFAZER</string>
+    <string name="errors_server_auth_too_many_attempts">Muitas tentativas. Tente novamente mais tarde</string>
+    <string name="navigation_drawer_menu_feedback">Feedback e suporte</string>
+    <string name="share_snackbar_remove_user">Usuário foi removido</string>
+    <string name="share_group_admin">Administrador</string>
+    <string name="share_group_everyone">Todos</string>
+    <string name="storage_onedrive_error_opened">O arquivo está aberto no portal</string>
+    <string name="storage_onedrive_error_exist">Arquivo com o mesmo nome já existe nesta pasta</string>
+    <string name="operation_panel_restore_button">Restaurar aqui</string>
+    <string name="trash_snackbar_move_text">Você pode restaurar arquivos da LIXEIRA</string>
+    <string name="trash_snackbar_move_button">RESTAURAR</string>
+    <string name="trash_popup_move">Restaurar para</string>
+    <string name="on_boarding_back_button">VOLTAR</string>
+    <string name="auth_header_screen_4">Digite o código</string>
+    <string name="auth_info_screen_4">Digite o código de seu aplicativo autenticador para o campo de entrada</string>
+    <string name="auth_step_title">Passo %1$d de %2$d</string>
+    <string name="auth_install_button">Instalar</string>
+    <string name="auth_confirm_button">Confirmar</string>
+    <string name="auth_clipboard_key_copied">Chave copiada para a área de transferência</string>
+    <string name="auth_edit_hint">Código</string>
+    <string name="app_settings_security">Segurança</string>
+    <string name="app_settings_passcode">Bloqueio por código de acesso</string>
+    <string name="app_settings_disable">Desabilitar</string>
+    <string name="app_settings_enable">Habilitar</string>
+    <string name="app_Settings_passcode_enable">Habilitar código de acesso</string>
+    <string name="app_settings_passcode_change">Alterar código de acesso</string>
+    <string name="app_settings_passcode_fingerprint">Usar impressão digital para desbloquear</string>
+    <string name="app_settings_passcode_enter_title">Digite um código de acesso</string>
+    <string name="app_settings_passscode_enter_full_title">Digite um código de acesso para desbloquear o aplicativo</string>
+    <string name="app_settings_passcode_enter_subtitle">Escolha um código de acesso para desbloquear o aplicativo</string>
+    <string name="app_settings_passcode_confirm_title">Confirmar código de acesso</string>
+    <string name="app_settings_passcode_confirm_subtitle">Digite o código de acesso mais uma vez</string>
+    <string name="app_settings_passcode_confirm_error">Senhas não correspondem</string>
+    <string name="app_settings_passcode_change_disable_title">Digite seu código de acesso atual</string>
+    <string name="app_settings_passcode_change_disable_error">Códigos de acesso incorretos inseridos</string>
+    <string name="app_settings_passcode_description">- este é o código solicitado no início do aplicativo.\n\nTenha atenção! Se você se esquecer da senha, será necessário remover ou reinstalar o aplicativo. Todos os documentos no dispositivo serão perdidos.</string>
+    <string name="app_settings_passcode_fingerprint_title">Acesso ao Documents</string>
+    <string name="item_owner_self">Me</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           Ao continuar, você concorda com a
+            <a href="%1$s">Política de privacidade</a>
+            e com os
+            <a href="%2$s">Termos de serviço</a>
+        ]]>
+    </string>
 </resources>

@@ -1,148 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
+    android:background="@color/colorBackground"
     android:fillViewport="true">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/auth_page_step"
+            style="@style/AuthTextViewSecond"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:text="@string/auth_step_title"
+            android:textSize="@dimen/screen_on_boarding_header_text_size"
+            app:layout_constraintBottom_toTopOf="@+id/auth_page_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Step" />
 
-            <FrameLayout
-                android:layout_width="@dimen/screen_auth_image_width"
-                android:layout_height="@dimen/screen_auth_image_height"
-                android:layout_gravity="start|center"
-                android:layout_marginStart="24dp">
+        <ImageView
+            android:id="@+id/auth_page_image"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/screen_auth_image_height"
+            android:src="@drawable/drawable_image_auth_screen_4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/auth_page_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            card_view:ignore="ContentDescription" />
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    card_view:cardCornerRadius="4dp">
+        <LinearLayout
+            android:id="@+id/auth_page_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@+id/auth_page_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/auth_page_image"
+            app:layout_constraintTop_toTopOf="@+id/auth_page_image">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/auth_page_image"
-                        style="@style/CommonImageView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="bottom"
-                        android:scaleType="fitXY" />
-                </androidx.cardview.widget.CardView>
-            </FrameLayout>
-
-            <LinearLayout
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/auth_page_header"
+                style="@style/AuthTextView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
+                android:layout_marginTop="@dimen/default_margin_xlarge"
+                android:gravity="start"
+                android:text="@string/auth_header_screen_1"
+                android:textSize="@dimen/screen_on_boarding_header_text_size"
+                tools:text="Header" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/auth_page_header"
-                    style="@style/AuthTextView"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/auth_secret_key_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
+                android:layout_marginTop="@dimen/screen_margin_large"
+                app:boxBackgroundColor="@color/colorBackground"
+                app:endIconDrawable="@drawable/drawable_ic_on_boarding_copy"
+                app:endIconMode="custom">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/auth_secret_key_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/screen_on_boarding_image_horizontal_margin"
-                    android:layout_marginTop="28dp"
-                    android:layout_marginEnd="@dimen/screen_on_boarding_image_horizontal_margin"
-                    android:layout_marginBottom="24dp"
-                    android:gravity="start"
-                    android:textSize="@dimen/screen_on_boarding_header_text_size"
-                    tools:text="Header" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/auth_page_info"
-                    style="@style/AuthTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/screen_on_boarding_image_horizontal_margin"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="@dimen/screen_on_boarding_image_horizontal_margin"
-                    android:layout_marginBottom="24dp"
-                    android:gravity="start"
-                    android:textSize="@dimen/screen_on_boarding_info_text_size"
-                    tools:text="Info" />
-
-
-                <app.editors.manager.ui.views.edits.BaseEditText
-                    android:id="@+id/auth_code_edit"
-                    style="@style/MediumEditText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginStart="@dimen/screen_on_boarding_image_horizontal_margin"
-                    android:layout_marginTop="8dp"
-                    android:ems="9"
-                    android:gravity="center"
+                    android:hint="@string/auth_edit_hint"
                     android:imeOptions="actionDone"
-                    android:inputType="textNoSuggestions|textVisiblePassword"
-                    android:letterSpacing="1"
-                    android:singleLine="true"
-                    android:text="−−−−−−"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:inputType="textNoSuggestions"
+                    android:maxLines="1"
+                    android:textSize="@dimen/screen_on_boarding_info_text_size" />
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/auth_secret_key_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginStart="@dimen/screen_on_boarding_image_horizontal_margin"
-                    android:orientation="horizontal">
+            </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/screen_top_bottom_padding"
-                        android:textAlignment="center">
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/auth_page_info"
+                style="@style/AuthTextViewSecond"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
+                android:layout_marginTop="@dimen/default_margin_medium"
+                android:gravity="start"
+                android:text="@string/auth_info_screen_1"
+                android:textSize="@dimen/screen_on_boarding_info_text_size"
+                tools:text="Info" />
 
-                        <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/auth_secret_key_edit_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:enabled="false"
-                            android:focusable="false"
-                            android:gravity="center"
-                            android:imeOptions="actionNone"
-                            android:importantForAutofill="noExcludeDescendants"
-                            android:inputType="text"
-                            android:maxLines="1"
-                            android:textAlignment="center"
-                            card_view:ignore="UnusedAttribute" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <androidx.appcompat.widget.AppCompatImageButton
-                        android:id="@+id/auth_copy_button"
-                        android:layout_width="40dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="16dp"
-                        android:background="?attr/selectableItemBackground"
-                        android:src="@drawable/ic_list_context_copy"
-                        android:tint="@color/colorAccent" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/confirm_button"
-                    style="@style/FixedAccentButtons"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginStart="@dimen/screen_on_boarding_image_horizontal_margin"
-                    android:layout_marginTop="16dp"
-                    tools:text="Install" />
-            </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/confirm_button"
+                style="@style/AuthAccentButton"
+                android:layout_width="match_parent"
+                android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
+                tools:text="Install" />
 
         </LinearLayout>
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>
 

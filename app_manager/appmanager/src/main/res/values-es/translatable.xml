@@ -20,11 +20,9 @@
     <string name="auth_header_screen_1">Establezca la autenticación de dos factores</string>
     <string name="auth_header_screen_2">Lance una aplicación de autenticación</string>
     <string name="auth_header_screen_3">Añada una clave secreta</string>
-    <string name="auth_header_screen_4">Copie el código</string>
     <string name="auth_info_screen_1">Instale una aplicación de autenticación para generar códigos de acceso (por ejemplo, Google Authenticator, Authy) para seguir trabajando con su portal.</string>
     <string name="auth_info_screen_2">Ejecute la aplicación y toca el icono de la nueva cuenta</string>
     <string name="auth_info_screen_3">Copie la clave y péguela en su aplicación de autentificación</string>
-    <string name="auth_info_screen_4">Copie el código desde su aplicación de autentificación e insértelo debajo</string>
     <string name="bottom_sheet_cloud_title">Nubes</string>
     <string name="bottom_sheet_portal_title">Portal</string>
     <string name="chooser_activity_not_found">No se encontró ninguna aplicación para esta acción...</string>
@@ -126,7 +124,6 @@
     <string name="fragment_on_device_title">En dispositivo</string>
     <string name="fragment_profile_title">Perfil</string>
     <string name="fragment_recent_title">Reciente</string>
-    <string name="item_owner_self">Yo</string>
     <string name="list_action_doc">Documento de texto</string>
     <string name="list_action_folder">Carpeta</string>
     <string name="list_action_photo">Tomar foto</string>
@@ -229,7 +226,6 @@
     <string name="navigation_drawer_menu_about">Acerca de</string>
     <string name="navigation_drawer_menu_add_account">Añadir cuenta</string>
     <string name="navigation_drawer_menu_common">Documentos comunes</string>
-    <string name="navigation_drawer_menu_feedback">Comentarios</string>
     <string name="navigation_drawer_menu_help">Ayuda</string>
     <string name="navigation_drawer_menu_logout">Cerrar sesión</string>
     <string name="navigation_drawer_menu_my">Mis documentos</string>
@@ -364,9 +360,6 @@
     <string name="toolbar_menu_main_open">Abrir</string>
     <string name="trash_dialog_empty_title">¿Vaciar Papelera?</string>
     <string name="trash_popup_delete">Eliminar para siempre</string>
-    <string name="trash_popup_move">Mover a</string>
-    <string name="trash_snackbar_move_button">MOVER</string>
-    <string name="trash_snackbar_move_text">Usted puede mover archivos de la PAPELERA</string>
     <string name="upload_error_wifi">Solamente puede subir archivos cuando está conectado a una red Wi-Fi</string>
     <string name="upload_manager_cancel">Subida cancelada</string>
     <string name="upload_manager_complete">Carga completa</string>
@@ -429,5 +422,51 @@
     <string name="download_manager_archiving_progress">Creando archivo</string>
     <string name="download_manager_exceed_size_100">Excede el tamaño máximo de archivo (100MB)</string>
     <string name="download_manager_exceed_size_25">Excede el tamaño máximo de archivo (25MB)</string>
+    <string name="snackbar_undo">DESHACER</string>
+    <string name="errors_server_auth_too_many_attempts">Demasiados intentos. Vuelva a intentarlo más tarde</string>
+    <string name="navigation_drawer_menu_feedback">Feedback y soporte</string>
+    <string name="share_snackbar_remove_user">Se ha quitado al usuario</string>
+    <string name="share_group_admin">Administrador</string>
+    <string name="share_group_everyone">Todos</string>
+    <string name="storage_onedrive_error_opened">El archivo está abierto en el portal</string>
+    <string name="storage_onedrive_error_exist">El archivo con el mismo nombre ya existe en esta carpeta</string>
+    <string name="operation_panel_restore_button">Restaurar aquí</string>
+    <string name="trash_snackbar_move_text">Usted puede restaurar los archivos de la papelera</string>
+    <string name="trash_snackbar_move_button">RESTAURAR</string>
+    <string name="trash_popup_move">Restaurar en</string>
+    <string name="on_boarding_back_button">ATRÁS</string>
+    <string name="auth_header_screen_4">Escriba el código</string>
+    <string name="auth_info_screen_4">Escriba el código de su aplicación de autenticación en el campo de entrada</string>
+    <string name="auth_step_title">Paso %1$d de %2$d</string>
+    <string name="auth_install_button">Instalar</string>
+    <string name="auth_confirm_button">Confirmar</string>
+    <string name="auth_clipboard_key_copied">La clave se ha copiado en el portapapeles</string>
+    <string name="auth_edit_hint">Código</string>
+    <string name="app_settings_security">Seguridad</string>
+    <string name="app_settings_passcode">Bloqueo por código</string>
+    <string name="app_settings_disable">Deshabilitar</string>
+    <string name="app_settings_enable">Habilitar</string>
+    <string name="app_Settings_passcode_enable">Habilitar código de acceso</string>
+    <string name="app_settings_passcode_change">Cambiar código de acceso</string>
+    <string name="app_settings_passcode_fingerprint">Utilizar huella digital para desbloquear</string>
+    <string name="app_settings_passcode_enter_title">Escriba un código de acceso</string>
+    <string name="app_settings_passscode_enter_full_title">Escriba el código de acceso para desbloquear la app</string>
+    <string name="app_settings_passcode_enter_subtitle">Elija el código de acceso para desbloquear la app</string>
+    <string name="app_settings_passcode_confirm_title">Confirmar código de acceso</string>
+    <string name="app_settings_passcode_confirm_subtitle">Vuelva a escribir el código de acceso</string>
+    <string name="app_settings_passcode_confirm_error">Los códigos de acceso no coinciden</string>
+    <string name="app_settings_passcode_change_disable_title">Escriba su código de acceso actual</string>
+    <string name="app_settings_passcode_change_disable_error">Se ha introducido un código de acceso incorrecto</string>
+    <string name="app_settings_passcode_description"> - este es el código que se solicita cuando se inicia la aplicación.\n\n¡Atención! Si usted olvida el código de acceso, es necesario eliminar o reinstalar la aplicación. Todos los documentos en el dispositivo se perderán. </string>
+    <string name="app_settings_passcode_fingerprint_title">Acceso a Documentos</string>
+    <string name="item_owner_self">Yo</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           Al proceder, usted acepta la
+            <a href="%1$s">Política de privacidad</a>
+            y los
+            <a href="%2$s">Términos del servicio</a>
+        ]]>
+    </string>
 
 </resources>

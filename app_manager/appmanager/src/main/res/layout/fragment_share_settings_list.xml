@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/share_settings_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -25,6 +25,7 @@
                 android:paddingRight="0dp">
 
                 <include
+                    android:id="@+id/share_settings_header"
                     layout="@layout/include_share_settings_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -35,7 +36,6 @@
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/share_main_list_of_items"
-                        style="@style/CommonRecycleView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:clipToPadding="false"
@@ -44,6 +44,7 @@
                         android:scrollbars="none" />
 
                     <include
+                        android:id="@+id/placeholder_layout"
                         layout="@layout/include_placeholders_text"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -60,11 +61,13 @@
         android:layout_height="@dimen/default_action_bottom_size"
         android:layout_margin="@dimen/default_action_button_margin"
         android:clickable="true"
+        android:focusable="true"
         android:scaleType="center"
+        android:tint="@color/colorSurface"
         app:fabSize="normal"
         app:layout_anchor="@+id/share_settings_list_swipe_refresh"
         app:layout_anchorGravity="bottom|right|end"
         app:srcCompat="@drawable/ic_action_button_share_add"
-        android:focusable="true" />
+        tools:ignore="ContentDescription" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -5,18 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
-import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.presenters.main.DocsBasePresenter
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.main.RecentState
-import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsRecentView
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
@@ -26,32 +26,27 @@ import app.editors.manager.ui.adapters.RecentAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.RecentDiffUtilsCallback
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
-import java.util.*
 
 class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
-    companion object {
-        var TAG: String = DocsRecentFragment::class.java.simpleName
-
-        fun newInstance(): DocsRecentFragment {
-            return DocsRecentFragment()
-        }
-
-        private const val KEY_FILTER = "KEY_FILTER"
-    }
-
     @InjectPresenter
-    lateinit var presenter: DocsRecentPresenter
+    override lateinit var presenter: DocsRecentPresenter
 
     private var activity: IMainActivity? = null
     private var adapter: RecentAdapter? = null
     private var filterValue: CharSequence? = null
 
     private val recentListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
-        presenter.fileClick(recent, position)
+            Debounce.perform(1000L) {
+                presenter.fileClick(recent, position)
+            }
     }
 
     private val contextListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
@@ -63,7 +58,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 presenter.getRecentFiles()
             } else {
-                mPlaceholderViews.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
+                placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
             }
         }
     }
@@ -82,16 +77,14 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_FILTER)) {
+        if (savedInstanceState?.containsKey(KEY_FILTER) == true) {
             filterValue = savedInstanceState.getCharSequence(KEY_FILTER)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (mSearchView != null) {
-            outState.putCharSequence(KEY_FILTER, mSearchView.query)
-        }
+        outState.putCharSequence(KEY_FILTER, searchView?.query)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,14 +95,12 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         setMenuSearchEnabled(true)
-        if (mMainItem != null) {
-            mMainItem.isVisible = false
-        }
-        if (mSortItem != null) {
-            mSortItem.isVisible = true
-            mSortItem.isEnabled = true
-            mSortItem.subMenu.findItem(R.id.toolbar_sort_item_owner).isVisible = false
-            //            mSortItem.getSubMenu().findItem(R.id.toolbar_sort_item_date_update).setChecked(true);
+        mainItem?.isVisible = false
+        sortItem?.let {
+            it.isVisible = true
+            it.isEnabled = true
+            it.subMenu.findItem(R.id.toolbar_sort_item_owner).isVisible = false
+            //mSortItem.getSubMenu().findItem(R.id.toolbar_sort_item_date_update).setChecked(true);
         }
     }
 
@@ -117,15 +108,16 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             BaseActivity.REQUEST_ACTIVITY_WEB_VIEWER -> presenter.getRecentFiles()
-            REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION, REQUEST_PDF -> if (resultCode == Activity.RESULT_CANCELED) {
-                presenter.deleteTempFile()
-            } else if (resultCode == Activity.RESULT_OK) {
-                if (data!!.data != null) {
-                    if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
-                        presenter.upload(data.data, null)
+            REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION, REQUEST_PDF ->
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    presenter.deleteTempFile()
+                } else if (resultCode == Activity.RESULT_OK) {
+                    data?.data?.let {
+                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
+                            presenter.upload(it, null)
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -133,7 +125,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         super.onStateUpdateFilter(isFilter, value)
         if (isFilter) {
             activity?.setAppBarStates(false)
-            mSearchView?.setQuery(filterValue, true)
+            searchView?.setQuery(filterValue, true)
+            filterValue = ""
         } else {
             activity?.setAppBarStates(false)
             activity?.showNavigationButton(false)
@@ -141,24 +134,23 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     private fun init() {
-        activity?.setAppBarStates(false)
-        activity?.showNavigationButton(false)
-        activity?.showActionButton(false)
-        activity?.showAccount(false)
+        activity?.let { activity ->
+            activity.setAppBarStates(false)
+            activity.showNavigationButton(false)
+            activity.showActionButton(false)
+            activity.showAccount(false)
+        }
         adapter = RecentAdapter(requireContext(), recentListener, contextListener)
-
-        if (mRecyclerView != null) {
-            mRecyclerView.adapter = adapter
-            mRecyclerView.setPadding(
-                resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
-                resources.getDimensionPixelSize(R.dimen.screen_top_bottom_padding),
-                resources.getDimensionPixelSize(R.dimen.screen_left_right_padding),
-                resources.getDimensionPixelSize(R.dimen.screen_bottom_padding)
+        recyclerView?.let {
+            it.adapter = adapter
+            it.setPadding(
+                resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_left_right_padding),
+                resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_top_bottom_padding),
+                resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_left_right_padding),
+                resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_bottom_padding)
             )
         }
-        if (mSwipeRefresh != null) {
-            mSwipeRefresh.isEnabled = false
-        }
+        swipeRefreshLayout?.isEnabled = false
         if (checkReadPermission()) {
             presenter.getRecentFiles()
         }
@@ -174,8 +166,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (mMenu != null) {
-            val isAscending = mMenu!!.findItem(R.id.toolbar_sort_item_asc).isChecked
+        menu?.let { menu ->
+            val isAscending = menu.findItem(R.id.toolbar_sort_item_asc).isChecked
             when (item.itemId) {
                 R.id.toolbar_item_sort -> {
                     activity?.setAppBarStates(false)
@@ -225,6 +217,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                     adapter!!.itemList,
                     isAscending
                 )
+                else -> {}
             }
         }
         item.isChecked = true
@@ -234,34 +227,36 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun onReverseSortOrder(itemList: List<Recent>) {
         adapter?.setData(itemList)
         adapter?.notifyDataSetChanged()
-        if (mMenu?.findItem(R.id.toolbar_sort_item_desc)?.isChecked == true) {
-            mMenu?.findItem(R.id.toolbar_sort_item_asc)?.isChecked = true
-        } else {
-            mMenu?.findItem(R.id.toolbar_sort_item_desc)?.isChecked = true
+        menu?.let { menu ->
+            if (menu.findItem(R.id.toolbar_sort_item_desc)?.isChecked == true) {
+                menu.findItem(R.id.toolbar_sort_item_asc)?.isChecked = true
+            } else {
+                menu.findItem(R.id.toolbar_sort_item_desc)?.isChecked = true
+            }
         }
     }
 
     override fun updateFiles(files: List<Recent>) {
         if (files.isNotEmpty()) {
-            if (adapter?.itemList != null && mRecyclerView != null) {
+            adapter?.itemList?.let {
                 updateDiffUtils(files)
-                mRecyclerView.scrollToPosition(0)
-            } else {
+                recyclerView?.scrollToPosition(0)
+            } ?: run {
                 adapter?.setItems(files)
             }
-            mPlaceholderViews.setVisibility(false)
+            placeholderViews?.setVisibility(false)
             updateMenu(true)
         } else {
-            mPlaceholderViews.setTemplatePlaceholder(PlaceholderViews.Type.SEARCH)
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.SEARCH)
             updateMenu(false)
         }
     }
 
     private fun updateMenu(isEnable: Boolean) {
-        if (mMenu != null && mSortItem != null && mSearchItem != null && mDeleteItem != null) {
-            mSortItem.isEnabled = isEnable
-            mSearchItem.isEnabled = isEnable
-            mDeleteItem.isVisible = isEnable
+        if (menu != null && sortItem != null && searchItem != null && deleteItem != null) {
+            sortItem?.isEnabled = isEnable
+            searchItem?.isEnabled = isEnable
+            deleteItem?.isVisible = isEnable
         }
     }
 
@@ -283,15 +278,13 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     private fun getExplorer(file: CloudFile): Explorer {
-        val explorer = Explorer()
-        val files: MutableList<CloudFile> = ArrayList()
-        files.add(file)
-        explorer.files = files
-        return explorer
+        return Explorer().apply {
+            this.files = mutableListOf(file)
+        }
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        mSearchCloseButton.isEnabled = newText.isNotEmpty()
+        searchCloseButton?.isEnabled = newText.isNotEmpty()
         presenter.searchRecent(newText)
         return false
     }
@@ -302,29 +295,29 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onMoveElement(recent: Recent, position: Int) {
         adapter?.moveItem(position, 0)
-        mRecyclerView?.scrollToPosition(0)
+        recyclerView?.scrollToPosition(0)
     }
 
     override fun onContextShow(state: ContextBottomDialog.State) {
         parentFragmentManager.let {
-            mContextBottomDialog.setState(state)
-            mContextBottomDialog.show(it, ContextBottomDialog.TAG)
+            contextBottomDialog?.state = state
+            contextBottomDialog?.onClickListener = this
+            contextBottomDialog?.show(it, ContextBottomDialog.TAG)
         }
     }
 
     override fun onDeleteItem(position: Int) {
-        adapter?.removeItem(position)
+        adapter?.let { recentAdapter ->
+            recentAdapter.removeItem(position)
+            if (recentAdapter.itemCount == 0) setEmpty()
+        }
     }
 
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons) {
+    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         if (buttons == ContextBottomDialog.Buttons.DELETE) {
             presenter.deleteRecent()
         }
-        mContextBottomDialog.dismiss()
-    }
-
-    override fun getPresenter(): DocsBasePresenter<out DocsBaseView> {
-        return presenter
+        contextBottomDialog?.dismiss()
     }
 
     override fun onRender(state: RecentState) {
@@ -346,7 +339,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     private fun setEmpty() {
         setMenuVisibility(false)
-        mPlaceholderViews.setTemplatePlaceholder(PlaceholderViews.Type.EMPTY)
+        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.EMPTY)
     }
 
     override fun onOpenFile(state: OpenState) {
@@ -373,8 +366,32 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     }
 
-    override fun isWebDav(): Boolean {
-        return false
+    override val isWebDav: Boolean
+        get() = false
+
+    object Debounce {
+        var isClickable = true
+
+        fun perform(timeMillis: Long, func: () -> Unit) {
+            if (isClickable) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    func.invoke()
+                    isClickable = false
+                    delay(timeMillis)
+                    isClickable = true
+                }
+            }
+        }
+    }
+
+    companion object {
+        var TAG: String = DocsRecentFragment::class.java.simpleName
+
+        fun newInstance(): DocsRecentFragment {
+            return DocsRecentFragment()
+        }
+
+        private const val KEY_FILTER = "KEY_FILTER"
     }
 
 }

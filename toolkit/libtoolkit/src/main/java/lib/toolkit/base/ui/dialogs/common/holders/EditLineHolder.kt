@@ -1,16 +1,14 @@
 package lib.toolkit.base.ui.dialogs.common.holders
 
-import android.graphics.*
-import android.os.Build
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
 import android.text.Spanned
 import android.view.View
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textview.MaterialTextView
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -29,8 +27,8 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     private lateinit var mLayout: ConstraintLayout
     private lateinit var mEditInputLayout: TextInputLayout
-    private lateinit var mEditValueView: AppCompatEditText
-    private lateinit var mEditHintView: AppCompatEditText
+    private lateinit var mEditValueView: TextInputEditText
+    private lateinit var mEditHintView: MaterialTextView
 
     private var mEditValue: String? = null
     private var mEditHintValue: String? = null
@@ -59,7 +57,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             mLayout = findViewById(R.id.dialogCommonEditLineLayout)
             mEditInputLayout = findViewById(R.id.dialogCommonEditLineTextInputLayout)
             mEditHintView = findViewById(R.id.dialogCommonEditLineHintEdit)
-            mEditValueView = findViewById<AppCompatEditText>(R.id.dialogCommonEditLineValueEdit).apply {
+            mEditValueView = findViewById<TextInputEditText>(R.id.dialogCommonEditLineValueEdit).apply {
                 filters = arrayOf<InputFilter>(EditFilter())
             }
         }
@@ -85,7 +83,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
             if (mHintValue != null) {
                 mEditHintView.visibility = View.VISIBLE
-                mEditHintView.setText(mHintValue)
+                mEditHintView.text = mHintValue
             } else {
                 mEditHintView.visibility = View.GONE
             }
@@ -101,13 +99,13 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
                 mEditInputLayout.error = mErrorValue
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                mEditValueView.background.colorFilter =
-                    BlendModeColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), BlendMode.SRC_ATOP)
-            } else {
-                mEditValueView.background.colorFilter =
-                    PorterDuffColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), PorterDuff.Mode.SRC_ATOP)
-            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                mEditValueView.background.colorFilter =
+//                    BlendModeColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), BlendMode.SRC_ATOP)
+//            } else {
+//                mEditValueView.background.colorFilter =
+//                    PorterDuffColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), PorterDuff.Mode.SRC_ATOP)
+//            }
             mEditValueView.postDelayed({
                 KeyboardUtils.showKeyboard(mEditValueView)
             }, 100)
@@ -148,7 +146,14 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     private inner class EditFilter : BaseInputFilter() {
 
-        override fun filter(source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int): CharSequence? {
+        override fun filter(
+            source: CharSequence,
+            start: Int,
+            end: Int,
+            dest: Spanned,
+            dstart: Int,
+            dend: Int
+        ): CharSequence? {
             super.filter(source, start, end, dest, dstart, dend)
             // Hide hint
             mAcceptView.isEnabled = mResultString.trim { it <= ' ' }.isNotBlank()
@@ -160,6 +165,11 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
                 mEditInputLayout.error = mErrorValue + StringUtils.DIALOG_FORBIDDEN_SYMBOLS
                 mAcceptView.isEnabled = mResultString.length > 1
                 ""
+            } else if (StringUtils.getAllowedName(mResultString)) {
+                mErrorValue = dialog.getString(R.string.dialogs_edit_forbidden_name)
+                mEditInputLayout.error = mErrorValue
+                mAcceptView.isEnabled = false
+                null
             } else {
                 mErrorValue = null
                 mEditInputLayout.isErrorEnabled = false

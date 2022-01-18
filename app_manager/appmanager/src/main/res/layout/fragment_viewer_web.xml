@@ -12,7 +12,6 @@
         android:layout_height="match_parent">
 
         <app.editors.manager.ui.views.webview.KeyboardWebView
-            style="@style/CommonWebView"
             android:id="@+id/web_viewer_webview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -25,8 +24,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ProgressBar
-            style="@android:style/Widget.Holo.ProgressBar"
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            style="@style/Widget.MaterialComponents.CircularProgressIndicator"
             android:id="@+id/web_viewer_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

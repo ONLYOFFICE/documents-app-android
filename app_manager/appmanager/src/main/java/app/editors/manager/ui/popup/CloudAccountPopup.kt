@@ -7,7 +7,7 @@ import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudAccountPopupLayoutBinding
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.UiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.ui.dialogs.AccountContextDialog.OnAccountContextClickListener
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -58,7 +58,7 @@ class CloudAccountPopup(context: Context) : BasePopup(context, R.layout.cloud_ac
                 header.accountItemPortal.text = it.portal
                 if (it.isWebDav) {
                     header.accountItemName.visibility = View.GONE
-                    UiUtils.setWebDavImage(it.webDavProvider, header.selectableLayout.viewIconSelectableImage)
+                    ManagerUiUtils.setWebDavImage(it.webDavProvider, header.selectableLayout.viewIconSelectableImage)
                 } else {
                     loadAvatar()
                 }
@@ -105,12 +105,12 @@ class CloudAccountPopup(context: Context) : BasePopup(context, R.layout.cloud_ac
     private fun initRemoveItem() {
         viewBinding?.removeItem?.itemImage?.let {
             it.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_trash))
-            setImageTint(it, R.color.colorLightRed)
+            setImageTint(it, lib.toolkit.base.R.color.colorLightRed)
 
         }
         viewBinding?.removeItem?.itemText?.let {
             it.text = context.getString(R.string.dialog_remove_account_title)
-            it.setTextColor(ContextCompat.getColor(context, R.color.colorLightRed))
+            it.setTextColor(ContextCompat.getColor(context, lib.toolkit.base.R.color.colorLightRed))
         }
         viewBinding?.removeItem?.root?.setOnClickListener {
             clickListener?.onRemoveClick(account)
@@ -156,7 +156,7 @@ class CloudAccountPopup(context: Context) : BasePopup(context, R.layout.cloud_ac
                         AccountUtils.getToken(context, account?.getAccountName() ?: "") ?: ""
                     )
                 )
-                .apply(GlideUtils.getAvatarOptions())
+                .apply(GlideUtils.avatarOptions)
                 .into(it)
         }
     }

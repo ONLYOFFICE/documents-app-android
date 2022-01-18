@@ -8,6 +8,8 @@ import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
+import app.editors.manager.app.webDavApi
 import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
@@ -28,7 +30,6 @@ import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.receivers.ExportReceiver
 import lib.toolkit.base.managers.receivers.ExportReceiver.Companion.getFilters
 import lib.toolkit.base.managers.receivers.ExportReceiver.OnExportFile
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getSize
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FileUtils.asyncDeletePath
@@ -65,33 +66,18 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
 
     fun getProvider() {
         mFileProvider?.let {
-            CoroutineScope(Dispatchers.Default).launch {
-                accountDao.getAccountOnline()?.let {
-                    withContext(Dispatchers.Main) {
-                        getItemsById(it.webDavPath)
-                    }
-
-                }
+            mContext.accountOnline?.let {
+                getItemsById(it.webDavPath)
             }
         } ?: run {
-            CoroutineScope(Dispatchers.Default).launch {
-                accountDao.getAccountOnline()?.let { cloudAccount ->
-                    AccountUtils.getAccount(mContext, cloudAccount.getAccountName())?.let { account ->
-                        val password = AccountUtils.getPassword(mContext, account)
-                        mFileProvider = WebDavFileProvider(
-                            App.getApp().getWebDavApi(cloudAccount.login, password),
-                            WebDavApi.Providers.valueOf(cloudAccount.webDavProvider ?: "")
-                        )
-                        withContext(Dispatchers.Main) {
-                            getItemsById(cloudAccount.webDavPath)
-                        }
-                    }
-                } ?: run {
-                    viewState.onUnauthorized(mContext.getString(R.string.errors_client_unauthorized))
-                }
+            mContext.accountOnline?.let { cloudAccount ->
+                mFileProvider = WebDavFileProvider(
+                    mContext.webDavApi(),
+                    WebDavApi.Providers.valueOf(cloudAccount.webDavProvider ?: "")
+                )
+                getItemsById(cloudAccount.webDavPath)
             }
         }
-
     }
 
     override fun onFirstViewAttach() {
@@ -204,23 +190,24 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         onClickEvent(item, position)
         mIsContextClick = true
         val state = ContextBottomDialog.State()
-        state.mTitle = itemClickedTitle
-        state.mInfo = formatDate(itemClickedDate)
-        state.mIsFolder = item is CloudFolder
-        state.mIsWebDav = true
-        state.mIsTrash = isTrash
+        state.title = itemClickedTitle
+        state.info = formatDate(itemClickedDate)
+        state.isFolder = item is CloudFolder
+        state.isWebDav = true
+        state.isOneDrive = false
+        state.isTrash = isTrash
         if (!isClickedItemFile) {
-            state.mIconResId = R.drawable.ic_type_folder
+            state.iconResId = R.drawable.ic_type_folder
         } else {
-            state.mIconResId = getIconContext(
+            state.iconResId = getIconContext(
                 StringUtils.getExtensionFromPath(
                     itemClickedTitle
                 )
             )
         }
-        state.mIsPdf = isPdf
-        if (state.mIsShared && state.mIsFolder) {
-            state.mIconResId = R.drawable.ic_type_folder_shared
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
     }
@@ -296,7 +283,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             id = "$id/"
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        mUploadDisposable = mFileProvider.upload(id, uriList)
+        mUploadDisposable = mFileProvider.upload(id, uriList)!!
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ }, { throwable: Throwable? ->
@@ -306,6 +293,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 }
             }
             ) {
+                refresh()
                 deleteTempFile()
                 viewState.onDialogClose()
                 viewState.onSnackBar(mContext.getString(R.string.upload_manager_complete))

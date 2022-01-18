@@ -21,20 +21,6 @@ import moxy.presenter.InjectPresenter
 
 open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButtonFragment {
 
-    companion object {
-        val TAG: String = DocsWebDavFragment::class.java.simpleName
-
-        const val KEY_PROVIDER = "KEY_PROVIDER"
-
-        fun newInstance(provider: WebDavApi.Providers): DocsWebDavFragment {
-            return DocsWebDavFragment().apply {
-                arguments = Bundle().apply {
-                    putSerializable(KEY_PROVIDER, provider)
-                }
-            }
-        }
-    }
-
     protected var provider: WebDavApi.Providers? = null
 
     @InjectPresenter
@@ -91,7 +77,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         }
     }
 
-    override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons) {
+    override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
         super.onActionButtonClick(buttons)
         if (buttons == ActionBottomDialog.Buttons.PHOTO) {
             if (checkCameraPermission()) {
@@ -111,33 +97,26 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
         loadFiles()
-        mSwipeRefresh.isRefreshing = true
-    }
-
-    private fun loadFiles() {
-        webDavPresenter.getProvider()
-    }
-
-    private fun init() {
-        webDavPresenter.checkBackStack()
-        getArgs()
+        swipeRefreshLayout?.isRefreshing = true
     }
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        mMenu?.let {
+        menu?.let {
             it.findItem(R.id.toolbar_sort_item_owner).isVisible = false
         }
     }
 
     override fun onStateMenuSelection() {
-        mMenu?.let { menu ->
-            mMenuInflater?.inflate(R.menu.docs_select, mMenu)
-            mDeleteItem = menu.findItem(R.id.toolbar_selection_delete).setVisible(true)
-            mMoveItem = menu.findItem(R.id.toolbar_selection_move).setVisible(true)
-            mCopyItem = menu.findItem(R.id.toolbar_selection_copy).setVisible(true)
-            mDownloadItem = menu.findItem(R.id.toolbar_selection_download).setVisible(true)
-            setMenuItemTint(requireContext(), mDeleteItem, R.color.colorWhite)
+        menu?.let { menu ->
+            menuInflater?.inflate(R.menu.docs_select, this.menu)
+            deleteItem = menu.findItem(R.id.toolbar_selection_delete).apply {
+                setMenuItemTint(requireContext(), this, lib.toolkit.base.R.color.colorPrimary)
+                isVisible = true
+            }
+            moveItem = menu.findItem(R.id.toolbar_selection_move).setVisible(true)
+            copyItem = menu.findItem(R.id.toolbar_selection_copy).setVisible(true)
+            downloadItem = menu.findItem(R.id.toolbar_selection_download).setVisible(true)
             mainActivity?.showAccount(false)
         }
     }
@@ -153,10 +132,10 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     }
 
     override fun onActionDialog() {
-        mActionBottomDialog.setLocal(true)
-        mActionBottomDialog.setWebDav(true)
-        mActionBottomDialog.setOnClickListener(this)
-        mActionBottomDialog.show(requireFragmentManager(), ActionBottomDialog.TAG)
+        actionBottomDialog?.isLocal = true
+        actionBottomDialog?.isWebDav = true
+        actionBottomDialog?.onClickListener = this
+        actionBottomDialog?.show(requireFragmentManager(), ActionBottomDialog.TAG)
     }
 
     override fun setToolbarState(isVisible: Boolean) {
@@ -177,17 +156,32 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         mainActivity?.showActionButton(isShow)
     }
 
-    override fun isActivePage(): Boolean {
-        return true
+
+    override val presenter: DocsBasePresenter<out DocsBaseView?>
+        get() = webDavPresenter
+
+    override val isWebDav: Boolean?
+        get() = true
+
+    private fun loadFiles() {
+        webDavPresenter.getProvider()
     }
 
-    override fun getPresenter(): DocsBasePresenter<out DocsBaseView?> {
-        return webDavPresenter
+    private fun init() {
+        webDavPresenter.checkBackStack()
     }
 
-    override fun isWebDav(): Boolean {
-        return true
+    companion object {
+        val TAG: String = DocsWebDavFragment::class.java.simpleName
+
+        const val KEY_PROVIDER = "KEY_PROVIDER"
+
+        fun newInstance(provider: WebDavApi.Providers): DocsWebDavFragment {
+            return DocsWebDavFragment().apply {
+                arguments = Bundle(1).apply {
+                    putSerializable(KEY_PROVIDER, provider)
+                }
+            }
+        }
     }
-
-
 }

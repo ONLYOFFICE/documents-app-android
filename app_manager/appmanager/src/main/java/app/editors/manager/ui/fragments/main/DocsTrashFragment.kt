@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.mvp.models.base.Entity
@@ -31,9 +32,7 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         super.onCreateOptionsMenu(menu, menuInflater)
         if (isVisible) {
             emptyTrashItem = menu.findItem(R.id.toolbar_item_empty_trash)
-            if (emptyTrashItem != null) {
-                emptyTrashItem!!.isVisible = isEmptyTrashVisible
-            }
+            emptyTrashItem?.isVisible = isEmptyTrashVisible
             showMenu()
         }
     }
@@ -53,7 +52,7 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
 
     override fun onSwipeRefresh(): Boolean {
         if (!super.onSwipeRefresh()) {
-            mCloudPresenter.getItemsById(ID)
+            cloudPresenter.getItemsById(ID)
             return true
         }
         return false
@@ -61,73 +60,67 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
 
     override fun onScrollPage() {
         super.onScrollPage()
-        mCloudPresenter.isTrashMode = true
-        mCloudPresenter.getItemsById(ID)
+        cloudPresenter.getItemsById(ID)
         initViews()
     }
 
     override fun onClick(v: View) {
-        mCloudPresenter.moveContext()
+        cloudPresenter.moveContext()
     }
 
     override fun onItemContextClick(view: View, position: Int) {
-        val item = mExplorerAdapter.getItem(position) as Item
-        mCloudPresenter.onContextClick(item, position, true)
+        val item = explorerAdapter?.getItem(position) as Item
+        cloudPresenter.onContextClick(item, position, true)
     }
 
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
-        if (mSwipeRefresh != null) {
-            mSwipeRefresh.isRefreshing = true
-        }
-        mCloudPresenter.getItemsById(ID)
+        swipeRefreshLayout?.isRefreshing = true
+        cloudPresenter.getItemsById(ID)
     }
 
     override fun setMenuMainEnabled(isEnabled: Boolean) {
         super.setMenuMainEnabled(isEnabled)
-        if (emptyTrashItem != null) {
-            isEmptyTrashVisible = isEnabled
-            emptyTrashItem!!.isVisible = isEmptyTrashVisible
-        }
-        if (mSearchItem != null) {
-            mSearchItem.isVisible = isEnabled
-        }
+        isEmptyTrashVisible = isEnabled
+        emptyTrashItem?.isVisible = isEmptyTrashVisible
+        searchItem?.isVisible = isEnabled
     }
 
     private fun showMenu() {
-        if (mCloudPresenter.isSelectionMode) {
-            mDeleteItem.isVisible = true
-            mMoveItem.isVisible = true
-            mCopyItem.isVisible = false
+        if (cloudPresenter.isSelectionMode) {
+            deleteItem?.isVisible = true
+            restoreItem?.isVisible = true
+            copyItem?.isVisible = false
         } else {
             setActionBarTitle("")
-            setMenuItemTint(requireContext(), emptyTrashItem!!, R.color.colorWhite)
+            setMenuItemTint(requireContext(), emptyTrashItem!!, lib.toolkit.base.R.color.colorPrimary)
         }
     }
 
     private fun initViews() {
-        if (mRecyclerView != null) {
-            mRecyclerView.setPadding(
-                mRecyclerView.paddingLeft, mRecyclerView.paddingTop,
-                mRecyclerView.paddingLeft, 0
+        recyclerView?.let {
+            it.setPadding(
+                it.paddingLeft, it.paddingTop,
+                it.paddingLeft, 0
             )
-            mCloudPresenter.isTrashMode = true
-            mCloudPresenter.checkBackStack()
+            cloudPresenter.checkBackStack()
         }
     }
 
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons) {
+    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         when (buttons) {
             ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
                 getString(R.string.trash_popup_delete),
-                mCloudPresenter.itemTitle,
+                cloudPresenter.itemTitle,
                 getString(R.string.dialogs_question_accept_delete),
                 getString(R.string.dialogs_common_cancel_button),
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
-            ContextBottomDialog.Buttons.MOVE -> mCloudPresenter.moveContext()
+            ContextBottomDialog.Buttons.RESTORE -> cloudPresenter.moveContext()
+            else -> {
+            }
         }
-        mContextBottomDialog.dismiss()
+        contextBottomDialog?.dismiss()
     }
 
     override fun onDeleteBatch(list: List<Entity>) {
@@ -139,7 +132,22 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
 
     override fun onRemoveItemFromFavorites() {}
 
+    override fun onResume() {
+        super.onResume()
+        cloudPresenter.isTrashMode = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cloudPresenter.isTrashMode = false
+    }
+
+    override val section: Int
+        get() = ApiContract.SectionType.CLOUD_TRASH
+
     companion object {
+        val ID = CloudFileProvider.Section.Trash.path
+
         fun newInstance(account: String?): DocsTrashFragment {
             return DocsTrashFragment().apply {
                 arguments = Bundle(1).apply {
@@ -147,7 +155,5 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
                 }
             }
         }
-
-        val ID = CloudFileProvider.Section.Trash.path
     }
 }

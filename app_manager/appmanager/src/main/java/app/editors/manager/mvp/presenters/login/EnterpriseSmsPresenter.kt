@@ -7,6 +7,7 @@ import app.documents.core.network.models.login.request.RequestSignIn
 import app.documents.core.network.models.login.response.ResponseSignIn
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.EnterpriseSmsView
 import io.reactivex.disposables.Disposable
 import kotlinx.serialization.decodeFromString
@@ -37,7 +38,7 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
 
     fun signInPortal(smsCode: String?, request: String) {
         val requestSignIn = Json.decodeFromString<RequestSignIn>(request)
-        disposable = App.getApp().loginComponent.loginService.signIn(requestSignIn, smsCode)
+        disposable = App.getApp().appComponent.loginService.signIn(requestSignIn, smsCode)
             .subscribe({ response ->
                 when (response) {
                     is LoginResponse.Success -> {
@@ -53,9 +54,8 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
     }
 
     fun resendSms(request: String) {
-        val service = App.getApp().loginComponent.loginService
         val requestNumber = Json.decodeFromString<RequestNumber>(request)
-        disposable = service.sendSms(
+        disposable = context.loginService.sendSms(
             RequestSignIn(
                 userName = requestNumber.userName,
                 password = requestNumber.password,

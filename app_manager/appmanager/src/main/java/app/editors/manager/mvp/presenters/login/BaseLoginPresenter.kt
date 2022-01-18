@@ -3,7 +3,6 @@ package app.editors.manager.mvp.presenters.login
 import android.accounts.Account
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.webkit.URLUtil
 import app.documents.core.account.CloudAccount
 import app.documents.core.login.LoginResponse
@@ -14,10 +13,9 @@ import app.documents.core.network.models.login.request.RequestSignIn
 import app.documents.core.network.models.login.response.ResponseSignIn
 import app.documents.core.network.models.login.response.ResponseUser
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.mvp.models.account.AccountsSqlData
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseView
 import com.google.android.gms.auth.GoogleAuthUtil
@@ -35,10 +33,6 @@ import javax.net.ssl.SSLPeerUnverifiedException
 
 abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
 
-    companion object {
-        protected const val KEY_NULL_VALUE = "null"
-    }
-
     protected var account: Account? = null
     private var disposable: Disposable? = null
     private var goggleJob: Job? = null
@@ -52,7 +46,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
      * Common sign in
      * */
     protected fun signIn(requestSignIn: RequestSignIn) {
-        disposable = App.getApp().loginComponent.loginService
+        disposable = context.loginService
             .signIn(requestSignIn)
             .subscribe({ loginResponse ->
                 when (loginResponse) {
@@ -74,7 +68,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     }
 
     protected fun getUserInfo(request: RequestSignIn, token: Token) {
-        disposable = App.getApp().loginComponent.loginService.getUserInfo(token.token ?: "")
+        disposable = context.loginService.getUserInfo(token.token ?: "")
             .subscribe({ response ->
                 when (response) {
                     is LoginResponse.Success -> createAccount(
@@ -99,12 +93,12 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
             password = accessToken
         }
 
-        val account = Account("$login@$portal", context.getString(R.string.account_type))
+        val account = Account("$login@$portal", context.getString(lib.toolkit.base.R.string.account_type))
 
         val accountData = AccountData(
             portal = networkSettings.getPortal(),
             scheme = networkSettings.getScheme(),
-            displayName = user.displayName,
+            displayName = user.getName(),
             userId = user.id,
             provider = provider,
             accessToken = accessToken,
@@ -129,7 +123,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                 login = login,
                 portal = portal,
                 scheme = networkSettings.getScheme(),
-                name = user.displayName,
+                name = user.getName(),
                 provider = provider,
                 avatarUrl = user.avatarMedium,
                 serverVersion = networkSettings.serverVersion,
@@ -138,7 +132,11 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                 isOnline = true,
                 isAdmin = user.isAdmin,
                 isVisitor = user.isVisitor
-            )
+            ).apply {
+                this.token = token.token ?: ""
+                this.password = password
+                this.expires = token.expires ?: ""
+            }
             accountDao.addAccount(newAccount)
             withContext(Dispatchers.Main) {
                 onAccountCreateSuccess(newAccount)
@@ -152,10 +150,6 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
 
     protected open fun onTwoFactorAuthApp(secretKey: String?, request: RequestSignIn) {
 
-    }
-
-    protected fun onGetToken(token: String?, sqlData: AccountsSqlData?) {
-//        mPreferenceTool.token = token
     }
 
     /*
@@ -189,6 +183,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         signInWithGoogle(account)
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     fun signInWithGoogle(account: Account?) {
         if (goggleJob != null && goggleJob?.isActive == true) {
             return
@@ -197,15 +192,17 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         goggleJob = CoroutineScope(Dispatchers.IO).launch {
             val scope = context.getString(R.string.google_scope)
             try {
-                val accessToken = GoogleAuthUtil.getToken(context, account, scope)
-                withContext(Dispatchers.Main) {
-                    signIn(
-                        RequestSignIn(
-                            userName = account?.name ?: "",
-                            accessToken = accessToken,
-                            provider = ApiContract.Social.GOOGLE
+                if (account != null) {
+                    val accessToken = GoogleAuthUtil.getToken(context, account, scope)
+                    withContext(Dispatchers.Main) {
+                        signIn(
+                            RequestSignIn(
+                                userName = account.name ?: "",
+                                accessToken = accessToken,
+                                provider = ApiContract.Social.GOOGLE
+                            )
                         )
-                    )
+                    }
                 }
             } catch (e: UserRecoverableAuthException) {
                 withContext(Dispatchers.Main) {
@@ -224,7 +221,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     /*
      * If we need user confirmation
      * */
-    protected open fun onGooglePermission(intent: Intent) {}
+    protected open fun onGooglePermission(intent: Intent?) {}
 
     protected open fun isConfigConnection(t: Throwable?): Boolean {
         if (t is SSLHandshakeException && !networkSettings.getCipher() && networkSettings.getScheme() == ApiContract.SCHEME_HTTPS && Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {

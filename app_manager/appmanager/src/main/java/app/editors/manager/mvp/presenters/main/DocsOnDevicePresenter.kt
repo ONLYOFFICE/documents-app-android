@@ -4,13 +4,17 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import androidx.work.Data
 import app.documents.core.account.Recent
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
+import app.editors.manager.app.webDavApi
 import app.editors.manager.managers.providers.LocalFileProvider
 import app.editors.manager.managers.providers.ProviderError
 import app.editors.manager.managers.providers.WebDavFileProvider
+import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
@@ -25,8 +29,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.*
-import lib.toolkit.base.managers.utils.PathUtils.getPath
-import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import moxy.InjectViewState
 import java.io.File
 import java.util.*
@@ -52,21 +54,16 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     private var mPhotoUri: Uri? = null
-    private var mWebDavFileProvider: WebDavFileProvider? = null
+    private var webDavFileProvider: WebDavFileProvider? = null
 
     private fun checkWebDav() {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
                 if (it.isWebDav) {
-                    AccountUtils.getPassword(
-                        mContext,
-                        it.getAccountName()
-                    )?.let { password ->
-                        mWebDavFileProvider = WebDavFileProvider(
-                            App.getApp().getWebDavApi(it.login, password),
-                            WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
-                        )
-                    }
+                    webDavFileProvider = WebDavFileProvider(
+                        mContext.webDavApi(),
+                        WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
+                    )
                 }
             }
         }
@@ -166,22 +163,22 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         onClickEvent(item, position)
         mIsContextClick = true
         val state = ContextBottomDialog.State()
-        state.mIsLocal = true
-        state.mTitle = item.title
-        state.mInfo = TimeUtils.formatDate(itemClickedDate)
-        state.mIsFolder = item is CloudFolder
+        state.isLocal = true
+        state.title = item.title
+        state.info = TimeUtils.formatDate(itemClickedDate)
+        state.isFolder = item is CloudFolder
         if (!isClickedItemFile) {
-            state.mIconResId = R.drawable.ic_type_folder
+            state.iconResId = R.drawable.ic_type_folder
         } else {
-            state.mIconResId = getIconContext(
+            state.iconResId = getIconContext(
                 StringUtils.getExtensionFromPath(
                     itemClickedTitle
                 )
             )
         }
-        state.mIsPdf = isPdf
-        if (state.mIsShared && state.mIsFolder) {
-            state.mIconResId = R.drawable.ic_type_folder_shared
+        state.isPdf = isPdf
+        if (state.isShared && state.isFolder) {
+            state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
     }
@@ -197,7 +194,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         items.addAll(folders)
         items.addAll(files)
         mDisposable.add(mFileProvider.delete(items, null)
-            .subscribe({ }, { fetchError(it)}) {
+            .subscribe({ }, { fetchError(it) }) {
                 mModelExplorerStack.removeSelected()
                 backStack
                 setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
@@ -207,15 +204,29 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun uploadToMy(uri: Uri) {
-        if (mWebDavFileProvider != null) {
-            CoroutineScope(Dispatchers.Default).launch {
-                val id = accountDao.getAccountOnline()?.webDavPath
-                withContext(Dispatchers.Main) {
-                    uploadWebDav(id ?: "", listOf(uri))
+        mContext.accountOnline?.let { account ->
+            if (webDavFileProvider == null) {
+                when {
+                    mPreferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(mContext) -> {
+                        viewState.onSnackBar(mContext.getString(R.string.upload_error_wifi))
+                    }
+                    ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE -> {
+                        viewState.onSnackBar(mContext.getString(R.string.upload_manager_error_file_size))
+                    }
+                    else -> {
+                        if (!account.isWebDav) {
+                            val workData = Data.Builder()
+                                .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                                .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
+                                .putString(UploadWork.TAG_FOLDER_ID, null)
+                                .build()
+                            startUpload(workData)
+                        }
+                    }
                 }
+            } else {
+                uploadWebDav(account.webDavPath ?: "", listOf(uri))
             }
-        } else {
-            super.uploadToMy(uri)
         }
     }
 
@@ -224,7 +235,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         if (id[id.length - 1] != '/') {
             id = "$id/"
         }
-        mUploadDisposable = mWebDavFileProvider!!.upload(id, uriList)
+        mUploadDisposable = webDavFileProvider!!.upload(id, uriList)!!
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ }, { throwable: Throwable -> fetchError(throwable) }
@@ -307,7 +318,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun openFile(uri: Uri, ext: String) {
         when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> viewState.onShowDocs(uri)
+            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> viewState.onShowDocs(uri)
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
@@ -412,11 +423,11 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun getMediaFile(uri: Uri): Explorer =
         Explorer().apply {
-            val file = File(getPath(mContext, uri).toString())
+            val file = File(PathUtils.getPath(mContext, uri).toString())
             val explorerFile = CloudFile().apply {
                 pureContentLength = file.length()
                 webUrl = file.absolutePath
-                fileExst = getExtensionFromPath(file.name)
+                fileExst = StringUtils.getExtensionFromPath(file.name)
                 title = file.name
                 isClicked = true
             }
@@ -449,4 +460,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
+    fun updateState() {
+        setSelection(false)
+        setFiltering(false)
+        updateViewsState()
+    }
 }

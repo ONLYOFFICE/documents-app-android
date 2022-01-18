@@ -2,16 +2,16 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface"
     android:paddingStart="@dimen/screen_left_right_padding"
     android:paddingTop="@dimen/screen_top_bottom_padding"
     android:paddingEnd="@dimen/screen_left_right_padding"
     android:scrollbars="vertical">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorWhite"
         android:orientation="vertical">
 
         <include
@@ -36,19 +36,19 @@
 
         <include layout="@layout/view_line_separator" />
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:id="@+id/servicesContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone">
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/default_margin_large"
                 android:text="@string/profile_thirdparty_title"
-                android:textColor="@color/colorPrimaryLight" />
+                android:textColor="@color/colorOnSurface" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
@@ -59,7 +59,7 @@
 
             <include layout="@layout/view_line_separator" />
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </LinearLayout>
 
         <include
             android:id="@+id/logoutItem"
@@ -70,6 +70,6 @@
             android:id="@+id/removeItem"
             layout="@layout/account_context_item" />
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

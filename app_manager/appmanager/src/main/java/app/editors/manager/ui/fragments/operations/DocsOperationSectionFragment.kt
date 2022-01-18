@@ -40,7 +40,7 @@ class DocsOperationSectionFragment : BaseAppFragment() {
             else -> ApiContract.SectionType.CLOUD_USER
         }
         showFragment(
-            DocsCloudOperationFragment.newInstance(arguments?.getString(DocsCloudFragment.KEY_ACCOUNT), sectionType),
+            DocsCloudOperationFragment.newInstance(sectionType),
             DocsCloudOperationFragment.TAG, false
         )
     }

@@ -10,8 +10,6 @@ import app.editors.manager.mvp.models.response.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
@@ -28,33 +26,36 @@ class CloudFileProvider : BaseFileProvider {
         Favorites("@favorites")
     }
 
-    var api: Api = getApi()
+    var api: Api = App.getApp().getApi()
 
-    @JvmName("getApiAsync")
-    private fun getApi(): Api = runBlocking {
-        App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
-            AccountUtils.getToken(
-                context = App.getApp().applicationContext,
-                accountName = cloudAccount.getAccountName()
-            )?.let { token ->
-                return@runBlocking App.getApp().getApi(token)
-            }
-        } ?: run {
-            throw Exception("No account")
-        }
+    override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
+        return id?.let {
+            api.getItemById(it, filter)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { responseExplorerResponse: Response<ResponseExplorer> ->
+                    if (responseExplorerResponse.isSuccessful && responseExplorerResponse.body() != null) {
+                        return@map responseExplorerResponse.body()!!.response
+                    } else {
+                        throw HttpException(responseExplorerResponse)
+                    }
+                }
+        }!!
     }
 
-    override fun getFiles(id: String, filter: Map<String, String>?): Observable<Explorer> {
-        return api.getItemById(id, filter)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { responseExplorerResponse: Response<ResponseExplorer> ->
-                if (responseExplorerResponse.isSuccessful && responseExplorerResponse.body() != null) {
-                    return@map responseExplorerResponse.body()!!.response
-                } else {
-                    throw HttpException(responseExplorerResponse)
+    override fun search(query: String?): Observable<String>? {
+        return query?.let {
+            api.search(it)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { responseSearchResponse ->
+                    if (responseSearchResponse.isSuccessful && responseSearchResponse.body() != null) {
+                        return@map responseSearchResponse.body()!!.string()
+                    } else {
+                        throw HttpException(responseSearchResponse)
+                    }
                 }
-            }
+        }
     }
 
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
@@ -179,7 +180,7 @@ class CloudFileProvider : BaseFileProvider {
         return null
     }
 
-    override fun upload(folderId: String, uri: List<Uri>): Observable<Int>? {
+    override fun upload(folderId: String, uri: List<Uri?>): Observable<Int>? {
         return null
     }
 
@@ -238,8 +239,8 @@ class CloudFileProvider : BaseFileProvider {
             }
     }
 
-    override fun fileInfo(item: Item): Observable<CloudFile> {
-        return api.getFileInfo(item.id)
+    override fun fileInfo(item: Item?): Observable<CloudFile> {
+        return api.getFileInfo(item?.id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseFile: Response<ResponseFile> ->

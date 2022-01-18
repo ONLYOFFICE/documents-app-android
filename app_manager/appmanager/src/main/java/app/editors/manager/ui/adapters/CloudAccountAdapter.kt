@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.UiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils.setDropboxImage
+import app.editors.manager.managers.utils.ManagerUiUtils.setOneDriveImage
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.extensions.inflate
 import lib.toolkit.base.ui.adapters.BaseListAdapter
@@ -126,7 +128,11 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         }
         if (account.isWebDav) {
             accountName.visibility = View.GONE
-            UiUtils.setWebDavImage(account.webDavProvider, iconSelectableImage)
+            ManagerUiUtils.setWebDavImage(account.webDavProvider, iconSelectableImage)
+        } else if(account.isOneDrive) {
+            iconSelectableImage.setOneDriveImage()
+        } else if(account.isDropbox) {
+            iconSelectableImage.setDropboxImage(account)
         } else {
             accountName.visibility = View.VISIBLE
             val url: String = if (account.avatarUrl?.contains("static") == true) {
@@ -135,8 +141,8 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 account.scheme + account.portal + account.avatarUrl
             }
             Glide.with(iconSelectableImage)
-                .load(GlideUtils.getCorrectLoad(url, account.token ?: ""))
-                .apply(GlideUtils.getAvatarOptions())
+                .load(GlideUtils.getCorrectLoad(url, account.getDecryptToken() ?: ""))
+                .apply(GlideUtils.avatarOptions)
                 .into(iconSelectableImage)
 
         }
