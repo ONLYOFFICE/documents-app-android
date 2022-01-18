@@ -125,7 +125,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
             title = item.name
             versionGroup = item.rev
             pureContentLength = item.size.toLong()
-            fileExst = StringUtils.getExtensionFromPath(item.name.toLowerCase())
+            fileExst = StringUtils.getExtensionFromPath(item.name.lowercase(Locale.getDefault()))
             updated = SimpleDateFormat(
                 "yyyy-MM-dd'T'HH:mm:ss",
                 Locale.getDefault()
@@ -145,7 +145,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
     }
 
     private fun createRequestBody(uri: Uri?): ProgressRequestBody {
-        val requestBody = ProgressRequestBody(App.getApp(), uri)
+        val requestBody = ProgressRequestBody(App.getApp(), uri ?: Uri.EMPTY)
         requestBody.setOnUploadCallbacks { total: Long, progress: Long ->
             if (!isStopped) {
                 if(action == DocsDropboxFragment.KEY_UPLOAD) {

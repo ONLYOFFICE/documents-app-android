@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.presenters.storage
 
-import android.accounts.Account
 import android.content.Context
 import app.documents.core.account.AccountDao
 import app.documents.core.network.ApiContract
@@ -8,22 +7,17 @@ import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
-import app.editors.manager.di.component.DaggerApiComponent
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.views.storage.SelectView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import okhttp3.ResponseBody
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
@@ -70,21 +64,11 @@ class SelectPresenter : MvpPresenter<SelectView>() {
     @Throws(JSONException::class)
     private fun collectListStorage(jsonObject: JSONObject): ArrayList<Storage> {
         val storages = ArrayList<Storage>()
-        val nextcloud = Storage().apply {
-            name = ApiContract.Storage.NEXTCLOUD
-        }
-        val owncloud = Storage().apply {
-            name = ApiContract.Storage.OWNCLOUD
-        }
-        val sharePoint = Storage().apply {
-            name = ApiContract.Storage.SHAREPOINT
-        }
-        val yandex = Storage().apply {
-            name = ApiContract.Storage.YANDEX
-        }
-        val webDav = Storage().apply {
-            name = ApiContract.Storage.WEBDAV
-        }
+        val nextcloud = Storage(name = ApiContract.Storage.NEXTCLOUD)
+        val owncloud = Storage(name = ApiContract.Storage.OWNCLOUD)
+        val sharePoint = Storage(name = ApiContract.Storage.SHAREPOINT)
+        val yandex = Storage(name = ApiContract.Storage.YANDEX)
+        val webDav = Storage(name = ApiContract.Storage.WEBDAV)
         storages.add(nextcloud)
         storages.add(owncloud)
         storages.add(sharePoint)
@@ -117,7 +101,7 @@ class SelectPresenter : MvpPresenter<SelectView>() {
     fun connect(providerKey: String) {
         var key = providerKey
         val storage = getStorage(key)
-        if (storage != null && storage.clientId != null) {
+        if (storage?.clientId != null) {
             viewState.showWebTokenFragment(storage)
         } else {
             var url = ""
@@ -158,7 +142,7 @@ class SelectPresenter : MvpPresenter<SelectView>() {
     private fun getNames(list: ArrayList<Storage>): List<String> {
         val names: MutableList<String> = ArrayList()
         for (storage in list) {
-            names.add(storage.name)
+            names.add(storage.name ?: "")
         }
         return names
     }

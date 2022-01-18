@@ -4,12 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import app.editors.manager.R
@@ -74,7 +72,7 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
     }
 
 
-    private fun actionKeyPress(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+    private fun actionKeyPress(actionId: Int): Boolean {
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             onNextClick()
             return true
@@ -201,8 +199,8 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
             onNextClick()
         }
 
-        viewBinding?.loginCreatePortalLastNameEdit?.setOnEditorActionListener { v, actionId, event ->
-            actionKeyPress(v, actionId, event)
+        viewBinding?.loginCreatePortalLastNameEdit?.setOnEditorActionListener { _, actionId, _ ->
+            actionKeyPress(actionId)
         }
         viewBinding?.loginCreatePortalAddressEdit?.addTextChangedListener(fieldsWatcher)
         viewBinding?.loginCreatePortalEmailEdit?.addTextChangedListener(fieldsWatcher)

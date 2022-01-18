@@ -64,6 +64,8 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
                     viewIconSelectableLayout.viewIconSelectableLayout
                         .setBackgroundResource(R.drawable.drawable_list_image_select_background)
                 }
+            } else {
+                viewIconSelectableLayout.viewIconSelectableLayout.background = null
             }
         }
     }

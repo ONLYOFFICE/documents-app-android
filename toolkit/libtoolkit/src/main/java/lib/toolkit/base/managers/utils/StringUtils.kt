@@ -43,6 +43,8 @@ object StringUtils {
 
     private val PATTERN_EXT_DOC = "^(doc|docx|docm|doct|dot|dotm|dotx|odt|ott|fodt|rtf|epub|txt|html|mht)$"
     private val PATTERN_EXT_FORM = "^(oform|docxf)$"
+    private val PATTERN_EXT_DOCXF = "^(docxf)$"
+    private val PATTERN_EXT_OFORM = "^(oform)$"
     private val PATTERN_EXT_SHEET = "^(xlst|xlsx|xlsm|xls|xlt|xltm|xltx|ods|fods|ots|csv)$"
     private val PATTERN_EXT_PRESENTATION = "^(ppt|pptt|pptx|pps|odp|fodp|otp|pot|potm|potx|ppsm|ppsx)$"
     private val PATTERN_EXT_HTML = "^(mht|html|htm)$"
@@ -61,6 +63,8 @@ object StringUtils {
         UNKNOWN,
         DOC,
         FORM,
+        DOCXF,
+        OFORM,
         SHEET,
         PRESENTATION,
         HTML,
@@ -94,10 +98,19 @@ object StringUtils {
         }
     }
 
+    fun getFormExtension(extension: String): Extension {
+        val ext = extension.replace(".", "")
+        return when {
+            Pattern.matches(PATTERN_EXT_DOCXF, ext) -> Extension.DOCXF
+            Pattern.matches(PATTERN_EXT_OFORM, ext) -> Extension.OFORM
+            else -> throw RuntimeException("Invalid form extension")
+        }
+    }
+
     @JvmStatic
     fun isDocument(extension: String): Boolean {
         return when (getExtension(extension)) {
-            Extension.SHEET, Extension.DOC, Extension.PRESENTATION, Extension.PDF -> true
+            Extension.SHEET, Extension.DOC, Extension.FORM, Extension.PRESENTATION, Extension.PDF -> true
             else -> false
         }
     }
@@ -341,7 +354,7 @@ object StringUtils {
         return try {
             val digest = MessageDigest.getInstance(MD5)
             val md5Data = BigInteger(1, digest.digest(value.toByteArray()))
-            String.format("%032X", md5Data).toLowerCase()
+            String.format("%032X", md5Data).lowercase(Locale.getDefault())
         } catch (e: NoSuchAlgorithmException) {
             null
         }

@@ -40,6 +40,7 @@ data class CloudAccount(
             field = CryptUtils.encryptAES128(value, id) ?: ""
         }
 
+    var expires: String = ""
 
     fun getAccountName() = "$login@$portal"
 

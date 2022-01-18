@@ -20,12 +20,11 @@ class AccountModule {
 
     @Provides
     @Singleton
-    fun providesAccountDataBase(roomCallback: RoomDatabase.Callback, context: Context): AccountsDataBase {
+    fun providesAccountDataBase(context: Context): AccountsDataBase {
         val builder = Room.databaseBuilder(context, AccountsDataBase::class.java, AccountsDataBase.TAG)
             .addMigrations(AccountsDataBase.MIGRATION_1_2)
             .addMigrations(AccountsDataBase.MIGRATION_2_3)
             .addMigrations(AccountsDataBase.MIGRATION_3_4)
-        builder.addCallback(roomCallback)
         return builder.build()
     }
 

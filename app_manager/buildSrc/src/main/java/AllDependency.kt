@@ -1,5 +1,5 @@
 object Dagger {
-    private const val version = "2.39.1"
+    private const val version = "2.40.5"
 
     const val dagger = "com.google.dagger:dagger:$version"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$version"
@@ -14,14 +14,13 @@ object Moxy {
 }
 
 object Koin {
-    private const val version = "3.1.2"
+    private const val version = "3.1.4"
 
     const val koinAndroid = "io.insert-koin:koin-android:$version"
     const val koinCompose = "io.insert-koin:koin-androidx-compose:$version"
 }
 
 object AndroidX {
-    const val composeVersion = "1.0.1"
     private const val androidxVersion = "1.4.0"
     private const val recyclerViewVersion = "1.2.1"
     private const val recyclerViewSelectionVersion = "1.1.0"
@@ -51,10 +50,10 @@ object Retrofit {
 }
 
 object Kotlin {
-    const val version = "1.5.21"
+    const val version = "1.5.31"
     const val pluginVersion = "1.5.21"
     private const val coroutinesVersion = "1.5.0"
-    private const val serializationVersion = "1.3.0"
+    private const val serializationVersion = "1.3.1"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
     const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -63,11 +62,11 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "19.2.0"
+    private const val playServicesAuthVersion = "20.0.0"
     private const val playCoreVersion = "1.10.2"
     private const val materialVersion = "1.4.0"
     private const val gsonVersion = "2.8.6"
-    private const val safetynetVersion = "17.0.1"
+    private const val safetynetVersion = "18.0.0"
 
 
     const val playServiceAuth = "com.google.android.gms:play-services-auth:$playServicesAuthVersion"
@@ -79,10 +78,10 @@ object Google {
 }
 
 object Firebase {
-    private const val firebaseCoreVersion = "20.0.0"
-    private const val firebaseConfigVersion = "21.0.0"
+    private const val firebaseCoreVersion = "20.0.2"
+    private const val firebaseConfigVersion = "21.0.1"
     private const val firebaseMessagingVersion = "23.0.0"
-    private const val firebaseCrashlyticsVersion = "18.2.4"
+    private const val firebaseCrashlyticsVersion = "18.2.6"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"
@@ -91,7 +90,7 @@ object Firebase {
 }
 
 object Room {
-    private const val roomVersion = "2.3.0"
+    private const val roomVersion = "2.4.0"
 
     const val roomRuntime = "androidx.room:room-runtime:$roomVersion"
     const val roomKtx = "androidx.room:room-ktx:$roomVersion"
@@ -105,15 +104,35 @@ object Rx {
     const val rxRelay = "com.jakewharton.rxrelay2:rxrelay:$version"
 }
 
+object Lifecycle {
+    private const val version = "2.4.0"
+
+    const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
+    const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
+    const val runtime = "androidx.lifecycle:lifecycle-runtime-ktx:$version"
+}
+
+object Compose {
+    const val version = "1.0.5"
+    private const val navigationVersion = "2.4.0-rc01"
+
+    const val ui = "androidx.compose.ui:ui:$version"
+    const val material = "androidx.compose.material:material:$version"
+    const val preview = "androidx.compose.ui:ui-tooling-preview:$version"
+    const val tooling = "androidx.compose.ui:ui-tooling:$version"
+    const val navigation = "androidx.navigation:navigation-compose:$navigationVersion"
+    const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
+}
+
+
 object Libs {
     const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
-    const val ormlite = "com.j256.ormlite:ormlite-android:5.1"
-    const val facebookLogin = "com.facebook.android:facebook-login:4.31.0"
+    const val facebookLogin = "com.facebook.android:facebook-login:12.2.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
     const val glide = "com.github.bumptech.glide:glide:4.12.0"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
-    const val androidWork = "android.arch.work:work-runtime:1.0.1"
+    const val androidWork = "androidx.work:work-runtime:2.7.1"
     const val documentFile = "androidx.documentfile:documentfile:1.0.1"
-    const val pdfView = "com.github.mhiew:android-pdf-viewer:3.2.0-beta.1"
-    const val colorPicker = "com.github.skydoves:colorpickerview:2.2.3"
+    const val pdfView = "com.github.TalbotGooday:AndroidPdfViewer:3.1.0-beta.3"
+    const val colorPicker = "com.github.skydoves:colorpickerview:2.2.4"
 }
