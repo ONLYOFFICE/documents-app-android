@@ -7,6 +7,7 @@ import android.os.Looper
 import app.documents.core.account.AccountDao
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.RecentDao
+import app.documents.core.account.copyWithToken
 import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.models.login.response.ResponseUser
@@ -171,9 +172,9 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                     AccountUtils.setToken(context, it, null)
                 }
             }
-            accountDao.updateAccount(account.copy(isOnline = false))
+            accountDao.updateAccount(account.copyWithToken(isOnline = false))
             withContext(Dispatchers.Main) {
-                viewState.onClose(true, account.copy(isOnline = false))
+                viewState.onClose(true, account.copyWithToken(isOnline = false))
             }
         }
     }

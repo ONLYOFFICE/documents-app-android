@@ -2,6 +2,7 @@ package app.editors.manager.mvp.presenters.login
 
 import android.accounts.Account
 import app.documents.core.account.CloudAccount
+import app.documents.core.account.copyWithToken
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.models.login.Capabilities
 import app.documents.core.network.models.login.response.ResponseCapabilities
@@ -179,9 +180,9 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
 
     private fun setAccount() {
         CoroutineScope(Dispatchers.Default).launch {
-            val account = accountDao.getAccountOnline()?.let { accountDao.getAccount(it.id)?.copy(isOnline = false) }
+            val account = accountDao.getAccountOnline()?.let { accountDao.getAccount(it.id)?.copyWithToken(isOnline = false) }
             account?.let { accountDao.updateAccount(it) }
-            accountDao.updateAccount(clickedAccount.copy(isOnline = true))
+            accountDao.updateAccount(clickedAccount.copyWithToken(isOnline = true))
 
             withContext(Dispatchers.Main) {
                 viewState.onAccountLogin()

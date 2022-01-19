@@ -2,6 +2,7 @@ package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
 import app.documents.core.account.CloudAccount
+import app.documents.core.account.copyWithToken
 import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
@@ -250,7 +251,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
                 accountDao.updateAccount(
-                    it.copy(
+                    it.copyWithToken(
                         isOnline = false
                     )
                 )

@@ -51,3 +51,49 @@ data class CloudAccount(
     fun getDecryptPassword() = CryptUtils.decryptAES128(password, id)
 
 }
+
+fun CloudAccount.copyWithToken(
+    id: String = this.id,
+    login: String? = this.login,
+    portal: String? = this.portal,
+    serverVersion: String = this.serverVersion,
+    scheme: String? = this.scheme,
+    name: String? = this.name,
+    provider: String? = this.provider,
+    avatarUrl: String? = this.avatarUrl,
+    isSslCiphers: Boolean = this.isSslCiphers,
+    isSslState: Boolean = this.isSslState,
+    isOnline: Boolean = this.isOnline,
+    isWebDav: Boolean = this.isWebDav,
+    isOneDrive: Boolean = this.isOneDrive,
+    isDropbox: Boolean = this.isDropbox,
+    webDavProvider: String? = this.webDavProvider,
+    webDavPath: String? = this.webDavPath,
+    isAdmin: Boolean = this.isAdmin,
+    isVisitor: Boolean = this.isVisitor
+): CloudAccount {
+    return CloudAccount(
+        id = id,
+        login = login,
+        portal = portal,
+        serverVersion = serverVersion,
+        scheme = scheme,
+        name = name,
+        provider = provider,
+        avatarUrl = avatarUrl,
+        isSslCiphers = isSslCiphers,
+        isSslState = isSslState,
+        isOnline = isOnline,
+        isWebDav = isWebDav,
+        isOneDrive = isOneDrive,
+        isDropbox = isDropbox,
+        webDavProvider = webDavProvider,
+        webDavPath = webDavPath,
+        isAdmin = isAdmin,
+        isVisitor = isVisitor
+    ).apply {
+        token = this@copyWithToken.getDecryptToken() ?: ""
+        password = this@copyWithToken.getDecryptPassword() ?: ""
+        expires = this@copyWithToken.expires
+    }
+}
