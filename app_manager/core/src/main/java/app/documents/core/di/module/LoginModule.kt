@@ -9,6 +9,7 @@ import app.documents.core.settings.NetworkSettings
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.http.NetworkClient
 import okhttp3.MediaType

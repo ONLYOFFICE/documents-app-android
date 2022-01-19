@@ -117,13 +117,8 @@ object ManagerUiUtils {
                 resId = R.drawable.ic_type_pdf
                 colorId = lib.toolkit.base.R.color.colorLightRed
             }
-            StringUtils.Extension.VIDEO_SUPPORT -> {
+            StringUtils.Extension.VIDEO_SUPPORT, StringUtils.Extension.VIDEO -> {
                 resId = R.drawable.ic_type_video
-                colorId = lib.toolkit.base.R.color.colorBlack
-            }
-            StringUtils.Extension.VIDEO -> {
-                setAlphaIcon(view, R.drawable.ic_type_video)
-                return
             }
             StringUtils.Extension.ARCH -> {
                 setAlphaIcon(view, R.drawable.ic_type_archive)

@@ -375,7 +375,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     fun isRoot(): Boolean {
-        return (activeFragment as DocsCloudFragment).isRoot
+        return if (activeFragment != null && activeFragment is DocsCloudFragment) {
+            (activeFragment as DocsCloudFragment).isRoot
+        } else {
+            false
+        }
     }
 
     val position: Int?

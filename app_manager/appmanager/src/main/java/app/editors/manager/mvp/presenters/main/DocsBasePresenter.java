@@ -293,29 +293,26 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
 
                 mFilteringValue = value;
                 if(!(mFileProvider instanceof CloudFileProvider) || App.getApp().getAppComponent().getAccountOnline().isPersonal()) {
-                    mDisposable.add(mFileProvider.getFiles(id, getArgs(value))
-                            .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
-                            .subscribe(explorer -> {
-                                mModelExplorerStack.setFilter(explorer);
-                                setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
-                                updateViewsState();
-                                getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
-                            }, this::fetchError));
+                    getSearchedFiles(id, value);
                 } else {
-                    mDisposable.add(((CloudFileProvider)mFileProvider).search(value)
-                            .subscribe(items -> {
+                    if(!value.isEmpty()) {
+                        mDisposable.add(((CloudFileProvider) mFileProvider).search(value)
+                                .subscribe(items -> {
 
-                                try {
-                                    mModelExplorerStack.setFilter(getSearchExplorer(items));
-                                } catch (JSONException e) {
-                                    throw e;
-                                }
+                                    try {
+                                        mModelExplorerStack.setFilter(getSearchExplorer(items));
+                                    } catch (JSONException e) {
+                                        throw e;
+                                    }
 
-                                setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
-                                updateViewsState();
-                                getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
-                            }, this::fetchError)
-                    );
+                                    setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
+                                    updateViewsState();
+                                    getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
+                                }, this::fetchError)
+                        );
+                    } else {
+                        getSearchedFiles(id, value);
+                    }
                 }
             }
         }
@@ -323,6 +320,16 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         return false;
     }
 
+    private void getSearchedFiles(String id, @NonNull final  String value) {
+        mDisposable.add(mFileProvider.getFiles(id, getArgs(value))
+                .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
+                .subscribe(explorer -> {
+                    mModelExplorerStack.setFilter(explorer);
+                    setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
+                    updateViewsState();
+                    getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
+                }, this::fetchError));
+    }
 
     private Explorer getSearchExplorer(String items) throws JSONException {
         List<CloudFile> files = new ArrayList();

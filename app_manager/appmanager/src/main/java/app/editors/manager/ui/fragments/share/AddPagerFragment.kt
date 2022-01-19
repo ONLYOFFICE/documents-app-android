@@ -13,6 +13,7 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.custom.SharePanelViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import lib.toolkit.base.managers.utils.StringUtils
 
 class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
 
@@ -153,6 +154,10 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
             binding.shareAddViewPager.adapter = viewPagerAdapter
             shareActivity?.getTabLayout()?.setupWithViewPager(binding.shareAddViewPager, true)
             sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, requireActivity()).apply {
+                val ext = StringUtils.getExtensionFromPath(checkNotNull(inputItem?.title))
+
+                setExtension(StringUtils.getExtension(ext)
+                    .takeIf { it != StringUtils.Extension.FORM } ?: StringUtils.getFormExtension(ext))
                 setOnEventListener(this@AddPagerFragment)
                 setAccessIcon(modelShareStack?.accessCode!!)
             }
