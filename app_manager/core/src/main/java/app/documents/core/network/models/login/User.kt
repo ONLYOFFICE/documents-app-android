@@ -10,7 +10,7 @@ data class User(
     val isVisitor: Boolean = false,
     val firstName: String = "",
     val lastName: String = "",
-    val email: String = "",
+    val email: String? = "",
     val birthday: String = "",
     val sex: String = "",
     val status: Int = 0,

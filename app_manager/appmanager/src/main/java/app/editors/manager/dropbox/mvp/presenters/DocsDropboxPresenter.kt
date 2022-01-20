@@ -46,7 +46,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     private var downloadDisposable: Disposable? = null
     private var tempFile: CloudFile? = null
 
-    private val workManager = WorkManager.getInstance()
+    private val workManager = WorkManager.getInstance(App.getApp())
 
     private val uploadReceiver: UploadReceiver
     private val downloadReceiver: DownloadReceiver

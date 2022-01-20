@@ -188,17 +188,20 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     private fun isContainFiles(folder: File): Boolean {
         val list = folder.listFiles()
-        if (list.isEmpty()) {
-            return false
-        }
-        list.forEach {
-            if (it.isDirectory) {
-                isContainFiles(it)
-            } else if (it.isFile) {
-                if (it.extension == DOCX_EXTENSION || it.extension == PPTX_EXTENSION || it.extension == XLSX_EXTENSION) {
-                    return true
+        if (list != null) {
+            if (list.isEmpty()) {
+                return false
+            }
+            list.forEach {
+                if (it.isDirectory) {
+                    isContainFiles(it)
+                } else if (it.isFile) {
+                    if (it.extension == DOCX_EXTENSION || it.extension == PPTX_EXTENSION || it.extension == XLSX_EXTENSION) {
+                        return true
+                    }
                 }
             }
+            return false
         }
         return false
     }

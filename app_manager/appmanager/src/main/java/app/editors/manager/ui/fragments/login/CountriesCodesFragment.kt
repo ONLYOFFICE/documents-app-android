@@ -98,11 +98,11 @@ class CountriesCodesFragment : BaseAppFragment(), SearchView.OnQueryTextListener
 
     override fun onItemClick(view: View, position: Int) {
         val codes = countriesCodesAdapter?.getItem(position)
-        fragmentManager?.popBackStack(
+        parentFragmentManager.popBackStack(
             EnterprisePhoneFragment.TAG,
             FragmentManager.POP_BACK_STACK_INCLUSIVE
         )
-        fragmentManager?.popBackStack(TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        parentFragmentManager.popBackStack(TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         codes?.let { EnterprisePhoneFragment.newInstance(it.number, it.name, it.code) }?.let {
             showFragment(
                 it,

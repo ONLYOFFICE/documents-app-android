@@ -88,7 +88,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
                 settings.javaScriptEnabled = true
                 settings.setAppCacheEnabled(false)
                 settings.cacheMode = WebSettings.LOAD_NO_CACHE
-                settings.setUserAgentString(getString(R.string.google_user_agent))
+                settings.userAgentString = getString(R.string.google_user_agent)
                 webViewClient = WebViewCallbacks()
                 clearHistory()
             }
@@ -175,7 +175,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
     }
 
     companion object {
-        val TAG = WebTokenFragment::class.java.simpleName
+        val TAG: String = WebTokenFragment::class.java.simpleName
         private const val TAG_STORAGE = "TAG_MEDIA"
         private const val TAG_WEB_VIEW = "TAG_WEB_VIEW"
         private const val TAG_PAGE_LOAD = "TAG_PAGE_LOAD"

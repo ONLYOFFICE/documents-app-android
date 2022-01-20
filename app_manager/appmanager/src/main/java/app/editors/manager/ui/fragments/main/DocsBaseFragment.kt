@@ -1144,9 +1144,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     private fun removeCommonDialog() {
-        val fragment = requireFragmentManager().findFragmentByTag(CommonDialog.TAG)
+        val fragment = parentFragmentManager.findFragmentByTag(CommonDialog.TAG)
         fragment?.let {
-            requireFragmentManager()
+            parentFragmentManager
                 .beginTransaction()
                 .remove(it)
                 .commit()
