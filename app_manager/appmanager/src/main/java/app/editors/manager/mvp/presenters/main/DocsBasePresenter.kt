@@ -270,32 +270,26 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                      fileProvider?.let { provider ->
                          if (provider !is CloudFileProvider ||
                              App.getApp().appComponent.accountOnline?.isPersonal() == true) {
-                             disposable.add(
-                                 provider.getFiles(id, getArgs(value))
-                                     .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                                     .subscribe({ explorer ->
-                                         stack.setFilter(explorer)
-                                         setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.SEARCH else
-                                             PlaceholderViews.Type.NONE)
-                                         updateViewsState()
-                                         viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
-                                     }, this::fetchError)
-                             )
+                             getSearchedFiles(id, value)
                          } else {
-                             provider.search(value)?.let { observable ->
-                                 disposable.add(
-                                     observable.subscribe({ items ->
-                                         try {
-                                             stack.setFilter(getSearchExplorer(items))
-                                         } catch (exception: JSONException) {
-                                             throw exception
-                                         }
-                                         setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.SEARCH else
-                                             PlaceholderViews.Type.NONE)
-                                         updateViewsState()
-                                         viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
-                                     }, this::fetchError)
-                                 )
+                             if (value.isNotEmpty()) {
+                                 provider.search(value)?.let { observable ->
+                                     disposable.add(
+                                         observable.subscribe({ items ->
+                                             try {
+                                                 stack.setFilter(getSearchExplorer(items))
+                                             } catch (exception: JSONException) {
+                                                 throw exception
+                                             }
+                                             setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.SEARCH else
+                                                 PlaceholderViews.Type.NONE)
+                                             updateViewsState()
+                                             viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
+                                         }, this::fetchError)
+                                     )
+                                 }
+                             } else {
+                                 getSearchedFiles(id, value)
                              }
                          }
                      }
@@ -303,6 +297,22 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             }
         }
         return false
+    }
+
+    private fun getSearchedFiles(id: String, value: String) {
+        fileProvider?.let { provider ->
+            disposable.add(
+                provider.getFiles(id, getArgs(value))
+                    .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
+                    .subscribe({ explorer ->
+                        modelExplorerStack?.setFilter(explorer)
+                        setPlaceholderType(if (modelExplorerStack?.isListEmpty == true) PlaceholderViews.Type.SEARCH else
+                            PlaceholderViews.Type.NONE)
+                        updateViewsState()
+                        viewState.onDocsFilter(getListWithHeaders(modelExplorerStack?.last(), true))
+                    }, this::fetchError)
+            )
+        }
     }
 
     @Throws(JSONException::class)
