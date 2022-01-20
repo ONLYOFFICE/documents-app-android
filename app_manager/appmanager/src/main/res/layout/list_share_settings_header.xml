@@ -7,12 +7,14 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_share_settings_header_title"
-        style="@style/MediumTextView"
+        style="@style/SmallTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/screen_margin_large"
         android:layout_marginRight="@dimen/screen_margin_large"
+        android:alpha="0.6"
         android:text="Types"
+        android:textColor="@color/colorOnSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

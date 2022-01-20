@@ -5,7 +5,6 @@
         android:id="@+id/menu_share_add_search"
         android:enabled="true"
         android:icon="@drawable/drawable_menu_search"
-        app:tint="@color/colorPrimary"
         android:title="@string/toolbar_menu_search_hint"
         android:visible="true"
         app:showAsAction="always" />
@@ -13,10 +12,9 @@
         android:id="@+id/menu_share_add"
         android:enabled="true"
         android:icon="@drawable/drawable_menu_main"
-        app:tint="@color/colorPrimary"
         android:title="@string/toolbar_menu_main_select"
         android:visible="true"
-        app:showAsAction="always" >
+        app:showAsAction="never">
         <menu>
             <group>
                 <item

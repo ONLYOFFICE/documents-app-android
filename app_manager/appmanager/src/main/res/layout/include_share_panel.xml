@@ -20,6 +20,7 @@
             android:layout_marginRight="@dimen/screen_margin_large"
             android:hint="@string/share_panel_message_notification"
             android:visibility="gone"
+            app:boxBackgroundColor="@null"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">

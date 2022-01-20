@@ -37,7 +37,7 @@
             app:tabMaxWidth="0dp"
             app:tabTextAppearance="@style/ViewPagerTabsText"
             app:tabSelectedTextColor="@color/colorPrimary"
-            app:tabIndicatorColor="@color/colorSecondary"/>
+            app:tabIndicatorColor="@color/colorPrimary"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
