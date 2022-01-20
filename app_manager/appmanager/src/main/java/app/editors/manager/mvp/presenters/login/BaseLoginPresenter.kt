@@ -134,8 +134,8 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                 isAdmin = user.isAdmin,
                 isVisitor = user.isVisitor
             ).apply {
-                this.token = token.token ?: ""
-                this.password = password
+                setCryptToken(token.token ?: "")
+                setCryptPassword(password)
                 this.expires = token.expires ?: ""
             }
             accountDao.addAccount(newAccount)

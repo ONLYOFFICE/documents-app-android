@@ -31,20 +31,22 @@ data class CloudAccount(
 ) {
 
     var token: String = ""
-        set(value) {
-            field = CryptUtils.encryptAES128(value, id) ?: ""
-        }
 
     var password: String = ""
-        set(value) {
-            field = CryptUtils.encryptAES128(value, id) ?: ""
-        }
 
     var expires: String = ""
 
     fun getAccountName() = "$login@$portal"
 
     fun isPersonal() = portal?.contains(ApiContract.PERSONAL_SUBDOMAIN) ?: false
+
+    fun setCryptToken(value: String) {
+        token = CryptUtils.encryptAES128(value, id) ?: ""
+    }
+
+    fun setCryptPassword(value: String) {
+        password = CryptUtils.encryptAES128(value, id) ?: ""
+    }
 
     fun getDecryptToken() = CryptUtils.decryptAES128(token, id)
 
@@ -92,8 +94,8 @@ fun CloudAccount.copyWithToken(
         isAdmin = isAdmin,
         isVisitor = isVisitor
     ).apply {
-        token = this@copyWithToken.getDecryptToken() ?: ""
-        password = this@copyWithToken.getDecryptPassword() ?: ""
+        token = this@copyWithToken.token
+        password = this@copyWithToken.password
         expires = this@copyWithToken.expires
     }
 }
