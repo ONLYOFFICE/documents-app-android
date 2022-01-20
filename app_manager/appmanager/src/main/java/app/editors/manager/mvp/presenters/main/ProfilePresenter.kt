@@ -2,6 +2,7 @@ package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
 import android.content.Context
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import app.documents.core.account.AccountDao
@@ -153,6 +154,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             )
             accountDao.deleteAccount(account)
             recentDao.removeAllByOwnerId(account.id)
+            context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
             withContext(Dispatchers.Main) {
                 viewState.onClose(false)
             }
