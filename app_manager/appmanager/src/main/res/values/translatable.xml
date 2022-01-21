@@ -141,6 +141,7 @@
     <string name="login_create_signin_repeat">Repeat password</string>
     <string name="login_create_signin_create_button">CREATE</string>
     <string name="login_create_signin_passwords_mismatch">Passwords mismatch</string>
+    <string name="login_create_signin_passwords_length">Password must contain: from 8 to 30 characters</string>
     <string name="login_create_signin_info">
         By clicking this button you accept our Terms of service
     </string>
