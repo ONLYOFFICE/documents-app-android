@@ -86,8 +86,6 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                         )
                     )
                 )
-
-
             }
             cloudAccount.isVisitor -> {
                 viewState.onRender(
@@ -98,8 +96,6 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                         )
                     )
                 )
-
-
             }
             else -> {
                 viewState.onRender(

@@ -175,16 +175,6 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 getCloudFragments(state.account, state.version)
             }
         }
-        arguments?.getString(KEY_FILE_DATA)?.let {
-            childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
-                viewBinding?.mainViewPager?.post {
-                    adapter?.let {
-                        viewBinding?.mainViewPager?.currentItem =
-                            it.getByTitle(getString(R.string.main_pager_docs_projects))
-                    }
-                }
-            }
-        }
     }
 
     override fun onRender(stringAccount: String, sections: List<Explorer>?) {
@@ -215,14 +205,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             }
             val correctOrderTabs = setCorrectOrder(fragments)
             setAdapter(correctOrderTabs.filterNotNull())
-            arguments?.getString(KEY_FILE_DATA)?.let {
-                childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let {
-                    viewBinding?.mainViewPager?.post {
-                        viewBinding?.mainViewPager?.currentItem =
-                            adapter?.getByTitle(getString(R.string.main_pager_docs_projects)) ?: -1
-                    }
-                }
-            }
+
         }
     }
 
@@ -364,11 +347,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     override fun setFileData(fileData: String) {
         viewBinding?.root?.postDelayed({
-            childFragmentManager.fragments.find { it is DocsProjectsFragment }?.let { it ->
-                adapter?.let {
-                    viewBinding?.mainViewPager?.currentItem = it.getByTitle(getString(R.string.main_pager_docs_projects))
-                }
-                (it as DocsProjectsFragment).setFileData(fileData)
+            childFragmentManager.fragments.find { it is DocsCloudFragment }?.let { it ->
+                (it as DocsCloudFragment).setFileData(fileData)
                 requireActivity().intent.data = null
             }
         }, 1000)

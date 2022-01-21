@@ -54,10 +54,6 @@ class DocsProjectsFragment : DocsCloudFragment() {
         presenter.checkBackStack()
     }
 
-    fun setFileData(fileData: String) {
-        cloudPresenter.openFile(fileData)
-    }
-
     companion object {
         val ID = CloudFileProvider.Section.Projects.path
 

@@ -587,14 +587,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
-        mDisposable.add(mFileProvider.getFiles(model.folder?.id.toString(), getArgs(null))
-            .map { loadSuccess(it) }
-            .flatMap {
-                mFileProvider.fileInfo(CloudFile().apply {
-                    id = model.file?.id?.toString()
-                })
-            }
-            .subscribe({ file: CloudFile ->
+        mDisposable.add(mFileProvider.fileInfo(CloudFile().apply {
+            id = model.file?.id?.toString()
+        }).subscribe({ file: CloudFile ->
                 mItemClicked = file
                 when (StringUtils.getExtension(file.fileExst)) {
                     StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
