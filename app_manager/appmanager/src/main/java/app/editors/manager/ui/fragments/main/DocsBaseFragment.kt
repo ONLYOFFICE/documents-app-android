@@ -93,7 +93,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     private var selectItem: MenuItem? = null
     private val mTypeFactory: TypeFactory = factory
 
-    protected abstract val presenter: DocsBasePresenter<out DocsBaseView?>
+    protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
     protected abstract val isWebDav: Boolean?
 
     companion object {
@@ -183,7 +183,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (requestCode == PERMISSION_READ_UPLOAD) {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 requireActivity().intent?.let {
-                    presenter.uploadToMy(it.clipData?.getItemAt(0)?.uri)
+                    it.clipData?.getItemAt(0)?.uri?.let { uri -> presenter.uploadToMy(uri) }
                     requireActivity().intent = null
                 }
             }
@@ -249,7 +249,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onBackPressed(): Boolean {
-        return presenter.backStack
+        return presenter.getBackStack()
     }
 
     override fun onListEnd() {

@@ -22,7 +22,6 @@ import app.editors.manager.mvp.views.main.DocsRecentView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -57,35 +56,34 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     init {
         App.getApp().appComponent.inject(this)
-        mModelExplorerStack = ModelExplorerStack()
-        mFilteringValue = ""
-        mPlaceholderType = PlaceholderViews.Type.NONE
-        mIsContextClick = false
-        mIsFilteringMode = false
-        mIsSelectionMode = false
-        mIsFoldersMode = false
+        modelExplorerStack = ModelExplorerStack()
+        filteringValue = ""
+        placeholderViewType = PlaceholderViews.Type.NONE
+        isContextClick = false
+        isFilteringMode = false
+        isSelectionMode = false
+        isFoldersMode = false
     }
 
     private var contextPosition = 0
     private var item: Recent? = null
     private var contextItem: Recent? = null
     private var temp: CloudFile? = null
-    private val disposable = CompositeDisposable()
     private val account: CloudAccount? = getAccount()
 
     private fun getAccount(): CloudAccount? = runBlocking(Dispatchers.Default) {
-        accountDao?.getAccountOnline()?.let { account ->
+        accountDao.getAccountOnline()?.let { account ->
             if (account.isWebDav) {
                 AccountUtils.getPassword(
-                    mContext,
-                    Account(account.getAccountName(), mContext.getString(lib.toolkit.base.R.string.account_type))
+                    context,
+                    Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
                 )?.let {
                     return@runBlocking account
                 }
             } else {
                 AccountUtils.getToken(
-                    mContext,
-                    Account(account.getAccountName(), mContext.getString(lib.toolkit.base.R.string.account_type))
+                    context,
+                    Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
                 )?.let {
                     return@runBlocking account
                 }
@@ -139,11 +137,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     private suspend fun openFile(recent: Recent) {
         accountDao.getAccount(recent.ownerId!!)?.let { account ->
             AccountUtils.getToken(
-                mContext,
-                Account(account.getAccountName(), mContext.getString(lib.toolkit.base.R.string.account_type))
+                context,
+                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
             )?.let { it ->
                 disposable.add(
-                    mContext.api()
+                    context.api()
                         .getFileInfo(recent.idFile)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -162,19 +160,19 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                             if (throwable is HttpException) {
                                 when (throwable.code()) {
                                     ApiContract.HttpCodes.CLIENT_UNAUTHORIZED ->
-                                        viewState.onError(mContext.getString(R.string.errors_client_unauthorized))
+                                        viewState.onError(context.getString(R.string.errors_client_unauthorized))
                                     ApiContract.HttpCodes.CLIENT_FORBIDDEN ->
-                                        viewState.onError(mContext.getString(R.string.error_recent_account))
+                                        viewState.onError(context.getString(R.string.error_recent_account))
                                     else ->
                                         onErrorHandle(throwable.response()?.errorBody(), throwable.code())
                                 }
                             } else {
-                                viewState.onError(mContext.getString(R.string.error_recent_account))
+                                viewState.onError(context.getString(R.string.error_recent_account))
                             }
                         })
                 )
             } ?: run {
-                viewState.onError(mContext.getString(R.string.error_recent_enter_account))
+                viewState.onError(context.getString(R.string.error_recent_enter_account))
             }
         }
     }
@@ -185,10 +183,10 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 StringUtils.Extension.DOC, StringUtils.Extension.FORM, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                     viewState.openFile(file)
                 }
-                else -> viewState.onError(mContext.getString(R.string.error_unsupported_format))
+                else -> viewState.onError(context.getString(R.string.error_unsupported_format))
             }
         } else {
-            viewState.onError(mContext.getString(R.string.error_recent_account))
+            viewState.onError(context.getString(R.string.error_recent_account))
         }
     }
 
@@ -212,7 +210,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             if (!recent.isLocal) {
                 accountDao.getAccount(recent.ownerId ?: "")?.let {
                     state.info =
-                        it.portal + mContext.getString(R.string.placeholder_point) + TimeUtils.formatDate(Date(recent.date))
+                        it.portal + context.getString(R.string.placeholder_point) + TimeUtils.formatDate(Date(recent.date))
                 }
 
             } else {
@@ -233,7 +231,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         account?.let {
             if (it.isWebDav) {
                 val provider = WebDavFileProvider(
-                    mContext.webDavApi(),
+                    context.webDavApi(),
                     WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
                 )
                 item?.let { item ->
@@ -252,7 +250,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                             return@flatMap provider.upload(cloudFile.folderId, arrayListOf(uri))
                         }.subscribe({}, { error -> fetchError(error) }, {
                             deleteTempFile()
-                            viewState.onSnackBar(mContext.getString(R.string.upload_manager_complete))
+                            viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
                         })
                     )
                 }
@@ -329,7 +327,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 accountDao.getAccount(id)?.let { recentAccount ->
                     if (!recentAccount.isOnline) {
                         withContext(Dispatchers.Main) {
-                            viewState.onError(mContext.getString(R.string.error_recent_enter_account))
+                            viewState.onError(context.getString(R.string.error_recent_enter_account))
                         }
                     } else if (recentAccount.isWebDav) {
                         openWebDavFile(recent, position)
@@ -343,7 +341,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     private fun openLocalFile(uri: Uri) {
-        val name = getName(mContext, uri)
+        val name = getName(context, uri)
         when (StringUtils.getExtension(StringUtils.getExtensionFromPath(name.lowercase(Locale.ROOT)))) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> viewState.onOpenFile(OpenState.Docs(uri))
             StringUtils.Extension.SHEET -> viewState.onOpenFile(OpenState.Cells(uri))
@@ -352,14 +350,14 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                 viewState.onOpenFile(OpenState.Media(getImages(File(uri.path)), false))
             }
-            else -> viewState.onError(mContext.getString(R.string.error_unsupported_format))
+            else -> viewState.onError(context.getString(R.string.error_unsupported_format))
         }
     }
 
     private suspend fun openWebDavFile(recent: Recent, position: Int) {
         accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
             WebDavFileProvider(
-                mContext.webDavApi(),
+                context.webDavApi(),
                 WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
             ).let { provider ->
                 val cloudFile = CloudFile().apply {
@@ -375,7 +373,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                         disposable.add(provider.fileInfo(cloudFile)
                             .doOnSubscribe {
                                 viewState.onDialogWaiting(
-                                    mContext.getString(R.string.dialogs_wait_title),
+                                    context.getString(R.string.dialogs_wait_title),
                                     null
                                 )
                             }
@@ -430,7 +428,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     @SuppressLint("MissingPermission")
     fun deleteTempFile() {
-        if (temp != null && checkReadWritePermission(mContext)) {
+        if (temp != null && checkReadWritePermission(context)) {
             val uri = Uri.parse(temp!!.webUrl)
             if (uri.path != null) {
                 asyncDeletePath(uri.path!!)

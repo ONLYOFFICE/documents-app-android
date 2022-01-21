@@ -63,25 +63,25 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
 
     val externalLink : Unit
         get() {
-            mItemClicked?.let {
+            itemClicked?.let {
                 val request = ExternalLinkRequest(
                     type = OneDriveUtils.VAL_SHARE_TYPE_READ_WRITE,
                     scope = OneDriveUtils.VAL_SHARE_SCOPE_ANON
                 )
-                (mFileProvider as OneDriveFileProvider).share(it.id, request)?.let { extrenalLinkResponse ->
-                    mDisposable.add(extrenalLinkResponse
+                (fileProvider as OneDriveFileProvider).share(it.id, request)?.let { externalLinkResponse ->
+                    disposable.add(externalLinkResponse
                         .subscribe( {response ->
                             it.shared = !it.shared
                             response.link?.webUrl?.let { link ->
                                 KeyboardUtils.setDataToClipboard(
-                                    mContext,
+                                    context,
                                     link,
-                                    mContext.getString(R.string.share_clipboard_external_link_label)
+                                    context.getString(R.string.share_clipboard_external_link_label)
                                 )
                             }
                             viewState.onDocsAccess(
                                 true,
-                                mContext.getString(R.string.share_clipboard_external_copied)
+                                context.getString(R.string.share_clipboard_external_copied)
                             )
                         }) {throwable: Throwable -> fetchError(throwable)}
                     )
@@ -91,13 +91,13 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
 
     init {
         App.getApp().appComponent.inject(this)
-        mModelExplorerStack = ModelExplorerStack()
-        mFilteringValue = ""
-        mPlaceholderType = PlaceholderViews.Type.NONE
-        mIsContextClick = false
-        mIsFilteringMode = false
-        mIsSelectionMode = false
-        mIsFoldersMode = false
+        modelExplorerStack = ModelExplorerStack()
+        filteringValue = ""
+        placeholderViewType = PlaceholderViews.Type.NONE
+        isContextClick = false
+        isFilteringMode = false
+        isSelectionMode = false
+        isFoldersMode = false
         uploadReceiver = UploadReceiver()
         downloadReceiver = DownloadReceiver()
     }
@@ -105,19 +105,19 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         uploadReceiver.setOnUploadListener(this)
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(uploadReceiver, uploadReceiver.filter)
+        LocalBroadcastManager.getInstance(context).registerReceiver(uploadReceiver, uploadReceiver.filter)
         downloadReceiver.setOnDownloadListener(this)
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(downloadReceiver, downloadReceiver.filter)
+        LocalBroadcastManager.getInstance(context).registerReceiver(downloadReceiver, downloadReceiver.filter)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(uploadReceiver)
-        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(downloadReceiver)
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
     }
 
     fun getProvider() {
-        mFileProvider?.let {
+        fileProvider?.let {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                     withContext(Dispatchers.Main) {
@@ -129,8 +129,8 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         } ?: run {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
-                    AccountUtils.getAccount(mContext, cloudAccount.getAccountName())?.let {
-                        mFileProvider = OneDriveFileProvider()
+                    AccountUtils.getAccount(context, cloudAccount.getAccountName())?.let {
+                        fileProvider = OneDriveFileProvider()
                         withContext(Dispatchers.Main) {
                             getItemsById(null)
                         }
@@ -143,8 +143,8 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     }
 
     fun refreshToken() {
-        val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), mContext.getString(lib.toolkit.base.R.string.account_type))
-        val accData = AccountUtils.getAccountData(mContext, account)
+        val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
+        val accData = AccountUtils.getAccountData(context, account)
         val map = mapOf(
             StorageUtils.ARG_CLIENT_ID to Constants.OneDrive.COM_CLIENT_ID,
             StorageUtils.ARG_SCOPE to StorageUtils.OneDrive.VALUE_SCOPE,
@@ -153,13 +153,13 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
             StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.OneDrive.COM_CLIENT_SECRET,
             StorageUtils.OneDrive.ARG_REFRESH_TOKEN to accData.refreshToken!!
         )
-        mDisposable.add(App.getApp().oneDriveAuthService.getToken(map)
+        disposable.add(App.getApp().oneDriveAuthService.getToken(map)
             .subscribe {oneDriveResponse ->
                 when(oneDriveResponse) {
                     is OneDriveResponse.Success -> {
-                        AccountUtils.setAccountData(mContext, account, accData.copy(accessToken = (oneDriveResponse.response as AuthResponse).access_token))
-                        AccountUtils.setToken(mContext, account, oneDriveResponse.response.access_token)
-                        (mFileProvider as OneDriveFileProvider).refreshInstance()
+                        AccountUtils.setAccountData(context, account, accData.copy(accessToken = (oneDriveResponse.response as AuthResponse).access_token))
+                        AccountUtils.setToken(context, account, oneDriveResponse.response.access_token)
+                        (fileProvider as OneDriveFileProvider).refreshInstance()
                         refresh()
                     }
                     is OneDriveResponse.Error -> {
@@ -171,7 +171,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
 
     override fun download(downloadTo: Uri) {
         val data = Data.Builder()
-            .putString(DownloadWork.FILE_ID_KEY, mItemClicked?.id)
+            .putString(DownloadWork.FILE_ID_KEY, itemClicked?.id)
             .putString(DownloadWork.FILE_URI_KEY, downloadTo.toString())
             .build()
 
@@ -183,47 +183,52 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     }
 
     override fun createDownloadFile() {
-        if (mModelExplorerStack.selectedFiles.isNotEmpty() || mModelExplorerStack.selectedFolders.isNotEmpty() || mItemClicked is CloudFolder) {
+        if (modelExplorerStack?.selectedFiles?.isNotEmpty() == true ||
+            modelExplorerStack?.selectedFolders?.isNotEmpty() == true || itemClicked is CloudFolder) {
             viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
-        } else if (mItemClicked is CloudFile) {
-            viewState.onCreateDownloadFile((mItemClicked as CloudFile).title)
+        } else if (itemClicked is CloudFile) {
+            viewState.onCreateDownloadFile((itemClicked as CloudFile).title)
         }
     }
 
     override fun getNextList() {
-        val id = mModelExplorerStack.currentId
-        val loadPosition = mModelExplorerStack.loadPosition
+        val id = modelExplorerStack?.currentId
+        val loadPosition = modelExplorerStack?.loadPosition ?: 0
         if (id != null && loadPosition > 0) {
-            val args = getArgs(mFilteringValue)
+            val args = getArgs(filteringValue).toMutableMap()
             args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
-            mDisposable.add(mFileProvider.getFiles(id, args)!!.subscribe({ explorer: Explorer? ->
-                mModelExplorerStack.addOnNext(explorer)
-                val last = mModelExplorerStack.last()
-                if (last != null) {
-                    viewState.onDocsNext(getListWithHeaders(last, true))
-                }
-            }) { throwable: Throwable? -> fetchError(throwable) })
+            fileProvider?.let { provider ->
+                disposable.add(provider.getFiles(id, args).subscribe({ explorer: Explorer? ->
+                    modelExplorerStack?.addOnNext(explorer)
+                    val last = modelExplorerStack?.last()
+                    if (last != null) {
+                        viewState.onDocsNext(getListWithHeaders(last, true))
+                    }
+                }) { throwable: Throwable -> fetchError(throwable) })
+            }
         }
     }
 
     override fun createDocs(title: String) {
-        val id = mModelExplorerStack.currentId
+        val id = modelExplorerStack?.currentId
         id?.let {
             val requestCreate = RequestCreate()
             requestCreate.title = title
-            mDisposable.add(mFileProvider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
-                addFile(file)
-                setPlaceholderType(PlaceholderViews.Type.NONE)
-                viewState.onDialogClose()
-                viewState.onOpenLocalFile(file)
-            }) { throwable: Throwable? -> fetchError(throwable) })
+            fileProvider?.let { provider ->
+                disposable.add(provider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
+                    addFile(file)
+                    setPlaceholderType(PlaceholderViews.Type.NONE)
+                    viewState.onDialogClose()
+                    viewState.onOpenLocalFile(file)
+                }) { throwable: Throwable -> fetchError(throwable) })
+            }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
     }
 
     override fun getFileInfo() {
-        if (mItemClicked != null && mItemClicked is CloudFile) {
-            val file = mItemClicked as CloudFile
+        if (itemClicked != null && itemClicked is CloudFile) {
+            val file = itemClicked as CloudFile
             val extension = file.fileExst
             if (StringUtils.isImage(extension)) {
                 addRecent(file)
@@ -231,17 +236,18 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
             }
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        downloadDisposable = mFileProvider.fileInfo(mItemClicked!!)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { file: CloudFile? ->
-                    tempFile = file
-                    viewState.onDialogClose()
-                    viewState.onOpenLocalFile(file)
-                }
-            ) { throwable: Throwable? -> fetchError(throwable) }
-
+        fileProvider?.let { provider ->
+            downloadDisposable = provider.fileInfo(itemClicked!!)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { file: CloudFile? ->
+                        tempFile = file
+                        viewState.onDialogClose()
+                        viewState.onOpenLocalFile(file)
+                    }
+                ) { throwable: Throwable -> fetchError(throwable) }
+        }
     }
 
     fun upload(uri: Uri?, uris: ClipData?, tag: String) {
@@ -259,7 +265,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
 
         for (uri in uploadUris) {
             val data = Data.Builder()
-                .putString(UploadWork.KEY_FOLDER_ID, mModelExplorerStack.currentId)
+                .putString(UploadWork.KEY_FOLDER_ID, modelExplorerStack?.currentId)
                 .putString(UploadWork.KEY_FROM, uri.toString())
                 .putString(UploadWork.KEY_TAG, tag)
                 .build()
@@ -273,10 +279,10 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
 
     }
 
-    override fun addRecent(file: CloudFile?) {
+    override fun addRecent(file: CloudFile) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
-                file?.title?.let { fileName ->
+                file.title?.let { fileName ->
                     Recent(
                         idFile = if (file.fileExst?.let { fileExt -> StringUtils.isImage(fileExt) } == true) file.id else file.viewUrl,
                         path = file.webUrl,
@@ -289,17 +295,15 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
                         source = it.portal
                     )
                 }?.let { recent ->
-                    recentDao.addRecent(
-                        recent
-                    )
+                    recentDao.addRecent(recent)
                 }
             }
         }
     }
 
-    override fun onContextClick(item: Item?, position: Int, isTrash: Boolean) {
+    override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
-        mIsContextClick = true
+        isContextClick = true
         val state = ContextBottomDialog.State()
         state.title = itemClickedTitle
         state.info = TimeUtils.formatDate(itemClickedDate)
@@ -332,24 +336,24 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     }
 
     override fun updateViewsState() {
-        if (mIsSelectionMode) {
+        if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(mModelExplorerStack.countSelectedItems.toString())
-            viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
+            viewState.onActionBarTitle(modelExplorerStack?.countSelectedItems.toString())
+            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
             viewState.onStateActionButton(false)
-        } else if (mIsFilteringMode) {
-            viewState.onActionBarTitle(mContext.getString(R.string.toolbar_menu_search_result))
-            viewState.onStateUpdateFilter(true, mFilteringValue)
-            viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
+        } else if (isFilteringMode) {
+            viewState.onActionBarTitle(context.getString(R.string.toolbar_menu_search_result))
+            viewState.onStateUpdateFilter(true, filteringValue)
+            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
             viewState.onStateActionButton(false)
-        } else if (!mModelExplorerStack.isRoot) {
+        } else if (!modelExplorerStack?.isRoot!!) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(if(currentTitle.isEmpty()) { mItemClicked?.title } else { currentTitle } )
+            viewState.onActionBarTitle(if(currentTitle.isEmpty()) { itemClicked?.title } else { currentTitle } )
         } else {
-            if (mIsFoldersMode) {
-                viewState.onActionBarTitle(mContext.getString(R.string.operation_title))
+            if (isFoldersMode) {
+                viewState.onActionBarTitle(context.getString(R.string.operation_title))
                 viewState.onStateActionButton(false)
             } else {
                 viewState.onActionBarTitle("")
@@ -377,9 +381,9 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     }
 
     override fun delete(): Boolean {
-        if (mModelExplorerStack.countSelectedItems > 0) {
+        if (modelExplorerStack?.countSelectedItems!! > 0) {
             viewState.onDialogQuestion(
-                mContext.getString(R.string.dialogs_question_delete), null,
+                context.getString(R.string.dialogs_question_delete), null,
                 TAG_DIALOG_BATCH_DELETE_SELECTED
             )
         } else {
@@ -388,13 +392,13 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         return true
     }
 
-    override fun fetchError(throwable: Throwable?) {
+    override fun fetchError(throwable: Throwable) {
         super.fetchError(throwable)
-        if(throwable is HttpException) {
-            if(throwable.code() == 423) {
+        if (throwable is HttpException) {
+            if (throwable.code() == 423) {
                 viewState.onError(App.getApp().applicationContext.getString(R.string.storage_onedrive_error_opened))
             }
-            if(throwable.code() == 409) {
+            if (throwable.code() == 409) {
                 viewState.onError(App.getApp().applicationContext.getString(R.string.storage_onedrive_error_exist))
             }
         }
@@ -421,7 +425,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        if (mModelExplorerStack.currentId == folderId) {
+        if (modelExplorerStack?.currentId == folderId) {
             viewState.onUploadFileProgress(progress, id)
         }
     }
@@ -429,9 +433,9 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
     override fun onUploadCanceled(path: String?, info: String?, id: String?) {
         info?.let { viewState.onSnackBar(it) }
         viewState.onDeleteUploadFile(id)
-        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(mModelExplorerStack.currentId)?.isEmpty() == true) {
+        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(modelExplorerStack?.currentId)?.isEmpty() == true) {
             viewState.onRemoveUploadHead()
-            getListWithHeaders(mModelExplorerStack.last(), true)
+            getListWithHeaders(modelExplorerStack?.last(), true)
         }
     }
 
@@ -463,7 +467,7 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
             """
     $info
     $title
-    """.trimIndent(), mContext.getString(R.string.download_manager_open)
+    """.trimIndent(), context.getString(R.string.download_manager_open)
         ) { showDownloadFolderActivity(uri) }
     }
 

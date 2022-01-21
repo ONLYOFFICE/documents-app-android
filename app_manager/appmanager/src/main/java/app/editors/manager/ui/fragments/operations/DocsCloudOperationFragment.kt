@@ -122,7 +122,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
     }
 
     private fun getDocs() {
-        cloudPresenter.setFoldersMode(true)
+        cloudPresenter.isFoldersMode = true
         when (sectionType) {
             ApiContract.SectionType.CLOUD_USER -> cloudPresenter.getItemsById(DocsMyFragment.ID)
             ApiContract.SectionType.CLOUD_SHARE -> cloudPresenter.getItemsById(DocsShareFragment.ID)
