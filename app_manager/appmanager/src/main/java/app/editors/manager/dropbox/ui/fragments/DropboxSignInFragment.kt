@@ -10,6 +10,7 @@ import android.webkit.*
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageWebBinding
 import app.editors.manager.dropbox.mvp.presenters.DropboxSignInPresenter
 import app.editors.manager.dropbox.mvp.views.DropboxSignInView
@@ -175,7 +176,7 @@ class DropboxSignInFragment: BaseAppFragment(), SwipeRefreshLayout.OnRefreshList
         ) {
             super.onReceivedError(view, request, error)
             viewBinding?.webStorageSwipe?.isRefreshing = false
-            if (!NetworkUtils.isOnline(requireContext())) {
+            if (!NetworkUtils.isOnline(context ?: App.getApp())) {
                 showSnackBar(R.string.errors_connection_error)
             }
         }
