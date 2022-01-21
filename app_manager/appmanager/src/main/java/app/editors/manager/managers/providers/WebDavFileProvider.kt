@@ -521,7 +521,8 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     private fun getFolderTitle(href: String?): String {
-        return href!!.substring(href.lastIndexOf('/', href.length - 2) + 1, href.lastIndexOf('/'))
+        if (href.isNullOrEmpty()) return ""
+        return href.substring(href.lastIndexOf('/', href.length - 2) + 1, href.lastIndexOf('/'))
     }
 
     @Throws(UnsupportedEncodingException::class)

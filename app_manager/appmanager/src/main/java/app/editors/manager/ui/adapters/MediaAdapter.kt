@@ -261,7 +261,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
                     if (bitmap == null) {
                         val b = ThumbnailUtils.createVideoThumbnail(file.webUrl, MediaStore.Images.Thumbnails.MINI_KIND)
                         videoView.setImageBitmap(b)
-                        cacheTool.addBitmap(file.webUrl, b!!, null)
+                        cacheTool.addBitmap(file.webUrl, checkNotNull(b), null)
                     } else {
                         videoView.setImageBitmap(bitmap)
                     }

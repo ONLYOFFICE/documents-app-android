@@ -1,12 +1,11 @@
 package app.editors.manager.ui.fragments.login
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginEnterpriseCreateSigninBinding
@@ -68,7 +67,10 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         hideKeyboard(viewBinding?.loginSigninPasswordEdit)
         val password = viewBinding?.loginSigninPasswordEdit?.text.toString()
         val repeat = viewBinding?.loginSigninRepeatEdit?.text.toString()
-        if (password != repeat) {
+        if (password.length < 8 || password.length > 30) {
+            viewBinding?.loginSigninPasswordLayout?.error = getString(R.string.login_create_signin_passwords_length)
+            return
+        } else if (password != repeat) {
             viewBinding?.loginSigninRepeatLayout?.error = getString(R.string.login_create_signin_passwords_mismatch)
             return
         }
@@ -102,7 +104,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
     }
 
 
-    private fun actionKeyPress(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+    private fun actionKeyPress(actionId: Int): Boolean {
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             onSignInClick()
             return true
@@ -160,11 +162,15 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
             onAgreeTerms()
         }
 
-        viewBinding?.loginSigninRepeatEdit?.setOnEditorActionListener { v, actionId, event ->
-            actionKeyPress(v, actionId, event)
+        viewBinding?.loginSigninRepeatEdit?.setOnEditorActionListener { _, actionId, _ ->
+            actionKeyPress(actionId)
         }
 
         viewBinding?.loginSigninRepeatEdit?.addTextChangedListener(fieldsWatcher)
+
+        viewBinding?.loginSigninPasswordEdit?.addTextChangedListener {
+            viewBinding?.loginSigninPasswordLayout?.error = null
+        }
     }
 
     private val args: Unit

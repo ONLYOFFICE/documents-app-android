@@ -52,8 +52,9 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     private var api: IDropboxServiceProvider = App.getApp().getDropboxComponent()
-    private val workManager = WorkManager.getInstance()
+    private val workManager = WorkManager.getInstance(App.getApp())
 
+    @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
 
         val req =
@@ -61,15 +62,15 @@ class DropboxFileProvider : BaseFileProvider {
                 (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) &&
                 (filter[DropboxUtils.DROPBOX_SEARCH_CURSOR] == null || filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isEmpty() == true)
             ) {
-                SearchRequest(query = filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!)
+                SearchRequest(query = filter[ApiContract.Parameters.ARG_FILTER_VALUE] ?: "")
             } else if (
                 (filter?.get(DropboxUtils.DROPBOX_CONTINUE_CURSOR) != null && filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]?.isNotEmpty() == true) ||
                 (filter?.get(DropboxUtils.DROPBOX_SEARCH_CURSOR) != null && filter[DropboxUtils.DROPBOX_SEARCH_CURSOR]?.isNotEmpty() == true)
             ) {
-                ExplorerContinueRequest(cursor = filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR]!!)
+                ExplorerContinueRequest(cursor = filter[DropboxUtils.DROPBOX_CONTINUE_CURSOR] ?: "")
             } else {
                 if (id?.isEmpty() == true) ExplorerRequest(path = DropboxUtils.DROPBOX_ROOT) else ExplorerRequest(
-                    path = id!!
+                    path = id ?: ""
                 )
             }
 
@@ -139,7 +140,7 @@ class DropboxFileProvider : BaseFileProvider {
                     file.title = item.name
                     file.versionGroup = item.rev
                     file.pureContentLength = item.size.toLong()
-                    file.fileExst = StringUtils.getExtensionFromPath(item.name.toLowerCase())
+                    file.fileExst = StringUtils.getExtensionFromPath(item.name.lowercase(Locale.getDefault()))
                     file.updated = SimpleDateFormat(
                         "yyyy-MM-dd'T'HH:mm:ss",
                         Locale.getDefault()
@@ -203,7 +204,7 @@ class DropboxFileProvider : BaseFileProvider {
         file.webUrl = Uri.fromFile(temp).toString()
         file.pureContentLength = temp?.length() ?: 0
         file.updated = Date()
-        file.id = folderId?.trim() + title
+        file.id = folderId.trim() + title
         file.title = title
         file.fileExst = title?.split(".")?.get(1)
         return Observable.just(file)
@@ -374,7 +375,7 @@ class DropboxFileProvider : BaseFileProvider {
         }
     }
 
-    private fun sortExplorer(explorer: Explorer, filter: Map<String, String>?): Explorer? {
+    private fun sortExplorer(explorer: Explorer, filter: Map<String, String>?): Explorer {
         val folders = explorer.folders
         val files = explorer.files
         if (filter != null) {
@@ -382,23 +383,23 @@ class DropboxFileProvider : BaseFileProvider {
             val order = filter[ApiContract.Parameters.ARG_SORT_ORDER]
             if (sort != null && order != null) {
                 when (sort) {
-                    ApiContract.Parameters.VAL_SORT_BY_UPDATED -> folders.sortWith(Comparator { o1: CloudFolder, o2: CloudFolder ->
+                    ApiContract.Parameters.VAL_SORT_BY_UPDATED -> folders.sortWith { o1: CloudFolder, o2: CloudFolder ->
                         o1.updated.compareTo(o2.updated)
-                    })
-                    ApiContract.Parameters.VAL_SORT_BY_TITLE -> {
-                        folders.sortWith(Comparator { o1: CloudFolder, o2: CloudFolder ->
-                            o1.title.toLowerCase().compareTo(o2.title.toLowerCase())
-                        })
-                        files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
-                            o1.title.toLowerCase().compareTo(o2.title.toLowerCase())
-                        })
                     }
-                    ApiContract.Parameters.VAL_SORT_BY_SIZE -> files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
+                    ApiContract.Parameters.VAL_SORT_BY_TITLE -> {
+                        folders.sortWith { o1: CloudFolder, o2: CloudFolder ->
+                            o1.title.lowercase(Locale.getDefault()).compareTo(o2.title.lowercase(Locale.getDefault()))
+                        }
+                        files.sortWith { o1: CloudFile, o2: CloudFile ->
+                            o1.title.lowercase(Locale.getDefault()).compareTo(o2.title.lowercase(Locale.getDefault()))
+                        }
+                    }
+                    ApiContract.Parameters.VAL_SORT_BY_SIZE -> files.sortWith { o1: CloudFile, o2: CloudFile ->
                         o1.pureContentLength.compareTo(o2.pureContentLength)
-                    })
-                    ApiContract.Parameters.VAL_SORT_BY_TYPE -> files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
+                    }
+                    ApiContract.Parameters.VAL_SORT_BY_TYPE -> files.sortWith { o1: CloudFile, o2: CloudFile ->
                         o1.fileExst.compareTo(o2.fileExst)
-                    })
+                    }
                 }
                 if (order == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
                     folders.reverse()
@@ -509,7 +510,7 @@ class DropboxFileProvider : BaseFileProvider {
                 return FileUtils.createFile(parent, file.title)
             }
         }
-        val local = File(Uri.parse(file.webUrl).path)
+        val local = File(Uri.parse(file.webUrl).path ?: "")
         return if (local.exists()) {
             local
         } else {

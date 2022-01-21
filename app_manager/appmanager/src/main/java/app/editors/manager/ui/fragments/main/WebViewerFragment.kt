@@ -67,9 +67,9 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         private const val PATTERN_BACK_3 = ".*/Files/#.*"
         private const val PATTERN_BACK_2 = ".*projects.*\\d+#\\d+"
         private const val DESKTOP_USER_AGENT =
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36"
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36 AscAndroidWebView"
         private const val MOBILE_USER_AGENT =
-            "Mozilla/5.0 (Linux; U; Android 4.4; en-us; Nexus 4 Build/JOP24G) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"
+            "Mozilla/5.0 (Linux; U; Android 4.4; en-us; Nexus 4 Build/JOP24G) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 AscAndroidWebView"
 
         const val INTERFACE = "Android"
         const val KEY_EVENT = "event"
@@ -325,6 +325,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         webView.clearFormData()
         webView.addJavascriptInterface(webViewEventsInterface!!, INTERFACE)
         webView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.NORMAL
+//        webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
 
         if (isDesktopMode || UiUtils.isHuaweiDesktopMode(resources.configuration)) {
             webView.settings.userAgentString = DESKTOP_USER_AGENT

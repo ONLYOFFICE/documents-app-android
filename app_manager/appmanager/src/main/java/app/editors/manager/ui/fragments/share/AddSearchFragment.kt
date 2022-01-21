@@ -21,6 +21,7 @@ import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.custom.SharePanelViews
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
@@ -244,9 +245,13 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     private fun initViews() {
         viewBinding?.let { binding ->
             sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, shareActivity!!).apply {
-                    setOnEventListener(this@AddSearchFragment)
-                    setAccessIcon(addPresenter.accessCode)
-                }
+                val ext = StringUtils.getExtensionFromPath(checkNotNull(addPresenter.item?.title))
+
+                setExtension(StringUtils.getExtension(ext)
+                    .takeIf { it != StringUtils.Extension.FORM } ?: StringUtils.getFormExtension(ext))
+                setOnEventListener(this@AddSearchFragment)
+                setAccessIcon(addPresenter.accessCode)
+            }
         }
         shareAdapter = ShareAdapter(ShareHolderFactory { view, position ->
             onItemClick(view, position)

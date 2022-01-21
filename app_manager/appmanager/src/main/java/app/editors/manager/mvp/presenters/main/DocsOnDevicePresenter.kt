@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.annotation.SuppressLint
-import android.content.ClipData
 import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
@@ -23,12 +22,10 @@ import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
@@ -44,14 +41,14 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     init {
         App.getApp().appComponent.inject(this)
-        mModelExplorerStack = ModelExplorerStack()
-        mFilteringValue = ""
-        mPlaceholderType = PlaceholderViews.Type.NONE
-        mIsContextClick = false
-        mIsFilteringMode = false
-        mIsSelectionMode = false
-        mIsFoldersMode = false
-        mFileProvider = LocalFileProvider(LocalContentTools(mContext))
+        modelExplorerStack = ModelExplorerStack()
+        filteringValue = ""
+        placeholderViewType = PlaceholderViews.Type.NONE
+        isContextClick = false
+        isFilteringMode = false
+        isSelectionMode = false
+        isFoldersMode = false
+        fileProvider = LocalFileProvider(LocalContentTools(context))
         checkWebDav()
     }
 
@@ -63,7 +60,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             accountDao.getAccountOnline()?.let {
                 if (it.isWebDav) {
                     webDavFileProvider = WebDavFileProvider(
-                        mContext.webDavApi(),
+                        context.webDavApi(),
                         WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
                     )
                 }
@@ -76,22 +73,24 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun createDocs(title: String) {
-        val id = mModelExplorerStack.currentId
+        val id = modelExplorerStack?.currentId
         if (id != null) {
             val requestCreate = RequestCreate()
             requestCreate.title = title
-            mDisposable.add(mFileProvider.createFile(id, requestCreate)
-                .subscribe({ file: CloudFile ->
-                    addFile(file)
-                    addRecent(file)
-                    openFile(file)
-                }) { viewState.onError(mContext.getString(R.string.errors_create_local_file)) })
+            fileProvider?.let { provider ->
+                disposable.add(provider.createFile(id, requestCreate)
+                    .subscribe({ file: CloudFile ->
+                        addFile(file)
+                        addRecent(file)
+                        openFile(file)
+                    }) { viewState.onError(context.getString(R.string.errors_create_local_file)) })
+            }
         }
     }
 
     override fun getFileInfo() {
-        if (mItemClicked != null && mItemClicked is CloudFile) {
-            val file = mItemClicked as CloudFile
+        if (itemClicked != null && itemClicked is CloudFile) {
+            val file = itemClicked as CloudFile
             addRecent(file)
             openFile(file)
         }
@@ -116,7 +115,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun addRecent(uri: Uri) {
         CoroutineScope(Dispatchers.Default).launch {
-            DocumentFile.fromSingleUri(mContext, uri)?.let { file ->
+            DocumentFile.fromSingleUri(context, uri)?.let { file ->
                 recentDao.addRecent(
                     Recent(
                         idFile = null,
@@ -133,27 +132,27 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun updateViewsState() {
-        if (mIsSelectionMode) {
+        if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(mModelExplorerStack.countSelectedItems.toString())
-            viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
+            viewState.onActionBarTitle(modelExplorerStack?.countSelectedItems.toString())
+            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
             viewState.onStateActionButton(false)
-        } else if (mIsFilteringMode) {
-            viewState.onActionBarTitle(mContext.getString(R.string.toolbar_menu_search_result))
-            viewState.onStateUpdateFilter(true, mFilteringValue)
-            viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
+        } else if (isFilteringMode) {
+            viewState.onActionBarTitle(context.getString(R.string.toolbar_menu_search_result))
+            viewState.onStateUpdateFilter(true, filteringValue)
+            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
             viewState.onStateActionButton(false)
-        } else if (!mModelExplorerStack.isRoot) {
+        } else if (!modelExplorerStack?.isRoot!!) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
             viewState.onActionBarTitle(currentTitle)
         } else {
-            if (mIsFoldersMode) {
-                viewState.onActionBarTitle(mContext.getString(R.string.operation_title))
+            if (isFoldersMode) {
+                viewState.onActionBarTitle(context.getString(R.string.operation_title))
                 viewState.onStateActionButton(false)
             } else {
-                viewState.onActionBarTitle(mContext.getString(R.string.fragment_on_device_title))
+                viewState.onActionBarTitle(context.getString(R.string.fragment_on_device_title))
                 viewState.onStateActionButton(true)
             }
             viewState.onStateAdapterRoot(true)
@@ -163,7 +162,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
-        mIsContextClick = true
+        isContextClick = true
         val state = ContextBottomDialog.State()
         state.isLocal = true
         state.title = item.title
@@ -190,30 +189,34 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun deleteItems() {
-        val items: MutableList<Item> = ArrayList()
-        val files = mModelExplorerStack.selectedFiles
-        val folders = mModelExplorerStack.selectedFolders
-        items.addAll(folders)
-        items.addAll(files)
-        mDisposable.add(mFileProvider.delete(items, null)
-            .subscribe({ }, { fetchError(it) }) {
-                mModelExplorerStack.removeSelected()
-                backStack
-                setPlaceholderType(if (mModelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                viewState.onRemoveItems(items)
-                viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
-            })
+        modelExplorerStack?.let { stack ->
+            val items: MutableList<Item> = ArrayList()
+            val files = stack.selectedFiles
+            val folders = stack.selectedFolders
+            items.addAll(folders)
+            items.addAll(files)
+            fileProvider?.let { provider ->
+                disposable.add(provider.delete(items, null)
+                    .subscribe({ }, { fetchError(it) }) {
+                        stack.removeSelected()
+                        getBackStack()
+                        setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                        viewState.onRemoveItems(items)
+                        viewState.onSnackBar(context.getString(R.string.operation_complete_message))
+                    })
+            }
+        }
     }
 
     override fun uploadToMy(uri: Uri) {
-        mContext.accountOnline?.let { account ->
+        context.accountOnline?.let { account ->
             if (webDavFileProvider == null) {
                 when {
-                    mPreferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(mContext) -> {
-                        viewState.onSnackBar(mContext.getString(R.string.upload_error_wifi))
+                    preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context) -> {
+                        viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
                     }
-                    ContentResolverUtils.getSize(mContext, uri) > FileUtils.STRICT_SIZE -> {
-                        viewState.onSnackBar(mContext.getString(R.string.upload_manager_error_file_size))
+                    ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE -> {
+                        viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
                     }
                     else -> {
                         if (!account.isWebDav) {
@@ -237,37 +240,37 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         if (id[id.length - 1] != '/') {
             id = "$id/"
         }
-        mUploadDisposable = webDavFileProvider!!.upload(id, uriList)!!
+        uploadDisposable = webDavFileProvider!!.upload(id, uriList)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ }, { throwable: Throwable -> fetchError(throwable) }
             ) {
                 viewState.onDialogClose()
-                viewState.onSnackBar(mContext.getString(R.string.upload_manager_complete))
-                for (file in (mFileProvider as WebDavFileProvider).uploadsFile) {
+                viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
+                for (file in (fileProvider as WebDavFileProvider).uploadsFile) {
                     addFile(file)
                 }
-                (mFileProvider as WebDavFileProvider).uploadsFile.clear()
+                (fileProvider as WebDavFileProvider).uploadsFile.clear()
             }
     }
 
     override fun sortBy(value: String, isRepeatedTap: Boolean): Boolean {
-        mPreferenceTool.sortBy = value
+        preferenceTool.sortBy = value
         if (isRepeatedTap) {
             reverseSortOrder()
         }
-        getItemsById(mModelExplorerStack.currentId)
+        getItemsById(modelExplorerStack?.currentId)
         return true
     }
 
     override fun orderBy(value: String): Boolean {
-        mPreferenceTool.sortOrder = value
-        getItemsById(mModelExplorerStack.currentId)
+        preferenceTool.sortOrder = value
+        getItemsById(modelExplorerStack?.currentId)
         return true
     }
 
     override fun rename(title: String?) {
-        val item = mModelExplorerStack.getItemById(mItemClicked)
+        val item = modelExplorerStack?.getItemById(itemClicked)
         if (item != null) {
             val existFile = File(item.id)
             if (existFile.exists()) {
@@ -278,7 +281,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                 }
                 val renameFile = File(path.toString())
                 if (renameFile.exists()) {
-                    viewState.onError(mContext.getString(R.string.rename_file_exist))
+                    viewState.onError(context.getString(R.string.rename_file_exist))
                 } else {
                     super.rename(title)
                 }
@@ -287,17 +290,17 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun moveFile(data: Uri?, isCopy: Boolean) {
-        val path = PathUtils.getFolderPath(mContext, data!!)
+        val path = PathUtils.getFolderPath(context, data!!)
         if (isSelectionMode) {
             moveSelection(path, isCopy)
             return
         }
         try {
-            if ((mFileProvider as LocalFileProvider).transfer(path, mItemClicked, isCopy)) {
+            if ((fileProvider as LocalFileProvider).transfer(path, itemClicked, isCopy)) {
                 refresh()
-                viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
+                viewState.onSnackBar(context.getString(R.string.operation_complete_message))
             } else {
-                viewState.onError(mContext.getString(R.string.operation_error_move_to_same))
+                viewState.onError(context.getString(R.string.operation_error_move_to_same))
             }
         } catch (e: Exception) {
             catchTransferError(e)
@@ -305,7 +308,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun openFromChooser(uri: Uri) {
-        val fileName = ContentResolverUtils.getName(mContext, uri)
+        val fileName = ContentResolverUtils.getName(context, uri)
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
 
         addRecent(uri)
@@ -313,12 +316,12 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun import(uri: Uri) {
-        val fileName = ContentResolverUtils.getName(mContext, uri)
+        val fileName = ContentResolverUtils.getName(context, uri)
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
 
-        mDisposable.add((mFileProvider as LocalFileProvider).import(mContext, mModelExplorerStack.currentId!!, uri).subscribe {
+        disposable.add((fileProvider as LocalFileProvider).import(context, modelExplorerStack?.currentId!!, uri).subscribe {
             refresh()
-            viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
+            viewState.onSnackBar(context.getString(R.string.operation_complete_message))
             addRecent(uri)
             openFile(uri, ext)
         })
@@ -338,50 +341,52 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(uri)
-            else -> viewState.onError(mContext.getString(R.string.error_unsupported_format))
+            else -> viewState.onError(context.getString(R.string.error_unsupported_format))
         }
     }
 
     private fun moveSelection(path: String?, isCopy: Boolean) {
-        if (mModelExplorerStack.countSelectedItems > 0) {
-            if (mFileProvider is LocalFileProvider) {
-                val provider = mFileProvider as LocalFileProvider
-                val items: MutableList<Item> = ArrayList()
-                val files = mModelExplorerStack.selectedFiles
-                val folders = mModelExplorerStack.selectedFolders
-                items.addAll(folders)
-                items.addAll(files)
-                for (item in items) {
-                    try {
-                        if (!provider.transfer(path, item, isCopy)) {
-                            viewState.onError(mContext.getString(R.string.operation_error_move_to_same))
-                            break
+        modelExplorerStack?.let { stack ->
+            if (stack.countSelectedItems > 0) {
+                if (fileProvider is LocalFileProvider) {
+                    val provider = fileProvider as LocalFileProvider
+                    val items: MutableList<Item> = ArrayList()
+                    val files = stack.selectedFiles
+                    val folders = stack.selectedFolders
+                    items.addAll(folders)
+                    items.addAll(files)
+                    for (item in items) {
+                        try {
+                            if (!provider.transfer(path, item, isCopy)) {
+                                viewState.onError(context.getString(R.string.operation_error_move_to_same))
+                                break
+                            }
+                        } catch (e: Exception) {
+                            catchTransferError(e)
                         }
-                    } catch (e: Exception) {
-                        catchTransferError(e)
                     }
+                    getBackStack()
+                    refresh()
+                    viewState.onSnackBar(context.getString(R.string.operation_complete_message))
                 }
-                backStack
-                refresh()
-                viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
+            } else {
+                viewState.onError(context.getString(R.string.operation_empty_lists_data))
             }
-        } else {
-            viewState.onError(mContext.getString(R.string.operation_empty_lists_data))
         }
     }
 
     fun showDeleteDialog() {
-        if (mItemClicked != null) {
-            if (mItemClicked is CloudFolder) {
+        if (itemClicked != null) {
+            if (itemClicked is CloudFolder) {
                 viewState.onDialogQuestion(
-                    mContext.getString(R.string.dialogs_question_delete),
-                    mContext.getString(R.string.dialog_question_delete_folder),
+                    context.getString(R.string.dialogs_question_delete),
+                    context.getString(R.string.dialog_question_delete_folder),
                     TAG_DIALOG_DELETE_CONTEXT
                 )
             } else {
                 viewState.onDialogQuestion(
-                    mContext.getString(R.string.dialogs_question_delete),
-                    mContext.getString(R.string.dialog_question_delete_file),
+                    context.getString(R.string.dialogs_question_delete),
+                    context.getString(R.string.dialog_question_delete_file),
                     TAG_DIALOG_DELETE_CONTEXT
                 )
             }
@@ -389,44 +394,46 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun deleteFile() {
-        if (mItemClicked != null) {
+        if (itemClicked != null) {
             val items: MutableList<Item> = ArrayList()
-            items.add(mItemClicked!!)
-            mDisposable.add(mFileProvider.delete(items, null)
-                .subscribe({ }, { }) {
-                    mModelExplorerStack.removeItemById(mItemClicked!!.id)
-                    viewState.onRemoveItem(mItemClicked)
-                    viewState.onSnackBar(mContext.getString(R.string.operation_complete_message))
-                })
+            items.add(itemClicked!!)
+            fileProvider?.let { provider ->
+                disposable.add(provider.delete(items, null)
+                    .subscribe({ }, { }) {
+                        modelExplorerStack?.removeItemById(itemClicked!!.id)
+                        viewState.onRemoveItem(itemClicked)
+                        viewState.onSnackBar(context.getString(R.string.operation_complete_message))
+                    })
+            }
         }
     }
 
     @SuppressLint("MissingPermission")
     fun createPhoto() {
-        val photo = FileUtils.createFile(File(stack.current.id), TimeUtils.fileTimeStamp, "png")
+        val photo = FileUtils.createFile(File(stack?.current?.id ?: ""), TimeUtils.fileTimeStamp, "png")
         if (photo != null) {
-            mPhotoUri = ContentResolverUtils.getFileUri(mContext, photo)
+            mPhotoUri = ContentResolverUtils.getFileUri(context, photo)
             viewState.onShowCamera(mPhotoUri)
         }
     }
 
     fun deletePhoto() {
         if (mPhotoUri != null) {
-            mContext.contentResolver.delete(mPhotoUri!!, null, null)
+            context.contentResolver.delete(mPhotoUri!!, null, null)
         }
     }
 
     fun checkSelectedFiles() {
-        if (mModelExplorerStack.countSelectedItems > 0) {
+        if (modelExplorerStack?.countSelectedItems!! > 0) {
             viewState.onShowFolderChooser()
         } else {
-            viewState.onError(mContext.getString(R.string.operation_empty_lists_data))
+            viewState.onError(context.getString(R.string.operation_empty_lists_data))
         }
     }
 
     fun upload() {
-        mItemClicked?.let { item ->
-            mContext.accountOnline?.let {
+        itemClicked?.let { item ->
+            context.accountOnline?.let {
                 Uri.fromFile(File(item.id))?.let { uri ->
                     uploadToMy(uri)
                 }
@@ -444,7 +451,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun getMediaFile(uri: Uri): Explorer =
         Explorer().apply {
-            val file = File(PathUtils.getPath(mContext, uri).toString())
+            val file = File(PathUtils.getPath(context, uri).toString())
             val explorerFile = CloudFile().apply {
                 pureContentLength = file.length()
                 webUrl = file.absolutePath
@@ -463,7 +470,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     override fun fetchError(throwable: Throwable) {
         if (throwable.message != null) {
             if (throwable.message == ProviderError.ERROR_CREATE_LOCAL) {
-                viewState.onError(mContext.getString(R.string.rename_file_exist))
+                viewState.onError(context.getString(R.string.rename_file_exist))
             } else {
                 super.fetchError(throwable)
             }
@@ -473,8 +480,8 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     private fun catchTransferError(e: Exception) {
         if (e.message != null) {
             when (e.message) {
-                ProviderError.FILE_EXIST -> viewState.onError(mContext.getString(R.string.operation_error_move_to_same))
-                ProviderError.UNSUPPORTED_PATH -> viewState.onError(mContext.getString(R.string.error_unsupported_path))
+                ProviderError.FILE_EXIST -> viewState.onError(context.getString(R.string.operation_error_move_to_same))
+                ProviderError.UNSUPPORTED_PATH -> viewState.onError(context.getString(R.string.error_unsupported_path))
             }
         } else {
             Log.e(TAG, "Error move/copy local")

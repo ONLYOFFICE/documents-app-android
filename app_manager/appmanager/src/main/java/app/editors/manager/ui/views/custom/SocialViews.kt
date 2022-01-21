@@ -121,7 +121,7 @@ class SocialViews(private val activity: Activity, view: View?,
     }
 
     fun onFacebookContinue() {
-        onSocialNetworkCallbacks?.onFacebookSuccess(AccessToken.getCurrentAccessToken().token)
+        onSocialNetworkCallbacks?.onFacebookSuccess(AccessToken.getCurrentAccessToken()?.token ?: "")
     }
 
     fun onFacebookLogout() {
@@ -157,15 +157,15 @@ class SocialViews(private val activity: Activity, view: View?,
     * Facebook callback
     * */
     private inner class FacebookAuthCallback : FacebookCallback<LoginResult> {
-        override fun onSuccess(loginResult: LoginResult) {
-            onSocialNetworkCallbacks?.onFacebookSuccess(loginResult.accessToken.token)
+        override fun onSuccess(result: LoginResult) {
+            onSocialNetworkCallbacks?.onFacebookSuccess(result.accessToken.token)
         }
 
         override fun onCancel() {
             onSocialNetworkCallbacks?.onFacebookCancel()
         }
 
-        override fun onError(exception: FacebookException) {
+        override fun onError(error: FacebookException) {
             LoginManager.getInstance().logOut()
             onSocialNetworkCallbacks?.onFacebookFailed()
         }

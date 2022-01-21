@@ -1,7 +1,6 @@
 package app.editors.manager.di.component
 
 import android.content.Context
-import androidx.room.RoomDatabase
 import app.documents.core.account.AccountDao
 import app.documents.core.account.AccountsDataBase
 import app.documents.core.account.CloudAccount
@@ -9,7 +8,6 @@ import app.documents.core.account.RecentDao
 import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.settings.NetworkSettings
 import app.documents.core.settings.WebDavInterceptor
-import app.editors.manager.app.MigrateDb
 import app.editors.manager.di.module.AppModule
 import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
 import app.editors.manager.dropbox.mvp.presenters.DocsDropboxPresenter
@@ -51,7 +49,6 @@ import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModel
-import app.editors.manager.viewModels.main.SetPasscodeViewModel
 import dagger.BindsInstance
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
@@ -67,9 +64,6 @@ interface AppComponent {
 
         @BindsInstance
         fun context(context: Context): Builder
-
-        @BindsInstance
-        fun roomCallback(callback: RoomDatabase.Callback): Builder
 
         fun build(): AppComponent
 
@@ -103,7 +97,6 @@ interface AppComponent {
     fun inject(personalSignInPresenter: PersonalLoginPresenter?)
     fun inject(personalSignUpPresenter: PersonalSignUpPresenter?)
     fun inject(enterpriseSSOPresenter: EnterpriseSSOPresenter?)
-    fun inject(migrateDb: MigrateDb?)
     fun inject(codesFragment: CountriesCodesFragment?)
     fun inject(phoneFragment: EnterprisePhoneFragment?)
     fun inject(portalFragment: EnterprisePortalFragment?)
