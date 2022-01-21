@@ -32,7 +32,8 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
 
     override fun bind(file: CloudFile) {
         // Get file info
-        val filesInfo: String = file.createdBy.displayName + PLACEHOLDER_POINT +
+        val filesInfo: String = file.createdBy.displayName + PLACEHOLDER_POINT
+            .takeIf { file.createdBy.displayName.isNotEmpty() }.orEmpty() +
                 TimeUtils.getWeekDate(file.updated) + PLACEHOLDER_POINT +
                 StringUtils.getFormattedSize(adapter.context, file.pureContentLength)
 
