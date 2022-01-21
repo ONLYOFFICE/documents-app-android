@@ -44,7 +44,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
 
     val accounts: Unit
         get() {
-            CoroutineScope(Dispatchers.Default).launch {
+            CoroutineScope(Dispatchers.Main).launch {
                 viewState.onUsersAccounts(accountDao.getAccounts().toMutableList())
             }
         }
