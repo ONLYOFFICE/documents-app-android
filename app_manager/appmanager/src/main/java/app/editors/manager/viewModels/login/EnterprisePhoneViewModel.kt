@@ -22,6 +22,7 @@ sealed class EnterprisePhoneState {
 
 class EnterprisePhoneViewModelFactory(private val loginService: ILoginServiceProvider) : ViewModelProvider.Factory {
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return EnterprisePhoneViewModel(loginService) as T
     }

@@ -1,12 +1,10 @@
 package app.editors.manager.ui.fragments.login
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
@@ -106,7 +104,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
     }
 
 
-    private fun actionKeyPress(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+    private fun actionKeyPress(actionId: Int): Boolean {
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             onSignInClick()
             return true
@@ -164,8 +162,8 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
             onAgreeTerms()
         }
 
-        viewBinding?.loginSigninRepeatEdit?.setOnEditorActionListener { v, actionId, event ->
-            actionKeyPress(v, actionId, event)
+        viewBinding?.loginSigninRepeatEdit?.setOnEditorActionListener { _, actionId, _ ->
+            actionKeyPress(actionId)
         }
 
         viewBinding?.loginSigninRepeatEdit?.addTextChangedListener(fieldsWatcher)

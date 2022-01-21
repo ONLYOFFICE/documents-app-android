@@ -55,8 +55,8 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
                 .blockingGet() else
             applicationContext.getDropboxServiceProvider().downloadFolder(Json.encodeToString(request))
                 .blockingGet()
-        response.body()?.let { response ->
-            FileUtils.writeFromResponseBody(response, to!!, applicationContext, object: FileUtils.Progress {
+        response.body()?.let { responseBody ->
+            FileUtils.writeFromResponseBody(responseBody, to!!, applicationContext, object: FileUtils.Progress {
                 override fun onProgress(total: Long, progress: Long): Boolean {
                     showProgress(total, progress, false)
                     return isStopped

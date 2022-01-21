@@ -119,7 +119,7 @@ class OneDriveFileProvider : BaseFileProvider {
                     file.title = item.name
                     file.folderId = item.parentReference.id
                     file.pureContentLength = item.size.toLong()
-                    file.fileExst = getExtensionFromPath(file.title.toLowerCase())
+                    file.fileExst = getExtensionFromPath(file.title.lowercase(Locale.getDefault()))
                     file.created =
                         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.createdDateTime)
                     file.updated =

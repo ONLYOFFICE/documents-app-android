@@ -87,7 +87,6 @@ class AccountContentProvider : ContentProvider() {
             Json.decodeFromString(values.getAsString(CLOUD_ACCOUNT_KEY))
         } else {
             getAccount(values)
-
         }
         runBlocking {
             return@runBlocking dao?.addAccount(account)
@@ -105,6 +104,14 @@ class AccountContentProvider : ContentProvider() {
                 runBlocking {
                     dao?.addAccount(account = account)
                 }
+                addSystemAccount(account)
+            } else {
+                val account: CloudAccount = getAccount(it)
+                id = account.id
+                runBlocking {
+                    dao?.addAccount(account = account)
+                }
+                addSystemAccount(account)
             }
         }
         return Uri.parse("content://$AUTHORITY/$PATH/$id")
@@ -144,8 +151,8 @@ class AccountContentProvider : ContentProvider() {
             expires = ""
         )
 
-        val token = cloudAccount.token
-        val password = cloudAccount.password
+        val token = cloudAccount.getDecryptToken()
+        val password = cloudAccount.getDecryptPassword() ?: ""
 
         if (!AccountUtils.addAccount(checkNotNull(context), account, password, accountData)) {
             AccountUtils.setAccountData(checkNotNull(context), account, accountData)
@@ -159,22 +166,48 @@ class AccountContentProvider : ContentProvider() {
             id = values?.getAsString("id") ?: "",
             login = values?.getAsString("login"),
             portal = values?.getAsString("portal"),
-            serverVersion = values?.getAsString("server_version") ?: "",
+            serverVersion = values?.getAsString("serverVersion") ?: "",
             scheme = values?.getAsString("scheme"),
             name = values?.getAsString("name"),
             provider = values?.getAsString("provider"),
-            avatarUrl = values?.getAsString("avatar_url"),
-            isSslCiphers = values?.getAsBoolean("ciphers") ?: false,
-            isSslState = values?.getAsBoolean("ssl") ?: true,
+            avatarUrl = values?.getAsString("avatarUrl"),
+            isSslCiphers = values?.getAsBoolean("isSslCiphers") ?: false,
+            isSslState = values?.getAsBoolean("isSslState") ?: true,
             isOnline = false,
             isWebDav = false,
             isOneDrive = false,
             isDropbox = false,
-            isAdmin = values?.getAsBoolean("admin") ?: false,
-            isVisitor = values?.getAsBoolean("visitor") ?: false
+            isAdmin = values?.getAsBoolean("isAdmin") ?: false,
+            isVisitor = values?.getAsBoolean("isVisitor") ?: false
         ).apply {
             token = values?.getAsString("token") ?: ""
             password = values?.getAsString("password") ?: ""
+            expires = values?.getAsString("expires") ?: ""
+        }
+    }
+
+    private fun getAccount(extras: Bundle): CloudAccount {
+        return CloudAccount(
+            id = extras.getString("id") ?: "",
+            login = extras.getString("login"),
+            portal = extras.getString("portal"),
+            serverVersion = extras.getString("serverVersion") ?: "",
+            scheme = extras.getString("scheme"),
+            name = extras.getString("name"),
+            provider = extras.getString("provider"),
+            avatarUrl = extras.getString("avatarUrl"),
+            isSslCiphers = extras.getBoolean("isSslCiphers", false),
+            isSslState = extras.getBoolean("isSslState", true),
+            isOnline = false,
+            isWebDav = false,
+            isOneDrive = false,
+            isDropbox = false,
+            isAdmin = extras.getBoolean("isAdmin", false),
+            isVisitor = extras.getBoolean("isVisitor", false)
+        ).apply {
+            token = extras.getString("token") ?: ""
+            password = extras.getString("password") ?: ""
+            expires = extras.getString("expires") ?: ""
         }
     }
 }

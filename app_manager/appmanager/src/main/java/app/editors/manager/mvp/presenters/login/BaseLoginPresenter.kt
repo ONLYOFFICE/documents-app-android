@@ -24,7 +24,6 @@ import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.*
 import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getUrlWithoutScheme
 import lib.toolkit.base.managers.utils.StringUtils.isValidUrl
 import java.net.ConnectException
@@ -33,10 +32,6 @@ import javax.net.ssl.SSLHandshakeException
 import javax.net.ssl.SSLPeerUnverifiedException
 
 abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
-
-    companion object {
-        protected const val KEY_NULL_VALUE = "null"
-    }
 
     protected var account: Account? = null
     private var disposable: Disposable? = null
@@ -140,6 +135,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
             ).apply {
                 this.token = token.token ?: ""
                 this.password = password
+                this.expires = token.expires ?: ""
             }
             accountDao.addAccount(newAccount)
             withContext(Dispatchers.Main) {
@@ -187,6 +183,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         signInWithGoogle(account)
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     fun signInWithGoogle(account: Account?) {
         if (goggleJob != null && goggleJob?.isActive == true) {
             return
@@ -195,15 +192,17 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         goggleJob = CoroutineScope(Dispatchers.IO).launch {
             val scope = context.getString(R.string.google_scope)
             try {
-                val accessToken = GoogleAuthUtil.getToken(context, account, scope)
-                withContext(Dispatchers.Main) {
-                    signIn(
-                        RequestSignIn(
-                            userName = account?.name ?: "",
-                            accessToken = accessToken,
-                            provider = ApiContract.Social.GOOGLE
+                if (account != null) {
+                    val accessToken = GoogleAuthUtil.getToken(context, account, scope)
+                    withContext(Dispatchers.Main) {
+                        signIn(
+                            RequestSignIn(
+                                userName = account.name ?: "",
+                                accessToken = accessToken,
+                                provider = ApiContract.Social.GOOGLE
+                            )
                         )
-                    )
+                    }
                 }
             } catch (e: UserRecoverableAuthException) {
                 withContext(Dispatchers.Main) {
@@ -222,7 +221,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     /*
      * If we need user confirmation
      * */
-    protected open fun onGooglePermission(intent: Intent) {}
+    protected open fun onGooglePermission(intent: Intent?) {}
 
     protected open fun isConfigConnection(t: Throwable?): Boolean {
         if (t is SSLHandshakeException && !networkSettings.getCipher() && networkSettings.getScheme() == ApiContract.SCHEME_HTTPS && Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
