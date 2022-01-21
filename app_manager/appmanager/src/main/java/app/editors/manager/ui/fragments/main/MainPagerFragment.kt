@@ -160,7 +160,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun showActionDialog() {
-        (activeFragment as DocsBaseFragment).showActionDialog()
+        (activeFragment as? DocsBaseFragment)?.showActionDialog()
     }
 
     override fun onRender(state: MainPagerState) {
