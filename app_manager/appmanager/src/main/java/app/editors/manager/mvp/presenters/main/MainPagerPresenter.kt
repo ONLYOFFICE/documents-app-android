@@ -149,7 +149,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 ) {
                     viewState.setFileData(Json.encodeToString(dataModel))
                 } else {
-                    viewState.onError(R.string.error_recent_enter_account)
+                    viewState.onOpenProjectFileError(R.string.error_open_project_file)
                 }
             }
         }

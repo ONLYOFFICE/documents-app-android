@@ -28,7 +28,7 @@ import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import java.util.*
 
-class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView {
+class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener {
 
     companion object {
 
@@ -354,6 +354,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }, 1000)
     }
 
+    override fun onOpenProjectFileError(@StringRes error: Int) {
+        showSnackBarWithAction(error, R.string.switch_account_open_project_file, this)
+    }
+
     fun isRoot(): Boolean {
         return if (activeFragment != null && activeFragment is DocsCloudFragment) {
             (activeFragment as DocsCloudFragment).isRoot
@@ -382,5 +386,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             this@MainPagerFragment.selectedPage = mSelectedPage
             (getActiveFragment(viewBinding?.mainViewPager) as DocsCloudFragment).onScrollPage()
         }
+    }
+
+    override fun onClick(view: View?) {
+        activity?.onSwitchAccount()
     }
 }
