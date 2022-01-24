@@ -121,6 +121,10 @@ class DocsGoogleDriveOperationFragment: DocsBaseFragment(), OperationActivity.On
         presenter.getProvider()
     }
 
+    override fun onUpdateItemFavorites() {
+        TODO("Not yet implemented")
+    }
+
     override fun onDocsBatchOperation() {
         super.onDocsBatchOperation()
         requireActivity().setResult(Activity.RESULT_OK)
@@ -142,10 +146,6 @@ class DocsGoogleDriveOperationFragment: DocsBaseFragment(), OperationActivity.On
     }
 
     override fun onChooseDownloadFolder() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onRemoveItemFromFavorites() {
         TODO("Not yet implemented")
     }
 

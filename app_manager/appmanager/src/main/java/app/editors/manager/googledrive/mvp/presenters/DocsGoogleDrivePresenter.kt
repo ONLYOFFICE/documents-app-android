@@ -52,13 +52,13 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
 
     init {
         App.getApp().appComponent.inject(this)
-        mModelExplorerStack = ModelExplorerStack()
-        mFilteringValue = ""
-        mPlaceholderType = PlaceholderViews.Type.NONE
-        mIsContextClick = false
-        mIsFilteringMode = false
-        mIsSelectionMode = false
-        mIsFoldersMode = false
+        modelExplorerStack = ModelExplorerStack()
+        filteringValue = ""
+        placeholderViewType = PlaceholderViews.Type.NONE
+        isContextClick = false
+        isFilteringMode = false
+        isSelectionMode = false
+        isFoldersMode = false
         uploadReceiver = UploadReceiver()
         downloadReceiver = DownloadReceiver()
     }
@@ -70,25 +70,25 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
                 role = "reader",
                 type = "anyone"
             )
-            val externalLink = if (mItemClicked is CloudFile) (mItemClicked as CloudFile).webUrl else if(mItemClicked is GoogleDriveFolder) (mItemClicked as GoogleDriveFolder).webUrl else ""
-            mDisposable.add(
-                mItemClicked?.id?.let { id ->
-                    (mFileProvider as GoogleDriveFileProvider).share(id, request)
+            val externalLink = if (itemClicked is CloudFile) (itemClicked as CloudFile).webUrl else if(itemClicked is GoogleDriveFolder) (itemClicked as GoogleDriveFolder).webUrl else ""
+            disposable.add(
+                itemClicked?.id?.let { id ->
+                    (fileProvider as GoogleDriveFileProvider).share(id, request)
                         .subscribe({ response ->
                             if(response) {
                                 KeyboardUtils.setDataToClipboard(
-                                    mContext,
+                                    context,
                                     externalLink,
-                                    mContext.getString(R.string.share_clipboard_external_link_label)
+                                    context.getString(R.string.share_clipboard_external_link_label)
                                 )
                                 viewState.onDocsAccess(
                                     true,
-                                    mContext.getString(R.string.share_clipboard_external_copied)
+                                    context.getString(R.string.share_clipboard_external_copied)
                                 )
                             } else {
                                 viewState.onDocsAccess(
                                     false,
-                                    mContext.getString(R.string.errors_client_forbidden)
+                                    context.getString(R.string.errors_client_forbidden)
                                 )
                             }
                         },
@@ -101,7 +101,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
         }
 
     fun getProvider() {
-        mFileProvider?.let {
+        fileProvider?.let {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                     withContext(Dispatchers.Main) {
@@ -113,8 +113,8 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
         } ?: run {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
-                    AccountUtils.getAccount(mContext, cloudAccount.getAccountName())?.let {
-                        mFileProvider = GoogleDriveFileProvider()
+                    AccountUtils.getAccount(context, cloudAccount.getAccountName())?.let {
+                        fileProvider = GoogleDriveFileProvider()
                         withContext(Dispatchers.Main) {
                             getItemsById("root")
                         }
@@ -129,73 +129,73 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         uploadReceiver.setOnUploadListener(this)
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(uploadReceiver, uploadReceiver.filter)
+        LocalBroadcastManager.getInstance(context).registerReceiver(uploadReceiver, uploadReceiver.filter)
         downloadReceiver.setOnDownloadListener(this)
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(downloadReceiver, downloadReceiver.filter)
+        LocalBroadcastManager.getInstance(context).registerReceiver(downloadReceiver, downloadReceiver.filter)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(uploadReceiver)
-        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(downloadReceiver)
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
     }
 
     override fun getNextList() {
-        val id = mModelExplorerStack.currentId
-        val args = getArgs(mFilteringValue)
-        mDisposable.add(mFileProvider.getFiles(id!!, args).subscribe({ explorer: Explorer? ->
-            mModelExplorerStack.addOnNext(explorer)
-            val last = mModelExplorerStack.last()
+        val id = modelExplorerStack?.currentId
+        val args = getArgs(filteringValue)
+        disposable.add(fileProvider?.getFiles(id!!, args)?.subscribe({ explorer: Explorer? ->
+            modelExplorerStack?.addOnNext(explorer)
+            val last = modelExplorerStack?.last()
             if (last != null) {
                 viewState.onDocsNext(getListWithHeaders(last, true))
             }
-        }) { throwable: Throwable? -> fetchError(throwable) })
+        }) { throwable: Throwable -> fetchError(throwable) }!!)
     }
 
     override fun getArgs(filteringValue: String?): MutableMap<String, String> {
         val args = mutableMapOf<String, String>()
-        if(mModelExplorerStack?.last()?.current?.providerItem == true) {
+        if(modelExplorerStack?.last()?.current?.providerItem == true) {
             args[GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN] =
-                mModelExplorerStack?.last()?.current?.parentId!!
+                modelExplorerStack?.last()?.current?.parentId!!
         }
         args.putAll(super.getArgs(filteringValue))
         return args
     }
 
     override fun createDocs(title: String) {
-        val id = mModelExplorerStack.currentId
+        val id = modelExplorerStack?.currentId
         id?.let {
             val requestCreate = RequestCreate()
             requestCreate.title = title
-            mDisposable.add(mFileProvider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
+            disposable.add(fileProvider?.createFile(id, requestCreate)?.subscribe({ file: CloudFile? ->
                 addFile(file)
                 setPlaceholderType(PlaceholderViews.Type.NONE)
                 viewState.onDialogClose()
                 //viewState.onOpenLocalFile(file)
-            }) { throwable: Throwable? -> fetchError(throwable) })
+            }) { throwable: Throwable -> fetchError(throwable) }!!)
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
     }
 
     override fun getFileInfo() {
-        if (mItemClicked != null && mItemClicked is CloudFile) {
-            val file = mItemClicked as CloudFile
+        if (itemClicked != null && itemClicked is CloudFile) {
+            val file = itemClicked as CloudFile
             val extension = file.fileExst
             if (StringUtils.isImage(extension)) {
                 addRecent(file)
                 return
             }
         }
-        downloadDisposable = mFileProvider.fileInfo(mItemClicked!!)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
+        downloadDisposable = fileProvider?.fileInfo(itemClicked!!)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe(
                 { file: CloudFile? ->
                     tempFile = file
                     viewState.onDialogClose()
                     viewState.onOpenLocalFile(file)
                 }
-            ) { throwable: Throwable? -> fetchError(throwable) }
+            ) { throwable: Throwable -> fetchError(throwable) }
     }
 
     override fun move(): Boolean {
@@ -210,29 +210,29 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
     override fun copy(): Boolean {
         val itemList = mutableListOf<Item>()
         when {
-            mModelExplorerStack?.selectedFiles?.isNotEmpty() == true -> {
-                itemList.addAll(mModelExplorerStack?.selectedFiles!!)
+            modelExplorerStack?.selectedFiles?.isNotEmpty() == true -> {
+                itemList.addAll(modelExplorerStack?.selectedFiles!!)
             }
-            mModelExplorerStack.selectedFolders.isNotEmpty() -> {
-                viewState.onSnackBar(mContext.getString(R.string.storage_google_drive_copy_folder_error))
-                itemList.addAll(mModelExplorerStack?.selectedFiles!!)
+            modelExplorerStack?.selectedFolders?.isNotEmpty() == true -> {
+                viewState.onSnackBar(context.getString(R.string.storage_google_drive_copy_folder_error))
+                itemList.addAll(modelExplorerStack?.selectedFiles!!)
             }
             else -> {
-                mItemClicked?.let { itemList.add(it) }
+                itemClicked?.let { itemList.add(it) }
             }
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
-        mDisposable.add((mFileProvider as GoogleDriveFileProvider).copy(itemList, mModelExplorerStack.currentId!!)
+        disposable.add((fileProvider as GoogleDriveFileProvider).copy(itemList, modelExplorerStack?.currentId!!)
             .subscribe ({},{
                 fetchError(it)
-                if (mIsSelectionMode) {
+                if (isSelectionMode) {
                     setSelection(false)
                     updateViewsState()
                 }
                 false
             }, {
                 viewState.onDocsBatchOperation()
-                if (mIsSelectionMode) {
+                if (isSelectionMode) {
                     setSelection(false)
                     updateViewsState()
                 }
@@ -266,24 +266,24 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
     }
 
     override fun updateViewsState() {
-        if (mIsSelectionMode) {
+        if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(mModelExplorerStack.countSelectedItems.toString())
-            viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
+            viewState.onActionBarTitle(modelExplorerStack?.countSelectedItems.toString())
+            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot == true)
             viewState.onStateActionButton(false)
-        } else if (mIsFilteringMode) {
-            viewState.onActionBarTitle(mContext.getString(R.string.toolbar_menu_search_result))
-            viewState.onStateUpdateFilter(true, mFilteringValue)
-            viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
+        } else if (isFilteringMode) {
+            viewState.onActionBarTitle(context.getString(R.string.toolbar_menu_search_result))
+            viewState.onStateUpdateFilter(true, filteringValue)
+            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot == true)
             viewState.onStateActionButton(false)
-        } else if (!mModelExplorerStack.isRoot) {
+        } else if (modelExplorerStack?.isRoot == false) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(if(currentTitle.isEmpty()) { mItemClicked?.title } else { currentTitle } )
+            viewState.onActionBarTitle(if(currentTitle.isEmpty()) { itemClicked?.title } else { currentTitle } )
         } else {
-            if (mIsFoldersMode) {
-                viewState.onActionBarTitle(mContext.getString(R.string.operation_title))
+            if (isFoldersMode) {
+                viewState.onActionBarTitle(context.getString(R.string.operation_title))
                 viewState.onStateActionButton(false)
             } else {
                 viewState.onActionBarTitle("")
@@ -296,11 +296,11 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
 
 
     override fun createDownloadFile() {
-        if(mModelExplorerStack.countSelectedItems == 0) {
-            if (mItemClicked is CloudFolder) {
+        if(modelExplorerStack?.countSelectedItems == 0) {
+            if (itemClicked is CloudFolder) {
                 viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
-            } else if (mItemClicked is CloudFile) {
-                viewState.onCreateDownloadFile((mItemClicked as CloudFile).title)
+            } else if (itemClicked is CloudFile) {
+                viewState.onCreateDownloadFile((itemClicked as CloudFile).title)
             }
         } else {
             viewState.onChooseDownloadFolder()
@@ -308,13 +308,13 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
     }
 
     override fun download(downloadTo: Uri) {
-        if(mModelExplorerStack.countSelectedItems == 0) {
-            startDownload(downloadTo, mItemClicked)
+        if(modelExplorerStack?.countSelectedItems == 0) {
+            startDownload(downloadTo, itemClicked)
         } else {
-            val itemList: MutableList<Item> = (mModelExplorerStack.selectedFiles + mModelExplorerStack.selectedFolders).toMutableList()
+            val itemList: MutableList<Item> = (modelExplorerStack?.selectedFiles!! + modelExplorerStack?.selectedFolders!!).toMutableList()
             itemList.forEach { item ->
                 val fileName = if(item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
-                val doc = DocumentFile.fromTreeUri(mContext, downloadTo)?.createFile(StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName)
+                val doc = DocumentFile.fromTreeUri(context, downloadTo)?.createFile(StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName)
                 startDownload(doc?.uri!!, item)
             }
         }
@@ -338,9 +338,9 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
     }
 
     override fun delete(): Boolean {
-        if (mModelExplorerStack.countSelectedItems > 0) {
+        if (modelExplorerStack?.countSelectedItems!! > 0) {
             viewState.onDialogQuestion(
-                mContext.getString(R.string.dialogs_question_delete), null,
+                context.getString(R.string.dialogs_question_delete), null,
                 TAG_DIALOG_BATCH_DELETE_SELECTED
             )
         } else {
@@ -364,10 +364,10 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
 
         for (uri in uploadUris) {
             val data = Data.Builder()
-                .putString(UploadWork.KEY_FOLDER_ID, mModelExplorerStack.currentId)
+                .putString(UploadWork.KEY_FOLDER_ID, modelExplorerStack?.currentId)
                 .putString(UploadWork.KEY_FROM, uri.toString())
                 .putString(UploadWork.KEY_TAG, tag)
-                .putString(UploadWork.KEY_FILE_ID, mItemClicked?.id)
+                .putString(UploadWork.KEY_FILE_ID, itemClicked?.id)
                 .build()
 
             val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
@@ -379,9 +379,9 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
 
     }
 
-    override fun onContextClick(item: Item?, position: Int, isTrash: Boolean) {
+    override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
-        mIsContextClick = true
+        isContextClick = true
         val state = ContextBottomDialog.State()
         state.title = itemClickedTitle
         state.info = TimeUtils.formatDate(itemClickedDate)
@@ -415,7 +415,13 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
         viewState.onActionDialog(false, true)
     }
 
-    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?) {
+    override fun onDownloadError(
+        id: String?,
+        url: String?,
+        title: String?,
+        info: String?,
+        uri: Uri?
+    ) {
         info?.let { viewState.onSnackBar(it) }
     }
 
@@ -437,7 +443,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
             """
     $info
     $title
-    """.trimIndent(), mContext.getString(R.string.download_manager_open)
+    """.trimIndent(), context.getString(R.string.download_manager_open)
         ) { showDownloadFolderActivity(uri) }
     }
 
@@ -472,7 +478,7 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        if (mModelExplorerStack.currentId == folderId) {
+        if (modelExplorerStack?.currentId == folderId) {
             viewState.onUploadFileProgress(progress, id)
         }
     }
@@ -480,9 +486,9 @@ class DocsGoogleDrivePresenter: DocsBasePresenter<DocsGoogleDriveView>(), Upload
     override fun onUploadCanceled(path: String?, info: String?, id: String?) {
         info?.let { viewState.onSnackBar(it) }
         viewState.onDeleteUploadFile(id)
-        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(mModelExplorerStack.currentId)?.isEmpty() == true) {
+        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(modelExplorerStack?.currentId)?.isEmpty() == true) {
             viewState.onRemoveUploadHead()
-            getListWithHeaders(mModelExplorerStack.last(), true)
+            getListWithHeaders(modelExplorerStack?.last(), true)
         }
     }
 

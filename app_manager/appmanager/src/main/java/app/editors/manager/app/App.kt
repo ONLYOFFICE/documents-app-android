@@ -147,7 +147,6 @@ class App : Application() {
     private fun initDagger() {
         _appComponent = DaggerAppComponent.builder()
             .context(context = this)
-            .roomCallback(RoomCallback())
             .build()
     }
 
@@ -187,6 +186,12 @@ class App : Application() {
         return DaggerDropboxComponent.builder().appComponent(appComponent)
             .build()
             .dropboxServiceProvider
+    }
+
+    fun getGoogleDriveComponent(): IGoogleDriveServiceProvider {
+        return DaggerGoogleDriveComponent.builder().appComponent(appComponent)
+            .build()
+            .googleDriveServiceProvider
     }
 }
 

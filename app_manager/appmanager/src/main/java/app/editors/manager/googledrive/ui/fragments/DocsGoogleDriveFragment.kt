@@ -44,11 +44,7 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
 
     override val isWebDav: Boolean?
         get() = false
-
-    override fun onRemoveItemFromFavorites() {
-        TODO("Not yet implemented")
-    }
-
+    
     private var activity: IMainActivity? = null
 
     override fun onAttach(context: Context) {
@@ -158,6 +154,10 @@ open class DocsGoogleDriveFragment: DocsBaseFragment(), ActionButtonFragment, Do
                 disableMenu()
             }
         }
+    }
+
+    override fun onUpdateItemFavorites() {
+        TODO("Not yet implemented")
     }
 
     private fun disableMenu() {

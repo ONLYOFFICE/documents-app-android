@@ -928,7 +928,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    fun copySelected() {
+    open fun copySelected() {
         modelExplorerStack?.let { stack ->
             if (stack.countSelectedItems > 0) {
                 stack.clone()?.let { clonedStack ->
