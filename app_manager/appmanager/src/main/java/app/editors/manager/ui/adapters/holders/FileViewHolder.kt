@@ -32,7 +32,9 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
 
     override fun bind(file: CloudFile) {
         // Get file info
-        val filesInfo: String = TimeUtils.getWeekDate(file.updated) + PLACEHOLDER_POINT +
+        val filesInfo: String = file.createdBy.displayName + PLACEHOLDER_POINT
+            .takeIf { file.createdBy.displayName.isNotEmpty() }.orEmpty() +
+                TimeUtils.getWeekDate(file.updated) + PLACEHOLDER_POINT +
                 StringUtils.getFormattedSize(adapter.context, file.pureContentLength)
 
         if (adapter.preferenceTool.selfId.equals(file.createdBy.id, ignoreCase = true)) {
@@ -47,6 +49,7 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             listExplorerFileName.text = file.title
             listExplorerFileInfo.text = filesInfo
             listExplorerFileContext.isVisible = true
+            listExplorerFileFavorite.isVisible = file.favorite
 
             viewIconSelectableLayout.viewIconSelectableImage.background = null
             viewIconSelectableLayout.viewIconSelectableMask.background = null
@@ -61,6 +64,8 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
                     viewIconSelectableLayout.viewIconSelectableLayout
                         .setBackgroundResource(R.drawable.drawable_list_image_select_background)
                 }
+            } else {
+                viewIconSelectableLayout.viewIconSelectableLayout.background = null
             }
         }
     }

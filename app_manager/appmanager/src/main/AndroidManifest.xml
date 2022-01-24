@@ -23,6 +23,15 @@
     <uses-permission android:name="${permissionId}.permission.WRITE" />
     <uses-permission android:name="${permissionId}.permission.READ" />
 
+    <queries>
+        <provider android:authorities="com.onlyoffice.projects.accounts"
+            tools:ignore="ExportedContentProvider" />
+    </queries>
+
+    <queries>
+        <package android:name="com.onlyoffice.projects" />
+    </queries>
+
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
@@ -69,6 +78,7 @@
             android:name=".ui.activities.login.PortalsActivity"
             android:launchMode="standard"
             android:exported="true"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
@@ -276,6 +286,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <provider
+            android:name=".managers.tools.AccountContentProvider"
+            android:authorities="com.onlyoffice.accounts"
+            android:exported="true"
+            android:enabled="true"/>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

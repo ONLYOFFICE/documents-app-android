@@ -7,6 +7,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Process
 import android.webkit.WebView
+import androidx.room.InvalidationTracker
 import app.documents.core.account.CloudAccount
 import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.share.ShareService
@@ -26,6 +27,7 @@ import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceP
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import java.util.*
 
 class App : Application() {
@@ -102,7 +104,6 @@ class App : Application() {
     }
 
     private fun init() {
-
         /*
          Only android >= pie.
          https://bugs.chromium.org/p/chromium/issues/detail?id=558377
@@ -115,9 +116,22 @@ class App : Application() {
                 WebView.setDataDirectorySuffix("cacheWebView")
             }
         }
+        if (ActivitiesUtils.isPackageExist(this, "com.onlyoffice.projects")) {
+            AddAccountHelper(this).copyData()
+        }
         isAnalyticEnable = appComponent.preference.isAnalyticEnable
         initCrashlytics()
         KeyStoreUtils.init()
+        addDataBaseObserver()
+    }
+
+    private fun addDataBaseObserver() {
+        appComponent.accountsDataBase.invalidationTracker.addObserver(object :
+            InvalidationTracker.Observer(arrayOf(CloudAccount::class.java.simpleName)) {
+            override fun onInvalidated(tables: MutableSet<String>) {
+                appComponent.preference.dbTimestamp = System.currentTimeMillis()
+            }
+        })
     }
 
     private fun getProcess(): String {
@@ -174,11 +188,6 @@ class App : Application() {
             .build()
             .dropboxServiceProvider
     }
-    fun getGoogleDriveComponent(): IGoogleDriveServiceProvider {
-        return DaggerGoogleDriveComponent.builder().appComponent(appComponent)
-            .build()
-            .googleDriveServiceProvider
-    }
 }
 
 val Context.accountOnline: CloudAccount?
@@ -201,19 +210,19 @@ val Context.loginService: ILoginServiceProvider
     }
 
 val Context.oneDriveLoginService: IOneDriveLoginServiceProvider
-    get() = when(this) {
+    get() = when (this) {
         is App -> this.appComponent.oneDriveLoginService
         else -> applicationContext.appComponent.oneDriveLoginService
     }
 
 val Context.dropboxLoginService: IDropboxLoginServiceProvider
-    get() = when(this) {
+    get() = when (this) {
         is App -> this.appComponent.dropboxLoginService
         else -> applicationContext.appComponent.dropboxLoginService
     }
 
 val Context.oneDriveAuthService: IOneDriveAuthServiceProvider
-    get() = when(this) {
+    get() = when (this) {
         is App -> this.appComponent.oneDriveAuthService
         else -> applicationContext.appComponent.oneDriveAuthService
     }
@@ -246,11 +255,12 @@ fun Context.getShareApi(): ShareService {
 }
 
 fun Context.getOneDriveServiceProvider(): IOneDriveServiceProvider {
-    return when(this) {
+    return when (this) {
         is App -> this.getOneDriveComponent()
         else -> this.applicationContext.getOneDriveServiceProvider()
     }
 }
+
 fun Context.getDropboxServiceProvider(): IDropboxServiceProvider {
     return when(this) {
         is App -> this.getDropboxComponent()

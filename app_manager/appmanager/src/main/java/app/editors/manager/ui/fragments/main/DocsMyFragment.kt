@@ -36,7 +36,9 @@ class DocsMyFragment : DocsCloudFragment() {
         cloudPresenter.getItemsById(ID)
     }
 
-    override fun onRemoveItemFromFavorites() {}
+    override fun onUpdateItemFavorites() {
+        explorerAdapter?.updateItem(cloudPresenter.itemClicked)
+    }
 
     private fun init() {
         explorerAdapter?.isSectionMy = true

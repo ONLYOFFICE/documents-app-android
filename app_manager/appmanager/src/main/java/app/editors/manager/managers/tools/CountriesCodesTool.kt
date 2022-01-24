@@ -1,18 +1,13 @@
 package app.editors.manager.managers.tools
 
-import android.content.Context
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import java.util.*
 import javax.inject.Inject
-import kotlin.Comparator
-import kotlin.collections.ArrayList
 
 class CountriesCodesTool @Inject constructor(
-    private val context: Context,
     private val phoneNumberUtil: PhoneNumberUtil
 ) {
-
-    class Codes(val name: String, val code: String, val number: Int)
+    data class Codes(val name: String, val code: String, val number: Int)
 
     private val codesList: MutableList<Codes> = ArrayList()
 

@@ -120,16 +120,11 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     fun deleteAccount() {
         CoroutineScope(Dispatchers.Default).launch {
             contextAccount?.let { account ->
-                if (AccountUtils.removeAccount(context, account.getAccountName())) {
-                    accountDao.deleteAccount(account)
-                    accountDao.getAccounts().let {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
-                        }
-                    }
-                } else {
+                AccountUtils.removeAccount(context, account.getAccountName())
+                accountDao.deleteAccount(account)
+                accountDao.getAccounts().let {
                     withContext(Dispatchers.Main) {
-                        viewState.onError("Error delete")
+                        viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
                     }
                 }
             }
@@ -140,9 +135,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         CoroutineScope(Dispatchers.Default).launch {
             selection?.forEach {
                 accountDao.getAccount(it)?.let { account ->
-                    if (AccountUtils.removeAccount(context, account.getAccountName())) {
-                        accountDao.deleteAccount(account)
-                    }
+                    AccountUtils.removeAccount(context, account.getAccountName())
+                    accountDao.deleteAccount(account)
                 }
             }
             accountDao.getAccounts().let {

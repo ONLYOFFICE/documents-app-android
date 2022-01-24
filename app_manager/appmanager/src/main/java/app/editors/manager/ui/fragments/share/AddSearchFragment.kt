@@ -1,8 +1,10 @@
 package app.editors.manager.ui.fragments.share
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
+import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DiffUtil
 import app.editors.manager.R
@@ -21,6 +23,7 @@ import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.custom.SharePanelViews
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
@@ -102,6 +105,9 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
             setOnQueryTextListener(this@AddSearchFragment)
             maxWidth = Int.MAX_VALUE
             isIconified = false
+            findViewById<EditText>(androidx.appcompat.R.id.search_src_text).hint = null
+            findViewById<View>(androidx.appcompat.R.id.search_plate).setBackgroundColor(Color.TRANSPARENT)
+
             addPresenter.updateSearchState()
 
             // Action on close search
@@ -244,9 +250,13 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     private fun initViews() {
         viewBinding?.let { binding ->
             sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, shareActivity!!).apply {
-                    setOnEventListener(this@AddSearchFragment)
-                    setAccessIcon(addPresenter.accessCode)
-                }
+                val ext = StringUtils.getExtensionFromPath(checkNotNull(addPresenter.item?.title))
+
+                setExtension(StringUtils.getExtension(ext)
+                    .takeIf { it != StringUtils.Extension.FORM } ?: StringUtils.getFormExtension(ext))
+                setOnEventListener(this@AddSearchFragment)
+                setAccessIcon(addPresenter.accessCode)
+            }
         }
         shareAdapter = ShareAdapter(ShareHolderFactory { view, position ->
             onItemClick(view, position)

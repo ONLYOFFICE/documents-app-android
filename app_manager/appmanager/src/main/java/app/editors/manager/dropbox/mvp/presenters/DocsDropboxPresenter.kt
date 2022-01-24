@@ -14,10 +14,17 @@ import app.editors.manager.app.App
 import app.editors.manager.dropbox.dropbox.api.DropboxService
 import app.editors.manager.dropbox.managers.providers.DropboxFileProvider
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
+import app.editors.manager.dropbox.managers.works.DownloadWork
+import app.editors.manager.dropbox.managers.works.UploadWork
 import app.editors.manager.dropbox.mvp.views.DocsDropboxView
+import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelExplorerStack
+import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -29,23 +36,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import java.util.*
-import app.editors.manager.dropbox.managers.works.*
-import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.request.RequestCreate
-import lib.toolkit.base.managers.utils.KeyboardUtils
 
 class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
 
     private var downloadDisposable: Disposable? = null
     private var tempFile: CloudFile? = null
 
-    private val workManager = WorkManager.getInstance()
+    private val workManager = WorkManager.getInstance(App.getApp())
 
     private val uploadReceiver: UploadReceiver
     private val downloadReceiver: DownloadReceiver
@@ -53,21 +54,21 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     val externalLink : Unit
         get() {
-            mItemClicked?.let {
-                (mFileProvider as DropboxFileProvider).share(it.id)?.let { externalLinkResponse ->
-                    mDisposable.add(externalLinkResponse
+            itemClicked?.let {
+                (fileProvider as DropboxFileProvider).share(it.id)?.let { externalLinkResponse ->
+                    disposable.add(externalLinkResponse
                         .subscribe( {response ->
                             it.shared = !it.shared
                             response.link.let { link ->
                                 KeyboardUtils.setDataToClipboard(
-                                    mContext,
+                                    context,
                                     link,
-                                    mContext.getString(R.string.share_clipboard_external_link_label)
+                                    context.getString(R.string.share_clipboard_external_link_label)
                                 )
                             }
                             viewState.onDocsAccess(
                                 true,
-                                mContext.getString(R.string.share_clipboard_external_copied)
+                                context.getString(R.string.share_clipboard_external_copied)
                             )
                         }) {throwable: Throwable -> fetchError(throwable)}
                     )
@@ -77,13 +78,13 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     init {
         App.getApp().appComponent.inject(this)
-        mModelExplorerStack = ModelExplorerStack()
-        mFilteringValue = ""
-        mPlaceholderType = PlaceholderViews.Type.NONE
-        mIsContextClick = false
-        mIsFilteringMode = false
-        mIsSelectionMode = false
-        mIsFoldersMode = false
+        modelExplorerStack = ModelExplorerStack()
+        filteringValue = ""
+        placeholderViewType = PlaceholderViews.Type.NONE
+        isContextClick = false
+        isFilteringMode = false
+        isSelectionMode = false
+        isFoldersMode = false
         uploadReceiver = UploadReceiver()
         downloadReceiver = DownloadReceiver()
     }
@@ -91,19 +92,19 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         uploadReceiver.setOnUploadListener(this)
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(uploadReceiver, uploadReceiver.filter)
+        LocalBroadcastManager.getInstance(context).registerReceiver(uploadReceiver, uploadReceiver.filter)
         downloadReceiver.setOnDownloadListener(this)
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(downloadReceiver, downloadReceiver.filter)
+        LocalBroadcastManager.getInstance(context).registerReceiver(downloadReceiver, downloadReceiver.filter)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(uploadReceiver)
-        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(downloadReceiver)
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
     }
 
     fun getProvider() {
-        mFileProvider?.let {
+        fileProvider?.let {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                     withContext(Dispatchers.Main) {
@@ -116,8 +117,8 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
         } ?: run {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
-                    AccountUtils.getAccount(mContext, cloudAccount.getAccountName())?.let {
-                        mFileProvider = DropboxFileProvider()
+                    AccountUtils.getAccount(context, cloudAccount.getAccountName())?.let {
+                        fileProvider = DropboxFileProvider()
                         withContext(Dispatchers.Main) {
                             setBaseUrl(DropboxService.DROPBOX_BASE_URL)
                             getItemsById(DropboxUtils.DROPBOX_ROOT)
@@ -131,11 +132,11 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun createDownloadFile() {
-        if(mModelExplorerStack.countSelectedItems == 0) {
-            if (mItemClicked is CloudFolder) {
+        if (modelExplorerStack?.countSelectedItems!! == 0) {
+            if (itemClicked is CloudFolder) {
                 viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
-            } else if (mItemClicked is CloudFile) {
-                viewState.onCreateDownloadFile((mItemClicked as CloudFile).title)
+            } else if (itemClicked is CloudFile) {
+                viewState.onCreateDownloadFile((itemClicked as CloudFile).title)
             }
         } else {
             viewState.onChooseDownloadFolder()
@@ -144,13 +145,13 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     override fun download(downloadTo: Uri) {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
-        if(mModelExplorerStack.countSelectedItems == 0) {
-            startDownload(downloadTo, mItemClicked)
+        if (modelExplorerStack?.countSelectedItems!! == 0) {
+            startDownload(downloadTo, itemClicked)
         } else {
-            val itemList: MutableList<Item> = (mModelExplorerStack.selectedFiles + mModelExplorerStack.selectedFolders).toMutableList()
+            val itemList =  modelExplorerStack?.selectedFiles!! + modelExplorerStack?.selectedFolders!!
             itemList.forEach { item ->
-                val fileName = if(item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
-                val doc = DocumentFile.fromTreeUri(mContext, downloadTo)?.createFile(
+                val fileName = if (item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
+                val doc = DocumentFile.fromTreeUri(context, downloadTo)?.createFile(
                     StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName
                 )
                 startDownload(doc?.uri!!, item)
@@ -187,29 +188,33 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
 
     override fun getNextList() {
-        val id = mModelExplorerStack.currentId
-        val args = getArgs(mFilteringValue)
-        mDisposable.add(mFileProvider.getFiles(id!!, args).subscribe({ explorer: Explorer? ->
-            mModelExplorerStack.addOnNext(explorer)
-            val last = mModelExplorerStack.last()
-            if (last != null) {
-                viewState.onDocsNext(getListWithHeaders(last, true))
-            }
-        }) { throwable: Throwable? -> fetchError(throwable) })
+        val id = modelExplorerStack?.currentId
+        val args = getArgs(filteringValue)
+        fileProvider?.let { provider ->
+            disposable.add(provider.getFiles(id!!, args).subscribe({ explorer: Explorer? ->
+                modelExplorerStack?.addOnNext(explorer)
+                val last = modelExplorerStack?.last()
+                if (last != null) {
+                    viewState.onDocsNext(getListWithHeaders(last, true))
+                }
+            }) { throwable: Throwable -> fetchError(throwable) })
+        }
     }
 
     override fun createDocs(title: String) {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
-        val id = mModelExplorerStack.currentId
+        val id = modelExplorerStack?.currentId
         id?.let {
             val requestCreate = RequestCreate()
             requestCreate.title = title
-            mDisposable.add(mFileProvider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
-                addFile(file)
-                setPlaceholderType(PlaceholderViews.Type.NONE)
-                viewState.onDialogClose()
-                viewState.onOpenLocalFile(file)
-            }) { throwable: Throwable? -> fetchError(throwable) })
+            fileProvider?.let { provider ->
+                disposable.add(provider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
+                    addFile(file)
+                    setPlaceholderType(PlaceholderViews.Type.NONE)
+                    viewState.onDialogClose()
+                    viewState.onOpenLocalFile(file)
+                }) { throwable: Throwable -> fetchError(throwable) })
+            }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
     }
@@ -231,7 +236,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
         for (uri in uploadUris) {
             val data = Data.Builder()
-                .putString(UploadWork.TAG_FOLDER_ID, mModelExplorerStack.currentId)
+                .putString(UploadWork.TAG_FOLDER_ID, modelExplorerStack?.currentId)
                 .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
                 .putString(UploadWork.KEY_TAG, tag)
                 .build()
@@ -247,13 +252,13 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     override fun getArgs(filteringValue: String?): Map<String, String> {
         val args = mutableMapOf<String, String>()
-        if(mModelExplorerStack?.last()?.current?.providerItem == true) {
+        if(modelExplorerStack?.last()?.current?.providerItem == true) {
             args[DropboxUtils.DROPBOX_CONTINUE_CURSOR] =
-                mModelExplorerStack?.last()?.current?.parentId!!
+                modelExplorerStack?.last()?.current?.parentId!!
         }
-        if(mModelExplorerStack?.last()?.current?.providerItem == true && mFilteringValue?.isNotEmpty() == true) {
+        if(modelExplorerStack?.last()?.current?.providerItem == true && this.filteringValue?.isNotEmpty() == true) {
             args[DropboxUtils.DROPBOX_SEARCH_CURSOR] =
-                mModelExplorerStack?.last()?.current?.parentId!!
+                modelExplorerStack?.last()?.current?.parentId!!
         }
         args.putAll(super.getArgs(filteringValue))
         return args
@@ -277,8 +282,8 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun getFileInfo() {
-        if (mItemClicked != null && mItemClicked is CloudFile) {
-            val file = mItemClicked as CloudFile
+        if (itemClicked != null && itemClicked is CloudFile) {
+            val file = itemClicked as CloudFile
             val extension = file.fileExst
             if (StringUtils.isImage(extension)) {
                 addRecent(file)
@@ -287,16 +292,18 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
-        downloadDisposable = mFileProvider.fileInfo(mItemClicked)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { file: CloudFile? ->
-                    tempFile = file
-                    viewState.onDialogClose()
-                    viewState.onOpenLocalFile(file)
-                }
-            ) { throwable: Throwable? -> fetchError(throwable) }
+        fileProvider?.let { provider ->
+            downloadDisposable = provider.fileInfo(itemClicked)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { file: CloudFile? ->
+                        tempFile = file
+                        viewState.onDialogClose()
+                        viewState.onOpenLocalFile(file)
+                    }
+                ) { throwable: Throwable -> fetchError(throwable) }
+        }
     }
 
     override fun addRecent(file: CloudFile) {
@@ -311,7 +318,8 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
                         isLocal = false,
                         isWebDav = true,
                         date = Date().time,
-                        ownerId = it.id
+                        ownerId = it.id,
+                        source = it.portal
                     )
                 )
             }
@@ -320,9 +328,9 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     override fun delete(): Boolean {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL)
-        if (mModelExplorerStack.countSelectedItems > 0) {
+        if (modelExplorerStack?.countSelectedItems!! > 0) {
             viewState.onDialogQuestion(
-                mContext.getString(R.string.dialogs_question_delete), null,
+                context.getString(R.string.dialogs_question_delete), null,
                 TAG_DIALOG_BATCH_DELETE_SELECTED
             )
         } else {
@@ -332,24 +340,24 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun updateViewsState() {
-        if (mIsSelectionMode) {
+        if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(mModelExplorerStack.countSelectedItems.toString())
-            viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
+            viewState.onActionBarTitle(modelExplorerStack?.countSelectedItems.toString())
+            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
             viewState.onStateActionButton(false)
-        } else if (mIsFilteringMode) {
-            viewState.onActionBarTitle(mContext.getString(R.string.toolbar_menu_search_result))
-            viewState.onStateUpdateFilter(true, mFilteringValue)
-            viewState.onStateAdapterRoot(mModelExplorerStack.isNavigationRoot)
+        } else if (isFilteringMode) {
+            viewState.onActionBarTitle(context.getString(R.string.toolbar_menu_search_result))
+            viewState.onStateUpdateFilter(true, filteringValue)
+            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
             viewState.onStateActionButton(false)
-        } else if (!mModelExplorerStack.isRoot) {
+        } else if (!modelExplorerStack?.isRoot!!) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(if(currentTitle.isEmpty()) { mItemClicked?.title } else { currentTitle } )
+            viewState.onActionBarTitle(if(currentTitle.isEmpty()) { itemClicked?.title } else { currentTitle } )
         } else {
-            if (mIsFoldersMode) {
-                viewState.onActionBarTitle(mContext.getString(R.string.operation_title))
+            if (isFoldersMode) {
+                viewState.onActionBarTitle(context.getString(R.string.operation_title))
                 viewState.onStateActionButton(false)
             } else {
                 viewState.onActionBarTitle("")
@@ -360,9 +368,9 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
         }
     }
 
-    override fun onContextClick(item: Item?, position: Int, isTrash: Boolean) {
+    override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
-        mIsContextClick = true
+        isContextClick = true
         val state = ContextBottomDialog.State()
         state.title = itemClickedTitle
         state.info = TimeUtils.formatDate(itemClickedDate)
@@ -398,7 +406,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
 
     private fun setBaseUrl(baseUrl: String) {
         networkSettings.setBaseUrl(baseUrl)
-        (mFileProvider as DropboxFileProvider).refreshInstance()
+        (fileProvider as DropboxFileProvider).refreshInstance()
     }
 
     override fun onDownloadError(id: String?, url: String?, title: String?, info: String?, uri: Uri?) {
@@ -424,7 +432,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
             """
     $info
     $title
-    """.trimIndent(), mContext.getString(R.string.download_manager_open)
+    """.trimIndent(), context.getString(R.string.download_manager_open)
         ) { showDownloadFolderActivity(uri) }
     }
 
@@ -459,7 +467,7 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        if (mModelExplorerStack.currentId == folderId) {
+        if (modelExplorerStack?.currentId == folderId) {
             viewState.onUploadFileProgress(progress, id)
         }
     }
@@ -467,9 +475,9 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
     override fun onUploadCanceled(path: String?, info: String?, id: String?) {
         info?.let { viewState.onSnackBar(it) }
         viewState.onDeleteUploadFile(id)
-        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(mModelExplorerStack.currentId)?.isEmpty() == true) {
+        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(modelExplorerStack?.currentId)?.isEmpty() == true) {
             viewState.onRemoveUploadHead()
-            getListWithHeaders(mModelExplorerStack.last(), true)
+            getListWithHeaders(modelExplorerStack?.last(), true)
         }
     }
 

@@ -93,7 +93,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     private var selectItem: MenuItem? = null
     private val mTypeFactory: TypeFactory = factory
 
-    protected abstract val presenter: DocsBasePresenter<out DocsBaseView?>
+    protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
     protected abstract val isWebDav: Boolean?
 
     companion object {
@@ -184,7 +184,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (requestCode == PERMISSION_READ_UPLOAD) {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 requireActivity().intent?.let {
-                    presenter.uploadToMy(it.clipData?.getItemAt(0)?.uri)
+                    it.clipData?.getItemAt(0)?.uri?.let { uri -> presenter.uploadToMy(uri) }
                     requireActivity().intent = null
                 }
             }
@@ -250,7 +250,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onBackPressed(): Boolean {
-        return presenter.backStack
+        return presenter.getBackStack()
     }
 
     override fun onListEnd() {
@@ -627,9 +627,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 menuInflater?.let { inflater ->
                     inflater.inflate(R.menu.docs_main, menu)
                     sortItem = menu.findItem(R.id.toolbar_item_sort)
+                    openItem = menu.findItem(R.id.toolbar_item_open)
                     mainItem = menu.findItem(R.id.toolbar_item_main)
                     selectItem = menu.findItem(R.id.toolbar_main_item_options)
-                    openItem = menu.findItem(R.id.toolbar_item_open)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
                     searchView = (searchItem?.actionView as SearchView).apply {
                         setOnQueryTextListener(this@DocsBaseFragment)
@@ -1145,9 +1145,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     private fun removeCommonDialog() {
-        val fragment = requireFragmentManager().findFragmentByTag(CommonDialog.TAG)
+        val fragment = parentFragmentManager.findFragmentByTag(CommonDialog.TAG)
         fragment?.let {
-            requireFragmentManager()
+            parentFragmentManager
                 .beginTransaction()
                 .remove(it)
                 .commit()

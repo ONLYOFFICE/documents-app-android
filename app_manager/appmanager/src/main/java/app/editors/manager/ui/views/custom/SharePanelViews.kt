@@ -10,6 +10,7 @@ import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.ui.views.popup.SharePopup
+import lib.toolkit.base.managers.utils.StringUtils
 
 class SharePanelViews(private val view: View, private val activity: Activity) :
     HeightValueAnimator.OnAnimationListener {
@@ -27,6 +28,7 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
     private var sharePopup: SharePopup? = null
     private val popupAccessListener: PopupAccessListener
     private var viewBinding: IncludeSharePanelBinding? = null
+    private var extension: StringUtils.Extension = StringUtils.Extension.UNKNOWN
 
     init {
         viewBinding = IncludeSharePanelBinding.bind(view)
@@ -38,18 +40,18 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
     }
 
     private fun initListeners() {
-        viewBinding?.let {
-            it.buttonPopupLayout.buttonPopupLayout.setOnClickListener {
+        viewBinding?.let { binding ->
+            binding.buttonPopupLayout.buttonPopupLayout.setOnClickListener {
                 sharePopup = SharePopup(view.context, R.layout.popup_share_menu).apply {
                     setContextListener(popupAccessListener)
                     setExternalLink()
-                    setFullAccess(true)
-                    showOverlap(view, activity)
+                    extension = this@SharePanelViews.extension
+                    showOverlap(view, binding.root.height)
                 }
             }
-            it.sharePanelResetButton.setOnClickListener { onReset() }
-            it.sharePanelMessageButton.setOnClickListener { onMessage() }
-            it.sharePanelAddButton.setOnClickListener { onAdd() }
+            binding.sharePanelResetButton.setOnClickListener { onReset() }
+            binding.sharePanelMessageButton.setOnClickListener { onMessage() }
+            binding.sharePanelAddButton.setOnClickListener { onAdd() }
         }
     }
 
@@ -126,6 +128,10 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
     fun hideMessageView(): Boolean {
         heightValueAnimator.animate(false)
         return isMessageShowed
+    }
+
+    fun setExtension(extension: StringUtils.Extension) {
+        this.extension = extension
     }
 
     val message: String?

@@ -20,7 +20,7 @@ import moxy.presenter.InjectPresenter
 class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropboxView {
 
     companion object {
-        val TAG = DocsDropboxFragment::class.java.simpleName
+        val TAG: String = DocsDropboxFragment::class.java.simpleName
 
         const val KEY_ACCOUNT = "KEY_ACCOUNT"
         const val KEY_UPLOAD = "KEY_UPLOAD"
@@ -201,8 +201,6 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
         presenter.getProvider()
     }
 
-    override fun onRemoveItemFromFavorites() {
-        TODO("Not yet implemented")
-    }
+    override fun onUpdateItemFavorites() { }
 
 }

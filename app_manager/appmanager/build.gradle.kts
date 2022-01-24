@@ -60,7 +60,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 332
+        versionCode = 342
         versionName = "5.3.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -189,7 +189,7 @@ android {
         }
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = AndroidX.composeVersion
+        kotlinCompilerExtensionVersion = Compose.version
     }
 }
 
@@ -220,7 +220,6 @@ dependencies {
 
     // Androidx
     implementation(AndroidX.appCompat)
-    implementation(AndroidX.appCompatResources)
     implementation(AndroidX.biometric)
     // RecyclerView
     implementation(AndroidX.recyclerView)
@@ -255,9 +254,13 @@ dependencies {
     implementation(Rx.androidRx)
     implementation(Rx.rxRelay)
 
+    // Room
+    implementation(Room.roomRuntime)
+    implementation(Room.roomKtx)
+    kapt(Room.roomCompiler)
+
     // Other
     implementation(Libs.phoneNumber)
-    implementation(Libs.ormlite)
     implementation(Libs.facebookLogin)
     implementation(Libs.pageIndicator)
     implementation(Libs.glide)
@@ -265,20 +268,20 @@ dependencies {
     implementation(Libs.androidWork)
 
     //TODO add to base module
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+    implementation(Lifecycle.viewModel)
+    implementation(Lifecycle.liveData)
+    implementation(Lifecycle.runtime)
 
     implementation("androidx.fragment:fragment-ktx:1.4.0")
 
     //Compose
-    implementation("androidx.compose.ui:ui:${AndroidX.composeVersion}")
-    implementation("androidx.compose.material:material:${AndroidX.composeVersion}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${AndroidX.composeVersion}")
-    debugImplementation("androidx.compose.ui:ui-tooling:${AndroidX.composeVersion}")
-    implementation("androidx.navigation:navigation-compose:2.4.0-beta02")
+    implementation(Compose.ui)
+    implementation(Compose.material)
+    implementation(Compose.preview)
+    debugImplementation(Compose.tooling)
+    implementation(Compose.navigation)
     implementation(AndroidX.composeActivity)
-    implementation( "androidx.compose.runtime:runtime-livedata:${AndroidX.composeVersion}")
+    implementation( Compose.liveData)
 
 }
 

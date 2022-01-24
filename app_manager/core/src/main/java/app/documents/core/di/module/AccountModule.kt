@@ -25,7 +25,7 @@ class AccountModule {
             .addMigrations(AccountsDataBase.MIGRATION_1_2)
             .addMigrations(AccountsDataBase.MIGRATION_2_3)
             .addMigrations(AccountsDataBase.MIGRATION_3_4)
-        builder.addCallback(roomCallback)
+            .addMigrations(AccountsDataBase.MIGRATION_4_5)
         return builder.build()
     }
 

@@ -1,5 +1,6 @@
 package app.editors.manager.managers.providers
 
+import android.content.Context
 import android.net.Uri
 import app.editors.manager.managers.providers.ProviderError.Companion.throwErrorCreate
 import app.editors.manager.app.App.Companion.getLocale
@@ -16,6 +17,7 @@ import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import io.reactivex.Observable
+import lib.toolkit.base.managers.utils.PathUtils
 import java.io.File
 import java.io.IOException
 import java.lang.Exception
@@ -149,9 +151,6 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
     override fun getStatusOperation(): ResponseOperation? = null
 
     override fun download(items: List<Item>): Observable<Int>? = null
-
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
-
     override fun share(
         id: String,
         requestExternal: RequestExternal
@@ -162,6 +161,18 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
     override fun addToFavorites(fileId: RequestFavorites): Observable<Base>? = null
 
     override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
+
+    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
+
+    fun import(context: Context, folderId: String, uri: Uri?):Observable<Int> {
+        val folder = File(folderId)
+        return Observable.just(uri).map { file ->
+            val path = PathUtils.getPath(context, file)
+            val file = File(Uri.parse(path).path)
+            mLocalContentTools.moveFiles(file, folder, true)
+            1
+        }
+    }
 
     @Throws(Exception::class)
     fun transfer(path: String?, clickedItem: Item?, isCopy: Boolean): Boolean {
@@ -230,7 +241,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
         val root = File(id)
         val listFiles = root.listFiles()
         for (item in listFiles) {
-            if (item.name.toLowerCase().contains(value?.toLowerCase().toString())) {
+            if (item.name.lowercase(Locale.getDefault()).contains(value?.lowercase(Locale.getDefault()).toString())) {
                 files.add(item)
                 tempExplorer = getExplorer(files, File(id))
             }
@@ -239,6 +250,13 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
             }
             resultExplorer.add(tempExplorer)
         }
+
+        if(resultExplorer.count == 0) {
+            val current = Current()
+            current.id = id
+            resultExplorer.current = current
+        }
+
         return resultExplorer
     }
 
@@ -256,10 +274,10 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
                 })
                 ApiContract.Parameters.VAL_SORT_BY_TITLE -> {
                     folders.sortWith(Comparator { o1: CloudFolder, o2: CloudFolder ->
-                        o1.title.toLowerCase().compareTo(o2.title.toLowerCase())
+                        o1.title.lowercase(Locale.getDefault()).compareTo(o2.title.lowercase(Locale.getDefault()))
                     })
                     files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
-                        o1.title.toLowerCase().compareTo(o2.title.toLowerCase())
+                        o1.title.lowercase(Locale.getDefault()).compareTo(o2.title.lowercase(Locale.getDefault()))
                     })
                 }
                 ApiContract.Parameters.VAL_SORT_BY_SIZE -> files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
