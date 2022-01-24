@@ -32,12 +32,13 @@
             android:layout_height="@dimen/default_tab_layout_height"
             android:layout_gravity="center"
             android:visibility="gone"
+            android:background="@color/colorAppBar"
             app:tabMode="fixed"
             app:tabGravity="fill"
             app:tabMaxWidth="0dp"
             app:tabTextAppearance="@style/ViewPagerTabsText"
             app:tabSelectedTextColor="@color/colorPrimary"
-            app:tabIndicatorColor="@color/colorSecondary"/>
+            app:tabIndicatorColor="@color/colorPrimary"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
