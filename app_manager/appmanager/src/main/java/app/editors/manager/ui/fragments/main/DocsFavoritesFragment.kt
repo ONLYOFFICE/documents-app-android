@@ -48,7 +48,7 @@ class DocsFavoritesFragment : DocsCloudFragment() {
         cloudPresenter.getItemsById(ID)
     }
 
-    override fun onRemoveItemFromFavorites() {
+    override fun onUpdateItemFavorites() {
         cloudPresenter.removeFromFavorites()
     }
 

@@ -291,7 +291,8 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
                         isLocal = false,
                         isWebDav = true,
                         date = Date().time,
-                        ownerId = it.id
+                        ownerId = it.id,
+                        source = it.portal
                     )
                 }?.let { recent ->
                     recentDao.addRecent(recent)

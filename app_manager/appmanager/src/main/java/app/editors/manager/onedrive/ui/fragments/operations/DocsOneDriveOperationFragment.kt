@@ -104,9 +104,7 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
         presenter.getProvider()
     }
 
-    override fun onRemoveItemFromFavorites() {
-        //stub
-    }
+    override fun onUpdateItemFavorites() { }
 
     override fun onActionClick() {
         when (operationType) {

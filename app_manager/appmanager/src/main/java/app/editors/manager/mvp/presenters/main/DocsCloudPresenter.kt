@@ -207,7 +207,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     isLocal = false,
                     isWebDav = account.isWebDav,
                     date = Date().time,
-                    ownerId = account.id
+                    ownerId = account.id,
+                    source = account.portal
                 )
             )
         }
@@ -465,8 +466,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         requestFavorites.fileIds = ArrayList(listOf(itemClicked!!.id))
         fileProvider?.let { provider ->
             disposable.add(provider.addToFavorites(requestFavorites)!!
-                .subscribe({ response: Base? ->
-                    itemClicked!!.favorite = !itemClicked!!.favorite
+                .subscribe({
+                    (itemClicked as? CloudFile)?.fileStatus = ApiContract.FileStatus.FAVORITE.toString()
+                    viewState.onUpdateItemFavorites()
                     viewState.onSnackBar(context.getString(R.string.operation_add_to_favorites))
                 }) { throwable: Throwable -> fetchError(throwable) })
         }
@@ -477,9 +479,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         requestFavorites.fileIds = ArrayList(listOf(itemClicked!!.id))
         fileProvider?.let { provider ->
             disposable.add(provider.deleteFromFavorites(requestFavorites)!!
-                .subscribe({ response: Base? ->
-                    itemClicked!!.favorite = !itemClicked!!.favorite
-                    viewState.onRemoveItemFromFavorites()
+                .subscribe({
+                    (itemClicked as? CloudFile)?.fileStatus = ApiContract.FileStatus.NONE.toString()
+                    viewState.onUpdateItemFavorites()
                     viewState.onSnackBar(context.getString(R.string.operation_remove_from_favorites))
                 }) { throwable: Throwable -> fetchError(throwable) })
         }

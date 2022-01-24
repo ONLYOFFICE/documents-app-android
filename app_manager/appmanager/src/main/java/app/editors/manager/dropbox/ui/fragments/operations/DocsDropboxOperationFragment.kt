@@ -12,7 +12,6 @@ import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState
-import app.editors.manager.onedrive.ui.fragments.operations.DocsOneDriveOperationFragment
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
@@ -110,9 +109,7 @@ class DocsDropboxOperationFragment : DocsBaseFragment(), OperationActivity.OnAct
         presenter.getProvider()
     }
 
-    override fun onRemoveItemFromFavorites() {
-        //stub
-    }
+    override fun onUpdateItemFavorites() { }
 
     override fun onActionClick() {
         when (operationType) {

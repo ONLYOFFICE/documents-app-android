@@ -376,6 +376,10 @@
         <item name="android:tint">@color/colorOnSurface</item>
     </style>
 
+    <style name="ContextListImage.Favorite" parent="ContextListImage">
+        <item name="android:tint">@null</item>
+    </style>
+
     <style name="ContextListMediumText" parent="ItemMediumBlackText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

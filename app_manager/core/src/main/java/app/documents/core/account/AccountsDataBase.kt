@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [CloudAccount::class, Recent::class], version = 4, exportSchema = false)
+@Database(entities = [CloudAccount::class, Recent::class], version = 5, exportSchema = false)
 abstract class AccountsDataBase: RoomDatabase() {
 
     companion object {
@@ -28,6 +28,13 @@ abstract class AccountsDataBase: RoomDatabase() {
                 database.execSQL("ALTER TABLE CloudAccount ADD COLUMN token TEXT DEFAULT '' NOT NULL")
                 database.execSQL("ALTER TABLE CloudAccount ADD COLUMN password TEXT DEFAULT '' NOT NULL")
                 database.execSQL("ALTER TABLE CloudAccount ADD COLUMN expires TEXT DEFAULT '' NOT NULL")
+            }
+
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE Recent ADD COLUMN source TEXT DEFAULT NULL")
             }
 
         }

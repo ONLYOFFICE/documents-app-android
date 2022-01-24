@@ -318,7 +318,8 @@ class DocsDropboxPresenter: DocsBasePresenter<DocsDropboxView>(), UploadReceiver
                         isLocal = false,
                         isWebDav = true,
                         date = Date().time,
-                        ownerId = it.id
+                        ownerId = it.id,
+                        source = it.portal
                     )
                 )
             }
