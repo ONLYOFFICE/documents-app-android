@@ -265,26 +265,20 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
 
     fun checkFileData(fileData: Uri) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccounts().let { accounts ->
+            accountDao.getAccountOnline()?.let { account ->
                 val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query))
-                accounts.forEach { account ->
-                    if (data.portal?.equals(
-                            account.portal,
-                            ignoreCase = true
-                        ) == true &&
-                        data.email?.equals(account.login, ignoreCase = true) == true
-                    ) {
-                        AccountUtils.getPassword(context, account.getAccountName())?.let {
-                            withContext(Dispatchers.Main) {
-                                viewState.openFile(account, Json.encodeToString(data))
-                            }
-                            return@forEach
-                        } ?: run {
-                            withContext(Dispatchers.Main) {
-                                viewState.onError(context.getString(R.string.error_recent_enter_account))
-                            }
-                            return@forEach
-                        }
+                if (data.portal?.equals(
+                        account.portal,
+                        ignoreCase = true
+                    ) == true &&
+                    data.email?.equals(account.login, ignoreCase = true) == true
+                ) {
+                    withContext(Dispatchers.Main) {
+                        viewState.openFile(account, Json.encodeToString(data))
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        viewState.onOpenProjectFileError(context.getString(R.string.error_open_project_file))
                     }
                 }
 
