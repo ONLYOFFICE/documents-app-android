@@ -174,7 +174,11 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                     AccountUtils.setToken(context, it, null)
                 }
             }
-            accountDao.updateAccount(account.copyWithToken(isOnline = false))
+            accountDao.updateAccount(account.copyWithToken(isOnline = false).apply {
+                token = ""
+                password = ""
+                expires = ""
+            })
             withContext(Dispatchers.Main) {
                 viewState.onClose(true, account.copyWithToken(isOnline = false))
             }

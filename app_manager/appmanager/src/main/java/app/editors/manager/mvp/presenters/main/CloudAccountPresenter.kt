@@ -109,7 +109,11 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 } else {
                     AccountUtils.setPassword(context, account.getAccountName(), null)
                 }
-                accountDao.updateAccount(account.copyWithToken(isOnline = false))
+                accountDao.updateAccount(account.copyWithToken(isOnline = false).apply {
+                    token = ""
+                    password = ""
+                    expires = ""
+                })
                 accountDao.getAccounts().let {
                     withContext(Dispatchers.Main) {
                         viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
