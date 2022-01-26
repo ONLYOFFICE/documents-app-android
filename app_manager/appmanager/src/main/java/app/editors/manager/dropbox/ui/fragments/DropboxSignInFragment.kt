@@ -12,6 +12,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageWebBinding
+import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.presenters.DropboxSignInPresenter
 import app.editors.manager.dropbox.mvp.views.DropboxSignInView
 import app.editors.manager.managers.utils.StorageUtils
@@ -20,6 +21,7 @@ import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.NetworkUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import moxy.presenter.InjectPresenter
 
 class DropboxSignInFragment: BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener, DropboxSignInView {
@@ -157,9 +159,12 @@ class DropboxSignInFragment: BaseAppFragment(), SwipeRefreshLayout.OnRefreshList
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             if (url.startsWith(redirectUrl!!)) {
-                val accessToken = url.split("=")
-                val token = accessToken[2]
-                presenter.getUserInfo(token.dropLast(4), accessToken[4])
+                val map = StringUtils.getParametersFromUrl(url.split("#")[1])
+                map[DropboxUtils.DROPBOX_ACCESS_TOKEN_NAME]?.let { token -> map[DropboxUtils.DROPBOX_ACCOUNT_ID_NAME]?.let { accountId ->
+                    presenter.getUserInfo(token,
+                        accountId
+                    )
+                } }
             }
         }
 

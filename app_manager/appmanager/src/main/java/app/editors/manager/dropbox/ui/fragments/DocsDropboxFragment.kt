@@ -6,9 +6,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import app.documents.core.account.CloudAccount
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.dropbox.mvp.presenters.DocsDropboxPresenter
 import app.editors.manager.dropbox.mvp.views.DocsDropboxView
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ContextBottomDialog
@@ -184,7 +187,12 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
     override fun onError(message: String?) {
         when(message) {
             context?.getString(R.string.errors_client_unauthorized) -> {
-                //presenter.refreshToken()
+                val storage = Storage(
+                    ApiContract.Storage.DROPBOX,
+                    Constants.DropBox.COM_CLIENT_ID,
+                    Constants.DropBox.COM_REDIRECT_URL
+                )
+                showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
             }
             else -> {
                 message?.let { showSnackBar(it) }
