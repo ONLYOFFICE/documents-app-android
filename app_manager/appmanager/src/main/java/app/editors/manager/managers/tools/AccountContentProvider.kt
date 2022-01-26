@@ -88,8 +88,10 @@ class AccountContentProvider : ContentProvider() {
         } else {
             getAccount(values)
         }.apply {
-            setCryptToken(token)
-            setCryptPassword(password)
+            if (token.isNotEmpty()) {
+                setCryptToken(token)
+                setCryptPassword(password)
+            }
         }
         runBlocking {
             val online = dao?.getAccountOnline()
@@ -116,8 +118,10 @@ class AccountContentProvider : ContentProvider() {
                 addSystemAccount(account)
             } else {
                 val account: CloudAccount = getAccount(it).apply {
-                    setCryptToken(token)
-                    setCryptPassword(password)
+                    if (token.isNotEmpty()) {
+                        setCryptToken(token)
+                        setCryptPassword(password)
+                    }
                 }
                 id = account.id
                 runBlocking {
@@ -168,8 +172,15 @@ class AccountContentProvider : ContentProvider() {
             expires = ""
         )
 
-        val token = cloudAccount.getDecryptToken()
-        val password = cloudAccount.getDecryptPassword() ?: ""
+        val token: String
+        val password: String
+        if (cloudAccount.token.isNotEmpty()) {
+            token = cloudAccount.getDecryptToken() ?: ""
+            password = cloudAccount.getDecryptPassword() ?: ""
+        } else {
+            token = ""
+            password = ""
+        }
 
         if (!AccountUtils.addAccount(checkNotNull(context), account, password, accountData)) {
             AccountUtils.setAccountData(checkNotNull(context), account, accountData)
