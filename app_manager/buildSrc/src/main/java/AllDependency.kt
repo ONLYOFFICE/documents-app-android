@@ -124,6 +124,12 @@ object Compose {
     const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
 }
 
+object Jackson {
+    private const val version = "2.10.1"
+    const val core = "com.fasterxml.jackson.core:jackson-core:$version"
+    const val annotations = "com.fasterxml.jackson.core:jackson-annotations:$version"
+    const val databind = "com.fasterxml.jackson.core:jackson-databind:$version"
+}
 
 object Libs {
     const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
