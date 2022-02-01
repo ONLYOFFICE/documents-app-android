@@ -204,6 +204,10 @@
         </FrameLayout>
 
         <include
+            android:id="@+id/settingsAppTheme"
+            layout="@layout/include_setting_item" />
+
+        <include
             android:id="@+id/settingAboutItem"
             layout="@layout/include_setting_item" />
 

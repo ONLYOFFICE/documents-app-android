@@ -621,4 +621,8 @@
             <a href="%2$s">Terms of Service</a>
         ]]>
     </string>
+    <string name="app_settings_color_theme">Color theme</string>
+    <string name="app_settings_follow_the_system">Follow the system</string>
+    <string name="app_settings_light_theme">Light theme</string>
+    <string name="app_settings_dark_theme">Dark theme</string>
 </resources>
