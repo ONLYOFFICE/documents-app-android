@@ -89,8 +89,7 @@ private fun RadioItem(title: String, selected: Boolean, onClick: () -> Unit) {
     Row(modifier = Modifier
         .padding(top = 14.dp, bottom = 14.dp)) {
         RadioButton(selected = selected,
-            onClick = onClick,
-            colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colors.primary))
+            onClick = onClick)
         Text(text = title, modifier = Modifier.padding(start = 26.dp), style = MaterialTheme.typography.subtitle1)
     }
 }
