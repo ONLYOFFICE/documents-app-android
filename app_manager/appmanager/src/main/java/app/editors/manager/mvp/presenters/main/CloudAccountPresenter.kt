@@ -29,10 +29,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import moxy.InjectViewState
 import okhttp3.Credentials
 import retrofit2.HttpException
-import java.util.*
 
 sealed class CloudAccountState {
     class AccountLoadedState(val account: List<CloudAccount>, val state: Bundle?) : CloudAccountState()
@@ -130,7 +130,9 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 accountDao.deleteAccount(account)
                 accountDao.getAccounts().let {
                     withContext(Dispatchers.Main) {
-                        context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
+                        if (ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
+                            context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
+                        }
                         viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
                     }
                 }

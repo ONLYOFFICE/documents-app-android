@@ -29,9 +29,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
-import java.lang.RuntimeException
 import javax.inject.Inject
 
 sealed class ProfileState(val account: CloudAccount) {
@@ -154,7 +154,9 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             )
             accountDao.deleteAccount(account)
             recentDao.removeAllByOwnerId(account.id)
-            context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
+            if (ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
+                context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
+            }
             withContext(Dispatchers.Main) {
                 viewState.onClose(false)
             }
