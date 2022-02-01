@@ -38,7 +38,7 @@ data class CloudAccount(
 
     fun getAccountName() = "$login@$portal"
 
-    fun isPersonal() = portal?.contains(ApiContract.PERSONAL_SUBDOMAIN) ?: false
+    fun isPersonal() = portal?.contains(ApiContract.PERSONAL_HOST) ?: false
 
     fun setCryptToken(value: String) {
         token = CryptUtils.encryptAES128(value, id) ?: ""

@@ -123,7 +123,7 @@ class OperationActivity : BaseAppActivity(){
                     } else if(account.isDropbox) {
                         showFragment(DocsDropboxOperationFragment.newInstance(), null)
                     } else {
-                        if (account.portal?.contains(ApiContract.PERSONAL_SUBDOMAIN) == true) {
+                        if (account.portal?.contains(ApiContract.PERSONAL_HOST) == true) {
                             showFragment(DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER), null)
                         } else {
                             showFragment(DocsOperationSectionFragment.newInstance(Json.encodeToString(account)), null)

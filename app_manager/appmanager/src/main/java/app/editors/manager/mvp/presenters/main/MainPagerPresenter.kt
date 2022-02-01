@@ -54,7 +54,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
 
     fun getState(fileData: Uri? = null) {
         if (StringUtils.convertServerVersion(networkSetting.serverVersion) < 11 || networkSetting.getBaseUrl()
-                .contains(ApiContract.PERSONAL_SUBDOMAIN)
+                .contains(ApiContract.PERSONAL_HOST)
         ) {
             accountJson?.let { jsonAccount ->
                 viewState.onFinishRequest()
@@ -77,7 +77,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
 
     private fun render(cloudAccount: CloudAccount, jsonAccount: String, fileData: Uri?) {
         when {
-            networkSetting.getPortal().contains(ApiContract.PERSONAL_SUBDOMAIN) -> {
+            networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
                 viewState.onRender(
                     MainPagerState.PersonalState(
                         jsonAccount,
