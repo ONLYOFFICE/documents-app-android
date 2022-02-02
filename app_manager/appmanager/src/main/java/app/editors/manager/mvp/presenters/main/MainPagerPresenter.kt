@@ -41,7 +41,6 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     private var disposable: Disposable? = null
-    private var sections: List<Explorer>? = null
 
     private val api: Api = context.api()
 
@@ -63,7 +62,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 throw Exception("Need account")
             }
         } else {
-            disposable = getPortalModules().subscribe({
+            disposable = getPortalModules().subscribe({ sections ->
                 viewState.onFinishRequest()
                 accountJson?.let { account ->
                     viewState.onRender(account, sections)
@@ -107,7 +106,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         checkFileData(cloudAccount, fileData)
     }
 
-    private fun getPortalModules(): Observable<Boolean> {
+    private fun getPortalModules(): Observable<List<Explorer>?> {
        return api.getRootFolder(
             mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
             mapOf(
@@ -120,7 +119,6 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             .observeOn(AndroidSchedulers.mainThread())
             .map { cloudTree ->
                 if (cloudTree.response != null) {
-                    sections = cloudTree.response
                     for (folder in cloudTree.response) {
                         if (folder.current?.rootFolderType == ApiContract.SectionType.CLOUD_FAVORITES) {
                             preferenceTool.setFavoritesEnable(true)
@@ -134,7 +132,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                         }
                     }
                 }
-                return@map true
+                return@map cloudTree.response
             }
     }
 
