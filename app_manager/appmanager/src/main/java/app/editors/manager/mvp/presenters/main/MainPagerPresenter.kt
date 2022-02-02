@@ -8,7 +8,6 @@ import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -22,7 +21,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TabFragmentDictionary
 import moxy.InjectViewState
 import javax.inject.Inject
 
@@ -110,32 +108,34 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     private fun getPortalModules(): Observable<Boolean> {
-        return Observable.zip(
-            api.getRootFolder(
-                mapOf("filterType" to 2),
-                mapOf(
-                    "withsubfolders" to false,
-                    "withoutTrash" to false,
-                    "withoutAdditionalFolder" to false
-                )
-            ), api.getModules(listOf(Constants.Modules.PROJECT_ID))
-        ) { cloudTree, modules ->
-            if (cloudTree.response != null && modules.response != null) {
-                preferenceTool.isProjectDisable = !modules.response[0].isEnable
-                sections = cloudTree.response
-                for (folder in cloudTree.response) {
-                    if (TabFragmentDictionary.Favorites.contains(folder.current.title)) {
-                        preferenceTool.setFavoritesEnable(true)
-                        break
-                    } else {
-                        preferenceTool.setFavoritesEnable(false)
-                    }
-                }
-            }
-            return@zip true
-        }
+       return api.getRootFolder(
+            mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
+            mapOf(
+                ApiContract.Modules.FLAG_SUBFOLDERS to false,
+                ApiContract.Modules.FLAG_TRASH to false,
+                ApiContract.Modules.FLAG_ADDFOLDERS to false
+            )
+        )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .map { cloudTree ->
+                if (cloudTree.response != null) {
+                    sections = cloudTree.response
+                    for (folder in cloudTree.response) {
+                        if (folder.current?.rootFolderType == ApiContract.SectionType.CLOUD_FAVORITES) {
+                            preferenceTool.setFavoritesEnable(true)
+                            break
+                        } else if(folder.current?.rootFolderType == ApiContract.SectionType.CLOUD_PROJECTS) {
+                            preferenceTool.isProjectDisable = false
+                            break
+                        } else {
+                            preferenceTool.setFavoritesEnable(false)
+                            preferenceTool.isProjectDisable = true
+                        }
+                    }
+                }
+                return@map true
+            }
     }
 
     private fun checkFileData(account: CloudAccount, fileData: Uri?) {

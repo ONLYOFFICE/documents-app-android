@@ -150,6 +150,17 @@ object ApiContract {
         const val CLOUD_SHARE = 6
         const val CLOUD_PROJECTS = 8
         const val DEVICE_DOCUMENTS = 9
+        const val CLOUD_FAVORITES = 10
+        const val CLOUD_RECENT = 11
+    }
+
+    object Modules {
+        const val FILTER_TYPE_HEADER = "filterType"
+        const val FILTER_TYPE_VALUE = 2
+
+        const val FLAG_SUBFOLDERS = "withsubfolders"
+        const val FLAG_TRASH = "withoutTrash"
+        const val FLAG_ADDFOLDERS = "withoutAdditionalFolder"
     }
 
     object Operation {

@@ -23,10 +23,10 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.factory.TabFragmentFactory
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
-import lib.toolkit.base.managers.utils.TabFragmentDictionary
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import java.util.*
+import app.documents.core.network.ApiContract
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener {
 
@@ -179,48 +179,47 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     override fun onRender(stringAccount: String, sections: List<Explorer>?) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
-        sections?.let {
-            for(section in sections) {
-                if(TabFragmentDictionary.Recent.contains(section.current?.title)) {
-                    continue
+        val correctOrderTabs = setCorrectOrder(sections).filterNotNull()
+        correctOrderTabs.let {
+            for(section in correctOrderTabs) {
+                if(section.current?.rootFolderType != ApiContract.SectionType.CLOUD_RECENT) {
+                    fragments.add(
+                        ViewPagerAdapter.Container(
+                            section.current?.rootFolderType?.let { folderType ->
+                                TabFragmentFactory.getSectionFragment(
+                                    folderType,
+                                    stringAccount,
+                                    arguments?.getString(KEY_FILE_DATA)
+                                )
+                            },
+                            context?.let {
+                                section.current?.rootFolderType?.let { folderType ->
+                                    TabFragmentFactory(it).getTabTitle(
+                                        folderType
+                                    )
+                                }
+                            }
+                        )
+                    )
                 }
-                fragments.add(
-                    ViewPagerAdapter.Container(
-                        section.current?.title?.let { TabFragmentFactory.getSectionFragment(it, stringAccount) },
-                        context?.let { section.current?.title?.let { it1 ->
-                            TabFragmentFactory(it).getTabTitle(
-                                it1
-                            )
-                        } }
-                    )
-                )
             }
-            if (preferenceTool?.isProjectDisable?.not() == true) {
-                fragments.add(
-                    ViewPagerAdapter.Container(
-                        DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
-                        getString(R.string.main_pager_docs_projects)
-                    )
-                )
-            }
-            val correctOrderTabs = setCorrectOrder(fragments)
-            setAdapter(correctOrderTabs.filterNotNull())
-
+            setAdapter(fragments)
         }
     }
 
-    private fun setCorrectOrder(tabs: ArrayList<ViewPagerAdapter.Container>): ArrayList<ViewPagerAdapter.Container?> {
-        val tabOrder = arrayListOf<ViewPagerAdapter.Container?>(null, null, null, null, null, null)
-        for(tab in tabs) {
-            when {
-                TabFragmentDictionary.My.contains(tab.mTitle) -> tabOrder[0] = tab
-                TabFragmentDictionary.Shared.contains(tab.mTitle) -> tabOrder[1] = tab
-                TabFragmentDictionary.Favorites.contains(tab.mTitle) -> tabOrder[2] = tab
-                TabFragmentDictionary.Common.contains(tab.mTitle) -> tabOrder[3] = tab
-                TabFragmentDictionary.Trash.contains(tab.mTitle) -> tabOrder[5] = tab
-                else -> tabOrder[4] = tab
+    private fun setCorrectOrder(tabs: List<Explorer>?): List<Explorer?> {
+        val tabOrder = arrayListOf<Explorer?>(null, null, null, null, null, null)
+        tabs?.forEach { tab ->
+            when (tab.current?.rootFolderType) {
+                ApiContract.SectionType.CLOUD_USER -> tabOrder[0] = tab
+                ApiContract.SectionType.CLOUD_SHARE -> tabOrder[1] = tab
+                ApiContract.SectionType.CLOUD_FAVORITES -> tabOrder[2] = tab
+                ApiContract.SectionType.CLOUD_COMMON -> tabOrder[3] = tab
+                ApiContract.SectionType.CLOUD_TRASH -> tabOrder[5] = tab
+                ApiContract.SectionType.CLOUD_PROJECTS -> tabOrder[4] = tab
             }
         }
+
         return tabOrder
     }
 
