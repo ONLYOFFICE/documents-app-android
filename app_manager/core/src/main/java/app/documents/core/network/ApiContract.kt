@@ -11,7 +11,9 @@ object ApiContract {
     const val API_SUBDOMAIN = "api-system"
     const val PERSONAL_SUBDOMAIN = "personal"
     const val DEFAULT_HOST = "onlyoffice.com"
+    const val DEFAULT_INFO_HOST = "teamlab.info"
     const val PERSONAL_HOST = "$PERSONAL_SUBDOMAIN.$DEFAULT_HOST"
+    const val PERSONAL_INFO_HOST = "$PERSONAL_SUBDOMAIN.$DEFAULT_INFO_HOST"
     const val RESPONSE_FORMAT = ".json"
     const val COOKIE_HEADER = "asc_auth_key="
 
@@ -180,7 +182,7 @@ object ApiContract {
         const val YANDEX = "Yandex"
         const val OWNCLOUD = "OwnCloud"
         const val NEXTCLOUD = "Nextcloud"
-        const val KDRIVE = "KDrive"
+        const val KDRIVE = "kDrive"
         const val WEBDAV = "WebDav"
     }
 
