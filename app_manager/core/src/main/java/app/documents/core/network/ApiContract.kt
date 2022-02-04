@@ -135,7 +135,7 @@ object ApiContract {
         const val VAL_FILTER_BY = "title"
         const val VAL_SORT_BY_UPDATED = "DateAndTime"
         const val VAL_SORT_BY_CREATED = "created"
-        const val VAL_SORT_BY_TITLE = "title"
+        const val VAL_SORT_BY_TITLE = "AZ"
         const val VAL_SORT_BY_TYPE = "type"
         const val VAL_SORT_BY_SIZE = "size"
         const val VAL_SORT_BY_OWNER = "Author"
