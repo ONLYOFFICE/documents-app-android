@@ -1,5 +1,8 @@
 package app.documents.core.network
 
+import lib.toolkit.base.BuildConfig
+
+
 object ApiContract {
 
     /*
@@ -9,9 +12,9 @@ object ApiContract {
     const val SCHEME_HTTPS = "https://"
     const val SCHEME_HTTP = "http://"
     const val API_SUBDOMAIN = "api-system"
-    const val PERSONAL_SUBDOMAIN = "personal"
-    const val DEFAULT_HOST = "onlyoffice.com"
-    const val DEFAULT_INFO_HOST = "teamlab.info"
+    const val PERSONAL_SUBDOMAIN = BuildConfig.SUBDOMAIN
+    const val DEFAULT_HOST = BuildConfig.DEFAULT_HOST
+    const val DEFAULT_INFO_HOST = BuildConfig.DEFAULT_INFO_HOST
     const val PERSONAL_HOST = "$PERSONAL_SUBDOMAIN.$DEFAULT_HOST"
     const val PERSONAL_INFO_HOST = "$PERSONAL_SUBDOMAIN.$DEFAULT_INFO_HOST"
     const val RESPONSE_FORMAT = ".json"
