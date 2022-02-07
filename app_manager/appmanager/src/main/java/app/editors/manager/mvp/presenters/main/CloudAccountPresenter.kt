@@ -202,7 +202,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                             viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
                         }
                     } ?: run {
-                        networkSettings.setBaseUrl(account.portal ?: "")
+                        setSettings(account)
                         disposable = context.loginService.capabilities().subscribe({ response ->
                             if (response is LoginResponse.Success) {
                                 if (response.response is ResponseCapabilities) {
