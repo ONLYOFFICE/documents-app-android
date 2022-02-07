@@ -13,14 +13,14 @@ data class OpenDataModel(
 
 @Serializable
 data class OpenFileModel(
-    val id: Int? = null,
+    val id: String? = null,
     val title: String? = null,
     val extension: String? = null
 )
 
 @Serializable
 data class OpenFolderModel(
-    val id: Int? = null,
-    val parentId: Int? = null,
+    val id: String? = null,
+    val parentId: String? = null,
     val rootFolderType: Int? = null
 )
