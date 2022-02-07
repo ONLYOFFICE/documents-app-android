@@ -109,22 +109,14 @@ object ManagerUiUtils {
                 resId = R.drawable.ic_type_video
             }
             StringUtils.Extension.ARCH -> {
-                setAlphaIcon(view, R.drawable.ic_type_archive)
-                return
+                resId = R.drawable.ic_type_archive
             }
             StringUtils.Extension.UNKNOWN -> {
-                setAlphaIcon(view, R.drawable.ic_type_file)
-                return
+                resId = R.drawable.ic_type_file
             }
         }
         view.setImageResource(resId)
         view.alpha = 1.0f
-    }
-
-    private fun setAlphaIcon(view: ImageView, @DrawableRes resId: Int) {
-        view.setImageResource(resId)
-        view.alpha = UiUtils.getFloatResource(view.context, lib.toolkit.base.R.dimen.alpha_medium)
-        view.clearColorFilter()
     }
 
     fun setFolderIcon(view: ImageView, folder: CloudFolder, isRoot: Boolean) {
@@ -150,7 +142,6 @@ object ManagerUiUtils {
             }
             view.setImageResource(resId)
             view.alpha = 1.0f
-            view.clearColorFilter()
             return
         }
         view.setImageResource(resId)
