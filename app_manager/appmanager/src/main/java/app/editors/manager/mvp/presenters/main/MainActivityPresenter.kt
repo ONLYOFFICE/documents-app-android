@@ -7,7 +7,6 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.managers.utils.FirebaseUtils.OnRatingApp
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainActivityView
@@ -34,7 +33,7 @@ sealed class MainActivityState {
 }
 
 @InjectViewState
-class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
+class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     companion object {
         val TAG: String = MainActivityPresenter::class.java.simpleName
@@ -112,14 +111,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         networkSettings.setSslState(cloudAccount.isSslState)
         networkSettings.setCipher(cloudAccount.isSslCiphers)
         networkSettings.serverVersion = cloudAccount.serverVersion
-    }
-
-    override fun onRatingApp(isRating: Boolean) {
-        if (isRating) {
-            if (preferenceTool.isRateOn && preferenceTool.userSession % DEFAULT_RATE_SESSIONS == 0L) {
-                viewState.onRatingApp()
-            }
-        }
     }
 
     fun getRemoteConfigRate() {
