@@ -155,12 +155,15 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
                                     clickedAccount.login ?: "")
                             }
                         }
-                    }, { fetchError(it) })
+                    }, {
+                        setOnlineSettings()
+                        fetchError(it)
+                    })
             } else {
                 viewState.onSignIn(clickedAccount.portal ?: "", clickedAccount.login ?: "")
             }
         } ?: run {
-            networkSettings.setBaseUrl(clickedAccount.portal ?: "")
+            setNetworkSettings()
             disposable = context.loginService.capabilities()
                 .doOnSubscribe { viewState.showWaitingDialog() }
                 .subscribe({ response ->
@@ -175,9 +178,15 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
                                     loginResponse.response.communityServer ?: ""
                             }
                         }
-                        is LoginResponse.Error -> fetchError(response.error)
+                        is LoginResponse.Error -> {
+                            setOnlineSettings()
+                            fetchError(response.error)
+                        }
                     }
-                }) { fetchError(it) }
+                }) {
+                    setOnlineSettings()
+                    fetchError(it)
+                }
         }
     }
 
