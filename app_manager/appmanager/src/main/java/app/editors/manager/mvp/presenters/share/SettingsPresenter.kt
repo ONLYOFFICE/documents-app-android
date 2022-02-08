@@ -172,7 +172,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     externalLink = it
-                    item?.access = code
+                    item?.access = code.toString()
                     item?.shared = isShared(code)
                     viewState.onExternalAccess(code, true)
                 }
@@ -182,7 +182,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                        item?.access = code
+                        item?.access = code.toString()
                         item?.shared = isShared(code)
                         viewState.onExternalAccess(code, true)
                     }, { error -> fetchError(error) }
@@ -205,12 +205,12 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
                         (item as CloudFolder).id,
                         false,
                         null,
-                        Share(accessCode, it.sharedTo, it.isLocked, it.isOwner)
+                        Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner)
                     )
                 }
             } else {
                 shareItem?.let {
-                    setShareFile(item?.id ?: "", false, null, Share(accessCode, it.sharedTo, it.isLocked, it.isOwner))
+                    setShareFile(item?.id ?: "", false, null, Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner))
                 }
 
             }
@@ -221,7 +221,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
      * Update states
      * */
     fun updateSharedListState() {
-        viewState.onGetShare(commonList, item!!.access)
+        viewState.onGetShare(commonList, item!!.intAccess)
         loadAvatars(commonList)
         if (isPopupShow) {
             isPopupShow = false
@@ -230,7 +230,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     }
 
     fun updateSharedExternalState(isMessage: Boolean) {
-        viewState.onExternalAccess(item!!.access, isMessage)
+        viewState.onExternalAccess(item!!.intAccess, isMessage)
     }
 
     fun updateActionButtonState() {
@@ -281,14 +281,14 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     private fun getShareList(shareList: List<Share>, isFolder: Boolean = false) {
         isAccessDenied = false
         val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() && !it.isOwner || (it.isOwner && isFolder) }
-            .map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
+            .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
         val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }
-            .map { ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
+            .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
             .sortedWith(groupComparator())
 
         shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {
-            item?.access = it.access
-            item?.shared = isShared(it.access)
+            item?.access = it.access.toString()
+            item?.shared = isShared(it.intAccess)
             externalLink = it.sharedTo.shareLink
         }
 
@@ -315,10 +315,10 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
 
         viewState.onActionButtonState(true)
         if (isShare && commonList.isNotEmpty()) {
-            viewState.onGetShareItem(commonList[sharePosition], sharePosition, item?.access ?: -1)
+            viewState.onGetShareItem(commonList[sharePosition], sharePosition, item?.intAccess ?: -1)
             isShare = false
         } else {
-            viewState.onGetShare(commonList, item?.access ?: -1)
+            viewState.onGetShare(commonList, item?.intAccess ?: -1)
         }
 
         if (commonList.isEmpty()) {

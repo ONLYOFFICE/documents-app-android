@@ -1599,13 +1599,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         List<CloudFolder> folders = explorer.getFolders();
         if (!files.isEmpty()) {
             for (CloudFile file : files) {
-                file.setAccess(0);
+                file.setAccess("0");
             }
             explorer.setFiles(files);
         }
         if (!folders.isEmpty()) {
             for (CloudFolder folder : folders) {
-                folder.setAccess(0);
+                folder.setAccess("0");
             }
             explorer.setFolders(folders);
         }
