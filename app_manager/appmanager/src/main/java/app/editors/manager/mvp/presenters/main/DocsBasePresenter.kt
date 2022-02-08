@@ -1,8 +1,8 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.Context
+import android.content.*
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Handler
 import android.util.Log
@@ -1544,6 +1544,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         when (throwable) {
             is NoConnectivityException -> {
                 viewState.onError(context.getString(R.string.errors_connection_error))
+                onNetworkHandle()
             }
             is UnknownHostException -> {
                 viewState.onError(context.getString(R.string.errors_unknown_host_error))
@@ -1560,6 +1561,19 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 viewState.onError(context.getString(R.string.errors_unknown_error))
             }
         }
+    }
+
+    private fun onNetworkHandle() {
+        context.registerReceiver(
+            object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    if (isOnline(context)) {
+                        refresh()
+                        context.unregisterReceiver(this)
+                    }
+                }
+            }, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        )
     }
 
     private fun checkStatusOperation() {
