@@ -9,8 +9,8 @@ import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentChooseCloudsBinding
 import app.editors.manager.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.googledrive.ui.fragments.GoogleDriveSignInFragment
 import app.editors.manager.managers.utils.Constants
-import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
@@ -109,6 +109,18 @@ class CloudsFragment : BaseAppFragment() {
                 Constants.DropBox.COM_REDIRECT_URL
             )
             showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
+        }
+
+        viewBinding?.cloudsItemGoogleDrive?.bind(
+            R.drawable.ic_storage_google,
+            R.string.storage_select_google_drive
+        ) {
+            val storage = Storage(
+                ApiContract.Storage.GOOGLEDRIVE,
+                Constants.Google.COM_CLIENT_ID,
+                Constants.Google.COM_REDIRECT_URL
+            )
+            showFragment(GoogleDriveSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
         }
 
         viewBinding?.cloudsItemYandex?.isVisible = false

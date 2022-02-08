@@ -17,6 +17,9 @@ import app.editors.manager.di.component.*
 import app.editors.manager.dropbox.di.component.DaggerDropboxComponent
 import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
+import app.editors.manager.googledrive.di.component.DaggerGoogleDriveComponent
+import app.editors.manager.googledrive.googledrive.api.IGoogleDriveServiceProvider
+import app.editors.manager.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
 import app.editors.manager.managers.utils.KeyStoreUtils
 import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
 import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
@@ -185,6 +188,11 @@ class App : Application() {
             .dropboxServiceProvider
     }
 
+    fun getGoogleDriveComponent(): IGoogleDriveServiceProvider {
+        return DaggerGoogleDriveComponent.builder().appComponent(appComponent)
+            .build()
+            .googleDriveServiceProvider
+    }
 }
 
 val Context.accountOnline: CloudAccount?
@@ -224,6 +232,12 @@ val Context.oneDriveAuthService: IOneDriveAuthServiceProvider
         else -> applicationContext.appComponent.oneDriveAuthService
     }
 
+val Context.googleDriveLoginService: IGoogleDriveLoginServiceProvider
+    get() = when(this) {
+        is App -> this.appComponent.googleDriveLoginService
+        else -> applicationContext.appComponent.googleDriveLoginService
+    }
+
 fun Context.api(): Api {
     return when (this) {
         is App -> this.getApi()
@@ -253,8 +267,14 @@ fun Context.getOneDriveServiceProvider(): IOneDriveServiceProvider {
 }
 
 fun Context.getDropboxServiceProvider(): IDropboxServiceProvider {
-    return when (this) {
+    return when(this) {
         is App -> this.getDropboxComponent()
         else -> this.applicationContext.getDropboxServiceProvider()
+    }
+}
+fun Context.getGoogleDriveServiceProvider(): IGoogleDriveServiceProvider {
+    return when(this) {
+        is App -> this.getGoogleDriveComponent()
+        else -> this.applicationContext.getGoogleDriveServiceProvider()
     }
 }

@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [CloudAccount::class, Recent::class], version = 5, exportSchema = false)
+@Database(entities = [CloudAccount::class, Recent::class], version = 3)
 abstract class AccountsDataBase: RoomDatabase() {
 
     companion object {
@@ -35,6 +35,12 @@ abstract class AccountsDataBase: RoomDatabase() {
         val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE Recent ADD COLUMN source TEXT DEFAULT NULL")
+            }
+
+        }
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE CloudAccount ADD COLUMN isGoogleDrive INTEGER DEFAULT 0 NOT NULL")
             }
 
         }

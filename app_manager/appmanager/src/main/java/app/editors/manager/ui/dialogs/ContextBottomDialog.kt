@@ -133,7 +133,8 @@ class ContextBottomDialog : BaseBottomDialog() {
                         getString(R.string.list_context_delete)
                 }
                 binding.listExplorerContextDownload.isVisible = !state.isOneDrive
-                binding.listExplorerContextExternalLink.isVisible = state.isOneDrive
+                binding.listExplorerContextExternalLink.isVisible = state.isOneDrive || state.isGoogleDrive
+                binding.listExplorerContextCopy.isVisible = !state.isGoogleDrive
             } else {
                 /** File can downloaded */
                 binding.listExplorerContextDownload.isVisible = true
@@ -166,8 +167,8 @@ class ContextBottomDialog : BaseBottomDialog() {
             binding.listExplorerContextRename.isVisible = state.isCanRename
 
             /** Item can share */
-            binding.viewLineSeparatorShare.root.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox
-            binding.listExplorerContextShare.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox
+            binding.viewLineSeparatorShare.root.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox && !state.isGoogleDrive
+            binding.listExplorerContextShare.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox && !state.isGoogleDrive
 
             /** Only for share section, instead of delete */
             binding.listExplorerContextShareDelete.isVisible = state.isDeleteShare
@@ -320,7 +321,8 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isFavorite: Boolean = false,
         var isOneDrive: Boolean = false,
         var isDropBox: Boolean = false,
-        var isPersonalAccount: Boolean = false
+        var isPersonalAccount: Boolean = false,
+        var isGoogleDrive: Boolean = false
     ) : Serializable
 }
 

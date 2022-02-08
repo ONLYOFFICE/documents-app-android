@@ -35,8 +35,8 @@ public class StorageUtils {
     public static final class Google {
 
         public static final String AUTH_URL = "https://accounts.google.com/o/oauth2/auth?";
-        public static final String VALUE_RESPONSE_TYPE = "code";
-        public static final String VALUE_ACCESS_TYPE = "offline";
+        public static final String VALUE_RESPONSE_TYPE = "token";
+        public static final String VALUE_ACCESS_TYPE = "online";
         public static final String VALUE_APPROVAL_PROMPT = "force";
         public static final String VALUE_SCOPE = "https://www.googleapis.com/auth/drive";
     }

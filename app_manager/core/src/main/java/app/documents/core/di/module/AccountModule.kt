@@ -26,6 +26,7 @@ class AccountModule {
             .addMigrations(AccountsDataBase.MIGRATION_2_3)
             .addMigrations(AccountsDataBase.MIGRATION_3_4)
             .addMigrations(AccountsDataBase.MIGRATION_4_5)
+            .addMigrations(AccountsDataBase.MIGRATION_5_6)
         return builder.build()
     }
 

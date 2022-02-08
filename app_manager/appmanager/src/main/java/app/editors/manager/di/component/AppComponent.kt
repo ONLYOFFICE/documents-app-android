@@ -12,6 +12,9 @@ import app.editors.manager.di.module.AppModule
 import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
 import app.editors.manager.dropbox.mvp.presenters.DocsDropboxPresenter
 import app.editors.manager.dropbox.mvp.presenters.DropboxSignInPresenter
+import app.editors.manager.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
+import app.editors.manager.googledrive.mvp.presenters.DocsGoogleDrivePresenter
+import app.editors.manager.googledrive.mvp.presenters.GoogleDriveSignInPresenter
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.PreferenceTool
@@ -85,6 +88,7 @@ interface AppComponent {
     val oneDriveLoginService: IOneDriveLoginServiceProvider
     val oneDriveAuthService: IOneDriveAuthServiceProvider
     val dropboxLoginService: IDropboxLoginServiceProvider
+    val googleDriveLoginService: IGoogleDriveLoginServiceProvider
     val accountOnline: CloudAccount?
     val recentDao: RecentDao?
 
@@ -108,6 +112,7 @@ interface AppComponent {
     fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
     fun inject(splashFragment: SplashFragment?)
     fun inject(dropboxSignInPresenter: DropboxSignInPresenter?)
+    fun inject(googleDriveSignInPresenter: GoogleDriveSignInPresenter?)
 
     /*
     * Main
@@ -127,6 +132,7 @@ interface AppComponent {
     fun inject(mainPagerPresenter: MainPagerPresenter?)
     fun inject(docsOneDrivePresenter: DocsOneDrivePresenter?)
     fun inject(docsDropboxPresenter: DocsDropboxPresenter?)
+    fun inject(docsGoogleDrivePresenter: DocsGoogleDrivePresenter?)
 
     /*
     * Media

@@ -139,7 +139,7 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
-                11000023 -> {
+                REQUEST_MULTIPLE_FILES_DOWNLOAD -> {
                     data?.data?.let { presenter.download(it) }
                 }
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let {
@@ -178,7 +178,7 @@ class DocsDropboxFragment: DocsBaseFragment(), ActionButtonFragment, DocsDropbox
         //intent.addCategory(Intent.CATEGORY_OPENABLE)
         //intent.type = StringUtils.getMimeTypeFromPath(name)
         //intent.putExtra(Intent.EXTRA_TITLE, name)
-        startActivityForResult(intent, 11000023)
+        startActivityForResult(intent, REQUEST_MULTIPLE_FILES_DOWNLOAD)
     }
 
     override fun onError(message: String?) {

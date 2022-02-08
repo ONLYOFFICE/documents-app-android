@@ -15,6 +15,7 @@ import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.dropbox.ui.fragments.DocsDropboxFragment
+import app.editors.manager.googledrive.ui.fragments.DocsGoogleDriveFragment
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
@@ -500,6 +501,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 it.isDropbox -> {
                     showDropboxFragment(account)
                 }
+                it.isGoogleDrive -> {
+                    showGoogleDriveFragment()
+                }
                 else -> {
                     showCloudFragment(account)
                 }
@@ -562,6 +566,19 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             )
         }
     }
+
+    private fun showGoogleDriveFragment() {
+        supportFragmentManager.findFragmentByTag(DocsDropboxFragment.TAG)?.let {
+            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
+        } ?: run {
+            FragmentUtils.showFragment(
+                supportFragmentManager,
+                DocsGoogleDriveFragment.newInstance(),
+                R.id.frame_container
+            )
+        }
+    }
+
 
     private fun showWebDavFragment(account: CloudAccount) {
         supportFragmentManager.findFragmentByTag(DocsWebDavFragment.TAG)?.let {

@@ -267,6 +267,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isDeleteShare = isShareSection
         state.isWebDav = false
         state.isOneDrive = false
+        state.isGoogleDrive = false
+        state.isDropBox = false
         state.isTrash = isTrash
         state.isFavorite = isClickedItemFavorite
         state.isPersonalAccount = account.isPersonal()

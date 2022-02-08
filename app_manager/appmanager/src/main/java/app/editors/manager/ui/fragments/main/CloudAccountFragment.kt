@@ -16,6 +16,7 @@ import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
 import app.editors.manager.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.googledrive.ui.fragments.GoogleDriveSignInFragment
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
@@ -317,6 +318,15 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onAccountLogin(portal: String, login: String) {
         SignInActivity.showPortalSignIn(this, portal, login)
+    }
+
+    override fun onGoogleDriveLogin() {
+        val storage = Storage(
+            ApiContract.Storage.GOOGLEDRIVE,
+            Constants.Google.COM_CLIENT_ID,
+            Constants.Google.COM_REDIRECT_URL
+        )
+        showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
     }
 
     override fun onDropboxLogin() {
