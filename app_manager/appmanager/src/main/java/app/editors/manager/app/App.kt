@@ -7,6 +7,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Process
 import android.webkit.WebView
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.InvalidationTracker
 import app.documents.core.account.CloudAccount
 import app.documents.core.login.ILoginServiceProvider
@@ -27,6 +28,7 @@ import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceP
 import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import java.util.*
 
@@ -100,6 +102,9 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        ThemePreferencesTools(this).also { pref ->
+            AppCompatDelegate.setDefaultNightMode(pref.mode)
+        }
         init()
     }
 

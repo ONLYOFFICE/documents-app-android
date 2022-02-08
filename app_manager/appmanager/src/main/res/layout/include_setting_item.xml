@@ -21,11 +21,11 @@
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/screen_margin_large"
             android:alpha="0.54"
-            android:tint="@color/colorOnSurface"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            app:tint="@color/colorOnSurface" />
 
         <ImageView
             android:id="@+id/settingIconArrow"
@@ -35,11 +35,11 @@
             android:layout_gravity="center"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_arrow_right"
-            android:tint="@color/colorOnSurface"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            app:tint="@color/colorOnSurface" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/settingTwoText"
