@@ -31,8 +31,6 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import retrofit2.HttpException
@@ -478,8 +476,8 @@ class DropboxFileProvider : BaseFileProvider {
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
-        val map = mapOf("path" to (item as CloudFile).id)
-        val result = api.download(Json.encodeToString(map)).blockingGet()
+        val request = "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox((item as CloudFile).id)}\"}"
+        val result = api.download(request).blockingGet()
         result.body()?.let { file ->
             try {
                 file.byteStream().use { inputStream ->

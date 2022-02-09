@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.webkit.URLUtil
 import app.documents.core.account.CloudAccount
+import app.documents.core.account.copyWithToken
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.Token
@@ -116,7 +117,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         val accountDao = App.getApp().appComponent.accountsDao
         CoroutineScope(Dispatchers.IO).launch {
             accountDao.getAccountOnline()?.let {
-                accountDao.updateAccount(it.copy(isOnline = false))
+                accountDao.updateAccount(it.copyWithToken(isOnline = false))
             }
             val newAccount = CloudAccount(
                 id = user.id,
@@ -133,8 +134,8 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                 isAdmin = user.isAdmin,
                 isVisitor = user.isVisitor
             ).apply {
-                this.token = token.token ?: ""
-                this.password = password
+                setCryptToken(token.token ?: "")
+                setCryptPassword(password)
                 this.expires = token.expires ?: ""
             }
             accountDao.addAccount(newAccount)

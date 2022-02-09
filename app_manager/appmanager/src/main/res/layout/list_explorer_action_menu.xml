@@ -42,8 +42,8 @@
                 <ImageView
                     style="@style/ContextListImage"
                     android:alpha="1.0"
-                    app:tint="@color/colorSheetTint"
                     app:srcCompat="@drawable/ic_type_spreadsheet"
+                    app:tint="@color/colorSheetTint"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -58,8 +58,8 @@
                 <ImageView
                     style="@style/ContextListImage"
                     android:alpha="1.0"
-                    app:tint="@color/colorPresentationTint"
                     app:srcCompat="@drawable/ic_type_presentation"
+                    app:tint="@color/colorPresentationTint"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -73,6 +73,7 @@
 
                 <ImageView
                     style="@style/ContextListImage"
+                    android:alpha="1"
                     app:srcCompat="@drawable/ic_type_folder" />
 
                 <androidx.appcompat.widget.AppCompatTextView

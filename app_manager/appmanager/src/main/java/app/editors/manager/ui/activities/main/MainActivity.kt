@@ -55,11 +55,12 @@ interface IMainActivity {
     fun getTabLayout(): TabLayout
     fun setAppBarStates(isVisible: Boolean)
     fun getNavigationBottom(): BottomNavigationView
+    fun onSwitchAccount()
 }
 
 
 class MainActivity : BaseAppActivity(), MainActivityView,
-    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity {
+    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity, View.OnClickListener {
 
     companion object {
 
@@ -378,6 +379,14 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
+    override fun onOpenProjectFileError(error: String) {
+        showSnackBar(error, getString(R.string.switch_account_open_project_file), this)
+    }
+
+    override fun onClick(view: View?) {
+        onSwitchAccount()
+    }
+
     override fun onUnauthorized(message: String?) {
         message?.let { showSnackBar(it) }
         setAppBarStates(false)
@@ -464,6 +473,15 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun getNavigationBottom(): BottomNavigationView = viewBinding.bottomNavigation
+
+    override fun onSwitchAccount() {
+        FragmentUtils.showFragment(
+            supportFragmentManager,
+            CloudAccountFragment.newInstance(),
+            R.id.frame_container
+        )
+        viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_setting
+    }
 
     private fun checkPermission() {
         if (PermissionUtils.requestReadWritePermission(this, PERMISSION_READ_STORAGE)) {

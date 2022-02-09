@@ -90,8 +90,8 @@ class AddAccountHelper(private val context: Application) {
             isAdmin = json.optString(CloudAccount::isAdmin.name) == "1",
             isVisitor = json.optString(CloudAccount::isVisitor.name) == "1",
         ).apply {
-            token = CryptUtils.decryptAES128(json.optString(CloudAccount::token.name), this.id) ?: ""
-            password = CryptUtils.decryptAES128(json.optString(CloudAccount::password.name), this.id) ?: ""
+            token = json.optString(CloudAccount::token.name)
+            password = json.optString(CloudAccount::password.name)
             expires = json.optString(CloudAccount::expires.name)
         }
     }

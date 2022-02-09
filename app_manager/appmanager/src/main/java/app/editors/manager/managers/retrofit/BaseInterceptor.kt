@@ -19,7 +19,7 @@ class BaseInterceptor(val token: String?) : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         checkConnection()
-        val token = if (chain.request().url().host().contains("personal")) {
+        val token = if (chain.request().url().host().contains(ApiContract.PERSONAL_HOST)) {
             token
         } else {
             KEY_AUTH + token

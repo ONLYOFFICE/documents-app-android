@@ -454,7 +454,7 @@
     <string name="on_boarding_back_button">НАЗАД</string>
     <string name="auth_header_screen_4">Введите код</string>
     <string name="auth_info_screen_4">Введите код из приложения для аутентификации в поле ввода</string>
-    <string name="auth_step_title">Шаг %1$ из %2$</string>
+    <string name="auth_step_title">Шаг %1$d из %2$d</string>
     <string name="auth_install_button">Установить</string>
     <string name="auth_confirm_button">Подтвердить</string>
     <string name="auth_clipboard_key_copied">Ключ скопирован в буфер</string>

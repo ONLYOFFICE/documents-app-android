@@ -1,8 +1,10 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
+import android.net.Uri
 import android.os.Bundle
 import app.documents.core.account.CloudAccount
+import app.documents.core.account.copyWithToken
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.Capabilities
@@ -27,10 +29,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import moxy.InjectViewState
 import okhttp3.Credentials
 import retrofit2.HttpException
-import java.util.*
 
 sealed class CloudAccountState {
     class AccountLoadedState(val account: List<CloudAccount>, val state: Bundle?) : CloudAccountState()
@@ -107,7 +109,11 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 } else {
                     AccountUtils.setPassword(context, account.getAccountName(), null)
                 }
-                accountDao.updateAccount(account.copy(isOnline = false))
+                accountDao.updateAccount(account.copyWithToken(isOnline = false).apply {
+                    token = ""
+                    password = ""
+                    expires = ""
+                })
                 accountDao.getAccounts().let {
                     withContext(Dispatchers.Main) {
                         viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
@@ -124,6 +130,9 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 accountDao.deleteAccount(account)
                 accountDao.getAccounts().let {
                     withContext(Dispatchers.Main) {
+                        if (ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
+                            context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
+                        }
                         viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
                     }
                 }
@@ -149,70 +158,75 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     fun checkLogin(account: CloudAccount) {
         if (!account.isOnline) {
-            if (account.isWebDav) {
-                AccountUtils.getPassword(context, account.getAccountName())?.let { password ->
-                    if (password.isNotEmpty()) {
-                        webDavLogin(account, password)
-                    } else {
+            when {
+                account.isWebDav -> {
+                    AccountUtils.getPassword(context, account.getAccountName())?.let { password ->
+                        if (password.isNotEmpty()) {
+                            webDavLogin(account, password)
+                        } else {
+                            viewState.onWebDavLogin(
+                                Json.encodeToString(account),
+                                WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                            )
+                        }
+                    } ?: run {
                         viewState.onWebDavLogin(
                             Json.encodeToString(account),
                             WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
                         )
                     }
-                } ?: run {
-                    viewState.onWebDavLogin(
-                        Json.encodeToString(account),
-                        WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
-                    )
                 }
-            } else if(account.isOneDrive) {
-                AccountUtils.getToken(context, account.getAccountName())?.let {token ->
-                    if(token.isNotEmpty()) {
-                        loginSuccess(account)
-                    } else {
-                        viewState.onOneDriveLogin()
-                    }
-                }
-            } else if(account.isDropbox) {
-                AccountUtils.getToken(context, account.getAccountName())?.let {token ->
-                    if(token.isNotEmpty()) {
-                        loginSuccess(account)
-                    } else {
-                        viewState.onDropboxLogin()
-                    }
-                }
-            } else if(account.isGoogleDrive) {
-                AccountUtils.getToken(context, account.getAccountName())?.let {token ->
-                    if(token.isNotEmpty()) {
-                        loginSuccess(account)
-                    } else {
-                        viewState.onGoogleDriveLogin()
-                    }
-                }
-            } else {
-                AccountUtils.getToken(context, account.getAccountName())?.let { token ->
-                    if (token.isNotEmpty()) {
-                        login(account, token)
-                    } else {
-                        viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
-                    }
-                } ?: run {
-                    networkSettings.setBaseUrl(account.portal ?: "")
-                    disposable = context.loginService.capabilities().subscribe({ response ->
-                        if (response is LoginResponse.Success) {
-                            if (response.response is ResponseCapabilities) {
-                                val capability = (response.response as ResponseCapabilities).response
-                                setSettings(capability)
-                                viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
-                            } else {
-                                networkSettings.serverVersion =
-                                    (response.response as ResponseSettings).response.communityServer ?: ""
-                            }
+                account.isOneDrive -> {
+                    AccountUtils.getToken(context, account.getAccountName())?.let {token ->
+                        if(token.isNotEmpty()) {
+                            loginSuccess(account)
                         } else {
-                            fetchError((response as LoginResponse.Error).error)
+                            viewState.onOneDriveLogin()
                         }
-                    }) { throwable: Throwable -> checkError(throwable, account) }
-
+                    }
+                }
+                account.isDropbox -> {
+                    AccountUtils.getToken(context, account.getAccountName())?.let {token ->
+                        if(token.isNotEmpty()) {
+                            loginSuccess(account)
+                        } else {
+                            viewState.onDropboxLogin()
+                        }
+                    }
+                }
+                account.isGoogleDrive -> {
+                    AccountUtils.getToken(context, account.getAccountName())?.let {token ->
+                        if(token.isNotEmpty()) {
+                            loginSuccess(account)
+                        } else {
+                            viewState.onGoogleDriveLogin()
+                        }
+                    }
+                }
+                else -> {
+                    AccountUtils.getToken(context, account.getAccountName())?.let { token ->
+                        if (token.isNotEmpty()) {
+                            login(account, token)
+                        } else {
+                            viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
+                        }
+                    } ?: run {
+                        setSettings(account)
+                        disposable = context.loginService.capabilities().subscribe({ response ->
+                            if (response is LoginResponse.Success) {
+                                if (response.response is ResponseCapabilities) {
+                                    val capability = (response.response as ResponseCapabilities).response
+                                    setSettings(capability)
+                                    viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
+                                } else {
+                                    networkSettings.serverVersion =
+                                        (response.response as ResponseSettings).response.communityServer ?: ""
+                                }
+                            } else {
+                                fetchError((response as LoginResponse.Error).error)
+                            }
+                        }) { throwable: Throwable -> checkError(throwable, account) }
+                    }
                 }
             }
         } else {
@@ -269,9 +283,9 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     private fun loginSuccess(account: CloudAccount) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let { onlineAccount ->
-                accountDao.updateAccount(onlineAccount.copy(isOnline = false))
+                accountDao.updateAccount(onlineAccount.copyWithToken(isOnline = false))
             }
-            accountDao.updateAccount(account.copy(isOnline = true))
+            accountDao.updateAccount(account.copyWithToken(isOnline = true))
             withContext(Dispatchers.Main) {
                 viewState.onSuccessLogin()
             }

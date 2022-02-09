@@ -56,7 +56,7 @@ class AuthAppActivity : BaseAppActivity() {
 
     fun setActionBar() {
         viewBinding?.appBarToolbar?.isVisible = true
-        setSupportActionBar(viewBinding?.appBarToolbar?.toolbar)
+        setSupportActionBar(viewBinding?.appBarToolbar)
         supportActionBar?.let {
             it.title = ""
             it.setDisplayHomeAsUpEnabled(true)

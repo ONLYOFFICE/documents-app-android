@@ -604,28 +604,25 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
-        fileProvider?.let { provider ->
-            disposable.add(provider.getFiles(model.folder?.id.toString(), getArgs(null))
-                .map { loadSuccess(it) }
-                .flatMap {
-                    provider.fileInfo(CloudFile().apply {
-                        id = model.file?.id?.toString()
-                    })
-                }
-                .subscribe({ file: CloudFile ->
-                    itemClicked = file
-                    when (StringUtils.getExtension(file.fileExst)) {
-                        StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
-                            viewState.onFileWebView(file)
-                        }
-                        StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                            viewState.onFileMedia(getListMedia(file.id), false)
-                        }
-                        else -> viewState.onFileDownloadPermission()
+        mDisposable.add(mFileProvider.fileInfo(CloudFile().apply {
+            id = model.file?.id?.toString()
+        }).subscribe({ file: CloudFile ->
+                mItemClicked = file
+                when (StringUtils.getExtension(file.fileExst)) {
+                    StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
+                        viewState.onFileWebView(file)
                     }
-                }) { throwable: Throwable -> fetchError(throwable) }
-            )
-        }
+                    StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
+                        viewState.onFileMedia(getListMedia(file.id), false)
+                    }
+                    else -> viewState.onFileDownloadPermission()
+                }
+            }
+            ) { throwable: Throwable? ->
+                fetchError(
+                    throwable
+                )
+            })
     }
 
     private fun cancelRequest(id: String) {
@@ -689,14 +686,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = StringUtils.equals(itemClicked?.createdBy?.id, account.id)
 
     private val isItemReadWrite: Boolean
-        get() = itemClicked?.access == ApiContract.ShareCode.READ_WRITE ||
-                itemClicked?.access == ApiContract.ShareCode.NONE
+        get() = itemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE ||
+                itemClicked?.intAccess == ApiContract.ShareCode.NONE
 
     private val isItemEditable: Boolean
         get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
-                itemClicked?.access == ApiContract.ShareCode.REVIEW ||
-                itemClicked?.access == ApiContract.ShareCode.FILL_FORMS ||
-                itemClicked?.access == ApiContract.ShareCode.COMMENT)
+                itemClicked?.intAccess == ApiContract.ShareCode.REVIEW ||
+                itemClicked?.intAccess == ApiContract.ShareCode.FILL_FORMS ||
+                itemClicked?.intAccess == ApiContract.ShareCode.COMMENT)
 
     private val isItemShareable: Boolean
         get() = isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection

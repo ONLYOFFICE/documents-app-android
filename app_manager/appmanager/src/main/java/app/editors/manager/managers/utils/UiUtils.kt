@@ -1,12 +1,7 @@
 package app.editors.manager.managers.utils
 
-import android.graphics.BlendMode
-import android.graphics.BlendModeColorFilter
-import android.graphics.PorterDuff
-import android.os.Build
 import android.view.View
 import android.widget.ImageView
-import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -87,11 +82,9 @@ object ManagerUiUtils {
     fun setFileIcon(view: ImageView, ext: String) {
         val extension = StringUtils.getExtension(ext)
         @DrawableRes var resId = R.drawable.ic_type_file
-        @ColorRes var colorId = lib.toolkit.base.R.color.colorGrey
         when (extension) {
             StringUtils.Extension.DOC -> {
                 resId = R.drawable.ic_type_text_document
-                colorId = lib.toolkit.base.R.color.colorDocTint
             }
             StringUtils.Extension.FORM -> {
                 resId = if (ext == ".${LocalContentTools.OFORM_EXTENSION}") {
@@ -99,45 +92,31 @@ object ManagerUiUtils {
                 } else {
                     R.drawable.ic_format_docxf
                 }
-                colorId = lib.toolkit.base.R.color.colorTransparent
             }
             StringUtils.Extension.SHEET -> {
                 resId = R.drawable.ic_type_spreadsheet
-                colorId = lib.toolkit.base.R.color.colorSheetTint
             }
             StringUtils.Extension.PRESENTATION -> {
                 resId = R.drawable.ic_type_presentation
-                colorId = lib.toolkit.base.R.color.colorPresentationTint
             }
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF -> {
                 resId = R.drawable.ic_type_image
-                colorId = lib.toolkit.base.R.color.colorPicTint
             }
             StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.PDF -> {
                 resId = R.drawable.ic_type_pdf
-                colorId = lib.toolkit.base.R.color.colorLightRed
             }
             StringUtils.Extension.VIDEO_SUPPORT, StringUtils.Extension.VIDEO -> {
                 resId = R.drawable.ic_type_video
             }
             StringUtils.Extension.ARCH -> {
-                setAlphaIcon(view, R.drawable.ic_type_archive)
-                return
+                resId = R.drawable.ic_type_archive
             }
             StringUtils.Extension.UNKNOWN -> {
-                setAlphaIcon(view, R.drawable.ic_type_file)
-                return
+                resId = R.drawable.ic_type_file
             }
         }
         view.setImageResource(resId)
         view.alpha = 1.0f
-        view.setColorFilter(ContextCompat.getColor(view.context, colorId))
-    }
-
-    private fun setAlphaIcon(view: ImageView, @DrawableRes resId: Int) {
-        view.setImageResource(resId)
-        view.alpha = UiUtils.getFloatResource(view.context, lib.toolkit.base.R.dimen.alpha_medium)
-        view.clearColorFilter()
     }
 
     fun setFolderIcon(view: ImageView, folder: CloudFolder, isRoot: Boolean) {
@@ -147,41 +126,25 @@ object ManagerUiUtils {
         } else if (isRoot && folder.providerItem && folder.providerKey.isNotEmpty()) {
             when (folder.providerKey) {
                 ApiContract.Storage.BOXNET -> resId = R.drawable.ic_storage_box
+                ApiContract.Storage.NEXTCLOUD -> resId = R.drawable.ic_storage_nextcloud
                 ApiContract.Storage.DROPBOX -> resId = R.drawable.ic_storage_dropbox
                 ApiContract.Storage.SHAREPOINT -> resId = R.drawable.ic_storage_sharepoint
                 ApiContract.Storage.GOOGLEDRIVE -> resId = R.drawable.ic_storage_google
+                ApiContract.Storage.KDRIVE -> resId = R.drawable.ic_storage_kdrive
                 ApiContract.Storage.ONEDRIVE, ApiContract.Storage.SKYDRIVE -> resId =
                     R.drawable.ic_storage_onedrive
                 ApiContract.Storage.YANDEX -> resId = R.drawable.ic_storage_yandex
                 ApiContract.Storage.WEBDAV -> {
                     resId = R.drawable.ic_storage_webdav
                     view.setImageResource(resId)
-                    view.alpha =
-                        UiUtils.getFloatResource(view.context, lib.toolkit.base.R.dimen.alpha_medium)
                     return
                 }
             }
             view.setImageResource(resId)
             view.alpha = 1.0f
-            view.clearColorFilter()
             return
         }
         view.setImageResource(resId)
-        view.alpha =
-            UiUtils.getFloatResource(view.context, lib.toolkit.base.R.dimen.alpha_medium)
-        if (UiUtils.isDarkMode(view.context)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                view.colorFilter = BlendModeColorFilter(
-                    ContextCompat.getColor(view.context, lib.toolkit.base.R.color.colorOnSurface),
-                    BlendMode.SRC_ATOP
-                )
-            } else {
-                view.setColorFilter(
-                    ContextCompat.getColor(view.context, lib.toolkit.base.R.color.colorOnSurface),
-                    PorterDuff.Mode.SRC_ATOP
-                )
-            }
-        }
     }
 
     fun setAccessIcon(imageView: ImageView, accessCode: Int) {

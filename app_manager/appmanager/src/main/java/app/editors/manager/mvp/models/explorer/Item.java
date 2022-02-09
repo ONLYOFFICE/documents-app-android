@@ -25,7 +25,7 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
 
     @SerializedName("access")
     @Expose
-    private int access = ApiContract.ShareCode.NONE;
+    private String access = ApiContract.ShareType.NONE;
 
     @SerializedName("shared")
     @Expose
@@ -84,11 +84,11 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
         this.title = title;
     }
 
-    public int getAccess() {
+    public String getAccess() {
         return access;
     }
 
-    public void setAccess(int access) {
+    public void setAccess(String access) {
         this.access = access;
     }
 
@@ -146,6 +146,15 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
 
     public void setProviderItem(boolean providerItem) {
         this.providerItem = providerItem;
+    }
+
+    public int getIntAccess() {
+        final String access = getAccess();
+        try {
+            return Integer.parseInt(access);
+        }catch (NumberFormatException error) {
+            return ApiContract.ShareType.INSTANCE.getCode(getAccess());
+        }
     }
 
     public void setItem(Item item) {
