@@ -30,7 +30,7 @@ import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
-import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
 import app.editors.manager.ui.adapters.ExplorerAdapter
