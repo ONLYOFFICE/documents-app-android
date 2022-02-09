@@ -1586,10 +1586,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     private fun setAccess(explorer: Explorer?): Explorer {
         return explorer?.also {
             explorer.files.map { file ->
-                file.also { it.access = 0 }
+                file.also { it.access = "0" }
             }
             explorer.folders.map { folder ->
-                folder.also { it.access = 0 }
+                folder.also { it.access = "0" }
             }
         } ?: Explorer()
     }

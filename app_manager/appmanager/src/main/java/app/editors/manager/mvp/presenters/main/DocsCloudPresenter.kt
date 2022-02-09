@@ -18,7 +18,6 @@ import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.managers.works.UploadWork
-import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
@@ -36,7 +35,6 @@ import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,8 +53,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     OnDownloadListener,
     OnUploadListener {
 
-    private val mGetDisposable = HashMap<String, Disposable>()
-    private var mExternalAccessType: String? = null
+    private var externalAccessType: String? = null
 
     private val downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver
@@ -434,14 +431,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     val externalLink: Unit
         get() {
             if (itemClicked != null) {
-                mExternalAccessType = ApiContract.ShareType.READ
+                externalAccessType = ApiContract.ShareType.READ
                 val requestExternal = RequestExternal()
-                requestExternal.share = mExternalAccessType
+                requestExternal.share = externalAccessType
                 fileProvider?.let { provider ->
                     disposable.add(provider.share(itemClicked!!.id, requestExternal)!!
                         .subscribe({ responseExternal: ResponseExternal ->
                             itemClicked!!.shared = !itemClicked!!.shared
-                            when (mExternalAccessType) {
+                            when (externalAccessType) {
                                 ApiContract.ShareType.NONE -> viewState.onDocsAccess(
                                     false,
                                     context.getString(R.string.share_access_denied)
@@ -604,10 +601,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
-        mDisposable.add(mFileProvider.fileInfo(CloudFile().apply {
-            id = model.file?.id?.toString()
-        }).subscribe({ file: CloudFile ->
-                mItemClicked = file
+        fileProvider?.let { provider ->
+            disposable.add(provider.fileInfo(CloudFile().apply {
+                id = model.file?.id
+            }).subscribe({ file: CloudFile ->
+                itemClicked = file
                 when (StringUtils.getExtension(file.fileExst)) {
                     StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
                         viewState.onFileWebView(file)
@@ -618,18 +616,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     else -> viewState.onFileDownloadPermission()
                 }
             }
-            ) { throwable: Throwable? ->
-                fetchError(
-                    throwable
-                )
+            ) { throwable: Throwable ->
+                fetchError(throwable)
             })
-    }
-
-    private fun cancelRequest(id: String) {
-        if (mGetDisposable.containsKey(id)) {
-            val disposable = mGetDisposable.remove(id)
-            disposable?.dispose()
         }
+
     }
 
     /*
