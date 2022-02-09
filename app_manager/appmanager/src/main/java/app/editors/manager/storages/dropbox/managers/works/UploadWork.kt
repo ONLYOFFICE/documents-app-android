@@ -17,6 +17,7 @@ import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.retrofit.ProgressRequestBody
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.ContentResolverUtils
@@ -74,10 +75,10 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
                 strict_conflict = false
             )
             val response = when (action) {
-                DocsDropboxFragment.KEY_UPLOAD, DocsDropboxFragment.KEY_CREATE -> {
+                BaseStorageDocsFragment.KEY_UPLOAD, BaseStorageDocsFragment.KEY_CREATE -> {
                     api.upload(Json.encodeToString(request) ,createMultipartBody(from)).blockingGet()
                 }
-                DocsDropboxFragment.KEY_UPDATE -> {
+                BaseStorageDocsFragment.KEY_UPDATE -> {
                     api.upload(Json.encodeToString(request.copy(mode = MODE_OVERWRITE)) ,createMultipartBody(from)).blockingGet()
                 }
                 else -> {
@@ -87,7 +88,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
             when(response) {
                 is DropboxResponse.Success -> {
                     mNotificationUtils.removeNotification(id.hashCode())
-                    if(action == DocsDropboxFragment.KEY_UPLOAD) {
+                    if(action == BaseStorageDocsFragment.KEY_UPLOAD) {
                         mNotificationUtils.showUploadCompleteNotification(id.hashCode(), title)
                         sendBroadcastUploadComplete(
                             path,
@@ -148,7 +149,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         val requestBody = ProgressRequestBody(App.getApp(), uri ?: Uri.EMPTY)
         requestBody.setOnUploadCallbacks { total: Long, progress: Long ->
             if (!isStopped) {
-                if(action == DocsDropboxFragment.KEY_UPLOAD) {
+                if(action == BaseStorageDocsFragment.KEY_UPLOAD) {
                     showProgress(total, progress)
                 }
             } else {

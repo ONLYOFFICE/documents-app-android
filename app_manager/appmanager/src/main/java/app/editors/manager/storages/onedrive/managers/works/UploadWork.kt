@@ -14,6 +14,7 @@ import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.mvp.models.request.UploadRequest
 import app.editors.manager.storages.onedrive.mvp.models.response.UploadResponse
@@ -51,10 +52,10 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
         getArgs()
 
         when(tag) {
-            DocsOneDriveFragment.KEY_UPLOAD -> {
+            BaseStorageDocsFragment.KEY_UPLOAD -> {
                 fileName = file?.name!!
             }
-            DocsOneDriveFragment.KEY_UPDATE -> {
+            BaseStorageDocsFragment.KEY_UPDATE -> {
                 fileName = path?.let { FileUtils.getFileName(it, true) }!!
             }
         }
@@ -64,12 +65,12 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
             applicationContext.getOneDriveServiceProvider().uploadFile(
                 it, fileName,
                 when (tag) {
-                    DocsOneDriveFragment.KEY_UPLOAD -> request.copy(
+                    BaseStorageDocsFragment.KEY_UPLOAD -> request.copy(
                         item = app.editors.manager.storages.onedrive.mvp.models.other.Item(
                             OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME
                         )
                     )
-                    DocsOneDriveFragment.KEY_UPDATE -> request.copy(
+                    BaseStorageDocsFragment.KEY_UPDATE -> request.copy(
                         item = app.editors.manager.storages.onedrive.mvp.models.other.Item(
                             OneDriveUtils.VAL_CONFLICT_BEHAVIOR_REPLACE
                         )
@@ -119,7 +120,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
             while (fileInputStream.read(buffer).also { bytesRead = it } != -1) {
                 outputStream.write(buffer, 0, bytesRead)
                 count += bytesRead
-                if(tag == DocsOneDriveFragment.KEY_UPLOAD) {
+                if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                     count.toLong().let { progress ->
                         file?.length()?.let { total -> showProgress(total, progress) }
                     }
@@ -127,7 +128,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
             }
             if(connection.responseCode == 200 || connection.responseCode == 201) {
                 mNotificationUtils.removeNotification(id.hashCode())
-                if (tag == DocsOneDriveFragment.KEY_UPLOAD) {
+                if (tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                     mNotificationUtils.showUploadCompleteNotification(id.hashCode(), fileName)
                     sendBroadcastUploadComplete(path, fileName, CloudFile(), path)
                 }

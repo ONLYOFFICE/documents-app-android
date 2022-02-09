@@ -3,38 +3,28 @@ package app.editors.manager.storages.onedrive.mvp.presenters
 import android.accounts.Account
 import android.content.ClipData
 import android.net.Uri
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.oneDriveAuthService
-import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.mvp.models.models.ModelExplorerStack
-import app.editors.manager.mvp.models.request.RequestCreate
-import app.editors.manager.mvp.presenters.main.DocsBasePresenter
+import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
+import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.managers.works.DownloadWork
 import app.editors.manager.storages.onedrive.managers.works.UploadWork
 import app.editors.manager.storages.onedrive.mvp.models.request.ExternalLinkRequest
 import app.editors.manager.storages.onedrive.mvp.models.response.AuthResponse
-import app.editors.manager.storages.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.storages.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,22 +36,12 @@ import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import retrofit2.HttpException
-import java.util.*
 
 
 @InjectViewState
-class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
-    UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
+class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
-    private var downloadDisposable: Disposable? = null
-    private var tempFile: CloudFile? = null
-    private val workManager = WorkManager.getInstance()
-
-    private val uploadReceiver: UploadReceiver
-    private val downloadReceiver: DownloadReceiver
-
-
-    val externalLink : Unit
+    override val externalLink : Unit
         get() {
             itemClicked?.let {
                 val request = ExternalLinkRequest(
@@ -91,32 +71,9 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
 
     init {
         App.getApp().appComponent.inject(this)
-        modelExplorerStack = ModelExplorerStack()
-        filteringValue = ""
-        placeholderViewType = PlaceholderViews.Type.NONE
-        isContextClick = false
-        isFilteringMode = false
-        isSelectionMode = false
-        isFoldersMode = false
-        uploadReceiver = UploadReceiver()
-        downloadReceiver = DownloadReceiver()
     }
 
-    override fun onFirstViewAttach() {
-        super.onFirstViewAttach()
-        uploadReceiver.setOnUploadListener(this)
-        LocalBroadcastManager.getInstance(context).registerReceiver(uploadReceiver, uploadReceiver.filter)
-        downloadReceiver.setOnDownloadListener(this)
-        LocalBroadcastManager.getInstance(context).registerReceiver(downloadReceiver, downloadReceiver.filter)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
-    }
-
-    fun getProvider() {
+    override fun getProvider() {
         fileProvider?.let {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
@@ -182,15 +139,6 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         workManager.enqueue(request)
     }
 
-    override fun createDownloadFile() {
-        if (modelExplorerStack?.selectedFiles?.isNotEmpty() == true ||
-            modelExplorerStack?.selectedFolders?.isNotEmpty() == true || itemClicked is CloudFolder) {
-            viewState.onCreateDownloadFile(DownloadWork.DOWNLOAD_ZIP_NAME)
-        } else if (itemClicked is CloudFile) {
-            viewState.onCreateDownloadFile((itemClicked as CloudFile).title)
-        }
-    }
-
     override fun getNextList() {
         val id = modelExplorerStack?.currentId
         val loadPosition = modelExplorerStack?.loadPosition ?: 0
@@ -206,23 +154,6 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
                     }
                 }) { throwable: Throwable -> fetchError(throwable) })
             }
-        }
-    }
-
-    override fun createDocs(title: String) {
-        val id = modelExplorerStack?.currentId
-        id?.let {
-            val requestCreate = RequestCreate()
-            requestCreate.title = title
-            fileProvider?.let { provider ->
-                disposable.add(provider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
-                    addFile(file)
-                    setPlaceholderType(PlaceholderViews.Type.NONE)
-                    viewState.onDialogClose()
-                    viewState.onOpenLocalFile(file)
-                }) { throwable: Throwable -> fetchError(throwable) })
-            }
-            showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
     }
 
@@ -278,29 +209,6 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         }
 
     }
-
-    override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccountOnline()?.let {
-                file.title?.let { fileName ->
-                    Recent(
-                        idFile = if (file.fileExst?.let { fileExt -> StringUtils.isImage(fileExt) } == true) file.id else file.viewUrl,
-                        path = file.webUrl,
-                        name = fileName,
-                        size = file.pureContentLength,
-                        isLocal = false,
-                        isWebDav = true,
-                        date = Date().time,
-                        ownerId = it.id,
-                        source = it.portal
-                    )
-                }?.let { recent ->
-                    recentDao.addRecent(recent)
-                }
-            }
-        }
-    }
-
     override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
         isContextClick = true
@@ -331,65 +239,13 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
         viewState.onItemContext(state)
     }
 
-    override fun onActionClick() {
-        viewState.onActionDialog(false, true)
-    }
-
-    override fun updateViewsState() {
-        if (isSelectionMode) {
-            viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(modelExplorerStack?.countSelectedItems.toString())
-            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
-            viewState.onStateActionButton(false)
-        } else if (isFilteringMode) {
-            viewState.onActionBarTitle(context.getString(R.string.toolbar_menu_search_result))
-            viewState.onStateUpdateFilter(true, filteringValue)
-            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
-            viewState.onStateActionButton(false)
-        } else if (!modelExplorerStack?.isRoot!!) {
-            viewState.onStateAdapterRoot(false)
-            viewState.onStateUpdateRoot(false)
-            viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(if(currentTitle.isEmpty()) { itemClicked?.title } else { currentTitle } )
-        } else {
-            if (isFoldersMode) {
-                viewState.onActionBarTitle(context.getString(R.string.operation_title))
-                viewState.onStateActionButton(false)
-            } else {
-                viewState.onActionBarTitle("")
-                viewState.onStateActionButton(true)
-            }
-            viewState.onStateAdapterRoot(true)
-            viewState.onStateUpdateRoot(true)
-        }
-    }
-    override fun move(): Boolean {
-        return if (super.move()) {
-            transfer(ApiContract.Operation.DUPLICATE, true)
-            true
-        } else {
-            false
-        }
-    }
     override fun copy(): Boolean {
-        return if (super.move()) {
+        return if (super.copy()) {
             transfer(ApiContract.Operation.DUPLICATE, false)
             true
         } else {
             false
         }
-    }
-
-    override fun delete(): Boolean {
-        if (modelExplorerStack?.countSelectedItems!! > 0) {
-            viewState.onDialogQuestion(
-                context.getString(R.string.dialogs_question_delete), null,
-                TAG_DIALOG_BATCH_DELETE_SELECTED
-            )
-        } else {
-            deleteItems()
-        }
-        return true
     }
 
     override fun fetchError(throwable: Throwable) {
@@ -402,86 +258,5 @@ class DocsOneDrivePresenter: DocsBasePresenter<DocsOneDriveView>(),
                 viewState.onError(App.getApp().applicationContext.getString(R.string.storage_onedrive_error_exist))
             }
         }
-    }
-
-    override fun onUploadError(path: String?, info: String?, file: String?) {
-        info?.let { viewState.onSnackBar(it) }
-    }
-
-    override fun onUploadComplete(
-        path: String?,
-        info: String?,
-        title: String?,
-        file: CloudFile?,
-        id: String?
-    ) {
-        info?.let { viewState.onSnackBar(it) }
-        refresh()
-        viewState.onDeleteUploadFile(id)
-    }
-
-    override fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?) {
-        //viewState.onFileWebView(file)
-    }
-
-    override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        if (modelExplorerStack?.currentId == folderId) {
-            viewState.onUploadFileProgress(progress, id)
-        }
-    }
-
-    override fun onUploadCanceled(path: String?, info: String?, id: String?) {
-        info?.let { viewState.onSnackBar(it) }
-        viewState.onDeleteUploadFile(id)
-        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(modelExplorerStack?.currentId)?.isEmpty() == true) {
-            viewState.onRemoveUploadHead()
-            getListWithHeaders(modelExplorerStack?.last(), true)
-        }
-    }
-
-    override fun onUploadRepeat(path: String?, info: String?) {
-        viewState.onDialogClose()
-        info?.let { viewState.onSnackBar(it) }
-    }
-
-    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?, uri: Uri?) {
-        info?.let { viewState.onSnackBar(it) }
-        viewState.onFinishDownload(uri)
-    }
-
-    override fun onDownloadProgress(id: String?, total: Int, progress: Int) {
-        viewState.onDialogProgress(total, progress)
-    }
-
-    override fun onDownloadComplete(
-        id: String?,
-        url: String?,
-        title: String?,
-        info: String?,
-        path: String?,
-        mime: String?,
-        uri: Uri?
-    ) {
-        viewState.onDialogClose()
-        viewState.onSnackBarWithAction(
-            """
-    $info
-    $title
-    """.trimIndent(), context.getString(R.string.download_manager_open)
-        ) { showDownloadFolderActivity(uri) }
-    }
-
-    override fun onDownloadCanceled(id: String?, info: String?) {
-        viewState.onDialogClose()
-        info?.let { viewState.onSnackBar(it) }
-    }
-
-    override fun onDownloadRepeat(id: String?, title: String?, info: String?) {
-        viewState.onDialogClose()
-        info?.let { viewState.onSnackBar(it) }
-    }
-
-    private fun showDownloadFolderActivity(uri: Uri?) {
-        viewState.onDownloadActivity(uri)
     }
 }

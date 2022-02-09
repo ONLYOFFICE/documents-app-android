@@ -10,12 +10,10 @@ import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.getGoogleDriveServiceProvider
 import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemRequest
-import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment.Companion.KEY_CREATE
-import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment.Companion.KEY_UPDATE
-import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment.Companion.KEY_UPLOAD
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import java.io.DataOutputStream
@@ -53,10 +51,10 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
         getArgs()
 
         when(tag) {
-            KEY_UPLOAD -> {
+            BaseStorageDocsFragment.KEY_UPLOAD -> {
                 fileName = file?.name!!
             }
-            KEY_UPDATE, KEY_CREATE -> {
+            BaseStorageDocsFragment.KEY_UPDATE, BaseStorageDocsFragment.KEY_CREATE -> {
                 fileName = path?.let { FileUtils.getFileName(it, true) }!!
             }
         }
@@ -67,8 +65,8 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
         )
 
         val response = when(tag) {
-            KEY_UPLOAD, KEY_CREATE -> applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
-            KEY_UPDATE -> fileId?.let { applicationContext.getGoogleDriveServiceProvider().update(it).blockingGet() }
+            BaseStorageDocsFragment.KEY_UPLOAD, BaseStorageDocsFragment.KEY_CREATE -> applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
+            BaseStorageDocsFragment.KEY_UPDATE -> fileId?.let { applicationContext.getGoogleDriveServiceProvider().update(it).blockingGet() }
             else -> applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
         }
 
@@ -104,7 +102,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
             while (fileInputStream.read(buffer).also { bytesRead = it } != -1) {
                 outputStream.write(buffer, 0, bytesRead)
                 count += bytesRead
-                if (tag == KEY_UPLOAD) {
+                if (tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                     count.toLong().let { progress ->
                         file?.length()?.let { total -> showProgress(total, progress) }
                     }
@@ -112,7 +110,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
             }
             if (connection.responseCode == 200 || connection.responseCode == 201) {
                 mNotificationUtils.removeNotification(id.hashCode())
-                if (tag == KEY_UPLOAD) {
+                if (tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                     mNotificationUtils.showUploadCompleteNotification(id.hashCode(), fileName)
                     sendBroadcastUploadComplete(path, fileName, CloudFile(), path)
                 }

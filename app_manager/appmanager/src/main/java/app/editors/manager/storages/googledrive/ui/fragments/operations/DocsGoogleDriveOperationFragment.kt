@@ -14,12 +14,13 @@ import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import moxy.presenter.InjectPresenter
 
-class DocsGoogleDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnActionClickListener, DocsGoogleDriveView {
+class DocsGoogleDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnActionClickListener, BaseStorageDocsView {
 
     companion object {
 

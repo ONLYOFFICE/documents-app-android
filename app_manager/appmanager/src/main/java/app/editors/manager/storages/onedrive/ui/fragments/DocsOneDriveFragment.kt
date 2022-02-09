@@ -1,33 +1,21 @@
 package app.editors.manager.storages.onedrive.ui.fragments
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
+import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
-import app.editors.manager.storages.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
-import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.fragments.main.DocsBaseFragment
-import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
-open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, DocsOneDriveView {
+open class DocsOneDriveFragment : BaseStorageDocsFragment(), ActionButtonFragment, BaseStorageDocsView {
 
     companion object {
         val TAG = DocsOneDriveFragment::class.java.simpleName
-
-        const val KEY_ACCOUNT = "KEY_ACCOUNT"
-        const val KEY_UPLOAD = "KEY_UPLOAD"
-        const val KEY_UPDATE = "KEY_UPDATE"
-
-        const val KEY_MODIFIED = "EXTRA_IS_MODIFIED"
 
         fun newInstance(account: String) = DocsOneDriveFragment().apply {
             arguments = Bundle(1).apply {
@@ -36,27 +24,10 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         }
     }
 
-    var account: CloudAccount? = null
-
     @InjectPresenter
     override lateinit var presenter: DocsOneDrivePresenter
 
-    override val isWebDav: Boolean?
-        get() = false
-
-    private var activity: IMainActivity? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            activity = context as IMainActivity
-        } catch (e: ClassCastException) {
-            throw RuntimeException(
-                DocsOneDriveFragment::class.java.simpleName + " - must implement - " +
-                        IMainActivity::class.java.simpleName
-            )
-        }
-    }
+    override fun getOtherPresenter() = presenter
 
     init {
         App.getApp().appComponent.inject(this)
@@ -92,88 +63,6 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        activity?.showAccount(false)
-        activity?.showNavigationButton(false)
-    }
-
-    override fun setToolbarState(isVisible: Boolean) {
-        activity?.showAccount(isVisible)
-        activity?.showNavigationButton(!isVisible)
-    }
-
-
-    override fun onActionBarTitle(title: String) {
-        if (isActivePage) {
-            setActionBarTitle(title)
-            if (title == "0") {
-                disableMenu()
-            }
-        }
-    }
-
-    private fun disableMenu() {
-        menu?.let {
-            deleteItem?.isEnabled = false
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        init()
-    }
-
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
-        super.onContextButtonClick(buttons)
-        when(buttons) {
-            ContextBottomDialog.Buttons.EXTERNAL -> {
-                presenter.externalLink
-            }
-            ContextBottomDialog.Buttons.EDIT -> {
-                presenter.getFileInfo()
-            }
-            else -> { }
-        }
-    }
-
-    override fun onUpdateItemFavorites() { }
-
-    override fun setVisibilityActionButton(isShow: Boolean) {
-        activity?.showActionButton(isShow)
-    }
-
-    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
-        super.onStateMenuDefault(sortBy, isAsc)
-        menu?.findItem(R.id.toolbar_sort_item_type)?.isVisible = false
-        menu?.findItem(R.id.toolbar_sort_item_owner)?.isVisible = false
-        searchCloseButton?.setOnClickListener { v: View? ->
-            onBackPressed()
-        }
-    }
-
-    override fun onStateMenuSelection() {
-        super.onStateMenuSelection()
-        if (menu != null && menuInflater != null) {
-            menuInflater?.inflate(R.menu.docs_select, menu)
-            deleteItem = menu?.findItem(R.id.toolbar_selection_delete)?.apply {
-                setMenuItemTint(requireContext(), this, lib.toolkit.base.R.color.colorPrimary)
-                isVisible = true
-            }
-            moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
-            copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
-            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
-            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
-            setAccountEnable(false)
-        }
-    }
-
-    override fun onStateEmptyBackStack() {
-        super.onStateEmptyBackStack()
-        loadFiles()
-        swipeRefreshLayout?.isRefreshing = true
-    }
-
     override fun onError(message: String?) {
         when(message) {
             context?.getString(R.string.errors_client_unauthorized) -> {
@@ -184,14 +73,6 @@ open class DocsOneDriveFragment : DocsBaseFragment(), ActionButtonFragment, Docs
             }
         }
 
-    }
-
-    private fun init() {
-        presenter.checkBackStack()
-    }
-
-    private fun loadFiles() {
-        presenter.getProvider()
     }
 
 }

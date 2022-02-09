@@ -7,9 +7,11 @@ import android.view.View
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.models.base.Entity
+import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.storages.onedrive.mvp.views.DocsOneDriveView
 import app.editors.manager.ui.activities.main.OperationActivity
@@ -17,7 +19,8 @@ import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import moxy.presenter.InjectPresenter
 
-class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnActionClickListener, DocsOneDriveView {
+class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnActionClickListener,
+    BaseStorageDocsView {
 
     companion object {
 
@@ -79,6 +82,14 @@ class DocsOneDriveOperationFragment: DocsBaseFragment(), OperationActivity.OnAct
             setEnabledActionButton(false)
         }
 
+    }
+
+    override fun onFileWebView(file: CloudFile) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onChooseDownloadFolder() {
+        TODO("Not yet implemented")
     }
 
     override fun onError(message: String?) {
