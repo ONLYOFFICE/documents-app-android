@@ -26,6 +26,7 @@ import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
+import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -389,9 +390,9 @@ class GoogleDriveFileProvider: BaseFileProvider {
         return Observable.fromIterable(uris)
             .map {
                 val data = Data.Builder()
-                    .putString(UploadWork.KEY_FOLDER_ID, folderId)
-                    .putString(UploadWork.KEY_FROM, it.toString())
-                    .putString(UploadWork.KEY_TAG, BaseStorageDocsFragment.KEY_CREATE)
+                    .putString(BaseStorageUploadWork.TAG_FOLDER_ID, folderId)
+                    .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, it.toString())
+                    .putString(BaseStorageUploadWork.KEY_TAG, BaseStorageDocsFragment.KEY_CREATE)
                     .build()
 
                 val request = OneTimeWorkRequest.Builder(UploadWork::class.java)

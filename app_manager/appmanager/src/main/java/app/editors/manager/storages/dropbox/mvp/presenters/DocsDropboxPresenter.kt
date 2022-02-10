@@ -19,6 +19,7 @@ import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.base.work.BaseStorageDownloadWork
+import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -165,9 +166,9 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
         for (uri in uploadUris) {
             val data = Data.Builder()
-                .putString(UploadWork.TAG_FOLDER_ID, modelExplorerStack?.currentId)
-                .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
-                .putString(UploadWork.KEY_TAG, tag)
+                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, modelExplorerStack?.currentId)
+                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uri.toString())
+                .putString(BaseStorageUploadWork.KEY_TAG, tag)
                 .build()
 
             val request = OneTimeWorkRequest.Builder(UploadWork::class.java)

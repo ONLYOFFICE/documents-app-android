@@ -18,6 +18,7 @@ import app.editors.manager.managers.retrofit.ProgressRequestBody
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
+import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.ContentResolverUtils
@@ -30,27 +31,16 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorageUploadWork(context, workerParams) {
 
     companion object {
         val TAG: String = UploadWork::class.java.simpleName
 
-        const val TAG_UPLOAD_FILES = "TAG_UPLOAD_FILES"
-        const val TAG_FOLDER_ID = "TAG_FOLDER_ID"
-        const val KEY_TAG = "KEY_TAG"
         const val KEY_REVISION = "KEY_REVISION"
 
         const val MODE_ADD = "add"
         const val MODE_OVERWRITE = "overwrite"
     }
-
-    private val mNotificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, app.editors.manager.managers.works.UploadWork.TAG)
-    private var action: String? = null
-    private var path: String? = null
-    private var folderId: String? = null
-    private var title: String? = null
-    private var from: Uri? = null
-    private var timeMark = 0L
 
     private val headers: Headers by lazy {
         Headers.Builder()
@@ -74,7 +64,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
                 mute = true,
                 strict_conflict = false
             )
-            val response = when (action) {
+            val response = when (tag) {
                 BaseStorageDocsFragment.KEY_UPLOAD, BaseStorageDocsFragment.KEY_CREATE -> {
                     api.upload(Json.encodeToString(request) ,createMultipartBody(from)).blockingGet()
                 }
@@ -88,7 +78,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
             when(response) {
                 is DropboxResponse.Success -> {
                     mNotificationUtils.removeNotification(id.hashCode())
-                    if(action == BaseStorageDocsFragment.KEY_UPLOAD) {
+                    if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                         mNotificationUtils.showUploadCompleteNotification(id.hashCode(), title)
                         sendBroadcastUploadComplete(
                             path,
@@ -133,14 +123,6 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
             ).parse(item.client_modified)
         }
 
-    private fun getArgs() {
-        inputData.let {
-            action = it.getString(KEY_TAG)
-            from = Uri.parse(it.getString(TAG_UPLOAD_FILES))
-            folderId = it.getString(TAG_FOLDER_ID)
-        }
-    }
-
     private fun createMultipartBody(uri: Uri?): MultipartBody.Part {
         return MultipartBody.Part.create(headers, createRequestBody(uri))
     }
@@ -149,7 +131,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         val requestBody = ProgressRequestBody(App.getApp(), uri ?: Uri.EMPTY)
         requestBody.setOnUploadCallbacks { total: Long, progress: Long ->
             if (!isStopped) {
-                if(action == BaseStorageDocsFragment.KEY_UPLOAD) {
+                if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                     showProgress(total, progress)
                 }
             } else {
@@ -157,48 +139,5 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
             }
         }
         return requestBody
-    }
-
-    private fun showProgress(total: Long, progress: Long) {
-        val deltaTime = System.currentTimeMillis() - timeMark
-        if (deltaTime > FileUtils.LOAD_PROGRESS_UPDATE) {
-            timeMark = System.currentTimeMillis()
-            val percent = FileUtils.getPercentOfLoading(total, progress)
-            val id = id.hashCode()
-            val tag = getId().toString()
-            mNotificationUtils.showUploadProgressNotification(id, tag, title!!, percent)
-            sendBroadcastProgress(percent, path, folderId)
-        }
-    }
-
-    private fun sendBroadcastUnknownError(title: String, uploadFile: String?) {
-        val intent = Intent(UploadReceiver.UPLOAD_ACTION_ERROR)
-        intent.putExtra(UploadReceiver.EXTRAS_KEY_FILE, uploadFile)
-        intent.putExtra(UploadReceiver.EXTRAS_KEY_TITLE, title)
-        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
-    }
-
-    private fun sendBroadcastUploadComplete(path: String?, title: String, file: CloudFile, id: String?) {
-        val intent = Intent(UploadReceiver.UPLOAD_ACTION_COMPLETE)
-        intent.putExtra(UploadReceiver.EXTRAS_KEY_PATH, path)
-        intent.putExtra(UploadReceiver.EXTRAS_KEY_ID, id)
-        intent.putExtra(UploadReceiver.EXTRAS_KEY_TITLE, title)
-        intent.putExtra(UploadReceiver.EXTRAS_KEY_FILE, file)
-        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
-    }
-
-    private fun sendBroadcastUploadCanceled(path: String?) {
-        val intent = Intent(UploadReceiver.UPLOAD_ACTION_CANCELED)
-        intent.putExtra(UploadReceiver.EXTRAS_KEY_PATH, path)
-        intent.putExtra(UploadReceiver.EXTRAS_KEY_ID, path)
-        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
-    }
-
-    private fun sendBroadcastProgress(progress: Int, file: String?, folderId: String?) {
-        val intent = Intent(UploadReceiver.UPLOAD_ACTION_PROGRESS)
-        intent.putExtra(UploadReceiver.EXTRAS_KEY_FILE, file)
-        intent.putExtra(UploadReceiver.EXTRAS_FOLDER_ID, folderId)
-        intent.putExtra(UploadReceiver.EXTRAS_KEY_PROGRESS, progress)
-        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 }

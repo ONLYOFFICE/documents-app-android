@@ -18,6 +18,8 @@ import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
+import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
+import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.managers.works.UploadWork
 import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemCloudTree
@@ -391,9 +393,9 @@ class OneDriveFileProvider : BaseFileProvider {
         return Observable.fromIterable(uris)
             .flatMap {
                 val data = Data.Builder()
-                    .putString(UploadWork.KEY_FOLDER_ID, folderId)
-                    .putString(UploadWork.KEY_FROM, it.toString())
-                    .putString(UploadWork.KEY_TAG, "KEY_UPDATE")
+                    .putString(BaseStorageUploadWork.TAG_FOLDER_ID, folderId)
+                    .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, it.toString())
+                    .putString(BaseStorageUploadWork.KEY_TAG, BaseStorageDocsFragment.KEY_UPDATE)
                     .build()
 
                 val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
