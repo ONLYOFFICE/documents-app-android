@@ -194,7 +194,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
 
     override fun copy(): Boolean {
-        return if (super.move()) {
+        return if (super.copy()) {
             transfer(ApiContract.Operation.DUPLICATE, false)
             true
         } else {

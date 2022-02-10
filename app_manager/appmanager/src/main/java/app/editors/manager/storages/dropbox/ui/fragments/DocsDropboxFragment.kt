@@ -11,7 +11,7 @@ import app.editors.manager.ui.activities.main.ActionButtonFragment
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
-class DocsDropboxFragment: BaseStorageDocsFragment(), ActionButtonFragment, BaseStorageDocsView {
+class DocsDropboxFragment: BaseStorageDocsFragment() {
 
     companion object {
         val TAG: String = DocsDropboxFragment::class.java.simpleName
