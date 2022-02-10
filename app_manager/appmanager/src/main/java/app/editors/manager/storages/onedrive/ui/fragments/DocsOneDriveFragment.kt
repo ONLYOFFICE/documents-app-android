@@ -12,7 +12,7 @@ import app.editors.manager.ui.activities.main.ActionButtonFragment
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
-open class DocsOneDriveFragment : BaseStorageDocsFragment(), ActionButtonFragment, BaseStorageDocsView {
+open class DocsOneDriveFragment : BaseStorageDocsFragment() {
 
     companion object {
         val TAG = DocsOneDriveFragment::class.java.simpleName

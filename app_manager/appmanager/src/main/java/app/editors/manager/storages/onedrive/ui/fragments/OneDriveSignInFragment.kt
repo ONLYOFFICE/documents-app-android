@@ -22,7 +22,7 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.NetworkUtils.isOnline
 import moxy.presenter.InjectPresenter
 
-class OneDriveSignInFragment : BaseStorageSignInFragment(), OneDriveSignInView {
+class OneDriveSignInFragment : BaseStorageSignInFragment() {
 
     companion object {
         val TAG = OneDriveSignInFragment::class.java.simpleName

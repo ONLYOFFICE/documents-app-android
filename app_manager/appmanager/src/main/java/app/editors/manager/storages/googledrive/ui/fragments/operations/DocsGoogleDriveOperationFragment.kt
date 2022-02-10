@@ -22,7 +22,7 @@ import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import moxy.presenter.InjectPresenter
 
-class DocsGoogleDriveOperationFragment: BaseStorageOperationsFragment(), OperationActivity.OnActionClickListener, BaseStorageDocsView {
+class DocsGoogleDriveOperationFragment: BaseStorageOperationsFragment() {
 
     companion object {
 

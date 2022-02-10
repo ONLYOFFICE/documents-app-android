@@ -12,7 +12,7 @@ import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import lib.toolkit.base.managers.utils.NetworkUtils
 import moxy.presenter.InjectPresenter
 
-class DropboxSignInFragment: BaseStorageSignInFragment(), BaseStorageSignInView {
+class DropboxSignInFragment: BaseStorageSignInFragment() {
 
 
     @InjectPresenter

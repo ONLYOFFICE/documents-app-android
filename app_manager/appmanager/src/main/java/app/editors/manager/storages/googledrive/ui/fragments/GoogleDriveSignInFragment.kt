@@ -22,7 +22,7 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.NetworkUtils
 import moxy.presenter.InjectPresenter
 
-class GoogleDriveSignInFragment: BaseStorageSignInFragment(), BaseStorageSignInView {
+class GoogleDriveSignInFragment: BaseStorageSignInFragment(){
 
     companion object {
         val TAG = GoogleDriveSignInFragment::class.java.simpleName

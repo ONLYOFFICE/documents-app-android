@@ -21,8 +21,7 @@ import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import moxy.presenter.InjectPresenter
 
-class DocsOneDriveOperationFragment: BaseStorageOperationsFragment(), OperationActivity.OnActionClickListener,
-    BaseStorageDocsView {
+class DocsOneDriveOperationFragment: BaseStorageOperationsFragment() {
 
     companion object {
 
