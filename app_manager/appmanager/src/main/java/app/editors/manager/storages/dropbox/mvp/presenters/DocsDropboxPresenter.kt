@@ -18,6 +18,7 @@ import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
+import app.editors.manager.storages.base.work.BaseStorageDownloadWork
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -107,8 +108,8 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     private fun startDownload(downloadTo: Uri, item: Item?) {
         val data = Data.Builder()
-            .putString(DownloadWork.FILE_ID_KEY, item?.id)
-            .putString(DownloadWork.FILE_URI_KEY, downloadTo.toString())
+            .putString(BaseStorageDownloadWork.FILE_ID_KEY, item?.id)
+            .putString(BaseStorageDownloadWork.FILE_URI_KEY, downloadTo.toString())
             .putString(
                 DownloadWork.DOWNLOADABLE_ITEM_KEY,
                 if (item is CloudFile) DownloadWork.DOWNLOADABLE_ITEM_FILE else DownloadWork.DOWNLOADABLE_ITEM_FOLDER
