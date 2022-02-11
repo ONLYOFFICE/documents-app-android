@@ -76,7 +76,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
 
         if (account.isWebDav) {
             viewState.onRender(ProfileState.WebDavState(account))
-        } else if (account.isDropbox || account.isOneDrive) {
+        } else if (account.isDropbox || account.isOneDrive || account.isGoogleDrive) {
             viewState.onRender(ProfileState.CloudState(account))
         } else {
             viewState.onRender(ProfileState.CloudState(account))
@@ -170,7 +170,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             AccountUtils.getAccount(context, account.getAccountName())?.let {
                 if (account.isWebDav) {
                     AccountUtils.setPassword(context, it, null)
-                } else if (account.isDropbox || account.isOneDrive) {
+                } else if (account.isDropbox || account.isOneDrive || account.isGoogleDrive) {
                     AccountUtils.setToken(context, it, "")
                 } else {
                     AccountUtils.setToken(context, it, null)
