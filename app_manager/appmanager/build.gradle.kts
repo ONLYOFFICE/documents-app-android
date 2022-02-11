@@ -69,6 +69,7 @@ android {
         buildConfigField("boolean", "IS_BETA", "false")
         buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
         buildConfigField("String", "BETA_ID", "\"" + appIdBeta + "\"")
+        buildConfigField("String", "APP_NAME", "\"" + appName + "\"")
 
 
         ndk {

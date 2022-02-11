@@ -15,7 +15,7 @@ import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
 import app.editors.manager.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.retrofit.ProgressRequestBody
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
@@ -41,7 +41,8 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         const val MODE_OVERWRITE = "overwrite"
     }
 
-    private val mNotificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, app.editors.manager.managers.works.UploadWork.TAG)
+    private val mNotificationUtils: NotificationUtils =
+        NotificationUtils(applicationContext, app.editors.manager.managers.works.UploadWork.TAG)
     private var action: String? = null
     private var path: String? = null
     private var folderId: String? = null
