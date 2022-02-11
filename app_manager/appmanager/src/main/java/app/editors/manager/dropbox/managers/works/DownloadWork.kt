@@ -11,7 +11,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.getDropboxServiceProvider
 import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import app.editors.manager.managers.works.DownloadWork
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
@@ -38,7 +38,8 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
     }
 
-    private val notificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)
+    private val notificationUtils: NotificationUtils =
+        NotificationUtils(applicationContext, TAG)
     private var file: DocumentFile? = null
     private var id: String? = null
     private var to: Uri? = null

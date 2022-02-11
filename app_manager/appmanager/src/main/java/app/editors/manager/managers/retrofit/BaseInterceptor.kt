@@ -31,7 +31,7 @@ class BaseInterceptor(val token: String?) : Interceptor {
             )
                 .addHeader(
                     ApiContract.HEADER_AGENT,
-                    "Android ONLYOFFICE Documents (id = ${BuildConfig.APPLICATION_ID}, SDK = ${Build.VERSION.SDK_INT}, build = ${BuildConfig.VERSION_CODE}, appName = ${BuildConfig.VERSION_NAME}"
+                    "Android ${BuildConfig.APP_NAME} Documents (id = ${BuildConfig.APPLICATION_ID}, SDK = ${Build.VERSION.SDK_INT}, build = ${BuildConfig.VERSION_CODE}, appName = ${BuildConfig.VERSION_NAME}"
                 )
                 .build()
         )

@@ -11,7 +11,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.getOneDriveServiceProvider
 import app.editors.manager.onedrive.onedrive.OneDriveResponse
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.onedrive.managers.utils.OneDriveUtils
@@ -38,7 +38,8 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
         private const val HEADER_NAME = "Content-Disposition"
     }
 
-    private val mNotificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)
+    private val mNotificationUtils: NotificationUtils =
+        NotificationUtils(applicationContext, TAG)
     private var path: String? = null
     private var folderId: String? = null
     private var from: Uri? = null
