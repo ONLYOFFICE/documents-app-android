@@ -3,6 +3,7 @@ package app.editors.manager.storages.dropbox.ui.fragments
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.webkit.*
+import androidx.room.util.StringUtil
 import app.editors.manager.R
 import app.editors.manager.storages.dropbox.mvp.presenters.DropboxSignInPresenter
 import app.editors.manager.mvp.models.account.Storage
@@ -10,6 +11,7 @@ import app.editors.manager.storages.base.fragment.BaseStorageSignInFragment
 import app.editors.manager.storages.base.view.BaseStorageSignInView
 import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import lib.toolkit.base.managers.utils.NetworkUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import moxy.presenter.InjectPresenter
 
 class DropboxSignInFragment: BaseStorageSignInFragment() {
@@ -33,9 +35,12 @@ class DropboxSignInFragment: BaseStorageSignInFragment() {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             if (url.startsWith(redirectUrl!!)) {
-                val accessToken = url.split("=")
-                val token = accessToken[1]
-                presenter.getUserInfo(token.dropLast(11), accessToken[5])
+                val parametersMap = StringUtils.getParametersFromUrl(url.split("#")[1])
+                parametersMap[TAG_ACCESS_TOKEN]?.let { token -> parametersMap[TAG_ACCOUNT_ID]?.let { accountId ->
+                    presenter.getUserInfo(token,
+                        accountId
+                    )
+                } }
             }
         }
 

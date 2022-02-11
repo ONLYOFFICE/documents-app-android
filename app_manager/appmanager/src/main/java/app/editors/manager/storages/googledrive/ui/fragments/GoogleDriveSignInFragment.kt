@@ -20,6 +20,7 @@ import app.editors.manager.storages.base.view.BaseStorageSignInView
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.NetworkUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import moxy.presenter.InjectPresenter
 
 class GoogleDriveSignInFragment: BaseStorageSignInFragment(){
@@ -41,9 +42,8 @@ class GoogleDriveSignInFragment: BaseStorageSignInFragment(){
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             if (url.startsWith(redirectUrl!!)) {
-                val accessToken = url.split("=")
-                val token = accessToken[1]
-                presenter.getUserInfo(token.dropLast(11))
+                val parametersMap = StringUtils.getParametersFromUrl(url.split("#")[1])
+                parametersMap[TAG_ACCESS_TOKEN]?.let { presenter.getUserInfo(it) }
             }
         }
 

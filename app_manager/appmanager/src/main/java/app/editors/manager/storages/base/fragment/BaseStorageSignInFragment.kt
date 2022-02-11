@@ -24,10 +24,13 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
 
     companion object {
         val TAG = OneDriveSignInFragment::class.java.simpleName
-        val TAG_STORAGE = "TAG_MEDIA"
-        val TAG_WEB_VIEW = "TAG_WEB_VIEW"
-        val TAG_PAGE_LOAD = "TAG_PAGE_LOAD"
+        const val TAG_STORAGE = "TAG_MEDIA"
+        const val TAG_WEB_VIEW = "TAG_WEB_VIEW"
+        const val TAG_PAGE_LOAD = "TAG_PAGE_LOAD"
 
+        const val TAG_ACCESS_TOKEN = "access_token"
+        const val TAG_CODE = "code"
+        const val TAG_ACCOUNT_ID = "account_id"
     }
 
     abstract fun getWebViewCallback(): WebViewClient

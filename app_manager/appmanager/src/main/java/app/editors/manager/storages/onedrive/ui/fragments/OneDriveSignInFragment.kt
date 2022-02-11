@@ -1,25 +1,14 @@
 package app.editors.manager.storages.onedrive.ui.fragments
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.webkit.*
-import androidx.core.content.ContextCompat
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.editors.manager.R
-import app.editors.manager.databinding.FragmentStorageWebBinding
-import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.storages.base.fragment.BaseStorageSignInFragment
-import app.editors.manager.storages.base.view.BaseStorageSignInView
 import app.editors.manager.storages.onedrive.mvp.presenters.OneDriveSingInPresenter
-import app.editors.manager.storages.onedrive.mvp.views.OneDriveSignInView
-import app.editors.manager.ui.activities.main.MainActivity
-import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.NetworkUtils.isOnline
+import lib.toolkit.base.managers.utils.StringUtils
 import moxy.presenter.InjectPresenter
 
 class OneDriveSignInFragment : BaseStorageSignInFragment() {
@@ -48,9 +37,8 @@ class OneDriveSignInFragment : BaseStorageSignInFragment() {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             if (url.startsWith(redirectUrl!!)) {
-                val response = url.split("=")
-                val code = response[1]
-                presenter.getToken(code)
+                val parametersMap = StringUtils.getParametersFromUrl(url.split("?")[1])
+                parametersMap[TAG_CODE]?.let { presenter.getToken(it) }
             }
         }
 
