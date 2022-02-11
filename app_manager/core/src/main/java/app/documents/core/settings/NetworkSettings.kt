@@ -109,5 +109,6 @@ class NetworkSettings(context: Context) {
         setCipher(account.isSslCiphers)
         setSslState(account.isSslState)
         setScheme(account.scheme ?: ApiContract.SCHEME_HTTPS)
+        serverVersion = account.serverVersion
     }
 }

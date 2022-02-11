@@ -557,6 +557,8 @@
     <string name="device_trash_files_restore">Restore</string>
     <string name="error_recent_account">File has been deleted or is not available from this account.</string>
     <string name="error_recent_enter_account">Please enter account.</string>
+    <string name="error_open_project_file">This account does not have access to the project</string>
+    <string name="switch_account_open_project_file">Switch account</string>
     <string name="operation_move_file_existing">%1$s file already exists in the destination directory.</string>
     <string name="upload_to_portal">Upload to portal</string>
     <string name="this_device">This device</string>

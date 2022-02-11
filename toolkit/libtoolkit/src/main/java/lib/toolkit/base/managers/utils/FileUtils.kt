@@ -606,7 +606,8 @@ object FileUtils {
         context: Context,
         to: Uri,
         from: String,
-        notFound: ((error: Throwable) -> Unit)? = null
+        notFound: ((error: Throwable) -> Unit)? = null,
+        success: (() -> Unit)? = null
     ): Boolean {
         try {
             BufferedInputStream(FileInputStream(from)).use { input ->
@@ -618,6 +619,7 @@ object FileUtils {
                 ).use { output ->
                     output.write(input.readBytes())
                     output.flush()
+                    success?.invoke()
                     return true
                 }
             }

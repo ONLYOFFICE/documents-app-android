@@ -7,17 +7,20 @@ data class OpenDataModel(
     val portal: String? = null,
     val email: String? = null,
     val file: OpenFileModel? = null,
-    val folder: OpenFolderModel? = null
+    val folder: OpenFolderModel? = null,
+    val originalUrl: String? = null
 )
 
 @Serializable
 data class OpenFileModel(
-    val id: Int? = null
+    val id: String? = null,
+    val title: String? = null,
+    val extension: String? = null
 )
 
 @Serializable
 data class OpenFolderModel(
-    val id: Int? = null,
-    val parentId: Int? = null,
+    val id: String? = null,
+    val parentId: String? = null,
     val rootFolderType: Int? = null
 )

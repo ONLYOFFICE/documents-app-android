@@ -87,9 +87,20 @@ class AccountContentProvider : ContentProvider() {
             Json.decodeFromString(values.getAsString(CLOUD_ACCOUNT_KEY))
         } else {
             getAccount(values)
+        }.apply {
+            if (token.isNotEmpty()) {
+                setCryptToken(token)
+                setCryptPassword(password)
+            }
         }
         runBlocking {
-            return@runBlocking dao?.addAccount(account)
+            val online = dao?.getAccountOnline()
+            if (account.id == online?.id) {
+                return@runBlocking dao?.addAccount(account.copy(isOnline = true))
+            } else {
+                return@runBlocking dao?.addAccount(account)
+            }
+
         }
         addSystemAccount(account)
         return Uri.parse("content://$AUTHORITY/$PATH/${account.id}")
@@ -106,10 +117,20 @@ class AccountContentProvider : ContentProvider() {
                 }
                 addSystemAccount(account)
             } else {
-                val account: CloudAccount = getAccount(it)
+                val account: CloudAccount = getAccount(it).apply {
+                    if (token.isNotEmpty()) {
+                        setCryptToken(token)
+                        setCryptPassword(password)
+                    }
+                }
                 id = account.id
                 runBlocking {
-                    dao?.addAccount(account = account)
+                    val online = dao?.getAccountOnline()
+                    if (online?.id == id) {
+                        dao?.addAccount(account = account.copy(isOnline = true))
+                    } else {
+                        dao?.addAccount(account = account)
+                    }
                 }
                 addSystemAccount(account)
             }
@@ -151,8 +172,15 @@ class AccountContentProvider : ContentProvider() {
             expires = ""
         )
 
-        val token = cloudAccount.getDecryptToken()
-        val password = cloudAccount.getDecryptPassword() ?: ""
+        val token: String
+        val password: String
+        if (cloudAccount.token.isNotEmpty()) {
+            token = cloudAccount.getDecryptToken() ?: ""
+            password = cloudAccount.getDecryptPassword() ?: ""
+        } else {
+            token = ""
+            password = ""
+        }
 
         if (!AccountUtils.addAccount(checkNotNull(context), account, password, accountData)) {
             AccountUtils.setAccountData(checkNotNull(context), account, accountData)

@@ -60,6 +60,10 @@ class StorageViewHolder(view: View, clickListener: BaseAdapter.OnItemClickListen
                     storageItemImage.setImageResource(R.drawable.ic_storage_nextcloud)
                     storageItemTitle.setText(R.string.storage_select_next_cloud)
                 }
+                ApiContract.Storage.KDRIVE -> {
+                    storageItemImage.setImageResource(R.drawable.ic_storage_kdrive)
+                    storageItemTitle.text = id
+                }
                 ApiContract.Storage.WEBDAV -> {
                     storageItemImage.setImageResource(R.drawable.ic_storage_webdav)
                     storageItemImage.alpha = UiUtils.getFloatResource(context, lib.toolkit.base.R.dimen.alpha_medium)

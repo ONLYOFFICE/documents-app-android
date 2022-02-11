@@ -218,6 +218,18 @@ object StringUtils {
     }
 
     @JvmStatic
+    fun getParametersFromUrl(url: String): MutableMap<String, String> {
+        val queries = url.split("&")
+        val params = mutableMapOf<String, String>()
+        queries.forEach { query ->
+            val name = query.split("=")[0]
+            val value = query.split("=")[1]
+            params[name] = value
+        }
+        return params
+    }
+
+    @JvmStatic
     @Nullable
     fun getAllowedString(source: String, symbols: String = DIALOG_FORBIDDEN_SYMBOLS): String? {
         val position =

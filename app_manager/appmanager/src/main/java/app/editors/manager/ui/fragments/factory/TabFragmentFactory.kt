@@ -3,27 +3,29 @@ package app.editors.manager.ui.fragments.factory
 import android.content.Context
 import app.editors.manager.R
 import app.editors.manager.ui.fragments.main.*
-import lib.toolkit.base.managers.utils.TabFragmentDictionary
+import app.documents.core.network.ApiContract
 
 class TabFragmentFactory(val context: Context) {
     companion object {
-        fun getSectionFragment(section: String, stringAccount: String): DocsCloudFragment =
-            when {
-                TabFragmentDictionary.My.contains(section) -> DocsMyFragment.newInstance(stringAccount)
-                TabFragmentDictionary.Shared.contains(section) -> DocsShareFragment.newInstance(stringAccount)
-                TabFragmentDictionary.Favorites.contains(section) -> DocsFavoritesFragment.newInstance(stringAccount)
-                TabFragmentDictionary.Common.contains(section) -> DocsCommonFragment.newInstance(stringAccount)
-                TabFragmentDictionary.Trash.contains(section) -> DocsTrashFragment.newInstance(stringAccount)
+        fun getSectionFragment(section: Int, stringAccount: String, fileData: String? = null): DocsCloudFragment =
+            when(section) {
+                ApiContract.SectionType.CLOUD_USER -> DocsMyFragment.newInstance(stringAccount)
+                ApiContract.SectionType.CLOUD_SHARE -> DocsShareFragment.newInstance(stringAccount)
+                ApiContract.SectionType.CLOUD_FAVORITES -> DocsFavoritesFragment.newInstance(stringAccount)
+                ApiContract.SectionType.CLOUD_COMMON -> DocsCommonFragment.newInstance(stringAccount)
+                ApiContract.SectionType.CLOUD_TRASH -> DocsTrashFragment.newInstance(stringAccount)
+                ApiContract.SectionType.CLOUD_PROJECTS -> DocsProjectsFragment.newInstance(stringAccount, fileData)
                 else -> DocsMyFragment.newInstance(stringAccount)
             }
     }
-    fun getTabTitle(tab: String): String =
-        when {
-            TabFragmentDictionary.Common.contains(tab) -> context.getString(R.string.main_pager_docs_common)
-            TabFragmentDictionary.My.contains(tab) -> context.getString(R.string.main_pager_docs_my)
-            TabFragmentDictionary.Favorites.contains(tab) -> context.getString(R.string.main_pager_docs_favorites)
-            TabFragmentDictionary.Shared.contains(tab) -> context.getString(R.string.main_pager_docs_share)
-            TabFragmentDictionary.Trash.contains(tab) -> context.getString(R.string.main_pager_docs_trash)
+    fun getTabTitle(tab: Int): String =
+        when(tab) {
+            ApiContract.SectionType.CLOUD_COMMON -> context.getString(R.string.main_pager_docs_common)
+            ApiContract.SectionType.CLOUD_USER -> context.getString(R.string.main_pager_docs_my)
+            ApiContract.SectionType.CLOUD_FAVORITES -> context.getString(R.string.main_pager_docs_favorites)
+            ApiContract.SectionType.CLOUD_SHARE -> context.getString(R.string.main_pager_docs_share)
+            ApiContract.SectionType.CLOUD_TRASH -> context.getString(R.string.main_pager_docs_trash)
+            ApiContract.SectionType.CLOUD_PROJECTS -> context.getString(R.string.main_pager_docs_projects)
             else -> ""
         }
 }

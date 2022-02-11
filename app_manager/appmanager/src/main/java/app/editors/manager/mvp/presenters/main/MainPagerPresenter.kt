@@ -8,7 +8,6 @@ import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -22,7 +21,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TabFragmentDictionary
 import moxy.InjectViewState
 import javax.inject.Inject
 
@@ -43,7 +41,6 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     private var disposable: Disposable? = null
-    private var sections: List<Explorer>? = null
 
     private val api: Api = context.api()
 
@@ -54,7 +51,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
 
     fun getState(fileData: Uri? = null) {
         if (StringUtils.convertServerVersion(networkSetting.serverVersion) < 11 || networkSetting.getBaseUrl()
-                .contains(ApiContract.PERSONAL_SUBDOMAIN)
+                .contains(ApiContract.PERSONAL_HOST)
         ) {
             accountJson?.let { jsonAccount ->
                 viewState.onFinishRequest()
@@ -65,7 +62,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 throw Exception("Need account")
             }
         } else {
-            disposable = getPortalModules().subscribe({
+            disposable = getPortalModules().subscribe({ sections ->
                 viewState.onFinishRequest()
                 accountJson?.let { account ->
                     viewState.onRender(account, sections)
@@ -77,7 +74,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
 
     private fun render(cloudAccount: CloudAccount, jsonAccount: String, fileData: Uri?) {
         when {
-            networkSetting.getPortal().contains(ApiContract.PERSONAL_SUBDOMAIN) -> {
+            networkSetting.getPortal().contains(ApiContract.PERSONAL_HOST) -> {
                 viewState.onRender(
                     MainPagerState.PersonalState(
                         jsonAccount,
@@ -86,8 +83,6 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                         )
                     )
                 )
-
-
             }
             cloudAccount.isVisitor -> {
                 viewState.onRender(
@@ -98,8 +93,6 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                         )
                     )
                 )
-
-
             }
             else -> {
                 viewState.onRender(
@@ -113,33 +106,34 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         checkFileData(cloudAccount, fileData)
     }
 
-    private fun getPortalModules(): Observable<Boolean> {
-        return Observable.zip(
-            api.getRootFolder(
-                mapOf("filterType" to 2),
-                mapOf(
-                    "withsubfolders" to false,
-                    "withoutTrash" to false,
-                    "withoutAdditionalFolder" to false
-                )
-            ), api.getModules(listOf(Constants.Modules.PROJECT_ID))
-        ) { cloudTree, modules ->
-            if (cloudTree.response != null && modules.response != null) {
-                preferenceTool.isProjectDisable = !modules.response[0].isEnable
-                sections = cloudTree.response
-                for (folder in cloudTree.response) {
-                    if (TabFragmentDictionary.Favorites.contains(folder.current.title)) {
-                        preferenceTool.setFavoritesEnable(true)
-                        break
-                    } else {
-                        preferenceTool.setFavoritesEnable(false)
-                    }
-                }
-            }
-            return@zip true
-        }
+    private fun getPortalModules(): Observable<List<Explorer>?> {
+       return api.getRootFolder(
+            mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
+            mapOf(
+                ApiContract.Modules.FLAG_SUBFOLDERS to false,
+                ApiContract.Modules.FLAG_TRASH to false,
+                ApiContract.Modules.FLAG_ADDFOLDERS to false
+            )
+        )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .map { cloudTree ->
+                if (cloudTree.response != null) {
+                    for (folder in cloudTree.response) {
+                        if (folder.current?.rootFolderType == ApiContract.SectionType.CLOUD_FAVORITES) {
+                            preferenceTool.setFavoritesEnable(true)
+                            break
+                        } else if(folder.current?.rootFolderType == ApiContract.SectionType.CLOUD_PROJECTS) {
+                            preferenceTool.isProjectDisable = false
+                            break
+                        } else {
+                            preferenceTool.setFavoritesEnable(false)
+                            preferenceTool.isProjectDisable = true
+                        }
+                    }
+                }
+                return@map cloudTree.response
+            }
     }
 
     private fun checkFileData(account: CloudAccount, fileData: Uri?) {
@@ -153,7 +147,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 ) {
                     viewState.setFileData(Json.encodeToString(dataModel))
                 } else {
-                    viewState.onError(R.string.error_recent_enter_account)
+                    viewState.onOpenProjectFileError(R.string.error_open_project_file)
                 }
             }
         }

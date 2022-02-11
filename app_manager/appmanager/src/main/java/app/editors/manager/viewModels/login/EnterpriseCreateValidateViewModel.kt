@@ -1,6 +1,5 @@
 package app.editors.manager.viewModels.login
 
-import android.telephony.TelephonyManager
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

@@ -54,6 +54,7 @@ public class StorageUtils {
 
     public static final class WevDav {
         public static final String URL_YANDEX = "https://webdav.yandex.ru";
+        public static final String URL_KDRIVE = "https://connect.drive.infomaniak.com";
     }
 
     @Nullable

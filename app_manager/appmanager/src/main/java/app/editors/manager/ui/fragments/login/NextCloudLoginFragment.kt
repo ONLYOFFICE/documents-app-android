@@ -123,7 +123,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
                 }
                 if (uri.toString().contains(BACK_PATTERN_1) || uri.path?.contains(BACK_PATTERN_2) == true) {
                     isClear = true
-                    clearCookies(requireContext())
+                    clearCookies(context ?: App.getApp())
                     viewBinding?.webView?.clearHistory()
                     viewBinding?.webView?.clearCache(true)
                     viewBinding?.webView?.loadUrl(portla + LOGIN_SUFFIX, headers)

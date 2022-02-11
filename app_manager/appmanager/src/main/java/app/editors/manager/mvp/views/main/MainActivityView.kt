@@ -25,4 +25,5 @@ interface MainActivityView : BaseViewExt {
     fun onRender(state: MainActivityState)
     fun openFile(account: CloudAccount, fileData: String)
     fun onCodeActivity()
+    fun onOpenProjectFileError(error: String)
 }
