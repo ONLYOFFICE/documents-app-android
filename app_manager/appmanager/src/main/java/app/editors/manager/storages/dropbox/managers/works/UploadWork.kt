@@ -1,26 +1,19 @@
-package app.editors.manager.dropbox.managers.works
+package app.editors.manager.storages.dropbox.managers.works
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.getDropboxServiceProvider
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxResponse
 import app.editors.manager.storages.dropbox.mvp.models.explorer.DropboxItem
-import app.editors.manager.storages.dropbox.mvp.models.request.UploadRequest
-import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
-import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.retrofit.ProgressRequestBody
-import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
+import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
-import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.Headers
@@ -55,7 +48,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
         title = ContentResolverUtils.getName(applicationContext, from ?: Uri.EMPTY)
         try {
             val request = "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox(folderId?.trim() + title!!)}\",\"mode\":\"${
-                if (action == DocsDropboxFragment.KEY_UPLOAD || action == DocsDropboxFragment.KEY_CREATE) {
+                if (tag == BaseStorageDocsFragment.KEY_UPLOAD || tag == BaseStorageDocsFragment.KEY_CREATE) {
                     MODE_ADD
                 } else {
                     MODE_OVERWRITE
@@ -76,7 +69,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
                     }
                 }
                 is DropboxResponse.Error -> {
-                    if(action == DocsDropboxFragment.KEY_UPLOAD) {
+                    if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                         mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
                     }
                     sendBroadcastUnknownError(title!!, path)
@@ -90,7 +83,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
                 mNotificationUtils.showCanceledUploadNotification(id.hashCode(), title)
                 sendBroadcastUploadCanceled(path)
             } else {
-                if(action == DocsDropboxFragment.KEY_UPLOAD) {
+                if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                     mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
                 }
                 sendBroadcastUnknownError(title!!, path)

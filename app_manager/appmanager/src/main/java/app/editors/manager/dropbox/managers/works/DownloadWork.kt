@@ -9,7 +9,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.getDropboxServiceProvider
-import app.editors.manager.dropbox.managers.utils.DropboxUtils
+import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.managers.works.DownloadWork
