@@ -82,6 +82,9 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
             is OneDriveResponse.Error -> {
                 mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
                 sendBroadcastUnknownError(fileName, path)
+                if(tag == BaseStorageDocsFragment.KEY_UPDATE) {
+                    file?.delete()
+                }
             }
         }
 
@@ -122,15 +125,23 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
                 if (tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                     mNotificationUtils.showUploadCompleteNotification(id.hashCode(), fileName)
                     sendBroadcastUploadComplete(path, fileName, CloudFile(), path)
+                } else {
+                    file?.delete()
                 }
             } else {
                 mNotificationUtils.removeNotification(id.hashCode())
                 mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
                 sendBroadcastUnknownError(fileName, path)
+                if(tag == BaseStorageDocsFragment.KEY_UPDATE) {
+                    file?.delete()
+                }
             }
         } catch (e: Exception) {
             mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
             sendBroadcastUnknownError(fileName, path)
+            if(tag == BaseStorageDocsFragment.KEY_UPDATE) {
+                file?.delete()
+            }
             throw e
         }
     }

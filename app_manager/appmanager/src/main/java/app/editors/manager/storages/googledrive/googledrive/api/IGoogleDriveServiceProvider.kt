@@ -1,6 +1,7 @@
 package app.editors.manager.storages.googledrive.googledrive.api
 
 import app.editors.manager.storages.googledrive.googledrive.login.GoogleDriveResponse
+import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveFile
 import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.storages.googledrive.mvp.models.request.RenameRequest
 import app.editors.manager.storages.googledrive.mvp.models.request.ShareRequest
@@ -18,6 +19,7 @@ interface IGoogleDriveServiceProvider {
     fun move(fileId: String, map: Map<String, String?>): Single<GoogleDriveResponse>
     fun copy(fileId: String): Single<GoogleDriveResponse>
     fun create(request: CreateItemRequest): Single<GoogleDriveResponse>
+    fun createFile(request: CreateItemRequest): Single<Response<GoogleDriveFile>>
     fun upload(request: CreateItemRequest, map: Map<String, String> = mapOf("uploadType" to "resumable")): Single<Response<ResponseBody>>
     fun update(fileId: String, map: Map<String, String> = mapOf("uploadType" to "resumable")): Single<Response<ResponseBody>>
     fun share(fileId: String, request: ShareRequest): Single<Response<ResponseBody>>

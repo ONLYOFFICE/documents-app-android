@@ -3,6 +3,7 @@ package app.editors.manager.storages.googledrive.mvp.presenters
 import android.content.ClipData
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import app.editors.manager.R
@@ -17,6 +18,7 @@ import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.base.work.BaseStorageDownloadWork
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
+import app.editors.manager.storages.googledrive.managers.receiver.GoogleDriveUploadReceiver
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -29,12 +31,15 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 
-class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
+class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(), GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
+
+    var uploadGoogleDriveReceiver: GoogleDriveUploadReceiver? = null
 
     init {
         App.getApp().appComponent.inject(this)
-    }
+        uploadGoogleDriveReceiver = GoogleDriveUploadReceiver()
 
+    }
     override val externalLink : Unit
         get() {
             val request = ShareRequest(
@@ -70,6 +75,18 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() 
 
 
         }
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        uploadGoogleDriveReceiver?.setUploadListener(this)
+        LocalBroadcastManager.getInstance(context).registerReceiver(uploadGoogleDriveReceiver!!, uploadGoogleDriveReceiver?.filter!!)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        uploadGoogleDriveReceiver?.setUploadListener(null)
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadGoogleDriveReceiver!!)
+    }
 
     override fun getProvider() {
         fileProvider?.let {
@@ -269,5 +286,9 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() 
             state.iconResId = R.drawable.ic_type_folder_shared
         }
         viewState.onItemContext(state)
+    }
+
+    override fun onItemId(itemId: String) {
+        itemClicked?.id = itemId
     }
 }

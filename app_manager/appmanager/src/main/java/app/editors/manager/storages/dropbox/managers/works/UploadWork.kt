@@ -2,6 +2,7 @@ package app.editors.manager.storages.dropbox.managers.works
 
 import android.content.Context
 import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
 import androidx.work.WorkerParameters
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
@@ -66,11 +67,15 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
                             getCloudFile((response.response as DropboxItem)),
                             path
                         )
+                    } else {
+                        from?.let { DocumentFile.fromSingleUri(applicationContext, it)?.delete() }
                     }
                 }
                 is DropboxResponse.Error -> {
                     if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                         mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                    } else {
+                        from?.let { DocumentFile.fromSingleUri(applicationContext, it)?.delete() }
                     }
                     sendBroadcastUnknownError(title!!, path)
                     if (!NetworkUtils.isOnline(applicationContext)) {
@@ -85,6 +90,8 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
             } else {
                 if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                     mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                } else {
+                    from?.let { DocumentFile.fromSingleUri(applicationContext, it)?.delete() }
                 }
                 sendBroadcastUnknownError(title!!, path)
                 if (!NetworkUtils.isOnline(applicationContext)) {

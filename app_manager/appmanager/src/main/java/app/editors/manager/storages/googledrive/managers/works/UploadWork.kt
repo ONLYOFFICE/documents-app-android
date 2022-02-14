@@ -3,8 +3,10 @@ package app.editors.manager.storages.googledrive.managers.works
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
@@ -15,6 +17,8 @@ import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
+import app.editors.manager.storages.googledrive.managers.receiver.GoogleDriveUploadReceiver
+import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveFile
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import java.io.DataOutputStream
@@ -57,16 +61,28 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
         )
 
         val response = when(tag) {
-            BaseStorageDocsFragment.KEY_UPLOAD, BaseStorageDocsFragment.KEY_CREATE -> applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
+            BaseStorageDocsFragment.KEY_UPLOAD -> applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
+            BaseStorageDocsFragment.KEY_CREATE -> applicationContext.getGoogleDriveServiceProvider().createFile(request).blockingGet()
             BaseStorageDocsFragment.KEY_UPDATE -> fileId?.let { applicationContext.getGoogleDriveServiceProvider().update(it).blockingGet() }
             else -> applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
         }
 
         if(response?.isSuccessful == true) {
-            from?.let { from -> response.headers().get(HEADER_LOCATION)?.let { url -> uploadSession(url, from) } }
+            when(tag) {
+                BaseStorageDocsFragment.KEY_UPLOAD, BaseStorageDocsFragment.KEY_UPDATE -> {
+                    from?.let { from -> response.headers().get(HEADER_LOCATION)?.let { url -> uploadSession(url, from) } }
+                }
+                BaseStorageDocsFragment.KEY_CREATE -> {
+                    sendUploadItemId((response.body() as GoogleDriveFile).id)
+                    file?.delete()
+                }
+            }
         } else {
             mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
             sendBroadcastUnknownError(fileName, path)
+            if(tag == BaseStorageDocsFragment.KEY_UPDATE || tag == BaseStorageDocsFragment.KEY_CREATE) {
+                file?.delete()
+            }
         }
 
         return Result.success()
@@ -105,17 +121,28 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
                 if (tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                     mNotificationUtils.showUploadCompleteNotification(id.hashCode(), fileName)
                     sendBroadcastUploadComplete(path, fileName, CloudFile(), path)
+                } else if( tag == BaseStorageDocsFragment.KEY_UPDATE) {
+                    file?.delete()
                 }
             } else {
                 mNotificationUtils.removeNotification(id.hashCode())
                 mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
                 sendBroadcastUnknownError(fileName, path)
+                if(tag == BaseStorageDocsFragment.KEY_UPDATE) {
+                    file?.delete()
+                }
             }
         } catch (e: Exception) {
             mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
             sendBroadcastUnknownError(fileName, path)
             throw e
         }
+    }
+
+    private fun sendUploadItemId(itemId: String) {
+        val intent = Intent(GoogleDriveUploadReceiver.UPLOAD_ITEM_ID)
+        intent.putExtra(GoogleDriveUploadReceiver.KEY_ITEM_ID, itemId)
+        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 
     override fun getArgs() {

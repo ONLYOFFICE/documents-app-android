@@ -88,6 +88,7 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
             requestCreate.title = title
             fileProvider?.let { provider ->
                 disposable.add(provider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
+                    itemClicked = file
                     addFile(file)
                     setPlaceholderType(PlaceholderViews.Type.NONE)
                     viewState.onDialogClose()

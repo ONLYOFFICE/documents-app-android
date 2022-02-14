@@ -1,6 +1,7 @@
 package app.editors.manager.storages.googledrive.googledrive.api
 
 import app.editors.manager.storages.googledrive.googledrive.login.GoogleDriveResponse
+import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveFile
 import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.storages.googledrive.mvp.models.request.RenameRequest
 import app.editors.manager.storages.googledrive.mvp.models.request.ShareRequest
@@ -73,6 +74,12 @@ class GoogleDriveServiceProvider(
     override fun create(request: CreateItemRequest): Single<GoogleDriveResponse> {
         return googleDriveServiceProvider.createItem(request)
             .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun createFile(request: CreateItemRequest): Single<Response<GoogleDriveFile>> {
+        return googleDriveServiceProvider.createItem(request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

@@ -7,6 +7,7 @@ import app.editors.manager.app.getDropboxServiceProvider
 import app.editors.manager.storages.dropbox.mvp.models.request.PathRequest
 import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.storages.base.work.BaseStorageDownloadWork
+import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FileUtils
@@ -32,11 +33,11 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): BaseSt
 
     override fun doWork(): Result {
         getArgs()
-        val request = id?.let { PathRequest( path = it) }
+        val request = "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox(id!!)}\"}"
         val response = if (downloadableItem == DOWNLOADABLE_ITEM_FILE)
-            applicationContext.getDropboxServiceProvider().download(Json.encodeToString(request))
+            applicationContext.getDropboxServiceProvider().download(request)
                 .blockingGet() else
-            applicationContext.getDropboxServiceProvider().downloadFolder(Json.encodeToString(request))
+            applicationContext.getDropboxServiceProvider().downloadFolder(request)
                 .blockingGet()
         response.body()?.let { responseBody ->
             FileUtils.writeFromResponseBody(responseBody, to!!, applicationContext, object: FileUtils.Progress {
