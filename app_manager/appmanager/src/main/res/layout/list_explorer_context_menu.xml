@@ -21,7 +21,7 @@
 
             <ImageView
                 android:id="@+id/list_explorer_context_header_image"
-                style="@style/ContextListImage"
+                style="@style/ContextListHeaderImage"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 app:srcCompat="@drawable/ic_list_context_folder_name"

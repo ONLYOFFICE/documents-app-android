@@ -376,6 +376,12 @@
         <item name="android:tint">@color/colorOnSurface</item>
     </style>
 
+    <style name="ContextListHeaderImage" parent="CommonImageView">
+        <item name="android:layout_width">@dimen/image_default_size</item>
+        <item name="android:layout_height">@dimen/image_default_size</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
     <style name="ContextListMediumText" parent="ItemMediumBlackText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

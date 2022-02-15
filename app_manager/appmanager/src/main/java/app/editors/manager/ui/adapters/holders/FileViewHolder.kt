@@ -3,7 +3,7 @@ package app.editors.manager.ui.adapters.holders
 import android.view.View
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -50,7 +50,7 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
 
             viewIconSelectableLayout.viewIconSelectableImage.background = null
             viewIconSelectableLayout.viewIconSelectableMask.background = null
-            ManagerUiUtils.setFileIcon(viewIconSelectableLayout.viewIconSelectableImage, file.fileExst)
+            viewIconSelectableLayout.viewIconSelectableImage.setFileIcon(file.fileExst)
 
             // For selection mode add background/foreground
             if (adapter.isSelectMode) {
