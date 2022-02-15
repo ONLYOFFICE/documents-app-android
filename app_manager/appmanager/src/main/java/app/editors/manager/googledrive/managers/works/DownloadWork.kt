@@ -10,7 +10,7 @@ import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.getGoogleDriveServiceProvider
 import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -36,7 +36,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
     }
 
-    private val notificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)
+    private val notificationUtils: NotificationUtils = NotificationUtils(applicationContext, TAG)
     private var file: DocumentFile? = null
     private var id: String? = null
     private var to: Uri? = null

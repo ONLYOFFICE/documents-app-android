@@ -14,7 +14,7 @@ import app.editors.manager.googledrive.ui.fragments.DocsGoogleDriveFragment.Comp
 import app.editors.manager.googledrive.ui.fragments.DocsGoogleDriveFragment.Companion.KEY_UPDATE
 import app.editors.manager.googledrive.ui.fragments.DocsGoogleDriveFragment.Companion.KEY_UPLOAD
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
@@ -39,7 +39,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): Worker(c
         private const val HEADER_NAME = "Content-Disposition"
     }
 
-    private val mNotificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, app.editors.manager.onedrive.managers.works.UploadWork.TAG)
+    private val mNotificationUtils: NotificationUtils = NotificationUtils(applicationContext, app.editors.manager.onedrive.managers.works.UploadWork.TAG)
     private var path: String? = null
     private var folderId: String? = null
     private var from: Uri? = null
