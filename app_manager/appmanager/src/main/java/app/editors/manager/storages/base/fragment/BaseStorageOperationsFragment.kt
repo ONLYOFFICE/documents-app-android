@@ -130,11 +130,11 @@ abstract class BaseStorageOperationsFragment: DocsBaseFragment(), OperationActiv
         if (savedInstanceState == null) {
             val explorer =
                 intent.getSerializableExtra(OperationActivity.TAG_OPERATION_EXPLORER) as Explorer?
-            if (explorer != null) {
-                presenter.setOperationExplorer(explorer)
-            } else {
-                requireActivity().finish()
-            }
+
+            explorer?.let {
+                presenter.setOperationExplorer(it)
+            } ?: requireActivity().finish()
+
         }
     }
 

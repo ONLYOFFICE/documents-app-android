@@ -54,7 +54,7 @@ class OneDriveFileProvider : BaseFileProvider {
 
     private var api: IOneDriveServiceProvider = getApp().getOneDriveComponent()
 
-    private val workManager = WorkManager.getInstance()
+    private val workManager = WorkManager.getInstance(getApp().applicationContext)
 
 
     fun refreshInstance() {
@@ -352,13 +352,16 @@ class OneDriveFileProvider : BaseFileProvider {
     override fun fileInfo(item: Item?): Observable<CloudFile> {
         return Observable.create { emitter: ObservableEmitter<CloudFile> ->
             val outputFile = checkDirectory(item)
-            if (outputFile != null && outputFile.exists()) {
-                if (item is CloudFile) {
-                    if (item.pureContentLength != outputFile.length()) {
-                        download(emitter, item, outputFile)
-                    } else {
-                        setFile(item, outputFile).let { emitter.onNext(it) }
-                        emitter.onComplete()
+
+            outputFile?.let {
+                if(it.exists()) {
+                    if (item is CloudFile) {
+                        if (item.pureContentLength != outputFile.length()) {
+                            download(emitter, item, outputFile)
+                        } else {
+                            setFile(item, outputFile).let { emitter.onNext(it) }
+                            emitter.onComplete()
+                        }
                     }
                 }
             }
@@ -368,13 +371,16 @@ class OneDriveFileProvider : BaseFileProvider {
     fun fileInfo(item: Item, isDownload: Boolean): Observable <CloudFile?> {
         return Observable.create(ObservableOnSubscribe { emitter: ObservableEmitter<CloudFile?> ->
             val outputFile = checkDirectory(item)
-            if (outputFile != null && outputFile.exists()) {
-                if (item is CloudFile) {
-                    if (isDownload) {
-                        download(emitter, item, outputFile)
-                    } else {
-                        emitter.onNext(setFile(item, outputFile)!!)
-                        emitter.onComplete()
+
+            outputFile?.let {
+                if(it.exists()) {
+                    if (item is CloudFile) {
+                        if (isDownload) {
+                            download(emitter, item, outputFile)
+                        } else {
+                            emitter.onNext(setFile(item, outputFile)!!)
+                            emitter.onComplete()
+                        }
                     }
                 }
             }

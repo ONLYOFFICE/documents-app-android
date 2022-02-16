@@ -29,7 +29,7 @@ open class BaseStorageUploadWork(context: Context, workerParams: WorkerParameter
     protected var folderId: String? = null
     protected var title: String? = null
     protected var from: Uri? = null
-    protected var timeMark = 0L
+    private var timeMark = 0L
     protected var data: Data? = null
 
     override fun doWork() = Result.success()
@@ -69,7 +69,7 @@ open class BaseStorageUploadWork(context: Context, workerParams: WorkerParameter
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 
-    protected fun sendBroadcastProgress(progress: Int, file: String?, folderId: String?) {
+    private fun sendBroadcastProgress(progress: Int, file: String?, folderId: String?) {
         val intent = Intent(UploadReceiver.UPLOAD_ACTION_PROGRESS)
         intent.putExtra(UploadReceiver.EXTRAS_KEY_FILE, file)
         intent.putExtra(UploadReceiver.EXTRAS_FOLDER_ID, folderId)

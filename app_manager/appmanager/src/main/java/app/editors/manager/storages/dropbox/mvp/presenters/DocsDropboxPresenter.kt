@@ -41,11 +41,11 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override val externalLink : Unit
         get() {
-            itemClicked?.let {
-                (fileProvider as DropboxFileProvider).share(it.id)?.let { externalLinkResponse ->
+            itemClicked?.let { item ->
+                (fileProvider as DropboxFileProvider).share(item.id)?.let { externalLinkResponse ->
                     disposable.add(externalLinkResponse
-                        .subscribe( {response ->
-                            it.shared = !it.shared
+                        .subscribe( { response ->
+                            item.shared = !item.shared
                             response.link.let { link ->
                                 KeyboardUtils.setDataToClipboard(
                                     context,
@@ -93,7 +93,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun download(downloadTo: Uri) {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
-        if (modelExplorerStack?.countSelectedItems!! == 0) {
+        if (modelExplorerStack?.countSelectedItems == 0) {
             startDownload(downloadTo, itemClicked)
         } else {
             val itemList =  modelExplorerStack?.selectedFiles!! + modelExplorerStack?.selectedFolders!!
@@ -102,7 +102,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                 val doc = DocumentFile.fromTreeUri(context, downloadTo)?.createFile(
                     StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName
                 )
-                startDownload(doc?.uri!!, item)
+                doc?.uri?.let { uri -> startDownload(uri, item) }
             }
         }
     }
@@ -139,7 +139,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         val id = modelExplorerStack?.currentId
         val args = getArgs(filteringValue)
         fileProvider?.let { provider ->
-            disposable.add(provider.getFiles(id!!, args).subscribe({ explorer: Explorer? ->
+            disposable.add(provider.getFiles(id, args).subscribe({ explorer: Explorer? ->
                 modelExplorerStack?.addOnNext(explorer)
                 val last = modelExplorerStack?.last()
                 if (last != null) {
@@ -155,12 +155,14 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         val uploadUris = mutableListOf<Uri>()
         var index = 0
 
-        if(uri != null) {
+        uri?.let {
             uploadUris.add(uri)
-        } else if(uris != null) {
-            while(index != uris.itemCount) {
-                uploadUris.add(uris.getItemAt(index).uri)
-                index++
+        } ?: run {
+            uris?.let {
+                while(index != uris.itemCount) {
+                    uploadUris.add(uris.getItemAt(index).uri)
+                    index++
+                }
             }
         }
 

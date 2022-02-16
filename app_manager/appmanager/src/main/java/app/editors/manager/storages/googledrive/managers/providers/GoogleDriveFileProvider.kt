@@ -49,7 +49,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
     private val api = App.getApp().getGoogleDriveComponent()
 
-    private val workManager = WorkManager.getInstance()
+    private val workManager = WorkManager.getInstance(App.getApp().applicationContext)
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         var queryString = "\"$id\" in parents and trashed = false"
@@ -143,17 +143,17 @@ class GoogleDriveFileProvider: BaseFileProvider {
             .map { _ ->
                 val title = body.title
                 val path = PATH_TEMPLATES + body.title.lowercase()
-                    .let { StringUtils.getExtensionFromPath(it) }.let {
+                    .let { title -> StringUtils.getExtensionFromPath(title) }.let { ext ->
                         FileUtils.getTemplates(
                             App.getApp(), App.getLocale(),
-                            it
+                            ext
                         )
                     }
-                val temp = title.let { StringUtils.getNameWithoutExtension(it) }.let {
+                val temp = title.let { StringUtils.getNameWithoutExtension(it) }.let { name ->
                     FileUtils.createTempAssetsFile(
                         App.getApp(),
                         path,
-                        it,
+                        name,
                         StringUtils.getExtensionFromPath(title)
                     )
                 }
@@ -309,13 +309,16 @@ class GoogleDriveFileProvider: BaseFileProvider {
     override fun fileInfo(item: Item?): Observable<CloudFile> {
         return Observable.create { emitter: ObservableEmitter<CloudFile> ->
             val outputFile = item?.let { checkDirectory(it) }
-            if (outputFile != null && outputFile.exists()) {
-                if (item is CloudFile) {
-                    if (item.pureContentLength != outputFile.length()) {
-                        download(emitter, item, outputFile)
-                    } else {
-                        setFile(item, outputFile).let { emitter.onNext(it) }
-                        emitter.onComplete()
+
+            outputFile?.let {
+                if(it.exists()) {
+                    if (item is CloudFile) {
+                        if (item.pureContentLength != outputFile.length()) {
+                            download(emitter, item, outputFile)
+                        } else {
+                            setFile(item, outputFile).let { emitter.onNext(it) }
+                            emitter.onComplete()
+                        }
                     }
                 }
             }
@@ -388,10 +391,10 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
     override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? {
         return Observable.fromIterable(uris)
-            .map {
+            .map { uri ->
                 val data = Data.Builder()
                     .putString(BaseStorageUploadWork.TAG_FOLDER_ID, folderId)
-                    .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, it.toString())
+                    .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uri.toString())
                     .putString(BaseStorageUploadWork.KEY_TAG, BaseStorageDocsFragment.KEY_CREATE)
                     .build()
 

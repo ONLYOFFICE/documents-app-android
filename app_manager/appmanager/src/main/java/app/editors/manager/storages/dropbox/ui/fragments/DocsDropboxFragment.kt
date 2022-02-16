@@ -34,19 +34,19 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
                 REQUEST_MULTIPLE_FILES_DOWNLOAD -> {
                     data?.data?.let { presenter.download(it) }
                 }
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let {
+                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
                     if(data.getBooleanExtra(KEY_MODIFIED, false)) {
                         presenter.upload(
-                            it,
+                            uri,
                             null,
                             KEY_UPDATE
                         )
                     }
                 }
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let {
+                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let { clipData ->
                     presenter.upload(
                         null,
-                        it,
+                        clipData,
                         KEY_UPLOAD
                     )
                 }.run {
@@ -59,6 +59,6 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
         }
     }
 
-    override fun getOtherPresenter() = presenter
+    override fun getDocsPresenter() = presenter
 
 }

@@ -160,11 +160,11 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     }
 
     override val presenter: BaseStorageDocsPresenter<out BaseStorageDocsView>
-        get() = getOtherPresenter()
+        get() = getDocsPresenter()
 
     override fun onUpdateItemFavorites() {
         TODO("Not yet implemented")
     }
 
-    abstract fun getOtherPresenter(): BaseStorageDocsPresenter<out BaseStorageDocsView>
+    abstract fun getDocsPresenter(): BaseStorageDocsPresenter<out BaseStorageDocsView>
 }

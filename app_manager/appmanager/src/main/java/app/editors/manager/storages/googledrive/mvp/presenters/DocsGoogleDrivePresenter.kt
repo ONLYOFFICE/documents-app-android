@@ -79,13 +79,23 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         uploadGoogleDriveReceiver?.setUploadListener(this)
-        LocalBroadcastManager.getInstance(context).registerReceiver(uploadGoogleDriveReceiver!!, uploadGoogleDriveReceiver?.filter!!)
+        uploadGoogleDriveReceiver?.let { receiver ->
+            uploadGoogleDriveReceiver?.filter?.let { filter ->
+                LocalBroadcastManager.getInstance(context).registerReceiver(
+                    receiver, filter
+                )
+            }
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         uploadGoogleDriveReceiver?.setUploadListener(null)
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadGoogleDriveReceiver!!)
+        uploadGoogleDriveReceiver?.let { receiver ->
+            LocalBroadcastManager.getInstance(context).unregisterReceiver(
+                receiver
+            )
+        }
     }
 
     override fun getProvider() {
@@ -117,12 +127,13 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
     override fun getNextList() {
         val id = modelExplorerStack?.currentId
         val args = getArgs(filteringValue)
-        disposable.add(fileProvider?.getFiles(id!!, args)?.subscribe({ explorer: Explorer? ->
+        disposable.add(fileProvider?.getFiles(id, args)?.subscribe({ explorer: Explorer? ->
             modelExplorerStack?.addOnNext(explorer)
             val last = modelExplorerStack?.last()
-            if (last != null) {
-                viewState.onDocsNext(getListWithHeaders(last, true))
+            last?.let {
+                viewState.onDocsNext(getListWithHeaders(it, true))
             }
+
         }) { throwable: Throwable -> fetchError(throwable) }!!)
     }
 
@@ -137,15 +148,18 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
     }
 
     override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            val extension = file.fileExst
-            if (StringUtils.isImage(extension)) {
-                addRecent(file)
-                return
+        itemClicked?.let { item ->
+            if(item is CloudFile) {
+                val file = itemClicked as CloudFile
+                val extension = file.fileExst
+                if (StringUtils.isImage(extension)) {
+                    addRecent(file)
+                    return
+                }
             }
         }
-        downloadDisposable = fileProvider?.fileInfo(itemClicked!!)
+
+        downloadDisposable = fileProvider?.fileInfo(itemClicked)
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe(
@@ -230,12 +244,14 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
         val uploadUris = mutableListOf<Uri>()
         var index = 0
 
-        if(uri != null) {
+        uri?.let {
             uploadUris.add(uri)
-        } else if(uris != null) {
-            while(index != uris.itemCount) {
-                uploadUris.add(uris.getItemAt(index).uri)
-                index++
+        } ?: run {
+            uris?.let {
+                while(index != uris.itemCount) {
+                    uploadUris.add(uris.getItemAt(index).uri)
+                    index++
+                }
             }
         }
 

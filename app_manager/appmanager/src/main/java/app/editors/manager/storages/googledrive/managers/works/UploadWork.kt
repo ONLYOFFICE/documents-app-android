@@ -48,16 +48,16 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
 
         when(tag) {
             BaseStorageDocsFragment.KEY_UPLOAD -> {
-                fileName = file?.name!!
+                fileName = file?.name.toString()
             }
             BaseStorageDocsFragment.KEY_UPDATE, BaseStorageDocsFragment.KEY_CREATE -> {
-                fileName = path?.let { FileUtils.getFileName(it, true) }!!
+                fileName = path?.let { FileUtils.getFileName(it, true) }.toString()
             }
         }
 
         val request = CreateItemRequest(
             name = fileName,
-            parents = listOf(folderId!!)
+            parents = listOf(folderId) as List<String>
         )
 
         val response = when(tag) {

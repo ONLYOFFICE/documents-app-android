@@ -145,7 +145,7 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
 
     private fun loadWebView(url: String?) {
         viewBinding?.webStorageSwipe?.isRefreshing = true
-        viewBinding?.webStorageWebview?.loadUrl(url!!)
+        url?.let { viewBinding?.webStorageWebview?.loadUrl(it) }
     }
 
 

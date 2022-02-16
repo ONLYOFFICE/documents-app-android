@@ -27,7 +27,7 @@ open class DocsOneDriveFragment : BaseStorageDocsFragment() {
     @InjectPresenter
     override lateinit var presenter: DocsOneDrivePresenter
 
-    override fun getOtherPresenter() = presenter
+    override fun getDocsPresenter() = presenter
 
     init {
         App.getApp().appComponent.inject(this)
@@ -39,19 +39,19 @@ open class DocsOneDriveFragment : BaseStorageDocsFragment() {
             onRefresh()
         } else if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let {
+                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
                     if(data.getBooleanExtra(KEY_MODIFIED, false)) {
                         presenter.upload(
-                            it,
+                            uri,
                             null,
                             KEY_UPDATE
                         )
                     }
                 }
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let {
+                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let { clipData ->
                     presenter.upload(
                         null,
-                        it,
+                        clipData,
                         KEY_UPLOAD)
                 }.run {
                     presenter.upload(data?.data, null, KEY_UPLOAD)

@@ -52,7 +52,7 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     private var api: IDropboxServiceProvider = App.getApp().getDropboxComponent()
-    private val workManager = WorkManager.getInstance(App.getApp())
+    private val workManager = WorkManager.getInstance(App.getApp().applicationContext)
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
@@ -362,13 +362,16 @@ class DropboxFileProvider : BaseFileProvider {
     override fun fileInfo(item: Item?): Observable<CloudFile> {
         return Observable.create { emitter: ObservableEmitter<CloudFile> ->
             val outputFile = item?.let { checkDirectory(it) }
-            if (outputFile != null && outputFile.exists()) {
-                if (item is CloudFile) {
-                    if (item.pureContentLength != outputFile.length()) {
-                        download(emitter, item, outputFile)
-                    } else {
-                        setFile(item, outputFile).let { emitter.onNext(it) }
-                        emitter.onComplete()
+
+            outputFile?.let {
+                if(it.exists()) {
+                    if (item is CloudFile) {
+                        if (item.pureContentLength != outputFile.length()) {
+                            download(emitter, item, outputFile)
+                        } else {
+                            setFile(item, outputFile).let { file -> emitter.onNext(file) }
+                            emitter.onComplete()
+                        }
                     }
                 }
             }
@@ -378,7 +381,7 @@ class DropboxFileProvider : BaseFileProvider {
     private fun sortExplorer(explorer: Explorer, filter: Map<String, String>?): Explorer {
         val folders = explorer.folders
         val files = explorer.files
-        if (filter != null) {
+        filter?.let {
             val sort = filter[ApiContract.Parameters.ARG_SORT_BY]
             val order = filter[ApiContract.Parameters.ARG_SORT_ORDER]
             if (sort != null && order != null) {

@@ -41,7 +41,7 @@ class GoogleDriveSignInFragment: BaseStorageSignInFragment(){
     inner class WebViewCallbacks : WebViewClient() {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
-            if (url.startsWith(redirectUrl!!)) {
+            if (url.startsWith(redirectUrl.toString())) {
                 val parametersMap = StringUtils.getParametersFromUrl(url.split("#")[1])
                 parametersMap[TAG_ACCESS_TOKEN]?.let { presenter.getUserInfo(it) }
             }

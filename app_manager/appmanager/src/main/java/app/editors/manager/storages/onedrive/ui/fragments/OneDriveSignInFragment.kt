@@ -36,7 +36,7 @@ class OneDriveSignInFragment : BaseStorageSignInFragment() {
     inner class WebViewCallbacks : WebViewClient() {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
-            if (url.startsWith(redirectUrl!!)) {
+            if (redirectUrl?.let { url.startsWith(it) } == true) {
                 val parametersMap = StringUtils.getParametersFromUrl(url.split("?")[1])
                 parametersMap[TAG_CODE]?.let { presenter.getToken(it) }
             }

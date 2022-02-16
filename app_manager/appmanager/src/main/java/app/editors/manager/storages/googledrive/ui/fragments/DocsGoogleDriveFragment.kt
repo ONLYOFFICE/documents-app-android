@@ -26,7 +26,7 @@ open class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
     @InjectPresenter
     override lateinit var presenter: DocsGoogleDrivePresenter
 
-    override fun getOtherPresenter() = presenter
+    override fun getDocsPresenter() = presenter
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -38,19 +38,19 @@ open class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
                 BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
                     onRefresh()
                 }
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let {
+                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
                     if(data.getBooleanExtra(KEY_MODIFIED, false)) {
                         presenter.upload(
-                            it,
+                            uri,
                             null,
                             KEY_UPDATE
                         )
                     }
                 }
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let {
+                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let { clipData ->
                     presenter.upload(
                         null,
-                        it,
+                        clipData,
                         KEY_UPLOAD
                     )
                 }.run {

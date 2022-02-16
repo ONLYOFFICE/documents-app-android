@@ -44,17 +44,17 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
 
         when(tag) {
             BaseStorageDocsFragment.KEY_UPLOAD -> {
-                fileName = file?.name!!
+                fileName = file?.name.toString()
             }
             BaseStorageDocsFragment.KEY_UPDATE -> {
-                fileName = path?.let { FileUtils.getFileName(it, true) }!!
+                fileName = path?.let { FileUtils.getFileName(it, true) }.toString()
             }
         }
 
         val request = UploadRequest()
-        val response = folderId?.let {
+        val response = folderId?.let { folderId ->
             applicationContext.getOneDriveServiceProvider().uploadFile(
-                it, fileName,
+                folderId, fileName,
                 when (tag) {
                     BaseStorageDocsFragment.KEY_UPLOAD -> request.copy(
                         item = app.editors.manager.storages.onedrive.mvp.models.other.Item(

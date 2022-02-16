@@ -110,9 +110,9 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             StorageUtils.ARG_REDIRECT_URI to Constants.OneDrive.COM_REDIRECT_URL,
             StorageUtils.OneDrive.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_REFRESH,
             StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.OneDrive.COM_CLIENT_SECRET,
-            StorageUtils.OneDrive.ARG_REFRESH_TOKEN to accData.refreshToken!!
+            StorageUtils.OneDrive.ARG_REFRESH_TOKEN to accData.refreshToken
         )
-        disposable.add(App.getApp().oneDriveAuthService.getToken(map)
+        disposable.add(App.getApp().oneDriveAuthService.getToken(map as Map<String, String>)
             .subscribe {oneDriveResponse ->
                 when(oneDriveResponse) {
                     is OneDriveResponse.Success -> {
@@ -144,33 +144,42 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     override fun getNextList() {
         val id = modelExplorerStack?.currentId
         val loadPosition = modelExplorerStack?.loadPosition ?: 0
-        if (id != null && loadPosition > 0) {
-            val args = getArgs(filteringValue).toMutableMap()
-            args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
-            fileProvider?.let { provider ->
-                disposable.add(provider.getFiles(id, args).subscribe({ explorer: Explorer? ->
-                    modelExplorerStack?.addOnNext(explorer)
-                    val last = modelExplorerStack?.last()
-                    if (last != null) {
-                        viewState.onDocsNext(getListWithHeaders(last, true))
-                    }
-                }) { throwable: Throwable -> fetchError(throwable) })
+
+        id?.let {
+            if(loadPosition > 0) {
+                val args = getArgs(filteringValue).toMutableMap()
+                args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
+                fileProvider?.let { provider ->
+                    disposable.add(provider.getFiles(id, args).subscribe({ explorer: Explorer? ->
+                        modelExplorerStack?.addOnNext(explorer)
+                        val last = modelExplorerStack?.last()
+
+                        last?.let {
+                            viewState.onDocsNext(getListWithHeaders(it, true))
+                        }
+
+                    }) { throwable: Throwable -> fetchError(throwable) })
+                }
             }
         }
     }
 
     override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            val extension = file.fileExst
-            if (StringUtils.isImage(extension)) {
-                addRecent(file)
-                return
+
+        itemClicked?.let {
+            if(it is CloudFile) {
+                val file = itemClicked as CloudFile
+                val extension = file.fileExst
+                if (StringUtils.isImage(extension)) {
+                    addRecent(file)
+                    return
+                }
             }
         }
+
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         fileProvider?.let { provider ->
-            downloadDisposable = provider.fileInfo(itemClicked!!)
+            downloadDisposable = provider.fileInfo(itemClicked)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -187,12 +196,14 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         val uploadUris = mutableListOf<Uri>()
         var index = 0
 
-        if(uri != null) {
+        uri?.let {
             uploadUris.add(uri)
-        } else if(uris != null) {
-            while(index != uris.itemCount) {
-                uploadUris.add(uris.getItemAt(index).uri)
-                index++
+        } ?: run {
+            uris?.let {
+                while(index != uris.itemCount) {
+                    uploadUris.add(uris.getItemAt(index).uri)
+                    index++
+                }
             }
         }
 

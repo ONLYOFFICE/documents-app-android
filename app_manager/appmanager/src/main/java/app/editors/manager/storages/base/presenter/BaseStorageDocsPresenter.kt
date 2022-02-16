@@ -37,8 +37,8 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
 
     val workManager = WorkManager.getInstance(App.getApp())
 
-    val uploadReceiver: UploadReceiver
-    val downloadReceiver: DownloadReceiver
+    private val uploadReceiver: UploadReceiver
+    private val downloadReceiver: DownloadReceiver
 
     init {
         modelExplorerStack = ModelExplorerStack()
