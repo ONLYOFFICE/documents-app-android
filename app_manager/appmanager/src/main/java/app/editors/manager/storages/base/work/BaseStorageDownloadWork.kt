@@ -10,7 +10,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import lib.toolkit.base.managers.utils.FileUtils
 
 open class BaseStorageDownloadWork(context: Context, workerParameters: WorkerParameters): Worker(context, workerParameters) {
@@ -25,7 +25,7 @@ open class BaseStorageDownloadWork(context: Context, workerParameters: WorkerPar
     }
 
 
-    protected val notificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)
+    protected val notificationUtils: NotificationUtils = NotificationUtils(applicationContext, TAG)
     protected var file: DocumentFile? = null
     protected var id: String? = null
     protected var to: Uri? = null

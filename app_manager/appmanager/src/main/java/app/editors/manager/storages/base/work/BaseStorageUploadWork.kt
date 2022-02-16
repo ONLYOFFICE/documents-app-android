@@ -9,7 +9,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import lib.toolkit.base.managers.utils.FileUtils
 
@@ -23,7 +23,7 @@ open class BaseStorageUploadWork(context: Context, workerParams: WorkerParameter
         const val KEY_TAG = "KEY_TAG"
     }
 
-    protected val mNotificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)
+    protected val mNotificationUtils: NotificationUtils = NotificationUtils(applicationContext, TAG)
     protected var tag: String? = null
     protected var path: String? = null
     protected var folderId: String? = null
