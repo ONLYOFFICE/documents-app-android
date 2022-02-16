@@ -1,19 +1,14 @@
-package app.editors.manager.googledrive.managers.works
+package app.editors.manager.storages.googledrive.managers.works
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.work.Data
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.getGoogleDriveServiceProvider
 import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemRequest
-import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.managers.utils.NotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.work.BaseStorageUploadWork

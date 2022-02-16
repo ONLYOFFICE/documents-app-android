@@ -1,17 +1,12 @@
 package app.editors.manager.storages.onedrive.managers.works
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.getOneDriveServiceProvider
 import app.editors.manager.storages.onedrive.onedrive.OneDriveResponse
-import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.managers.utils.NewNotificationUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
@@ -19,7 +14,6 @@ import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.mvp.models.request.UploadRequest
 import app.editors.manager.storages.onedrive.mvp.models.response.UploadResponse
-import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import java.io.DataOutputStream
