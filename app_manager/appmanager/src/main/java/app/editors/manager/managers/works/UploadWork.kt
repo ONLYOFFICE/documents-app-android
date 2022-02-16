@@ -10,7 +10,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.retrofit.ProgressRequestBody
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.UploadFile
 import app.editors.manager.mvp.models.response.ResponseFile
@@ -55,7 +55,8 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         }
     }
 
-    private val mNotificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)
+    private val mNotificationUtils: NotificationUtils =
+        NotificationUtils(applicationContext, TAG)
     private var action: String? = null
     private var path: String? = null
     private var folderId: String? = null

@@ -1,7 +1,7 @@
 package app.editors.manager.managers.services
 
 import android.app.PendingIntent
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import lib.toolkit.base.managers.utils.ActivitiesUtils
@@ -22,7 +22,8 @@ class MessageService : FirebaseMessagingService() {
                         ActivitiesUtils.getBrowserIntent(url),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
                     )
-                val utils = NewNotificationUtils(applicationContext, MessageService::class.java.simpleName)
+                val utils =
+                    NotificationUtils(applicationContext, MessageService::class.java.simpleName)
                 utils.show(
                     notification.hashCode(),
                     utils.getNotification(notification.title, null, notification.body).setContentIntent(contentIntent)

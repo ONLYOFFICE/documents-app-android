@@ -1,4 +1,4 @@
-package app.editors.manager.storages.googledrive.managers.works
+package app.editors.manager.googledrive.managers.works
 
 import android.content.Context
 import android.content.Intent
@@ -13,7 +13,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.getGoogleDriveServiceProvider
 import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.work.BaseStorageUploadWork

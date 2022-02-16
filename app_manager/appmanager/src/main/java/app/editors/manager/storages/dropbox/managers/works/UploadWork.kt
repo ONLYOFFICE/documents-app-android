@@ -1,6 +1,7 @@
 package app.editors.manager.storages.dropbox.managers.works
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.WorkerParameters
@@ -130,5 +131,48 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
             }
         }
         return requestBody
+    }
+
+    private fun showProgress(total: Long, progress: Long) {
+        val deltaTime = System.currentTimeMillis() - timeMark
+        if (deltaTime > FileUtils.LOAD_PROGRESS_UPDATE) {
+            timeMark = System.currentTimeMillis()
+            val percent = FileUtils.getPercentOfLoading(total, progress)
+            val id = id.hashCode()
+            val tag = getId().toString()
+            mNotificationUtils.showUploadProgressNotification(id, tag, title!!, percent)
+            sendBroadcastProgress(percent, path, folderId)
+        }
+    }
+
+    private fun sendBroadcastUnknownError(title: String, uploadFile: String?) {
+        val intent = Intent(UploadReceiver.UPLOAD_ACTION_ERROR)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_FILE, uploadFile)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_TITLE, title)
+        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
+    }
+
+    private fun sendBroadcastUploadComplete(path: String?, title: String, file: CloudFile, id: String?) {
+        val intent = Intent(UploadReceiver.UPLOAD_ACTION_COMPLETE)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_PATH, path)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_ID, id)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_TITLE, title)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_FILE, file)
+        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
+    }
+
+    private fun sendBroadcastUploadCanceled(path: String?) {
+        val intent = Intent(UploadReceiver.UPLOAD_ACTION_CANCELED)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_PATH, path)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_ID, path)
+        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
+    }
+
+    private fun sendBroadcastProgress(progress: Int, file: String?, folderId: String?) {
+        val intent = Intent(UploadReceiver.UPLOAD_ACTION_PROGRESS)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_FILE, file)
+        intent.putExtra(UploadReceiver.EXTRAS_FOLDER_ID, folderId)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_PROGRESS, progress)
+        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 }
