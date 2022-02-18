@@ -93,21 +93,10 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun download(downloadTo: Uri) {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
-        if (modelExplorerStack?.countSelectedItems == 0) {
-            startDownload(downloadTo, itemClicked)
-        } else {
-            val itemList =  modelExplorerStack?.selectedFiles!! + modelExplorerStack?.selectedFolders!!
-            itemList.forEach { item ->
-                val fileName = if (item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
-                val doc = DocumentFile.fromTreeUri(context, downloadTo)?.createFile(
-                    StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName
-                )
-                doc?.uri?.let { uri -> startDownload(uri, item) }
-            }
-        }
+        super.download(downloadTo)
     }
 
-    private fun startDownload(downloadTo: Uri, item: Item?) {
+    override fun startDownload(downloadTo: Uri, item: Item?) {
         val data = Data.Builder()
             .putString(BaseStorageDownloadWork.FILE_ID_KEY, item?.id)
             .putString(BaseStorageDownloadWork.FILE_URI_KEY, downloadTo.toString())

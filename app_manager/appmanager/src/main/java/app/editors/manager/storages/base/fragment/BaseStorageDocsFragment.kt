@@ -1,5 +1,6 @@
 package app.editors.manager.storages.base.fragment
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -15,6 +16,7 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.ui.activities.base.BaseActivity
 
 abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment, BaseStorageDocsView {
 
@@ -24,6 +26,8 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         const val KEY_UPDATE = "KEY_UPDATE"
         const val KEY_CREATE = "KEY_CREATE"
         const val KEY_MODIFIED = "EXTRA_IS_MODIFIED"
+
+        const val REQUEST_MULTIPLE_FILES_DOWNLOAD = 11000023
     }
 
     var account: CloudAccount? = null
@@ -126,6 +130,17 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
             downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(true)
             restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
             setAccountEnable(false)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                REQUEST_MULTIPLE_FILES_DOWNLOAD -> {
+                    data?.data?.let { presenter.download(it) }
+                }
+            }
         }
     }
 

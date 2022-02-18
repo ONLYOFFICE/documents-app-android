@@ -40,6 +40,12 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     private val uploadReceiver: UploadReceiver
     private val downloadReceiver: DownloadReceiver
 
+    companion object {
+        const val DOWNLOAD_ZIP_NAME =  "storage.zip"
+    }
+
+    abstract fun startDownload(downloadTo: Uri, item: Item?)
+
     init {
         modelExplorerStack = ModelExplorerStack()
         filteringValue = ""
@@ -72,12 +78,27 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     override fun createDownloadFile() {
         if (modelExplorerStack?.countSelectedItems!! == 0) {
             if (itemClicked is CloudFolder) {
-                viewState.onCreateDownloadFile(app.editors.manager.storages.dropbox.managers.works.DownloadWork.DOWNLOAD_ZIP_NAME)
+                viewState.onCreateDownloadFile(DOWNLOAD_ZIP_NAME)
             } else if (itemClicked is CloudFile) {
                 viewState.onCreateDownloadFile((itemClicked as CloudFile).title)
             }
         } else {
             viewState.onChooseDownloadFolder()
+        }
+    }
+
+    override fun download(downloadTo: Uri) {
+        if (modelExplorerStack?.countSelectedItems == 0) {
+            startDownload(downloadTo, itemClicked)
+        } else {
+            val itemList =  modelExplorerStack?.selectedFiles!! + modelExplorerStack?.selectedFolders!!
+            itemList.forEach { item ->
+                val fileName = if (item is CloudFile) item.title else DOWNLOAD_ZIP_NAME
+                val doc = DocumentFile.fromTreeUri(context, downloadTo)?.createFile(
+                    StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName
+                )
+                doc?.uri?.let { uri -> startDownload(uri, item) }
+            }
         }
     }
 
@@ -194,6 +215,10 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     $title
     """.trimIndent(), context.getString(R.string.download_manager_open)
         ) { showDownloadFolderActivity(uri) }
+        if(isSelectionMode) {
+            setSelection(false)
+            updateViewsState()
+        }
     }
 
     override fun onDownloadCanceled(id: String?, info: String?) {

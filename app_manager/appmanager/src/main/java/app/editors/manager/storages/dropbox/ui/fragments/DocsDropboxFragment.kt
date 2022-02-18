@@ -31,9 +31,6 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
-                REQUEST_MULTIPLE_FILES_DOWNLOAD -> {
-                    data?.data?.let { presenter.download(it) }
-                }
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
                     if(data.getBooleanExtra(KEY_MODIFIED, false)) {
                         presenter.upload(

@@ -32,9 +32,6 @@ open class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
-                REQUEST_MULTIPLE_FILES_DOWNLOAD -> {
-                    data?.data?.let { presenter.download(it) }
-                }
                 BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
                     onRefresh()
                 }

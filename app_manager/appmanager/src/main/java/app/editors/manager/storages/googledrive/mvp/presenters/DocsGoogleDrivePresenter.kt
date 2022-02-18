@@ -171,20 +171,7 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
             ) { throwable: Throwable -> fetchError(throwable) }
     }
 
-    override fun download(downloadTo: Uri) {
-        if(modelExplorerStack?.countSelectedItems == 0) {
-            startDownload(downloadTo, itemClicked)
-        } else {
-            val itemList: MutableList<Item> = (modelExplorerStack?.selectedFiles!! + modelExplorerStack?.selectedFolders!!).toMutableList()
-            itemList.forEach { item ->
-                val fileName = if(item is CloudFile) item.title else DownloadWork.DOWNLOAD_ZIP_NAME
-                val doc = DocumentFile.fromTreeUri(context, downloadTo)?.createFile(StringUtils.getMimeTypeFromExtension(fileName.substring(fileName.lastIndexOf("."))), fileName)
-                startDownload(doc?.uri!!, item)
-            }
-        }
-    }
-
-    private fun startDownload(downloadTo: Uri, item: Item?) {
+    override fun startDownload(downloadTo: Uri, item: Item?) {
         val data = Data.Builder()
             .putString(BaseStorageDownloadWork.FILE_ID_KEY, item?.id)
             .putString(BaseStorageDownloadWork.FILE_URI_KEY, downloadTo.toString())

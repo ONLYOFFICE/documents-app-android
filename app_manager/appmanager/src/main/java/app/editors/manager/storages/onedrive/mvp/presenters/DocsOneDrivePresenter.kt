@@ -128,9 +128,9 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             })
     }
 
-    override fun download(downloadTo: Uri) {
+    override fun startDownload(downloadTo: Uri, item: Item?) {
         val data = Data.Builder()
-            .putString(BaseStorageDownloadWork.FILE_ID_KEY, itemClicked?.id)
+            .putString(BaseStorageDownloadWork.FILE_ID_KEY, item?.id)
             .putString(BaseStorageDownloadWork.FILE_URI_KEY, downloadTo.toString())
             .build()
 
