@@ -272,4 +272,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             }
         }
     }
+
+    fun isFoldersInSelection(): Boolean = modelExplorerStack?.selectedFolders?.isEmpty() == true
+
 }
