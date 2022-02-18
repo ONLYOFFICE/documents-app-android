@@ -24,7 +24,7 @@ import app.editors.manager.storages.onedrive.managers.works.DownloadWork
 import app.editors.manager.storages.onedrive.managers.works.UploadWork
 import app.editors.manager.storages.onedrive.mvp.models.request.ExternalLinkRequest
 import app.editors.manager.storages.onedrive.mvp.models.response.AuthResponse
-import app.editors.manager.storages.onedrive.onedrive.OneDriveResponse
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

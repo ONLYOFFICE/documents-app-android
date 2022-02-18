@@ -3,7 +3,7 @@ package app.editors.manager.storages.onedrive.di.component
 import app.editors.manager.di.component.AppComponent
 import app.editors.manager.di.module.OneDriveModule
 import app.editors.manager.di.module.OneDriveScope
-import app.editors.manager.storages.onedrive.onedrive.IOneDriveServiceProvider
+import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
 import dagger.Component
 
 

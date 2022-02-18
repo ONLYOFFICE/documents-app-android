@@ -1,6 +1,6 @@
 package app.editors.manager.storages.onedrive.onedrive.authorization
 
-import app.editors.manager.storages.onedrive.onedrive.OneDriveResponse
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

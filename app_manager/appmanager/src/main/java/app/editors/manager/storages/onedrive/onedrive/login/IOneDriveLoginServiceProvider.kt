@@ -1,6 +1,6 @@
 package app.editors.manager.storages.onedrive.onedrive.login
 
-import app.editors.manager.storages.onedrive.onedrive.OneDriveResponse
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import io.reactivex.Single
 
 interface IOneDriveLoginServiceProvider {

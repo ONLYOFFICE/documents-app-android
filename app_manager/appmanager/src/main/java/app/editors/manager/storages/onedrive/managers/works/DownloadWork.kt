@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.work.WorkerParameters
 import app.editors.manager.app.getOneDriveServiceProvider
-import app.editors.manager.storages.onedrive.onedrive.OneDriveResponse
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import app.editors.manager.storages.base.work.BaseStorageDownloadWork
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils

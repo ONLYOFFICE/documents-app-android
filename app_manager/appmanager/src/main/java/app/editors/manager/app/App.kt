@@ -23,7 +23,7 @@ import app.editors.manager.storages.googledrive.googledrive.api.IGoogleDriveServ
 import app.editors.manager.storages.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
 import app.editors.manager.managers.utils.KeyStoreUtils
 import app.editors.manager.storages.onedrive.di.component.DaggerOneDriveComponent
-import app.editors.manager.storages.onedrive.onedrive.IOneDriveServiceProvider
+import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
 import app.editors.manager.storages.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
 import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import com.google.firebase.FirebaseApp

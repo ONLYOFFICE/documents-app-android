@@ -1,4 +1,4 @@
-package app.editors.manager.storages.onedrive.onedrive
+package app.editors.manager.storages.onedrive.onedrive.api
 
 import app.documents.core.network.ApiContract
 import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemCloudTree

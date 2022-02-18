@@ -10,7 +10,7 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.managers.providers.BaseFileProvider
-import app.editors.manager.storages.onedrive.onedrive.OneDriveResponse
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.request.RequestCreate
@@ -28,7 +28,7 @@ import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemParent
 import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemValue
 import app.editors.manager.storages.onedrive.mvp.models.request.*
 import app.editors.manager.storages.onedrive.mvp.models.response.ExternalLinkResponse
-import app.editors.manager.storages.onedrive.onedrive.IOneDriveServiceProvider
+import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

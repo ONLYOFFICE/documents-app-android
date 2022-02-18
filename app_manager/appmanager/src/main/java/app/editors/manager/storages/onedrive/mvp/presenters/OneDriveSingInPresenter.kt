@@ -1,28 +1,19 @@
 package app.editors.manager.storages.onedrive.mvp.presenters
 
-import android.accounts.Account
 import app.documents.core.account.CloudAccount
 import app.editors.manager.app.App
 import app.editors.manager.app.oneDriveAuthService
 import app.editors.manager.app.oneDriveLoginService
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.StorageUtils
-import app.editors.manager.storages.onedrive.onedrive.OneDriveResponse
-import app.editors.manager.mvp.presenters.base.BasePresenter
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import app.editors.manager.storages.base.presenter.BaseStorageSignInPresenter
 import app.editors.manager.storages.base.view.BaseStorageSignInView
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.mvp.models.response.AuthResponse
-import app.editors.manager.storages.onedrive.mvp.views.OneDriveSignInView
 import app.editors.manager.storages.onedrive.mvp.models.user.User
-import app.editors.manager.storages.onedrive.onedrive.OneDriveService
-import io.reactivex.disposables.Disposable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveService
 import lib.toolkit.base.managers.utils.AccountData
-import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
 
 @InjectViewState

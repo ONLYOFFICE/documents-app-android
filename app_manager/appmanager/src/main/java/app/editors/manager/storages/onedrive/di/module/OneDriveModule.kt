@@ -2,10 +2,10 @@ package app.editors.manager.di.module
 
 import android.content.Context
 import app.documents.core.account.CloudAccount
-import app.editors.manager.storages.onedrive.onedrive.OneDriveService
-import app.editors.manager.storages.onedrive.onedrive.IOneDriveServiceProvider
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveService
+import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
 import app.editors.manager.managers.retrofit.BaseInterceptor
-import app.editors.manager.storages.onedrive.onedrive.OneDriveServiceProvider
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveServiceProvider
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides

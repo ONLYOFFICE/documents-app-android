@@ -6,7 +6,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.getOneDriveServiceProvider
-import app.editors.manager.storages.onedrive.onedrive.OneDriveResponse
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
