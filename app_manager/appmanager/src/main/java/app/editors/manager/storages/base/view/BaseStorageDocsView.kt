@@ -9,4 +9,5 @@ import moxy.viewstate.strategy.StateStrategyType
 interface BaseStorageDocsView: DocsBaseView {
     fun onFileWebView(file: CloudFile)
     fun onChooseDownloadFolder()
+    fun onRefreshToken()
 }

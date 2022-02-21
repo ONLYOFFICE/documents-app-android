@@ -45,6 +45,7 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     }
 
     abstract fun startDownload(downloadTo: Uri, item: Item?)
+    abstract fun refreshToken()
 
     init {
         modelExplorerStack = ModelExplorerStack()

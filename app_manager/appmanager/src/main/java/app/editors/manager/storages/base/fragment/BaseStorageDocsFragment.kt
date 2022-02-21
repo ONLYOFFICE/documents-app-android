@@ -165,7 +165,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override fun onError(message: String?) {
         when(message) {
             context?.getString(R.string.errors_client_unauthorized) -> {
-                //presenter.refreshToken()
+                presenter.refreshToken()
             }
             else -> {
                 message?.let { showSnackBar(it) }

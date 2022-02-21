@@ -3,6 +3,9 @@ package app.editors.manager.storages.dropbox.ui.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import app.documents.core.network.ApiContract
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.dropbox.mvp.presenters.DocsDropboxPresenter
@@ -57,5 +60,13 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
     }
 
     override fun getDocsPresenter() = presenter
+    override fun onRefreshToken() {
+        val storage = Storage(
+            ApiContract.Storage.DROPBOX,
+            Constants.DropBox.COM_CLIENT_ID,
+            Constants.DropBox.COM_REDIRECT_URL
+        )
+        showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
+    }
 
 }

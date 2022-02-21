@@ -63,18 +63,6 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
         }
     }
 
-    override fun onError(message: String?) {
-        when(message) {
-            context?.getString(R.string.errors_client_unauthorized) -> {
-                presenter.refreshToken()
-            }
-            else -> {
-                message?.let { showSnackBar(it) }
-            }
-        }
-
-    }
-
     override fun onStateUpdateSelection(isSelection: Boolean) {
         super.onStateUpdateSelection(isSelection)
         downloadItem = if(presenter.isFoldersInSelection()) {
@@ -82,6 +70,10 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
         } else {
             menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
         }
+    }
+
+    override fun onRefreshToken() {
+        //stub
     }
 
 }

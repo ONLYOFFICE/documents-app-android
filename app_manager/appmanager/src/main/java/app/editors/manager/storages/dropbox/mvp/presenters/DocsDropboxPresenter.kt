@@ -266,4 +266,8 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         networkSettings.setBaseUrl(baseUrl)
         (fileProvider as DropboxFileProvider).refreshInstance()
     }
+
+    override fun refreshToken() {
+        viewState.onRefreshToken()
+    }
 }

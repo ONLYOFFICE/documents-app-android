@@ -294,4 +294,8 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
     override fun onItemId(itemId: String) {
         itemClicked?.id = itemId
     }
+
+    override fun refreshToken() {
+        viewState.onRefreshToken()
+    }
 }

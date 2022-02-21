@@ -101,7 +101,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         }
     }
 
-    fun refreshToken() {
+    override fun refreshToken() {
         val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
         val accData = AccountUtils.getAccountData(context, account)
         val map = mapOf(

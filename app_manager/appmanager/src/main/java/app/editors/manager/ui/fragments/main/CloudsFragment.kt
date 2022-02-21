@@ -120,7 +120,7 @@ class CloudsFragment : BaseAppFragment() {
                 Constants.Google.COM_CLIENT_ID,
                 Constants.Google.COM_REDIRECT_URL
             )
-            showFragment(GoogleDriveSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
+            showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
         }
 
         viewBinding?.cloudsItemYandex?.isVisible = false
