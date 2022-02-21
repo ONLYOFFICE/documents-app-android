@@ -14,7 +14,7 @@ import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
-open class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
+class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
 
     companion object {
         val TAG = DocsGoogleDriveFragment::class.java.simpleName
