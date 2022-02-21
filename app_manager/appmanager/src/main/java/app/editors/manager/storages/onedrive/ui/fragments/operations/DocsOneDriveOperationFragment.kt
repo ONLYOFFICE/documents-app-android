@@ -36,6 +36,10 @@ class DocsOneDriveOperationFragment: BaseStorageOperationsFragment() {
 
     override fun getOperationsPresenter() = presenter
 
+    override fun onRefreshToken() {
+        //stub
+    }
+
     init {
         App.getApp().appComponent.inject(this)
     }
