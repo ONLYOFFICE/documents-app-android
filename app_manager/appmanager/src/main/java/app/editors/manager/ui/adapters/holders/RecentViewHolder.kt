@@ -4,7 +4,7 @@ import android.view.View
 import app.documents.core.account.Recent
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.ui.RecentUI
 import app.editors.manager.mvp.models.ui.toRecent
@@ -37,8 +37,8 @@ class RecentViewHolder(
                 listExplorerFileContext.setOnClickListener {
                     contextListener?.invoke(item.toRecent(), absoluteAdapterPosition)
                 }
-                ManagerUiUtils.setFileIcon(viewIconSelectableLayout.viewIconSelectableImage,
-                    getExtensionFromPath(item.name.lowercase(Locale.ROOT)))
+                viewIconSelectableLayout.viewIconSelectableImage
+                    .setFileIcon(getExtensionFromPath(item.name.lowercase(Locale.ROOT)))
             }
         }
     }
