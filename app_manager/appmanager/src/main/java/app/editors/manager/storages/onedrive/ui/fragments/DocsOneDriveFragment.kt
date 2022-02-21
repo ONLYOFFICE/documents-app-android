@@ -77,10 +77,10 @@ open class DocsOneDriveFragment : BaseStorageDocsFragment() {
 
     override fun onStateUpdateSelection(isSelection: Boolean) {
         super.onStateUpdateSelection(isSelection)
-        if(presenter.isFoldersInSelection()) {
-            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(true)
+        downloadItem = if(presenter.isFoldersInSelection()) {
+            menu?.findItem(R.id.toolbar_selection_download)?.setVisible(true)
         } else {
-            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
+            menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
         }
     }
 
