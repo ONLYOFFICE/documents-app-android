@@ -259,13 +259,24 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         if (isRepeatedTap) {
             reverseSortOrder()
         }
-        getItemsById(modelExplorerStack?.currentId)
+        if(!isFilteringMode) {
+            getItemsById(modelExplorerStack?.currentId)
+        } else {
+            loadSuccess(modelExplorerStack?.last()
+                ?.let { explorer ->  (fileProvider as LocalFileProvider).sortExplorer(explorer, getArgs(null)) })
+        }
         return true
     }
 
     override fun orderBy(value: String): Boolean {
         preferenceTool.sortOrder = value
-        getItemsById(modelExplorerStack?.currentId)
+
+        if(!isFilteringMode) {
+            getItemsById(modelExplorerStack?.currentId)
+        } else {
+            loadSuccess(modelExplorerStack?.last()
+                ?.let { explorer -> (fileProvider as LocalFileProvider).sortExplorer(explorer, getArgs(null)) })
+        }
         return true
     }
 
