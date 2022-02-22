@@ -64,7 +64,7 @@ class AddPresenter : BasePresenter<AddView>() {
         disposable = shareApi.getUsers()
             .subscribeOn(Schedulers.io())
             .map { response ->
-                response.response.filter { it.id != account.id }.map {
+                response.response.filter { it.id != account.id && it.id != item?.createdBy?.id }.map {
                     UserUi(it.id, it.department, it.displayName, it.avatarMedium)
                 }
             }
