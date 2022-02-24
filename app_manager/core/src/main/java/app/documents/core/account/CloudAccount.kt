@@ -31,23 +31,71 @@ data class CloudAccount(
 ) {
 
     var token: String = ""
-        set(value) {
-            field = CryptUtils.encryptAES128(value, id) ?: ""
-        }
 
     var password: String = ""
-        set(value) {
-            field = CryptUtils.encryptAES128(value, id) ?: ""
-        }
 
     var expires: String = ""
 
     fun getAccountName() = "$login@$portal"
 
-    fun isPersonal() = portal?.contains(ApiContract.PERSONAL_SUBDOMAIN) ?: false
+    fun isPersonal() = portal?.contains(ApiContract.PERSONAL_HOST) == true || portal?.contains(ApiContract.PERSONAL_INFO_HOST) == true
+
+    fun setCryptToken(value: String) {
+        token = CryptUtils.encryptAES128(value, id) ?: ""
+    }
+
+    fun setCryptPassword(value: String) {
+        password = CryptUtils.encryptAES128(value, id) ?: ""
+    }
 
     fun getDecryptToken() = CryptUtils.decryptAES128(token, id)
 
     fun getDecryptPassword() = CryptUtils.decryptAES128(password, id)
 
+}
+
+fun CloudAccount.copyWithToken(
+    id: String = this.id,
+    login: String? = this.login,
+    portal: String? = this.portal,
+    serverVersion: String = this.serverVersion,
+    scheme: String? = this.scheme,
+    name: String? = this.name,
+    provider: String? = this.provider,
+    avatarUrl: String? = this.avatarUrl,
+    isSslCiphers: Boolean = this.isSslCiphers,
+    isSslState: Boolean = this.isSslState,
+    isOnline: Boolean = this.isOnline,
+    isWebDav: Boolean = this.isWebDav,
+    isOneDrive: Boolean = this.isOneDrive,
+    isDropbox: Boolean = this.isDropbox,
+    webDavProvider: String? = this.webDavProvider,
+    webDavPath: String? = this.webDavPath,
+    isAdmin: Boolean = this.isAdmin,
+    isVisitor: Boolean = this.isVisitor
+): CloudAccount {
+    return CloudAccount(
+        id = id,
+        login = login,
+        portal = portal,
+        serverVersion = serverVersion,
+        scheme = scheme,
+        name = name,
+        provider = provider,
+        avatarUrl = avatarUrl,
+        isSslCiphers = isSslCiphers,
+        isSslState = isSslState,
+        isOnline = isOnline,
+        isWebDav = isWebDav,
+        isOneDrive = isOneDrive,
+        isDropbox = isDropbox,
+        webDavProvider = webDavProvider,
+        webDavPath = webDavPath,
+        isAdmin = isAdmin,
+        isVisitor = isVisitor
+    ).apply {
+        token = this@copyWithToken.token
+        password = this@copyWithToken.password
+        expires = this@copyWithToken.expires
+    }
 }

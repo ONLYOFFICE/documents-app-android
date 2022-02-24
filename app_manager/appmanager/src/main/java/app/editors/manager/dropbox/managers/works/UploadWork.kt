@@ -10,15 +10,13 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.getDropboxServiceProvider
 import app.editors.manager.dropbox.dropbox.login.DropboxResponse
+import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.dropbox.mvp.models.explorer.DropboxItem
-import app.editors.manager.dropbox.mvp.models.request.UploadRequest
 import app.editors.manager.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.retrofit.ProgressRequestBody
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
@@ -43,7 +41,8 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         const val MODE_OVERWRITE = "overwrite"
     }
 
-    private val mNotificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, app.editors.manager.managers.works.UploadWork.TAG)
+    private val mNotificationUtils: NotificationUtils =
+        NotificationUtils(applicationContext, app.editors.manager.managers.works.UploadWork.TAG)
     private var action: String? = null
     private var path: String? = null
     private var folderId: String? = null
@@ -64,27 +63,16 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
 
         path = from?.path
         title = ContentResolverUtils.getName(applicationContext, from ?: Uri.EMPTY)
-
         try {
-            val request = UploadRequest(
-                path = folderId?.trim() + title,
-                mode = MODE_ADD,
-                autorename = true,
-                mute = true,
-                strict_conflict = false
-            )
-            val response = when (action) {
-                DocsDropboxFragment.KEY_UPLOAD, DocsDropboxFragment.KEY_CREATE -> {
-                    api.upload(Json.encodeToString(request) ,createMultipartBody(from)).blockingGet()
+            val request = "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox(folderId?.trim() + title!!)}\",\"mode\":\"${
+                if (action == DocsDropboxFragment.KEY_UPLOAD || action == DocsDropboxFragment.KEY_CREATE) {
+                    MODE_ADD
+                } else {
+                    MODE_OVERWRITE
                 }
-                DocsDropboxFragment.KEY_UPDATE -> {
-                    api.upload(Json.encodeToString(request.copy(mode = MODE_OVERWRITE)) ,createMultipartBody(from)).blockingGet()
-                }
-                else -> {
-                    api.upload(Json.encodeToString(request) ,createMultipartBody(from)).blockingGet()
-                }
-            }
-            when(response) {
+            }\",\"autorename\":true,\"mute\":true,\"strict_conflict\":false}"
+
+            when(val response = api.upload(request, createMultipartBody(from)).blockingGet()) {
                 is DropboxResponse.Success -> {
                     mNotificationUtils.removeNotification(id.hashCode())
                     if(action == DocsDropboxFragment.KEY_UPLOAD) {
@@ -98,7 +86,9 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
                     }
                 }
                 is DropboxResponse.Error -> {
-                    mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                    if(action == DocsDropboxFragment.KEY_UPLOAD) {
+                        mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                    }
                     sendBroadcastUnknownError(title!!, path)
                     if (!NetworkUtils.isOnline(applicationContext)) {
                         return Result.retry()
@@ -110,7 +100,9 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
                 mNotificationUtils.showCanceledUploadNotification(id.hashCode(), title)
                 sendBroadcastUploadCanceled(path)
             } else {
-                mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                if(action == DocsDropboxFragment.KEY_UPLOAD) {
+                    mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                }
                 sendBroadcastUnknownError(title!!, path)
                 if (!NetworkUtils.isOnline(applicationContext)) {
                     return Result.retry()

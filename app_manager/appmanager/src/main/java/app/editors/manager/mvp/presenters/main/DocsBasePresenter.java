@@ -229,33 +229,14 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         setPlaceholderType(PlaceholderViews.Type.LOAD);
         final String id = mModelExplorerStack.getCurrentId();
         if (id != null) {
-            if(mFilteringValue.isEmpty()) {
-                mDisposable.add(mFileProvider.getFiles(id, getArgs(mFilteringValue))
-                        .subscribe(explorer -> {
-                            mModelExplorerStack.refreshStack(explorer);
-                            updateViewsState();
-                            getViewState().onDocsRefresh(getListWithHeaders(mModelExplorerStack.last(), true));
-                        }, this::fetchError));
-                getViewState().onSwipeEnable(true);
-                return true;
-            } else if(mIsFilteringMode && mFileProvider instanceof CloudFileProvider) {
-                mDisposable.add(((CloudFileProvider)mFileProvider).search(mFilteringValue)
-                        .subscribe(items -> {
-
-                            try {
-                                mModelExplorerStack.refreshStack(getSearchExplorer(items));
-                            } catch (JSONException e) {
-                                throw e;
-                            }
-
-                            setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
-                            updateViewsState();
-                            getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
-                        }, this::fetchError)
-                );
-                getViewState().onSwipeEnable(true);
-                return true;
-            }
+            mDisposable.add(mFileProvider.getFiles(id, getArgs(mFilteringValue))
+                    .subscribe(explorer -> {
+                        mModelExplorerStack.refreshStack(explorer);
+                        updateViewsState();
+                        getViewState().onDocsRefresh(getListWithHeaders(mModelExplorerStack.last(), true));
+                    }, this::fetchError));
+            getViewState().onSwipeEnable(true);
+            return true;
         }
 
         return false;
@@ -292,86 +273,18 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
             if (id != null) {
 
                 mFilteringValue = value;
-                if(!(mFileProvider instanceof CloudFileProvider) || App.getApp().getAppComponent().getAccountOnline().isPersonal()) {
-                    getSearchedFiles(id, value);
-                } else {
-                    if(!value.isEmpty()) {
-                        mDisposable.add(((CloudFileProvider) mFileProvider).search(value)
-                                .subscribe(items -> {
-
-                                    try {
-                                        mModelExplorerStack.setFilter(getSearchExplorer(items));
-                                    } catch (JSONException e) {
-                                        throw e;
-                                    }
-
-                                    setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
-                                    updateViewsState();
-                                    getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
-                                }, this::fetchError)
-                        );
-                    } else {
-                        getSearchedFiles(id, value);
-                    }
-                }
+                mDisposable.add(mFileProvider.getFiles(id, getArgs(value))
+                        .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
+                        .subscribe(explorer -> {
+                            mModelExplorerStack.setFilter(explorer);
+                            setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
+                            updateViewsState();
+                            getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
+                        }, this::fetchError));
             }
         }
 
         return false;
-    }
-
-    private void getSearchedFiles(String id, @NonNull final  String value) {
-        mDisposable.add(mFileProvider.getFiles(id, getArgs(value))
-                .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
-                .subscribe(explorer -> {
-                    mModelExplorerStack.setFilter(explorer);
-                    setPlaceholderType(mModelExplorerStack.isListEmpty() ? PlaceholderViews.Type.SEARCH : PlaceholderViews.Type.NONE);
-                    updateViewsState();
-                    getViewState().onDocsFilter(getListWithHeaders(mModelExplorerStack.last(), true));
-                }, this::fetchError));
-    }
-
-    private Explorer getSearchExplorer(String items) throws JSONException {
-        List<CloudFile> files = new ArrayList();
-        List<CloudFolder> folders = new ArrayList();
-
-        Explorer explorer = new Explorer();
-        explorer.setCurrent(mModelExplorerStack.last().getCurrent());
-
-        for(Item item : getSearchResult(items)) {
-            if(
-                    Integer.valueOf(item.getRootFolderType()) == mModelExplorerStack.getRootFolderType() &&
-                    item.getTitle().toLowerCase().contains(mFilteringValue)
-            ) {
-                if (item instanceof CloudFile) {
-                    files.add((CloudFile) item);
-                } else {
-                    folders.add((CloudFolder) item);
-                }
-            }
-        }
-        explorer.setFiles(files);
-        explorer.setFolders(folders);
-        return explorer;
-    }
-
-    private List<Item> getSearchResult(String response) throws JSONException {
-        final JSONObject jsonObjectResponse = StringUtils.getJsonObject(response);
-        if(jsonObjectResponse != null) {
-            String result = jsonObjectResponse.getString("response");
-            Gson gson = new Gson();
-            JsonArray jsonArrayItems = new JsonParser().parse(result).getAsJsonArray();
-            List<Item> items = new ArrayList();
-            for(JsonElement json: jsonArrayItems) {
-                if(json.toString().contains("parentId")) {
-                    items.add(gson.fromJson(json, CloudFolder.class));
-                } else {
-                    items.add(gson.fromJson(json, CloudFile.class));
-                }
-            }
-            return items;
-        }
-        return null;
     }
 
     public void filterWait(@NonNull final String value) {
@@ -921,10 +834,11 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         args.put(ApiContract.Parameters.ARG_SORT_BY, mPreferenceTool.getSortBy());
         args.put(ApiContract.Parameters.ARG_SORT_ORDER, mPreferenceTool.getSortOrder());
 
-        if (filteringValue != null) {
+        if (filteringValue != null && !filteringValue.isEmpty()) {
             args.put(ApiContract.Parameters.ARG_FILTER_BY, ApiContract.Parameters.VAL_FILTER_BY);
             args.put(ApiContract.Parameters.ARG_FILTER_OP, ApiContract.Parameters.VAL_FILTER_OP_CONTAINS);
             args.put(ApiContract.Parameters.ARG_FILTER_VALUE, filteringValue);
+            args.put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, ApiContract.Parameters.VAL_FILTER_SUBFOLDERS);
         }
 
         return args;
@@ -1685,13 +1599,13 @@ public abstract class DocsBasePresenter<View extends DocsBaseView> extends MvpPr
         List<CloudFolder> folders = explorer.getFolders();
         if (!files.isEmpty()) {
             for (CloudFile file : files) {
-                file.setAccess(0);
+                file.setAccess("0");
             }
             explorer.setFiles(files);
         }
         if (!folders.isEmpty()) {
             for (CloudFolder folder : folders) {
-                folder.setAccess(0);
+                folder.setAccess("0");
             }
             explorer.setFolders(folders);
         }

@@ -200,6 +200,10 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         showViewerActivity(file)
     }
 
+    fun setFileData(fileData: String) {
+        cloudPresenter.openFile(fileData)
+    }
+
     /*
      * On pager scroll callback
      * */

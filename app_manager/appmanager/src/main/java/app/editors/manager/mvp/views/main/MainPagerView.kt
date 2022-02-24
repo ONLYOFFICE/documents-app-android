@@ -15,4 +15,5 @@ interface MainPagerView : BaseView {
     fun onRender(stringAccount: String, sections: List<Explorer>?)
     fun onFinishRequest()
     fun setFileData(fileData: String)
+    fun onOpenProjectFileError(@StringRes res: Int)
 }

@@ -35,7 +35,7 @@ public class Current implements Cloneable, Serializable {
 
     @SerializedName("access")
     @Expose
-    private int access = ApiContract.ShareCode.NONE;
+    private String access = ApiContract.ShareType.NONE;
 
     @SerializedName("shared")
     @Expose
@@ -113,11 +113,11 @@ public class Current implements Cloneable, Serializable {
         this.title = title;
     }
 
-    public int getAccess() {
+    public String getAccess() {
         return access;
     }
 
-    public void setAccess(int access) {
+    public void setAccess(String access) {
         this.access = access;
     }
 
@@ -186,6 +186,15 @@ public class Current implements Cloneable, Serializable {
             return current;
         } catch (CloneNotSupportedException e) {
             return null;
+        }
+    }
+
+    public int getIntAccess() {
+        final String access = getAccess();
+        try {
+            return Integer.parseInt(access);
+        }catch (NumberFormatException error) {
+            return ApiContract.ShareType.INSTANCE.getCode(getAccess());
         }
     }
 }

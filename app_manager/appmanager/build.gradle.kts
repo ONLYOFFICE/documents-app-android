@@ -60,8 +60,8 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 342
-        versionName = "5.3.0"
+        versionCode = 355
+        versionName = "5.3.1"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
         manifestPlaceholders["permissionId"] = appIdBeta
@@ -69,6 +69,7 @@ android {
         buildConfigField("boolean", "IS_BETA", "false")
         buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
         buildConfigField("String", "BETA_ID", "\"" + appIdBeta + "\"")
+        buildConfigField("String", "APP_NAME", "\"" + appName + "\"")
 
 
         ndk {
@@ -186,6 +187,7 @@ android {
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_FB2FILE")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_EPUBFILE")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL_NETWORK")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DOCX_RENDERER")}.so")
         }
     }
     composeOptions {
@@ -283,6 +285,10 @@ dependencies {
     implementation(AndroidX.composeActivity)
     implementation( Compose.liveData)
 
+    //Jackson
+    implementation (Jackson.core)
+    implementation (Jackson.annotations)
+    implementation (Jackson.databind)
 }
 
 apply(plugin = "com.google.gms.google-services")

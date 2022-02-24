@@ -12,6 +12,10 @@ android {
     defaultConfig {
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
+
+        buildConfigField("String", "SUBDOMAIN", "\"personal\"")
+        buildConfigField("String", "DEFAULT_HOST", "\"onlyoffice.com\"")
+        buildConfigField("String", "DEFAULT_INFO_HOST", "\"teamlab.info\"")
     }
 
     buildTypes {
@@ -83,4 +87,10 @@ dependencies {
     // Rx
     implementation(Rx.androidRx)
     implementation(Rx.rxRelay)
+
+    implementation("com.squareup.okhttp3:okhttp:3.14.9")
+    implementation("com.github.bumptech.glide:okhttp3-integration:4.0.0"){
+        exclude("glide-parent")
+    }
+    kapt ("com.github.bumptech.glide:compiler:4.12.0")
 }

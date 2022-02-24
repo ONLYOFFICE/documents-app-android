@@ -228,7 +228,7 @@ public class ExplorerStackMap implements ExplorerStack {
 
     @Override
     public int getCurrentFolderAccess() {
-        return mExplorer.getCurrent().getAccess();
+        return mExplorer.getCurrent().getIntAccess();
     }
 
     @Override

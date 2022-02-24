@@ -2,11 +2,11 @@ package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
 import app.documents.core.account.CloudAccount
+import app.documents.core.account.copyWithToken
 import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.managers.utils.FirebaseUtils.OnRatingApp
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainActivityView
@@ -33,7 +33,7 @@ sealed class MainActivityState {
 }
 
 @InjectViewState
-class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
+class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     companion object {
         val TAG: String = MainActivityPresenter::class.java.simpleName
@@ -111,14 +111,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         networkSettings.setSslState(cloudAccount.isSslState)
         networkSettings.setCipher(cloudAccount.isSslCiphers)
         networkSettings.serverVersion = cloudAccount.serverVersion
-    }
-
-    override fun onRatingApp(isRating: Boolean) {
-        if (isRating) {
-            if (preferenceTool.isRateOn && preferenceTool.userSession % DEFAULT_RATE_SESSIONS == 0L) {
-                viewState.onRatingApp()
-            }
-        }
     }
 
     fun getRemoteConfigRate() {
@@ -250,7 +242,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
                 accountDao.updateAccount(
-                    it.copy(
+                    it.copyWithToken(
                         isOnline = false
                     )
                 )
@@ -264,26 +256,20 @@ class MainActivityPresenter : BasePresenter<MainActivityView>(), OnRatingApp {
 
     fun checkFileData(fileData: Uri) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccounts().let { accounts ->
+            accountDao.getAccountOnline()?.let { account ->
                 val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query))
-                accounts.forEach { account ->
-                    if (data.portal?.equals(
-                            account.portal,
-                            ignoreCase = true
-                        ) == true &&
-                        data.email?.equals(account.login, ignoreCase = true) == true
-                    ) {
-                        AccountUtils.getPassword(context, account.getAccountName())?.let {
-                            withContext(Dispatchers.Main) {
-                                viewState.openFile(account, Json.encodeToString(data))
-                            }
-                            return@forEach
-                        } ?: run {
-                            withContext(Dispatchers.Main) {
-                                viewState.onError(context.getString(R.string.error_recent_enter_account))
-                            }
-                            return@forEach
-                        }
+                if (data.portal?.equals(
+                        account.portal,
+                        ignoreCase = true
+                    ) == true &&
+                    data.email?.equals(account.login, ignoreCase = true) == true
+                ) {
+                    withContext(Dispatchers.Main) {
+                        viewState.openFile(account, Json.encodeToString(data))
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        viewState.onOpenProjectFileError(context.getString(R.string.error_open_project_file))
                     }
                 }
 

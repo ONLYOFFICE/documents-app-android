@@ -587,14 +587,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
-        mDisposable.add(mFileProvider.getFiles(model.folder?.id.toString(), getArgs(null))
-            .map { loadSuccess(it) }
-            .flatMap {
-                mFileProvider.fileInfo(CloudFile().apply {
-                    id = model.file?.id?.toString()
-                })
-            }
-            .subscribe({ file: CloudFile ->
+        mDisposable.add(mFileProvider.fileInfo(CloudFile().apply {
+            id = model.file?.id?.toString()
+        }).subscribe({ file: CloudFile ->
                 mItemClicked = file
                 when (StringUtils.getExtension(file.fileExst)) {
                     StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
@@ -674,14 +669,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = StringUtils.equals(mItemClicked?.createdBy?.id, account.id)
 
     private val isItemReadWrite: Boolean
-        get() = mItemClicked?.access == ApiContract.ShareCode.READ_WRITE ||
-                mItemClicked?.access == ApiContract.ShareCode.NONE
+        get() = mItemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE ||
+                mItemClicked?.intAccess == ApiContract.ShareCode.NONE
 
     private val isItemEditable: Boolean
         get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
-                        mItemClicked?.access == ApiContract.ShareCode.REVIEW ||
-                        mItemClicked?.access == ApiContract.ShareCode.FILL_FORMS ||
-                        mItemClicked?.access == ApiContract.ShareCode.COMMENT)
+                        mItemClicked?.intAccess == ApiContract.ShareCode.REVIEW ||
+                        mItemClicked?.intAccess == ApiContract.ShareCode.FILL_FORMS ||
+                        mItemClicked?.intAccess == ApiContract.ShareCode.COMMENT)
 
     private val isItemShareable: Boolean
         get() = isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection

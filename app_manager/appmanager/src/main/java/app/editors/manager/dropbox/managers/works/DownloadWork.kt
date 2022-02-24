@@ -9,12 +9,10 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.getDropboxServiceProvider
-import app.editors.manager.dropbox.mvp.models.request.PathRequest
+import app.editors.manager.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.utils.NewNotificationUtils
+import app.editors.manager.managers.utils.NotificationUtils
 import app.editors.manager.managers.works.DownloadWork
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -40,7 +38,8 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
     }
 
-    private val notificationUtils: NewNotificationUtils = NewNotificationUtils(applicationContext, TAG)
+    private val notificationUtils: NotificationUtils =
+        NotificationUtils(applicationContext, TAG)
     private var file: DocumentFile? = null
     private var id: String? = null
     private var to: Uri? = null
@@ -49,11 +48,11 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): Worker
 
     override fun doWork(): Result {
         getArgs()
-        val request = id?.let { PathRequest( path = it) }
+        val request = "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox(id!!)}\"}"
         val response = if (downloadableItem == DOWNLOADABLE_ITEM_FILE)
-            applicationContext.getDropboxServiceProvider().download(Json.encodeToString(request))
+            applicationContext.getDropboxServiceProvider().download(request)
                 .blockingGet() else
-            applicationContext.getDropboxServiceProvider().downloadFolder(Json.encodeToString(request))
+            applicationContext.getDropboxServiceProvider().downloadFolder(request)
                 .blockingGet()
         response.body()?.let { responseBody ->
             FileUtils.writeFromResponseBody(responseBody, to!!, applicationContext, object: FileUtils.Progress {

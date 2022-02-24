@@ -30,7 +30,7 @@ class DocsProjectsFragment : DocsCloudFragment() {
 
     override fun onError(message: String?) {
         message?.let {
-            if (it != getString(R.string.errors_server_error) + "500") {
+            if (it != getString(R.string.errors_server_error) + "500" && it != "HTTP 500 Server error") {
                 super.onError(message)
             }
         }
@@ -52,10 +52,6 @@ class DocsProjectsFragment : DocsCloudFragment() {
 
     private fun init() {
         presenter.checkBackStack()
-    }
-
-    fun setFileData(fileData: String) {
-        cloudPresenter.openFile(fileData)
     }
 
     companion object {

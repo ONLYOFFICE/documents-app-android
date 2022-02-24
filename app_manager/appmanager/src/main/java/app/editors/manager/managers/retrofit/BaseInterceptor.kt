@@ -19,7 +19,7 @@ class BaseInterceptor(val token: String?) : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         checkConnection()
-        val token = if (chain.request().url().host().contains("personal")) {
+        val token = if (chain.request().url().host().contains(ApiContract.PERSONAL_HOST)) {
             token
         } else {
             KEY_AUTH + token
@@ -31,7 +31,7 @@ class BaseInterceptor(val token: String?) : Interceptor {
             )
                 .addHeader(
                     ApiContract.HEADER_AGENT,
-                    "Android ONLYOFFICE Documents (id = ${BuildConfig.APPLICATION_ID}, SDK = ${Build.VERSION.SDK_INT}, build = ${BuildConfig.VERSION_CODE}, appName = ${BuildConfig.VERSION_NAME}"
+                    "Android ${BuildConfig.APP_NAME} Documents (id = ${BuildConfig.APPLICATION_ID}, SDK = ${Build.VERSION.SDK_INT}, build = ${BuildConfig.VERSION_CODE}, appName = ${BuildConfig.VERSION_NAME}"
                 )
                 .build()
         )

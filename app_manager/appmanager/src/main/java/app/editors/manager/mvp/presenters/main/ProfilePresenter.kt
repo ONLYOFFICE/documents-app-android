@@ -2,11 +2,13 @@ package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
 import android.content.Context
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import app.documents.core.account.AccountDao
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.RecentDao
+import app.documents.core.account.copyWithToken
 import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.models.login.response.ResponseUser
@@ -27,9 +29,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
-import java.lang.RuntimeException
 import javax.inject.Inject
 
 sealed class ProfileState(val account: CloudAccount) {
@@ -152,6 +154,9 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             )
             accountDao.deleteAccount(account)
             recentDao.removeAllByOwnerId(account.id)
+            if (ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
+                context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
+            }
             withContext(Dispatchers.Main) {
                 viewState.onClose(false)
             }
@@ -171,9 +176,13 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                     AccountUtils.setToken(context, it, null)
                 }
             }
-            accountDao.updateAccount(account.copy(isOnline = false))
+            accountDao.updateAccount(account.copyWithToken(isOnline = false).apply {
+                token = ""
+                password = ""
+                expires = ""
+            })
             withContext(Dispatchers.Main) {
-                viewState.onClose(true, account.copy(isOnline = false))
+                viewState.onClose(true, account.copyWithToken(isOnline = false))
             }
         }
     }

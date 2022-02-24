@@ -1,5 +1,8 @@
 package app.documents.core.network
 
+import lib.toolkit.base.BuildConfig
+
+
 object ApiContract {
 
     /*
@@ -9,9 +12,11 @@ object ApiContract {
     const val SCHEME_HTTPS = "https://"
     const val SCHEME_HTTP = "http://"
     const val API_SUBDOMAIN = "api-system"
-    const val PERSONAL_SUBDOMAIN = "personal"
-    const val DEFAULT_HOST = "onlyoffice.com"
+    const val PERSONAL_SUBDOMAIN = BuildConfig.SUBDOMAIN
+    const val DEFAULT_HOST = BuildConfig.DEFAULT_HOST
+    const val DEFAULT_INFO_HOST = BuildConfig.DEFAULT_INFO_HOST
     const val PERSONAL_HOST = "$PERSONAL_SUBDOMAIN.$DEFAULT_HOST"
+    const val PERSONAL_INFO_HOST = "$PERSONAL_SUBDOMAIN.$DEFAULT_INFO_HOST"
     const val RESPONSE_FORMAT = ".json"
     const val COOKIE_HEADER = "asc_auth_key="
 
@@ -122,6 +127,7 @@ object ApiContract {
         const val ARG_FILTER_BY = "filterBy"
         const val ARG_FILTER_OP = "filterOp"
         const val ARG_FILTER_VALUE = "filterValue"
+        const val ARG_FILTER_SUBFOLDERS = "withSubfolders"
         const val ARG_UPDATED_SINCE = "updatedSince"
         const val VAL_ACTION_VIEW = "view"
         const val VAL_SORT_ORDER_ASC = "ascending"
@@ -131,9 +137,10 @@ object ApiContract {
         const val VAL_FILTER_OP_STARTS_WITH = "startsWith"
         const val VAL_FILTER_OP_PRESENT = "present"
         const val VAL_FILTER_BY = "title"
+        const val VAL_FILTER_SUBFOLDERS = "true"
         const val VAL_SORT_BY_UPDATED = "DateAndTime"
         const val VAL_SORT_BY_CREATED = "created"
-        const val VAL_SORT_BY_TITLE = "title"
+        const val VAL_SORT_BY_TITLE = "AZ"
         const val VAL_SORT_BY_TYPE = "type"
         const val VAL_SORT_BY_SIZE = "size"
         const val VAL_SORT_BY_OWNER = "Author"
@@ -150,6 +157,17 @@ object ApiContract {
         const val CLOUD_SHARE = 6
         const val CLOUD_PROJECTS = 8
         const val DEVICE_DOCUMENTS = 9
+        const val CLOUD_FAVORITES = 10
+        const val CLOUD_RECENT = 11
+    }
+
+    object Modules {
+        const val FILTER_TYPE_HEADER = "filterType"
+        const val FILTER_TYPE_VALUE = 2
+
+        const val FLAG_SUBFOLDERS = "withsubfolders"
+        const val FLAG_TRASH = "withoutTrash"
+        const val FLAG_ADDFOLDERS = "withoutAdditionalFolder"
     }
 
     object Operation {
@@ -169,7 +187,7 @@ object ApiContract {
         const val YANDEX = "Yandex"
         const val OWNCLOUD = "OwnCloud"
         const val NEXTCLOUD = "Nextcloud"
-        const val KDRIVE = "KDrive"
+        const val KDRIVE = "kDrive"
         const val WEBDAV = "WebDav"
     }
 

@@ -66,11 +66,13 @@ class SelectPresenter : MvpPresenter<SelectView>() {
         val storages = ArrayList<Storage>()
         val nextcloud = Storage(name = ApiContract.Storage.NEXTCLOUD)
         val owncloud = Storage(name = ApiContract.Storage.OWNCLOUD)
+        val kDrive = Storage(name = ApiContract.Storage.KDRIVE)
         val sharePoint = Storage(name = ApiContract.Storage.SHAREPOINT)
         val yandex = Storage(name = ApiContract.Storage.YANDEX)
         val webDav = Storage(name = ApiContract.Storage.WEBDAV)
         storages.add(nextcloud)
         storages.add(owncloud)
+        storages.add(kDrive)
         storages.add(sharePoint)
         val array = jsonObject.getJSONArray("response")
         for (i in 0 until array.length()) {
@@ -110,6 +112,10 @@ class SelectPresenter : MvpPresenter<SelectView>() {
                 ApiContract.Storage.YANDEX -> {
                     url = StorageUtils.WevDav.URL_YANDEX
                     title = context.getString(R.string.storage_select_yandex)
+                }
+                ApiContract.Storage.KDRIVE -> {
+                    url = StorageUtils.WevDav.URL_KDRIVE
+                    title = "kDrive"
                 }
                 ApiContract.Storage.SHAREPOINT -> {
                     title = context.getString(R.string.storage_select_share_point)
