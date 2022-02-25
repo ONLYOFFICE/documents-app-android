@@ -1,0 +1,10 @@
+package app.editors.manager.storages.dropbox.mvp.models.explorer
+
+import kotlinx.serialization.Serializable
+
+
+@Serializable
+data class PropertyGroup(
+    val template_id: String = "",
+    val fields: List<Field> = emptyList()
+)

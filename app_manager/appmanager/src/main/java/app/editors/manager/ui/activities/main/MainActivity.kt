@@ -14,14 +14,14 @@ import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
-import app.editors.manager.dropbox.ui.fragments.DocsDropboxFragment
-import app.editors.manager.googledrive.ui.fragments.DocsGoogleDriveFragment
+import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
+import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
-import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.main.*
