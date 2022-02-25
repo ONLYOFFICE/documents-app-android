@@ -13,7 +13,6 @@ import app.editors.manager.mvp.models.explorer.CloudFolder
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.UiUtils
 
 object ManagerUiUtils {
 
@@ -78,45 +77,27 @@ object ManagerUiUtils {
         }
     }
 
-    @JvmStatic
-    fun setFileIcon(view: ImageView, ext: String) {
-        val extension = StringUtils.getExtension(ext)
-        @DrawableRes var resId = R.drawable.ic_type_file
-        when (extension) {
-            StringUtils.Extension.DOC -> {
-                resId = R.drawable.ic_type_text_document
-            }
+    fun ImageView.setFileIcon(ext: String) {
+        @DrawableRes val resId = when (StringUtils.getExtension(ext)) {
+            StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
+            StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
+            StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
+            StringUtils.Extension.IMAGE,
+            StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_image
+            StringUtils.Extension.HTML,
+            StringUtils.Extension.EBOOK,
+            StringUtils.Extension.PDF -> R.drawable.ic_type_pdf
+            StringUtils.Extension.VIDEO_SUPPORT,
+            StringUtils.Extension.VIDEO -> R.drawable.ic_type_video
+            StringUtils.Extension.ARCH -> R.drawable.ic_type_archive
             StringUtils.Extension.FORM -> {
-                resId = if (ext == ".${LocalContentTools.OFORM_EXTENSION}") {
-                    R.drawable.ic_format_oform
-                } else {
-                    R.drawable.ic_format_docxf
-                }
+                if (ext == ".${LocalContentTools.OFORM_EXTENSION}") R.drawable.ic_format_oform
+                else R.drawable.ic_format_docxf
             }
-            StringUtils.Extension.SHEET -> {
-                resId = R.drawable.ic_type_spreadsheet
-            }
-            StringUtils.Extension.PRESENTATION -> {
-                resId = R.drawable.ic_type_presentation
-            }
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF -> {
-                resId = R.drawable.ic_type_image
-            }
-            StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.PDF -> {
-                resId = R.drawable.ic_type_pdf
-            }
-            StringUtils.Extension.VIDEO_SUPPORT, StringUtils.Extension.VIDEO -> {
-                resId = R.drawable.ic_type_video
-            }
-            StringUtils.Extension.ARCH -> {
-                resId = R.drawable.ic_type_archive
-            }
-            StringUtils.Extension.UNKNOWN -> {
-                resId = R.drawable.ic_type_file
-            }
+            else -> R.drawable.ic_type_file
         }
-        view.setImageResource(resId)
-        view.alpha = 1.0f
+        setImageResource(resId)
+        alpha = 1.0f
     }
 
     fun setFolderIcon(view: ImageView, folder: CloudFolder, isRoot: Boolean) {
