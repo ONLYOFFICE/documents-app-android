@@ -360,7 +360,6 @@
     <string name="storage_web_dav_settings_login">Логин</string>
     <string name="storage_web_dav_settings_password">Пароль</string>
     <string name="storage_web_dav_settings_title">Введите название сервиса</string>
-    <string name="storage_web_dav_settings_url">URL-адрес подключения</string>
     <string name="storage_web_title">Подключение сервиса </string>
     <string name="this_device">Это устройство</string>
     <string name="toolbar_menu_main_copy">Скопировать</string>

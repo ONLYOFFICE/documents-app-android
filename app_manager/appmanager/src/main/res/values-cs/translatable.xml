@@ -402,7 +402,6 @@
     <string name="storage_web_title">Připojení služby </string>
     <string name="storage_connect_button">PŘIPOJIT</string>
 
-    <string name="storage_web_dav_settings_url">Adresa URL připojení</string>
     <string name="storage_web_dav_settings_login">Přihlásit se</string>
     <string name="storage_web_dav_settings_password">Heslo</string>
     <string name="storage_web_dav_settings_title">Vstupní název služby</string>

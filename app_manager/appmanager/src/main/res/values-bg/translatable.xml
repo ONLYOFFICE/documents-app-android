@@ -304,7 +304,6 @@
     <string name="storage_web_dav_settings_login">Влизам</string>
     <string name="storage_web_dav_settings_password">Парола</string>
     <string name="storage_web_dav_settings_title">Въведете заглавие за услугата</string>
-    <string name="storage_web_dav_settings_url">URL адрес за връзка</string>
     <string name="storage_web_title">Свържете услуга </string>
     <string name="toolbar_menu_main_copy">Копие</string>
     <string name="toolbar_menu_main_delete">Изтрий</string>
