@@ -61,6 +61,7 @@
         android:layout_marginTop="@dimen/default_margin_large"
         android:hint="@string/storage_web_dav_settings_password"
         app:errorIconDrawable="@null"
+        app:passwordToggleDrawable="@drawable/drawable_selector_password_visibility"
         app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText

@@ -32,7 +32,7 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="@dimen/default_margin_medium"
                 android:visibility="gone"
-                android:text="storage_connect_button" />
+                android:text="@string/storage_connect_button" />
 
         </androidx.appcompat.widget.Toolbar>
 
