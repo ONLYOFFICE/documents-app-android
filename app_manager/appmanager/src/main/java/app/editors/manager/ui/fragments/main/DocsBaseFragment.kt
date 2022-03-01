@@ -30,7 +30,7 @@ import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
-import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -105,7 +105,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         const val REQUEST_PDF = 10004
         const val REQUEST_DOWNLOAD = 10005
         const val REQUEST_STORAGE_ACCESS = 10006
-        const val REQUEST_MULTIPLE_FILES_DOWNLOAD = 11000023
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

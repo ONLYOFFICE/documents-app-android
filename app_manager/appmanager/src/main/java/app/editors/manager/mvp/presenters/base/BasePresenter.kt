@@ -190,12 +190,14 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
     }
 
     fun onUnauthorized(responseCode: Int) {
-        if (responseCode == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED && viewState is BaseViewExt) {
-            (viewState as BaseViewExt).onUnauthorized(
+        if (responseCode == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
+            (viewState as? BaseViewExt)?.onUnauthorized(
                 context.getString(
                     R.string.login_not_authorization_info_token
                 )
-            )
+            ) ?: run {
+                viewState.onError(context.getString(R.string.errors_client_unauthorized))
+            }
         }
     }
 

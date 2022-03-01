@@ -78,7 +78,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                getShareList(it.response, true)
+                getShareList(it.response)
             }, { error ->
                 fetchError(error)
             })
@@ -120,7 +120,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             .map { it.response }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                getShareList(it, true)
+                getShareList(it)
             }, { fetchError(it) })
     }
 
@@ -278,9 +278,9 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
      * Callbacks for response
      * */
 
-    private fun getShareList(shareList: List<Share>, isFolder: Boolean = false) {
+    private fun getShareList(shareList: List<Share>) {
         isAccessDenied = false
-        val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() && !it.isOwner || (it.isOwner && isFolder) }
+        val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() }
             .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
         val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }
             .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }

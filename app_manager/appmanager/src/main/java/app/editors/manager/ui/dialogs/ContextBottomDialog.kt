@@ -13,7 +13,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.managers.utils.isVisible
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -90,10 +90,9 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextHeaderTitleText.text = state.title
             it.listExplorerContextHeaderInfoText.text = state.info
             it.listExplorerContextHeaderImage.setImageResource(state.iconResId)
-            UiUtils.setImageTint(it.listExplorerContextHeaderImage, lib.toolkit.base.R.color.colorOnSurface)
+            it.listExplorerContextHeaderImage.alpha = 1f
             if (!state.isFolder) {
-                ManagerUiUtils.setFileIcon(
-                    it.listExplorerContextHeaderImage, StringUtils.getExtensionFromPath(state.title))
+                it.listExplorerContextHeaderImage.setFileIcon(StringUtils.getExtensionFromPath(state.title))
             }
         }
         setViewState()

@@ -60,7 +60,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 352
+        versionCode = 355
         versionName = "5.3.1"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -69,6 +69,7 @@ android {
         buildConfigField("boolean", "IS_BETA", "false")
         buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
         buildConfigField("String", "BETA_ID", "\"" + appIdBeta + "\"")
+        buildConfigField("String", "APP_NAME", "\"" + appName + "\"")
 
 
         ndk {
