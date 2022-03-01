@@ -8,8 +8,9 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/storage_web_dav_server_layout"
         style="@style/CommonEditText"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/default_screen_width"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginHorizontal="@dimen/default_margin_large"
         android:layout_marginTop="@dimen/default_margin_medium"
         android:hint="@string/storage_web_dav_settings_server"
@@ -32,8 +33,9 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/storage_web_dav_login_layout"
         style="@style/CommonEditText"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/default_screen_width"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginHorizontal="@dimen/default_margin_large"
         android:layout_marginTop="@dimen/default_margin_large"
         android:hint="@string/storage_web_dav_settings_login"
@@ -55,8 +57,9 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/storage_web_dav_password_layout"
         style="@style/CommonEditText"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/default_screen_width"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginHorizontal="@dimen/default_margin_large"
         android:layout_marginTop="@dimen/default_margin_large"
         android:hint="@string/storage_web_dav_settings_password"
@@ -79,8 +82,9 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/storage_web_dav_title_layout"
         style="@style/CommonEditText"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/default_screen_width"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginHorizontal="@dimen/default_margin_large"
         android:layout_marginTop="@dimen/default_margin_large"
         android:hint="@string/storage_web_dav_settings_title">

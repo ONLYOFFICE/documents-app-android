@@ -25,8 +25,6 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
-import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
-import app.editors.manager.storages.base.presenter.BaseStorageSignInPresenter
 import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.storages.onedrive.mvp.presenters.OneDriveSingInPresenter
@@ -47,7 +45,7 @@ import app.editors.manager.ui.fragments.onboarding.OnBoardingPagerFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
 import app.editors.manager.ui.fragments.storage.ConnectFragment
 import app.editors.manager.ui.fragments.storage.SelectFragment
-import app.editors.manager.ui.fragments.storage.WebDavFragment
+import app.editors.manager.ui.fragments.storage.WebDavStorageFragment
 import app.editors.manager.ui.fragments.storage.WebTokenFragment
 import app.editors.manager.viewModels.login.EnterpriseCreateValidateViewModel
 import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
@@ -155,7 +153,7 @@ interface AppComponent {
     fun inject(webTokenFragment: WebTokenFragment?)
     fun inject(connectFragment: ConnectFragment?)
     fun inject(settingsFragment: ConnectPresenter?)
-    fun inject(webDavFragment: WebDavFragment?)
+    fun inject(webDavFragment: WebDavStorageFragment?)
 
     /*
     * On boarding

@@ -88,7 +88,7 @@ class SelectFragment : BaseAppFragment(), BaseAdapter.OnItemClickListener, Selec
     }
 
     override fun showWebDavFragment(providerKey: String, url: String, title: String) {
-        showFragment(WebDavFragment.newInstance(providerKey, url, title), WebDavFragment.TAG, false)
+        showFragment(WebDavStorageFragment.newInstance(providerKey, url, title), WebDavStorageFragment.TAG, false)
     }
 
     override fun showProgress(isVisible: Boolean) {
