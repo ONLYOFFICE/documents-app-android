@@ -27,7 +27,7 @@ open class BaseWatcher : TextWatcher {
     protected var mSelectionEnd = 0
     protected var mInputSelection = Pair(0, 0)
     protected var mDeleteSelection = Pair(0, 0)
-    var mSelectionPosition = 0
+    var selectionPosition = 0
     var mSelectionPositionStart = 0
     var mSelectionPositionEnd = 0
     constructor()
@@ -109,7 +109,7 @@ open class BaseWatcher : TextWatcher {
 
             }
         }
-        mSelectionPosition = start + count
+        selectionPosition = start + count
         setState()
     }
 
@@ -159,10 +159,10 @@ open class BaseWatcher : TextWatcher {
 
     fun setSelection() {
         if (mEditView?.text?.isNotEmpty() != false) {
-            if (mEditView?.text?.length!! < mSelectionPosition){
+            if (mEditView?.text?.length!! < selectionPosition){
                 mEditView?.setSelection(mEditView?.text?.length ?: 0)
             } else {
-                mEditView?.setSelection(mSelectionPosition)
+                mEditView?.setSelection(selectionPosition)
             }
         }
     }
