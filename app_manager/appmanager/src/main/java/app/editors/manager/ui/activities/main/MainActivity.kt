@@ -306,7 +306,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 checkPermission()
             }
             is MainActivityState.CloudState -> {
-                showActionButton(false)
                 state.account?.let {
                     showOnCloudFragment(state.account)
                 } ?: run {
@@ -551,7 +550,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                     }
                 }
             }
-            showActionButton(true)
         } ?: run {
             FragmentUtils.showFragment(
                 supportFragmentManager,
