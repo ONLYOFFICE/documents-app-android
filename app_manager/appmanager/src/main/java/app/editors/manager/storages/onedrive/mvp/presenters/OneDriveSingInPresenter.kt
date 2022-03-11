@@ -2,7 +2,6 @@ package app.editors.manager.storages.onedrive.mvp.presenters
 
 import app.documents.core.account.CloudAccount
 import app.editors.manager.app.App
-import app.editors.manager.app.oneDriveAuthService
 import app.editors.manager.app.oneDriveLoginService
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.StorageUtils
@@ -34,13 +33,15 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
         )
         var accessToken = ""
         var refreshToken = ""
-        disposable = App.getApp().oneDriveAuthService.getToken(map)
+        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_AUTH_URL)
+        disposable = App.getApp().oneDriveLoginService.getToken(map)
             .map { oneDriveResponse ->
                 viewState.onStartLogin()
                 when(oneDriveResponse) {
                     is OneDriveResponse.Success -> {
                         accessToken = (oneDriveResponse.response as AuthResponse).access_token
                         refreshToken = oneDriveResponse.response.refresh_token
+                        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_BASE_URL)
                         return@map oneDriveResponse.response
                     }
                     is OneDriveResponse.Error -> {

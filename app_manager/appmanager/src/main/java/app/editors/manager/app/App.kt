@@ -231,12 +231,6 @@ val Context.dropboxLoginService: IDropboxLoginServiceProvider
         else -> applicationContext.appComponent.dropboxLoginService
     }
 
-val Context.oneDriveAuthService: IOneDriveAuthServiceProvider
-    get() = when (this) {
-        is App -> this.appComponent.oneDriveAuthService
-        else -> applicationContext.appComponent.oneDriveAuthService
-    }
-
 val Context.googleDriveLoginService: IGoogleDriveLoginServiceProvider
     get() = when(this) {
         is App -> this.appComponent.googleDriveLoginService
