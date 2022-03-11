@@ -55,7 +55,7 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
                         createUser((oneDriveResponse.response as User), accessToken, refreshToken)
                     }
                     is OneDriveResponse.Error -> {
-                        throw oneDriveResponse.error
+                        viewState.onError(oneDriveResponse.error.message)
                     }
                 }
             }

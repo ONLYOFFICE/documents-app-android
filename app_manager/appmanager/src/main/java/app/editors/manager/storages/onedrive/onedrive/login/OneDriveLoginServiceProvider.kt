@@ -19,7 +19,6 @@ class OneDriveLoginServiceProvider(
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { throwable: Throwable -> Log.d("ONEDRIVE", "${throwable.message}") }
     }
 
     override fun getToken(map: Map<String, String>): Single<OneDriveResponse> {

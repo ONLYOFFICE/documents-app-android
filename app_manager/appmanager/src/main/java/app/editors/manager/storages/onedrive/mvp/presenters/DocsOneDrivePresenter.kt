@@ -107,7 +107,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
         val accData = AccountUtils.getAccountData(context, account)
         networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_AUTH_URL)
-        Log.d("REFRESHTOKENONEDRIVE", "refresh token")
         val map = mapOf(
             StorageUtils.ARG_CLIENT_ID to Constants.OneDrive.COM_CLIENT_ID,
             StorageUtils.ARG_SCOPE to StorageUtils.OneDrive.VALUE_SCOPE,
