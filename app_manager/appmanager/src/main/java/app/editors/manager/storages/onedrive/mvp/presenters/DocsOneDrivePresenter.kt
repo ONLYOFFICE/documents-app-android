@@ -125,7 +125,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                         refresh()
                     }
                     is OneDriveResponse.Error -> {
-                        throw oneDriveResponse.error
+                       viewState.onError(oneDriveResponse.error.message)
                     }
                 }
             })
