@@ -118,6 +118,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
                 settingIcon.isVisible = true
                 settingText.text = getString(R.string.app_settings_color_theme)
                 settingIconArrow.isVisible = false
+                settingIcon.isVisible = false
             }
         }
     }
