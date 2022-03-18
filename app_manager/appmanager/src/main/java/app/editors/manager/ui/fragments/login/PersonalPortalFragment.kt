@@ -246,6 +246,10 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         showSnackBar(R.string.socials_google_failed_auth)
     }
 
+    override fun onGoogleCancelled() {
+        showSnackBar(R.string.socials_google_cancel_auth)
+    }
+
     private fun init(savedInstanceState: Bundle?) {
         fieldsWatcher = FieldsWatcher()
         initListeners()
