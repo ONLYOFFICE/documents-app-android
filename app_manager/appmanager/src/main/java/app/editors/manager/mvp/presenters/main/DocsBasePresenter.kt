@@ -1256,14 +1256,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } ?: false
 
     fun getListMedia(clickedId: String?): Explorer {
-        return modelExplorerStack?.last()?.clone()?.also { explorer ->
-            explorer.files
-            explorer.folders = listOf()
-            explorer.files
-                .filter { file -> !isImage(file.fileExst) && !isVideoSupport(file.fileExst) }
-                .forEach { file ->
-                    file.isClicked = file.id.equals(clickedId, ignoreCase = true)
-                }
+        return modelExplorerStack?.last()?.let { explorer ->
+            Explorer().apply {
+                folders = listOf()
+                files = explorer.files
+                    .filter { isImage(it.fileExst) || isVideoSupport(it.fileExst) }
+                    .onEach { it.isClicked = it.id.equals(clickedId, ignoreCase = true) }
+            }
         } ?: Explorer()
     }
 
