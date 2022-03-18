@@ -322,6 +322,11 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         showSnackBar(R.string.socials_google_failed_auth)
     }
 
+    override fun onGoogleCancelled() {
+        hideDialog()
+        showSnackBar(R.string.socials_google_cancel_auth)
+    }
+
     private fun init(savedInstanceState: Bundle?) {
         initViews()
         initListeners()

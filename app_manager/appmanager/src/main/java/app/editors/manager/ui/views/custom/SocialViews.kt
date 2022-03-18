@@ -33,6 +33,7 @@ class SocialViews(private val activity: Activity, view: View?,
         fun onFacebookFailed()
         fun onGoogleSuccess(account: Account)
         fun onGoogleFailed()
+        fun onGoogleCancelled()
     }
 
     private var onSocialNetworkCallbacks: OnSocialNetworkCallbacks? = null
@@ -98,7 +99,11 @@ class SocialViews(private val activity: Activity, view: View?,
             } catch (e: ApiException) {
                 Log.e(TAG, "Status code: " + e.statusCode, e)
                 googleSignInClient?.signOut()
-                callbacks.onGoogleFailed()
+                if (e.statusCode == SIGN_IN_CANCELLED) {
+                    callbacks.onGoogleCancelled()
+                } else {
+                    callbacks.onGoogleFailed()
+                }
             } catch (e: Exception) {
                 googleSignInClient?.signOut()
                 callbacks.onGoogleFailed()
@@ -175,6 +180,7 @@ class SocialViews(private val activity: Activity, view: View?,
         val TAG = SocialViews::class.java.simpleName
         const val GOOGLE_PERMISSION = 1212
         private const val RC_SIGN_IN = 9001
+        private const val SIGN_IN_CANCELLED = 12501
     }
 
 }
