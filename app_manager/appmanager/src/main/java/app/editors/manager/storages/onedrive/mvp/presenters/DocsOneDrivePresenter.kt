@@ -80,7 +80,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                     withContext(Dispatchers.Main) {
-                        getItemsById(null)
+                        getItemsById("")
                     }
 
                 }
