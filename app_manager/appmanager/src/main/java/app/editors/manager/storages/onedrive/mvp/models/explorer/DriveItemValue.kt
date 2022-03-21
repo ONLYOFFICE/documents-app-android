@@ -17,7 +17,7 @@ data class DriveItemValue(
     val webUrl: String = "",
     val reactions: DriveItemReactions? = null,
     val createdBy: DriveItemOperation,
-    val lastModifiedBy: DriveItemOperation,
+    val lastModifiedBy: DriveItemOperation? = null,
     val parentReference: DriveItemParentReference,
     val fileSystemInfo: DriveItemFileSystemInfo,
     val folder: DriveItemFolder? = null,
