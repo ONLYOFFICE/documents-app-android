@@ -7,10 +7,9 @@ import android.text.Spanned
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.doOnTextChanged
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.google.android.material.textview.MaterialTextView
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -54,44 +53,45 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         super.init()
         dialog.view?.apply {
             layout = findViewById(R.id.dialogCommonEditLineLayout)
-            editValueView = findViewById<TextInputEditText>(R.id.dialogCommonEditLineValueEdit).apply {
-                if (!isPassword) {
-                    filters = arrayOf<InputFilter>(EditFilter())
-                } else {
-                    inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
-                }
-            }
-            editInputLayout = findViewById<TextInputLayout?>(R.id.dialogCommonEditLineTextInputLayout).apply {
-                if (isPassword) {
-                    endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
-                    endIconDrawable =
-                        AppCompatResources.getDrawable(context, R.drawable.drawable_selector_password_visibility)
-                }
-            }
+            editValueView = findViewById(R.id.dialogCommonEditLineValueEdit)
+            editInputLayout = findViewById(R.id.dialogCommonEditLineTextInputLayout)
         }
     }
 
     override fun show() {
         super.show()
         layout.visibility = View.VISIBLE
+        mAcceptView.isEnabled = !editValue?.trim().isNullOrEmpty()
         dialog.view?.post {
-            if (!editValue.isNullOrEmpty()) {
-                editValueView.setText(editValue)
-                if (!editValueView.text.isNullOrEmpty()) {
-                    editValueView.setSelection(0, editValue!!.length)
+            editValueView.apply {
+                if (isPassword) {
+                    inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    doOnTextChanged { _, _, _, _ ->
+                        editInputLayout.error = null
+                        mAcceptView.isEnabled = !text?.trim().isNullOrEmpty()
+                    }
+                } else {
+                    if (!editValue.isNullOrEmpty()) {
+                        setText(editValue)
+                        if (!text.isNullOrEmpty()) {
+                            setSelection(0, editValue?.length ?: 0)
+                        }
+                    }
+                    filters = arrayOf<InputFilter>(EditFilter())
                 }
-                mAcceptView.isEnabled = editValue!!.trim { it <= ' ' }.isNotEmpty()
-            } else {
-                editValueView.setText("")
             }
 
-            if (hintValue != null) {
-                editInputLayout.hint = hintValue
-            }
+            editInputLayout.apply {
+                hintValue?.let(::setHint)
+                if (!errorValue.isNullOrEmpty()) {
+                    isErrorEnabled = true
+                    error = errorValue
+                }
 
-            if (!errorValue.isNullOrBlank()) {
-                editInputLayout.isErrorEnabled = true
-                editInputLayout.error = errorValue
+                if (isPassword && errorValue.isNullOrEmpty()) {
+                    endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+                    endIconDrawable = AppCompatResources.getDrawable(context, R.drawable.drawable_selector_password_visibility)
+                }
             }
 
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -101,6 +101,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 //                mEditValueView.background.colorFilter =
 //                    PorterDuffColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), PorterDuff.Mode.SRC_ATOP)
 //            }
+
             editValueView.postDelayed({
                 KeyboardUtils.showKeyboard(editValueView)
             }, 100)

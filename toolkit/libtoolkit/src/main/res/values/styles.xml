@@ -446,9 +446,8 @@
         <item name="android:padding">0dp</item>
     </style>
 
-    <style name="DialogTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+    <style name="DialogTextInputLayout">
         <item name="boxBackgroundColor">@color/colorSurface</item>
-        <item name="colorControlActivated">@color/colorPrimary</item>
     </style>
 
 </resources>

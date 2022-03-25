@@ -3,7 +3,7 @@
     android:id="@+id/dialogCommonEditLineLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/Theme.MaterialComponents.Dialog.Alert">
+    android:theme="@style/AppTheme">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dialogCommonEditLineTextInputLayout"
@@ -13,12 +13,12 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/dialogCommonEditLineValueEdit"
-            style="@style/MediumTextView"
+            android:textAppearance="@style/MediumTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
             android:importantForAutofill="noExcludeDescendants"
-            android:inputType="text" />
+            android:inputType="textNoSuggestions" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
