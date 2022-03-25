@@ -1,5 +1,5 @@
 object Dagger {
-    private const val version = "2.40.5"
+    private const val version = "2.41"
 
     const val dagger = "com.google.dagger:dagger:$version"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$version"
@@ -21,18 +21,18 @@ object Koin {
 }
 
 object AndroidX {
-    private const val androidxVersion = "1.4.0"
+    private const val androidxVersion = "1.4.1"
     private const val recyclerViewVersion = "1.2.1"
     private const val recyclerViewSelectionVersion = "1.1.0"
     private const val kotlinKtxVersion = "1.7.0"
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
-    const val composeActivity = "androidx.activity:activity-compose:$androidxVersion"
+    const val composeActivity = "androidx.activity:activity-compose:1.4.0"
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     const val recyclerViewSelection = "androidx.recyclerview:recyclerview-selection:$recyclerViewSelectionVersion"
     const val cardView = "androidx.cardview:cardview:1.0.0"
-    const val constraint = "androidx.constraintlayout:constraintlayout:2.1.2"
+    const val constraint = "androidx.constraintlayout:constraintlayout:2.1.3"
     const val ktx = "androidx.core:core-ktx:$kotlinKtxVersion"
     const val biometric = "androidx.biometric:biometric:1.1.0"
 
@@ -53,7 +53,7 @@ object Kotlin {
     const val version = "1.5.31"
     const val pluginVersion = "1.5.21"
     private const val coroutinesVersion = "1.5.0"
-    private const val serializationVersion = "1.3.1"
+    private const val serializationVersion = "1.3.2"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
     const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -62,11 +62,11 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "20.0.0"
-    private const val playCoreVersion = "1.10.2"
-    private const val materialVersion = "1.4.0"
+    private const val playServicesAuthVersion = "20.1.0"
+    private const val playCoreVersion = "1.10.3"
+    private const val materialVersion = "1.5.0"
     private const val gsonVersion = "2.8.6"
-    private const val safetynetVersion = "18.0.0"
+    private const val safetynetVersion = "18.0.1"
 
 
     const val playServiceAuth = "com.google.android.gms:play-services-auth:$playServicesAuthVersion"
@@ -78,10 +78,10 @@ object Google {
 }
 
 object Firebase {
-    private const val firebaseCoreVersion = "20.0.2"
-    private const val firebaseConfigVersion = "21.0.1"
-    private const val firebaseMessagingVersion = "23.0.0"
-    private const val firebaseCrashlyticsVersion = "18.2.6"
+    private const val firebaseCoreVersion = "20.1.1"
+    private const val firebaseConfigVersion = "21.0.2"
+    private const val firebaseMessagingVersion = "23.0.2"
+    private const val firebaseCrashlyticsVersion = "18.2.9"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"
@@ -90,7 +90,7 @@ object Firebase {
 }
 
 object Room {
-    private const val roomVersion = "2.4.0"
+    private const val roomVersion = "2.4.2"
 
     const val roomRuntime = "androidx.room:room-runtime:$roomVersion"
     const val roomKtx = "androidx.room:room-ktx:$roomVersion"
@@ -105,7 +105,7 @@ object Rx {
 }
 
 object Lifecycle {
-    private const val version = "2.4.0"
+    private const val version = "2.4.1"
 
     const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
     const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
@@ -114,7 +114,7 @@ object Lifecycle {
 
 object Compose {
     const val version = "1.0.5"
-    private const val navigationVersion = "2.4.0-rc01"
+    private const val navigationVersion = "2.4.1"
 
     const val ui = "androidx.compose.ui:ui:$version"
     const val material = "androidx.compose.material:material:$version"
@@ -135,7 +135,7 @@ object Libs {
     const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
     const val facebookLogin = "com.facebook.android:facebook-login:12.2.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
-    const val glide = "com.github.bumptech.glide:glide:4.12.0"
+    const val glide = "com.github.bumptech.glide:glide:4.13.1"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
     const val androidWork = "androidx.work:work-runtime:2.7.1"
     const val documentFile = "androidx.documentfile:documentfile:1.0.1"
