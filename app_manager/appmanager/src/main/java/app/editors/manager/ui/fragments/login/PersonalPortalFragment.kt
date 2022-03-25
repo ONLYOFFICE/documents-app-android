@@ -159,10 +159,10 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
 
     override fun onTwoFactorAuth(phoneNoise: String?, request: String) {
         hideDialog()
-        if (phoneNoise != null) {
-            context?.let { showPhone(it, request) }
-        } else {
+        if (phoneNoise != null && phoneNoise.isNotEmpty()) {
             context?.let { showSms(it, request) }
+        } else {
+            context?.let { showPhone(it, request) }
         }
     }
 

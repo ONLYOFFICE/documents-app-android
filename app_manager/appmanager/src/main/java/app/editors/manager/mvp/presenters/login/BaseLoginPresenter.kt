@@ -62,9 +62,9 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
 
     protected fun signInSuccess(requestSignIn: RequestSignIn, token: Token) {
         when {
+            !token.token.isNullOrEmpty() -> getUserInfo(requestSignIn, token)
             token.tfa == true -> onTwoFactorAuthApp(token.tfaKey, requestSignIn)
             token.sms == true -> onTwoFactorAuth(token.phoneNoise, requestSignIn)
-            !token.token.isNullOrEmpty() -> getUserInfo(requestSignIn, token)
         }
     }
 
@@ -146,7 +146,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     }
 
     protected open fun onTwoFactorAuth(phoneNoise: String?, request: RequestSignIn) {
-
+        preferenceTool.phoneNoise = phoneNoise
     }
 
     protected open fun onTwoFactorAuthApp(secretKey: String?, request: RequestSignIn) {

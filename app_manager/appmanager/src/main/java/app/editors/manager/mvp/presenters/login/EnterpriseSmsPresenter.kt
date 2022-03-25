@@ -2,7 +2,6 @@ package app.editors.manager.mvp.presenters.login
 
 import app.documents.core.account.CloudAccount
 import app.documents.core.login.LoginResponse
-import app.documents.core.network.models.login.request.RequestNumber
 import app.documents.core.network.models.login.request.RequestSignIn
 import app.documents.core.network.models.login.response.ResponseSignIn
 import app.editors.manager.R
@@ -54,7 +53,7 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
     }
 
     fun resendSms(request: String) {
-        val requestNumber = Json.decodeFromString<RequestNumber>(request)
+        val requestNumber = Json.decodeFromString<RequestSignIn>(request)
         disposable = context.loginService.sendSms(
             RequestSignIn(
                 userName = requestNumber.userName,

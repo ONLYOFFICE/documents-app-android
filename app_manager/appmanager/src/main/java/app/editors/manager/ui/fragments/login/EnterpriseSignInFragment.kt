@@ -224,13 +224,13 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     override fun onTwoFactorAuth(phoneNoise: String?, request: String) {
         hideDialog()
         if (phoneNoise != null && phoneNoise.isNotEmpty()) {
-            showFragment(EnterprisePhoneFragment.newInstance(request), EnterprisePhoneFragment.TAG, false)
-        } else {
             showFragment(
                 EnterpriseSmsFragment.newInstance(false, request),
                 EnterpriseSmsFragment.TAG,
                 false
             )
+        } else {
+            showFragment(EnterprisePhoneFragment.newInstance(request), EnterprisePhoneFragment.TAG, false)
         }
     }
 
