@@ -82,9 +82,6 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
         mAcceptView.setOnClickListener(this)
         mCancelView.setOnClickListener(this)
 
-        mAcceptView.setTextColor(color)
-        mCancelView.setTextColor(color)
-
         if (mTopTitle.isNullOrBlank()) {
             mTopTitleView.visibility = View.GONE
         } else {
@@ -112,11 +109,6 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
         } else {
             mCancelView.visibility = View.VISIBLE
             mCancelView.text = mCancelTitle
-        }
-
-        if (mTextColor != 0 && dialog.context != null) {
-            mAcceptView.setTextColor(ContextCompat.getColor(dialog.requireContext(), mTextColor))
-            mCancelView.setTextColor(ContextCompat.getColor(dialog.requireContext(), mTextColor))
         }
 
         dialog.view?.let { TransitionManager.beginDelayedTransition(it as ViewGroup, Fade()) }

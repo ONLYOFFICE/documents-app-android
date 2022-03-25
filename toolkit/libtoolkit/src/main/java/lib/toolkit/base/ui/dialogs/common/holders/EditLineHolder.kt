@@ -5,6 +5,8 @@ import android.text.InputFilter
 import android.text.InputType
 import android.text.Spanned
 import android.view.View
+import android.widget.FrameLayout
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -19,33 +21,30 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     companion object {
         private const val TAG_EDIT_VALUE = "TAG_EDIT_VALUE"
-        private const val TAG_EDIT_HINT_VALUE = "TAG_EDIT_HINT_VALUE"
         private const val TAG_HINT_VALUE = "TAG_HINT_VALUE"
         private const val TAG_ERROR_VALUE = "TAG_ERROR_VALUE"
         private const val TAG_COLOR_TINT = "TAG_COLOR_TINT"
     }
 
-    private lateinit var mLayout: ConstraintLayout
-    private lateinit var mEditInputLayout: TextInputLayout
-    private lateinit var mEditValueView: TextInputEditText
-    private lateinit var mEditHintView: MaterialTextView
+    private lateinit var layout: FrameLayout
+    private lateinit var editInputLayout: TextInputLayout
+    private lateinit var editValueView: TextInputEditText
 
-    private var mEditValue: String? = null
-    private var mEditHintValue: String? = null
-    private var mHintValue: String? = null
-    private var mErrorValue: String? = null
-    private var mIsPassword: Boolean = false
-    private var mColorTint: Int = android.R.color.black
+    private var editValue: String? = null
+    private var hintValue: String? = null
+    private var errorValue: String? = null
+    private var isPassword: Boolean = false
+    private var colorTint: Int = android.R.color.black
 
     override fun onClick(v: View) {
         when (v.id) {
             R.id.dialogCommonAcceptButton -> {
-                KeyboardUtils.hideKeyboard(mEditValueView)
+                KeyboardUtils.hideKeyboard(editValueView)
                 mOnClickListener?.onAcceptClick(getType(), getValue(), mTag)
             }
 
             R.id.dialogCommonCancelButton -> {
-                KeyboardUtils.hideKeyboard(mEditValueView)
+                KeyboardUtils.hideKeyboard(editValueView)
                 mOnClickListener?.onCancelClick(getType(), mTag)
             }
         }
@@ -54,49 +53,45 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     override fun init() {
         super.init()
         dialog.view?.apply {
-            mLayout = findViewById(R.id.dialogCommonEditLineLayout)
-            mEditInputLayout = findViewById(R.id.dialogCommonEditLineTextInputLayout)
-            mEditHintView = findViewById(R.id.dialogCommonEditLineHintEdit)
-            mEditValueView = findViewById<TextInputEditText>(R.id.dialogCommonEditLineValueEdit).apply {
-                filters = arrayOf<InputFilter>(EditFilter())
+            layout = findViewById(R.id.dialogCommonEditLineLayout)
+            editValueView = findViewById<TextInputEditText>(R.id.dialogCommonEditLineValueEdit).apply {
+                if (!isPassword) {
+                    filters = arrayOf<InputFilter>(EditFilter())
+                } else {
+                    inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                }
+            }
+            editInputLayout = findViewById<TextInputLayout?>(R.id.dialogCommonEditLineTextInputLayout).apply {
+                if (isPassword) {
+                    endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+                    endIconDrawable =
+                        AppCompatResources.getDrawable(context, R.drawable.drawable_selector_password_visibility)
+                }
             }
         }
     }
 
     override fun show() {
         super.show()
-        mLayout.visibility = View.VISIBLE
+        layout.visibility = View.VISIBLE
         dialog.view?.post {
-            if (!mEditValue.isNullOrEmpty()) {
-                mEditValueView.setText(mEditValue)
-                if (!mEditValueView.text.isNullOrEmpty()) {
-                    mEditValueView.setSelection(0, mEditValue!!.length)
+            if (!editValue.isNullOrEmpty()) {
+                editValueView.setText(editValue)
+                if (!editValueView.text.isNullOrEmpty()) {
+                    editValueView.setSelection(0, editValue!!.length)
                 }
-                mAcceptView.isEnabled = mEditValue!!.trim { it <= ' ' }.isNotEmpty()
+                mAcceptView.isEnabled = editValue!!.trim { it <= ' ' }.isNotEmpty()
             } else {
-                mEditValueView.setText("")
+                editValueView.setText("")
             }
 
-            if (!mEditHintValue.isNullOrEmpty()) {
-                mEditValueView.hint = mEditHintValue
+            if (hintValue != null) {
+                editInputLayout.hint = hintValue
             }
 
-            if (mHintValue != null) {
-                mEditHintView.visibility = View.VISIBLE
-                mEditHintView.text = mHintValue
-            } else {
-                mEditHintView.visibility = View.GONE
-            }
-
-            if (mIsPassword) {
-                mEditValueView.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            } else {
-                mEditValueView.inputType = InputType.TYPE_CLASS_TEXT
-            }
-
-            if (!mErrorValue.isNullOrBlank()) {
-                mEditInputLayout.isErrorEnabled = true
-                mEditInputLayout.error = mErrorValue
+            if (!errorValue.isNullOrBlank()) {
+                editInputLayout.isErrorEnabled = true
+                editInputLayout.error = errorValue
             }
 
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -106,43 +101,41 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 //                mEditValueView.background.colorFilter =
 //                    PorterDuffColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), PorterDuff.Mode.SRC_ATOP)
 //            }
-            mEditValueView.postDelayed({
-                KeyboardUtils.showKeyboard(mEditValueView)
+            editValueView.postDelayed({
+                KeyboardUtils.showKeyboard(editValueView)
             }, 100)
         }
     }
 
     override fun hide() {
         super.hide()
-        mLayout.visibility = View.GONE
-        KeyboardUtils.hideKeyboard(mEditValueView)
+        layout.visibility = View.GONE
+        KeyboardUtils.hideKeyboard(editValueView)
     }
 
     override fun save(state: Bundle) {
         super.save(state)
         state.let { bundle ->
-            bundle.putString(TAG_EDIT_VALUE, mEditValueView.text.toString())
-            bundle.putString(TAG_EDIT_HINT_VALUE, mEditHintValue)
-            bundle.putString(TAG_HINT_VALUE, mHintValue)
-            bundle.putString(TAG_ERROR_VALUE, mErrorValue)
-            bundle.putInt(TAG_COLOR_TINT, mColorTint)
+            bundle.putString(TAG_EDIT_VALUE, editValueView.text.toString())
+            bundle.putString(TAG_HINT_VALUE, hintValue)
+            bundle.putString(TAG_ERROR_VALUE, errorValue)
+            bundle.putInt(TAG_COLOR_TINT, colorTint)
         }
     }
 
     override fun restore(state: Bundle) {
         super.restore(state)
         state.let { bundle ->
-            mEditValue = bundle.getString(TAG_EDIT_VALUE)
-            mEditHintValue = bundle.getString(TAG_EDIT_HINT_VALUE)
-            mHintValue = bundle.getString(TAG_HINT_VALUE)
-            mErrorValue = bundle.getString(TAG_ERROR_VALUE)
-            mColorTint = bundle.getInt(TAG_COLOR_TINT)
+            editValue = bundle.getString(TAG_EDIT_VALUE)
+            hintValue = bundle.getString(TAG_HINT_VALUE)
+            errorValue = bundle.getString(TAG_ERROR_VALUE)
+            colorTint = bundle.getInt(TAG_COLOR_TINT)
         }
     }
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.EDIT_LINE
 
-    override fun getValue(): String = mEditValueView.text.toString()
+    override fun getValue(): String = editValueView.text.toString()
 
     private inner class EditFilter : BaseInputFilter() {
 
@@ -161,18 +154,18 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             // Check for allowed symbols
             val checkedString = StringUtils.getAllowedString(mResultString)
             return if (checkedString != null) {
-                mErrorValue = dialog.getString(R.string.dialogs_edit_forbidden_symbols)
-                mEditInputLayout.error = mErrorValue + StringUtils.DIALOG_FORBIDDEN_SYMBOLS
+                errorValue = dialog.getString(R.string.dialogs_edit_forbidden_symbols)
+                editInputLayout.error = errorValue + StringUtils.DIALOG_FORBIDDEN_SYMBOLS
                 mAcceptView.isEnabled = mResultString.length > 1
                 ""
             } else if (StringUtils.getAllowedName(mResultString)) {
-                mErrorValue = dialog.getString(R.string.dialogs_edit_forbidden_name)
-                mEditInputLayout.error = mErrorValue
+                errorValue = dialog.getString(R.string.dialogs_edit_forbidden_name)
+                editInputLayout.error = errorValue
                 mAcceptView.isEnabled = false
                 null
             } else {
-                mErrorValue = null
-                mEditInputLayout.isErrorEnabled = false
+                errorValue = null
+                editInputLayout.isErrorEnabled = false
                 null
             }
         }
@@ -196,17 +189,12 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         }
 
         fun setEditValue(value: String?): Builder {
-            mEditValue = value
+            editValue = value
             return this
         }
 
         fun setEditHintValue(value: String?): Builder {
-            mEditHintValue = value
-            return this
-        }
-
-        fun setHintValue(value: String?): Builder {
-            mHintValue = value
+            hintValue = value
             return this
         }
 
@@ -221,17 +209,17 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         }
 
         fun setError(value: String?): Builder {
-            mErrorValue = value
+            errorValue = value
             return this
         }
 
         fun setIsPassword(password: Boolean): Builder {
-            mIsPassword = password
+            isPassword = password
             return this
         }
 
         fun setColorTint(int: Int): Builder {
-            mColorTint = int
+            colorTint = int
             return this
         }
 

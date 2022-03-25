@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:theme="@style/Theme.MaterialComponents.DayNight"
+    app:cardBackgroundColor="@color/colorSurface"
     app:cardCornerRadius="@dimen/default_corner_radius_micro">
 
     <LinearLayout
@@ -84,21 +86,17 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dialogCommonCancelButton"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/screen_margin_medium"
-                android:paddingRight="@dimen/screen_margin_medium"
                 tools:text="Cancel" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dialogCommonAcceptButton"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/screen_margin_medium"
-                android:paddingLeft="@dimen/screen_margin_medium"
-                android:paddingRight="@dimen/screen_margin_medium"
                 tools:text="Accept" />
         </LinearLayout>
 

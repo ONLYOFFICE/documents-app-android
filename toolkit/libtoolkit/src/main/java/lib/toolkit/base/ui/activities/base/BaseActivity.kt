@@ -455,7 +455,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         tintColor: Int = R.color.colorPrimaryLight
     ) {
         getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)?.run {
-            setHintValue(endHint)
+            setEditHintValue(endHint)
             setIsPassword(isPassword)
             setError(error)
             setColorTint(tintColor)
