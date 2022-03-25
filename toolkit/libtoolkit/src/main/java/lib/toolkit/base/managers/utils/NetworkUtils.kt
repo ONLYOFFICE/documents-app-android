@@ -35,19 +35,9 @@ object NetworkUtils {
     }
 
     @JvmStatic
-    fun clearCookies(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            CookieManager.getInstance().removeAllCookies(null)
-            CookieManager.getInstance().flush()
-        } else {
-            val cookieSyncMngr = CookieSyncManager.createInstance(context)
-            cookieSyncMngr.startSync()
-            val cookieManager = CookieManager.getInstance()
-            cookieManager.removeAllCookie()
-            cookieManager.removeSessionCookie()
-            cookieSyncMngr.stopSync()
-            cookieSyncMngr.sync()
-        }
+    fun clearCookies() {
+        CookieManager.getInstance().removeAllCookies(null)
+        CookieManager.getInstance().flush()
     }
 
     @JvmStatic
