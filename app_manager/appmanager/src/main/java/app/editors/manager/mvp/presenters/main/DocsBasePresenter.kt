@@ -204,32 +204,14 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         modelExplorerStack?.let { stack ->
             stack.currentId?.let { id ->
                 fileProvider?.let { provider ->
-                    if (filteringValue?.isEmpty() == true) {
-                        disposable.add(
-                            provider.getFiles(id, getArgs(filteringValue))
-                                .subscribe({ explorer ->
-                                    stack.refreshStack(explorer)
-                                    updateViewsState()
-                                    viewState.onDocsRefresh(getListWithHeaders(stack.last(), true))
-                                }, this::fetchError)
-                        )
-                    } else if (isFilteringMode && provider is CloudFileProvider) {
-                        provider.search(filteringValue)?.let { observable ->
-                            disposable.add(
-                                observable.subscribe({ items ->
-                                    try {
-                                        stack.refreshStack(getSearchExplorer(items))
-                                    } catch (exception: JSONException) {
-                                        throw exception
-                                    }
-                                    setPlaceholderType( if (stack.isListEmpty)
-                                        PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
-                                    updateViewsState()
-                                    viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
-                                }, this::fetchError)
-                            )
-                        }
-                    }
+                    disposable.add(
+                        provider.getFiles(id, getArgs(filteringValue))
+                            .subscribe({ explorer ->
+                                stack.refreshStack(explorer)
+                                updateViewsState()
+                                viewState.onDocsRefresh(getListWithHeaders(stack.last(), true))
+                            }, this::fetchError)
+                    )
                     viewState.onSwipeEnable(true)
                     return true
                 }
@@ -268,80 +250,20 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                  stack.currentId?.let { id ->
                      filteringValue = value
                      fileProvider?.let { provider ->
-                         if (provider !is CloudFileProvider ||
-                             App.getApp().appComponent.accountOnline?.isPersonal() == true) {
-                             getSearchedFiles(id, value)
-                         } else {
-                             if (value.isNotEmpty()) {
-                                 provider.search(value)?.let { observable ->
-                                     disposable.add(
-                                         observable.subscribe({ items ->
-                                             try {
-                                                 stack.setFilter(getSearchExplorer(items))
-                                             } catch (exception: JSONException) {
-                                                 throw exception
-                                             }
-                                             setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.SEARCH else
-                                                 PlaceholderViews.Type.NONE)
-                                             updateViewsState()
-                                             viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
-                                         }, this::fetchError)
-                                     )
-                                 }
-                             } else {
-                                 getSearchedFiles(id, value)
-                             }
-                         }
+                         provider.getFiles(id, getArgs(value))
+                             .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
+                             .subscribe({ explorer ->
+                                 modelExplorerStack?.setFilter(explorer)
+                                 setPlaceholderType(if (modelExplorerStack?.isListEmpty == true) PlaceholderViews.Type.SEARCH else
+                                     PlaceholderViews.Type.NONE)
+                                 updateViewsState()
+                                 viewState.onDocsFilter(getListWithHeaders(modelExplorerStack?.last(), true))
+                             }, this::fetchError)
                      }
                  }
             }
         }
         return false
-    }
-
-    private fun getSearchedFiles(id: String, value: String) {
-        fileProvider?.let { provider ->
-            disposable.add(
-                provider.getFiles(id, getArgs(value))
-                    .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                    .subscribe({ explorer ->
-                        modelExplorerStack?.setFilter(explorer)
-                        setPlaceholderType(if (modelExplorerStack?.isListEmpty == true) PlaceholderViews.Type.SEARCH else
-                            PlaceholderViews.Type.NONE)
-                        updateViewsState()
-                        viewState.onDocsFilter(getListWithHeaders(modelExplorerStack?.last(), true))
-                    }, this::fetchError)
-            )
-        }
-    }
-
-    @Throws(JSONException::class)
-    private fun getSearchExplorer(items: String): Explorer {
-        return Explorer().apply {
-            current = modelExplorerStack?.last()?.current
-            getSearchResult(items)?.filter(::checkFolderRootType)?.let { items ->
-                files = items.filterIsInstance<CloudFile>()
-                folders = items.filterIsInstance<CloudFolder>()
-            }
-        }
-    }
-
-    private fun checkFolderRootType(item: Item): Boolean {
-        return item.rootFolderType.toInt() == modelExplorerStack?.rootFolderType
-                && item.title.contains(filteringValue.orEmpty(), true)
-    }
-
-    @Throws(JSONException::class)
-    private fun getSearchResult(response: String): List<Item>? {
-        return StringUtils.getJsonObject(response)?.let { jsonObject ->
-            return JsonParser().parse(jsonObject.getString("response")).asJsonArray?.map {
-                if (it.toString().contains("parentId")) {
-                    Gson().fromJson(it, CloudFolder::class.java)
-                } else {
-                    Gson().fromJson(it, CloudFile::class.java)
-                }
-            }
-        }
     }
 
     fun filterWait(value: String) {
