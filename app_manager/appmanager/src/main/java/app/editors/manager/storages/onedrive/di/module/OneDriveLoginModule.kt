@@ -1,6 +1,7 @@
 package app.editors.manager.storages.onedrive.di.module
 
 
+import app.documents.core.settings.NetworkSettings
 import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.storages.onedrive.onedrive.login.OneDriveLoginService
 import app.editors.manager.storages.onedrive.onedrive.login.OneDriveLoginServiceProvider
@@ -25,9 +26,9 @@ class OneDriveLoginModule {
 
 
     @Provides
-    fun provideOneDriveLoginService(okHttpClient: OkHttpClient): OneDriveLoginService = Retrofit.Builder()
+    fun provideOneDriveLoginService(okHttpClient: OkHttpClient, settings: NetworkSettings): OneDriveLoginService = Retrofit.Builder()
         .client(okHttpClient)
-        .baseUrl("https://graph.microsoft.com/")
+        .baseUrl(settings.getBaseUrl())
         .addConverterFactory(Json {
             isLenient = true
             ignoreUnknownKeys = true

@@ -16,6 +16,7 @@ interface OneDriveService {
     companion object {
         const val API_VERSION = "beta/"
         const val ONEDRIVE_BASE_URL = "https://graph.microsoft.com/"
+        const val ONEDRIVE_AUTH_URL = "https://login.microsoftonline.com/"
     }
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + "application/x-www-form-urlencoded",
