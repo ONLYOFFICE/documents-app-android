@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/Theme.MaterialComponents.DayNight"
-    app:cardBackgroundColor="@color/colorSurface"
+    android:theme="@style/DialogCommonTheme"
     app:cardCornerRadius="@dimen/default_corner_radius_micro">
 
     <LinearLayout

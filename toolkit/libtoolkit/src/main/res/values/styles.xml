@@ -66,6 +66,7 @@
 
     <style name="DialogCommonTheme" parent="NoActionBarTheme">
         <item name="android:windowIsTranslucent">true</item>
+        <item name="elevationOverlayEnabled">false</item>
     </style>
 
     <style name="MediaTheme" parent="NoActionBarTheme">

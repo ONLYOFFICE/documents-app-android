@@ -61,7 +61,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     override fun show() {
         super.show()
         layout.visibility = View.VISIBLE
-        mAcceptView.isEnabled = !editValue?.trim().isNullOrEmpty()
+        mAcceptView.isEnabled = false
         dialog.view?.post {
             editValueView.apply {
                 if (isPassword) {
