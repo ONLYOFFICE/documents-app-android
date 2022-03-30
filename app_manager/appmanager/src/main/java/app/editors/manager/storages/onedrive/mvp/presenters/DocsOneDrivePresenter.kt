@@ -3,12 +3,13 @@ package app.editors.manager.storages.onedrive.mvp.presenters
 import android.accounts.Account
 import android.content.ClipData
 import android.net.Uri
+import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.oneDriveAuthService
+import app.editors.manager.app.oneDriveLoginService
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
@@ -25,6 +26,7 @@ import app.editors.manager.storages.onedrive.managers.works.UploadWork
 import app.editors.manager.storages.onedrive.mvp.models.request.ExternalLinkRequest
 import app.editors.manager.storages.onedrive.mvp.models.response.AuthResponse
 import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveService
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -104,6 +106,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     override fun refreshToken() {
         val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
         val accData = AccountUtils.getAccountData(context, account)
+        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_AUTH_URL)
         val map = mapOf(
             StorageUtils.ARG_CLIENT_ID to Constants.OneDrive.COM_CLIENT_ID,
             StorageUtils.ARG_SCOPE to StorageUtils.OneDrive.VALUE_SCOPE,
@@ -112,7 +115,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.OneDrive.COM_CLIENT_SECRET,
             StorageUtils.OneDrive.ARG_REFRESH_TOKEN to accData.refreshToken
         )
-        disposable.add(App.getApp().oneDriveAuthService.getToken(map as Map<String, String>)
+        disposable.add(App.getApp().oneDriveLoginService.getToken(map as Map<String, String>)
             .subscribe {oneDriveResponse ->
                 when(oneDriveResponse) {
                     is OneDriveResponse.Success -> {
@@ -122,7 +125,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                         refresh()
                     }
                     is OneDriveResponse.Error -> {
-                        throw oneDriveResponse.error
+                       viewState.onError(oneDriveResponse.error.message)
                     }
                 }
             })

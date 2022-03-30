@@ -25,12 +25,9 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
-import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
-import app.editors.manager.storages.base.presenter.BaseStorageSignInPresenter
 import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.storages.onedrive.mvp.presenters.OneDriveSingInPresenter
-import app.editors.manager.storages.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
 import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
@@ -88,7 +85,6 @@ interface AppComponent {
     val accountsDao: AccountDao
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider
-    val oneDriveAuthService: IOneDriveAuthServiceProvider
     val dropboxLoginService: IDropboxLoginServiceProvider
     val googleDriveLoginService: IGoogleDriveLoginServiceProvider
     val accountOnline: CloudAccount?

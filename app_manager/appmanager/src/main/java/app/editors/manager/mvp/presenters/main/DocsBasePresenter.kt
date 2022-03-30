@@ -442,14 +442,18 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return fileProvider?.let { provider ->
             Observable.just(provider.fileInfo(item))
                 .flatMap { response: Observable<CloudFile> ->
-                    response.flatMap { file: CloudFile ->
-                        val statusMask = file.fileStatus.toInt() and ApiContract.FileStatus.IS_EDITING
-                        if (statusMask != 0) {
-                            Observable.just(true)
-                        } else {
-                            Observable.just(false)
+                    response.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap { file: CloudFile ->
+                            val fileStatus = if (file.fileStatus.isEmpty())
+                                ApiContract.FileStatus.NONE else file.fileStatus.toInt()
+                            val statusMask = fileStatus and ApiContract.FileStatus.IS_EDITING
+                            if (statusMask != 0) {
+                                Observable.just(true)
+                            } else {
+                                Observable.just(false)
+                            }
                         }
-                    }
                 }
         }
     }
