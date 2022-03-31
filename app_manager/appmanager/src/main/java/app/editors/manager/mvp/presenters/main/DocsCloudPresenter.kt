@@ -603,7 +603,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val model = Json.decodeFromString<OpenDataModel>(data)
         fileProvider?.let { provider ->
             disposable.add(provider.fileInfo(CloudFile().apply {
-                id = model.file?.id
+                id = model.file?.id.toString()
             }).subscribe({ file: CloudFile ->
                 itemClicked = file
                 when (StringUtils.getExtension(file.fileExst)) {

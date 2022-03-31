@@ -17,18 +17,19 @@ data class OpenDataModel(
 
 @Serializable
 data class OpenFileModel(
-    @Serializable(with = JsonAsStringSerializer::class) val id: String? = null,
+    val id: Int? = null,
     val title: String? = null,
     val extension: String? = null
 )
 
 @Serializable
 data class OpenFolderModel(
-    @Serializable(with = JsonAsStringSerializer::class) val id: String? = null,
+    val id: Int? = null,
     val parentId: String? = null,
     val rootFolderType: Int? = null
 )
 
+// TODO need string?
 object JsonAsStringSerializer: JsonTransformingSerializer<String>(tSerializer = String.serializer()) {
     override fun transformDeserialize(element: JsonElement): JsonElement {
         return JsonPrimitive(value = element.toString())
