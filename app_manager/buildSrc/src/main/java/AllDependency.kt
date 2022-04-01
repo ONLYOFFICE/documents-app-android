@@ -14,7 +14,7 @@ object Moxy {
 }
 
 object Koin {
-    private const val version = "3.1.4"
+    private const val version = "3.1.5"
 
     const val koinAndroid = "io.insert-koin:koin-android:$version"
     const val koinCompose = "io.insert-koin:koin-androidx-compose:$version"
