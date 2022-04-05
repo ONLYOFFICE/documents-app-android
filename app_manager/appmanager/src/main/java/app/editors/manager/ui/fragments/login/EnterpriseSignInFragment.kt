@@ -9,10 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentLoginEnterpriseSigninBinding
+import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.mvp.presenters.login.EnterpriseLoginPresenter
 import app.editors.manager.mvp.views.login.CommonSignInView
 import app.editors.manager.ui.activities.login.AuthAppActivity
@@ -364,6 +366,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
             showGoogleLogin(providers.contains("google"))
             showFacebookLogin(providers.contains("facebook"))
         }
+        viewBinding?.socialNetworkLayout?.loginSocialGoogleButton?.isVisible = GoogleUtils.isGooglePlayServicesAvailable(requireContext())
     }
 
     private val intent: Unit
