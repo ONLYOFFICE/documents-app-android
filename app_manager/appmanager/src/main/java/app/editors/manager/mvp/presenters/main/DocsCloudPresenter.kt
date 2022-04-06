@@ -175,6 +175,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 disposable.add(
                     provider.createFile(id, requestCreate).subscribe({ file ->
                         addFile(file)
+                        addRecent(file)
                         setPlaceholderType(PlaceholderViews.Type.NONE)
                         viewState.onDialogClose()
                         viewState.onCreateFile(file)
