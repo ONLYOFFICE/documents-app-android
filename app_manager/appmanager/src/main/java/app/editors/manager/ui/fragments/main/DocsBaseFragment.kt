@@ -279,7 +279,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        searchCloseButton?.isVisible = newText.isEmpty()
+        val isEmpty = newText.isEmpty()
+        if(isEmpty) {
+            searchCloseButton?.alpha = 0.5f
+        } else {
+            searchCloseButton?.alpha = 1.0f
+        }
+        searchCloseButton?.isEnabled = !isEmpty
         presenter.filterWait(newText)
         return false
     }
@@ -587,7 +593,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 searchCloseButton?.let {
                     val isEmpty = value?.isEmpty() ?: false
                     it.isEnabled = !isEmpty
-                    it.isVisible = !isEmpty
                 }
             } else {
                 searchView?.let {
@@ -636,10 +641,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                         maxWidth = Int.MAX_VALUE
                         isIconified = !presenter.isFilteringMode
                         searchCloseButton = findViewById(androidx.appcompat.R.id.search_close_btn)
-                        searchCloseButton?.isVisible = false
-                        searchCloseButton?.setOnClickListener {
-                            if (!isSearchViewClear)
-                                onBackPressed()
+                        searchCloseButton?.apply {
+                            isEnabled = false
+                            isVisible = true
+                            setOnClickListener {
+                                if (!isSearchViewClear)
+                                    onBackPressed()
+                            }
                         }
 
                         // On search open
