@@ -23,13 +23,13 @@ open class BaseWatcher : TextWatcher {
     protected var inputText: String = ""
 
     protected var state = StatesAction.NONE
-    protected var mSelectionStart = 0
-    protected var mSelectionEnd = 0
-    protected var mInputSelection = Pair(0, 0)
-    protected var mDeleteSelection = Pair(0, 0)
+    protected var selectionStart = 0
+    protected var selectionEnd = 0
+    protected var inputSelection = Pair(0, 0)
+    protected var deleteSelection = Pair(0, 0)
     var selectionPosition = 0
-    var mSelectionPositionStart = 0
-    var mSelectionPositionEnd = 0
+    var selectionPositionStart = 0
+    var selectionPositionEnd = 0
     constructor()
 
     constructor(view: EditText?) {
@@ -53,21 +53,21 @@ open class BaseWatcher : TextWatcher {
     override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
         Log.d(TAG, "onTextChanged($text, $start, $before, $count)")
         resultText = text.toString()
-        mSelectionStart = mEditView?.selectionStart ?: resultText.length
-        mSelectionEnd = mEditView?.selectionEnd ?: resultText.length
+        selectionStart = mEditView?.selectionStart ?: resultText.length
+        selectionEnd = mEditView?.selectionEnd ?: resultText.length
 
         inputText = when {
             abs(count - before) > 1 -> {
-                mInputSelection = Pair(start, start + count)
-                resultText.substring(mInputSelection.first, mInputSelection.second)
+                inputSelection = Pair(start, start + count)
+                resultText.substring(inputSelection.first, inputSelection.second)
             }
 
             count >= before -> {
                 if (count == before && text.toString() != beforeText) {
                     text.toString()
                 } else {
-                    mInputSelection = Pair(start + before, start + count)
-                    resultText.substring(mInputSelection.first, mInputSelection.second)
+                    inputSelection = Pair(start + before, start + count)
+                    resultText.substring(inputSelection.first, inputSelection.second)
                 }
             }
 
@@ -79,29 +79,29 @@ open class BaseWatcher : TextWatcher {
 //            }
 
             else -> {
-                mInputSelection = Pair(0, 0)
+                inputSelection = Pair(0, 0)
                 ""
             }
         }
 
         deletedText = when {
             abs(count - before) > 1 -> {
-                mDeleteSelection = Pair(start, start + before)
-                beforeText.substring(mDeleteSelection.first, mDeleteSelection.second)
+                deleteSelection = Pair(start, start + before)
+                beforeText.substring(deleteSelection.first, deleteSelection.second)
             }
 
             count <= before -> {
                 if (count == before && beforeText != text.toString()) {
                     beforeText
                 } else {
-                    mDeleteSelection = Pair(start + count, start + before)
-                    beforeText.substring(mDeleteSelection.first, mDeleteSelection.second)
+                    deleteSelection = Pair(start + count, start + before)
+                    beforeText.substring(deleteSelection.first, deleteSelection.second)
                 }
             }
 
             else -> {
                 if (resultText.substring(0, before) == beforeText) {
-                    mDeleteSelection = Pair(0, 0)
+                    deleteSelection = Pair(0, 0)
                     ""
                 } else {
                     beforeText
@@ -114,13 +114,13 @@ open class BaseWatcher : TextWatcher {
     }
 
     override fun afterTextChanged(s: Editable) {
-        Log.d(TAG, "afterTextChanged($mSelectionStart, $inputText, $deletedText, $resultText)")
+        Log.d(TAG, "afterTextChanged($selectionStart, $inputText, $deletedText, $resultText)")
     }
 
     protected fun setState() {
         state = when {
             inputText.isNotEmpty() && deletedText.isEmpty() -> {
-                if (mSelectionStart == resultText.length) {
+                if (selectionStart == resultText.length) {
                     StatesAction.APPEND
                 } else {
                     StatesAction.INSERT
@@ -147,7 +147,7 @@ open class BaseWatcher : TextWatcher {
             view.setText(text)
             view.addTextChangedListener(this)
 
-            (selection ?: mSelectionStart).let {
+            (selection ?: selectionStart).let {
                 view.setSelection(if (it > text.length) {
                     text.length
                 } else {
