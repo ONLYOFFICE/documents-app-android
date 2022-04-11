@@ -142,6 +142,7 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     }
 
     override fun onOneDriveLogin() {
+        dismiss()
         val storage = Storage(
             OneDriveUtils.ONEDRIVE_STORAGE,
             Constants.OneDrive.COM_CLIENT_ID,
@@ -151,6 +152,7 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     }
 
     override fun onDropboxLogin() {
+        dismiss()
         val storage = Storage(
             ApiContract.Storage.DROPBOX,
             Constants.DropBox.COM_CLIENT_ID,
@@ -160,6 +162,7 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
     }
 
     override fun onGoogleDriveLogin() {
+        dismiss()
         val storage = Storage(
             ApiContract.Storage.GOOGLEDRIVE,
             Constants.Google.COM_CLIENT_ID,
