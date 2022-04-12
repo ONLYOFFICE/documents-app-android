@@ -335,7 +335,7 @@ class CloudAccountFragment : BaseAppFragment(),
             Constants.DropBox.COM_CLIENT_ID,
             Constants.DropBox.COM_REDIRECT_URL
         )
-        showFragment(newInstance(storage), DropboxSignInFragment.TAG, false)
+        showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
     }
 
     override fun onOneDriveLogin() {
