@@ -63,5 +63,10 @@ class DropboxSignInFragment: BaseStorageSignInFragment() {
         }
     }
 
+    override fun loadWebView(url: String?) {
+        viewBinding?.webStorageSwipe?.isRefreshing = true
+        url?.let { viewBinding?.webStorageWebview?.loadUrl(it.replace("code", "token")) }
+    }
+
     override fun getWebViewCallback() = WebViewCallbacks()
 }
