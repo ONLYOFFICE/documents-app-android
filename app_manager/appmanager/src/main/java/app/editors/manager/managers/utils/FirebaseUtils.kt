@@ -1,5 +1,6 @@
 package app.editors.manager.managers.utils
 
+import android.content.Context
 import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -88,6 +89,10 @@ object FirebaseUtils {
             }
         }
         return liveData
+    }
+
+    fun getLocalServicesUrl(context: Context): Array<String> {
+        return arrayOf(context.getString(R.string.app_url_terms), context.getString(R.string.app_url_policy))
     }
 
     private fun addAnalytics(event: String, bundle: Bundle) {
