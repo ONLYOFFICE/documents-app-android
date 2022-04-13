@@ -24,7 +24,6 @@ import app.editors.manager.mvp.presenters.main.CloudAccountState
 import app.editors.manager.mvp.views.main.CloudAccountView
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
-import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment.Companion.newInstance
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
@@ -344,7 +343,7 @@ class CloudAccountFragment : BaseAppFragment(),
             Constants.OneDrive.COM_CLIENT_ID,
             Constants.OneDrive.COM_REDIRECT_URL
         )
-        showFragment(newInstance(storage), OneDriveSignInFragment.TAG, false)
+        showFragment(OneDriveSignInFragment.newInstance(storage), OneDriveSignInFragment.TAG, false)
     }
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {

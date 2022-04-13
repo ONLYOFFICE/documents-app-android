@@ -17,7 +17,10 @@ class RemoteUrlViewModel: ViewModel() {
     val remoteUrls: LiveData<Spanned?> = getUrls().map {
         it?.let { urls ->
             return@map resourcesProvider.getHtmlSpanned(R.string.sign_in_terms_and_policy_text, urls[1], urls[0])
-        } ?: return@map null
+        } ?: run {
+            val urls = FirebaseUtils.getLocalServicesUrl(resourcesProvider.context)
+            return@map resourcesProvider.getHtmlSpanned(R.string.sign_in_terms_and_policy_text, urls[1], urls[0])
+        }
     }
 
     private fun getUrls() = FirebaseUtils.getServiceUrls()

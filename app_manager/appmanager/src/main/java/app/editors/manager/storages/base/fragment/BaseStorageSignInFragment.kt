@@ -23,7 +23,7 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
 
 
     companion object {
-        val TAG = OneDriveSignInFragment::class.java.simpleName
+        val TAG = BaseStorageSignInFragment::class.java.simpleName
         const val TAG_STORAGE = "TAG_MEDIA"
         const val TAG_WEB_VIEW = "TAG_WEB_VIEW"
         const val TAG_PAGE_LOAD = "TAG_PAGE_LOAD"
@@ -143,7 +143,7 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
         }
     }
 
-    private fun loadWebView(url: String?) {
+    protected open fun loadWebView(url: String?) {
         viewBinding?.webStorageSwipe?.isRefreshing = true
         url?.let { viewBinding?.webStorageWebview?.loadUrl(it) }
     }
