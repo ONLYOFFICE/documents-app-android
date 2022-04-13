@@ -327,14 +327,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun import(uri: Uri) {
-        val fileName = ContentResolverUtils.getName(context, uri)
-        val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
-
         disposable.add((fileProvider as LocalFileProvider).import(context, modelExplorerStack?.currentId!!, uri).subscribe {
             refresh()
             viewState.onSnackBar(context.getString(R.string.operation_complete_message))
-            addRecent(uri)
-            openFile(uri, ext)
         })
     }
 
