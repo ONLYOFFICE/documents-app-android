@@ -41,7 +41,7 @@ open class BaseStorageUploadWork(context: Context, workerParams: WorkerParameter
             val percent = FileUtils.getPercentOfLoading(total, progress)
             val id = id.hashCode()
             val tag = getId().toString()
-            mNotificationUtils.showUploadProgressNotification(id, tag, title!!, percent)
+            title?.let { mNotificationUtils.showUploadProgressNotification(id, tag, it, percent) }
             sendBroadcastProgress(percent, path, folderId)
         }
     }
