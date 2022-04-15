@@ -4,8 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
+import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.managers.utils.Constants
+import app.editors.manager.mvp.models.account.Storage
+import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
+import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.login.WebDavSignInFragment
 
@@ -14,12 +21,18 @@ class WebDavLoginActivity : BaseAppActivity() {
     companion object {
         private const val KEY_PROVIDER = "KEY_PROVIDER"
         private const val KEY_ACCOUNT = "KEY_ACCOUNT "
+        private const val KEY_TAG_FRAGMENT = "KEY_TAG_FRAGMENT"
+
+        const val ONEDRIVE_FRAGMENT_VALUE = 1
+        const val DROPBOX_FRAGMENT_VALUE = 2
+        const val GOOGLEDRIVE_FRAGMENT_VALUE = 3
 
         @JvmStatic
-        fun show(activity: Activity, provider: WebDavApi.Providers?, account: String?) {
+        fun show(activity: Activity, provider: WebDavApi.Providers? = null, account: String?, fragment: Int = 0) {
             activity.startActivityForResult(Intent(activity, WebDavLoginActivity::class.java).apply {
                 putExtra(KEY_PROVIDER, provider)
                 putExtra(KEY_ACCOUNT, account)
+                putExtra(KEY_TAG_FRAGMENT, fragment)
             }, 5)
         }
     }
@@ -49,7 +62,7 @@ class WebDavLoginActivity : BaseAppActivity() {
             intent.let { data ->
                 it.title = getString(
                     R.string.login_web_dav_title,
-                    (data.getSerializableExtra(KEY_PROVIDER) as WebDavApi.Providers).name
+                    (data.getSerializableExtra(KEY_PROVIDER) as WebDavApi.Providers?)?.name
                 )
             }
 
@@ -57,7 +70,16 @@ class WebDavLoginActivity : BaseAppActivity() {
         savedInstanceState?.let {
             // Nothing
         } ?: run {
-            showSignInFragment()
+            showFragment()
+        }
+    }
+
+    private fun showFragment() {
+        when(intent.getIntExtra(KEY_TAG_FRAGMENT, 0)) {
+            ONEDRIVE_FRAGMENT_VALUE -> showOneDriveSignInFragment()
+            DROPBOX_FRAGMENT_VALUE -> showDropboxSignInFragment()
+            GOOGLEDRIVE_FRAGMENT_VALUE -> showGoogleDriveSignInFragment()
+            else -> showSignInFragment()
         }
     }
 
@@ -65,6 +87,45 @@ class WebDavLoginActivity : BaseAppActivity() {
         showFragment(
             WebDavSignInFragment.newInstance(intent.getSerializableExtra(KEY_PROVIDER) as WebDavApi.Providers),
             null
+        )
+    }
+
+    private fun showOneDriveSignInFragment() {
+        val storage = Storage(
+            OneDriveUtils.ONEDRIVE_STORAGE,
+            Constants.OneDrive.COM_CLIENT_ID,
+            Constants.OneDrive.COM_REDIRECT_URL
+        )
+
+        showFragment(
+            OneDriveSignInFragment.newInstance(storage),
+            OneDriveSignInFragment.TAG
+        )
+    }
+
+    private fun showDropboxSignInFragment() {
+        val storage = Storage(
+            ApiContract.Storage.DROPBOX,
+            Constants.DropBox.COM_CLIENT_ID,
+            Constants.DropBox.COM_REDIRECT_URL
+        )
+
+        showFragment(
+            DropboxSignInFragment.newInstance(storage),
+            DropboxSignInFragment.TAG
+        )
+    }
+
+    private fun showGoogleDriveSignInFragment() {
+        val storage = Storage(
+            ApiContract.Storage.GOOGLEDRIVE,
+            Constants.Google.COM_CLIENT_ID,
+            Constants.Google.COM_REDIRECT_URL
+        )
+
+        showFragment(
+            GoogleDriveSignInFragment.newInstance(storage),
+            GoogleDriveSignInFragment.TAG
         )
     }
 }

@@ -13,7 +13,7 @@ interface AccountsView : BaseView {
     fun onSignIn(portal: String, login: String)
     fun showWaitingDialog()
     fun onWebDavLogin(account: CloudAccount)
-    fun onOneDriveLogin()
-    fun onDropboxLogin()
-    fun onGoogleDriveLogin()
+    fun onOneDriveLogin(account: CloudAccount)
+    fun onDropboxLogin(account: CloudAccount)
+    fun onGoogleDriveLogin(account: CloudAccount)
 }

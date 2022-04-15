@@ -141,31 +141,16 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
         WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.valueOf(account.webDavProvider ?: ""), Json.encodeToString(account))
     }
 
-    override fun onOneDriveLogin() {
-        val storage = Storage(
-            OneDriveUtils.ONEDRIVE_STORAGE,
-            Constants.OneDrive.COM_CLIENT_ID,
-            Constants.OneDrive.COM_REDIRECT_URL
-        )
-        fragmentManager?.let { showFragment(fragmentManager = it,OneDriveSignInFragment.newInstance(storage), R.id.frame_container, OneDriveSignInFragment.TAG, false) }
+    override fun onOneDriveLogin(account: CloudAccount) {
+        WebDavLoginActivity.show(activity = requireActivity(), account = Json.encodeToString(account), fragment = WebDavLoginActivity.ONEDRIVE_FRAGMENT_VALUE)
     }
 
-    override fun onDropboxLogin() {
-        val storage = Storage(
-            ApiContract.Storage.DROPBOX,
-            Constants.DropBox.COM_CLIENT_ID,
-            Constants.DropBox.COM_REDIRECT_URL
-        )
-        fragmentManager?.let { showFragment(fragmentManager = it,DropboxSignInFragment.newInstance(storage), R.id.frame_container, DropboxSignInFragment.TAG, false) }
+    override fun onDropboxLogin(account: CloudAccount) {
+        WebDavLoginActivity.show(activity = requireActivity(), account = Json.encodeToString(account), fragment = WebDavLoginActivity.DROPBOX_FRAGMENT_VALUE)
     }
 
-    override fun onGoogleDriveLogin() {
-        val storage = Storage(
-            ApiContract.Storage.GOOGLEDRIVE,
-            Constants.Google.COM_CLIENT_ID,
-            Constants.Google.COM_REDIRECT_URL
-        )
-        fragmentManager?.let { showFragment(fragmentManager = it, GoogleDriveSignInFragment.newInstance(storage), R.id.frame_container, GoogleDriveSignInFragment.TAG, false) }
+    override fun onGoogleDriveLogin(account: CloudAccount) {
+        WebDavLoginActivity.show(activity = requireActivity(), account = Json.encodeToString(account), fragment = WebDavLoginActivity.GOOGLEDRIVE_FRAGMENT_VALUE)
     }
 
     override fun onError(message: String?) {
