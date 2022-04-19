@@ -1,23 +1,21 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
-import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
-import app.documents.core.account.AccountDao
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.RecentDao
 import app.documents.core.account.copyWithToken
 import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.models.login.response.ResponseUser
-import app.documents.core.settings.NetworkSettings
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.models.user.Thirdparty
+import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.ProfileView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -31,7 +29,6 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import moxy.InjectViewState
-import moxy.MvpPresenter
 import javax.inject.Inject
 
 sealed class ProfileState(val account: CloudAccount) {
@@ -41,19 +38,10 @@ sealed class ProfileState(val account: CloudAccount) {
 }
 
 @InjectViewState
-class ProfilePresenter : MvpPresenter<ProfileView>() {
-
-    @Inject
-    lateinit var context: Context
-
-    @Inject
-    lateinit var accountDao: AccountDao
+class ProfilePresenter : BasePresenter<ProfileView>() {
 
     @Inject
     lateinit var recentDao: RecentDao
-
-    @Inject
-    lateinit var networkSettings: NetworkSettings
 
     init {
         App.getApp().appComponent.inject(this)
@@ -100,7 +88,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                 .map { it.response }
                 .subscribe({ list: List<Thirdparty> ->
                     viewState.onRender(ProfileState.ProvidersState(list, account))
-                }) { throwable: Throwable -> viewState.onError(throwable.message) })
+                }) { throwable: Throwable -> fetchError(throwable = throwable) })
         } catch (error: RuntimeException) {
             //nothing
         }
@@ -137,7 +125,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                     )
                 }
                 is LoginResponse.Error -> {
-                    viewState.onError(response.error.message)
+                    fetchError(response.error)
                 }
                 else -> {
                     // Nothing
