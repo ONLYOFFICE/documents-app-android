@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- ======================================================================================= -->
     <!-- Global customizations -->
@@ -21,6 +21,7 @@
         <item name="android:splitMotionEvents">false</item>
         <item name="android:windowBackground">@color/colorBackgroundSecond</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme">

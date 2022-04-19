@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.compose.NavHost
@@ -28,6 +29,7 @@ import app.editors.manager.R
 import app.editors.manager.compose.ui.theme.AppManagerTheme
 import app.editors.manager.compose.ui.theme.colorAppBar
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import lib.editors.gbase.ui.adapters.settings.factory.Actions
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.UiUtils
 
@@ -106,7 +108,7 @@ private fun AboutScreen(
     sdkVersion: String,
     isTablet: Boolean?,
     itemClick: (item: AboutClickedItem) -> Unit,
-    backPressed: () -> Unit
+    backPressed: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -136,7 +138,8 @@ private fun AboutScreen(
                     ),
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.onSurface,
-                    modifier = Modifier.padding(top = 16.dp)
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally)
                 )
                 Spacer(modifier = Modifier.padding(top = 48.dp))
                 AboutItem(

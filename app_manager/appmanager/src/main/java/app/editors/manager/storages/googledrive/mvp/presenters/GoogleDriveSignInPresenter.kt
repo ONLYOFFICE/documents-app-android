@@ -22,7 +22,7 @@ class GoogleDriveSignInPresenter: BaseStorageSignInPresenter<BaseStorageSignInVi
         val map = mapOf(
             StorageUtils.ARG_CODE to code,
             StorageUtils.ARG_CLIENT_ID to Constants.Google.COM_CLIENT_ID,
-            StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.Google.COM_CLIENT_SECRET,
+//            StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.Google.COM_CLIENT_SECRET,
             StorageUtils.ARG_REDIRECT_URI to Constants.Google.COM_REDIRECT_URL,
             StorageUtils.OneDrive.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_AUTH,
         )

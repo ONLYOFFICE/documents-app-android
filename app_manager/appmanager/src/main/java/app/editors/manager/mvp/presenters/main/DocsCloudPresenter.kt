@@ -175,6 +175,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 disposable.add(
                     provider.createFile(id, requestCreate).subscribe({ file ->
                         addFile(file)
+                        addRecent(file)
                         setPlaceholderType(PlaceholderViews.Type.NONE)
                         viewState.onDialogClose()
                         viewState.onCreateFile(file)
@@ -603,7 +604,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val model = Json.decodeFromString<OpenDataModel>(data)
         fileProvider?.let { provider ->
             disposable.add(provider.fileInfo(CloudFile().apply {
-                id = model.file?.id
+                id = model.file?.id.toString()
             }).subscribe({ file: CloudFile ->
                 itemClicked = file
                 when (StringUtils.getExtension(file.fileExst)) {

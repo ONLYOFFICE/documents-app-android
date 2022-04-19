@@ -107,6 +107,8 @@ class AccountViewHolder(view: View, listener: BaseAdapter.OnItemClickListener?) 
             portalIcon.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.ic_storage_onedrive))
         } else if(account.isDropbox) {
             portalIcon.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.ic_storage_dropbox))
+        } else if(account.isGoogleDrive) {
+            portalIcon.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.ic_storage_google))
         } else if(account.isWebDav) {
             when (WebDavApi.Providers.valueOf(account.webDavProvider!!)) {
                 WebDavApi.Providers.NextCloud -> portalIcon.setImageDrawable(

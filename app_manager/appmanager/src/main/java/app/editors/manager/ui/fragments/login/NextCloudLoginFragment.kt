@@ -77,7 +77,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         viewBinding = null
-        clearCookies(requireContext())
+        clearCookies()
         viewBinding?.webView?.clearCache(true)
         viewBinding?.webView?.webChromeClient = null
     }
@@ -123,7 +123,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
                 }
                 if (uri.toString().contains(BACK_PATTERN_1) || uri.path?.contains(BACK_PATTERN_2) == true) {
                     isClear = true
-                    clearCookies(context ?: App.getApp())
+                    clearCookies()
                     viewBinding?.webView?.clearHistory()
                     viewBinding?.webView?.clearCache(true)
                     viewBinding?.webView?.loadUrl(portla + LOGIN_SUFFIX, headers)

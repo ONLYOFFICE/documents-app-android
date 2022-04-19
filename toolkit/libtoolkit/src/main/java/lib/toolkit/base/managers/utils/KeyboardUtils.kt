@@ -34,9 +34,9 @@ object KeyboardUtils {
                     isFocusableInTouchMode = true
                 }.requestFocus()
 
-                manager.toggleSoftInput(
-                    if (isShowForce) InputMethodManager.SHOW_FORCED else InputMethodManager.SHOW_IMPLICIT,
-                    InputMethodManager.HIDE_IMPLICIT_ONLY
+                manager.showSoftInput(view,
+                    if (isShowForce) InputMethodManager.SHOW_FORCED else
+                        InputMethodManager.SHOW_IMPLICIT
                 )
             }
         }

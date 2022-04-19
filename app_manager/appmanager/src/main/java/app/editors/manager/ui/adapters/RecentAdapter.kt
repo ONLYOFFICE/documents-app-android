@@ -15,10 +15,17 @@ import lib.toolkit.base.ui.adapters.holder.ViewType
 
 class RecentAdapter(private val context: Context, factory: RecentHolderFactory) : BaseViewTypeAdapter<ViewType>(factory) {
 
-    fun setRecent(list: List<Recent>) {
-        val diffUtils = RecentDiffUtilsCallback(getListWithHeaders(list), itemsList)
-        val result = DiffUtil.calculateDiff(diffUtils)
-        super.set(getListWithHeaders(list), result)
+    fun setRecent(list: List<Recent>, sortByUpdated: Boolean) {
+        if (sortByUpdated) {
+            val diffUtils = RecentDiffUtilsCallback(getListWithHeaders(list), itemsList)
+            val result = DiffUtil.calculateDiff(diffUtils)
+            super.set(getListWithHeaders(list), result)
+        } else {
+            val newList = list.map { it.toRecentUI() }
+            val diffUtils = RecentDiffUtilsCallback(newList, itemsList)
+            val result = DiffUtil.calculateDiff(diffUtils)
+            super.set(newList, result)
+        }
     }
 
     fun isEmpty(): Boolean {
@@ -35,7 +42,7 @@ class RecentAdapter(private val context: Context, factory: RecentHolderFactory) 
 
         val itemsList = mutableListOf<ViewType>()
 
-        for (item in list.sortedByDescending { it.date }) {
+        for (item in list) {
             val date = item.date
 
             when {

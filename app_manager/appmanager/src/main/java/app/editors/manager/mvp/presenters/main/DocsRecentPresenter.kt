@@ -106,7 +106,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 recentDao.getRecents()
             }
             withContext(Dispatchers.Main) {
-                viewState.onRender(RecentState.RenderList(list))
+                viewState.onRender(RecentState.RenderList(list.sort()))
             }
         }
     }
@@ -127,9 +127,12 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun searchRecent(newText: String?) {
         CoroutineScope(Dispatchers.Default).launch {
-            val list = recentDao.getRecents().filter { it.name.contains(newText ?: "", true) }
+            val list = recentDao.getRecents()
+                .filter { it.name.contains(newText ?: "", true) }
+                .sort()
+
             withContext(Dispatchers.Main) {
-                viewState.updateFiles(list)
+                updateFiles(list)
             }
         }
     }
@@ -192,6 +195,24 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun loadMore(itemCount: Int?) {
 //        mAccountsSqlData.getRecent()
+    }
+
+    fun setOrder(isAsc: Boolean) {
+        if (isAsc) {
+            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
+        } else {
+            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
+        }
+        update()
+    }
+
+    fun reverseOrder() {
+        if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
+            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
+        } else {
+            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
+        }
+        update()
     }
 
     private fun addRecent(recent: Recent) {
@@ -435,6 +456,39 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             }
         }
         temp = null
+    }
+
+    fun update(sortBy: String = preferenceTool.sortBy.orEmpty()) {
+        preferenceTool.sortBy = sortBy
+        CoroutineScope(Dispatchers.Default).launch {
+            val list = recentDao.getRecents().sort()
+            withContext(Dispatchers.Main) {
+                updateFiles(list)
+            }
+        }
+    }
+
+    fun updateFiles(list: List<Recent>) {
+        val sortBy = preferenceTool.sortBy.orEmpty()
+        val sortOrder = preferenceTool.sortOrder.orEmpty()
+
+        viewState.updateFiles(list, sortBy, sortOrder)
+    }
+
+    private fun List<Recent>.sort(sortBy: String = preferenceTool.sortBy.orEmpty()): List<Recent> {
+        var sortedList = when (sortBy) {
+            ApiContract.Parameters.VAL_SORT_BY_TITLE -> sortedBy { it.name }
+            ApiContract.Parameters.VAL_SORT_BY_UPDATED -> sortedBy { it.date }
+            ApiContract.Parameters.VAL_SORT_BY_SIZE -> sortedBy { it.size }
+            ApiContract.Parameters.VAL_SORT_BY_TYPE -> sortedBy {
+                StringUtils.getExtensionFromPath(it.name)
+            }
+            else -> this
+        }
+        if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
+            sortedList = sortedList.reversed()
+        }
+        return sortedList
     }
 
 }

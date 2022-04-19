@@ -115,9 +115,10 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
             binding.settingSupportItem.settingText.text = getString(R.string.navigation_drawer_menu_feedback)
 
             binding.settingsAppTheme.apply {
-                settingIcon.isVisible = false
+                settingIcon.isVisible = true
                 settingText.text = getString(R.string.app_settings_color_theme)
                 settingIconArrow.isVisible = false
+                settingIcon.isVisible = false
             }
         }
     }

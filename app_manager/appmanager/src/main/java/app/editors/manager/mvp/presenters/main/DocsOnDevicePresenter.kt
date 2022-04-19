@@ -259,13 +259,24 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         if (isRepeatedTap) {
             reverseSortOrder()
         }
-        getItemsById(modelExplorerStack?.currentId)
+        if(!isFilteringMode) {
+            getItemsById(modelExplorerStack?.currentId)
+        } else {
+            loadSuccess(modelExplorerStack?.last()
+                ?.let { explorer ->  (fileProvider as LocalFileProvider).sortExplorer(explorer, getArgs(null)) })
+        }
         return true
     }
 
     override fun orderBy(value: String): Boolean {
         preferenceTool.sortOrder = value
-        getItemsById(modelExplorerStack?.currentId)
+
+        if(!isFilteringMode) {
+            getItemsById(modelExplorerStack?.currentId)
+        } else {
+            loadSuccess(modelExplorerStack?.last()
+                ?.let { explorer -> (fileProvider as LocalFileProvider).sortExplorer(explorer, getArgs(null)) })
+        }
         return true
     }
 
@@ -316,14 +327,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun import(uri: Uri) {
-        val fileName = ContentResolverUtils.getName(context, uri)
-        val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
-
         disposable.add((fileProvider as LocalFileProvider).import(context, modelExplorerStack?.currentId!!, uri).subscribe {
             refresh()
             viewState.onSnackBar(context.getString(R.string.operation_complete_message))
-            addRecent(uri)
-            openFile(uri, ext)
         })
     }
 

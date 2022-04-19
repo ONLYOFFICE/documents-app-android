@@ -118,8 +118,4 @@ open class BaseViewTypeAdapter<T : ViewType>(holderFactory: HolderFactory)
         items.addAll(list)
         result.dispatchUpdatesTo(this)
     }
-
-    fun setData(list: MutableList<T>) {
-        items = list
-    }
 }

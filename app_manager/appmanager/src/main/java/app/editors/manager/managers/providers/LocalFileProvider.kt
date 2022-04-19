@@ -56,6 +56,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
                     if (createFile.exists()) {
                         val file = CloudFile()
                         file.id = folderId + "/" + createFile.name
+                        file.webUrl = file.id
                         file.title = createFile.name
                         file.folderId = folderId
                         file.pureContentLength = createFile.length()
@@ -260,7 +261,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
         return resultExplorer
     }
 
-    private fun sortExplorer(explorer: Explorer, filter: Map<String, String>?): Explorer {
+    fun sortExplorer(explorer: Explorer, filter: Map<String, String>?): Explorer {
         val folders = explorer.folders
         val files = explorer.files
         filter?.let {
