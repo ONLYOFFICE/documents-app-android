@@ -1,5 +1,7 @@
 package lib.toolkit.base.ui.dialogs.common.holders
 
+import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
@@ -7,6 +9,7 @@ import android.text.Spanned
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.ColorUtils
 import androidx.core.widget.doOnTextChanged
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -15,6 +18,7 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.views.edits.BaseInputFilter
+
 
 class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
@@ -55,6 +59,30 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             layout = findViewById(R.id.dialogCommonEditLineLayout)
             editValueView = findViewById(R.id.dialogCommonEditLineValueEdit)
             editInputLayout = findViewById(R.id.dialogCommonEditLineTextInputLayout)
+            setTint()
+        }
+    }
+
+    private fun setTint() {
+        val colorPrimary = dialog.requireContext().getColor(colorTint)
+        val colorDisabled = ColorUtils
+            .setAlphaComponent(dialog.requireContext().getColor(R.color.colorOnSurface), 60)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            editValueView.textCursorDrawable?.setTint(colorPrimary)
+        }
+        editInputLayout.boxStrokeColor = colorPrimary
+        editInputLayout.hintTextColor = ColorStateList.valueOf(colorPrimary)
+        arrayOf(mCancelView, mAcceptView).forEach { view ->
+            view.rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(colorPrimary, 60))
+            view.setTextColor(
+                ColorStateList(
+                    arrayOf(
+                        intArrayOf(android.R.attr.state_enabled),
+                        intArrayOf(-android.R.attr.state_enabled)
+                    ), intArrayOf(colorPrimary, colorDisabled)
+                )
+            )
         }
     }
 
