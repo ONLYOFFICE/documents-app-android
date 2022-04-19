@@ -129,7 +129,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
     }
 
     private fun createMultipartBody(uri: Uri?): MultipartBody.Part {
-        return MultipartBody.Part.create(headers, createRequestBody(uri))
+        return MultipartBody.Part.createFormData(title!!, title!!, createRequestBody(uri))
     }
 
     private fun createRequestBody(uri: Uri?): ProgressRequestBody {
