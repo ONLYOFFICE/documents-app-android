@@ -452,7 +452,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         isPassword: Boolean = false,
         error: String?,
         tag: String?,
-        tintColor: Int = R.color.colorPrimaryLight
+        tintColor: Int? = null
     ) {
         getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)?.run {
             setEditHintValue(endHint)

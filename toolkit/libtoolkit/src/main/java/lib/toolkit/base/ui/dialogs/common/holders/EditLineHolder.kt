@@ -36,8 +36,8 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     private var editValue: String? = null
     private var hintValue: String? = null
     private var errorValue: String? = null
+    private var colorTint: Int? = null
     private var isPassword: Boolean = false
-    private var colorTint: Int = android.R.color.black
 
     override fun onClick(v: View) {
         when (v.id) {
@@ -59,30 +59,32 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             layout = findViewById(R.id.dialogCommonEditLineLayout)
             editValueView = findViewById(R.id.dialogCommonEditLineValueEdit)
             editInputLayout = findViewById(R.id.dialogCommonEditLineTextInputLayout)
-            setTint()
         }
+        setTint()
     }
 
     private fun setTint() {
-        val colorPrimary = dialog.requireContext().getColor(colorTint)
-        val colorDisabled = ColorUtils
-            .setAlphaComponent(dialog.requireContext().getColor(R.color.colorOnSurface), 60)
+        colorTint?.let { color ->
+            val colorPrimary = dialog.requireContext().getColor(color)
+            val colorDisabled = ColorUtils
+                .setAlphaComponent(dialog.requireContext().getColor(R.color.colorOnSurface), 60)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            editValueView.textCursorDrawable?.setTint(colorPrimary)
-        }
-        editInputLayout.boxStrokeColor = colorPrimary
-        editInputLayout.hintTextColor = ColorStateList.valueOf(colorPrimary)
-        arrayOf(mCancelView, mAcceptView).forEach { view ->
-            view.rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(colorPrimary, 60))
-            view.setTextColor(
-                ColorStateList(
-                    arrayOf(
-                        intArrayOf(android.R.attr.state_enabled),
-                        intArrayOf(-android.R.attr.state_enabled)
-                    ), intArrayOf(colorPrimary, colorDisabled)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                editValueView.textCursorDrawable?.setTint(colorPrimary)
+            }
+            editInputLayout.boxStrokeColor = colorPrimary
+            editInputLayout.hintTextColor = ColorStateList.valueOf(colorPrimary)
+            arrayOf(mCancelView, mAcceptView).forEach { view ->
+                view.rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(colorPrimary, 60))
+                view.setTextColor(
+                    ColorStateList(
+                        arrayOf(
+                            intArrayOf(android.R.attr.state_enabled),
+                            intArrayOf(-android.R.attr.state_enabled)
+                        ), intArrayOf(colorPrimary, colorDisabled)
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -148,7 +150,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             bundle.putString(TAG_EDIT_VALUE, editValueView.text.toString())
             bundle.putString(TAG_HINT_VALUE, hintValue)
             bundle.putString(TAG_ERROR_VALUE, errorValue)
-            bundle.putInt(TAG_COLOR_TINT, colorTint)
+            colorTint?.let { bundle.putInt(TAG_COLOR_TINT, it) }
         }
     }
 
@@ -247,7 +249,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             return this
         }
 
-        fun setColorTint(int: Int): Builder {
+        fun setColorTint(int: Int?): Builder {
             colorTint = int
             return this
         }
