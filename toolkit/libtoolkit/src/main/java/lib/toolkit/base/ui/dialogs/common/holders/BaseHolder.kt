@@ -1,20 +1,20 @@
 package lib.toolkit.base.ui.dialogs.common.holders
 
-import android.content.res.TypedArray
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.google.android.material.button.MaterialButton
 import lib.toolkit.base.R
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
+
 
 abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewHolder,
         View.OnClickListener {
@@ -43,17 +43,12 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     protected var mTopTitleGravity: Int = Gravity.START
     protected var mIsBackPress: Boolean = true
 
-    private val color: Int
-    get() {
-        val typedValue = TypedValue()
-        val a: TypedArray = checkNotNull(dialog.requireView().context?.obtainStyledAttributes(typedValue.data, intArrayOf(
-            androidx.appcompat.R.attr.colorPrimary))) {
-            "Primary color can't be null"
+    protected val colorPrimary: Int
+        get() {
+            val typedValue = TypedValue()
+            dialog.requireContext().theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+            return typedValue.data
         }
-        val color = a.getColor(0, 0)
-        a.recycle()
-        return color
-    }
 
     override fun onClick(v: View) {
         when (v.id) {
@@ -76,6 +71,7 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
             mAcceptView = findViewById(R.id.dialogCommonAcceptButton)
             mCancelView = findViewById(R.id.dialogCommonCancelButton)
         }
+        setTint()
     }
 
     override fun show() {
@@ -151,4 +147,19 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
         return mIsBackPress
     }
 
+    protected open fun setTint() {
+        val colorDisabled = dialog.requireContext().getColor(R.color.colorOnSurface)
+
+        arrayOf(mCancelView, mAcceptView).forEach { view ->
+            view.rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(colorPrimary, 60))
+            view.setTextColor(
+                ColorStateList(
+                    arrayOf(
+                        intArrayOf(android.R.attr.state_enabled),
+                        intArrayOf(-android.R.attr.state_enabled)
+                    ), intArrayOf(colorPrimary, ColorUtils.setAlphaComponent(colorDisabled, 60))
+                )
+            )
+        }
+    }
 }

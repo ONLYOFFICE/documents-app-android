@@ -9,7 +9,6 @@ import android.text.Spanned
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.ColorUtils
 import androidx.core.widget.doOnTextChanged
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -29,9 +28,9 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         private const val TAG_COLOR_TINT = "TAG_COLOR_TINT"
     }
 
-    private lateinit var layout: FrameLayout
-    private lateinit var editInputLayout: TextInputLayout
-    private lateinit var editValueView: TextInputEditText
+    private var layout: FrameLayout? = null
+    private var editInputLayout: TextInputLayout? = null
+    private var editValueView: TextInputEditText? = null
 
     private var editValue: String? = null
     private var hintValue: String? = null
@@ -60,44 +59,27 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             editValueView = findViewById(R.id.dialogCommonEditLineValueEdit)
             editInputLayout = findViewById(R.id.dialogCommonEditLineTextInputLayout)
         }
-        setTint()
     }
 
-    private fun setTint() {
-        colorTint?.let { color ->
-            val colorPrimary = dialog.requireContext().getColor(color)
-            val colorDisabled = ColorUtils
-                .setAlphaComponent(dialog.requireContext().getColor(R.color.colorOnSurface), 60)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                editValueView.textCursorDrawable?.setTint(colorPrimary)
-            }
-            editInputLayout.boxStrokeColor = colorPrimary
-            editInputLayout.hintTextColor = ColorStateList.valueOf(colorPrimary)
-            arrayOf(mCancelView, mAcceptView).forEach { view ->
-                view.rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(colorPrimary, 60))
-                view.setTextColor(
-                    ColorStateList(
-                        arrayOf(
-                            intArrayOf(android.R.attr.state_enabled),
-                            intArrayOf(-android.R.attr.state_enabled)
-                        ), intArrayOf(colorPrimary, colorDisabled)
-                    )
-                )
-            }
+    override fun setTint() {
+        super.setTint()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            editValueView?.textCursorDrawable?.setTint(colorPrimary)
         }
+        editInputLayout?.boxStrokeColor = colorPrimary
+        editInputLayout?.hintTextColor = ColorStateList.valueOf(colorPrimary)
     }
 
     override fun show() {
         super.show()
-        layout.visibility = View.VISIBLE
+        layout?.visibility = View.VISIBLE
         mAcceptView.isEnabled = false
         dialog.view?.post {
-            editValueView.apply {
+            editValueView?.apply {
                 if (isPassword) {
                     inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
                     doOnTextChanged { _, _, _, _ ->
-                        editInputLayout.error = null
+                        editInputLayout?.error = null
                         mAcceptView.isEnabled = !text?.trim().isNullOrEmpty()
                     }
                 } else {
@@ -111,7 +93,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
                 }
             }
 
-            editInputLayout.apply {
+            editInputLayout?.apply {
                 hintValue?.let(::setHint)
                 if (!errorValue.isNullOrEmpty()) {
                     isErrorEnabled = true
@@ -132,7 +114,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 //                    PorterDuffColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), PorterDuff.Mode.SRC_ATOP)
 //            }
 
-            editValueView.postDelayed({
+            editValueView?.postDelayed({
                 KeyboardUtils.showKeyboard(editValueView)
             }, 100)
         }
@@ -140,14 +122,14 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     override fun hide() {
         super.hide()
-        layout.visibility = View.GONE
+        layout?.visibility = View.GONE
         KeyboardUtils.hideKeyboard(editValueView)
     }
 
     override fun save(state: Bundle) {
         super.save(state)
         state.let { bundle ->
-            bundle.putString(TAG_EDIT_VALUE, editValueView.text.toString())
+            bundle.putString(TAG_EDIT_VALUE, editValueView?.text.toString())
             bundle.putString(TAG_HINT_VALUE, hintValue)
             bundle.putString(TAG_ERROR_VALUE, errorValue)
             colorTint?.let { bundle.putInt(TAG_COLOR_TINT, it) }
@@ -166,7 +148,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.EDIT_LINE
 
-    override fun getValue(): String = editValueView.text.toString()
+    override fun getValue(): String = editValueView?.text.toString()
 
     private inner class EditFilter : BaseInputFilter() {
 
@@ -186,17 +168,17 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             val checkedString = StringUtils.getAllowedString(mResultString)
             return if (checkedString != null) {
                 errorValue = dialog.getString(R.string.dialogs_edit_forbidden_symbols)
-                editInputLayout.error = errorValue + StringUtils.DIALOG_FORBIDDEN_SYMBOLS
+                editInputLayout?.error = errorValue + StringUtils.DIALOG_FORBIDDEN_SYMBOLS
                 mAcceptView.isEnabled = mResultString.length > 1
                 ""
             } else if (StringUtils.getAllowedName(mResultString)) {
                 errorValue = dialog.getString(R.string.dialogs_edit_forbidden_name)
-                editInputLayout.error = errorValue
+                editInputLayout?.error = errorValue
                 mAcceptView.isEnabled = false
                 null
             } else {
                 errorValue = null
-                editInputLayout.isErrorEnabled = false
+                editInputLayout?.isErrorEnabled = false
                 null
             }
         }
