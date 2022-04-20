@@ -467,7 +467,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
         val parentFolder = getFolder(responseBeans[0])
         for (i in 1 until responseBeans.size) {
             val bean = responseBeans[i]
-            if (bean.isDir) {
+            if (bean.isDir && getExtensionFromPath(getTitle(bean.href)).isEmpty()) {
                 val folder = CloudFolder()
                 folder.id = bean.href
                 folder.title = getTitle(bean.href)
