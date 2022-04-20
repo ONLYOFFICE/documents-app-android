@@ -148,17 +148,6 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
     }
 
     override fun getFileInfo() {
-        itemClicked?.let { item ->
-            if(item is CloudFile) {
-                val file = itemClicked as CloudFile
-                val extension = file.fileExst
-                if (StringUtils.isImage(extension)) {
-                    addRecent(file)
-                    return
-                }
-            }
-        }
-
         downloadDisposable = fileProvider?.fileInfo(itemClicked)
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
@@ -166,6 +155,7 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
                 { file: CloudFile? ->
                     tempFile = file
                     viewState.onDialogClose()
+                    file?.let { addRecent(it) }
                     viewState.onOpenLocalFile(file)
                 }
             ) { throwable: Throwable -> fetchError(throwable) }

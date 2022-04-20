@@ -36,6 +36,11 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
+                BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
+                    mCameraUri?.let { uri ->
+                        presenter.upload(uri, null, KEY_UPLOAD)
+                    }
+                }
                 BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
                     onRefresh()
                 }

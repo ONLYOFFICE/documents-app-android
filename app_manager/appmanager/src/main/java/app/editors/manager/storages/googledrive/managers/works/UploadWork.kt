@@ -153,7 +153,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
         super.getArgs()
         fileId = data?.getString(KEY_FILE_ID)
         file = from?.let { DocumentFile.fromSingleUri(applicationContext, it) }
-        path = from?.let { PathUtils.getPath(applicationContext, it) }
+        path = from?.path
     }
 }
 

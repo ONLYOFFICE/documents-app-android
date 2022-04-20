@@ -196,14 +196,6 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            val extension = file.fileExst
-            if (StringUtils.isImage(extension)) {
-                addRecent(file)
-                return
-            }
-        }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
         fileProvider?.let { provider ->
@@ -214,6 +206,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                     { file: CloudFile? ->
                         tempFile = file
                         viewState.onDialogClose()
+                        file?.let { addRecent(it) }
                         viewState.onOpenLocalFile(file)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
