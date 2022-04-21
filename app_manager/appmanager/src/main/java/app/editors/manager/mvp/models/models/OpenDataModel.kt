@@ -25,7 +25,7 @@ data class OpenFileModel(
 @Serializable
 data class OpenFolderModel(
     val id: Int? = null,
-    val parentId: String? = null,
+    val parentId: Int? = null,
     val rootFolderType: Int? = null
 )
 
