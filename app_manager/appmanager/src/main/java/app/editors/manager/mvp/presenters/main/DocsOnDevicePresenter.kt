@@ -327,7 +327,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun import(uri: Uri) {
-        disposable.add((fileProvider as LocalFileProvider).import(context, modelExplorerStack?.currentId!!, uri).subscribe {
+        disposable.add((fileProvider as LocalFileProvider).import(context, modelExplorerStack?.currentId!!, uri).subscribe({}, {
+            viewState.onImportError(uri)
+        }) {
             refresh()
             viewState.onSnackBar(context.getString(R.string.operation_complete_message))
         })

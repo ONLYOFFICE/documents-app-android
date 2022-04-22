@@ -102,12 +102,23 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
+    var uri: Uri? = null
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == PERMISSION_CAMERA) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 makePhoto()
             }
+        } else if (requestCode == PERMISSION_READ_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                this.uri?.let { presenter.import(it) }
+            }
         }
+    }
+
+    override fun onImportError(uri: Uri) {
+        this.uri = uri
+        checkReadPermission()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
