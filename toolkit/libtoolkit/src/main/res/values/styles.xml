@@ -363,8 +363,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/item_one_line_height</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:paddingLeft">@dimen/screen_margin_large</item>
-        <item name="android:paddingRight">@dimen/screen_margin_large</item>
+        <item name="android:paddingStart">@dimen/screen_margin_large</item>
+        <item name="android:paddingEnd">@dimen/screen_margin_large</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:clickable">true</item>
@@ -390,7 +390,7 @@
     <style name="ContextListMediumText" parent="ItemMediumBlackText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">32dp</item>
+        <item name="android:layout_marginEnd">32dp</item>
         <item name="android:layout_gravity">center_vertical</item>
     </style>
 
