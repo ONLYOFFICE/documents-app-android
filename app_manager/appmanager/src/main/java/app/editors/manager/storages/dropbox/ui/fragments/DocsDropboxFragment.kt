@@ -34,6 +34,12 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
+
+                BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
+                    mCameraUri?.let { uri ->
+                        presenter.upload(uri, null, KEY_UPLOAD)
+                    }
+                }
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
                     if(data.getBooleanExtra(KEY_MODIFIED, false)) {
                         presenter.upload(

@@ -168,18 +168,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun getFileInfo() {
-
-        itemClicked?.let {
-            if(it is CloudFile) {
-                val file = itemClicked as CloudFile
-                val extension = file.fileExst
-                if (StringUtils.isImage(extension)) {
-                    addRecent(file)
-                    return
-                }
-            }
-        }
-
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         fileProvider?.let { provider ->
             downloadDisposable = provider.fileInfo(itemClicked)
@@ -189,6 +177,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                     { file: CloudFile? ->
                         tempFile = file
                         viewState.onDialogClose()
+                        file?.let { addRecent(it) }
                         viewState.onOpenLocalFile(file)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
