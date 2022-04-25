@@ -29,7 +29,6 @@ import app.editors.manager.R
 import app.editors.manager.compose.ui.theme.AppManagerTheme
 import app.editors.manager.compose.ui.theme.colorAppBar
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import lib.editors.gbase.ui.adapters.settings.factory.Actions
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.UiUtils
 
@@ -118,57 +117,61 @@ private fun AboutScreen(
                 backPressed()
             }
         }) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(top = 48.dp)
-                    .verticalScroll(state = scrollState, enabled = true)
-            ) {
-                Image(painter = painterResource(id = R.drawable.image_onlyoffice_text), contentDescription = null)
-                Text(
-                    text = stringResource(
-                        id = R.string.about_app_version,
-                        formatArgs = arrayOf(
-                            BuildConfig.VERSION_NAME,
-                            BuildConfig.VERSION_CODE.toString(),
-                            sdkVersion
-                        )
-                    ),
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally)
-                )
-                Spacer(modifier = Modifier.padding(top = 48.dp))
-                AboutItem(
-                    title = stringResource(id = R.string.about_terms),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
+            Surface(color = MaterialTheme.colors.background) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(top = 48.dp)
+                        .verticalScroll(state = scrollState, enabled = true)
                 ) {
-                    itemClick(AboutClickedItem.Terms)
-                }
-                AboutItem(
-                    title = stringResource(id = R.string.about_policy),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
-                ) {
-                    itemClick(AboutClickedItem.Policy)
-                }
-                AboutItem(
-                    title = stringResource(id = R.string.about_license),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
-                ) {
-                    itemClick(AboutClickedItem.License)
-                }
-                AboutItem(
-                    title = stringResource(id = R.string.about_website),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
-                ) {
-                    itemClick(AboutClickedItem.Web)
+                    Image(painter = painterResource(id = R.drawable.image_onlyoffice_text), contentDescription = null)
+                    Text(
+                        text = stringResource(
+                            id = R.string.about_app_version,
+                            formatArgs = arrayOf(
+                                BuildConfig.VERSION_NAME,
+                                BuildConfig.VERSION_CODE.toString(),
+                                sdkVersion
+                            )
+                        ),
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.onSurface,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(modifier = Modifier.padding(top = 48.dp))
+                    AboutItem(
+                        title = stringResource(id = R.string.about_terms),
+                        icon = R.drawable.ic_open_in_new,
+                        isTablet = isTablet
+                    ) {
+                        itemClick(AboutClickedItem.Terms)
+                    }
+                    AboutItem(
+                        title = stringResource(id = R.string.about_policy),
+                        icon = R.drawable.ic_open_in_new,
+                        isTablet = isTablet
+                    ) {
+                        itemClick(AboutClickedItem.Policy)
+                    }
+                    AboutItem(
+                        title = stringResource(id = R.string.about_license),
+                        icon = R.drawable.ic_open_in_new,
+                        isTablet = isTablet
+                    ) {
+                        itemClick(AboutClickedItem.License)
+                    }
+                    AboutItem(
+                        title = stringResource(id = R.string.about_website),
+                        icon = R.drawable.ic_open_in_new,
+                        isTablet = isTablet
+                    ) {
+                        itemClick(AboutClickedItem.Web)
+                    }
                 }
             }
         }
