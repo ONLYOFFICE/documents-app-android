@@ -19,7 +19,6 @@ import app.editors.manager.mvp.views.login.PersonalRegisterView
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
-import lib.toolkit.base.managers.utils.StringUtils.isEmailValid
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
 
@@ -53,7 +52,7 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         viewBinding = FragmentLoginPersonalSignupBinding.inflate(inflater)
@@ -84,19 +83,22 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
         }
     }
 
+    override fun onWaitingDialog() {
+        showWaitingDialog(
+            getString(R.string.dialogs_sign_in_register_portal),
+            getString(R.string.dialogs_common_cancel_button),
+            TAG_DIALOG_WAITING
+        )
+    }
+
+    override fun onMessage(message: Int) {
+        setMessage(message = getString(message), true)
+    }
+
     private fun onSignUpClick() {
         hideKeyboard(viewBinding?.loginPersonalPortalEmailEdit)
         val email = viewBinding?.loginPersonalPortalEmailEdit?.text.toString()
-        if (isEmailValid(email)) {
-            showWaitingDialog(
-                getString(R.string.dialogs_sign_in_register_portal),
-                getString(R.string.dialogs_common_cancel_button),
-                TAG_DIALOG_WAITING
-            )
-            personalSignUpPresenter.registerPortal(email)
-        } else {
-            setMessage(R.string.errors_email_syntax_error, true)
-        }
+        personalSignUpPresenter.checkMail(email = email)
     }
 
     private fun actionKeyPress(actionId: Int): Boolean {
@@ -118,7 +120,7 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
             getString(R.string.dialogs_question_personal_confirm_link_title),
             getString(
                 R.string.login_personal_signup_dialog_info,
-                viewBinding?.loginPersonalPortalEmailEdit?.text.toString()
+                viewBinding?.loginPersonalPortalEmailEdit?.text.toString().replace(PersonalSignUpPresenter.TAG_INFO, "")
             ),
             getString(R.string.dialogs_question_personal_confirm_accept),
             getString(R.string.dialogs_question_personal_confirm_cancel),
