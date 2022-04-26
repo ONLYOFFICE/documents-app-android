@@ -26,6 +26,4 @@ public interface DocsOnDeviceView extends DocsBaseView {
     void onShowCells(Uri uri);
     void onShowSlides(Uri uri);
     void onShowPdf(Uri uri);
-
-    void onImportError(Uri uri);
 }

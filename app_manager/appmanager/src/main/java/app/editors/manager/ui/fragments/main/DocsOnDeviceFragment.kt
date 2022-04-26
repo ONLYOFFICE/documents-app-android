@@ -13,7 +13,6 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
@@ -111,14 +110,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
         } else if (requestCode == PERMISSION_READ_STORAGE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                this.uri?.let { presenter.import(it) }
+                importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
             }
         }
-    }
-
-    override fun onImportError(uri: Uri) {
-        this.uri = uri
-        checkReadPermission()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -239,7 +233,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 makePhoto()
             }
         } else if(buttons == ActionBottomDialog.Buttons.IMPORT) {
-            importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
+            if(checkReadPermission()) {
+                importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
+            }
         }
     }
 
