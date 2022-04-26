@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Dokumente</string>
-    <string name="app_name_full">ONLYOFFICE Dokumente</string> <!-- ======================================================================================= --> <!-- Permissions -->
+    <string name="app_name_full">ONLYOFFICE Dokumente</string>
     <string name="permission_account_write_label">Label der Konto-Schreibberechtigung</string>
     <string name="permission_account_write_description">Beschreibung der Konto-Schreibberechtigung</string>
     <string name="permission_account_read_label">Label der Konto-Schreibberechtigung</string>
-    <string name="permission_account_read_description">Beschreibung der Konto-Schreibberechtigung</string> <!-- ======================================================================================= --> <!-- Versions -->
+    <string name="permission_account_read_description">Beschreibung der Konto-Schreibberechtigung</string>
     <string name="app_versions_title">Version 3.0 veröffentlicht</string>
     <string name="app_versions_cancel">Später</string>
     <string name="app_versions_without_release_accept">Offizielle App installieren</string>
@@ -12,15 +12,15 @@
     <string name="app_versions_update_accept">Offizielle App aktualisieren</string>
     <string name="app_versions_update_info">Vielen Dank, dass Sie an dem Beta-Test teilgenohmen haben! ONLYOFFICE Documents 3.0 wurde veröffentlicht und die Beta-Version wird nicht mehr unterstützt. Bitte wechseln Sie zur offiziellen App, um weitere Updates zu erhalten </string>
     <string name="app_versions_actual_release_accept">Offizielle App öffnen</string>
-    <string name="app_versions_actual_release_info">Vielen Dank, dass Sie an dem Beta-Test teilgenohmen haben! ONLYOFFICE Documents 3.0 wurde veröffentlicht und die Beta-Version wird nicht mehr unterstützt. Bitte wechseln Sie zur offiziellen App. </string> <!-- ======================================================================================= --> <!-- Snackbar common -->
-    <string name="snackbar_copied">Kopiert</string> <!-- ======================================================================================= --> <!-- About -->
+    <string name="app_versions_actual_release_info">Vielen Dank, dass Sie an dem Beta-Test teilgenohmen haben! ONLYOFFICE Documents 3.0 wurde veröffentlicht und die Beta-Version wird nicht mehr unterstützt. Bitte wechseln Sie zur offiziellen App. </string>
+    <string name="snackbar_copied">Kopiert</string>
     <string name="about_title">Info</string>
     <string name="about_app_version">Version %1$s, build %2$s, SDK %3$s</string>
     <string name="about_terms">Nutzungsbedingungen</string>
     <string name="about_policy">Datenschutzerklärung</string>
     <string name="about_license">Lizenzvereinbarung</string>
     <string name="about_website">ONLYOFFICE Webseite</string>
-    <string name="about_email_subject">ONLYOFFICE Documents Android-Feedback</string> <!-- ======================================================================================= --> <!-- Common errors -->
+    <string name="about_email_subject">ONLYOFFICE Documents Android-Feedback</string>
     <string name="errors_unknown_error">Verbindungsfehler. Versuchen Sie es erneut.</string>
     <string name="errors_ssl_error">SSL-Handshake fehlgeschlagenr</string>
     <string name="errors_connection_error">Überprüfen Sie Ihre Internetverbindung</string>
@@ -38,21 +38,21 @@
     <string name="errors_email_syntax_error">E-Mail ist ungültig</string>
     <string name="errors_viewer_download_name">Herunterladen fehlgeschlagen</string>
     <string name="errors_email_already_registered">Ein Benutzer mit dieser E-Mail-Adresse ist bereits registriert</string>
-    <string name="errors_path_url">Ungültige URL</string>&gt; <!-- SignIn -->
+    <string name="errors_path_url">Ungültige URL</string>
     <string name="errors_sign_in_splash_error">Zugriff auf das Portal fehlgeschlagen</string>
     <string name="errors_sign_in_account_error">Anmeldung fehlgeschlagen</string>
-    <string name="errors_sign_in_account_already_use">Es gibt bereits ein Konto mit diesen Anmeldedaten</string> <!-- ======================================================================================= --> <!-- Login -->
+    <string name="errors_sign_in_account_already_use">Es gibt bereits ein Konto mit diesen Anmeldedaten</string>
     <string name="login_api_init_error">Initialisierungsfehler</string>
     <string name="login_api_init_portal_error">Syntaxfehler des Portalnamens</string>
     <string name="login_api_portal_name">Ungültiger Portalname Beispiel: example.onlyoffice.com</string>
     <string name="login_api_portal_name_length">Kontoname muss mindestens aus 6 Zeichen bestehen</string>
-    <string name="login_api_portal_name_content">Kontoname darf nur die Zeichen A-Z, a-z, 0-9 enthalten</string>
-    <string name="login_retry">Verbindung erneut herstellen</string> <!-- Accounts -->
+    <string name="login_api_portal_name_content">Kontoname darf nur die Zeichen A–Z, a–z, 0–9 enthalten</string>
+    <string name="login_retry">Verbindung erneut herstellen</string>
     <string name="login_accounts_select_title">Konto auswählen</string>
-    <string name="login_accounts_select_add">Cloud-Konto hinzufügen</string> <!-- Portal pager -->
+    <string name="login_accounts_select_add">Cloud-Konto hinzufügen</string>
     <string name="login_pager_enterprise">PORTAL</string>
     <string name="login_pager_personal">PERSÖNLICH</string>
-    <string name="login_pager_title">ONLYOFFICE-Cloud verbinden</string> <!-- Portal enterprise-->
+    <string name="login_pager_title">ONLYOFFICE-Cloud verbinden</string>
     <string name="login_enterprise_edit_hint">Portal-Adresse</string>
     <string name="login_enterprise_button_next">WEITER</string>
     <string name="login_enterprise_edit_error_hint">Geben Sie eine gültige Adresse ein</string>
@@ -67,7 +67,7 @@
     <string name="login_not_authorization_info">Anmeldung bei %1$s um %2$s nicht möglich</string>
     <string name="login_not_authorization_button">ERNEUT VERSUCHEN</string>
     <string name="errors_first_name">Vorname ist ungültig. Er darf keine Ziffern enthalten.</string>
-    <string name="errors_last_name">Nachname ist ungültig. Er darf keine Ziffern enthalten.</string> <!-- Portal personal -->
+    <string name="errors_last_name">Nachname ist ungültig. Er darf keine Ziffern enthalten.</string>
     <string name="login_personal_edit_email_hint">E-Mail</string>
     <string name="login_personal_edit_password_hint">Passwort</string>
     <string name="login_personal_signin_button">ANMELDEN</string>
@@ -76,19 +76,19 @@
     <string name="login_personal_signup_edit_info">Der Bestätigungslink wird an diese Adresse gesendet</string>
     <string name="login_personal_signup_dialog_info">Der Bestätigungslink wurde an Ihre E-Mail-Adresse %1$s\n geschickt. Folgen Sie dem Link in der E-Mail, bevor Sie den Vorgang fortsetzen</string>
     <string name="login_personal_info">Verbinden Sie das persönliche Portal von ONLYOFFICE, um Dateien im Cloud-Speicher zu sichern </string>
-    <string name="login_web_dav_title">Verbindung zu %1$s</string> <!-- Portal create-->
+    <string name="login_web_dav_title">Verbindung zu %1$s</string>
     <string name="login_create_portal_title">Portal für Unternehmen erstellen</string>
     <string name="login_create_portal_address_hint">Portal-Adresse</string>
     <string name="login_create_portal_email_hint">E-Mail</string>
     <string name="login_create_signin_first_name_hint">Vorname</string>
     <string name="login_create_signin_last_name_hint">Nachname</string>
-    <string name="login_create_portal_next_button">SPÄTER</string> <!-- Portal create sign in -->
+    <string name="login_create_portal_next_button">SPÄTER</string>
     <string name="login_create_signin_title">Passwort festlegen</string>
     <string name="login_create_signin_password">Passwort</string>
     <string name="login_create_signin_repeat">Passwort wiederholen</string>
     <string name="login_create_signin_create_button">ERSTELLEN</string>
     <string name="login_create_signin_passwords_mismatch">Passwörter stimmen nicht überein</string>
-    <string name="login_create_signin_info">Durch Klicken auf diesen Button akzeptieren Sie unsere Nutzungsbedingungen </string> <!-- Portal SMS -->
+    <string name="login_create_signin_info">Durch Klicken auf diesen Button akzeptieren Sie unsere Nutzungsbedingungen </string>
     <string name="login_sms_code_label">Wir haben eine SMS mit dem Code an diese Nummer geschickt</string>
     <string name="login_sms_send_again">ERNEUT SENDEN</string>
     <string name="login_sms_send_again_after">DANACH ERNEUT SENDEN</string>
@@ -100,23 +100,23 @@
     <string name="login_sms_phone_send_button">CODE SENDEN</string>
     <string name="login_sms_phone_error_format">Ungültiges Format</string>
     <string name="login_sms_phone_send_code">Wir senden den Bestätigungscode per SMS</string>
-    <string name="login_sms_resend_ok">SMS-Code wurde gesendet</string> <!-- Countries codes -->
-    <string name="countries_codes_title">Land wählen</string> <!-- ======================================================================================= --> <!-- Dialogs -->
+    <string name="login_sms_resend_ok">SMS-Code wurde gesendet</string>
+    <string name="countries_codes_title">Land wählen</string>
     <string name="bottom_sheet_portal_title">Portal</string>
-    <string name="bottom_sheet_cloud_title">Clouds</string> <!--Move copy dialog-->
+    <string name="bottom_sheet_cloud_title">Clouds</string>
     <string name="dialog_move_copy_title_files">%1$d Dokumente mit demselben Namen sind bereits im Ordner \&quot;%2$s\&quot; vorhanden</string>
     <string name="dialog_move_copy_title_one_file">Die Datei mit dem Namen \&quot;%1$s\&quot; ist bereits im Ordner \&quot;%2$s\&quot; vorhanden</string>
     <string name="dialog_move_copy_overwrite">Überschreiben mit Versionsupdate</string>
     <string name="dialog_move_copy_copy">Dateikopie erstellen</string>
     <string name="dialog_move_copy_skip">Überspringen</string>
-    <string name="dialog_move_copy_title">Datei mit demselben Namen</string> <!-- Common -->
+    <string name="dialog_move_copy_title">Datei mit demselben Namen</string>
     <string name="dialogs_common_ok_button">ANNEHMEN</string>
     <string name="dialogs_common_cancel_button">ABBRECHEN</string>
     <string name="dialogs_check_portal_header_text">Portalfunktionen überprüfen</string>
     <string name="dialogs_sign_in_portal_header_text">Melden Sie sich im Portal an</string>
-    <string name="dialogs_sign_in_register_portal">Registrierung eines Portals</string> <!-- Waiting -->
-    <string name="dialogs_wait_title">Vorgang wird ausgeführt...</string>
-    <string name="dialogs_wait_title_storage">Verbindung des Datenspeichers...</string> <!-- Question -->
+    <string name="dialogs_sign_in_register_portal">Registrierung eines Portals</string>
+    <string name="dialogs_wait_title">Vorgang wird ausgeführt…</string>
+    <string name="dialogs_wait_title_storage">Verbindung des Datenspeichers…</string>
     <string name="dialogs_question_accept_yes">JA</string>
     <string name="dialogs_question_accept_no">NEIN</string>
     <string name="dialogs_question_accept_delete">LÖSCHEN</string>
@@ -151,26 +151,27 @@
     <string name="dialogs_edit_feedback_title">Feedback</string>
     <string name="dialogs_edit_feedback_rate_title">Würde es Ihnen etwas ausmachen uns Ihr Feedback zu senden?</string>
     <string name="dialogs_edit_feedback_rate_hint">Erzählen Sie uns was wir noch verbessern können</string>
-    <string name="dialogs_edit_feedback_rate_accept">SENDEN</string> <!-- ======================================================================================= --> <!-- Activity chooser -->
-    <string name="chooser_web_browser">Browser wählen...</string>
-    <string name="chooser_email_client">E-Mail-Client wählen</string> <!-- ======================================================================================= --> <!-- Main --> <!-- Title -->
+    <string name="dialogs_edit_feedback_rate_accept">SENDEN</string>
+    <string name="chooser_web_browser">Browser wählen…</string>
+    <string name="chooser_email_client">E-Mail-Client wählen</string>
     <string name="actionbar_title_main">Dokumente</string>
-    <string name="chooser_activity_not_found">Es konnte keine Anwendung für diese Aktion gefunden werden...</string>
+    <string name="chooser_activity_not_found">Es konnte keine Anwendung für diese Aktion gefunden werden…</string>
     <string name="fragment_clouds_title">Clouds</string>
     <string name="fragment_clouds_portal_title">Mit dem Portal verbinden</string>
     <string name="fragment_clouds_storage_title">Mit dem Datenspeicher verbinden</string>
     <string name="fragment_clouds_onlyoffice_item">ONLYOFFICE</string>
     <string name="fragment_recent_title">Zuletzt verwendet</string>
     <string name="fragment_on_device_title">Auf dem Gerät</string>
-    <string name="fragment_profile_title">Profil</string> <!-- Drawer -->
+    <string name="fragment_profile_title">Profil</string>
+    <!-- Drawer -->
     <string name="navigation_drawer_open">Navigationsdisplay öffnen</string>
-    <string name="navigation_drawer_close">Navigationsdisplay schließen</string> <!-- Main drawer menu-->
+    <string name="navigation_drawer_close">Navigationsdisplay schließen</string>
+    <!-- Main drawer menu-->
     <string name="navigation_drawer_menu_my">Meine Dokumente</string>
     <string name="navigation_drawer_menu_shared">Für mich freigegeben</string>
     <string name="navigation_drawer_menu_common">Gemeinsame Dokumente</string>
     <string name="navigation_drawer_menu_projects">Projekte</string>
     <string name="navigation_drawer_menu_trash">Papierkorb</string>
-    <string name="navigation_drawer_menu_about">Info</string>
     <string name="navigation_drawer_menu_help">Hilfe</string>
     <string name="navigation_drawer_menu_logout">Abmelden</string>
     <string name="navigation_drawer_menu_add_account">Konto hinzufügen</string>
@@ -180,9 +181,10 @@
     <string name="settings_title_common">Gemeinsam</string>
     <string name="setting_wifi">Dateien nur bei WLAN-Verbidung hochladen</string>
     <string name="setting_title_wifi">WLAN</string>
-    <string name="setting_cache_cleared">Cache gelöscht</string> <!-- Main toolbar menu -->
+    <string name="setting_cache_cleared">Cache gelöscht</string>
+    <!-- Main toolbar menu -->
     <string name="toolbar_menu_search_result">Suchergebnis</string>
-    <string name="toolbar_menu_search_hint">Suche...</string>
+    <string name="toolbar_menu_search_hint">Suche…</string>
     <string name="toolbar_menu_main_options">Optionen</string>
     <string name="toolbar_menu_main_share">Freigeben</string>
     <string name="toolbar_menu_main_move">Verschieben</string>
@@ -190,7 +192,7 @@
     <string name="toolbar_menu_main_remove_from_list">Aus der Liste entfernen</string>
     <string name="toolbar_menu_main_rename">Umbenennen</string>
     <string name="toolbar_menu_main_delete">Löschen</string>
-    <string name="toolbar_menu_main_select">Auswählen...</string>
+    <string name="toolbar_menu_main_select">Auswählen…</string>
     <string name="toolbar_menu_main_select_all">Alles auswählen</string>
     <string name="toolbar_menu_main_deselect">Abwählen</string>
     <string name="toolbar_menu_sort_by">Sortieren nach</string>
@@ -220,19 +222,22 @@
     <string name="list_context_delete_success">Löschen erfolgreich</string>
     <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Aus aktuell entfernen</string>
-    <string name="list_context_upload_to_portal">In Portal hochladen</string> <!-- List action menu -->
+    <string name="list_context_upload_to_portal">In Portal hochladen</string>
+    <!-- List action menu -->
     <string name="list_action_sheet">Tabelle</string>
     <string name="list_action_presentation">Präsentation</string>
     <string name="list_action_doc">Textdokument</string>
     <string name="list_action_folder">Ordner</string>
     <string name="list_action_photo">Photo machen</string>
     <string name="list_action_upload">Datei hochladen</string>
-    <string name="list_action_storage">Speicher von Drittanbietern verbinden</string> <!-- Dialog info --> <!-- Pager -->
+    <string name="list_action_storage">Speicher von Drittanbietern verbinden</string>
+    <!-- Dialog info --> <!-- Pager -->
     <string name="main_pager_docs_my">Meine</string>
     <string name="main_pager_docs_common">Gemeinsame</string>
     <string name="main_pager_docs_share">Für mich freigegeben</string>
     <string name="main_pager_docs_projects">Projekte</string>
-    <string name="main_pager_docs_trash">Papierkorb</string> <!-- Placeholder -->
+    <string name="main_pager_docs_trash">Papierkorb</string>
+    <!-- Placeholder -->
     <string name="placeholder_connection">Verbindungsfehler</string>
     <string name="placeholder_empty">Leerer Ordner</string>
     <string name="placeholder_search">Nichts gefunden</string>
@@ -244,7 +249,7 @@
     <string name="placeholder_no_users_groups">Keine Benutzer und Gruppen</string>
     <string name="placeholder_media_error">Medien können nicht geladen werden</string>
     <string name="placeholder_try_again">Erneut versuchen</string>
-    <string name="placeholder_loading_files">Dateien werden geladen...</string> <!-- Time marks-->
+    <string name="placeholder_loading_files">Dateien werden geladen…</string> <!-- Time marks-->
     <string name="list_headers_folder">Ordner</string>
     <string name="list_headers_files">Dateien</string>
     <string name="list_headers_created">Gerade erstellt</string>
@@ -300,7 +305,7 @@
     <string name="storage_web_dav_settings_url">Verbindungs-URL</string>
     <string name="storage_web_dav_settings_login">Einloggen</string>
     <string name="storage_web_dav_settings_password">Passwort</string>
-    <string name="storage_web_dav_settings_title">Geben Sie den Titel für den Service ein</string> <!-- ======================================================================================= --> <!-- Operations -->
+    <string name="storage_web_dav_settings_title">Geben Sie den Titel für den Service ein</string>
     <string name="operation_title">Ordner auswählen</string>
     <string name="operation_choose_section">Bereich auswählen</string>
     <string name="operation_complete_message">Vorgang abgeschlossen</string>
@@ -312,9 +317,9 @@
     <string name="operation_error_move_to_same_subfolder">Kann nicht in denselben Unterordner verschoben werden</string>
     <string name="operation_snackbar_send_link">LINK SENDEN</string>
     <string name="operation_snackbar_return">ZURÜCK</string>
-    <string name="operation_share_send_link">SENDEN</string> <!-- ======================================================================================= --> <!-- Trash -->
+    <string name="operation_share_send_link">SENDEN</string>
     <string name="trash_dialog_empty_title">Papierkorb leeren?</string>
-    <string name="trash_popup_delete">Endgültig löschen</string> <!-- ======================================================================================= --> <!-- Managers load -->
+    <string name="trash_popup_delete">Endgültig löschen</string>
     <string name="download_manager_title">ONLYOFFICE Downloads</string>
     <string name="download_manager_progress_title">Herunterladen wird ausgeführt</string>
     <string name="download_manager_complete">Herunterladen abgeschlossen</string>
@@ -339,11 +344,11 @@
     <string name="upload_manager_error_file_size">Die Dateigröße darf nicht mehr als 100 Megabyte betragen</string>
     <string name="upload_manager_notification_cancel_upload">Hochladen abbrechen</string>
     <string name="upload_manager_waiting_title">Warten auf Hochladen</string>
-    <string name="upload_error_wifi">Sie können nur hochladen, wenn das WLAN aktiviert ist</string> <!-- ======================================================================================= --> <!-- Socials -->
+    <string name="upload_error_wifi">Sie können nur hochladen, wenn das WLAN aktiviert ist</string>
     <string name="socials_twitter_failed_auth">Anmeldung über Twitter fehlgeschlagen</string>
     <string name="socials_facebook_cancel_auth">Anmeldung über Facebook abbrechen</string>
     <string name="socials_facebook_failed_auth">Anmeldung über Facebook fehlgeschlagen</string>
-    <string name="socials_google_failed_auth">Anmeldung über Google fehlgeschlagen</string> <!-- ======================================================================================= --> <!-- On boarding -->
+    <string name="socials_google_failed_auth">Anmeldung über Google fehlgeschlagen</string>
     <string name="on_boarding_skip_button">ÜBERSPRINGEN</string>
     <string name="on_boarding_next_button">WEITER</string>
     <string name="on_boarding_finish_button">FERTIG</string>
@@ -471,5 +476,15 @@
             <a href="%2$s">Nutzungsbedingungen</a> zu
         ]]>
     </string>
+    <string name="login_create_signin_passwords_length">Das Passwort muss zwischen 8 und 30 Zeichen enthalten</string>
+    <string name="list_action_import">Datei importieren</string>
+    <string name="storage_google_drive_copy_folder_error">Ordner können nicht kopiert werden</string>
+    <string name="socials_google_cancel_auth">Anmeldung über Google abbrechen</string>
+    <string name="error_open_project_file">Dieses Konto hat keinen Zugriff auf das Projekt</string>
+    <string name="switch_account_open_project_file">Konto wechseln</string>
+    <string name="app_settings_color_theme">Farbschema</string>
+    <string name="app_settings_follow_the_system">Wie im System</string>
+    <string name="app_settings_light_theme">Hell</string>
+    <string name="app_settings_dark_theme">Dunkelmodus</string>
 
 </resources>

@@ -205,7 +205,6 @@
     <string name="media_image_share_chooser">Изберете приложение за споделяне</string>
     <string name="media_video_error">Грешка при неизвестна играча: %1$s</string>
     <string name="navigation_drawer_close">Затворете чекмеджето за навигация</string>
-    <string name="navigation_drawer_menu_about">Относно</string>
     <string name="navigation_drawer_menu_add_account">Добавяне на профил</string>
     <string name="navigation_drawer_menu_common">Общи документи</string>
     <string name="navigation_drawer_menu_help">Помощ</string>

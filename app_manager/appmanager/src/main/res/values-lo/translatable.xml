@@ -74,7 +74,7 @@
     <string name="login_api_init_portal_error">ຜິດພາດຊື່ປະຕູ  syntax</string>
     <string name="login_api_portal_name">ຊື່ປະຕູທີ່ບໍ່ຖືກຕ້ອງ. ຕົວຢ່າງ   : example.onlyoffice.com</string>
     <string name="login_api_portal_name_length">ຊື່ປະຕູຕ້ອງມີຢ່າງ ໜ້ອຍ 6 ຕົວອັກສອນ </string>
-    <string name="login_api_portal_name_content">ຊື່ປະຕູຕ້ອງມີ A-Z, a-z, 0-9</string>
+    <string name="login_api_portal_name_content">ຊື່ປະຕູຕ້ອງມີ A–Z, a–z, 0–9</string>
 
 
     <string name="login_retry">ລອງໃໝ່ເຊື່ອມຕໍ່ </string>
@@ -174,8 +174,8 @@
     <string name="dialogs_sign_in_register_portal"> ລົງທະບຽນ portal </string>
 
     <!-- Waiting -->
-    <string name="dialogs_wait_title">ການດຳເນີນງານກຳລັງດຳເນີນຢູ່...</string>
-    <string name="dialogs_wait_title_storage">ກໍາລັງເຊື່ອມຕໍ່ບ່ອນຈັດເກັບຂໍ້ມູນ...</string>
+    <string name="dialogs_wait_title">ການດຳເນີນງານກຳລັງດຳເນີນຢູ່…</string>
+    <string name="dialogs_wait_title_storage">ກໍາລັງເຊື່ອມຕໍ່ບ່ອນຈັດເກັບຂໍ້ມູນ…</string>
 
     <!-- Question -->
     <string name="dialogs_question_accept_yes">ແມ່ນແລ້ວ</string>
@@ -220,8 +220,8 @@
 
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
-    <string name="chooser_web_browser">ເລືອກ browser...</string>
-    <string name="chooser_email_client">ເລືອກລູກຄ້າທາງອີເມວ...</string>
+    <string name="chooser_web_browser">ເລືອກ browser…</string>
+    <string name="chooser_email_client">ເລືອກລູກຄ້າທາງອີເມວ…</string>
 
     <!-- ======================================================================================= -->
     <!-- Main -->
@@ -246,7 +246,6 @@
     <string name="navigation_drawer_menu_common">ເອກະສານທົ່ວໄປ</string>
     <string name="navigation_drawer_menu_projects">ໂຄງການ </string>
     <string name="navigation_drawer_menu_trash">ກະຕ່າຂີ້ເຫຍື້ອ</string>
-    <string name="navigation_drawer_menu_about"> ກ່ຽວກັບ</string>
     <string name="navigation_drawer_menu_help">ຊ່ວຍເຫຼືອ </string>
     <string name="navigation_drawer_menu_logout">ລະບົບ</string>
     <string name="navigation_drawer_menu_add_account">ເພີ່ມບັນຊີ</string>
@@ -260,7 +259,7 @@
 
     <!-- Main toolbar menu -->
     <string name="toolbar_menu_search_result">ຜົນການຊອກຫາ </string>
-    <string name="toolbar_menu_search_hint">ກຳລັງຄົ້ນຫາ ... </string>
+    <string name="toolbar_menu_search_hint">ກຳລັງຄົ້ນຫາ … </string>
     <string name="toolbar_menu_main_options">ຕົວເລືອກ</string>
     <string name="toolbar_menu_main_share">ແບ່ງປັນ</string>
     <string name="toolbar_menu_main_move">ຍ້າຍ</string>
@@ -268,7 +267,7 @@
     <string name="toolbar_menu_main_remove_from_list">ເອົາອອກຈາກລາຍຊື່ </string>
     <string name="toolbar_menu_main_rename">ປ່ຽນຊື່ </string>
     <string name="toolbar_menu_main_delete">ລຶບ </string>
-    <string name="toolbar_menu_main_select">ກໍາລັງເລືອກ ...</string>
+    <string name="toolbar_menu_main_select">ກໍາລັງເລືອກ …</string>
     <string name="toolbar_menu_main_select_all">ເລືອກທັງ ໝົດ </string>
     <string name="toolbar_menu_main_deselect">ຍົກເລີກການເລືອກ </string>
     <string name="toolbar_menu_sort_by">ຮຽງຕາມ</string>
@@ -575,5 +574,51 @@
     <string name="download_manager_archiving_progress">ສ້າງສຳເນົາ</string>
     <string name="download_manager_exceed_size_100">ຂະໜາດຟາຍກາຍກຳນົດ(100MB)</string>
     <string name="download_manager_exceed_size_25">ຂະໜາດຟາຍກາຍກຳນົດ (25MB)</string>
+    <string name="snackbar_undo">ຍົກເລີກ</string>
+    <string name="errors_server_auth_too_many_attempts">ຜິດຫຼາຍຄັ້ງເກີນໄປ. ລອງໃໝ່ໃນພາຍຫຼັງ</string>
+    <string name="navigation_drawer_menu_feedback">ຄໍາຕິຊົມແລະສະຫນັບສະຫນູນ</string>
+    <string name="share_snackbar_remove_user">ຜູ້ໃຊ້ຖືກລຶບອອກ</string>
+    <string name="share_group_admin">ຄຸ້ມຄອງ</string>
+    <string name="share_group_everyone">ທຸກຄົນ</string>
+    <string name="storage_onedrive_error_opened">ໄຟລ໌ຖືກເປີດຢູ່ໃນເວັບແລ້ວ</string>
+    <string name="storage_onedrive_error_exist">ໄຟລ໌ທີ່ມີຊື່ດຽວກັນແມ່ນມີຢູ່ໃນໂຟນເດີນີ້ແລ້ວ</string>
+    <string name="operation_panel_restore_button">ເກັບກູ້ໄວ້ທີ່ນີ້</string>
+    <string name="trash_snackbar_move_text">ທ່ານສາມາດເກັບກໄຟລ໌ຈາກຖັງຂີ້ເຫຍື້ອໄດ້</string>
+    <string name="trash_snackbar_move_button">ກູ້ຄືນ</string>
+    <string name="trash_popup_move">ເກັບກເປັນ</string>
+    <string name="on_boarding_back_button">ກັບຄືນ</string>
+    <string name="auth_header_screen_4">ພິມລະຫັດ</string>
+    <string name="auth_info_screen_4">ພິມລະຫັດຈາກແອັບຢັ້ງຢືນຕົວຕົນຂອງທ່ານໃສ່ຊ່ອງໃສ່ຂໍ້ມູນ</string>
+    <string name="auth_step_title">ຂັ້ນຕອນທີ %1$d ຈາກທັງໝົດ %2$d</string>
+    <string name="auth_install_button">ຕິດຕັ້ງ</string>
+    <string name="auth_confirm_button">ຢືນຢັນ</string>
+    <string name="auth_clipboard_key_copied">ສຳເນົາກະແຈໃສ່ຄລິບບອດແລ້ວ</string>
+    <string name="auth_edit_hint">ລະຫັດ</string>
+    <string name="app_settings_security">ຄວາມປອດໄພ</string>
+    <string name="app_settings_passcode">ລັອກລະຫັດ</string>
+    <string name="app_settings_disable">ປິດໃຊ້ງານ</string>
+    <string name="app_settings_enable">ເປີດ</string>
+    <string name="app_Settings_passcode_enable">ເປີດໃຊ້ລະຫັດຜ່ານ</string>
+    <string name="app_settings_passcode_change">ປ່ຽນລະຫັດຜ່ານ</string>
+    <string name="app_settings_passcode_fingerprint">ໃຊ້ລາຍນິ້ວມືເພື່ອປົດລັອກ</string>
+    <string name="app_settings_passcode_enter_title">ໃສ່ລະຫັດຜ່ານ</string>
+    <string name="app_settings_passscode_enter_full_title">ໃສ່ລະຫັດເພື່ອປົດລັອກແອັບ</string>
+    <string name="app_settings_passcode_enter_subtitle">ເລືອກລະຫັດຜ່ານເພື່ອປົດລັອກແອັບ</string>
+    <string name="app_settings_passcode_confirm_title">ຢືນຢັນລະຫັດຜ່ານ</string>
+    <string name="app_settings_passcode_confirm_subtitle">ໃສ່ລະຫັດຜ່ານອີກຄັ້ງຫນຶ່ງ</string>
+    <string name="app_settings_passcode_confirm_error">ລະຫັດບໍ່ກົງກັນ</string>
+    <string name="app_settings_passcode_change_disable_title">ໃສ່ລະຫັດປັດຈຸບັນຂອງທ່ານ</string>
+    <string name="app_settings_passcode_change_disable_error">ປ້ອນລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</string>
+    <string name="app_settings_passcode_description"> - ນີ້ແມ່ນລະຫັດທີ່ຮ້ອງຂໍໃນຕອນເລີ່ມຕົ້ນແອັບພລິເຄຊັນ.\n\nໃຫ້ເອົາໃຈໃສ່! ຖ້າທ່ານລືມລະຫັດຜ່ານ, ທ່ານຕ້ອງເອົາອອກຫຼືຕິດຕັ້ງແອັບພລິເຄຊັນໃຫມ່. ເອກະສານທັງໝົດໃນອຸປະກອນຈະສູນຫາຍໄປ.</string>
+    <string name="app_settings_passcode_fingerprint_title">ການເຂົ້າເຖິງເອກະສານ</string>
+    <string name="item_owner_self">ຂ້ອຍ</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           By proceeding, you agree to the
+            <a href="%1$s">Privacy Policy</a>
+            and the
+            <a href="%2$s">Terms of Service</a>
+        ]]>
+    </string>
 
 </resources>
