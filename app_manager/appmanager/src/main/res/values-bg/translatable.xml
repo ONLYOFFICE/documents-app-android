@@ -460,12 +460,22 @@
     <string name="app_settings_passcode_description"> - това е кодът, изискван при стартирането на приложението.\n\nВнимавайте! Ако забравите паролата, трябва да премахнете или да инсталирате отново приложението. Всички документи на устройството ще бъдат изгубени. </string>
     <string name="app_settings_passcode_fingerprint_title">Достъп до Документи</string>
     <string name="sign_in_terms_and_policy_text">
-<![CDATA[
+        <![CDATA[
            Като продължите, се съгласявате с
             <a href="%1$s">Политиката на поверителност</a>
             и
             <a href="%2$s">Условията за употреба</a>
         ]]>
-</string>
+    </string>
+    <string name="login_create_signin_passwords_length">Паролата трябва да съдържа: от 8 до 30 знака</string>
+    <string name="list_action_import">Импортиране на файл</string>
+    <string name="storage_google_drive_copy_folder_error">Папките не могат да бъдат копирани</string>
+    <string name="socials_google_cancel_auth">Откажете списване с Google</string>
+    <string name="error_open_project_file">Този профил няма достъп до проекта</string>
+    <string name="switch_account_open_project_file">Сменете профил</string>
+    <string name="app_settings_color_theme">Цветна тема</string>
+    <string name="app_settings_follow_the_system">Следвайте системата</string>
+    <string name="app_settings_light_theme">Светла тема</string>
+    <string name="app_settings_dark_theme">Тъмна тема</string>
 
 </resources>
