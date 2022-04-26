@@ -14,7 +14,7 @@
         android:icon="@drawable/ic_navigation_on_device"
         android:title="@string/fragment_on_device_title" />
     <item
-        android:id="@+id/menu_item_setting"
+        android:id="@+id/menu_item_settings"
         android:icon="@drawable/ic_navigation_settings"
         android:title="@string/settings_item_title" />
 

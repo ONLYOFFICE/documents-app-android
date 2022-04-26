@@ -30,7 +30,6 @@ import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.activities.main.ProfileActivity
-import app.editors.manager.ui.activities.main.SettingsActivity
 import app.editors.manager.ui.adapters.AccountDetailsLookup
 import app.editors.manager.ui.adapters.AccountKeyProvider
 import app.editors.manager.ui.adapters.CloudAccountAdapter
@@ -64,7 +63,6 @@ class CloudAccountFragment : BaseAppFragment(),
     private var viewBinding: CloudsAccountsLayoutBinding? = null
     private var adapter: CloudAccountAdapter? = null
 
-    private var settingItem: MenuItem? = null
     private var selectAllItem: MenuItem? = null
     private var deselectAllItem: MenuItem? = null
     private var deleteItem: MenuItem? = null
@@ -127,12 +125,12 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onBackPressed(): Boolean {
-        return if (selectedTracker?.clearSelection() == true) {
+        if (selectedTracker?.clearSelection() == true) {
             onDefaultMode()
-            true
         } else {
-            super.onBackPressed()
+            presenter.showCloudFragment()
         }
+        return true
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -156,7 +154,6 @@ class CloudAccountFragment : BaseAppFragment(),
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.cloud_settings_menu, menu)
         menu.apply {
-            settingItem = findItem(R.id.settingsItem)
             selectAllItem = findItem(R.id.selectAll)
             deselectAllItem = findItem(R.id.deselect)
             deleteItem = findItem(R.id.deleteSelected)
@@ -168,7 +165,6 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.settingsItem -> SettingsActivity.show(requireContext())
             R.id.selectAll -> selectedTracker?.setItemsSelected(adapter?.getIds() ?: emptyList(), true)
             R.id.deselect -> selectedTracker?.setItemsSelected(adapter?.getIds() ?: emptyList(), false)
             R.id.deleteSelected -> presenter.deleteSelected(selectedTracker?.selection?.toList())
@@ -198,7 +194,7 @@ class CloudAccountFragment : BaseAppFragment(),
 
     private fun initViews() {
         activity.setAppBarStates(false)
-        activity.showNavigationButton(false)
+        activity.showNavigationButton(true)
         activity.showActionButton(false)
         setActionBarTitle(getString(R.string.cloud_accounts_title))
     }
@@ -232,13 +228,11 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     private fun onSelectionMode(count: String) {
-        activity.showNavigationButton(true)
         setActionBarTitle(count)
         setMenuState(false)
     }
 
     private fun onDefaultMode() {
-        activity.showNavigationButton(false)
         setActionBarTitle(getString(R.string.cloud_accounts_title))
         setMenuState(true)
     }
@@ -254,14 +248,16 @@ class CloudAccountFragment : BaseAppFragment(),
         })
     }
 
+    override fun onCloudFragment(cloudAccount: CloudAccount?) {
+        activity.showOnCloudFragment(account = cloudAccount)
+    }
+
     private fun setMenuState(isSelect: Boolean) {
         if (isSelect) {
-            settingItem?.isVisible = true
             selectAllItem?.isVisible = false
             deselectAllItem?.isVisible = false
             deleteItem?.isVisible = false
         } else {
-            settingItem?.isVisible = false
             selectAllItem?.isVisible = true
             deselectAllItem?.isVisible = true
             deleteItem?.isVisible = true

@@ -49,7 +49,7 @@
     <string name="login_api_portal_name_content">Kontoname darf nur die Zeichen A-Z, a-z, 0-9 enthalten</string>
     <string name="login_retry">Verbindung erneut herstellen</string> <!-- Accounts -->
     <string name="login_accounts_select_title">Konto auswählen</string>
-    <string name="login_accounts_select_add">Cloud-Konto hinzufügen</string> <!-- Portal pager -->
+    <!-- Portal pager -->
     <string name="login_pager_enterprise">PORTAL</string>
     <string name="login_pager_personal">PERSÖNLICH</string>
     <string name="login_pager_title">ONLYOFFICE-Cloud verbinden</string> <!-- Portal enterprise-->

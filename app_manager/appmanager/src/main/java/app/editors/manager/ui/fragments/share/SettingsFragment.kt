@@ -461,7 +461,8 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         private const val TAG_ITEM = "TAG_ITEM"
         private const val TAG_SHOW_POPUP = "TAG_SHOW_POPUP"
         private const val TAG_POSITION_POPUP = "TAG_POSITION_POPUP"
-        private val TAG = SettingsFragment::class.java.simpleName
+
+        val TAG = SettingsFragment::class.java.simpleName
 
         fun newInstance(item: Item): SettingsFragment {
             return SettingsFragment().apply {

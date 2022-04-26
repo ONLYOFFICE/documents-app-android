@@ -157,7 +157,6 @@
     <string name="list_headers_week">Semana</string>
     <string name="list_headers_year">Año</string>
     <string name="list_headers_yesterday">Ayer</string>
-    <string name="login_accounts_select_add">Añadir cuenta en la nube</string>
     <string name="login_accounts_select_title">Seleccionar cuenta</string>
     <string name="login_api_init_error">Error Init</string>
     <string name="login_api_init_portal_error">Error de sintaxis en nombre de la oficina en nube</string>

@@ -71,7 +71,6 @@
     <string name="login_retry">重试连接</string>
     <!-- Accounts -->
     <string name="login_accounts_select_title">选择账户</string>
-    <string name="login_accounts_select_add">添加云账户</string>
     <!-- Portal pager -->
     <string name="login_pager_enterprise">门户</string>
     <string name="login_pager_personal">个人</string>

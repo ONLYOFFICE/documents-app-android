@@ -1,8 +1,8 @@
 package app.editors.manager.mvp.views.main
 
+import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.mvp.presenters.main.CloudAccountState
-import app.editors.manager.mvp.views.base.BaseView
 import app.editors.manager.mvp.views.base.BaseViewExt
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
@@ -16,4 +16,5 @@ interface CloudAccountView : BaseViewExt {
     fun onDropboxLogin()
     fun onGoogleDriveLogin()
     fun onSuccessLogin()
+    fun onCloudFragment(cloudAccount: CloudAccount?)
 }

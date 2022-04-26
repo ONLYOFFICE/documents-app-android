@@ -82,6 +82,15 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         }
     }
 
+    fun showCloudFragment() {
+        CoroutineScope(Dispatchers.Default).launch {
+            val account = accountDao.getAccountOnline()
+            withContext(Dispatchers.Main) {
+                viewState.onCloudFragment(account)
+            }
+        }
+    }
+
     private suspend fun getTokens(accounts: List<CloudAccount>, saveState: Bundle?) {
         val accountsWithToken = accounts.map { account ->
             AccountUtils.getToken(

@@ -82,7 +82,7 @@
 
     <!-- Accounts -->
     <string name="login_accounts_select_title">Select account</string>
-    <string name="login_accounts_select_add">Add cloud account</string>
+    <string name="login_accounts_select_add">Add account</string>
 
     <!-- Portal pager -->
     <string name="login_pager_enterprise">PORTAL</string>

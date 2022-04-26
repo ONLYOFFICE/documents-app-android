@@ -155,7 +155,6 @@
     <string name="list_headers_week">Esta semana</string>
     <string name="list_headers_year">Este ano</string>
     <string name="list_headers_yesterday">Ontem</string>
-    <string name="login_accounts_select_add">Adicione conta da nuvem</string>
     <string name="login_accounts_select_title">Selecionar conta</string>
     <string name="login_api_init_error">Erro de inicialização</string>
     <string name="login_api_init_portal_error">Erro de sintaxe no nome do portal</string>

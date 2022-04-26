@@ -155,7 +155,6 @@
     <string name="list_headers_week">W tym tygodniu</string>
     <string name="list_headers_year">W tym roku</string>
     <string name="list_headers_yesterday">Wczoraj</string>
-    <string name="login_accounts_select_add">Dodaj konto w chmurze</string>
     <string name="login_accounts_select_title">Wybierz konto</string>
     <string name="login_api_init_error">Błąd Init</string>
     <string name="login_api_init_portal_error">Błąd składni nazwy portalu</string>

@@ -22,7 +22,6 @@ class CloudAccountsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val mViewIconSelectableLayout: FrameLayout = view.findViewById(R.id.selectableLayout)
     private val mAccountName: AppCompatTextView = view.findViewById(R.id.accountItemName)
     private val mAccountPortal: AppCompatTextView = view.findViewById(R.id.accountItemPortal)
-    private val mAccountEmail: AppCompatTextView = view.findViewById(R.id.accountItemEmail)
     private val mAccountContext: AppCompatImageButton = view.findViewById(R.id.accountItemContext)
 
     fun bind(
@@ -34,7 +33,6 @@ class CloudAccountsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     ) {
         mAccountName.text = account.name
         mAccountPortal.text = account.portal
-        mAccountEmail.text = account.login
         mAccountContext.visibility = View.VISIBLE
         if (!isSelection) {
             if (account.isOnline) {

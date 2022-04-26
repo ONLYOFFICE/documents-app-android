@@ -140,7 +140,6 @@
     <string name="list_headers_week">Тази седмица</string>
     <string name="list_headers_year">Тази година</string>
     <string name="list_headers_yesterday">Вчера</string>
-    <string name="login_accounts_select_add">Добавете акаунт в облака</string>
     <string name="login_accounts_select_title">Изберете профил</string>
     <string name="login_api_init_error">Първоначална грешка</string>
     <string name="login_api_init_portal_error">Синтактична грешка в адреса на офиса в облака</string>

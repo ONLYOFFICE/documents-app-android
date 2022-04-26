@@ -111,6 +111,7 @@ interface AppComponent {
     fun inject(splashFragment: SplashFragment?)
     fun inject(dropboxSignInPresenter: DropboxSignInPresenter?)
     fun inject(googleDriveSignInPresenter: GoogleDriveSignInPresenter?)
+    fun inject(onlyOfficeCloudPresenter: OnlyOfficeCloudPresenter)
 
     /*
     * Main

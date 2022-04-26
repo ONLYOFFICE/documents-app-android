@@ -155,7 +155,6 @@
     <string name="list_headers_week">Questa settimana</string>
     <string name="list_headers_year">Questo anno</string>
     <string name="list_headers_yesterday">Ieri</string>
-    <string name="login_accounts_select_add">Aggiungi account cloud</string>
     <string name="login_accounts_select_title">Seleziona account</string>
     <string name="login_api_init_error">Errore iniziale</string>
     <string name="login_api_init_portal_error">Errore di sintassi del nome del portale</string>

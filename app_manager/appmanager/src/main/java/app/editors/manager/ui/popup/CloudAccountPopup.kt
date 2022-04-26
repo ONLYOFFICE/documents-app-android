@@ -54,7 +54,6 @@ class CloudAccountPopup(context: Context) : BasePopup(context, R.layout.cloud_ac
         account?.let {
             viewBinding?.headerItem?.let { header ->
                 header.accountItemName.text = it.name
-                header.accountItemEmail.text = it.login
                 header.accountItemPortal.text = it.portal
                 if (it.isWebDav) {
                     header.accountItemName.visibility = View.GONE

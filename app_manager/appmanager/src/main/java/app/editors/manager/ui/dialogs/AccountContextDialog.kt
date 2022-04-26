@@ -97,7 +97,6 @@ class AccountContextDialog : BaseBottomDialog() {
             binding.accountItemContext.isVisible = false
             account?.let { acc ->
                 binding.accountItemName.text = acc.name
-                binding.accountItemEmail.text = acc.login
                 binding.accountItemPortal.text = acc.portal
                 if (acc.isWebDav) {
                     binding.accountItemName.isVisible = false

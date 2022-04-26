@@ -157,7 +157,6 @@
     <string name="list_headers_week">Cette semaine</string>
     <string name="list_headers_year">Cette année</string>
     <string name="list_headers_yesterday">Hier</string>
-    <string name="login_accounts_select_add">Ajouter un compte dans le nuage</string>
     <string name="login_accounts_select_title">Sélectionner le compte</string>
     <string name="login_api_init_error">Erreur d’initialisation</string>
     <string name="login_api_init_portal_error">Erreur de syntaxe du nom de bureau dans les nuages</string>

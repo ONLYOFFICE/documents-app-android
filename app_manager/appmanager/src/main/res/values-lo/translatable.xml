@@ -81,7 +81,6 @@
 
     <!-- Accounts -->
     <string name="login_accounts_select_title"> ເລືອກບັນຊີ</string>
-    <string name="login_accounts_select_add">ເພີ່ມບັນຊີຄລາວ</string>
 
     <!-- Portal pager -->
     <string name="login_pager_enterprise">ປ່ະຕູ</string>

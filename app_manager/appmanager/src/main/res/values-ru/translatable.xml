@@ -166,7 +166,6 @@
     <string name="list_headers_week">На этой неделе</string>
     <string name="list_headers_year">В этом году</string>
     <string name="list_headers_yesterday">Вчера</string>
-    <string name="login_accounts_select_add">Добавить облачный аккаунт</string>
     <string name="login_accounts_select_title">Выбор аккаунта</string>
     <string name="login_api_init_error">Ошибка инициализации</string>
     <string name="login_api_init_portal_error">Синтаксическая ошибка в адресе облачного офиса</string>

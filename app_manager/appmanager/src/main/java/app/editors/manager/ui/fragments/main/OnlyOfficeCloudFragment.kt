@@ -3,15 +3,22 @@ package app.editors.manager.ui.fragments.main
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import androidx.lifecycle.lifecycleScope
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentCloudLayoutBinding
+import app.editors.manager.mvp.presenters.login.OnlyOfficeCloudPresenter
+import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
+import app.editors.manager.mvp.views.login.OnlyOfficeCloudView
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.CloudsActivity
 import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.activities.main.SettingsActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import moxy.presenter.InjectPresenter
 
-class OnlyOfficeCloudFragment : BaseAppFragment() {
+class OnlyOfficeCloudFragment : BaseAppFragment(), OnlyOfficeCloudView {
+
+    @InjectPresenter
+    lateinit var presenter: OnlyOfficeCloudPresenter
 
     private var viewBinding: FragmentCloudLayoutBinding? = null
     private var mainActivity: IMainActivity? = null
@@ -50,13 +57,6 @@ class OnlyOfficeCloudFragment : BaseAppFragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.settingsItem) {
-            SettingsActivity.show(requireContext())
-        }
-        return true
-    }
-
     private fun checkArguments() {
         if (arguments?.containsKey(KEY_PROFILE) == true) {
             arguments?.getBoolean(KEY_PROFILE)?.let {
@@ -69,6 +69,7 @@ class OnlyOfficeCloudFragment : BaseAppFragment() {
     private fun init() {
         setActionBarTitle(getString(if (isAccounts)
             R.string.cloud_accounts_title else R.string.fragment_clouds_title))
+        mainActivity?.showNavigationButton(false)
         mainActivity?.showActionButton(false)
         initListeners()
     }
@@ -76,7 +77,7 @@ class OnlyOfficeCloudFragment : BaseAppFragment() {
     private fun initListeners() {
         viewBinding?.let {
             it.startButton.setOnClickListener {
-                PortalsActivity.show(requireActivity())
+                presenter.getAccounts()
             }
             it.otherStorageButton.setOnClickListener {
                 CloudsActivity.show(requireContext())
@@ -95,4 +96,14 @@ class OnlyOfficeCloudFragment : BaseAppFragment() {
                 }
             }
     }
+
+    override fun checkAccounts(isEmpty: Boolean) {
+        if (isEmpty) {
+            PortalsActivity.show(requireActivity())
+        } else {
+            mainActivity?.showAccountFragment()
+        }
+    }
+
+    override fun onError(message: String?) {}
 }

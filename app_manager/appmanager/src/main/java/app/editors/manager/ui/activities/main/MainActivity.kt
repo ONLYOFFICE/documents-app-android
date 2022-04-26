@@ -25,6 +25,7 @@ import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.ui.fragments.share.SettingsFragment
 import app.editors.manager.viewModels.main.RecentViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
@@ -56,6 +57,8 @@ interface IMainActivity {
     fun setAppBarStates(isVisible: Boolean)
     fun getNavigationBottom(): BottomNavigationView
     fun onSwitchAccount()
+    fun showOnCloudFragment(account: CloudAccount? = null)
+    fun showAccountFragment()
 }
 
 
@@ -236,7 +239,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             onBackPressed()
         }
         viewBinding.appBarToolbar.accountListener = {
-            AccountBottomDialog.newInstance().show(supportFragmentManager, AccountBottomDialog.TAG)
+            showAccountFragment()
         }
     }
 
@@ -313,12 +316,8 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 }
                 viewBinding.appBarToolbar.bind(state.account)
             }
-            is MainActivityState.AccountsState -> {
-                if (state.isAccounts) {
-                    showAccountFragment(true)
-                } else {
-                    showAccountFragment(false)
-                }
+            is MainActivityState.SettingsState -> {
+                showSettingsFragment()
             }
         }
     }
@@ -479,7 +478,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             CloudAccountFragment.newInstance(),
             R.id.frame_container
         )
-        viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_setting
+        viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_settings
     }
 
     private fun checkPermission() {
@@ -506,7 +505,23 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    private fun showOnCloudFragment(account: CloudAccount? = null) {
+    private fun showSettingsFragment() {
+        supportFragmentManager.findFragmentByTag(AppSettingsFragment.TAG)?.let { fragment ->
+            FragmentUtils.showFragment(
+                supportFragmentManager,
+                fragment,
+                R.id.frame_container
+            )
+        } ?: run {
+            FragmentUtils.showFragment(
+                supportFragmentManager,
+                AppSettingsFragment.newInstance(),
+                R.id.frame_container
+            )
+        }
+    }
+
+    override fun showOnCloudFragment(account: CloudAccount?) {
         account?.let {
             when {
                 it.isWebDav -> {
@@ -608,20 +623,12 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    private fun showAccountFragment(isAccounts: Boolean) {
-        if (isAccounts) {
-            FragmentUtils.showFragment(
-                supportFragmentManager,
-                CloudAccountFragment.newInstance(),
-                R.id.frame_container
-            )
-        } else {
-            FragmentUtils.showFragment(
-                supportFragmentManager,
-                OnlyOfficeCloudFragment.newInstance(true),
-                R.id.frame_container
-            )
-        }
+    override fun showAccountFragment() {
+        FragmentUtils.showFragment(
+            supportFragmentManager,
+            CloudAccountFragment.newInstance(),
+            R.id.frame_container
+        )
     }
 
     override fun setAppBarStates(isVisible: Boolean) {

@@ -79,7 +79,6 @@
 
     <!-- Accounts -->
     <string name="login_accounts_select_title">Vybrat účet</string>
-    <string name="login_accounts_select_add">Přidat cloudový účet</string>
 
     <!-- Portal pager -->
     <string name="login_pager_enterprise">PORTÁL</string>
