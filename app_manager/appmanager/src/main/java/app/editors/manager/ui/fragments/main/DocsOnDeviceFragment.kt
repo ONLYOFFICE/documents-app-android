@@ -13,7 +13,6 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
@@ -102,10 +101,16 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
+    var uri: Uri? = null
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == PERMISSION_CAMERA) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 makePhoto()
+            }
+        } else if (requestCode == PERMISSION_READ_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
             }
         }
     }
@@ -228,7 +233,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 makePhoto()
             }
         } else if(buttons == ActionBottomDialog.Buttons.IMPORT) {
-            importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
+            if(checkReadPermission()) {
+                importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
+            }
         }
     }
 
