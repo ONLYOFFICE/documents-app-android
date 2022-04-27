@@ -11,14 +11,14 @@
 
     <ImageView
         android:id="@+id/itemImage"
-        style="@style/CommonImageView"
         android:layout_width="@dimen/image_default_size"
         android:layout_height="@dimen/image_default_size"
         android:layout_marginStart="@dimen/default_margin_large"
+        android:background="@color/colorTransparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/colorOnSurface"
+        app:tint="@color/colorGrey"
         tools:ignore="ContentDescription" />
 
     <com.google.android.material.textview.MaterialTextView

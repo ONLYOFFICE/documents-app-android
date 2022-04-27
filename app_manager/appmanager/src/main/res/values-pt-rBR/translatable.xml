@@ -379,7 +379,6 @@
     <string name="cloud_only_office_description">Armazene documentos na nuvem e colabore neles</string>
     <string name="cloud_accounts_title">Contas</string>
     <string name="error_long_file_name">O nome do arquivo é muito longo</string>
-    <string name="dialog_remove_account_title">Remover conta</string>
     <string name="dialog_remove_account_description">
         O usuário com o email %1$s do portal %2$s será desconectada e removida da lista de contas. \n\nObserve que para fazer log-in precisará digitar o endereço do portal, email e senha. Todos os arquivos estarão seguros.
     </string>

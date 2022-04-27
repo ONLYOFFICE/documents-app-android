@@ -381,7 +381,6 @@
     <string name="cloud_only_office_description">Запазете документи в облака и работете по тях</string>
     <string name="cloud_accounts_title">Профили</string>
     <string name="error_long_file_name">Името на файла е твърде дълго</string>
-    <string name="dialog_remove_account_title">Премахни профил</string>
     <string name="dialog_remove_account_description">
         Потребител с %1$s от %2$s портала ще бъде отписан и премахнат от списъка с профили. \n\nМоля, имайте предвид: за да влезете ще е нужно да въведете адрес на портала, имейл и парола. Всички ваши файлове ще бъдат защитени.
 </string>

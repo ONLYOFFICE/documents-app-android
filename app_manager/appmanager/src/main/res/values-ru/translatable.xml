@@ -409,7 +409,6 @@
     <string name="cloud_only_office_description">Храните документы в облаке и работайте над ними совместно</string>
     <string name="cloud_accounts_title">Аккаунты</string>
     <string name="error_long_file_name">Слишком длинное имя файла</string>
-    <string name="dialog_remove_account_title">Удалить аккаунт</string>
     <string name="dialog_remove_account_description">
         Пользователь с %1$s с портала %2$s выйдет из системы и будет удален из списка аккаунтов. \n\nОбратите внимание: для входа в систему потребуется ввести адрес портала, email и пароль. Все файлы останутся в сохранности.
     </string>

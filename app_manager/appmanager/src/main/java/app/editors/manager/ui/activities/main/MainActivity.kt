@@ -23,9 +23,7 @@ import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
 import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.main.*
-import app.editors.manager.ui.fragments.share.SettingsFragment
 import app.editors.manager.viewModels.main.RecentViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout

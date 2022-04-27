@@ -34,7 +34,6 @@ import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
-import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.login.*
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.WebViewerFragment
@@ -116,7 +115,6 @@ interface AppComponent {
     /*
     * Main
     * */
-    fun inject(accountsPresenter: AccountsPresenter?)
     fun inject(mainActivityPresenter: MainActivityPresenter?)
     fun inject(onlyOfficePresenter: DocsCloudPresenter?)
     fun inject(webDavPresenter: DocsWebDavPresenter?)
@@ -169,7 +167,6 @@ interface AppComponent {
     fun inject(authPagerFragment: AuthPagerFragment?)
     fun inject(enterpriseAppAuthPresenter: EnterpriseAppAuthPresenter?)
     fun inject(selectPresenter: SelectPresenter?)
-    fun inject(accountsBottomFragment: AccountBottomDialog?)
     fun inject(webDavSignInPresenter: WebDavSignInPresenter?)
 
     fun inject(viewModel: AppSettingsViewModel)

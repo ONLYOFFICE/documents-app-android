@@ -381,7 +381,6 @@
     <string name="cloud_only_office_description">Stockez les documents dans le cloud et co-éditez-les</string>
     <string name="cloud_accounts_title">Comptes</string>
     <string name="error_long_file_name">Le nom de fichier est trop long</string>
-    <string name="dialog_remove_account_title">Supprimer le compte</string>
     <string name="dialog_remove_account_description">
         L\'utilisateur avec le mail %1$s du portail %2$s sera déconnecté et sont compte sera effacé de la liste des comptes. \n\nAttention! Vous devez saisir l\'adresse du portail, le mail et le mot de passe. Tous les fichiers seront en sécurité !
     </string>
