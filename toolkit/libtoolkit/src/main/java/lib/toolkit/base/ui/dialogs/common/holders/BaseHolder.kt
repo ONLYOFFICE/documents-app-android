@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
+import com.google.android.material.button.MaterialButton
 import lib.toolkit.base.R
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
@@ -30,8 +31,8 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     protected lateinit var mFrameLayout: FrameLayout
     protected lateinit var mTopTitleView: AppCompatTextView
     protected lateinit var mBottomTitleView: AppCompatTextView
-    protected lateinit var mAcceptView: AppCompatButton
-    protected lateinit var mCancelView: AppCompatButton
+    protected lateinit var mAcceptView: MaterialButton
+    protected lateinit var mCancelView: MaterialButton
 
     protected var mTag: String? = null
     protected var mTopTitle: String? = null

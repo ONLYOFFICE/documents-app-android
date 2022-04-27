@@ -294,7 +294,7 @@ class CloudAccountFragment : BaseAppFragment(),
     override fun onRemoveClick(account: CloudAccount?) {
         account?.let {
             showQuestionDialog(
-                getString(R.string.dialog_remove_account_title),
+                getString(R.string.dialog_remove_account_title) + "?",
                 getString(R.string.dialog_remove_account_description, account.login, account.portal),
                 getString(R.string.dialogs_question_accept_remove),
                 getString(R.string.dialogs_common_cancel_button),
