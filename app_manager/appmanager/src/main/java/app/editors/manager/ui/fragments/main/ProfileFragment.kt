@@ -14,6 +14,7 @@ import app.editors.manager.mvp.models.user.Thirdparty
 import app.editors.manager.mvp.presenters.main.ProfilePresenter
 import app.editors.manager.mvp.presenters.main.ProfileState
 import app.editors.manager.mvp.views.main.ProfileView
+import app.editors.manager.ui.activities.main.ProfileActivity
 import app.editors.manager.ui.adapters.ThirdpartyAdapter
 import app.editors.manager.ui.binders.ProfileItemBinder
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -31,7 +32,6 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
 
         const val KEY_ACCOUNT = "KEY_ACCOUNT"
         private const val TAG_LOGOUT = "TAG_LOGOUT"
-        private const val TAG_REMOVE = "TAG_REMOVE"
 
         fun newInstance(account: String?): ProfileFragment {
             return ProfileFragment().apply {
@@ -96,16 +96,12 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
                 }
             }
         }
-        initRemoveItem(state.account)
     }
 
     override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
         super.onAcceptClick(dialogs, value, tag)
         if (tag != null) {
             when (tag) {
-                TAG_REMOVE -> {
-                    presenter.removeAccount()
-                }
                 TAG_LOGOUT -> {
                     presenter.logout()
                 }
@@ -141,21 +137,45 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
 
     private fun onOnlineState(account: CloudAccount) {
         if (account.isOnline) {
-            viewBinding?.logoutItem?.root?.visibility = View.VISIBLE
-            viewBinding?.logoutItem?.itemImage?.setImageDrawable(
-                ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_account_logout
+            viewBinding?.logoutItem?.let { item ->
+                UiUtils.setImageTint(item.itemImage, lib.toolkit.base.R.color.colorLightRed)
+                item.root.visibility = View.VISIBLE
+                item.itemImage.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_account_logout
+                    )
                 )
-            )
-            viewBinding?.logoutItem?.itemText?.text = getString(R.string.navigation_drawer_menu_logout)
-            viewBinding?.logoutItem?.root?.setOnClickListener {
-                showQuestionDialog(
-                    getString(R.string.dialog_logout_account_title),
-                    getString(R.string.dialog_logout_account_description),
-                    getString(R.string.navigation_drawer_menu_logout),
-                    getString(R.string.dialogs_common_cancel_button), TAG_LOGOUT
+                item.itemText.text = getString(R.string.navigation_drawer_menu_logout)
+                item.itemText
+                    .setTextColor(item.root.context.getColor(lib.toolkit.base.R.color.colorLightRed))
+                item.root.setOnClickListener {
+                    showQuestionDialog(
+                        getString(R.string.dialog_logout_account_title),
+                        getString(R.string.dialog_logout_account_description),
+                        getString(R.string.navigation_drawer_menu_logout),
+                        getString(R.string.dialogs_common_cancel_button), TAG_LOGOUT
+                    )
+                }
+            }
+        } else {
+            viewBinding?.logoutItem?.let { item ->
+                UiUtils.setImageTint(item.itemImage, lib.toolkit.base.R.color.colorPrimary)
+                item.root.visibility = View.VISIBLE
+                item.itemImage.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_account_login
+                    )
                 )
+                item.itemText.text = getString(R.string.navigation_drawer_menu_sign_in)
+                item.itemText
+                    .setTextColor(item.root.context.getColor(lib.toolkit.base.R.color.colorPrimary))
+                item.root.setOnClickListener {
+                    requireActivity().intent.putExtra(KEY_ACCOUNT, Json.encodeToString(account))
+                    requireActivity().setResult(ProfileActivity.RESULT_LOGIN, requireActivity().intent)
+                    requireActivity().finish()
+                }
             }
         }
     }
@@ -170,28 +190,6 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
         viewBinding?.recyclerView?.layoutManager = LinearLayoutManager(requireContext())
         viewBinding?.recyclerView?.adapter = adapter
         adapter?.setItems(list)
-    }
-
-    private fun initRemoveItem(account: CloudAccount) {
-        viewBinding?.removeItem?.itemImage?.setImageDrawable(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.ic_trash
-            )
-        )
-        viewBinding?.removeItem?.itemText?.text = getString(R.string.dialog_remove_account_title)
-        viewBinding?.removeItem?.itemText?.setTextColor(ContextCompat.getColor(requireContext(), lib.toolkit.base.R.color.colorLightRed))
-        UiUtils.setImageTint(viewBinding?.removeItem?.itemImage ?: throw Error("Error inflate"), lib.toolkit.base.R.color.colorLightRed)
-
-        viewBinding?.removeItem?.root?.setOnClickListener {
-            showQuestionDialog(
-                getString(R.string.dialog_remove_account_title),
-                getString(R.string.dialog_remove_account_description, account.login, account.portal),
-                getString(R.string.dialogs_question_accept_remove),
-                getString(R.string.dialogs_common_cancel_button),
-                TAG_REMOVE
-            )
-        }
     }
 
     private fun setType(account: CloudAccount) {

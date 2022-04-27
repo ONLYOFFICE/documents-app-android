@@ -56,7 +56,6 @@
             style="@style/ItemSmallGreyText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_margin_small"
             android:layout_marginEnd="@dimen/default_margin_medium"
             android:layout_marginBottom="@dimen/default_margin_small"
             app:layout_constraintBottom_toBottomOf="parent"

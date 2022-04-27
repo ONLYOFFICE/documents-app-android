@@ -15,6 +15,7 @@ class ProfileActivity : BaseAppActivity() {
         val TAG: String = ProfileActivity::class.java.simpleName
 
         const val REQUEST_PROFILE = 1001
+        const val RESULT_LOGIN = 1005
 
         fun show(activity: Activity, account: String) {
             activity.startActivityForResult(Intent(activity, ProfileActivity::class.java).apply {

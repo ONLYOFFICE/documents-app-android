@@ -2,10 +2,9 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     android:paddingStart="@dimen/screen_left_right_padding"
-    android:paddingTop="@dimen/screen_top_bottom_padding"
     android:paddingEnd="@dimen/screen_left_right_padding"
     android:scrollbars="vertical">
 
@@ -34,8 +33,6 @@
             layout="@layout/profile_item_layout"
             android:visibility="gone" />
 
-        <include layout="@layout/view_line_separator" />
-
         <LinearLayout
             android:id="@+id/servicesContainer"
             android:layout_width="match_parent"
@@ -57,8 +54,6 @@
                 android:visibility="gone"
                 tools:listitem="@layout/thirdparty_item_layout" />
 
-            <include layout="@layout/view_line_separator" />
-
         </LinearLayout>
 
         <include
@@ -66,9 +61,7 @@
             layout="@layout/account_context_item"
             android:visibility="gone" />
 
-        <include
-            android:id="@+id/removeItem"
-            layout="@layout/account_context_item" />
+        <include layout="@layout/view_line_separator" />
 
     </LinearLayout>
 

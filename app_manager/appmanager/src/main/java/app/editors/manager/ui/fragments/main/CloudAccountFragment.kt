@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -36,6 +37,7 @@ import app.editors.manager.ui.adapters.CloudAccountAdapter
 import app.editors.manager.ui.dialogs.AccountContextDialog
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -70,7 +72,13 @@ class CloudAccountFragment : BaseAppFragment(),
     private var selectedTracker: SelectionTracker<String>? = null
 
     private val launchProfile = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        presenter.getAccounts()
+        when (it.resultCode) {
+            Activity.RESULT_OK -> presenter.getAccounts()
+            ProfileActivity.RESULT_LOGIN -> {
+                val account = it.data?.extras?.getString(ProfileFragment.KEY_ACCOUNT).orEmpty()
+                presenter.checkLogin(Json.decodeFromString(account))
+            }
+        }
     }
 
     private val selectionObserver: SelectionTracker.SelectionObserver<String> = object :
