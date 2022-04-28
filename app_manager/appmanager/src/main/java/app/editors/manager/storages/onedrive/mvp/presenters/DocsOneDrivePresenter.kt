@@ -3,7 +3,6 @@ package app.editors.manager.storages.onedrive.mvp.presenters
 import android.accounts.Account
 import android.content.ClipData
 import android.net.Uri
-import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import app.documents.core.network.ApiContract
@@ -103,6 +102,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun refreshToken() {
         val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
         val accData = AccountUtils.getAccountData(context, account)
@@ -145,8 +145,8 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun getNextList() {
-        val id = modelExplorerStack?.currentId
-        val loadPosition = modelExplorerStack?.loadPosition ?: 0
+        val id = modelExplorerStack.currentId
+        val loadPosition = modelExplorerStack.loadPosition
 
         id?.let {
             if(loadPosition > 0) {
@@ -154,8 +154,8 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                 args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
                 fileProvider?.let { provider ->
                     disposable.add(provider.getFiles(id, args).subscribe({ explorer: Explorer? ->
-                        modelExplorerStack?.addOnNext(explorer)
-                        val last = modelExplorerStack?.last()
+                        modelExplorerStack.addOnNext(explorer)
+                        val last = modelExplorerStack.last()
 
                         last?.let {
                             viewState.onDocsNext(getListWithHeaders(it, true))
@@ -199,10 +199,10 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             }
         }
 
-        for (uri in uploadUris) {
+        for (uploadUri in uploadUris) {
             val data = Data.Builder()
-                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, modelExplorerStack?.currentId)
-                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uri.toString())
+                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, modelExplorerStack.currentId)
+                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uploadUri.toString())
                 .putString(BaseStorageUploadWork.KEY_TAG, tag)
                 .build()
 
@@ -265,6 +265,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         }
     }
 
-    fun isFoldersInSelection(): Boolean = modelExplorerStack?.selectedFolders?.isEmpty() == true
+    fun isFoldersInSelection(): Boolean = modelExplorerStack.selectedFolders.isEmpty()
 
 }

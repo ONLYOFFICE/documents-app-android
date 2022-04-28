@@ -2,23 +2,25 @@ package app.editors.manager.storages.googledrive.mvp.presenters
 
 import android.content.ClipData
 import android.net.Uri
-import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.storages.googledrive.managers.works.DownloadWork
-import app.editors.manager.storages.googledrive.managers.providers.GoogleDriveFileProvider
-import app.editors.manager.storages.googledrive.managers.utils.GoogleDriveUtils
-import app.editors.manager.storages.googledrive.managers.works.UploadWork
-import app.editors.manager.storages.googledrive.mvp.models.request.ShareRequest
-import app.editors.manager.mvp.models.explorer.*
+import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.explorer.GoogleDriveFolder
+import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.base.work.BaseStorageDownloadWork
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
+import app.editors.manager.storages.googledrive.managers.providers.GoogleDriveFileProvider
 import app.editors.manager.storages.googledrive.managers.receiver.GoogleDriveUploadReceiver
+import app.editors.manager.storages.googledrive.managers.utils.GoogleDriveUtils
+import app.editors.manager.storages.googledrive.managers.works.DownloadWork
+import app.editors.manager.storages.googledrive.managers.works.UploadWork
+import app.editors.manager.storages.googledrive.mvp.models.request.ShareRequest
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -31,27 +33,27 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 
-class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(), GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
+class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<BaseStorageDocsView>(), GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
 
-    var uploadGoogleDriveReceiver: GoogleDriveUploadReceiver? = null
+    private var uploadGoogleDriveReceiver: GoogleDriveUploadReceiver = GoogleDriveUploadReceiver()
 
     init {
         App.getApp().appComponent.inject(this)
-        uploadGoogleDriveReceiver = GoogleDriveUploadReceiver()
-
     }
-    override val externalLink : Unit
+
+    override val externalLink: Unit
         get() {
             val request = ShareRequest(
                 role = "reader",
                 type = "anyone"
             )
-            val externalLink = if (itemClicked is CloudFile) (itemClicked as CloudFile).webUrl else if(itemClicked is GoogleDriveFolder) (itemClicked as GoogleDriveFolder).webUrl else ""
+            val externalLink =
+                if (itemClicked is CloudFile) (itemClicked as CloudFile).webUrl else if (itemClicked is GoogleDriveFolder) (itemClicked as GoogleDriveFolder).webUrl else ""
             disposable.add(
                 itemClicked?.id?.let { id ->
                     (fileProvider as GoogleDriveFileProvider).share(id, request)
                         .subscribe({ response ->
-                            if(response) {
+                            if (response) {
                                 KeyboardUtils.setDataToClipboard(
                                     context,
                                     externalLink,
@@ -68,7 +70,7 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
                                 )
                             }
                         },
-                            {throwable: Throwable -> fetchError(throwable)}
+                            { throwable: Throwable -> fetchError(throwable) }
                         )
                 }!!
             )
@@ -78,24 +80,17 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        uploadGoogleDriveReceiver?.setUploadListener(this)
-        uploadGoogleDriveReceiver?.let { receiver ->
-            uploadGoogleDriveReceiver?.filter?.let { filter ->
-                LocalBroadcastManager.getInstance(context).registerReceiver(
-                    receiver, filter
-                )
-            }
-        }
+        uploadGoogleDriveReceiver.setUploadListener(this)
+        LocalBroadcastManager.getInstance(context).registerReceiver(
+            uploadGoogleDriveReceiver, uploadGoogleDriveReceiver.filter
+        )
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        uploadGoogleDriveReceiver?.setUploadListener(null)
-        uploadGoogleDriveReceiver?.let { receiver ->
-            LocalBroadcastManager.getInstance(context).unregisterReceiver(
-                receiver
-            )
-        }
+        uploadGoogleDriveReceiver.setUploadListener(null)
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadGoogleDriveReceiver)
+
     }
 
     override fun getProvider() {
@@ -125,11 +120,11 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
     }
 
     override fun getNextList() {
-        val id = modelExplorerStack?.currentId
+        val id = modelExplorerStack.currentId
         val args = getArgs(filteringValue)
         disposable.add(fileProvider?.getFiles(id, args)?.subscribe({ explorer: Explorer? ->
-            modelExplorerStack?.addOnNext(explorer)
-            val last = modelExplorerStack?.last()
+            modelExplorerStack.addOnNext(explorer)
+            val last = modelExplorerStack.last()
             last?.let {
                 viewState.onDocsNext(getListWithHeaders(it, true))
             }
@@ -139,9 +134,9 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
 
     override fun getArgs(filteringValue: String?): MutableMap<String, String> {
         val args = mutableMapOf<String, String>()
-        if(modelExplorerStack?.last()?.current?.providerItem == true) {
+        if (modelExplorerStack.last()?.current?.providerItem == true) {
             args[GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN] =
-                modelExplorerStack?.last()?.current?.parentId!!
+                modelExplorerStack.last()?.current?.parentId!!
         }
         args.putAll(super.getArgs(filteringValue))
         return args
@@ -181,20 +176,20 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
     override fun copy(): Boolean {
         val itemList = mutableListOf<Item>()
         when {
-            modelExplorerStack?.selectedFiles?.isNotEmpty() == true -> {
-                itemList.addAll(modelExplorerStack?.selectedFiles!!)
+            modelExplorerStack.selectedFiles.isNotEmpty() -> {
+                itemList.addAll(modelExplorerStack.selectedFiles)
             }
-            modelExplorerStack?.selectedFolders?.isNotEmpty() == true -> {
+            modelExplorerStack.selectedFolders.isNotEmpty() -> {
                 viewState.onSnackBar(context.getString(R.string.storage_google_drive_copy_folder_error))
-                itemList.addAll(modelExplorerStack?.selectedFiles!!)
+                itemList.addAll(modelExplorerStack.selectedFiles)
             }
             else -> {
                 itemClicked?.let { itemList.add(it) }
             }
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
-        disposable.add((fileProvider as GoogleDriveFileProvider).copy(itemList, modelExplorerStack?.currentId!!)
-            .subscribe ({},{
+        disposable.add((fileProvider as GoogleDriveFileProvider).copy(itemList, modelExplorerStack.currentId!!)
+            .subscribe({}, {
                 fetchError(it)
                 if (isSelectionMode) {
                     setSelection(false)
@@ -225,17 +220,17 @@ class DocsGoogleDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>(),
             uploadUris.add(uri)
         } ?: run {
             uris?.let {
-                while(index != uris.itemCount) {
+                while (index != uris.itemCount) {
                     uploadUris.add(uris.getItemAt(index).uri)
                     index++
                 }
             }
         }
 
-        for (uri in uploadUris) {
+        for (uploadUri in uploadUris) {
             val data = Data.Builder()
-                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, modelExplorerStack?.currentId)
-                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uri.toString())
+                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, modelExplorerStack.currentId)
+                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uploadUri.toString())
                 .putString(BaseStorageUploadWork.KEY_TAG, tag)
                 .putString(UploadWork.KEY_FILE_ID, itemClicked?.id)
                 .build()

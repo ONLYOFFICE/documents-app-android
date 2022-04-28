@@ -16,7 +16,6 @@ import app.editors.manager.managers.providers.ProviderError
 import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.*
-import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
@@ -41,18 +40,11 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     init {
         App.getApp().appComponent.inject(this)
-        modelExplorerStack = ModelExplorerStack()
-        filteringValue = ""
-        placeholderViewType = PlaceholderViews.Type.NONE
-        isContextClick = false
-        isFilteringMode = false
-        isSelectionMode = false
-        isFoldersMode = false
         fileProvider = LocalFileProvider(LocalContentTools(context))
         checkWebDav()
     }
 
-    private var mPhotoUri: Uri? = null
+    private var photoUri: Uri? = null
     private var webDavFileProvider: WebDavFileProvider? = null
 
     private fun checkWebDav() {
@@ -73,7 +65,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun createDocs(title: String) {
-        val id = modelExplorerStack?.currentId
+        val id = modelExplorerStack.currentId
         if (id != null) {
             val requestCreate = RequestCreate()
             requestCreate.title = title
@@ -134,15 +126,15 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     override fun updateViewsState() {
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(modelExplorerStack?.countSelectedItems.toString())
-            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
+            viewState.onActionBarTitle(modelExplorerStack.countSelectedItems.toString())
+            viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
         } else if (isFilteringMode) {
             viewState.onActionBarTitle(context.getString(R.string.toolbar_menu_search_result))
             viewState.onStateUpdateFilter(true, filteringValue)
-            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
+            viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
-        } else if (!modelExplorerStack?.isRoot!!) {
+        } else if (!modelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
@@ -189,22 +181,20 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun deleteItems() {
-        modelExplorerStack?.let { stack ->
-            val items: MutableList<Item> = ArrayList()
-            val files = stack.selectedFiles
-            val folders = stack.selectedFolders
-            items.addAll(folders)
-            items.addAll(files)
-            fileProvider?.let { provider ->
-                disposable.add(provider.delete(items, null)
-                    .subscribe({ }, { fetchError(it) }) {
-                        stack.removeSelected()
-                        getBackStack()
-                        setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                        viewState.onRemoveItems(items)
-                        viewState.onSnackBar(context.getString(R.string.operation_complete_message))
-                    })
-            }
+        val items: MutableList<Item> = ArrayList()
+        val files = modelExplorerStack.selectedFiles
+        val folders = modelExplorerStack.selectedFolders
+        items.addAll(folders)
+        items.addAll(files)
+        fileProvider?.let { provider ->
+            disposable.add(provider.delete(items, null)
+                .subscribe({ }, { fetchError(it) }) {
+                    modelExplorerStack.removeSelected()
+                    getBackStack()
+                    setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    viewState.onRemoveItems(items)
+                    viewState.onSnackBar(context.getString(R.string.operation_complete_message))
+                })
         }
     }
 
@@ -236,14 +226,14 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     private fun uploadWebDav(id: String, uriList: List<Uri>) {
-        var id = id
-        if (id[id.length - 1] != '/') {
-            id = "$id/"
+        var uploadId = id
+        if (uploadId[uploadId.length - 1] != '/') {
+            uploadId = "$uploadId/"
         }
-        uploadDisposable = webDavFileProvider!!.upload(id, uriList)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ }, { throwable: Throwable -> fetchError(throwable) }
+        uploadDisposable = webDavFileProvider?.upload(uploadId, uriList)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe({ }, { throwable: Throwable -> fetchError(throwable) }
             ) {
                 viewState.onDialogClose()
                 viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
@@ -259,11 +249,11 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         if (isRepeatedTap) {
             reverseSortOrder()
         }
-        if(!isFilteringMode) {
-            getItemsById(modelExplorerStack?.currentId)
+        if (!isFilteringMode) {
+            getItemsById(modelExplorerStack.currentId)
         } else {
-            loadSuccess(modelExplorerStack?.last()
-                ?.let { explorer ->  (fileProvider as LocalFileProvider).sortExplorer(explorer, getArgs(null)) })
+            loadSuccess(modelExplorerStack.last()
+                ?.let { explorer -> (fileProvider as LocalFileProvider).sortExplorer(explorer, getArgs(null)) })
         }
         return true
     }
@@ -271,17 +261,17 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     override fun orderBy(value: String): Boolean {
         preferenceTool.sortOrder = value
 
-        if(!isFilteringMode) {
-            getItemsById(modelExplorerStack?.currentId)
+        if (!isFilteringMode) {
+            getItemsById(modelExplorerStack.currentId)
         } else {
-            loadSuccess(modelExplorerStack?.last()
+            loadSuccess(modelExplorerStack.last()
                 ?.let { explorer -> (fileProvider as LocalFileProvider).sortExplorer(explorer, getArgs(null)) })
         }
         return true
     }
 
     override fun rename(title: String?) {
-        val item = modelExplorerStack?.getItemById(itemClicked)
+        val item = modelExplorerStack.getItemById(itemClicked)
         if (item != null) {
             val existFile = File(item.id)
             if (existFile.exists()) {
@@ -327,7 +317,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun import(uri: Uri) {
-        disposable.add((fileProvider as LocalFileProvider).import(context, modelExplorerStack?.currentId!!, uri).subscribe {
+        disposable.add((fileProvider as LocalFileProvider).import(context, modelExplorerStack.currentId ?: "", uri).subscribe {
             refresh()
             viewState.onSnackBar(context.getString(R.string.operation_complete_message))
         })
@@ -352,33 +342,32 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     private fun moveSelection(path: String?, isCopy: Boolean) {
-        modelExplorerStack?.let { stack ->
-            if (stack.countSelectedItems > 0) {
-                if (fileProvider is LocalFileProvider) {
-                    val provider = fileProvider as LocalFileProvider
-                    val items: MutableList<Item> = ArrayList()
-                    val files = stack.selectedFiles
-                    val folders = stack.selectedFolders
-                    items.addAll(folders)
-                    items.addAll(files)
-                    for (item in items) {
-                        try {
-                            if (!provider.transfer(path, item, isCopy)) {
-                                viewState.onError(context.getString(R.string.operation_error_move_to_same))
-                                break
-                            }
-                        } catch (e: Exception) {
-                            catchTransferError(e)
+        if (modelExplorerStack.countSelectedItems > 0) {
+            if (fileProvider is LocalFileProvider) {
+                val provider = fileProvider as LocalFileProvider
+                val items: MutableList<Item> = ArrayList()
+                val files = modelExplorerStack.selectedFiles
+                val folders = modelExplorerStack.selectedFolders
+                items.addAll(folders)
+                items.addAll(files)
+                for (item in items) {
+                    try {
+                        if (!provider.transfer(path, item, isCopy)) {
+                            viewState.onError(context.getString(R.string.operation_error_move_to_same))
+                            break
                         }
+                    } catch (e: Exception) {
+                        catchTransferError(e)
                     }
-                    getBackStack()
-                    refresh()
-                    viewState.onSnackBar(context.getString(R.string.operation_complete_message))
                 }
-            } else {
-                viewState.onError(context.getString(R.string.operation_empty_lists_data))
+                getBackStack()
+                refresh()
+                viewState.onSnackBar(context.getString(R.string.operation_complete_message))
             }
+        } else {
+            viewState.onError(context.getString(R.string.operation_empty_lists_data))
         }
+
     }
 
     fun showDeleteDialog() {
@@ -406,7 +395,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             fileProvider?.let { provider ->
                 disposable.add(provider.delete(items, null)
                     .subscribe({ }, { }) {
-                        modelExplorerStack?.removeItemById(itemClicked!!.id)
+                        modelExplorerStack.removeItemById(itemClicked?.id)
                         viewState.onRemoveItem(itemClicked)
                         viewState.onSnackBar(context.getString(R.string.operation_complete_message))
                     })
@@ -418,19 +407,19 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     fun createPhoto() {
         val photo = FileUtils.createFile(File(stack?.current?.id ?: ""), TimeUtils.fileTimeStamp, "png")
         if (photo != null) {
-            mPhotoUri = ContentResolverUtils.getFileUri(context, photo)
-            viewState.onShowCamera(mPhotoUri)
+            photoUri = ContentResolverUtils.getFileUri(context, photo)
+            viewState.onShowCamera(photoUri)
         }
     }
 
     fun deletePhoto() {
-        if (mPhotoUri != null) {
-            context.contentResolver.delete(mPhotoUri!!, null, null)
+        if (photoUri != null) {
+            context.contentResolver.delete(photoUri!!, null, null)
         }
     }
 
     fun checkSelectedFiles() {
-        if (modelExplorerStack?.countSelectedItems!! > 0) {
+        if (modelExplorerStack.countSelectedItems > 0) {
             viewState.onShowFolderChooser()
         } else {
             viewState.onError(context.getString(R.string.operation_empty_lists_data))

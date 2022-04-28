@@ -2,7 +2,6 @@ package app.editors.manager.ui.compose.activities.main
 
 import android.os.Handler
 import android.os.Looper
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -32,7 +31,6 @@ enum class PasscodeScreens(val screen: String){
     ChangePasscode("change")
 }
 
-@ExperimentalFoundationApi
 @Composable
 fun PasscodeActivity(
     preferenceTool: PreferenceTool,
@@ -72,7 +70,6 @@ fun PasscodeActivity(
     }
 }
 
-@ExperimentalFoundationApi
 @Composable
 private fun EnterPasscode(
     navController: NavController,
@@ -150,7 +147,6 @@ private fun CommonPasscode(
     )
 }
 
-@ExperimentalFoundationApi
 @Composable
 private fun SetPasscode(
     navController: NavController,
@@ -186,7 +182,6 @@ private fun SetPasscode(
 }
 
 
-@ExperimentalFoundationApi
 @Composable
 private fun ConfirmPasscode(
     navController: NavController,
@@ -233,7 +228,6 @@ private fun ConfirmPasscode(
     }
 }
 
-@ExperimentalFoundationApi
 @Composable
 private fun ChangePasscode(
     navController: NavController,
@@ -277,7 +271,6 @@ private fun ChangePasscode(
     }
 }
 
-@ExperimentalFoundationApi
 @Composable
 private fun DisablePasscode(
     navController: NavController,

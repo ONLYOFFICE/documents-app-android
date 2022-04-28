@@ -122,7 +122,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        init(savedInstanceState)
+        init()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -940,7 +940,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     /*
      * Initialisations
      * */
-    private fun init(savedInstanceState: Bundle?) {
+    private fun init() {
         setDialogs()
         explorerAdapter = ExplorerAdapter(mTypeFactory).apply {
             setOnItemContextListener(this@DocsBaseFragment)
