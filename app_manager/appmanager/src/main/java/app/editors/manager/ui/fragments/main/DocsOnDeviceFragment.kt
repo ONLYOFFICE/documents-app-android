@@ -97,6 +97,10 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                     presenter.recreateStack()
                     presenter.getItemsById(LocalContentTools.getDir(requireContext()))
                 }
+                REQUEST_STORAGE_IMPORT -> {
+                    preferenceTool?.isShowStorageAccess = false
+                    importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
+                }
             }
         }
     }
@@ -110,14 +114,15 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
         } else if (requestCode == PERMISSION_READ_STORAGE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
+                preferenceTool?.isShowStorageAccess = true
+                checkStorage(TAG_STORAGE_IMPORT)
             }
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        checkStorage()
+        checkStorage(TAG_STORAGE_ACCESS)
         init()
     }
 
@@ -244,7 +249,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         tag?.let {
             string = string?.trim { it <= ' ' }
             when (tag) {
-                TAG_STORAGE_ACCESS -> requestManage()
+                TAG_STORAGE_IMPORT -> requestManage(REQUEST_STORAGE_IMPORT)
+                TAG_STORAGE_ACCESS -> requestManage(REQUEST_STORAGE_ACCESS)
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> presenter.deleteItems()
                 DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME -> string?.let {
                     presenter.rename(it)
@@ -383,7 +389,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
-    private fun checkStorage() {
+    private fun checkStorage(tag: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
             !Environment.isExternalStorageManager() &&
             preferenceTool?.isShowStorageAccess == true
@@ -400,19 +406,19 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 getString(R.string.app_manage_files_description),
                 getString(R.string.dialogs_common_ok_button),
                 getString(R.string.dialogs_common_cancel_button),
-                TAG_STORAGE_ACCESS
+                tag
             );
         }
     }
 
-    private fun requestManage() {
+    private fun requestManage(tag: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             try {
                 val intent = Intent(
                     Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
                     Uri.parse("package:" + requireContext().packageName)
                 )
-                startActivityForResult(intent, REQUEST_STORAGE_ACCESS)
+                startActivityForResult(intent, tag)
             } catch (e: ActivityNotFoundException) {
                 showSnackBar("Not found")
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
@@ -441,6 +447,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         val TAG: String = DocsOnDeviceFragment::class.java.simpleName
 
         private const val TAG_STORAGE_ACCESS = "TAG_STORAGE_ACCESS"
+        private const val TAG_STORAGE_IMPORT = "TAG_STORAGE_IMPORT"
+
+        private const val REQUEST_STORAGE_IMPORT = 10007
 
         fun newInstance(): DocsOnDeviceFragment {
             return DocsOnDeviceFragment()
