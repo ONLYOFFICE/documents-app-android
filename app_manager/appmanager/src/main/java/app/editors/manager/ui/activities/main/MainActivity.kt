@@ -14,13 +14,13 @@ import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
-import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
-import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
+import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
+import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment
 import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.main.*
@@ -57,6 +57,7 @@ interface IMainActivity {
     fun onSwitchAccount()
     fun showOnCloudFragment(account: CloudAccount? = null)
     fun showAccountsActivity()
+    fun onLogOut()
 }
 
 
@@ -200,9 +201,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 }
             }
         } else if (resultCode == AccountsActivity.RESULT_NO_LOGGED_IN_ACCOUNTS) {
-            showOnCloudFragment(null)
-            setAppBarStates(false)
-            showNavigationButton(false)
+            onLogOut()
         }
     }
 
@@ -625,8 +624,19 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
+    override fun onLogOut() {
+        showOnCloudFragment(null)
+        setAppBarStates(false)
+        showNavigationButton(false)
+    }
+
     override fun showAccountsActivity() {
-        AccountsActivity.show(this)
+        if (!isTablet) {
+            AccountsActivity.show(this)
+        } else {
+            CloudAccountDialogFragment.newInstance()
+                .show(supportFragmentManager, CloudAccountDialogFragment.TAG)
+        }
     }
 
     override fun setAppBarStates(isVisible: Boolean) {

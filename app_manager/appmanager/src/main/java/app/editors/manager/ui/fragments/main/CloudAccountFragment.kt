@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -26,6 +27,7 @@ import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.activities.main.AccountsActivity
+import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.adapters.AccountDetailsLookup
 import app.editors.manager.ui.adapters.AccountKeyProvider
@@ -36,11 +38,12 @@ import app.editors.manager.ui.popup.CloudAccountPopup
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
+import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
 
 class CloudAccountFragment : BaseAppFragment(),
-    AccountContextDialog.OnAccountContextClickListener, CloudAccountView {
+    AccountContextDialog.OnAccountContextClickListener, BaseActivity.OnBackPressFragment, CloudAccountView {
 
     companion object {
         val TAG: String = CloudAccountFragment::class.java.simpleName
@@ -62,12 +65,17 @@ class CloudAccountFragment : BaseAppFragment(),
 
     private var viewBinding: CloudsAccountsLayoutBinding? = null
     private var adapter: CloudAccountAdapter? = null
+    private var mainActivity: IMainActivity? = null
 
     private var selectAllItem: MenuItem? = null
     private var deselectAllItem: MenuItem? = null
     private var deleteItem: MenuItem? = null
 
     private var selectedTracker: SelectionTracker<String>? = null
+
+    private val accountDialogFragment: ICloudAccountDialogFragment?
+        get() = requireActivity().supportFragmentManager
+            .findFragmentByTag(CloudAccountDialogFragment.TAG) as? ICloudAccountDialogFragment
 
     private val selectionObserver: SelectionTracker.SelectionObserver<String> = object :
         SelectionTracker.SelectionObserver<String>() {
@@ -101,6 +109,20 @@ class CloudAccountFragment : BaseAppFragment(),
 
     private val addClickListener: (() -> Unit) = {
         PortalsActivity.showPortals(this)
+    }
+
+    override fun onAttach(context: Context) {
+        if (isTablet) {
+            mainActivity = try {
+                context as IMainActivity
+            } catch (e: ClassCastException) {
+                throw RuntimeException(
+                    "If device is tablet " + this::class.java.simpleName
+                            + " - must implement - " + IMainActivity::class.java.simpleName
+                )
+            }
+        }
+        super.onAttach(context)
     }
 
     override fun onDestroyView() {
@@ -144,19 +166,24 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onResume() {
         super.onResume()
-        setActionBarTitle(getString(R.string.cloud_accounts_title))
+        accountDialogFragment?.setToolbarTitle(getString(R.string.cloud_accounts_title))
+        accountDialogFragment?.setToolbarNavigationIcon(isClose = true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.cloud_settings_menu, menu)
-        menu.apply {
-            selectAllItem = findItem(R.id.selectAll)
-            deselectAllItem = findItem(R.id.deselect)
-            deleteItem = findItem(R.id.deleteSelected)
-            selectedTracker?.let {
-                setMenuState(!it.hasSelection())
+        if (!isTablet) {
+            menu.apply {
+                selectAllItem = findItem(R.id.selectAll)
+                deselectAllItem = findItem(R.id.deselect)
+                deleteItem = findItem(R.id.deleteSelected)
+                selectedTracker?.let {
+                    setMenuState(!it.hasSelection())
+                }
             }
+        } else {
+            setTabletToolbar()
         }
     }
 
@@ -182,7 +209,11 @@ class CloudAccountFragment : BaseAppFragment(),
                     }
                 }
                 if (state.account.none { it.isOnline }) {
-                    requireActivity().setResult(AccountsActivity.RESULT_NO_LOGGED_IN_ACCOUNTS)
+                    if (isTablet) {
+                        mainActivity?.onLogOut()
+                    } else {
+                        requireActivity().setResult(AccountsActivity.RESULT_NO_LOGGED_IN_ACCOUNTS)
+                    }
                 }
             }
         }
@@ -193,13 +224,6 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     private fun initRecyclerView(savedInstanceState: Bundle?) {
-        (viewBinding?.accountsLayout?.layoutParams as FrameLayout.LayoutParams).setMargins(
-            resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_left_right_padding),
-            0,
-            resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.screen_left_right_padding),
-            0
-        )
-
         adapter = CloudAccountAdapter(
             accountClickListener,
             accountContextClickListener,
@@ -220,14 +244,46 @@ class CloudAccountFragment : BaseAppFragment(),
         presenter.getAccounts(savedInstanceState)
     }
 
-    private fun onSelectionMode(count: String) {
-        setActionBarTitle(count)
-        setMenuState(false)
+    private fun setTabletToolbar() {
+        accountDialogFragment?.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.selectAll -> selectedTracker?.setItemsSelected(adapter?.getIds() ?: emptyList(), true)
+                R.id.deselect -> selectedTracker?.setItemsSelected(adapter?.getIds() ?: emptyList(), false)
+                R.id.deleteSelected -> presenter.deleteSelected(selectedTracker?.selection?.toList())
+            }
+            return@setOnMenuItemClickListener true
+        }
+        accountDialogFragment?.getMenu()?.apply {
+            selectAllItem = findItem(R.id.selectAll)
+            deselectAllItem = findItem(R.id.deselect)
+            deleteItem = findItem(R.id.deleteSelected)
+            selectedTracker?.let {
+                setMenuState(!it.hasSelection())
+            }
+        }
     }
 
-    private fun onDefaultMode() {
-        setActionBarTitle(getString(R.string.cloud_accounts_title))
+    private fun onSelectionMode(count: String) {
+        setMenuState(false)
+        if (isTablet) {
+            accountDialogFragment?.setToolbarTitle(count)
+            accountDialogFragment?.setToolbarNavigationIcon(false)
+            accountDialogFragment?.isSelectMode = true
+        } else {
+            setActionBarTitle(count)
+        }
+    }
+
+    fun onDefaultMode() {
         setMenuState(true)
+        if (isTablet) {
+            accountDialogFragment?.setToolbarTitle(getString(R.string.cloud_accounts_title))
+            accountDialogFragment?.setToolbarNavigationIcon(true)
+            accountDialogFragment?.isSelectMode = false
+            selectedTracker?.clearSelection()
+        } else {
+            setActionBarTitle(getString(R.string.cloud_accounts_title))
+        }
     }
 
     override fun onSuccessLogin() {
@@ -258,7 +314,7 @@ class CloudAccountFragment : BaseAppFragment(),
             CloudAccountPopup(requireActivity()).apply {
                 setListener(this@CloudAccountFragment)
                 setAccount(account)
-            }.showDropAt(view, requireActivity())
+            }.show(view)
         } else {
             AccountContextDialog.newInstance(Json.encodeToString(account), account.token)
                 .show(parentFragmentManager, AccountContextDialog.TAG)

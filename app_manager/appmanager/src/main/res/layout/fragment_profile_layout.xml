@@ -3,9 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
-    android:paddingStart="@dimen/screen_left_right_padding"
-    android:paddingEnd="@dimen/screen_left_right_padding"
     android:scrollbars="vertical">
 
     <LinearLayout

@@ -51,6 +51,10 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
 
     private var viewBinding: FragmentProfileLayoutBinding? = null
 
+    private val accountDialogFragment: ICloudAccountDialogFragment?
+        get() = requireActivity().supportFragmentManager
+            .findFragmentByTag(CloudAccountDialogFragment.TAG) as? ICloudAccountDialogFragment
+
     override fun onDestroyView() {
         super.onDestroyView()
         viewBinding = null
@@ -71,10 +75,18 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
         arguments?.getString(KEY_ACCOUNT)?.let {
             presenter.setAccount(it)
         }
-        typeBinder?.setTitle(getString(R.string.profile_type_account))
-            ?.setImage(R.drawable.ic_contact_calendar)
-        setActionBarTitle(getString(R.string.fragment_profile_title))
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        typeBinder?.setTitle(getString(R.string.profile_type_account))?.setImage(R.drawable.ic_contact_calendar)
+        initToolbar()
+    }
+
+    private fun initToolbar() {
+        if (isTablet) {
+            accountDialogFragment?.setToolbarTitle(getString(R.string.fragment_profile_title))
+            accountDialogFragment?.setToolbarNavigationIcon(isClose = false)
+        } else {
+            setActionBarTitle(getString(R.string.fragment_profile_title))
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
     }
 
     override fun onRender(state: ProfileState) {
