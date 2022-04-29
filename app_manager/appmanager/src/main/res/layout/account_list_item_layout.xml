@@ -24,7 +24,7 @@
             android:layout_marginHorizontal="@dimen/screen_margin_large"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/accountItemName"
+            app:layout_constraintEnd_toStartOf="@id/accountItemName"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView

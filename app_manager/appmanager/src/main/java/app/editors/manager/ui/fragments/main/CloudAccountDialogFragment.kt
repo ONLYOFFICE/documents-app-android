@@ -26,7 +26,6 @@ class CloudAccountDialogFragment : DialogFragment(), BaseActivity.OnBackPressFra
 
     companion object {
         val TAG: String = CloudAccountFragment::class.java.simpleName
-        const val REQUEST_LOGOUT = "request_logout"
 
         fun newInstance(): CloudAccountDialogFragment {
             return CloudAccountDialogFragment()
