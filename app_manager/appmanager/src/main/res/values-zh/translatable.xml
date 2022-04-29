@@ -13,17 +13,11 @@
     <string name="app_versions_title">版本3.0发布</string>
     <string name="app_versions_cancel">稍后</string>
     <string name="app_versions_without_release_accept">安装官方应用</string>
-    <string name="app_versions_without_release_info">
-感谢您加入Beta测试！ONLYOFFICE文档3.0现已发布，测试版将不再受到支持。切换到官方应用以获得进一步更新。
-</string>
+    <string name="app_versions_without_release_info">感谢您加入Beta测试！ONLYOFFICE文档3.0现已发布，测试版将不再受到支持。切换到官方应用以获得进一步更新。</string>
     <string name="app_versions_update_accept">更新官方应用</string>
-    <string name="app_versions_update_info">
-感谢您加入Beta测试！ONLYOFFICE文档3.0现已发布，测试版将不再受到支持。请切换到官方应用以接收进一步更新。
-</string>
+    <string name="app_versions_update_info">感谢您加入Beta测试！ONLYOFFICE文档3.0现已发布，测试版将不再受到支持。请切换到官方应用以接收进一步更新。</string>
     <string name="app_versions_actual_release_accept">打开官方应用</string>
-    <string name="app_versions_actual_release_info">
-感谢您加入Beta测试！ONLYOFFICE文档3.0现已发布，测试版将不再受到支持。请切换到官方应用。
-</string>
+    <string name="app_versions_actual_release_info">感谢您加入Beta测试！ONLYOFFICE文档3.0现已发布，测试版将不再受到支持。请切换到官方应用。</string>
     <!-- ======================================================================================= -->
     <!-- Snackbar common -->
     <string name="snackbar_copied">已复制</string>
@@ -86,9 +80,7 @@
     <string name="login_enterprise_password_hint">密码</string>
     <string name="login_enterprise_signin_button">登录</string>
     <string name="login_enterprise_single_sign_button">单点登录</string>
-    <string name="login_enterprise_info">
-ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以及实时协同编辑。
-</string>
+    <string name="login_enterprise_info">ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以及实时协同编辑。</string>
     <string name="login_not_authorization_info">无法在%2$s登录到%1$s</string>
     <string name="login_not_authorization_button">再试一次</string>
     <string name="errors_first_name">名字无效。不得包含数字。</string>
@@ -216,7 +208,6 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <string name="navigation_drawer_menu_common">共同文档</string>
     <string name="navigation_drawer_menu_projects">项目</string>
     <string name="navigation_drawer_menu_trash">垃圾</string>
-    <string name="navigation_drawer_menu_about">关于</string>
     <string name="navigation_drawer_menu_help">帮助</string>
     <string name="navigation_drawer_menu_logout">注销</string>
     <string name="navigation_drawer_menu_add_account">添加账户</string>
@@ -420,25 +411,15 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <string name="on_boarding_next_button">下一个</string>
     <string name="on_boarding_finish_button">完成</string>
     <string name="on_boarding_welcome_header">欢迎来到ONLYOFFICE</string>
-    <string name="on_boarding_welcome_info">
-我们对Android版ONLYOFFICE文档进行了重大更新。滑动以了解更多信息。
-</string>
+    <string name="on_boarding_welcome_info">我们对Android版ONLYOFFICE文档进行了重大更新。滑动以了解更多信息。</string>
     <string name="on_boarding_edit_header">编辑办公文档</string>
-    <string name="on_boarding_edit_info">
-在ONLYOFFICE门户中创建并编辑文本文档、电子表格以及演示文稿。
-</string>
+    <string name="on_boarding_edit_info">在ONLYOFFICE门户中创建并编辑文本文档、电子表格以及演示文稿。</string>
     <string name="on_boarding_access_header">授予对文档的访问权限</string>
-    <string name="on_boarding_access_info">
-为团队成员授予文档的完整访问权限、审阅权限或只读权限。也可通过外部链接共享。
-</string>
+    <string name="on_boarding_access_info">为团队成员授予文档的完整访问权限、审阅权限或只读权限。也可通过外部链接共享。</string>
     <string name="on_boarding_collaborate_header">协作</string>
-    <string name="on_boarding_collaborate_info">
-与团队成员实时协同编辑办公文档。
-</string>
+    <string name="on_boarding_collaborate_info">与团队成员实时协同编辑办公文档。</string>
     <string name="on_boarding_third_party_header">连接至第三方云</string>
-    <string name="on_boarding_third_party_info">
-将应用连接至其他您在使用的云存储：Google Drive、Dropbox、Nextcloud等。
-</string>
+    <string name="on_boarding_third_party_info">将应用连接至其他您在使用的云存储：Google Drive、Dropbox、Nextcloud等。</string>
     <!-- ======================================================================================= -->
     <!-- Media -->
     <string name="media_image_share_chooser">选择应用以进行共享</string>
@@ -469,12 +450,12 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
     <string name="cloud_accounts_title">账户</string>
     <string name="error_long_file_name">文件名过长</string>
     <string name="dialog_remove_account_description">
-%2$s门户中带有%1$s的用户将被登出，并从账户列表中移除。\n\n请注意：如需登录，您需要输入门户地址、邮箱以及密码。您的所有文件均将被安全存储。
-</string>
+        %2$s门户中带有%1$s的用户将被登出，并从账户列表中移除。\n\n请注意：如需登录，您需要输入门户地址、邮箱以及密码。您的所有文件均将被安全存储。
+    </string>
     <string name="dialog_logout_account_title">确定要登出？</string>
     <string name="dialog_logout_account_description">
-登出后，您将不需要输入门户地址或邮箱，仅需输入密码即可。别担心，所有文件都将被安全地存储于云端。
-</string>
+        登出后，您将不需要输入门户地址或邮箱，仅需输入密码即可。别担心，所有文件都将被安全地存储于云端。
+    </string>
     <string name="profile_username_title">用户名</string>
     <string name="profile_type_account">类型</string>
     <string name="profile_portal_address">门户地址</string>
@@ -550,4 +531,14 @@ ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以�
             <a href="%2$s">Terms of Service</a>
         ]]>
     </string>
+    <string name="login_create_signin_passwords_length">密码必须包含：8至30个字符</string>
+    <string name="list_action_import">导入文件</string>
+    <string name="storage_google_drive_copy_folder_error">文件夹无法复制</string>
+    <string name="socials_google_cancel_auth">取消谷歌的登录</string>
+    <string name="error_open_project_file">该账户没有访问项目的权限</string>
+    <string name="switch_account_open_project_file">切换帐户</string>
+    <string name="app_settings_color_theme">颜色主题</string>
+    <string name="app_settings_follow_the_system">跟随系统</string>
+    <string name="app_settings_light_theme">浅色主题</string>
+    <string name="app_settings_dark_theme">深色主题</string>
 </resources>

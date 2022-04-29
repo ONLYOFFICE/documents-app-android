@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.text.TextUtils
 import android.util.Log
 import androidx.core.content.ContextCompat.getExternalFilesDirs
 import lib.toolkit.base.managers.utils.FileUtils
@@ -60,18 +59,18 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         @SuppressLint("SdCardPath")
         private val KNOWN_PHYSICAL_PATHS = arrayOf(
-                "/storage/sdcard0", "/storage/sdcard1",                                    //Motorola Xoom
-                "/storage/extsdcard",                                                      //Samsung SGS3
-                "/storage/sdcard0/external_sdcard",                                        //User request
-                "/mnt/extsdcard", "/mnt/sdcard/external_sd",                               //Samsung galaxy family
-                "/mnt/sdcard/ext_sd", "/mnt/external_sd", "/mnt/media_rw/sdcard1",         //4.4.2 on CyanogenMod S3
-                "/removable/microsd",                                                      //Asus transformer prime
-                "/mnt/emmc", "/storage/external_SD",                                       //LG
-                "/storage/ext_sd",                                                         //HTC One Max
-                "/storage/removable/sdcard1",                                              //Sony Xperia Z1
-                "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", //Sony Xperia Z
-                "/sdcard2",                                                                //HTC One M8s
-                "/storage/microsd"                                                         //ASUS ZenFone 2
+            "/storage/sdcard0", "/storage/sdcard1",                                    //Motorola Xoom
+            "/storage/extsdcard",                                                      //Samsung SGS3
+            "/storage/sdcard0/external_sdcard",                                        //User request
+            "/mnt/extsdcard", "/mnt/sdcard/external_sd",                               //Samsung galaxy family
+            "/mnt/sdcard/ext_sd", "/mnt/external_sd", "/mnt/media_rw/sdcard1",         //4.4.2 on CyanogenMod S3
+            "/removable/microsd",                                                      //Asus transformer prime
+            "/mnt/emmc", "/storage/external_SD",                                       //LG
+            "/storage/ext_sd",                                                         //HTC One Max
+            "/storage/removable/sdcard1",                                              //Sony Xperia Z1
+            "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", //Sony Xperia Z
+            "/sdcard2",                                                                //HTC One M8s
+            "/storage/microsd"                                                         //ASUS ZenFone 2
         )
 
         fun getDir(context: Context): String {
@@ -84,20 +83,24 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     }
 
-    private val mContentResolver: ContentResolver = context.contentResolver
-    private val mUri: Uri = MediaStore.Files.getContentUri(URI_KEY)
-    private lateinit var mRootDir: File
+    private val contentResolver: ContentResolver = context.contentResolver
+    private val uri: Uri = MediaStore.Files.getContentUri(URI_KEY)
+    private lateinit var rootDir: File
 
     fun createRootDir(): File {
         val rootDir = File(getDir(context))
+        if (rootDir.exists()) {
+            this.rootDir = rootDir
+            return rootDir
+        }
         if (!rootDir.exists() && rootDir.mkdirs()) {
             addSamples(rootDir)
         }
-        mRootDir = rootDir
+        this.rootDir = rootDir
         return rootDir
     }
 
-    fun getRootDir(): File = mRootDir
+    fun getRootDir(): File = rootDir
 
     private fun addSamples(rootDir: File) {
         val samplesName = context.assets.list("samples")
@@ -172,7 +175,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
     }
 
     fun getFiles(): List<File> {
-        mRootDir.listFiles()?.let { list ->
+        rootDir.listFiles()?.let { list ->
             return list.asList().sortedBy { it.name }
         }
         return emptyList()
@@ -223,17 +226,17 @@ class LocalContentTools @Inject constructor(val context: Context) {
         return files.sortedBy { it.extension }
     }
 
-    fun getAllFiles(): List<File> {
+    private fun getAllFiles(): List<File> {
         val files = ArrayList<File>()
-        mContentResolver.query(mUri,
-                arrayOf(MediaStore.Files.FileColumns.DATA),
-                MediaStore.Files.FileColumns.MIME_TYPE + " =? OR " + MediaStore.Files.FileColumns.MIME_TYPE + " =? OR " + MediaStore.Files.FileColumns.MIME_TYPE + " =?",
-                arrayOf(
-                        MIME_TYPE_DOCX,
-                        MIME_TYPE_PPTX,
-                        MIME_TYPE_XLSX
-                ),
-                MediaStore.Files.FileColumns.MIME_TYPE)?.use {
+        contentResolver.query(uri,
+            arrayOf(MediaStore.Files.FileColumns.DATA),
+            MediaStore.Files.FileColumns.MIME_TYPE + " =? OR " + MediaStore.Files.FileColumns.MIME_TYPE + " =? OR " + MediaStore.Files.FileColumns.MIME_TYPE + " =?",
+            arrayOf(
+                MIME_TYPE_DOCX,
+                MIME_TYPE_PPTX,
+                MIME_TYPE_XLSX
+            ),
+            MediaStore.Files.FileColumns.MIME_TYPE)?.use {
             val dataIndex = it.getColumnIndex(MediaStore.Files.FileColumns.DATA)
             while (it.moveToNext()) {
                 files.add(File(it.getString(dataIndex)))
@@ -247,11 +250,12 @@ class LocalContentTools @Inject constructor(val context: Context) {
         return getAllFiles().sortedBy { it.lastModified() }
     }
 
+    @SuppressLint("Range")
     fun getIdByPath(path: String): Int {
         var id = 0
-        mContentResolver.query(mUri, arrayOf(MediaStore.Files.FileColumns._ID),
-                MediaStore.Files.FileColumns.DATA + " =? ",
-                arrayOf(path), null)?.use {
+        contentResolver.query(uri, arrayOf(MediaStore.Files.FileColumns._ID),
+            MediaStore.Files.FileColumns.DATA + " =? ",
+            arrayOf(path), null)?.use {
             while (it.moveToNext()) {
                 id = it.getInt(it.getColumnIndex(MediaStore.Files.FileColumns._ID))
                 return@use
@@ -264,7 +268,9 @@ class LocalContentTools @Inject constructor(val context: Context) {
     private fun getSdCard(): String {
         val fileList = File("/storage/").listFiles()
         for (file in fileList) {
-            if (!file.absolutePath.equals(Environment.getExternalStorageDirectory().absolutePath, ignoreCase = true) && file.isDirectory && file.canRead())
+            if (!file.absolutePath.equals(Environment.getExternalStorageDirectory().absolutePath,
+                    ignoreCase = true) && file.isDirectory && file.canRead()
+            )
                 if (getExternalStorage(context).size >= 2) {
                     return file.absolutePath
                 }
@@ -286,7 +292,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     fun deleteFile(file: File): Boolean {
         var isDelete = false
-        mContentResolver.delete(mUri, MediaStore.Files.FileColumns.DATA + " =? ", arrayOf(file.absolutePath))
+        contentResolver.delete(uri, MediaStore.Files.FileColumns.DATA + " =? ", arrayOf(file.absolutePath))
         if (file.exists()) {
             isDelete = if (file.isDirectory) {
                 file.deleteRecursively()
@@ -302,25 +308,16 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     private fun getExternalStorage(context: Context): Set<String> {
         val availableDirectoriesSet = HashSet<String>()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // /Storage/????-????
-            val files = getExternalFilesDirs(context, null)
-            for (file in files) {
-                if (file != null) {
-                    val applicationSpecificAbsolutePath = file.absolutePath
-                    val rootPath = applicationSpecificAbsolutePath.substring(
-                            0,
-                            applicationSpecificAbsolutePath.indexOf("Android/data")
-                    )
-                    availableDirectoriesSet.add(rootPath)
-                }
-            }
-        } else {
-            if (TextUtils.isEmpty(EXTERNAL_STORAGE)) {
-                availableDirectoriesSet.addAll(getAvailablePhysicalPaths())
-            } else {
-                // Device has physical external storage; use plain paths.
-                availableDirectoriesSet.add(EXTERNAL_STORAGE!!)
+        // /Storage/????-????
+        val files = getExternalFilesDirs(context, null)
+        for (file in files) {
+            if (file != null) {
+                val applicationSpecificAbsolutePath = file.absolutePath
+                val rootPath = applicationSpecificAbsolutePath.substring(
+                    0,
+                    applicationSpecificAbsolutePath.indexOf("Android/data")
+                )
+                availableDirectoriesSet.add(rootPath)
             }
         }
         return availableDirectoriesSet
@@ -379,6 +376,20 @@ class LocalContentTools @Inject constructor(val context: Context) {
         } else {
             false
         }
+    }
+
+    fun getFontsDir(): String {
+        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+            "${context.filesDir.path}/Fonts"
+        } else {
+            "${Environment.getExternalStorageDirectory().absolutePath}/Fonts"
+        }
+        val folder = File(path)
+        if (!folder.exists()) {
+            folder.mkdir()
+        }
+        return path
+
     }
 
 }

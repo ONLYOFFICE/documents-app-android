@@ -17,10 +17,8 @@ import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Current
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.views.main.DocsRecentView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
@@ -56,13 +54,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     init {
         App.getApp().appComponent.inject(this)
-        modelExplorerStack = ModelExplorerStack()
-        filteringValue = ""
-        placeholderViewType = PlaceholderViews.Type.NONE
-        isContextClick = false
-        isFilteringMode = false
-        isSelectionMode = false
-        isFoldersMode = false
     }
 
     private var contextPosition = 0
@@ -138,11 +129,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     private suspend fun openFile(recent: Recent) {
-        accountDao.getAccount(recent.ownerId!!)?.let { account ->
+        accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
             AccountUtils.getToken(
                 context,
                 Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-            )?.let { it ->
+            )?.let {
                 disposable.add(
                     context.api()
                         .getFileInfo(recent.idFile)
@@ -369,7 +360,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             StringUtils.Extension.PRESENTATION -> viewState.onOpenFile(OpenState.Slide(uri))
             StringUtils.Extension.PDF -> viewState.onOpenFile(OpenState.Pdf(uri))
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                viewState.onOpenFile(OpenState.Media(getImages(File(uri.path)), false))
+                viewState.onOpenFile(OpenState.Media(getImages(File(checkNotNull(uri.path))), false))
             }
             else -> viewState.onError(context.getString(R.string.error_unsupported_format))
         }

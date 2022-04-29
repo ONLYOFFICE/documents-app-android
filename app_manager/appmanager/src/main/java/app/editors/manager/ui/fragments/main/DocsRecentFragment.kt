@@ -220,12 +220,12 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun openFile(file: CloudFile) {
-        val ext = file.fileExst
+    override fun openFile(response: CloudFile) {
+        val ext = response.fileExst
         if (StringUtils.isVideoSupport(ext) || StringUtils.isImage(ext)) {
-            MediaActivity.show(this, getExplorer(file), false)
+            MediaActivity.show(this, getExplorer(response), false)
         } else if (StringUtils.isDocument(ext)) {
-            WebViewerActivity.show(requireActivity(), file)
+            WebViewerActivity.show(requireActivity(), response)
         } else {
             onError(getString(R.string.error_unsupported_format))
         }

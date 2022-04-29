@@ -25,9 +25,9 @@
     <string name="auth_info_screen_3">Copia la chiave e incollala nell’applicazione Google Authenticator</string>
     <string name="bottom_sheet_cloud_title">Cloud</string>
     <string name="bottom_sheet_portal_title">Portale</string>
-    <string name="chooser_activity_not_found">Impossibile trovare alcuna applicazione per questa azione...</string>
-    <string name="chooser_email_client">Seleziona il client di posta elettronica...</string>
-    <string name="chooser_web_browser">Seleziona il browser...</string>
+    <string name="chooser_activity_not_found">Impossibile trovare alcuna applicazione per questa azione…</string>
+    <string name="chooser_email_client">Seleziona il client di posta elettronica…</string>
+    <string name="chooser_web_browser">Seleziona il browser…</string>
     <string name="countries_codes_title">Seleziona paese</string>
     <string name="device_path_file_error">Questo file non esiste.</string>
     <string name="device_trash_files_restore">Ripristina</string>
@@ -76,8 +76,8 @@
     <string name="dialogs_question_share_remove">Rimuovi l’elemento dall’elenco</string>
     <string name="dialogs_sign_in_portal_header_text">Accedi al portale</string>
     <string name="dialogs_sign_in_register_portal">Portale di registrazione</string>
-    <string name="dialogs_wait_title">Operazione in corso ...</string>
-    <string name="dialogs_wait_title_storage">Collegamento dello spazio di archiviazione...</string>
+    <string name="dialogs_wait_title">Operazione in corso …</string>
+    <string name="dialogs_wait_title_storage">Collegamento dello spazio di archiviazione…</string>
     <string name="download_manager_cancel">Download annullato</string>
     <string name="download_manager_complete">Download completato</string>
     <string name="download_manager_error">errore nel Download</string>
@@ -159,7 +159,7 @@
     <string name="login_api_init_error">Errore iniziale</string>
     <string name="login_api_init_portal_error">Errore di sintassi del nome del portale</string>
     <string name="login_api_portal_name">Nome del portale errato. Esempio: example.onlyoffice.com</string>
-    <string name="login_api_portal_name_content">Il nome del portale deve essere composto da A-Z, a-z, 0-9</string>
+    <string name="login_api_portal_name_content">Il nome del portale deve essere composto da A–Z, a–z, 0–9</string>
     <string name="login_api_portal_name_length">Il nome del portale deve contenere almeno 6 caratteri</string>
     <string name="login_create_portal_address_hint">Indirizzo del portale</string>
     <string name="login_create_portal_email_hint">Email</string>
@@ -220,7 +220,6 @@
     <string name="media_image_share_chooser">Seleziona app per la condivisione</string>
     <string name="media_video_error">Errore sconosciuto lettore: %1$s</string>
     <string name="navigation_drawer_close">Chiudi il cassetto di navigazione</string>
-    <string name="navigation_drawer_menu_about">Informazioni su</string>
     <string name="navigation_drawer_menu_add_account">Aggiungi account</string>
     <string name="navigation_drawer_menu_common">Documenti comuni</string>
     <string name="navigation_drawer_menu_help">Guida</string>
@@ -263,7 +262,7 @@
     <string name="placeholder_access_denied">Accesso negato</string>
     <string name="placeholder_connection">Errore di connessione</string>
     <string name="placeholder_empty">Svuota cartella</string>
-    <string name="placeholder_loading_files">Caricamento...</string>
+    <string name="placeholder_loading_files">Caricamento…</string>
     <string name="placeholder_media_error">Impossibile caricare il file multimediale</string>
     <string name="placeholder_no_groups">Nessun gruppo</string>
     <string name="placeholder_no_subfolders">Non ci sono sottocartelle</string>
@@ -340,10 +339,10 @@
     <string name="toolbar_menu_main_options">Opzioni</string>
     <string name="toolbar_menu_main_remove_from_list">Elimina da elenco</string>
     <string name="toolbar_menu_main_rename">Rinomina</string>
-    <string name="toolbar_menu_main_select">Seleziona...</string>
+    <string name="toolbar_menu_main_select">Seleziona…</string>
     <string name="toolbar_menu_main_select_all">Seleziona tutto</string>
     <string name="toolbar_menu_main_share">Condividi</string>
-    <string name="toolbar_menu_search_hint">Cerca...</string>
+    <string name="toolbar_menu_search_hint">Cerca…</string>
     <string name="toolbar_menu_search_result">Risultati ricerca</string>
     <string name="toolbar_menu_sort_asc">Crescente</string>
     <string name="toolbar_menu_sort_by">Ordina per</string>
@@ -466,4 +465,14 @@
             <a href="%2$s">Terms of Service</a>
         ]]>
     </string>
+    <string name="login_create_signin_passwords_length">La password deve contenere da 8 a 30 caratteri</string>
+    <string name="list_action_import">Importare file</string>
+    <string name="storage_google_drive_copy_folder_error">Le cartelle non possono essere copiate</string>
+    <string name="socials_google_cancel_auth">Annulla il login con Google</string>
+    <string name="error_open_project_file">Questo account non ha accesso al progetto</string>
+    <string name="switch_account_open_project_file">Cambiare account</string>
+    <string name="app_settings_color_theme">Tema colori</string>
+    <string name="app_settings_follow_the_system">Lo stesso del sistema</string>
+    <string name="app_settings_light_theme">Tema chiaro</string>
+    <string name="app_settings_dark_theme">Tema scuro</string>
 </resources>

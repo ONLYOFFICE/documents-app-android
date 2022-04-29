@@ -25,9 +25,9 @@
     <string name="auth_info_screen_3">Copie la clave y péguela en su aplicación de autentificación</string>
     <string name="bottom_sheet_cloud_title">Nubes</string>
     <string name="bottom_sheet_portal_title">Portal</string>
-    <string name="chooser_activity_not_found">No se encontró ninguna aplicación para esta acción...</string>
-    <string name="chooser_email_client">Seleccionar cliente de correo...</string>
-    <string name="chooser_web_browser">Seleccionar navegador...</string>
+    <string name="chooser_activity_not_found">No se encontró ninguna aplicación para esta acción…</string>
+    <string name="chooser_email_client">Seleccionar cliente de correo…</string>
+    <string name="chooser_web_browser">Seleccionar navegador…</string>
     <string name="countries_codes_title">Seleccione país</string>
     <string name="device_path_file_error">Este archivo no existe.</string>
     <string name="device_trash_files_restore">Restaurar</string>
@@ -78,8 +78,8 @@
     <string name="dialog_question_delete_folder">La carpeta será eliminado irremediablemente.</string>
     <string name="dialogs_sign_in_portal_header_text">Acceso a la oficina en nube</string>
     <string name="dialogs_sign_in_register_portal">Registro de oficina en nube</string>
-    <string name="dialogs_wait_title">Operación en progreso...</string>
-    <string name="dialogs_wait_title_storage">Conectando almacenamiento...</string>
+    <string name="dialogs_wait_title">Operación en progreso…</string>
+    <string name="dialogs_wait_title_storage">Conectando almacenamiento…</string>
     <string name="download_manager_cancel">Descarga cancelada</string>
     <string name="download_manager_complete">Descarga completa</string>
     <string name="download_manager_error">Error en la descarga</string>
@@ -89,7 +89,7 @@
     <string name="download_manager_notification_cancel_download">Cancelar descarga</string>
     <string name="download_manager_open">Abrir</string>
     <string name="download_manager_progress_title">Descarga en progreso</string>
-    <string name="download_manager_repeat">El archivo ya se está descargando...</string>
+    <string name="download_manager_repeat">El archivo ya se está descargando…</string>
     <string name="download_manager_select_files">Seleccionar archivos</string>
     <string name="download_manager_title">descargas de ONLYOFFICE</string>
     <string name="error_recent_account">Se ha eliminado el archivo o no está disponible en esta cuenta.</string>
@@ -161,7 +161,7 @@
     <string name="login_api_init_error">Error Init</string>
     <string name="login_api_init_portal_error">Error de sintaxis en nombre de la oficina en nube</string>
     <string name="login_api_portal_name">Nombre de oficina en nube incorrecto. Ejemplo: example.onlyoffice.com</string>
-    <string name="login_api_portal_name_content">El nombre de portal debe constar de A-Z, a-z, 0-9</string>
+    <string name="login_api_portal_name_content">El nombre de portal debe constar de A–Z, a–z, 0–9</string>
     <string name="login_api_portal_name_length">El nombre de cuenta debe constar de al menos 6 caracteres</string>
     <string name="login_create_portal_address_hint">Nombre de cuenta</string>
     <string name="login_create_portal_email_hint">Correo electrónico</string>
@@ -222,7 +222,6 @@
     <string name="media_image_share_chooser">Seleccionar aplicación para compartir</string>
     <string name="media_video_error">Error desconocido del reproductor: %1$s</string>
     <string name="navigation_drawer_close">Cerrar el panel de navegación</string>
-    <string name="navigation_drawer_menu_about">Acerca de</string>
     <string name="navigation_drawer_menu_add_account">Añadir cuenta</string>
     <string name="navigation_drawer_menu_common">Documentos comunes</string>
     <string name="navigation_drawer_menu_help">Ayuda</string>
@@ -265,7 +264,7 @@
     <string name="placeholder_access_denied">Acceso denegado</string>
     <string name="placeholder_connection">Error de conexión</string>
     <string name="placeholder_empty">Vaciar carpeta</string>
-    <string name="placeholder_loading_files">Cargando archivos...</string>
+    <string name="placeholder_loading_files">Cargando archivos…</string>
     <string name="placeholder_media_error">No se puede cargar media</string>
     <string name="placeholder_no_groups">Sin grupos</string>
     <string name="placeholder_no_subfolders">No hay subcarpetas</string>
@@ -342,10 +341,10 @@
     <string name="toolbar_menu_main_options">Opciones</string>
     <string name="toolbar_menu_main_remove_from_list">Quitar de la lista</string>
     <string name="toolbar_menu_main_rename">Renombrar</string>
-    <string name="toolbar_menu_main_select">Seleccionar...</string>
+    <string name="toolbar_menu_main_select">Seleccionar…</string>
     <string name="toolbar_menu_main_select_all">Seleccionar todos</string>
     <string name="toolbar_menu_main_share">Compartir</string>
-    <string name="toolbar_menu_search_hint">Buscar...</string>
+    <string name="toolbar_menu_search_hint">Buscar…</string>
     <string name="toolbar_menu_search_result">Resultado de la búsqueda</string>
     <string name="toolbar_menu_sort_asc">Ascendente</string>
     <string name="toolbar_menu_sort_by">Ordenar por</string>
@@ -466,5 +465,15 @@
             <a href="%2$s">Términos del servicio</a>
         ]]>
     </string>
+    <string name="login_create_signin_passwords_length">La contraseña debe contener: de 8 a 30 caracteres</string>
+    <string name="list_action_import">Importar archivo</string>
+    <string name="storage_google_drive_copy_folder_error">Las carpetas no se pueden copiar</string>
+    <string name="socials_google_cancel_auth">Cancelar el inicio de sesión con Google</string>
+    <string name="error_open_project_file">Esta cuenta no tiene acceso al proyecto</string>
+    <string name="switch_account_open_project_file">Cambiar de una cuenta a otra</string>
+    <string name="app_settings_color_theme">Tema de colores</string>
+    <string name="app_settings_follow_the_system">Igual que el sistema</string>
+    <string name="app_settings_light_theme">Tema claro</string>
+    <string name="app_settings_dark_theme">Tema oscuro</string>
 
 </resources>

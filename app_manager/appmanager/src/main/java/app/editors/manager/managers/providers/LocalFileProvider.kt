@@ -23,18 +23,18 @@ import java.io.IOException
 import java.lang.Exception
 import java.util.*
 
-class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : BaseFileProvider {
+class LocalFileProvider(private val localContentTools: LocalContentTools) : BaseFileProvider {
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        return Observable.just(mLocalContentTools.createRootDir())
+        return Observable.just(localContentTools.createRootDir())
             .map<List<File?>> { file: File ->
                 if (file.exists()) {
-                    return@map mLocalContentTools.getFiles(File(id))
+                    return@map localContentTools.getFiles(File(checkNotNull(id)))
                 } else {
                     throw throwErrorCreate()
                 }
             }
-            .flatMap { files: List<File?> -> Observable.just(getExplorer(files, File(id))) }
+            .flatMap { files: List<File?> -> Observable.just(getExplorer(files, File(checkNotNull(id)))) }
             .map { explorer: Explorer -> sortExplorer(explorer, filter) }
             .flatMap { explorer: Explorer ->
                 filter?.let {
@@ -50,7 +50,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
         val parentFile = File(folderId)
         val name = body.title
         return try {
-            val localFile = mLocalContentTools.createFile(name, parentFile, getLocale())
+            val localFile = localContentTools.createFile(name, parentFile, getLocale())
             Observable.just(localFile)
                 .map { createFile: File ->
                     if (createFile.exists()) {
@@ -70,7 +70,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
                 }
         } catch (error: Throwable) {
             Observable.just(CloudFile())
-                .map { file: CloudFile? -> throw throwErrorCreate() }
+                .map { throw throwErrorCreate() }
         }
     }
 
@@ -79,7 +79,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
         val parentFile = File(folderId)
         val name = body.title
-        return Observable.just(mLocalContentTools.createFolder(name, parentFile))
+        return Observable.just(localContentTools.createFolder(name, parentFile))
             .map { isCreate: Boolean ->
                 if (isCreate) {
                     val folder = CloudFolder()
@@ -97,7 +97,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
 
     override fun rename(item: Item, newName: String, version: Int?): Observable<Item> {
         val oldFile = File(item.id)
-        return Observable.just(mLocalContentTools.renameFile(oldFile, newName))
+        return Observable.just(localContentTools.renameFile(oldFile, newName))
             .map { isRename: Boolean ->
                 if (isRename) {
                     item.id = item.id.replace(item.title, "") + newName
@@ -116,11 +116,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
     override fun delete(items: List<Item>, from: CloudFolder?): Observable<List<Operation>> {
         return Observable.fromIterable(items)
             .map { item: Item? ->
-                mLocalContentTools.deleteFile(
-                    File(
-                        item?.id
-                    )
-                )
+                localContentTools.deleteFile(File(checkNotNull(item?.id)))
             }
             .toList()
             .toObservable()
@@ -159,7 +155,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
 
     override fun terminate(): Observable<List<Operation>>? = null
 
-    override fun addToFavorites(fileId: RequestFavorites): Observable<Base>? = null
+    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
 
     override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
 
@@ -169,8 +165,8 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
         val folder = File(folderId)
         return Observable.just(uri).map { file ->
             val path = PathUtils.getPath(context, file)
-            val file = File(Uri.parse(path).path)
-            mLocalContentTools.moveFiles(file, folder, true)
+            val moveFile = File(checkNotNull(Uri.parse(path).path))
+            localContentTools.moveFiles(moveFile, folder, true)
             1
         }
     }
@@ -178,12 +174,12 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
     @Throws(Exception::class)
     fun transfer(path: String?, clickedItem: Item?, isCopy: Boolean): Boolean {
         return if (path != null) {
-            val file = File(clickedItem?.id)
-            val parentFile = File(Uri.parse(path).path)
+            val file = File(checkNotNull(clickedItem?.id))
+            val parentFile = File(checkNotNull(Uri.parse(path).path))
             if (parentFile == file || parentFile.absolutePath.contains(file.absolutePath)) {
                 throw throwExistException()
             }
-            mLocalContentTools.moveFiles(file, parentFile, isCopy)
+            localContentTools.moveFiles(file, parentFile, isCopy)
         } else {
             throw throwUnsupportedException()
         }
@@ -196,7 +192,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
         for (convertFile in localFiles) {
             if (convertFile?.isDirectory == true) {
                 val folder = CloudFolder()
-                folder.parentId = convertFile.parentFile.absolutePath
+                folder.parentId = checkNotNull(convertFile.parentFile).absolutePath
                 folder.id = convertFile.absolutePath
                 folder.title = convertFile.name
                 folder.updated = Date(convertFile.lastModified())
@@ -209,7 +205,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
                     getExtensionFromPath(name)
                 }
                 file.pureContentLength = convertFile?.length()!!
-                file.folderId = convertFile.parentFile.absolutePath
+                file.folderId = checkNotNull(convertFile.parentFile).absolutePath
                 file.webUrl = convertFile.absolutePath
                 file.updated = Date(convertFile.lastModified())
                 files.add(file)
@@ -237,7 +233,7 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
 
     private fun search(value: String?, id: String): Explorer {
         val files: MutableList<File?> = mutableListOf()
-        var resultExplorer = Explorer()
+        val resultExplorer = Explorer()
         var tempExplorer = Explorer()
         val root = File(id)
         val listFiles = root.listFiles()
@@ -268,27 +264,27 @@ class LocalFileProvider(private val mLocalContentTools: LocalContentTools) : Bas
             val sort = it[ApiContract.Parameters.ARG_SORT_BY]
             val order = it[ApiContract.Parameters.ARG_SORT_ORDER]
             when (sort) {
-                ApiContract.Parameters.VAL_SORT_BY_UPDATED -> folders.sortWith(Comparator { o1: CloudFolder, o2: CloudFolder ->
+                ApiContract.Parameters.VAL_SORT_BY_UPDATED -> folders.sortWith { o1: CloudFolder, o2: CloudFolder ->
                     o1.updated.compareTo(
                         o2.updated
                     )
-                })
-                ApiContract.Parameters.VAL_SORT_BY_TITLE -> {
-                    folders.sortWith(Comparator { o1: CloudFolder, o2: CloudFolder ->
-                        o1.title.lowercase(Locale.getDefault()).compareTo(o2.title.lowercase(Locale.getDefault()))
-                    })
-                    files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
-                        o1.title.lowercase(Locale.getDefault()).compareTo(o2.title.lowercase(Locale.getDefault()))
-                    })
                 }
-                ApiContract.Parameters.VAL_SORT_BY_SIZE -> files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
+                ApiContract.Parameters.VAL_SORT_BY_TITLE -> {
+                    folders.sortWith { o1: CloudFolder, o2: CloudFolder ->
+                        o1.title.lowercase(Locale.getDefault()).compareTo(o2.title.lowercase(Locale.getDefault()))
+                    }
+                    files.sortWith { o1: CloudFile, o2: CloudFile ->
+                        o1.title.lowercase(Locale.getDefault()).compareTo(o2.title.lowercase(Locale.getDefault()))
+                    }
+                }
+                ApiContract.Parameters.VAL_SORT_BY_SIZE -> files.sortWith { o1: CloudFile, o2: CloudFile ->
                     o1.pureContentLength.compareTo(o2.pureContentLength)
-                })
-                ApiContract.Parameters.VAL_SORT_BY_TYPE -> files.sortWith(Comparator { o1: CloudFile, o2: CloudFile ->
+                }
+                ApiContract.Parameters.VAL_SORT_BY_TYPE -> files.sortWith { o1: CloudFile, o2: CloudFile ->
                     o1.fileExst.compareTo(
                         o2.fileExst
                     )
-                })
+                }
             }
             if (order == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
                 folders.reverse()

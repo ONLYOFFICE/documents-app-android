@@ -180,7 +180,7 @@ class CloudFileProvider : BaseFileProvider {
         return null
     }
 
-    override fun upload(folderId: String, uri: List<Uri?>): Observable<Int>? {
+    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? {
         return null
     }
 

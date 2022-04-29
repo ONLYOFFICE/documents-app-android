@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
-import android.view.View
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.Recent
@@ -22,7 +21,6 @@ import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestDeleteShare
@@ -55,8 +53,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private var externalAccessType: String? = null
 
-    private val downloadReceiver: DownloadReceiver
-    private val uploadReceiver: UploadReceiver
+    private val downloadReceiver: DownloadReceiver = DownloadReceiver()
+    private val uploadReceiver: UploadReceiver = UploadReceiver()
 
     private var api: Api? = null
 
@@ -65,16 +63,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     init {
         App.getApp().appComponent.inject(this)
         api = context.api()
-        downloadReceiver = DownloadReceiver()
-        uploadReceiver = UploadReceiver()
-        modelExplorerStack = ModelExplorerStack()
-        filteringValue = ""
-        placeholderViewType = PlaceholderViews.Type.NONE
-        isContextClick = false
-        isFilteringMode = false
-        isSelectionMode = false
-        isFoldersMode = false
-        isTrashMode = false
         fileProvider = CloudFileProvider()
     }
 
@@ -102,12 +90,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         isContextClick = false
         if (isSelectionMode) {
             val isChecked = !itemClicked!!.isSelected
-            modelExplorerStack?.setSelectById(item, isChecked)
+            modelExplorerStack.setSelectById(item, isChecked)
             if (!isSelectedItemsEmpty) {
                 viewState.onStateUpdateSelection(true)
                 viewState.onItemSelected(
                     position,
-                    modelExplorerStack?.countSelectedItems.toString()
+                    modelExplorerStack.countSelectedItems.toString()
                 )
             }
         } else if (!isTrashMode) {
@@ -120,7 +108,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onSnackBarWithAction(
                 context.getString(R.string.trash_snackbar_move_text),
                 context.getString(R.string.trash_snackbar_move_button)
-            ) { v: View? -> moveContext() }
+            ) { moveContext() }
         }
     }
 
@@ -142,15 +130,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun getNextList() {
-        val id = modelExplorerStack?.currentId
-        val loadPosition = modelExplorerStack?.loadPosition ?: 0
+        val id = modelExplorerStack.currentId
+        val loadPosition = modelExplorerStack.loadPosition
         if (id != null && loadPosition > 0) {
             val args = getArgs(filteringValue).toMutableMap()
             args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
             fileProvider?.let { provider ->
                 disposable.add(provider.getFiles(id, args).subscribe({ explorer: Explorer? ->
-                    modelExplorerStack?.addOnNext(explorer)
-                    val last = modelExplorerStack?.last()
+                    modelExplorerStack.addOnNext(explorer)
+                    val last = modelExplorerStack.last()
                     if (last != null) {
                         viewState.onDocsNext(getListWithHeaders(last, true))
                     }
@@ -167,7 +155,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 StringUtils.getExtensionFromPath(title)
             )
         }
-        val id = modelExplorerStack?.currentId
+        val id = modelExplorerStack.currentId
         if (id != null) {
             val requestCreate = RequestCreate()
             requestCreate.title = title
@@ -215,15 +203,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun updateViewsState() {
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(modelExplorerStack?.countSelectedItems.toString())
-            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
+            viewState.onActionBarTitle(modelExplorerStack.countSelectedItems.toString())
+            viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
         } else if (isFilteringMode) {
             viewState.onActionBarTitle(context.getString(R.string.toolbar_menu_search_result))
             viewState.onStateUpdateFilter(true, filteringValue)
-            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
+            viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
-        } else if (!modelExplorerStack?.isRoot!!) {
+        } else if (!modelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(isContextEditable)
@@ -271,7 +259,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isFavorite = isClickedItemFavorite
         state.isPersonalAccount = account.isPersonal()
         if (!isClickedItemFile) {
-            if((itemClicked as CloudFolder).providerKey.isEmpty()) {
+            if ((itemClicked as CloudFolder).providerKey.isEmpty()) {
                 state.iconResId = R.drawable.ic_type_folder
             } else {
                 state.iconResId = StorageUtils.getStorageIcon((itemClicked as CloudFolder).providerKey)
@@ -317,7 +305,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         info: String,
         path: String,
         mime: String,
-        uri: Uri
+        uri: Uri,
     ) {
         viewState.onFinishDownload(uri)
         viewState.onDialogClose()
@@ -349,10 +337,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         info: String,
         title: String?,
         file: CloudFile,
-        id: String
+        id: String,
     ) {
         viewState.onSnackBar(info)
-        if (modelExplorerStack?.currentId == file.folderId) {
+        if (modelExplorerStack.currentId == file.folderId) {
             addFile(file)
         }
         viewState.onDeleteUploadFile(id)
@@ -363,7 +351,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun onUploadFileProgress(progress: Int, id: String, folderId: String) {
-        if (modelExplorerStack?.currentId == folderId) {
+        if (modelExplorerStack.currentId == folderId) {
             viewState.onUploadFileProgress(progress, id)
         }
     }
@@ -371,9 +359,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun onUploadCanceled(path: String, info: String, id: String) {
         viewState.onSnackBar(info)
         viewState.onDeleteUploadFile(id)
-        if (UploadWork.getUploadFiles(modelExplorerStack?.currentId)?.isEmpty() == true) {
+        if (UploadWork.getUploadFiles(modelExplorerStack.currentId)?.isEmpty() == true) {
             viewState.onRemoveUploadHead()
-            getListWithHeaders(modelExplorerStack?.last(), true)
+            getListWithHeaders(modelExplorerStack.last(), true)
         }
     }
 
@@ -397,29 +385,28 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun removeShareSelected() {
-        modelExplorerStack?.let { stack ->
-            if (stack.countSelectedItems > 0) {
-                val deleteShare = RequestDeleteShare()
-                deleteShare.folderIds = stack.selectedFoldersIds
-                deleteShare.fileIds = stack.selectedFilesIds
-                disposable.add(Observable
-                    .fromCallable { api?.deleteShare(deleteShare)?.execute() }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        stack.removeSelected()
-                        resetDatesHeaders()
-                        setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                        viewState.onActionBarTitle("0")
-                        viewState.onDeleteBatch(getListWithHeaders(stack.last(), true))
-                        onBatchOperations()
-                    }) { throwable: Throwable -> fetchError(throwable) })
-            }
+        if (modelExplorerStack.countSelectedItems > 0) {
+            val deleteShare = RequestDeleteShare()
+            deleteShare.folderIds = modelExplorerStack.selectedFoldersIds
+            deleteShare.fileIds = modelExplorerStack.selectedFilesIds
+            disposable.add(Observable
+                .fromCallable { api?.deleteShare(deleteShare)?.execute() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    modelExplorerStack.removeSelected()
+                    resetDatesHeaders()
+                    setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    viewState.onActionBarTitle("0")
+                    viewState.onDeleteBatch(getListWithHeaders(modelExplorerStack.last(), true))
+                    onBatchOperations()
+                }) { throwable: Throwable -> fetchError(throwable) })
         }
+
     }
 
     fun removeShare() {
-        if (modelExplorerStack?.countSelectedItems!! > 0) {
+        if (modelExplorerStack.countSelectedItems > 0) {
             viewState.onDialogQuestion(
                 context.getString(R.string.dialogs_question_share_remove), null,
                 TAG_DIALOG_ACTION_REMOVE_SHARE
@@ -488,10 +475,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun removeFromFavorites() {
-        if (itemClicked != null) {
-            modelExplorerStack?.removeItemById(itemClicked!!.id)
+        if (itemClicked?.id != null) {
+            modelExplorerStack.removeItemById(itemClicked?.id)
+            viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
         }
-        viewState.onDocsGet(getListWithHeaders(modelExplorerStack?.last(), true))
     }
 
     fun removeShareContext() {
@@ -509,18 +496,18 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     if (itemClicked != null) {
-                        modelExplorerStack?.removeItemById(itemClicked!!.id)
+                        modelExplorerStack.removeItemById(itemClicked?.id)
                     }
-                    setPlaceholderType(if (modelExplorerStack?.isListEmpty == true)
+                    setPlaceholderType(if (modelExplorerStack.isListEmpty)
                         PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                    viewState.onDocsGet(getListWithHeaders(modelExplorerStack?.last(), true))
+                    viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
                     onBatchOperations()
                 }) { throwable: Throwable -> fetchError(throwable) })
         }
     }
 
     fun emptyTrash() {
-        val explorer = modelExplorerStack?.last()
+        val explorer = modelExplorerStack.last()
         if (explorer != null) {
             val provider = fileProvider as CloudFileProvider
             showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
@@ -556,7 +543,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             .subscribe({
                 when {
                     it.isNotEmpty() -> {
-                        showMoveCopyDialog(it, action, modelExplorerStack?.currentTitle)
+                        showMoveCopyDialog(it, action, modelExplorerStack.currentTitle)
                     }
                     action == MoveCopyDialog.ACTION_COPY -> {
                         transfer(ApiContract.Operation.DUPLICATE, false)
@@ -647,11 +634,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = isContextEditable && (!isVisitor && !isShareSection || isCommonSection || isItemOwner)
 
     private val isContextOwner: Boolean
-        get() = StringUtils.equals(modelExplorerStack?.currentFolderOwnerId, account.id)
+        get() = StringUtils.equals(modelExplorerStack.currentFolderOwnerId, account.id)
 
     private val isContextReadWrite: Boolean
-        get() = isContextOwner || modelExplorerStack?.currentFolderAccess == ApiContract.ShareCode.READ_WRITE ||
-                modelExplorerStack?.currentFolderAccess == ApiContract.ShareCode.NONE
+        get() = isContextOwner || modelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE ||
+                modelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
 
     val isUserSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
