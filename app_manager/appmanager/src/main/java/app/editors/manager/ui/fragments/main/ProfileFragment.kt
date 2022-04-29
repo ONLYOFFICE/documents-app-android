@@ -1,11 +1,11 @@
 package app.editors.manager.ui.fragments.main
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
@@ -14,12 +14,9 @@ import app.editors.manager.mvp.models.user.Thirdparty
 import app.editors.manager.mvp.presenters.main.ProfilePresenter
 import app.editors.manager.mvp.presenters.main.ProfileState
 import app.editors.manager.mvp.views.main.ProfileView
-import app.editors.manager.ui.activities.main.ProfileActivity
 import app.editors.manager.ui.adapters.ThirdpartyAdapter
 import app.editors.manager.ui.binders.ProfileItemBinder
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.StringUtils.getEncodedString
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
@@ -76,6 +73,8 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
         }
         typeBinder?.setTitle(getString(R.string.profile_type_account))
             ?.setImage(R.drawable.ic_contact_calendar)
+        setActionBarTitle(getString(R.string.fragment_profile_title))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onRender(state: ProfileState) {
@@ -172,9 +171,11 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
                 item.itemText
                     .setTextColor(item.root.context.getColor(lib.toolkit.base.R.color.colorPrimary))
                 item.root.setOnClickListener {
-                    requireActivity().intent.putExtra(KEY_ACCOUNT, Json.encodeToString(account))
-                    requireActivity().setResult(ProfileActivity.RESULT_LOGIN, requireActivity().intent)
-                    requireActivity().finish()
+                    parentFragmentManager.setFragmentResult(
+                        CloudAccountFragment.REQUEST_PROFILE,
+                        bundleOf(CloudAccountFragment.RESULT_SIGN_IN to null)
+                    )
+                    parentFragmentManager.popBackStack()
                 }
             }
         }
@@ -208,13 +209,11 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
     }
 
     override fun onClose(isLogout: Boolean, account: CloudAccount?) {
-        if(isLogout) {
-            requireActivity().intent.putExtra(KEY_ACCOUNT, Json.encodeToString(account))
-            requireActivity().setResult(Activity.RESULT_OK, requireActivity().intent)
-        } else {
-            requireActivity().setResult(Activity.RESULT_CANCELED)
-        }
-        requireActivity().finish()
+        parentFragmentManager.setFragmentResult(
+            CloudAccountFragment.REQUEST_PROFILE,
+            bundleOf(CloudAccountFragment.RESULT_LOG_OUT to null)
+        )
+        parentFragmentManager.popBackStack()
     }
 
     override fun onError(message: String?) {

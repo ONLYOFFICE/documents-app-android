@@ -3,11 +3,9 @@ package app.editors.manager.ui.fragments.main
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import androidx.lifecycle.lifecycleScope
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentCloudLayoutBinding
 import app.editors.manager.mvp.presenters.login.OnlyOfficeCloudPresenter
-import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.views.login.OnlyOfficeCloudView
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.CloudsActivity
@@ -101,7 +99,7 @@ class OnlyOfficeCloudFragment : BaseAppFragment(), OnlyOfficeCloudView {
         if (isEmpty) {
             PortalsActivity.show(requireActivity())
         } else {
-            mainActivity?.showAccountFragment()
+            mainActivity?.showAccountsActivity()
         }
     }
 

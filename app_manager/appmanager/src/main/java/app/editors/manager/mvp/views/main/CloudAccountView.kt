@@ -16,5 +16,4 @@ interface CloudAccountView : BaseViewExt {
     fun onDropboxLogin()
     fun onGoogleDriveLogin()
     fun onSuccessLogin()
-    fun onCloudFragment(cloudAccount: CloudAccount?)
 }

@@ -252,7 +252,7 @@
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".ui.activities.main.ProfileActivity"
+            android:name=".ui.activities.main.AccountsActivity"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity

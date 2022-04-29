@@ -82,15 +82,6 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         }
     }
 
-    fun showCloudFragment() {
-        CoroutineScope(Dispatchers.Default).launch {
-            val account = accountDao.getAccountOnline()
-            withContext(Dispatchers.Main) {
-                viewState.onCloudFragment(account)
-            }
-        }
-    }
-
     private suspend fun getTokens(accounts: List<CloudAccount>, saveState: Bundle?) {
         val accountsWithToken = accounts.map { account ->
             AccountUtils.getToken(
@@ -123,10 +114,10 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     password = ""
                     expires = ""
                 })
-                accountDao.getAccounts().let {
-                    withContext(Dispatchers.Main) {
-                        viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
-                    }
+            }
+            accountDao.getAccounts().let {
+                withContext(Dispatchers.Main) {
+                    viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
                 }
             }
         }

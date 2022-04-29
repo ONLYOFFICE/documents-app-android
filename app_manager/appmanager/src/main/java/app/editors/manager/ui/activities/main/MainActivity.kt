@@ -56,7 +56,7 @@ interface IMainActivity {
     fun getNavigationBottom(): BottomNavigationView
     fun onSwitchAccount()
     fun showOnCloudFragment(account: CloudAccount? = null)
-    fun showAccountFragment()
+    fun showAccountsActivity()
 }
 
 
@@ -199,6 +199,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                     dialog?.show()
                 }
             }
+        } else if (resultCode == AccountsActivity.RESULT_NO_LOGGED_IN_ACCOUNTS) {
+            showOnCloudFragment(null)
+            setAppBarStates(false)
+            showNavigationButton(false)
         }
     }
 
@@ -237,7 +241,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             onBackPressed()
         }
         viewBinding.appBarToolbar.accountListener = {
-            showAccountFragment()
+            showAccountsActivity()
         }
     }
 
@@ -621,12 +625,8 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    override fun showAccountFragment() {
-        FragmentUtils.showFragment(
-            supportFragmentManager,
-            CloudAccountFragment.newInstance(),
-            R.id.frame_container
-        )
+    override fun showAccountsActivity() {
+        AccountsActivity.show(this)
     }
 
     override fun setAppBarStates(isVisible: Boolean) {
