@@ -343,7 +343,7 @@
     <string name="placeholder_no_users_groups">No users and groups</string>
     <string name="placeholder_media_error">Unable to load media</string>
     <string name="placeholder_try_again">Try again</string>
-    <string name="placeholder_loading_files">Loading files...</string>
+    <string name="placeholder_loading_files">Loading files…</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>

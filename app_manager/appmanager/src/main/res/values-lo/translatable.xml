@@ -620,5 +620,14 @@
             <a href="%2$s">Terms of Service</a>
         ]]>
     </string>
-
+    <string name="login_create_signin_passwords_length">ລະຫັດຜ່ານຕ້ອງມີ: ຈາກ 8 ຫາ 30 ຕົວອັກສອນ</string>
+    <string name="list_action_import">ໄຟລ໌ນໍາເຂົ້າ</string>
+    <string name="storage_google_drive_copy_folder_error">ບໍ່ສາມາດສຳເນົາໂຟນເດີໄດ້</string>
+    <string name="socials_google_cancel_auth">ຍົກເລີກການເຂົ້າສູ່ລະບົບດ້ວຍ Google</string>
+    <string name="error_open_project_file">ບັນຊີນີ້ບໍ່ມີສິດເຂົ້າເຖິງໂຄງການ</string>
+    <string name="switch_account_open_project_file">ສະຫຼັບບັນຊີ</string>
+    <string name="app_settings_color_theme">ຮູບແບບສີສັນ</string>
+    <string name="app_settings_follow_the_system">ຄືກັນກັບລະບົບ</string>
+    <string name="app_settings_light_theme">ຮູບແບບສີສັນແຈ້ງ</string>
+    <string name="app_settings_dark_theme">ຮູບແບບສີສັນມືດ</string>
 </resources>
