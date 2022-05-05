@@ -136,7 +136,7 @@ private fun AboutScreen(
                                 sdkVersion
                             )
                         ),
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.body2,
                         color = MaterialTheme.colors.onSurface,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
