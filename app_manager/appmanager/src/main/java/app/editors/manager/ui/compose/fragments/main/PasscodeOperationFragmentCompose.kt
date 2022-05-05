@@ -17,6 +17,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.editors.manager.managers.utils.BiometricsUtils
+import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.compose.base.Spacer
 import app.editors.manager.viewModels.main.PasscodeLockState
 import app.editors.manager.viewModels.main.SetPasscodeViewModel
@@ -158,7 +160,7 @@ fun PasscodeOperation(
             items(lastRow) { item ->
                 when (item) {
                     KeyboardLastRow.FingerprintImage -> {
-                        if (fingerprintState == true && isEnterCodeFragment) {
+                        if (fingerprintState == true && isEnterCodeFragment && BiometricsUtils.isFingerprintsExist(LocalContext.current as PasscodeActivity)) {
                             IconButton(onClick = { viewModel.openBiometricDialog() }, enabled = !isError) {
                                 Icon(
                                     painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
