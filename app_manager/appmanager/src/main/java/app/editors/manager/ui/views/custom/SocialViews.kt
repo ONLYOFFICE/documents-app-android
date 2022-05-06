@@ -61,11 +61,16 @@ class SocialViews(private val activity: Activity, view: View?,
     * */
     private fun initFacebook() {
         Log.d(TAG, "initFacebook() - app ID: " + activity.getString(R.string.facebook_app_id))
-        facebookId?.let { FacebookSdk.setApplicationId(it) }
-        loginPersonalSocialFacebookNativeButton = LoginButton(activity)
-        loginPersonalSocialFacebookNativeButton?.loginBehavior = LoginBehavior.WEB_ONLY
-        facebookCallbackManager = CallbackManager.Factory.create()
-        LoginManager.getInstance().registerCallback(facebookCallbackManager, FacebookAuthCallback())
+        if (FacebookSdk.isInitialized()) {
+            facebookId?.let { FacebookSdk.setApplicationId(it) }
+            loginPersonalSocialFacebookNativeButton = LoginButton(activity)
+            loginPersonalSocialFacebookNativeButton?.loginBehavior = LoginBehavior.WEB_ONLY
+            facebookCallbackManager = CallbackManager.Factory.create()
+            LoginManager.getInstance().registerCallback(facebookCallbackManager, FacebookAuthCallback())
+        } else {
+            viewBinding?.loginSocialFacebookButton?.isVisible = false
+        }
+
     }
 
     private fun initListeners() {
@@ -138,7 +143,9 @@ class SocialViews(private val activity: Activity, view: View?,
     * Lifecycle methods
     * */
     fun onDestroyView() {
-        LoginManager.getInstance().unregisterCallback(facebookCallbackManager)
+        if (FacebookSdk.isInitialized()) {
+            LoginManager.getInstance().unregisterCallback(facebookCallbackManager)
+        }
         setOnSocialNetworkCallbacks(null)
         viewBinding = null
     }
