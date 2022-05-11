@@ -407,7 +407,7 @@
 
     <!-- Popup menu -->
     <style name="PopupLayout" parent="ContextListLayout">
-        <item name="android:layout_width">@dimen/popup_width_context</item>
+        <item name="android:layout_width">wrap_content</item>
     </style>
 
     <style name="PopupText" parent="ContextListMediumText">
