@@ -13,6 +13,7 @@ import app.editors.manager.databinding.FragmentListBinding
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.recyclers.LoadingScroll
 import lib.toolkit.base.managers.tools.ResourcesProvider
+import lib.toolkit.base.ui.recycler.WrapLinearLayoutManager
 
 abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -49,7 +50,7 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
             it.listOfItems.layoutAnimation = AnimationUtils.loadLayoutAnimation(
                 context, R.anim.recycler_view_animation_layout
             )
-            linearLayoutManager = LinearLayoutManager(context)
+            linearLayoutManager = WrapLinearLayoutManager(requireContext())
             it.listSwipeRefresh.setProgressBackgroundColorSchemeColor(resourcesProvider
                 .getColor(lib.toolkit.base.R.color.colorTransparent)
             )
@@ -70,6 +71,6 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
     protected open fun onListEnd() {}
 
     companion object {
-        val TAG = ListFragment::class.java.simpleName
+        val TAG: String = ListFragment::class.java.simpleName
     }
 }
