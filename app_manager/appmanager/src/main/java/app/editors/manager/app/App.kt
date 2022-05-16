@@ -7,6 +7,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Process
 import android.webkit.WebView
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.InvalidationTracker
 import app.documents.core.account.CloudAccount
 import app.documents.core.login.ILoginServiceProvider
@@ -14,16 +15,19 @@ import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
-import app.editors.manager.dropbox.di.component.DaggerDropboxComponent
-import app.editors.manager.dropbox.dropbox.api.IDropboxServiceProvider
-import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
+import app.editors.manager.storages.dropbox.di.component.DaggerDropboxComponent
+import app.editors.manager.storages.dropbox.dropbox.api.IDropboxServiceProvider
+import app.editors.manager.storages.dropbox.dropbox.login.IDropboxLoginServiceProvider
+import app.editors.manager.storages.googledrive.di.component.DaggerGoogleDriveComponent
+import app.editors.manager.storages.googledrive.googledrive.api.IGoogleDriveServiceProvider
+import app.editors.manager.storages.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
 import app.editors.manager.managers.utils.KeyStoreUtils
-import app.editors.manager.onedrive.di.component.DaggerOneDriveComponent
-import app.editors.manager.onedrive.onedrive.IOneDriveServiceProvider
-import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
-import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
+import app.editors.manager.storages.onedrive.di.component.DaggerOneDriveComponent
+import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
+import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import java.util.*
 
@@ -97,6 +101,9 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        ThemePreferencesTools(this).also { pref ->
+            AppCompatDelegate.setDefaultNightMode(pref.mode)
+        }
         init()
     }
 
@@ -185,6 +192,11 @@ class App : Application() {
             .dropboxServiceProvider
     }
 
+    fun getGoogleDriveComponent(): IGoogleDriveServiceProvider {
+        return DaggerGoogleDriveComponent.builder().appComponent(appComponent)
+            .build()
+            .googleDriveServiceProvider
+    }
 }
 
 val Context.accountOnline: CloudAccount?
@@ -218,10 +230,10 @@ val Context.dropboxLoginService: IDropboxLoginServiceProvider
         else -> applicationContext.appComponent.dropboxLoginService
     }
 
-val Context.oneDriveAuthService: IOneDriveAuthServiceProvider
-    get() = when (this) {
-        is App -> this.appComponent.oneDriveAuthService
-        else -> applicationContext.appComponent.oneDriveAuthService
+val Context.googleDriveLoginService: IGoogleDriveLoginServiceProvider
+    get() = when(this) {
+        is App -> this.appComponent.googleDriveLoginService
+        else -> applicationContext.appComponent.googleDriveLoginService
     }
 
 fun Context.api(): Api {
@@ -253,8 +265,14 @@ fun Context.getOneDriveServiceProvider(): IOneDriveServiceProvider {
 }
 
 fun Context.getDropboxServiceProvider(): IDropboxServiceProvider {
-    return when (this) {
+    return when(this) {
         is App -> this.getDropboxComponent()
         else -> this.applicationContext.getDropboxServiceProvider()
+    }
+}
+fun Context.getGoogleDriveServiceProvider(): IGoogleDriveServiceProvider {
+    return when(this) {
+        is App -> this.getGoogleDriveComponent()
+        else -> this.applicationContext.getGoogleDriveServiceProvider()
     }
 }

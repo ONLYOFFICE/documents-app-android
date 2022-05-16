@@ -90,7 +90,7 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
                     if(token.isNotEmpty()) {
                         setAccount()
                     } else {
-                        viewState.onOneDriveLogin()
+                        viewState.onOneDriveLogin(clickedAccount)
                     }
                 }
                 return
@@ -100,7 +100,17 @@ class AccountsPresenter : BaseLoginPresenter<AccountsView>() {
                     if(token.isNotEmpty()) {
                         setAccount()
                     } else {
-                        viewState.onDropboxLogin()
+                        viewState.onDropboxLogin(clickedAccount)
+                    }
+                }
+                return
+            }
+            clickedAccount.isGoogleDrive -> {
+                AccountUtils.getToken(context, clickedAccount.getAccountName())?.let {token ->
+                    if(token.isNotEmpty()) {
+                        setAccount()
+                    } else {
+                        viewState.onGoogleDriveLogin(clickedAccount)
                     }
                 }
                 return

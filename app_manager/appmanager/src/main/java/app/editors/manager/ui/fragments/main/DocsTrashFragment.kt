@@ -132,7 +132,7 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         super.onDeleteBatch(list)
     }
 
-    override fun onRemoveItemFromFavorites() {}
+    override fun onUpdateItemFavorites() { }
 
     override fun onResume() {
         super.onResume()

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- ======================================================================================= -->
     <!-- Global customizations -->
@@ -21,6 +21,7 @@
         <item name="android:splitMotionEvents">false</item>
         <item name="android:windowBackground">@color/colorBackgroundSecond</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme">
@@ -362,8 +363,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/item_one_line_height</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:paddingLeft">@dimen/screen_margin_large</item>
-        <item name="android:paddingRight">@dimen/screen_margin_large</item>
+        <item name="android:paddingStart">@dimen/screen_margin_large</item>
+        <item name="android:paddingEnd">@dimen/screen_margin_large</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:clickable">true</item>
@@ -376,10 +377,21 @@
         <item name="android:tint">@color/colorOnSurface</item>
     </style>
 
+    <style name="ContextListImage.Favorite" parent="ContextListImage">
+        <item name="android:tint">@null</item>
+    </style>
+
+    <style name="ContextListHeaderImage" parent="CommonImageView">
+        <item name="android:layout_width">@dimen/image_default_size</item>
+        <item name="android:layout_height">@dimen/image_default_size</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
     <style name="ContextListMediumText" parent="ItemMediumBlackText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">32dp</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin_xxlarge</item>
+        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
         <item name="android:layout_gravity">center_vertical</item>
     </style>
 
@@ -395,7 +407,7 @@
 
     <!-- Popup menu -->
     <style name="PopupLayout" parent="ContextListLayout">
-        <item name="android:layout_width">@dimen/popup_width_context</item>
+        <item name="android:layout_width">wrap_content</item>
     </style>
 
     <style name="PopupText" parent="ContextListMediumText">

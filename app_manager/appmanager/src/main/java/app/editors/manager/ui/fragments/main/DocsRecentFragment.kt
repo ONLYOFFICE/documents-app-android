@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
@@ -23,7 +22,7 @@ import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.activities.main.WebViewerActivity
 import app.editors.manager.ui.adapters.RecentAdapter
-import app.editors.manager.ui.adapters.diffutilscallback.RecentDiffUtilsCallback
+import app.editors.manager.ui.adapters.holders.factory.RecentHolderFactory
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.CoroutineScope
@@ -44,9 +43,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private var filterValue: CharSequence? = null
 
     private val recentListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
-            Debounce.perform(1000L) {
-                presenter.fileClick(recent, position)
-            }
+        Debounce.perform(1000L) { presenter.fileClick(recent, position) }
     }
 
     private val contextListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
@@ -100,7 +97,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             it.isVisible = true
             it.isEnabled = true
             it.subMenu.findItem(R.id.toolbar_sort_item_owner).isVisible = false
-            //mSortItem.getSubMenu().findItem(R.id.toolbar_sort_item_date_update).setChecked(true);
         }
     }
 
@@ -119,6 +115,48 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                     }
                 }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.toolbar_item_sort -> {
+                activity?.setAppBarStates(false)
+                activity?.showNavigationButton(false)
+            }
+            R.id.toolbar_sort_item_title -> {
+                if (item.isChecked) {
+                    presenter.reverseOrder()
+                } else {
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_TITLE)
+                }
+            }
+            R.id.toolbar_sort_item_date_update -> {
+                if (item.isChecked) {
+                    presenter.reverseOrder()
+                } else {
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_UPDATED)
+                }
+            }
+            R.id.toolbar_sort_item_size -> {
+                if (item.isChecked) {
+                    presenter.reverseOrder()
+                } else {
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_SIZE)
+                }
+            }
+            R.id.toolbar_sort_item_type -> {
+                if (item.isChecked) {
+                    presenter.reverseOrder()
+                } else {
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_TYPE)
+                }
+            }
+            R.id.toolbar_sort_item_asc -> presenter.setOrder(isAsc = true)
+            R.id.toolbar_sort_item_desc -> presenter.setOrder(isAsc = false)
+            else -> {}
+        }
+        item.isChecked = true
+        return false
     }
 
     override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
@@ -140,7 +178,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             activity.showActionButton(false)
             activity.showAccount(false)
         }
-        adapter = RecentAdapter(requireContext(), recentListener, contextListener)
+        adapter = RecentAdapter(requireContext(), RecentHolderFactory(recentListener, contextListener))
         recyclerView?.let {
             it.adapter = adapter
             it.setPadding(
@@ -157,94 +195,16 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         setActionBarTitle(getString(R.string.fragment_recent_title))
     }
 
-    override fun onRecentGet(list: List<Recent>) {
-        adapter?.setItems(list)
-    }
-
     override fun onListEnd() {
         presenter.loadMore(adapter?.itemCount)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        menu?.let { menu ->
-            val isAscending = menu.findItem(R.id.toolbar_sort_item_asc).isChecked
-            when (item.itemId) {
-                R.id.toolbar_item_sort -> {
-                    activity?.setAppBarStates(false)
-                    activity?.showNavigationButton(false)
-                }
-                R.id.toolbar_sort_item_title -> {
-                    if (item.isChecked) {
-                        presenter.reverseSortOrder(adapter!!.itemList)
-                    } else {
-                        presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, isAscending)
-                    }
-                    item.isChecked = true
-                }
-                R.id.toolbar_sort_item_date_update -> {
-                    if (item.isChecked) {
-                        presenter.reverseSortOrder(adapter!!.itemList)
-                    } else {
-                        presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, isAscending)
-                    }
-                    item.isChecked = true
-                }
-                R.id.toolbar_sort_item_owner -> {
-                    if (item.isChecked) {
-                        presenter.reverseSortOrder(adapter!!.itemList)
-                    } else {
-                        presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, isAscending)
-                    }
-                    item.isChecked = true
-                }
-                R.id.toolbar_sort_item_size -> {
-                    if (item.isChecked) {
-                        presenter.reverseSortOrder(adapter!!.itemList)
-                    } else {
-                        presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, isAscending)
-                    }
-                    item.isChecked = true
-                }
-                R.id.toolbar_sort_item_type -> {
-                    if (item.isChecked) {
-                        presenter.reverseSortOrder(adapter!!.itemList)
-                    } else {
-                        presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, isAscending)
-                    }
-                    item.isChecked = true
-                }
-                R.id.toolbar_sort_item_asc, R.id.toolbar_sort_item_desc -> presenter.reverseList(
-                    adapter!!.itemList,
-                    isAscending
-                )
-                else -> {}
-            }
-        }
-        item.isChecked = true
-        return false
-    }
-
-    override fun onReverseSortOrder(itemList: List<Recent>) {
-        adapter?.setData(itemList)
-        adapter?.notifyDataSetChanged()
-        menu?.let { menu ->
-            if (menu.findItem(R.id.toolbar_sort_item_desc)?.isChecked == true) {
-                menu.findItem(R.id.toolbar_sort_item_asc)?.isChecked = true
-            } else {
-                menu.findItem(R.id.toolbar_sort_item_desc)?.isChecked = true
-            }
-        }
-    }
-
-    override fun updateFiles(files: List<Recent>) {
+    override fun updateFiles(files: List<Recent>, sortBy: String, sortOrder: String) {
         if (files.isNotEmpty()) {
-            adapter?.itemList?.let {
-                updateDiffUtils(files)
-                recyclerView?.scrollToPosition(0)
-            } ?: run {
-                adapter?.setItems(files)
-            }
+            adapter?.setRecent(files, sortBy == ApiContract.Parameters.VAL_SORT_BY_UPDATED)
+            recyclerView?.scrollToPosition(0)
             placeholderViews?.setVisibility(false)
+            onReverseSortOrder(sortOrder)
             updateMenu(true)
         } else {
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.SEARCH)
@@ -258,12 +218,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             searchItem?.isEnabled = isEnable
             deleteItem?.isVisible = isEnable
         }
-    }
-
-    private fun updateDiffUtils(files: List<Recent>) {
-        val diffUtils = RecentDiffUtilsCallback(files, adapter?.itemList)
-        val result = DiffUtil.calculateDiff(diffUtils)
-        adapter?.set(files, result)
     }
 
     override fun openFile(file: CloudFile) {
@@ -293,11 +247,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         return false
     }
 
-    override fun onMoveElement(recent: Recent, position: Int) {
-        adapter?.moveItem(position, 0)
-        recyclerView?.scrollToPosition(0)
-    }
-
     override fun onContextShow(state: ContextBottomDialog.State) {
         parentFragmentManager.let {
             contextBottomDialog?.state = state
@@ -309,7 +258,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun onDeleteItem(position: Int) {
         adapter?.let { recentAdapter ->
             recentAdapter.removeItem(position)
-            if (recentAdapter.itemCount == 0) setEmpty()
+            if (recentAdapter.isEmpty()) setEmpty()
         }
     }
 
@@ -326,15 +275,15 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                 if (state.recents.isEmpty()) {
                     setEmpty()
                 } else {
-                    setRecents(state.recents)
+                    setRecent(state.recents)
                 }
             }
         }
     }
 
-    private fun setRecents(recents: List<Recent>) {
+    private fun setRecent(recent: List<Recent>) {
         setMenuVisibility(true)
-        adapter?.setItems(recents)
+        presenter.updateFiles(recent)
     }
 
     private fun setEmpty() {
@@ -362,9 +311,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun onRemoveItemFromFavorites() {
-
-    }
+    override fun onUpdateItemFavorites() { }
 
     override val isWebDav: Boolean
         get() = false

@@ -69,7 +69,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
             .addUnsafeNonAscii(HEADER_NAME, "form-data; name=$title; filename=$title")
             .build()
     }
-    private lateinit var call: Call<ResponseFile>
+    private var call: Call<ResponseFile>? = null
 
     private val api = applicationContext.api()
 
@@ -81,13 +81,13 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         title = ContentResolverUtils.getName(applicationContext, from ?: Uri.EMPTY)
 
         call = if (action == ACTION_UPLOAD_MY) {
-            api.uploadFileToMy(createMultipartBody(from))
+            createMultipartBody(from)?.let { api.uploadFileToMy(it) }
         } else {
-            api.uploadFile(folderId ?: "", createMultipartBody(from))
+            createMultipartBody(from)?.let { api.uploadFile(folderId ?: "", it) }
         }
         try {
-            val response = call.execute()
-            if (response.isSuccessful && response.body() != null) {
+            val response = call?.execute()
+            if (response?.isSuccessful == true && response.body() != null) {
                 responseFile = response.body()!!
                 mNotificationUtils.removeNotification(id.hashCode())
                 mNotificationUtils.showUploadCompleteNotification(id.hashCode(), title)
@@ -128,8 +128,8 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         }
     }
 
-    private fun createMultipartBody(uri: Uri?): MultipartBody.Part {
-        return MultipartBody.Part.create(headers, createRequestBody(uri))
+    private fun createMultipartBody(uri: Uri?): MultipartBody.Part? {
+        return title?.let { MultipartBody.Part.createFormData(it, it, createRequestBody(uri)) }
     }
 
     private fun createRequestBody(uri: Uri?): ProgressRequestBody {
@@ -138,7 +138,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
             if (!isStopped) {
                 showProgress(total, progress)
             } else {
-                call.cancel()
+                call?.cancel()
             }
         }
         return requestBody

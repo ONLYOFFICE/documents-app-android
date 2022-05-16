@@ -106,7 +106,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     }
 
     private fun setNetworkSetting(cloudAccount: CloudAccount) {
-        networkSettings.setBaseUrl(cloudAccount.portal ?: "")
+        networkSettings.setBaseUrl(cloudAccount.portal ?: ApiContract.DEFAULT_HOST)
         networkSettings.setScheme(cloudAccount.scheme ?: ApiContract.SCHEME_HTTPS)
         networkSettings.setSslState(cloudAccount.isSslState)
         networkSettings.setCipher(cloudAccount.isSslCiphers)

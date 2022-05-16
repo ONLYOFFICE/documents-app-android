@@ -29,7 +29,7 @@ object ActivitiesUtils {
 
     private const val PLAY_MARKET = "market://details?id="
     private const val PLAY_STORE = "https://play.google.com/store/apps/details?id="
-    private const val PICKER_NO_FILTER = "*/*"
+    const val PICKER_NO_FILTER = "*/*"
     private const val PICKER_PNG_FILTER = "image/png"
 
     @JvmStatic

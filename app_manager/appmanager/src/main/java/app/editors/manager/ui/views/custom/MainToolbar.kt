@@ -72,7 +72,7 @@ class MainToolbar @JvmOverloads constructor(
             context,
             account?.getAccountName() ?: ""
         )?.let {
-            val url = if (cloudAccount.avatarUrl?.contains("static") == true || cloudAccount.avatarUrl?.contains("default") == true || cloudAccount.isDropbox) {
+            val url = if (cloudAccount.avatarUrl?.contains("static") == true || cloudAccount.avatarUrl?.contains("default") == true || cloudAccount.isDropbox || cloudAccount.isGoogleDrive) {
                 cloudAccount.avatarUrl
             } else {
                 cloudAccount.scheme + cloudAccount.portal + cloudAccount.avatarUrl

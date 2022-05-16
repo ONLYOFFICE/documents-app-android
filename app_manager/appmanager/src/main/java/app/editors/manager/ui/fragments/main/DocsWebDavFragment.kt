@@ -127,9 +127,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         setActionBarTitle(title)
     }
 
-    override fun onRemoveItemFromFavorites() {
-        //stub
-    }
+    override fun onUpdateItemFavorites() { }
 
     override fun onActionDialog() {
         actionBottomDialog?.isLocal = true
@@ -157,7 +155,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     }
 
 
-    override val presenter: DocsBasePresenter<out DocsBaseView?>
+    override val presenter: DocsBasePresenter<out DocsBaseView>
         get() = webDavPresenter
 
     override val isWebDav: Boolean?

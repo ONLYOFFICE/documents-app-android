@@ -9,9 +9,12 @@ import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.settings.NetworkSettings
 import app.documents.core.settings.WebDavInterceptor
 import app.editors.manager.di.module.AppModule
-import app.editors.manager.dropbox.dropbox.login.IDropboxLoginServiceProvider
-import app.editors.manager.dropbox.mvp.presenters.DocsDropboxPresenter
-import app.editors.manager.dropbox.mvp.presenters.DropboxSignInPresenter
+import app.editors.manager.storages.dropbox.dropbox.login.IDropboxLoginServiceProvider
+import app.editors.manager.storages.dropbox.mvp.presenters.DocsDropboxPresenter
+import app.editors.manager.storages.dropbox.mvp.presenters.DropboxSignInPresenter
+import app.editors.manager.storages.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
+import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
+import app.editors.manager.storages.googledrive.mvp.presenters.GoogleDriveSignInPresenter
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.PreferenceTool
@@ -22,11 +25,10 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
-import app.editors.manager.onedrive.managers.providers.OneDriveFileProvider
-import app.editors.manager.onedrive.mvp.presenters.DocsOneDrivePresenter
-import app.editors.manager.onedrive.mvp.presenters.OneDriveSingInPresenter
-import app.editors.manager.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
-import app.editors.manager.onedrive.onedrive.login.IOneDriveLoginServiceProvider
+import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProvider
+import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
+import app.editors.manager.storages.onedrive.mvp.presenters.OneDriveSingInPresenter
+import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
@@ -83,8 +85,8 @@ interface AppComponent {
     val accountsDao: AccountDao
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider
-    val oneDriveAuthService: IOneDriveAuthServiceProvider
     val dropboxLoginService: IDropboxLoginServiceProvider
+    val googleDriveLoginService: IGoogleDriveLoginServiceProvider
     val accountOnline: CloudAccount?
     val recentDao: RecentDao?
 
@@ -108,6 +110,7 @@ interface AppComponent {
     fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
     fun inject(splashFragment: SplashFragment?)
     fun inject(dropboxSignInPresenter: DropboxSignInPresenter?)
+    fun inject(googleDriveSignInPresenter: GoogleDriveSignInPresenter?)
 
     /*
     * Main
@@ -127,6 +130,7 @@ interface AppComponent {
     fun inject(mainPagerPresenter: MainPagerPresenter?)
     fun inject(docsOneDrivePresenter: DocsOneDrivePresenter?)
     fun inject(docsDropboxPresenter: DocsDropboxPresenter?)
+    fun inject(docsGoogleDrivePresenter: DocsGoogleDrivePresenter?)
 
     /*
     * Media

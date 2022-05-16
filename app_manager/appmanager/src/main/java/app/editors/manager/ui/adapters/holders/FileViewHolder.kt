@@ -3,7 +3,7 @@ package app.editors.manager.ui.adapters.holders
 import android.view.View
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -32,7 +32,9 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
 
     override fun bind(file: CloudFile) {
         // Get file info
-        val filesInfo: String = TimeUtils.getWeekDate(file.updated) + PLACEHOLDER_POINT +
+        val filesInfo: String = StringUtils.getHtmlString(file.createdBy.displayName) + PLACEHOLDER_POINT
+            .takeIf { file.createdBy.displayName.isNotEmpty() }.orEmpty() +
+                TimeUtils.getWeekDate(file.updated) + PLACEHOLDER_POINT +
                 StringUtils.getFormattedSize(adapter.context, file.pureContentLength)
 
         if (adapter.preferenceTool.selfId.equals(file.createdBy.id, ignoreCase = true)) {
@@ -47,10 +49,11 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             listExplorerFileName.text = file.title
             listExplorerFileInfo.text = filesInfo
             listExplorerFileContext.isVisible = true
+            listExplorerFileFavorite.isVisible = file.favorite
 
             viewIconSelectableLayout.viewIconSelectableImage.background = null
             viewIconSelectableLayout.viewIconSelectableMask.background = null
-            ManagerUiUtils.setFileIcon(viewIconSelectableLayout.viewIconSelectableImage, file.fileExst)
+            viewIconSelectableLayout.viewIconSelectableImage.setFileIcon(file.fileExst)
 
             // For selection mode add background/foreground
             if (adapter.isSelectMode) {

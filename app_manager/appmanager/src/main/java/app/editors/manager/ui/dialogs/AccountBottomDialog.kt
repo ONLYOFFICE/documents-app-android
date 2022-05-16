@@ -14,13 +14,14 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
-import app.editors.manager.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
 import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.login.AccountsPresenter
 import app.editors.manager.mvp.views.login.AccountsView
-import app.editors.manager.onedrive.managers.utils.OneDriveUtils
-import app.editors.manager.onedrive.ui.fragments.OneDriveSignInFragment
+import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
+import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
@@ -140,22 +141,16 @@ class AccountBottomDialog : BaseBottomDialog(), BaseAdapter.OnItemClickListener,
         WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.valueOf(account.webDavProvider ?: ""), Json.encodeToString(account))
     }
 
-    override fun onOneDriveLogin() {
-        val storage = Storage(
-            OneDriveUtils.ONEDRIVE_STORAGE,
-            Constants.OneDrive.COM_CLIENT_ID,
-            Constants.OneDrive.COM_REDIRECT_URL
-        )
-        fragmentManager?.let { showFragment(fragmentManager = it,OneDriveSignInFragment.newInstance(storage), R.id.frame_container, OneDriveSignInFragment.TAG, false) }
+    override fun onOneDriveLogin(account: CloudAccount) {
+        WebDavLoginActivity.show(activity = requireActivity(), account = Json.encodeToString(account), fragment = WebDavLoginActivity.ONEDRIVE_FRAGMENT_VALUE)
     }
 
-    override fun onDropboxLogin() {
-        val storage = Storage(
-            ApiContract.Storage.DROPBOX,
-            Constants.DropBox.COM_CLIENT_ID,
-            Constants.DropBox.COM_REDIRECT_URL
-        )
-        fragmentManager?.let { showFragment(fragmentManager = it,DropboxSignInFragment.newInstance(storage), R.id.frame_container, DropboxSignInFragment.TAG, false) }
+    override fun onDropboxLogin(account: CloudAccount) {
+        WebDavLoginActivity.show(activity = requireActivity(), account = Json.encodeToString(account), fragment = WebDavLoginActivity.DROPBOX_FRAGMENT_VALUE)
+    }
+
+    override fun onGoogleDriveLogin(account: CloudAccount) {
+        WebDavLoginActivity.show(activity = requireActivity(), account = Json.encodeToString(account), fragment = WebDavLoginActivity.GOOGLEDRIVE_FRAGMENT_VALUE)
     }
 
     override fun onError(message: String?) {

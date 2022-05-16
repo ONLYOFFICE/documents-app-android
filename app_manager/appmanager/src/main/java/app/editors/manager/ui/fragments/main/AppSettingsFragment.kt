@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentAppSettingsLayoutBinding
 import app.editors.manager.ui.activities.main.AboutActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
+import app.editors.manager.ui.dialogs.AppThemeDialog
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import lib.toolkit.base.managers.utils.ActivitiesUtils.showEmail
@@ -99,6 +101,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
             binding.wifiSwitch.setOnClickListener(this)
             binding.analyticSwitch.setOnClickListener(this)
             binding.passcodeLayout.setOnClickListener(this)
+            binding.settingsAppTheme.root.setOnClickListener(this)
 
             binding.settingAboutItem.settingIcon.setImageResource(R.drawable.ic_drawer_menu_about)
             binding.settingAboutItem.settingText.text = getString(R.string.about_title)
@@ -110,6 +113,13 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
             binding.settingSupportItem.settingIcon.setImageResource(R.drawable.ic_drawer_menu_feedback)
             binding.settingSupportItem.settingIconArrow.setImageResource(R.drawable.ic_open_in_new)
             binding.settingSupportItem.settingText.text = getString(R.string.navigation_drawer_menu_feedback)
+
+            binding.settingsAppTheme.apply {
+                settingIcon.isVisible = true
+                settingText.text = getString(R.string.app_settings_color_theme)
+                settingIconArrow.isVisible = false
+                settingIcon.isVisible = false
+            }
         }
     }
 
@@ -156,6 +166,9 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
             }
             R.id.passcodeLayout -> {
                 PasscodeActivity.show(requireContext())
+            }
+            R.id.settingsAppTheme -> {
+                AppThemeDialog().show(parentFragmentManager, null)
             }
         }
     }

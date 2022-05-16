@@ -14,21 +14,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/selectableItemBackground"
-        android:clickable="true">
+        android:clickable="true"
+        android:focusable="true">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/share_add_item_alpha_text"
             style="@style/LargeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/screen_margin_large"
+            android:layout_marginVertical="@dimen/screen_margin_large"
             android:gravity="center"
             android:text="R"
-            android:textColor="@color/colorSecondary"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline1"
@@ -42,7 +46,7 @@
             android:id="@+id/share_add_item_avatar_image"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="25dp"
             android:src="@drawable/drawable_list_share_image_item_user_placeholder"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/guideline1"

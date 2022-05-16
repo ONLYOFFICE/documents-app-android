@@ -272,11 +272,11 @@ class EnterpriseSmsFragment : BaseAppFragment(), EnterpriseSmsView, OnContextMen
         override fun afterTextChanged(s: Editable) {
             // Result text
             val resultString = srcString.toString()
-            if (resultString.matches(PATTER_DIGITS.toRegex())) {
-                viewBinding?.loginSmsCodeEdit?.setTextColor(resources.getColor(android.R.color.black, null))
-            } else {
-                viewBinding?.loginSmsCodeEdit?.setTextColor(viewBinding?.loginSmsCodeEdit?.hintTextColors)
-            }
+//            if (resultString.matches(PATTER_DIGITS.toRegex())) {
+//                viewBinding?.loginSmsCodeEdit?.setTextColor(resources.getColor(android.R.color.black, null))
+//            } else {
+//                viewBinding?.loginSmsCodeEdit?.setTextColor(viewBinding?.loginSmsCodeEdit?.hintTextColors)
+//            }
 
             // Remove listener, else will be recursion
             viewBinding?.loginSmsCodeEdit?.apply {

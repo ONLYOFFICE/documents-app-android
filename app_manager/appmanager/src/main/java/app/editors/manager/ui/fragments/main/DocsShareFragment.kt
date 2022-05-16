@@ -64,7 +64,7 @@ class DocsShareFragment : DocsCloudFragment() {
         cloudPresenter.getItemsById(ID)
     }
 
-    override fun onRemoveItemFromFavorites() { }
+    override fun onUpdateItemFavorites() { }
 
     private fun init() {
         cloudPresenter.checkBackStack()

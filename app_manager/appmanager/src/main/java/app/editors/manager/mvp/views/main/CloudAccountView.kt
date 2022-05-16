@@ -14,5 +14,6 @@ interface CloudAccountView : BaseViewExt {
     fun onAccountLogin(portal: String, login: String)
     fun onOneDriveLogin()
     fun onDropboxLogin()
+    fun onGoogleDriveLogin()
     fun onSuccessLogin()
 }

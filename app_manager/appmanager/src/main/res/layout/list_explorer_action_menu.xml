@@ -116,6 +116,20 @@
                     android:text="@string/list_action_upload" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/list_explorer_action_import"
+                style="@style/ContextListLayout">
+
+                <ImageView
+                    style="@style/ContextListImage"
+                    app:srcCompat="@drawable/ic_list_action_import"
+                    tools:ignore="ContentDescription" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/ContextListMediumText"
+                    android:text="@string/list_action_import" />
+            </LinearLayout>
+
             <include
                 android:id="@+id/view_line_separator_storage"
                 layout="@layout/view_line_separator"

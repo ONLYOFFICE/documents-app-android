@@ -22,5 +22,6 @@ data class Recent(
     val isLocal: Boolean,
     val isWebDav: Boolean,
     val size: Long,
-    val ownerId: String? = null
+    val ownerId: String? = null,
+    val source: String? = null
 )

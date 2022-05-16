@@ -13,7 +13,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.managers.utils.isVisible
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -90,10 +90,9 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextHeaderTitleText.text = state.title
             it.listExplorerContextHeaderInfoText.text = state.info
             it.listExplorerContextHeaderImage.setImageResource(state.iconResId)
-            UiUtils.setImageTint(it.listExplorerContextHeaderImage, lib.toolkit.base.R.color.colorOnSurface)
+            it.listExplorerContextHeaderImage.alpha = 1f
             if (!state.isFolder) {
-                ManagerUiUtils.setFileIcon(
-                    it.listExplorerContextHeaderImage, StringUtils.getExtensionFromPath(state.title))
+                it.listExplorerContextHeaderImage.setFileIcon(StringUtils.getExtensionFromPath(state.title))
             }
         }
         setViewState()
@@ -133,7 +132,8 @@ class ContextBottomDialog : BaseBottomDialog() {
                         getString(R.string.list_context_delete)
                 }
                 binding.listExplorerContextDownload.isVisible = !state.isOneDrive
-                binding.listExplorerContextExternalLink.isVisible = state.isOneDrive
+                binding.listExplorerContextExternalLink.isVisible = state.isOneDrive || state.isGoogleDrive
+                binding.listExplorerContextCopy.isVisible = !state.isGoogleDrive
             } else {
                 /** File can downloaded */
                 binding.listExplorerContextDownload.isVisible = true
@@ -166,8 +166,8 @@ class ContextBottomDialog : BaseBottomDialog() {
             binding.listExplorerContextRename.isVisible = state.isCanRename
 
             /** Item can share */
-            binding.viewLineSeparatorShare.root.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox
-            binding.listExplorerContextShare.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox
+            binding.viewLineSeparatorShare.root.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox && !state.isGoogleDrive
+            binding.listExplorerContextShare.isVisible = state.isCanShare && !state.isOneDrive && !state.isDropBox && !state.isGoogleDrive
 
             /** Only for share section, instead of delete */
             binding.listExplorerContextShareDelete.isVisible = state.isDeleteShare
@@ -222,7 +222,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun setLocalState() {
         viewBinding?.let {
-            setUploadToPortal(!state.isFolder)
+            setUploadToPortal(!state.isFolder && !(state.isGoogleDrive || state.isDropBox || state.isOneDrive))
             it.listExplorerContextMove.isVisible = true
             it.listExplorerContextCopy.isVisible = true
             it.listExplorerContextDelete.isVisible = true
@@ -320,7 +320,8 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isFavorite: Boolean = false,
         var isOneDrive: Boolean = false,
         var isDropBox: Boolean = false,
-        var isPersonalAccount: Boolean = false
+        var isPersonalAccount: Boolean = false,
+        var isGoogleDrive: Boolean = false
     ) : Serializable
 }
 

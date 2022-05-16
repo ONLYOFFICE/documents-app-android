@@ -29,7 +29,7 @@
     <color name="colorSheetTint">#1DBC62</color>
     <color name="colorPresentationTint">#FE8C33</color>
     <color name="colorPicTint">#BA86FC</color>
-    <color name="colorPdfTint">#db4437</color>
+    <color name="colorPdfTint">#FA4B3C</color>
     <color name="colorVideoTint">#00a9cd</color>
 
     <color name="listItemColor">@color/colorBackground</color>

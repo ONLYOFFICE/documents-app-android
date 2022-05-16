@@ -1,8 +1,10 @@
 package app.editors.manager.ui.fragments.share
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
+import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DiffUtil
 import app.editors.manager.R
@@ -103,6 +105,9 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
             setOnQueryTextListener(this@AddSearchFragment)
             maxWidth = Int.MAX_VALUE
             isIconified = false
+            findViewById<EditText>(androidx.appcompat.R.id.search_src_text).hint = null
+            findViewById<View>(androidx.appcompat.R.id.search_plate).setBackgroundColor(Color.TRANSPARENT)
+
             addPresenter.updateSearchState()
 
             // Action on close search

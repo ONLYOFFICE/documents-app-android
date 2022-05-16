@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape android:shape="oval">
+    <item android:height="40dp" android:width="40dp">
+        <shape android:shape="oval" >
             <solid android:color="@color/colorDarkGrey" />
         </shape>
     </item>
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/ic_list_select_done_white" />
-    </item>
+    <item android:gravity="center"
+        android:drawable="@drawable/drawable_ic_done" />
 </layer-list>

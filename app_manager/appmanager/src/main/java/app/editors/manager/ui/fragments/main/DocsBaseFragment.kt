@@ -30,7 +30,7 @@ import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
-import app.editors.manager.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -93,7 +93,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     private var selectItem: MenuItem? = null
     private val mTypeFactory: TypeFactory = factory
 
-    protected abstract val presenter: DocsBasePresenter<out DocsBaseView?>
+    protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
     protected abstract val isWebDav: Boolean?
 
     companion object {
@@ -105,6 +105,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         const val REQUEST_PDF = 10004
         const val REQUEST_DOWNLOAD = 10005
         const val REQUEST_STORAGE_ACCESS = 10006
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -183,7 +184,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (requestCode == PERMISSION_READ_UPLOAD) {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 requireActivity().intent?.let {
-                    presenter.uploadToMy(it.clipData?.getItemAt(0)?.uri)
+                    it.clipData?.getItemAt(0)?.uri?.let { uri -> presenter.uploadToMy(uri) }
                     requireActivity().intent = null
                 }
             }
@@ -249,7 +250,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onBackPressed(): Boolean {
-        return presenter.backStack
+        return presenter.getBackStack()
     }
 
     override fun onListEnd() {
@@ -278,7 +279,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        searchCloseButton?.isVisible = newText.isEmpty()
+        val isEmpty = newText.isEmpty()
+        if(isEmpty) {
+            searchCloseButton?.alpha = 0.5f
+        } else {
+            searchCloseButton?.alpha = 1.0f
+        }
+        searchCloseButton?.isEnabled = !isEmpty
         presenter.filterWait(newText)
         return false
     }
@@ -586,7 +593,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 searchCloseButton?.let {
                     val isEmpty = value?.isEmpty() ?: false
                     it.isEnabled = !isEmpty
-                    it.isVisible = !isEmpty
                 }
             } else {
                 searchView?.let {
@@ -626,19 +632,22 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 menuInflater?.let { inflater ->
                     inflater.inflate(R.menu.docs_main, menu)
                     sortItem = menu.findItem(R.id.toolbar_item_sort)
+                    openItem = menu.findItem(R.id.toolbar_item_open)
                     mainItem = menu.findItem(R.id.toolbar_item_main)
                     selectItem = menu.findItem(R.id.toolbar_main_item_options)
-                    openItem = menu.findItem(R.id.toolbar_item_open)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
                     searchView = (searchItem?.actionView as SearchView).apply {
                         setOnQueryTextListener(this@DocsBaseFragment)
                         maxWidth = Int.MAX_VALUE
                         isIconified = !presenter.isFilteringMode
                         searchCloseButton = findViewById(androidx.appcompat.R.id.search_close_btn)
-                        searchCloseButton?.isVisible = false
-                        searchCloseButton?.setOnClickListener {
-                            if (!isSearchViewClear)
-                                onBackPressed()
+                        searchCloseButton?.apply {
+                            isEnabled = false
+                            isVisible = true
+                            setOnClickListener {
+                                if (!isSearchViewClear)
+                                    onBackPressed()
+                            }
                         }
 
                         // On search open

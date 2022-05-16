@@ -9,11 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginPersonalPortalBinding
+import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.mvp.presenters.login.PersonalLoginPresenter
 import app.editors.manager.mvp.views.login.CommonSignInView
 import app.editors.manager.ui.activities.login.AuthAppActivity
@@ -159,10 +161,10 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
 
     override fun onTwoFactorAuth(phoneNoise: String?, request: String) {
         hideDialog()
-        if (phoneNoise != null) {
-            context?.let { showPhone(it, request) }
-        } else {
+        if (phoneNoise != null && phoneNoise.isNotEmpty()) {
             context?.let { showSms(it, request) }
+        } else {
+            context?.let { showPhone(it, request) }
         }
     }
 
@@ -246,6 +248,10 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         showSnackBar(R.string.socials_google_failed_auth)
     }
 
+    override fun onGoogleCancelled() {
+        showSnackBar(R.string.socials_google_cancel_auth)
+    }
+
     private fun init(savedInstanceState: Bundle?) {
         fieldsWatcher = FieldsWatcher()
         initListeners()
@@ -267,6 +273,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         viewBinding?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
             viewBinding?.loginPersonalSigninButton?.isEnabled = isChecked
         }
+        viewBinding?.socialNetworkLayout?.loginSocialGoogleButton?.isVisible = GoogleUtils.isGooglePlayServicesAvailable(requireContext())
     }
 
     private fun initListeners() {

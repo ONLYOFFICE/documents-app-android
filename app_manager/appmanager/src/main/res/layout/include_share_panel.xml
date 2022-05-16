@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/default_bottom_panel_height"
+    card_view:cardBackgroundColor="@color/colorAppBar"
     card_view:cardElevation="@dimen/default_bottom_panel_elevation">
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -20,6 +21,7 @@
             android:layout_marginRight="@dimen/screen_margin_large"
             android:hint="@string/share_panel_message_notification"
             android:visibility="gone"
+            app:boxBackgroundColor="@color/colorAppBar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">

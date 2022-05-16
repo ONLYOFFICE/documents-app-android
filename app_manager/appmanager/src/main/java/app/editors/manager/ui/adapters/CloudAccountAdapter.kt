@@ -135,7 +135,7 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             iconSelectableImage.setDropboxImage(account)
         } else {
             accountName.visibility = View.VISIBLE
-            val url: String = if (account.avatarUrl?.contains("static") == true) {
+            val url: String = if (account.avatarUrl?.contains("static") == true || account.isGoogleDrive) {
                 account.avatarUrl ?: ""
             } else {
                 account.scheme + account.portal + account.avatarUrl

@@ -2,6 +2,7 @@ package app.editors.manager.di.module
 
 import android.content.Context
 import app.documents.core.account.CloudAccount
+import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.app.Api
 import app.editors.manager.managers.retrofit.BaseInterceptor
@@ -38,8 +39,12 @@ class ApiModule {
     @Provides
     @ApiScope
     fun provideApi(factory: GsonConverterFactory, client: OkHttpClient, settings: NetworkSettings): Api {
+        var url = settings.getBaseUrl()
+        if (url.isEmpty()) {
+            url = ApiContract.DEFAULT_HOST
+        }
         return Retrofit.Builder()
-            .baseUrl(settings.getBaseUrl())
+            .baseUrl(url)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(factory)
             .client(client)
@@ -77,8 +82,8 @@ class ApiModule {
     fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
         account?.let { cloudAccount ->
             return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
-                ?: throw RuntimeException("Token cant be null")
-        } ?: throw RuntimeException("Token cant be null")
+                ?: ""
+        } ?: ""
     }
 
 }

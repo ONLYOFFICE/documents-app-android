@@ -171,7 +171,7 @@ public class NotificationUtils {
     private void showDownloadedAction(final int id, final String title, final Uri uri) {
         // Add file to default downloadFile manager
 
-        final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, ActivitiesUtils.getDownloadsViewerIntent(uri), 0);
+        final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, ActivitiesUtils.getDownloadsViewerIntent(uri), PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = getNotification(title, null, context.getString(R.string.download_manager_complete))
                 .setGroupSummary(false)
@@ -185,7 +185,7 @@ public class NotificationUtils {
 
         Intent mainActivityIntent = new Intent(context, MainActivity.class);
 
-        final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, mainActivityIntent, 0);
+        final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, mainActivityIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = getNotification(title, null, context.getString(R.string.upload_manager_complete))
                 .setGroupSummary(false)
@@ -201,7 +201,7 @@ public class NotificationUtils {
         final Intent intent = new Intent(App.getApp(), MainActivity.class);
         intent.setAction(DownloadReceiver.DOWNLOAD_ACTION_CANCELED);
         intent.putExtras(bundle);
-        return PendingIntent.getActivity(App.getApp(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(App.getApp(), 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private PendingIntent getUploadIntent(String id) {
@@ -211,6 +211,6 @@ public class NotificationUtils {
         final Intent intent = new Intent(App.getApp(), MainActivity.class);
         intent.setAction(UploadReceiver.UPLOAD_ACTION_CANCELED);
         intent.putExtras(bundle);
-        return PendingIntent.getActivity(App.getApp(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(App.getApp(), 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

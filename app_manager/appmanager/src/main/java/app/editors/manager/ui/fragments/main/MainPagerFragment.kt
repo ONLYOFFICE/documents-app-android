@@ -229,6 +229,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     override fun onError(message: String?) {
         message?.let { showSnackBar(it).show() }
+        (requireActivity() as? MainActivity)?.onUnauthorized(message)
     }
 
     override fun onError(@StringRes res: Int) {
@@ -346,9 +347,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     override fun setFileData(fileData: String) {
         viewBinding?.root?.postDelayed({
-            childFragmentManager.fragments.find { it is DocsCloudFragment }?.let { it ->
-                (it as DocsCloudFragment).setFileData(fileData)
-                requireActivity().intent.data = null
+            childFragmentManager.fragments.find { it is DocsCloudFragment }?.let { fragment ->
+                if (fragment.isAdded) {
+                    (fragment as DocsCloudFragment).setFileData(fileData)
+                    requireActivity().intent.data = null
+                }
             }
         }, 1000)
     }
