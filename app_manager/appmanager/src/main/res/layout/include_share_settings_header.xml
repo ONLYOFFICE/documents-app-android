@@ -5,9 +5,9 @@
     android:id="@+id/share_settings_header_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/screen_margin_large"
+    android:paddingStart="@dimen/screen_margin_large"
     android:paddingTop="16dp"
-    android:paddingRight="@dimen/screen_margin_large"
+    android:paddingEnd="@dimen/screen_margin_large"
     android:paddingBottom="16dp">
 
     <com.google.android.material.textview.MaterialTextView
@@ -30,7 +30,6 @@
         android:layout_marginTop="4dp"
         android:text="@string/share_main_external_access_info"
         app:layout_constraintEnd_toEndOf="@+id/share_settings_external_access_title"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="@+id/share_settings_external_access_title"
         app:layout_constraintTop_toBottomOf="@+id/share_settings_external_access_title" />
 

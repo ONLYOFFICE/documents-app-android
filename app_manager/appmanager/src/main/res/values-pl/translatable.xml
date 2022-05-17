@@ -25,9 +25,9 @@
     <string name="auth_info_screen_3">Skopiuj klucz i wklej go w aplikacji Google Authenticator</string>
     <string name="bottom_sheet_cloud_title">Chmury</string>
     <string name="bottom_sheet_portal_title">Portal</string>
-    <string name="chooser_activity_not_found">Nie znaleziono aplikacji dla danej akcji...</string>
-    <string name="chooser_email_client">Wybierz klienta poczty ...</string>
-    <string name="chooser_web_browser">Wybierz przeglądarkę...</string>
+    <string name="chooser_activity_not_found">Nie znaleziono aplikacji dla danej akcji…</string>
+    <string name="chooser_email_client">Wybierz klienta poczty …</string>
+    <string name="chooser_web_browser">Wybierz przeglądarkę…</string>
     <string name="countries_codes_title">Wybierz kraj</string>
     <string name="device_path_file_error">Dany plik nie istnieje</string>
     <string name="device_trash_files_restore">Przywróć</string>
@@ -76,8 +76,8 @@
     <string name="dialogs_question_share_remove">Usuń wybrane elementy z listy?</string>
     <string name="dialogs_sign_in_portal_header_text">Zaloguj się do portalu</string>
     <string name="dialogs_sign_in_register_portal">Rejestracja portalu</string>
-    <string name="dialogs_wait_title">Operacja w toku...</string>
-    <string name="dialogs_wait_title_storage">Podłączanie pamięci...</string>
+    <string name="dialogs_wait_title">Operacja w toku…</string>
+    <string name="dialogs_wait_title_storage">Podłączanie pamięci…</string>
     <string name="download_manager_cancel">Anulowano pobieranie</string>
     <string name="download_manager_complete">Zakończono pobieranie</string>
     <string name="download_manager_error">Błąd podczas pobierania</string>
@@ -160,7 +160,7 @@
     <string name="login_api_init_error">Błąd Init</string>
     <string name="login_api_init_portal_error">Błąd składni nazwy portalu</string>
     <string name="login_api_portal_name">Nieprawidłowa nazwa portalu Przykład: example.onlyoffice.com</string>
-    <string name="login_api_portal_name_content">Nazwa portalu musi składać się z A-Z, a-z, 0-9</string>
+    <string name="login_api_portal_name_content">Nazwa portalu musi składać się z A–Z, a–z, 0–9</string>
     <string name="login_api_portal_name_length">Nazwa portalu musi składać się przynajmniej z 6 znaków</string>
     <string name="login_create_portal_address_hint">Adres portalu</string>
     <string name="login_create_portal_email_hint">E-mail</string>
@@ -221,7 +221,6 @@
     <string name="media_image_share_chooser">Wybierz aplikację do udostępniania</string>
     <string name="media_video_error">Nieznany błąd odtwarzacza: %1$s</string>
     <string name="navigation_drawer_close">Zamknij szufladę nawigacji</string>
-    <string name="navigation_drawer_menu_about">O programie</string>
     <string name="navigation_drawer_menu_add_account">Dodaj konto</string>
     <string name="navigation_drawer_menu_common">Wspólne dokumenty</string>
     <string name="navigation_drawer_menu_help">Pomoc</string>
@@ -264,7 +263,7 @@
     <string name="placeholder_access_denied">Odmowa dostępu</string>
     <string name="placeholder_connection">Błąd połączenia</string>
     <string name="placeholder_empty">Pusty folder</string>
-    <string name="placeholder_loading_files">Ładowanie plików...</string>
+    <string name="placeholder_loading_files">Ładowanie plików…</string>
     <string name="placeholder_media_error">Nie można załadować mediów</string>
     <string name="placeholder_no_groups">Brak grup</string>
     <string name="placeholder_no_subfolders">Brak podfolderów</string>
@@ -341,10 +340,10 @@
     <string name="toolbar_menu_main_options">Opcje</string>
     <string name="toolbar_menu_main_remove_from_list">Usuń z listy</string>
     <string name="toolbar_menu_main_rename">Zmień nazwę</string>
-    <string name="toolbar_menu_main_select">Zaznacz...</string>
+    <string name="toolbar_menu_main_select">Zaznacz…</string>
     <string name="toolbar_menu_main_select_all">Zaznacz wszystko</string>
     <string name="toolbar_menu_main_share">Udostępnij</string>
-    <string name="toolbar_menu_search_hint">Szukaj...</string>
+    <string name="toolbar_menu_search_hint">Szukaj…</string>
     <string name="toolbar_menu_search_result">Wyniki wyszukiwania</string>
     <string name="toolbar_menu_sort_asc">Rosnąco</string>
     <string name="toolbar_menu_sort_by">Sortuj według</string>
@@ -468,4 +467,14 @@
             <a href="%2$s">Warunki użytkowania</a>
         ]]>
     </string>
+    <string name="login_create_signin_passwords_length">Hasło musi zawierać od 8 do 30 znaków</string>
+    <string name="list_action_import">Importuj plik</string>
+    <string name="storage_google_drive_copy_folder_error">Nie można skopiować katalogów</string>
+    <string name="socials_google_cancel_auth">Anuluj logowanie przez Google</string>
+    <string name="error_open_project_file">Dane konto nie ma dostępu do projektu</string>
+    <string name="switch_account_open_project_file">Przełącz konto</string>
+    <string name="app_settings_color_theme">Motyw kolorystyczny</string>
+    <string name="app_settings_follow_the_system">Jak system</string>
+    <string name="app_settings_light_theme">Motyw jasny</string>
+    <string name="app_settings_dark_theme">Motyw ciemny</string>
 </resources>

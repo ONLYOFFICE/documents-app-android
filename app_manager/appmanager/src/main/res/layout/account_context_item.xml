@@ -27,6 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/default_margin_large"
+        android:layout_marginEnd="@dimen/default_margin_large"
         android:gravity="start"
         app:layout_constraintBottom_toBottomOf="@+id/itemImage"
         app:layout_constraintEnd_toEndOf="parent"

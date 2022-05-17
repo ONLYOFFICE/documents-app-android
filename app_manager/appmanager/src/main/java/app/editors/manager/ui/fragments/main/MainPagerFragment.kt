@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
@@ -25,8 +26,6 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
-import java.util.*
-import app.documents.core.network.ApiContract
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener {
 
@@ -356,8 +355,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }, 1000)
     }
 
-    override fun onOpenProjectFileError(@StringRes error: Int) {
-        showSnackBarWithAction(error, R.string.switch_account_open_project_file, this)
+    override fun onOpenProjectFileError(@StringRes res: Int) {
+        showSnackBarWithAction(res, R.string.switch_account_open_project_file, this)
     }
 
     fun isRoot(): Boolean {

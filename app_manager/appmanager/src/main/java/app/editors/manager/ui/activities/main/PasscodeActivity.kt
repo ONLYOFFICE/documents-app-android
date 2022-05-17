@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import app.editors.manager.app.App
 import app.editors.manager.compose.ui.theme.AppManagerTheme
 import app.editors.manager.managers.tools.PreferenceTool
@@ -32,7 +31,6 @@ class PasscodeActivity : BaseAppActivity() {
 
     var isEnterPasscode = false
 
-    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

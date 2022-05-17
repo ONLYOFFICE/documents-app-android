@@ -75,7 +75,7 @@
     <string name="login_api_init_portal_error">Portal name syntax error</string>
     <string name="login_api_portal_name">Wrong portal name. Example: example.onlyoffice.com</string>
     <string name="login_api_portal_name_length">Portal name must consist of at least 6 characters</string>
-    <string name="login_api_portal_name_content">Portal name must consist of A-Z, a-z, 0-9</string>
+    <string name="login_api_portal_name_content">Portal name must consist of A–Z, a–z, 0–9</string>
 
 
     <string name="login_retry">Retry connect</string>
@@ -183,8 +183,8 @@
     <string name="dialogs_sign_in_register_portal">Registering portal</string>
 
     <!-- Waiting -->
-    <string name="dialogs_wait_title">Operation in progress...</string>
-    <string name="dialogs_wait_title_storage">Connecting storage...</string>
+    <string name="dialogs_wait_title">Operation in progress…</string>
+    <string name="dialogs_wait_title_storage">Connecting storage…</string>
 
     <!-- Question -->
     <string name="dialogs_question_accept_yes">YES</string>
@@ -229,14 +229,14 @@
 
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
-    <string name="chooser_web_browser">Choose browser...</string>
-    <string name="chooser_email_client">Choose email client...</string>
+    <string name="chooser_web_browser">Choose browser…</string>
+    <string name="chooser_email_client">Choose email client…</string>
 
     <!-- ======================================================================================= -->
     <!-- Main -->
     <!-- Title -->
     <string name="actionbar_title_main">Documents</string>
-    <string name="chooser_activity_not_found">Could not find any application for this action...</string>
+    <string name="chooser_activity_not_found">Could not find any application for this action…</string>
     <string name="fragment_clouds_title">Clouds</string>
     <string name="fragment_clouds_portal_title">Connect to portal</string>
     <string name="fragment_clouds_storage_title">Connect to storage</string>
@@ -255,7 +255,6 @@
     <string name="navigation_drawer_menu_common">Common documents</string>
     <string name="navigation_drawer_menu_projects">Projects</string>
     <string name="navigation_drawer_menu_trash">Trash</string>
-    <string name="navigation_drawer_menu_about">About</string>
     <string name="navigation_drawer_menu_help">Help</string>
     <string name="navigation_drawer_menu_logout">Log out</string>
     <string name="navigation_drawer_menu_add_account">Add account</string>
@@ -270,7 +269,7 @@
 
     <!-- Main toolbar menu -->
     <string name="toolbar_menu_search_result">Search result</string>
-    <string name="toolbar_menu_search_hint">Search...</string>
+    <string name="toolbar_menu_search_hint">Search…</string>
     <string name="toolbar_menu_main_options">Options</string>
     <string name="toolbar_menu_main_share">Share</string>
     <string name="toolbar_menu_main_move">Move</string>
@@ -278,7 +277,7 @@
     <string name="toolbar_menu_main_remove_from_list">Remove from list</string>
     <string name="toolbar_menu_main_rename">Rename</string>
     <string name="toolbar_menu_main_delete">Delete</string>
-    <string name="toolbar_menu_main_select">Select...</string>
+    <string name="toolbar_menu_main_select">Select…</string>
     <string name="toolbar_menu_main_select_all">Select all</string>
     <string name="toolbar_menu_main_deselect">Deselect</string>
     <string name="toolbar_menu_sort_by">Sort by</string>
@@ -344,7 +343,7 @@
     <string name="placeholder_no_users_groups">No users and groups</string>
     <string name="placeholder_media_error">Unable to load media</string>
     <string name="placeholder_try_again">Try again</string>
-    <string name="placeholder_loading_files">Loading files...</string>
+    <string name="placeholder_loading_files">Loading files…</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>
@@ -627,7 +626,7 @@
         ]]>
     </string>
     <string name="app_settings_color_theme">Color theme</string>
-    <string name="app_settings_follow_the_system">Follow the system</string>
+    <string name="app_settings_follow_the_system">Same as system</string>
     <string name="app_settings_light_theme">Light theme</string>
     <string name="app_settings_dark_theme">Dark theme</string>
 </resources>

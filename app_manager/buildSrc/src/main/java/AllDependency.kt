@@ -14,7 +14,7 @@ object Moxy {
 }
 
 object Koin {
-    private const val version = "3.1.5"
+    private const val version = "3.1.6"
 
     const val koinAndroid = "io.insert-koin:koin-android:$version"
     const val koinCompose = "io.insert-koin:koin-androidx-compose:$version"
@@ -50,9 +50,9 @@ object Retrofit {
 }
 
 object Kotlin {
-    const val version = "1.5.31"
+    const val version = "1.6.10"
     const val pluginVersion = "1.5.21"
-    private const val coroutinesVersion = "1.5.0"
+    private const val coroutinesVersion = "1.6.0"
     private const val serializationVersion = "1.3.2"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
@@ -78,9 +78,9 @@ object Google {
 }
 
 object Firebase {
-    private const val firebaseCoreVersion = "20.1.1"
+    private const val firebaseCoreVersion = "20.1.2"
     private const val firebaseConfigVersion = "21.0.2"
-    private const val firebaseMessagingVersion = "23.0.2"
+    private const val firebaseMessagingVersion = "23.0.3"
     private const val firebaseCrashlyticsVersion = "18.2.9"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
@@ -113,7 +113,7 @@ object Lifecycle {
 }
 
 object Compose {
-    const val version = "1.0.5"
+    const val version = "1.1.1"
     private const val navigationVersion = "2.4.1"
 
     const val ui = "androidx.compose.ui:ui:$version"
@@ -133,7 +133,7 @@ object Jackson {
 
 object Libs {
     const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
-    const val facebookLogin = "com.facebook.android:facebook-login:12.2.0"
+    const val facebookLogin = "com.facebook.android:facebook-login:13.2.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
     const val glide = "com.github.bumptech.glide:glide:4.13.1"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"

@@ -103,7 +103,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         CoroutineScope(Dispatchers.Default).launch {
             contextAccount?.let { account ->
                 if (account.isWebDav) {
-                    AccountUtils.setToken(context, account.getAccountName(), null)
+                    AccountUtils.setPassword(context, account.getAccountName(), null)
                 } else if(account.isOneDrive || account.isDropbox || account.isGoogleDrive) {
                     AccountUtils.setToken(context, account.getAccountName(), "")
                 } else {

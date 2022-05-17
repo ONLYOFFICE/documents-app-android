@@ -144,7 +144,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
     override fun getArgs() {
         super.getArgs()
         file = from?.let { DocumentFile.fromSingleUri(applicationContext, it) }
-        path = from?.let { PathUtils.getPath(applicationContext, it) }
+        path = from?.path
     }
 
 

@@ -133,7 +133,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         actionBottomDialog?.isLocal = true
         actionBottomDialog?.isWebDav = true
         actionBottomDialog?.onClickListener = this
-        actionBottomDialog?.show(requireFragmentManager(), ActionBottomDialog.TAG)
+        actionBottomDialog?.show(parentFragmentManager, ActionBottomDialog.TAG)
     }
 
     override fun setToolbarState(isVisible: Boolean) {
