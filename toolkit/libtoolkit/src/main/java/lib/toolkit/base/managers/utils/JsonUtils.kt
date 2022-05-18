@@ -70,9 +70,9 @@ object JsonUtils {
         return map
     }
 
-    fun getFormulasJson(context: Context): JSONObject? {
+    fun getFormulasJson(context: Context, lang: String = "en"): JSONObject? {
         return try {
-            JSONObject(jsonFromAssets(context, FORMULAS_PATH + StringUtils.getLang() + JSON_EXTENSION))
+            JSONObject(jsonFromAssets(context, FORMULAS_PATH + lang + JSON_EXTENSION))
         } catch (exception: JSONException) {
             return null
         }
