@@ -7,6 +7,8 @@ import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.HashMap
 
 
 object JsonUtils {
@@ -15,7 +17,7 @@ object JsonUtils {
     private const val JSON_EXTENSION = ".json"
     private const val DESC_SUFFIX = "_desc"
 
-    fun jsonFromAssets(context: Context, path: String): String {
+    private fun jsonFromAssets(context: Context, path: String): String {
         context.assets.open(path).use {
             return String(it.readBytes())
         }
@@ -70,7 +72,7 @@ object JsonUtils {
         return map
     }
 
-    fun getFormulasJson(context: Context, lang: String = "en"): JSONObject? {
+    fun getFormulasJson(context: Context, lang: String = Locale.ENGLISH.language): JSONObject? {
         return try {
             JSONObject(jsonFromAssets(context, FORMULAS_PATH + lang + JSON_EXTENSION))
         } catch (exception: JSONException) {
@@ -78,9 +80,9 @@ object JsonUtils {
         }
     }
 
-    fun getFormulasDescJson(context: Context): JSONObject? {
+    fun getFormulasDescJson(context: Context, lang: String = Locale.ENGLISH.language): JSONObject? {
         return try {
-            JSONObject(jsonFromAssets(context, FORMULAS_PATH + StringUtils.getLang() + DESC_SUFFIX + JSON_EXTENSION))
+            JSONObject(jsonFromAssets(context, FORMULAS_PATH + lang + DESC_SUFFIX + JSON_EXTENSION))
         } catch (exception: JSONException) {
             return null
         }
