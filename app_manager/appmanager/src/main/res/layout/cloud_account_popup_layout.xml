@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/drawable_shape_popup"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/default_margin_medium">
+    android:paddingVertical="@dimen/default_margin_medium">
 
     <include
         android:id="@+id/profileItem"

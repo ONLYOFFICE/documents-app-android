@@ -127,14 +127,13 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             checkImage.visibility = View.GONE
         }
         if (account.isWebDav) {
-            accountName.visibility = View.GONE
+            accountName.text = account.login
             ManagerUiUtils.setWebDavImage(account.webDavProvider, iconSelectableImage)
         } else if(account.isOneDrive) {
             iconSelectableImage.setOneDriveImage()
         } else if(account.isDropbox) {
             iconSelectableImage.setDropboxImage(account)
         } else {
-            accountName.visibility = View.VISIBLE
             val url: String = if (account.avatarUrl?.contains("static") == true || account.isGoogleDrive) {
                 account.avatarUrl ?: ""
             } else {

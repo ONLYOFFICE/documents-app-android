@@ -15,8 +15,8 @@
         <ImageView
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
-            android:layout_marginHorizontal="@dimen/screen_margin_large"
-            android:layout_marginVertical="@dimen/screen_margin_medium"
+            android:layout_marginHorizontal="@dimen/default_margin_large"
+            android:layout_marginVertical="@dimen/default_margin_medium"
             android:padding="@dimen/default_margin_medium"
             app:srcCompat="@drawable/ic_drawer_menu_account"
             app:tint="@color/colorPrimary"

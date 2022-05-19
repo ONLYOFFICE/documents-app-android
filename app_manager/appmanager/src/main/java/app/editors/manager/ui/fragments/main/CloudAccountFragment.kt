@@ -166,8 +166,12 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onResume() {
         super.onResume()
-        accountDialogFragment?.setToolbarTitle(getString(R.string.cloud_accounts_title))
-        accountDialogFragment?.setToolbarNavigationIcon(isClose = true)
+        if (isTablet) {
+            accountDialogFragment?.setToolbarTitle(getString(R.string.cloud_accounts_title))
+            accountDialogFragment?.setToolbarNavigationIcon(isClose = true)
+        } else {
+            setActionBarTitle(getString(R.string.cloud_accounts_title))
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

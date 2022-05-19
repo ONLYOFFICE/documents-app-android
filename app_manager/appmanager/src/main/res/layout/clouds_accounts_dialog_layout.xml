@@ -23,7 +23,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/frame_container"
-        android:layout_width="@dimen/dialogs_accounts_fragment_width"
-        android:layout_height="@dimen/dialogs_accounts_fragment_height" />
+        android:layout_width="@dimen/accounts_dialog_fragment_width"
+        android:layout_height="@dimen/accounts_dialog_fragment_height" />
 
 </LinearLayout>
