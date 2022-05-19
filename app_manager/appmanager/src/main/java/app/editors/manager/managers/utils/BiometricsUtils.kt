@@ -1,5 +1,7 @@
 package app.editors.manager.managers.utils
 
+import android.content.Context
+import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
 
@@ -43,6 +45,14 @@ object BiometricsUtils {
         )
 
         biometricPrompt.authenticate(promtInfo)
+    }
+
+    fun isFingerprintsExist(context: Context): Boolean {
+        return when(BiometricManager.from(context).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.BIOMETRIC_WEAK)) {
+            BiometricManager.BIOMETRIC_SUCCESS -> true
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE, BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE, BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> false
+            else -> false
+        }
     }
 
 }

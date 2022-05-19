@@ -4,13 +4,13 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.http.SslError
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
+import androidx.lifecycle.lifecycleScope
 import app.documents.core.account.CloudAccount
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
@@ -19,7 +19,6 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.NextCloudLoginLayoutBinding
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -59,7 +58,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
         )
     }
 
-    private var portla: String? = null
+    private var portal: String? = null
     private var isClear = false
 
     private var viewBinding: NextCloudLoginLayoutBinding? = null
@@ -97,7 +96,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
     private fun getArgs() {
         val args = arguments
         if (args != null && args.containsKey(KEY_PORTAL)) {
-            portla = args.getString(KEY_PORTAL)
+            portal = args.getString(KEY_PORTAL)
         }
         viewBinding?.webView?.apply {
             settings.javaScriptEnabled = true
@@ -106,7 +105,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
             webChromeClient = WebViewChromeClient()
             clearHistory()
             clearCache(true)
-            loadUrl(portla + LOGIN_SUFFIX, headers)
+            loadUrl(portal + LOGIN_SUFFIX, headers)
         }
     }
 
@@ -126,7 +125,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
                     clearCookies()
                     viewBinding?.webView?.clearHistory()
                     viewBinding?.webView?.clearCache(true)
-                    viewBinding?.webView?.loadUrl(portla + LOGIN_SUFFIX, headers)
+                    viewBinding?.webView?.loadUrl(portal + LOGIN_SUFFIX, headers)
                     return true
                 }
             }
@@ -169,11 +168,6 @@ class NextCloudLoginFragment : BaseAppFragment() {
     private inner class WebViewChromeClient : WebChromeClient() {
         override fun onReceivedTitle(view: WebView, title: String) {
             setActionBarTitle(title)
-        }
-
-        override fun onReceivedIcon(view: WebView, icon: Bitmap) {
-            val actionBar = requireActivity().actionBar
-            actionBar?.setIcon(BitmapDrawable(resources, icon))
         }
 
         override fun onJsAlert(view: WebView, url: String, message: String, result: JsResult): Boolean {
@@ -245,7 +239,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
 
     private fun addAccount(cloudAccount: CloudAccount) {
         val accountDao = requireContext().appComponent.accountsDao
-        CoroutineScope(Dispatchers.Default).launch {
+       lifecycleScope.launch {
             accountDao.getAccountOnline()?.let {
                 accountDao.addAccount(it.copy(isOnline = false))
             }
@@ -257,9 +251,13 @@ class NextCloudLoginFragment : BaseAppFragment() {
     }
 
     private fun login() {
-        MainActivity.show(requireContext())
-        requireActivity().setResult(Activity.RESULT_OK)
-        requireActivity().finish()
+        val activity =  requireActivity()
+        activity.supportFragmentManager.fragments.forEach {
+            activity.supportFragmentManager.beginTransaction().remove(it).commit()
+        }
+        activity.setResult(Activity.RESULT_OK)
+        activity.finish()
+        MainActivity.show(activity)
     }
 
 }

@@ -618,6 +618,7 @@ object UiUtils {
 
         val text = EditText(context)
         text.setText(value)
+        text.setSelection(value?.length ?: 0)
         text.layoutParams = params
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             text.focusable = View.FOCUSABLE

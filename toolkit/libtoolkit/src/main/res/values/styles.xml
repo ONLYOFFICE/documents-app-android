@@ -67,6 +67,7 @@
 
     <style name="DialogCommonTheme" parent="NoActionBarTheme">
         <item name="android:windowIsTranslucent">true</item>
+        <item name="elevationOverlayEnabled">false</item>
     </style>
 
     <style name="MediaTheme" parent="NoActionBarTheme">
@@ -391,7 +392,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginEnd">@dimen/default_margin_xxlarge</item>
-        <item name="android:layout_marginStart">@dimen/default_margin_medium</item>
+        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
         <item name="android:layout_gravity">center_vertical</item>
     </style>
 
@@ -407,7 +408,7 @@
 
     <!-- Popup menu -->
     <style name="PopupLayout" parent="ContextListLayout">
-        <item name="android:layout_width">@dimen/popup_width_context</item>
+        <item name="android:layout_width">wrap_content</item>
     </style>
 
     <style name="PopupText" parent="ContextListMediumText">
@@ -447,6 +448,10 @@
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="DialogTextInputLayout">
+        <item name="boxBackgroundColor">@color/colorSurface</item>
     </style>
 
 </resources>

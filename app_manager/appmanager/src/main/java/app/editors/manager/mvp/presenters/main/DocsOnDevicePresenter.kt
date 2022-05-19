@@ -156,6 +156,10 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         onClickEvent(item, position)
         isContextClick = true
         val state = ContextBottomDialog.State()
+        val onlineAccount = context.accountOnline
+        state.isDropBox = onlineAccount?.isDropbox == true
+        state.isOneDrive = onlineAccount?.isOneDrive == true
+        state.isGoogleDrive = onlineAccount?.isGoogleDrive == true
         state.isLocal = true
         state.title = item.title
         state.info = TimeUtils.formatDate(itemClickedDate)

@@ -222,7 +222,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun setLocalState() {
         viewBinding?.let {
-            setUploadToPortal(!state.isFolder)
+            setUploadToPortal(!state.isFolder && !(state.isGoogleDrive || state.isDropBox || state.isOneDrive))
             it.listExplorerContextMove.isVisible = true
             it.listExplorerContextCopy.isVisible = true
             it.listExplorerContextDelete.isVisible = true

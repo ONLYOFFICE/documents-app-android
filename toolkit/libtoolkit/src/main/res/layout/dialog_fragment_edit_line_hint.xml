@@ -1,50 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dialogCommonEditLineLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:theme="@style/AppTheme">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dialogCommonEditLineTextInputLayout"
+        style="@style/DialogTextInputLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content">
 
-        <RelativeLayout
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/dialogCommonEditLineValueEdit"
+            android:textAppearance="@style/MediumTextView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/drawable_rectangle_underline_focused">
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="noExcludeDescendants"
+            android:inputType="textNoSuggestions" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/dialogCommonEditLineValueEdit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/dialogCommonEditLineHintEdit"
-                android:imeOptions="actionDone"
-                android:importantForAutofill="noExcludeDescendants"
-                android:inputType="text" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/dialogCommonEditLineHintEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@id/dialogCommonEditLineValueEdit"
-                android:layout_alignParentEnd="true"
-                android:clickable="false"
-                android:enabled="false"
-                android:focusable="true"
-                android:gravity="center"
-                android:textColor="?android:textColorHint"
-                android:visibility="visible"
-                tools:text="Hint" />
-
-        </RelativeLayout>
     </com.google.android.material.textfield.TextInputLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

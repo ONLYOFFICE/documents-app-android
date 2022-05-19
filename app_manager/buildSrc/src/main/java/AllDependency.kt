@@ -135,7 +135,7 @@ object Libs {
     const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
     const val facebookLogin = "com.facebook.android:facebook-login:13.2.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
-    const val glide = "com.github.bumptech.glide:glide:4.13.1"
+    const val glide = "com.github.bumptech.glide:glide:4.13.2"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
     const val androidWork = "androidx.work:work-runtime:2.7.1"
     const val documentFile = "androidx.documentfile:documentfile:1.0.1"
