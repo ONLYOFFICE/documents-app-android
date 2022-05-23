@@ -104,7 +104,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
                     file.id = item.id
                     file.title = item.name
                     file.folderId = item.parents[0]
-                    file.pureContentLength = item.size.toLong()
+                    file.pureContentLength = if(item.size.isNotEmpty()) item.size.toLong() else 0
                     file.webUrl = item.webViewLink
                     file.fileExst = StringUtils.getExtensionFromPath(file.title.toLowerCase())
                     file.created =
