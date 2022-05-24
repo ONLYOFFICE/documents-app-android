@@ -35,7 +35,7 @@ public class UploadReceiver extends BaseReceiver<Intent> {
 
         void onUploadAndOpen(String path, @Nullable String title, CloudFile file, String id);
 
-        void onUploadFileProgress(int progress, String id, String folderId);
+        void onUploadFileProgress(int progress, @Nullable String id, @Nullable String folderId);
 
         void onUploadCanceled(String path, String info, String id);
 
