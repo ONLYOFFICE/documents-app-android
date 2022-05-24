@@ -3,6 +3,7 @@ package app.editors.manager.managers.utils
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import app.editors.manager.BuildConfig
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.PrivateKey
@@ -11,17 +12,17 @@ import javax.crypto.Cipher
 
 object KeyStoreUtils {
 
-    const val ANDROID_KEY_STORE = "AndroidKeyStore"
-    const val RSA_ECB_PKCS1_PADDING = "RSA/ECB/PKCS1Padding"
-    const val KEY_ALGORITHM_RSA = "RSA"
+    private const val ANDROID_KEY_STORE = "AndroidKeyStore"
+    private const val RSA_ECB_PKCS1_PADDING = "RSA/ECB/PKCS1Padding"
+    private const val KEY_ALGORITHM_RSA = "RSA"
 
     fun init() {
 
         val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
         ks.load(null)
 
-        val privateKey = ks.getKey(Constants.Modules.COMMUNITY_ID, null) as PrivateKey?
-        val publicKey: PublicKey? = ks.getCertificate(Constants.Modules.COMMUNITY_ID)?.publicKey
+        val privateKey = ks.getKey(BuildConfig.COMMUNITY_ID, null) as PrivateKey?
+        val publicKey: PublicKey? = ks.getCertificate(BuildConfig.COMMUNITY_ID)?.publicKey
 
         privateKey?.let {
             publicKey?.let {
@@ -29,7 +30,7 @@ object KeyStoreUtils {
             }
         }
 
-        val spec = KeyGenParameterSpec.Builder(Constants.Modules.COMMUNITY_ID, KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT)
+        val spec = KeyGenParameterSpec.Builder(BuildConfig.COMMUNITY_ID, KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT)
             .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
             .build()
@@ -43,7 +44,7 @@ object KeyStoreUtils {
         val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
         ks.load(null)
 
-        val publicKey = ks.getCertificate(Constants.Modules.COMMUNITY_ID).publicKey ?: return ""
+        val publicKey = ks.getCertificate(BuildConfig.COMMUNITY_ID).publicKey ?: return ""
 
         val cipher = Cipher.getInstance(RSA_ECB_PKCS1_PADDING)
 
@@ -57,7 +58,7 @@ object KeyStoreUtils {
         val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
         ks.load(null)
 
-        val privateKey = ks.getKey(Constants.Modules.COMMUNITY_ID, null) as PrivateKey
+        val privateKey = ks.getKey(BuildConfig.COMMUNITY_ID, null) as PrivateKey
 
         val encrypted = Base64.decode(data, Base64.DEFAULT)
 
