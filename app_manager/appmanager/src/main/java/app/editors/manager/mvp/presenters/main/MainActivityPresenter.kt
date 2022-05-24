@@ -28,8 +28,8 @@ import moxy.InjectViewState
 sealed class MainActivityState {
     object RecentState : MainActivityState()
     object OnDeviceState : MainActivityState()
+    object SettingsState : MainActivityState()
     class CloudState(val account: CloudAccount? = null) : MainActivityState()
-    class AccountsState(val isAccounts: Boolean = false) : MainActivityState()
 }
 
 @InjectViewState
@@ -206,32 +206,13 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     fun navigationItemClick(itemId: Int) {
         when (itemId) {
             R.id.menu_item_recent -> viewState.onRender(MainActivityState.RecentState)
+            R.id.menu_item_on_device -> viewState.onRender(MainActivityState.OnDeviceState)
+            R.id.menu_item_settings -> viewState.onRender(MainActivityState.SettingsState)
             R.id.menu_item_cloud -> {
                 CoroutineScope(Dispatchers.Default).launch {
-                    accountDao.getAccountOnline()?.let {
-                        cloudAccount = it
-                    } ?: run {
-                        cloudAccount = null
-                    }
+                    cloudAccount = accountDao.getAccountOnline()
                     withContext(Dispatchers.Main) {
                         viewState.onRender(MainActivityState.CloudState(cloudAccount))
-                    }
-                }
-            }
-            R.id.menu_item_on_device -> viewState.onRender(
-                MainActivityState.OnDeviceState
-            )
-            R.id.menu_item_setting -> {
-                CoroutineScope(Dispatchers.Default).launch {
-                    if (accountDao.getAccounts().isNotEmpty()) {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(MainActivityState.AccountsState(true))
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(MainActivityState.AccountsState(false))
-                        }
-
                     }
                 }
             }

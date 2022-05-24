@@ -114,10 +114,10 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     password = ""
                     expires = ""
                 })
-                accountDao.getAccounts().let {
-                    withContext(Dispatchers.Main) {
-                        viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
-                    }
+            }
+            accountDao.getAccounts().let {
+                withContext(Dispatchers.Main) {
+                    viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
                 }
             }
         }
