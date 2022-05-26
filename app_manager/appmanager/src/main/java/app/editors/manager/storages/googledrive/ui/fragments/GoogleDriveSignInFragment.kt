@@ -49,7 +49,7 @@ class GoogleDriveSignInFragment: BaseStorageSignInFragment(){
             request: WebResourceRequest,
             error: WebResourceError
         ) {
-            if (isDetached) {
+            if (context == null) {
                 return
             }
             super.onReceivedError(view, request, error)
