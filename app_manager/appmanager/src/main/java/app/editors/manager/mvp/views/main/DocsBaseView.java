@@ -145,8 +145,5 @@ public interface DocsBaseView extends BaseViewExt {
     void onUpdateItemFavorites();
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onReverseSortOrder(String order);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
     void onFinishDownload(Uri uri);
 }

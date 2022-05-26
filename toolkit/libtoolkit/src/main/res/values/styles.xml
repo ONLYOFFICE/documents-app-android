@@ -453,4 +453,9 @@
         <item name="boxBackgroundColor">@color/colorSurface</item>
     </style>
 
+    <style name="MainPopupAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_in</item>
+        <item name="android:windowExitAnimation">@anim/popup_out</item>
+    </style>
+
 </resources>

@@ -42,6 +42,8 @@ import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog.DialogButtonOnClick
 import app.editors.manager.ui.fragments.base.ListFragment
+import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.ActivitiesUtils.createFile
@@ -60,6 +62,7 @@ import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog.OnBottomDialogCloseList
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 
 abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnItemClickListener,
     OnItemContextListener, BaseAdapter.OnItemLongClickListener, ContextBottomDialog.OnClickListener,
@@ -197,54 +200,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         presenter.initMenu()
     }
 
-    override fun onReverseSortOrder(order: String) {
-        if (order == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
-            menu?.findItem(R.id.toolbar_sort_item_asc)?.isChecked = true
-        } else {
-            menu?.findItem(R.id.toolbar_sort_item_desc)?.isChecked = true
-        }
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_item_search, R.id.toolbar_item_sort -> item.isChecked = true
-            R.id.toolbar_sort_item_date_update -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_title -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_type -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_size -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_owner -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_asc -> {
-                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_ASC)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_desc -> {
-                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_DESC)
-                item.isChecked = true
-            }
-            R.id.toolbar_main_item_select -> presenter.setSelection(true)
-            R.id.toolbar_main_item_select_all -> presenter.setSelectionAll()
+            R.id.toolbar_item_main -> showMainActionBarMenu(item.itemId)
             R.id.toolbar_selection_delete -> presenter.delete()
-            R.id.toolbar_selection_move -> presenter.moveSelected()
-            R.id.toolbar_selection_restore -> presenter.moveSelected()
-            R.id.toolbar_selection_copy -> presenter.copySelected()
-            R.id.toolbar_selection_deselect -> presenter.deselectAll()
-            R.id.toolbar_selection_select_all -> presenter.selectAll()
-            R.id.toolbar_selection_download -> presenter.createDownloadFile()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -617,7 +576,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
             menu?.let {
                 onCreateOptionsMenu(it, requireActivity().menuInflater)
-                it.findItem(R.id.toolbar_selection_select_all)?.isVisible = !presenter.isSelectedAll
+//                it.findItem(R.id.toolbar_selection_select_all)?.isVisible = !presenter.isSelectedAll
             }
         }
     }
@@ -631,10 +590,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             menu?.let { menu ->
                 menuInflater?.let { inflater ->
                     inflater.inflate(R.menu.docs_main, menu)
-                    sortItem = menu.findItem(R.id.toolbar_item_sort)
                     openItem = menu.findItem(R.id.toolbar_item_open)
                     mainItem = menu.findItem(R.id.toolbar_item_main)
-                    selectItem = menu.findItem(R.id.toolbar_main_item_options)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
                     searchView = (searchItem?.actionView as SearchView).apply {
                         setOnQueryTextListener(this@DocsBaseFragment)
@@ -652,25 +609,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
                         // On search open
                         setOnSearchClickListener { presenter.setFiltering(true) }
-                    }
-
-                    // Init order by
-                    menu.findItem(
-                        if (isAsc) R.id.toolbar_sort_item_asc else
-                            R.id.toolbar_sort_item_desc
-                    ).isChecked = true
-
-                    when (sortBy) {
-                        ApiContract.Parameters.VAL_SORT_BY_UPDATED -> menu.findItem(R.id.toolbar_sort_item_date_update)
-                            .setEnabled(false).setChecked(true).isEnabled = true
-                        ApiContract.Parameters.VAL_SORT_BY_TITLE -> menu.findItem(R.id.toolbar_sort_item_title)
-                            .setEnabled(false).setChecked(true).isEnabled = true
-                        ApiContract.Parameters.VAL_SORT_BY_TYPE -> menu.findItem(R.id.toolbar_sort_item_type)
-                            .setEnabled(false).setChecked(true).isEnabled = true
-                        ApiContract.Parameters.VAL_SORT_BY_SIZE -> menu.findItem(R.id.toolbar_sort_item_size)
-                            .setEnabled(false).setChecked(true).isEnabled = true
-                        ApiContract.Parameters.VAL_SORT_BY_OWNER -> menu.findItem(R.id.toolbar_sort_item_owner)
-                            .setEnabled(false).setChecked(true).isEnabled = true
                     }
                     presenter.initMenuSearch()
                     presenter.initMenuState()
@@ -1162,5 +1100,67 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
+    protected open fun showMainActionBarMenu(
+        itemId: Int,
+        excluded: List<ActionBarPopupItem> = emptyList()
+    ) {
+        val view = requireActivity().findViewById<View>(itemId)
+        if (!presenter.isSelectionMode) {
+            MainActionBarPopup(
+                context = requireContext(),
+                clickListener = mainActionBarClickListener,
+                sortBy = presenter.preferenceTool.sortBy.orEmpty(),
+                isAsc = isAsc,
+                excluded = excluded
+            ).show(view)
+        } else {
+            showSelectedActionBarMenu(view)
+        }
+    }
 
+    protected open fun showSelectedActionBarMenu(
+        view: View,
+        excluded: List<ActionBarPopupItem> = emptyList()
+    ) {
+        SelectActionBarPopup(
+            context = requireContext(),
+            clickListener = selectActionBarClickListener,
+            excluded = excluded
+        ).show(view)
+    }
+
+    private val isAsc: Boolean
+        get() = presenter.preferenceTool.sortOrder.equals(
+            ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+            ignoreCase = true
+        )
+
+    protected open val mainActionBarClickListener: (ActionBarPopupItem) -> Unit = { item ->
+        val isRepeatedTap = item == MainActionBarPopup.getSortPopupItem(presenter.preferenceTool.sortBy)
+        when (item) {
+            MainActionBarPopup.Select -> presenter.setSelection(true)
+            MainActionBarPopup.SelectAll -> presenter.setSelectionAll()
+            MainActionBarPopup.Date ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, isRepeatedTap)
+            MainActionBarPopup.Type ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, isRepeatedTap)
+            MainActionBarPopup.Size ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, isRepeatedTap)
+            MainActionBarPopup.Title ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, isRepeatedTap)
+            MainActionBarPopup.Author ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, isRepeatedTap)
+        }
+    }
+
+    protected open val selectActionBarClickListener: (ActionBarPopupItem) -> Unit = { item ->
+        when (item) {
+            SelectActionBarPopup.Move -> presenter.moveSelected()
+            SelectActionBarPopup.Restore -> presenter.moveSelected()
+            SelectActionBarPopup.Copy -> presenter.copySelected()
+            SelectActionBarPopup.Deselect -> presenter.deselectAll()
+            SelectActionBarPopup.SelectAll -> presenter.selectAll()
+            SelectActionBarPopup.Download -> presenter.createDownloadFile()
+        }
+    }
 }

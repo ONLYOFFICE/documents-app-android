@@ -117,8 +117,12 @@
 
     <!-- Elevations -->
     <dimen name="elevation_height_micro">2dp</dimen>
+    <dimen name="elevation_height_popup">8dp</dimen>
 
     <dimen name="design_bottom_navigation_text_size" tools:override="true">10sp</dimen>
     <dimen name="design_bottom_navigation_active_text_size" tools:override="true">10sp</dimen>
 
+
+    <dimen name="popup_main_menu_item_height">48dp</dimen>
+    <dimen name="popup_main_menu_item_width">230dp</dimen>
 </resources>

@@ -208,10 +208,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected fun reverseSortOrder() {
         if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
-            viewState.onReverseSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC)
         } else {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
-            viewState.onReverseSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_ASC)
         }
     }
 

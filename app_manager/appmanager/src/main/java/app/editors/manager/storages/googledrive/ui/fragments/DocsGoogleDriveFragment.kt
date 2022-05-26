@@ -10,12 +10,11 @@ import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePr
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
-import app.editors.manager.storages.base.view.BaseStorageDocsView
-import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
-import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.popup.MainActionBarPopup
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
 class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
@@ -104,11 +103,6 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
         }
     }
 
-    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
-        super.onStateMenuDefault(sortBy, isAsc)
-        menu?.findItem(R.id.toolbar_sort_item_size)?.isVisible = false
-    }
-
     override fun onDocsBatchOperation() {
         onDialogClose()
         onSnackBar(getString(R.string.operation_complete_message))
@@ -122,5 +116,12 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
             Constants.Google.COM_REDIRECT_URL
         )
         showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
+    }
+
+    override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(
+            itemId = itemId,
+            excluded = listOf(MainActionBarPopup.Size)
+        )
     }
 }

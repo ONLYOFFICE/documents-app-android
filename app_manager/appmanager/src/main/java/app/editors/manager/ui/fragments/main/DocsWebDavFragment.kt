@@ -14,9 +14,12 @@ import app.editors.manager.mvp.views.main.DocsWebDavView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
+import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
 open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButtonFragment {
@@ -100,13 +103,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         swipeRefreshLayout?.isRefreshing = true
     }
 
-    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
-        super.onStateMenuDefault(sortBy, isAsc)
-        menu?.let {
-            it.findItem(R.id.toolbar_sort_item_owner).isVisible = false
-        }
-    }
-
     override fun onStateMenuSelection() {
         menu?.let { menu ->
             menuInflater?.inflate(R.menu.docs_select, this.menu)
@@ -114,11 +110,16 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
                 setMenuItemTint(requireContext(), this, lib.toolkit.base.R.color.colorPrimary)
                 isVisible = true
             }
-            moveItem = menu.findItem(R.id.toolbar_selection_move).setVisible(true)
-            copyItem = menu.findItem(R.id.toolbar_selection_copy).setVisible(true)
-            downloadItem = menu.findItem(R.id.toolbar_selection_download).setVisible(true)
             mainActivity?.showAccount(false)
         }
+    }
+
+    override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(itemId, listOf(MainActionBarPopup.Size))
+    }
+
+    override fun showSelectedActionBarMenu(view: View, excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(view, listOf(SelectActionBarPopup.Restore))
     }
 
     override fun onListEnd() {}

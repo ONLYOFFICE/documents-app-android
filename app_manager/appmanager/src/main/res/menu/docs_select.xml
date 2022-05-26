@@ -14,50 +14,14 @@
     <item
         android:id="@+id/toolbar_selection_delete"
         android:icon="@drawable/drawable_menu_delete"
-        android:iconTint="@color/colorWhite"
         android:orderInCategory="10"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         tools:ignore="MenuTitle" />
 
     <item
-        android:icon="@drawable/drawable_menu_main"
-        android:iconTint="@color/colorWhite"
+        android:id="@+id/toolbar_item_main"
+        android:icon="@drawable/ic_toolbar_menu"
         android:orderInCategory="20"
         app:showAsAction="always"
-        tools:ignore="MenuTitle">
-
-        <menu>
-            <group android:checkableBehavior="none">
-                <item
-                    android:id="@+id/toolbar_selection_move"
-                    android:title="@string/toolbar_menu_main_move"
-                    android:orderInCategory="110"/>
-                <item
-                    android:id="@+id/toolbar_selection_copy"
-                    android:title="@string/toolbar_menu_main_copy"
-                    android:orderInCategory="111"/>
-                <item
-                    android:id="@+id/toolbar_selection_share_delete"
-                    android:title="@string/toolbar_menu_main_remove_from_list"
-                    android:visible="false"
-                    android:orderInCategory="112"/>
-                <item
-                    android:id="@+id/toolbar_selection_restore"
-                    android:title="@string/device_trash_files_restore"
-                    android:orderInCategory="115"/>
-                <item
-                    android:id="@+id/toolbar_selection_deselect"
-                    android:title="@string/toolbar_menu_main_deselect"
-                    android:orderInCategory="120"/>
-                <item
-                    android:id="@+id/toolbar_selection_select_all"
-                    android:title="@string/toolbar_menu_main_select_all"
-                    android:orderInCategory="130"/>
-                <item
-                    android:id="@+id/toolbar_selection_download"
-                    android:title="@string/toolbar_menu_main_download"
-                    android:orderInCategory="135"/>
-            </group>
-        </menu>
-    </item>
+        tools:ignore="MenuTitle" />
 </menu>

@@ -2,7 +2,7 @@ package app.editors.manager.ui.fragments.main
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
+import android.view.View
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
@@ -20,10 +20,12 @@ import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog.Companion.newInstance
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -98,13 +100,6 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     .setVisible(cloudPresenter.isContextItemEditable).also {
                         setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
                     }
-                moveItem = menu.findItem(R.id.toolbar_selection_move)
-                    .setVisible(cloudPresenter.isContextItemEditable)
-                restoreItem = menu.findItem(R.id.toolbar_selection_restore)
-                    .setVisible(cloudPresenter.isTrashMode)
-                copyItem = menu.findItem(R.id.toolbar_selection_copy)
-                downloadItem = menu.findItem(R.id.toolbar_selection_download)
-                    .setVisible(!cloudPresenter.isTrashMode)
                 setAccountEnable(false)
             }
         }
@@ -194,6 +189,14 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             MoveCopyDialog.TAG_SKIP -> operationType = ApiContract.Operation.SKIP
         }
         cloudPresenter.transfer(operationType, action != MoveCopyDialog.ACTION_COPY)
+    }
+
+    override fun showSelectedActionBarMenu(view: View, excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(view, mutableListOf<ActionBarPopupItem>().apply {
+            if (!cloudPresenter.isContextItemEditable) add(SelectActionBarPopup.Move)
+            if (!cloudPresenter.isTrashMode) add(SelectActionBarPopup.Restore)
+            if (cloudPresenter.isTrashMode) add(SelectActionBarPopup.Download)
+        })
     }
 
     override fun onFileWebView(file: CloudFile) {
