@@ -15,7 +15,6 @@ import app.editors.manager.databinding.FragmentStorageWebBinding
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.storages.base.view.BaseStorageSignInView
-import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 
@@ -23,7 +22,7 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
 
 
     companion object {
-        val TAG = BaseStorageSignInFragment::class.java.simpleName
+        val TAG: String = BaseStorageSignInFragment::class.java.simpleName
         const val TAG_STORAGE = "TAG_MEDIA"
         const val TAG_WEB_VIEW = "TAG_WEB_VIEW"
         const val TAG_PAGE_LOAD = "TAG_PAGE_LOAD"
