@@ -69,6 +69,7 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewBinding = null
         CookieManager.getInstance().removeAllCookies(null)
     }
 
