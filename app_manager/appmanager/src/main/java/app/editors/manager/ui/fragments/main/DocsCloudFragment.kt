@@ -92,6 +92,11 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
+        super.onStateMenuDefault(sortBy, isAsc)
+        filterItem?.isVisible = true
+    }
+
     override fun onStateMenuSelection() {
         menu?.let { menu ->
             menuInflater?.let { menuInflater ->

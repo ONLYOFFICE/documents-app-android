@@ -291,6 +291,7 @@
     <string name="toolbar_menu_sort_desc">Descending</string>
     <string name="toolbar_menu_main_download">Download</string>
     <string name="toolbar_menu_main_open">Open</string>
+    <string name="toolbar_menu_main_filter">Filter</string>
 
     <!-- List context menu -->
     <string name="list_context_folder_name">Folder name</string>

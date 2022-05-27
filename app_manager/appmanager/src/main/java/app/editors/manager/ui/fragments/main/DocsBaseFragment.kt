@@ -81,10 +81,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected var sortItem: MenuItem? = null
     protected var mainItem: MenuItem? = null
     protected var deleteItem: MenuItem? = null
-    protected var moveItem: MenuItem? = null
     protected var restoreItem: MenuItem? = null
-    protected var copyItem: MenuItem? = null
-    protected var downloadItem: MenuItem? = null
+    protected var filterItem: MenuItem? = null
     protected var searchView: SearchView? = null
     protected var searchCloseButton: ImageView? = null
     protected var explorerAdapter: ExplorerAdapter? = null
@@ -593,6 +591,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     inflater.inflate(R.menu.docs_main, menu)
                     openItem = menu.findItem(R.id.toolbar_item_open)
                     mainItem = menu.findItem(R.id.toolbar_item_main)
+                    filterItem = menu.findItem(R.id.toolbar_item_filter)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
                     searchView = initSearchView()
                     presenter.initMenuSearch()
