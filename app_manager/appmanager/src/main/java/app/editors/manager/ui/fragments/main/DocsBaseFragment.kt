@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
@@ -593,27 +594,32 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     openItem = menu.findItem(R.id.toolbar_item_open)
                     mainItem = menu.findItem(R.id.toolbar_item_main)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
-                    searchView = (searchItem?.actionView as SearchView).apply {
-                        setOnQueryTextListener(this@DocsBaseFragment)
-                        maxWidth = Int.MAX_VALUE
-                        isIconified = !presenter.isFilteringMode
-                        searchCloseButton = findViewById(androidx.appcompat.R.id.search_close_btn)
-                        searchCloseButton?.apply {
-                            isEnabled = false
-                            isVisible = true
-                            setOnClickListener {
-                                if (!isSearchViewClear)
-                                    onBackPressed()
-                            }
-                        }
-
-                        // On search open
-                        setOnSearchClickListener { presenter.setFiltering(true) }
-                    }
+                    searchView = initSearchView()
                     presenter.initMenuSearch()
                     presenter.initMenuState()
                 }
             }
+        }
+    }
+
+    private fun initSearchView(): SearchView? {
+        return (searchItem?.actionView as? SearchView)?.apply {
+            maxWidth = Int.MAX_VALUE
+            isIconified = !presenter.isFilteringMode
+            setOnQueryTextListener(this@DocsBaseFragment)
+            setOnSearchClickListener { presenter.setFiltering(true) } // On search open
+            findViewById<View>(androidx.appcompat.R.id.search_plate)?.background = null
+            findViewById<EditText>(androidx.appcompat.R.id.search_src_text)?.apply {
+                setTextAppearance(lib.toolkit.base.R.style.SearchViewTextAppearance)
+                hint = "Enter your query"
+            }
+            searchCloseButton =
+                findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)?.apply {
+                    setOnClickListener {
+                        if (!isSearchViewClear)
+                            onBackPressed()
+                    }
+                }
         }
     }
 

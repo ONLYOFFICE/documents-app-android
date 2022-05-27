@@ -87,6 +87,8 @@
         <item name="defaultQueryHint">@string/toolbar_menu_search_hint</item>
     </style>
 
+    <style name="SearchViewTextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Title"/>
+
     <!-- ======================================================================================= -->
     <!-- Common views-->
     <style name="CommonTextView" parent="AppTheme">
@@ -457,5 +459,7 @@
         <item name="android:windowEnterAnimation">@anim/popup_in</item>
         <item name="android:windowExitAnimation">@anim/popup_out</item>
     </style>
+    
+    
 
 </resources>
