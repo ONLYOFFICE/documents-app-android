@@ -282,11 +282,11 @@
     <string name="toolbar_menu_main_deselect">Deselect</string>
     <string name="toolbar_menu_sort_by">Sort by</string>
     <string name="toolbar_menu_sort_order">Sort order</string>
-    <string name="toolbar_menu_sort_date_modified">Last modified</string>
+    <string name="toolbar_menu_sort_date_modified">Date</string>
     <string name="toolbar_menu_sort_title">Title</string>
     <string name="toolbar_menu_sort_type">Type</string>
     <string name="toolbar_menu_sort_size">Size</string>
-    <string name="toolbar_menu_sort_owner">Owner</string>
+    <string name="toolbar_menu_sort_owner">Author</string>
     <string name="toolbar_menu_sort_asc">Ascending</string>
     <string name="toolbar_menu_sort_desc">Descending</string>
     <string name="toolbar_menu_main_download">Download</string>

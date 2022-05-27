@@ -234,11 +234,9 @@
     <string name="toolbar_menu_main_deselect">取消选择</string>
     <string name="toolbar_menu_sort_by">排序方式</string>
     <string name="toolbar_menu_sort_order">排序顺序</string>
-    <string name="toolbar_menu_sort_date_modified">最后修改</string>
     <string name="toolbar_menu_sort_title">标题</string>
     <string name="toolbar_menu_sort_type">类型</string>
     <string name="toolbar_menu_sort_size">大小</string>
-    <string name="toolbar_menu_sort_owner">所有者</string>
     <string name="toolbar_menu_sort_asc">升序</string>
     <string name="toolbar_menu_sort_desc">降序</string>
     <string name="toolbar_menu_main_download">下载</string>

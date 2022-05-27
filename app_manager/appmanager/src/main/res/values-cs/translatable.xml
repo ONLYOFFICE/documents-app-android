@@ -269,11 +269,9 @@
     <string name="toolbar_menu_main_deselect">Zrušit výběr</string>
     <string name="toolbar_menu_sort_by">Řadit podle</string>
     <string name="toolbar_menu_sort_order">Pořadí řazení</string>
-    <string name="toolbar_menu_sort_date_modified">Poslední změna</string>
     <string name="toolbar_menu_sort_title">Název</string>
     <string name="toolbar_menu_sort_type">Typ</string>
     <string name="toolbar_menu_sort_size">Velikost</string>
-    <string name="toolbar_menu_sort_owner">Vlastník</string>
     <string name="toolbar_menu_sort_asc">Vzestupně</string>
     <string name="toolbar_menu_sort_desc">Sestupně</string>
     <string name="toolbar_menu_main_download">Stáhnout</string>
