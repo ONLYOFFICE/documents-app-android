@@ -79,7 +79,6 @@
 
     <!-- Accounts -->
     <string name="login_accounts_select_title">Vybrat účet</string>
-    <string name="login_accounts_select_add">Přidat cloudový účet</string>
 
     <!-- Portal pager -->
     <string name="login_pager_enterprise">PORTÁL</string>
@@ -523,7 +522,6 @@
     <string name="cloud_only_office_description">Ukládejte dokumenty v cloudu a spolupracujte na nich</string>
     <string name="cloud_accounts_title">Účty</string>
     <string name="error_long_file_name">Název souboru je příliš dlouhý</string>
-    <string name="dialog_remove_account_title">Odebrat účet</string>
     <string name="dialog_remove_account_description">Uživatel s %1$s z portálu %2$s bude odhlášen a odebrán ze seznamu účtů. \n\nProsím, mějte na paměti: pro přihlášení je třeba zadat adresu portálu, emailovou adresu a heslo. Všechny vaše soubory budou v bezpečí.</string>
     <string name="dialog_logout_account_title">Jste si jisti, že se chcete odhlásit?</string>
     <string name="dialog_logout_account_description">Po odhlášení nemusíte zadávat adresu portálu ani emailovou adresu, pouze heslo. Buďte bez obav, všechny soubory budou v bezpečí v cloudu.</string>

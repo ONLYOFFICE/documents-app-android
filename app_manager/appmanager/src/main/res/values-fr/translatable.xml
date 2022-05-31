@@ -157,7 +157,6 @@
     <string name="list_headers_week">Cette semaine</string>
     <string name="list_headers_year">Cette année</string>
     <string name="list_headers_yesterday">Hier</string>
-    <string name="login_accounts_select_add">Ajouter un compte dans le nuage</string>
     <string name="login_accounts_select_title">Sélectionner le compte</string>
     <string name="login_api_init_error">Erreur d’initialisation</string>
     <string name="login_api_init_portal_error">Erreur de syntaxe du nom de bureau dans les nuages</string>
@@ -379,7 +378,6 @@
     <string name="cloud_only_office_description">Stockez les documents dans le cloud et co-éditez-les</string>
     <string name="cloud_accounts_title">Comptes</string>
     <string name="error_long_file_name">Le nom de fichier est trop long</string>
-    <string name="dialog_remove_account_title">Supprimer le compte</string>
     <string name="dialog_remove_account_description">
         L\'utilisateur avec le mail %1$s du portail %2$s sera déconnecté et sont compte sera effacé de la liste des comptes. \n\nAttention! Vous devez saisir l\'adresse du portail, le mail et le mot de passe. Tous les fichiers seront en sécurité !
     </string>

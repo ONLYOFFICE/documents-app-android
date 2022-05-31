@@ -65,7 +65,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override fun onDestroyView() {
         super.onDestroyView()
         activity?.showAccount(false)
-        activity?.showNavigationButton(false)
     }
 
     override fun setToolbarState(isVisible: Boolean) {
@@ -90,6 +89,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     private fun init() {
         presenter.checkBackStack()
+        activity?.showAccount(true)
     }
 
     private fun loadFiles() {

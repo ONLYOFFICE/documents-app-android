@@ -444,6 +444,7 @@
 
     <style name="MainToolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
         <item name="colorOnPrimary">@color/colorPrimary</item>
+        <item name="elevationOverlayEnabled">false</item>
     </style>
 
     <style name="AccentButton" parent="Widget.MaterialComponents.Button">

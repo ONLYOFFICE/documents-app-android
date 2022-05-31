@@ -239,7 +239,7 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        if (modelExplorerStack.currentId == folderId) {
+        if (folderId != null && id != null && modelExplorerStack.currentId == folderId) {
             viewState.onUploadFileProgress(progress, id)
         }
     }

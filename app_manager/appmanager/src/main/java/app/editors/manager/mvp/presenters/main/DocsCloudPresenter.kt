@@ -350,8 +350,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onFileWebView(file)
     }
 
-    override fun onUploadFileProgress(progress: Int, id: String, folderId: String) {
-        if (modelExplorerStack.currentId == folderId) {
+    override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
+        if (folderId != null && id != null && modelExplorerStack.currentId == folderId) {
             viewState.onUploadFileProgress(progress, id)
         }
     }

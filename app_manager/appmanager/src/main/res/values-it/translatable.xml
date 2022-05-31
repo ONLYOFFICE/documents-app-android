@@ -155,7 +155,6 @@
     <string name="list_headers_week">Questa settimana</string>
     <string name="list_headers_year">Questo anno</string>
     <string name="list_headers_yesterday">Ieri</string>
-    <string name="login_accounts_select_add">Aggiungi account cloud</string>
     <string name="login_accounts_select_title">Seleziona account</string>
     <string name="login_api_init_error">Errore iniziale</string>
     <string name="login_api_init_portal_error">Errore di sintassi del nome del portale</string>
@@ -377,7 +376,6 @@
     <string name="cloud_only_office_description">Archivia i documenti nel cloud e collabora su di essi</string>
     <string name="cloud_accounts_title">Account</string>
     <string name="error_long_file_name">Il nome del file è troppo lungo</string>
-    <string name="dialog_remove_account_title">Elimina account</string>
     <string name="dialog_remove_account_description">
         L\'utente con %1$s dal portale %2$s verrà disconnesso e rimosso dall\'elenco degli account. \n\nSi prega di notare: per accedere, è necessario inserire l\'indirizzo del portale, e-mail e password. Tutti i tuoi file saranno al sicuro.
     </string>

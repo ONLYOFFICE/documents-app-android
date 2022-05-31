@@ -65,7 +65,6 @@
     <string name="login_retry">重试连接</string>
     <!-- Accounts -->
     <string name="login_accounts_select_title">选择账户</string>
-    <string name="login_accounts_select_add">添加云账户</string>
     <!-- Portal pager -->
     <string name="login_pager_enterprise">门户</string>
     <string name="login_pager_personal">个人</string>
@@ -448,7 +447,6 @@
     <string name="cloud_only_office_description">将文档存储与云端并就其展开协作</string>
     <string name="cloud_accounts_title">账户</string>
     <string name="error_long_file_name">文件名过长</string>
-    <string name="dialog_remove_account_title">移除账户</string>
     <string name="dialog_remove_account_description">
         %2$s门户中带有%1$s的用户将被登出，并从账户列表中移除。\n\n请注意：如需登录，您需要输入门户地址、邮箱以及密码。您的所有文件均将被安全存储。
     </string>

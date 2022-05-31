@@ -81,7 +81,6 @@
 
     <!-- Accounts -->
     <string name="login_accounts_select_title"> ເລືອກບັນຊີ</string>
-    <string name="login_accounts_select_add">ເພີ່ມບັນຊີຄລາວ</string>
 
     <!-- Portal pager -->
     <string name="login_pager_enterprise">ປ່ະຕູ</string>
@@ -529,7 +528,6 @@
     <string name="cloud_only_office_description">ເກັບຮັກສາເອກະສານໄວ້ໃນເມຄແລະຮ່ວມມືກັບພວກມັນ</string>
     <string name="cloud_accounts_title">ບັນຊີ</string>
     <string name="error_long_file_name">ຊື່ແຟ້ມຍາວເກີນໄປ </string>
-    <string name="dialog_remove_account_title">ເອົາບັນຊີອອກ</string>
     <string name="dialog_remove_account_description">
         ຜູ້ໃຊ້ທີ່ມີ %1$s ຈາກປະຕູ %2$s ຈະຖືກອອກຈາກລະບົບແລະລຶບອອກຈາກບັນຊີບັນຊີ. \ n \ n ກະລຸນາສັງເກດ: ເພື່ອເຂົ້າສູ່ລະບົບ, ທ່ານຕ້ອງການໃສ່ທີ່ຢູ່ປະຕູ, ອີເມວແລະລະຫັດຜ່ານ. ໄຟລ໌ທັງໝົດຂອງທ່ານຈະປອດໄພ.
     </string>

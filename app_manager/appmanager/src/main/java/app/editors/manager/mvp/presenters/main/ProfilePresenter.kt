@@ -134,25 +134,6 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
         }
     }
 
-    fun removeAccount() {
-        CoroutineScope(Dispatchers.Default).launch {
-            AccountUtils.removeAccount(
-                context,
-                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-            )
-            accountDao.deleteAccount(account)
-            recentDao.removeAllByOwnerId(account.id)
-            if (ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
-                context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
-            }
-            withContext(Dispatchers.Main) {
-                viewState.onClose(false)
-            }
-        }
-
-
-    }
-
     fun logout() {
         CoroutineScope(Dispatchers.Default).launch {
             AccountUtils.getAccount(context, account.getAccountName())?.let {
