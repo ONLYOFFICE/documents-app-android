@@ -107,7 +107,7 @@ class ActionBottomDialog : BaseBottomDialog() {
             it.listExplorerActionPresentation.isVisible = isDocs || isLocal
             it.listExplorerActionSheet.isVisible = isDocs || isLocal
 
-            it.listExplorerActionImport.isVisible = isLocal
+            it.listExplorerActionImport.isVisible = isLocal && !isWebDav
             it.listExplorerActionUpload.isVisible = !isLocal || isWebDav
         }
     }
