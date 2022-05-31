@@ -90,6 +90,24 @@
     <style name="SearchViewTextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Title"/>
 
     <!-- ======================================================================================= -->
+    <!-- Filter views -->
+
+    <style name="FilterChip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/color_filter_chip_text_selector</item>
+        <item name="chipMinTouchTargetSize">0dp</item>
+        <item name="chipBackgroundColor">@color/color_filter_chip_selector</item>
+        <item name="chipStrokeWidth">0.5dp</item>
+        <item name="chipStrokeColor">@color/color_filter_chip_border_selector</item>
+    </style>
+
+    <style name="FilterTitleTextAppearance" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
+    </style>
+
+    <!-- ======================================================================================= -->
     <!-- Common views-->
     <style name="CommonTextView" parent="AppTheme">
         <item name="android:textColor">@color/colorOnSurface</item>

@@ -3,6 +3,7 @@ package app.editors.manager.managers.tools
 import android.content.Context
 import android.content.SharedPreferences
 import app.documents.core.network.ApiContract
+import app.editors.manager.ui.activities.main.FilterType
 import java.util.*
 import javax.inject.Inject
 
@@ -37,6 +38,9 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_FINGERPRINT = "KEY_FINGERPRINT"
         private const val KEY_PASSCODE = "KEY_PASSCODE"
         private const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
+        private const val KEY_FILTER_TYPE = "KEY_FILTER_TYPE"
+        private const val KEY_FILTER_AUTHOR = "KEY_FILTER_AUTHOR"
+        private const val KEY_FILTER_SUBFOLDER = "KEY_FILTER_SUBFOLDER"
 
         private val PERSONAL_ADDRESSES: Set<String> = object : TreeSet<String>() {
             init {
@@ -214,4 +218,24 @@ class PreferenceTool @Inject constructor(val context: Context) {
             sharedPreferences.edit().putLong(KEY_TIMESTAMP, value).apply()
         }
 
+    var filterType: FilterType
+        get() = FilterType.values()
+            .find {
+                it.name == sharedPreferences.getString(KEY_FILTER_TYPE, "")
+            } ?: FilterType.None
+        set(value) {
+            sharedPreferences.edit().putString(KEY_FILTER_TYPE, value.name).apply()
+        }
+
+    var filterAuthor: String
+        get() = sharedPreferences.getString(KEY_FILTER_AUTHOR, "").orEmpty()
+        set(value) {
+            sharedPreferences.edit().putString(KEY_FILTER_AUTHOR, value).apply()
+        }
+
+    var filterSubfolder: Boolean
+        get() = sharedPreferences.getBoolean(KEY_FILTER_SUBFOLDER, false)
+        set(value) {
+            sharedPreferences.edit().putBoolean(KEY_FILTER_SUBFOLDER, value).apply()
+        }
 }

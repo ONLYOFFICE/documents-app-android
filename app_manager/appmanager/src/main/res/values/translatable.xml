@@ -630,4 +630,23 @@
     <string name="app_settings_follow_the_system">Same as system</string>
     <string name="app_settings_light_theme">Light theme</string>
     <string name="app_settings_dark_theme">Dark theme</string>
+
+    <string name="filter_toolbar_title">Filters</string>
+    <string name="filter_title_type">Type</string>
+    <string name="filter_title_author">Author</string>
+    <string name="filter_title_search">Search</string>
+    <string name="filter_type_folders">Folders</string>
+    <string name="filter_type_documents">Documents</string>
+    <string name="filter_type_presentations">Presentations</string>
+    <string name="filter_type_spreadsheets">Spreadsheets</string>
+    <string name="filter_type_images">Images</string>
+    <string name="filter_type_media">Media</string>
+    <string name="filter_type_archives">Archives</string>
+    <string name="filter_type_all">All files</string>
+    <string name="filter_author_users">Users</string>
+    <string name="filter_author_groups">Groups</string>
+    <string name="filter_exclude_subfolders">Exclude subfolders</string>
+    <string name="filter_show_results">Show %1$s results</string>
+    <string name="filter_button_reset">RESET</string>
+
 </resources>

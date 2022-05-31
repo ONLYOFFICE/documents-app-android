@@ -2,7 +2,9 @@ package app.editors.manager.ui.fragments.main
 
 import android.app.Activity
 import android.content.Intent
+import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
@@ -14,6 +16,8 @@ import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsCloudView
+import app.editors.manager.ui.activities.main.FilterActivity
+import app.editors.manager.ui.activities.main.FilterType
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
@@ -79,6 +83,9 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                         cloudPresenter.upload(it, null)
                     }
                 }
+                FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED -> {
+                    onRefresh()
+                }
             }
         }
     }
@@ -92,11 +99,6 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
-        super.onStateMenuDefault(sortBy, isAsc)
-        filterItem?.isVisible = true
-    }
-
     override fun onStateMenuSelection() {
         menu?.let { menu ->
             menuInflater?.let { menuInflater ->
@@ -108,6 +110,19 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 setAccountEnable(false)
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.toolbar_item_filter -> {
+                startActivityForResult(
+                    Intent(requireContext(), FilterActivity::class.java)
+                        .putExtra(FilterActivity.KEY_ID, presenter.folderId),
+                    FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED
+                )
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onUploadFileProgress(progress: Int, id: String) {
@@ -222,11 +237,28 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onResume() {
         super.onResume()
         cloudPresenter.setSectionType(section)
+        setFilterIconEnabled()
+    }
+
+    override fun onStateMenuEnabled(isEnabled: Boolean) {
+        super.onStateMenuEnabled(isEnabled)
+        setMenuFilterEnabled(true)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         cloudPresenter.setSectionType(section)
+    }
+
+    private fun setMenuFilterEnabled(isEnabled: Boolean) {
+        filterItem?.isVisible = isEnabled
+        setFilterIconEnabled()
+    }
+
+    private fun setFilterIconEnabled() {
+        filterItem?.icon = if (hasFilter) {
+            AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_enable)
+        } else AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_disable)
     }
 
     override val isActivePage: Boolean
@@ -245,6 +277,11 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             deleteItem?.isEnabled = false
         }
     }
+
+    private val hasFilter: Boolean
+        get() = presenter.preferenceTool.filterType != FilterType.None
+                || presenter.preferenceTool.filterSubfolder
+                || presenter.preferenceTool.filterAuthor.isNotEmpty()
 
     val isRoot: Boolean
         get() = presenter.isRoot

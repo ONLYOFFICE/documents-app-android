@@ -177,4 +177,5 @@ interface AppComponent {
     fun inject(viewModel: EnterpriseCreateValidateViewModel)
     fun inject(viewModel: RemoteUrlViewModel)
     fun inject(passcodeActivity: PasscodeActivity?)
+    fun inject(docsFilterPresenter: DocsFilterPresenter)
 }

@@ -34,8 +34,8 @@
         android:id="@+id/toolbar_item_filter"
         android:icon="@drawable/drawable_selector_toolbar_filter"
         android:orderInCategory="10"
+        android:title="@string/toolbar_menu_main_filter"
         android:visible="false"
-        android:title="@string/toolbar_menu_main_options"
         app:showAsAction="ifRoom"
         tools:ignore="MenuTitle" />
 

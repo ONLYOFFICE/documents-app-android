@@ -259,7 +259,10 @@
             android:name=".ui.activities.main.SettingsActivity"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
-
+        <activity
+            android:name=".ui.activities.main.FilterActivity"
+            android:theme="@style/NoActionBarTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <service
             android:name=".managers.services.AuthenticatorService"
             android:exported="false">

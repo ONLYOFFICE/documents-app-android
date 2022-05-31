@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
@@ -32,6 +31,7 @@ import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.ui.activities.main.FilterActivity
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
 import app.editors.manager.ui.adapters.ExplorerAdapter

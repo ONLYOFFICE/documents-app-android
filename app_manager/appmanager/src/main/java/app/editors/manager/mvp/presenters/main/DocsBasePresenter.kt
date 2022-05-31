@@ -172,7 +172,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, getArgs(null))
+                    provider.getFiles(id, applyFilters())
                         .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError))
             }
         }
@@ -183,7 +183,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         modelExplorerStack.currentId?.let { id ->
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, getArgs(filteringValue))
+                    provider.getFiles(id, applyFilters(getArgs(filteringValue)))
                         .subscribe({ explorer ->
                             modelExplorerStack.refreshStack(explorer)
                             updateViewsState()
@@ -224,7 +224,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             modelExplorerStack.currentId?.let { id ->
                 filteringValue = value
                 fileProvider?.let { provider ->
-                    provider.getFiles(id, getArgs(value))
+                    provider.getFiles(id, applyFilters(getArgs(value)))
                         .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
                         .subscribe({ explorer ->
                             modelExplorerStack.setFilter(explorer)
@@ -771,6 +771,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 map[ApiContract.Parameters.ARG_FILTER_VALUE] = value
             }
         }
+    }
+
+    protected fun applyFilters(args: Map<String, String> = mapOf()): Map<String, String> {
+        return args.plus(ApiContract.Parameters.ARG_FILTER_BY_TYPE to preferenceTool.filterType.filterVal)
     }
 
     private fun cancelGetRequests() {
@@ -1463,6 +1467,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     val stack: Explorer?
         get() = modelExplorerStack.last()
+
+    val folderId: String?
+        get() = modelExplorerStack.currentId
 
     private fun setAccess(explorer: Explorer?): Explorer {
         return explorer?.also {

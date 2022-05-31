@@ -136,7 +136,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             val args = getArgs(filteringValue).toMutableMap()
             args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
             fileProvider?.let { provider ->
-                disposable.add(provider.getFiles(id, args).subscribe({ explorer: Explorer? ->
+                disposable.add(provider.getFiles(id, applyFilters(args)).subscribe({ explorer: Explorer? ->
                     modelExplorerStack.addOnNext(explorer)
                     val last = modelExplorerStack.last()
                     if (last != null) {
