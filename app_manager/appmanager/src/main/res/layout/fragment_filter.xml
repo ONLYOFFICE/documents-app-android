@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/default_margin_large"
+            android:layout_marginVertical="@dimen/default_margin_medium"
+            android:text="@string/filter_title_type"
+            android:textAppearance="@style/FilterTitleTextAppearance" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/types"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/default_margin_large"
+            android:paddingVertical="@dimen/default_margin_medium"
+            app:chipSpacingHorizontal="@dimen/default_margin_large"
+            app:chipSpacingVertical="@dimen/default_margin_large"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/folders"
+                style="@style/FilterChip"
+                android:text="@string/filter_type_folders" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/documents"
+                style="@style/FilterChip"
+                android:text="@string/filter_type_documents" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/presentations"
+                style="@style/FilterChip"
+                android:text="@string/filter_type_presentations" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/spreadsheets"
+                style="@style/FilterChip"
+                android:text="@string/filter_type_spreadsheets" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/images"
+                style="@style/FilterChip"
+                android:text="@string/filter_type_images" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/media"
+                style="@style/FilterChip"
+                android:text="@string/filter_type_media" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/archives"
+                style="@style/FilterChip"
+                android:text="@string/filter_type_archives" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/all"
+                style="@style/FilterChip"
+                android:text="@string/filter_type_all" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/default_margin_large"
+            android:layout_marginVertical="@dimen/default_margin_medium"
+            android:text="@string/filter_title_author"
+            android:textAppearance="@style/FilterTitleTextAppearance" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/default_margin_large"
+            android:paddingVertical="@dimen/default_margin_medium">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/users"
+                style="@style/FilterChip.Closable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/default_margin_large"
+                android:clickable="false"
+                android:text="@string/filter_author_users" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/groups"
+                style="@style/FilterChip.Closable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_author_groups" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/default_margin_large"
+            android:layout_marginVertical="@dimen/default_margin_medium"
+            android:text="@string/filter_title_search"
+            android:textAppearance="@style/FilterTitleTextAppearance" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/subfolder"
+            style="@style/FilterChip"
+            android:layout_marginHorizontal="@dimen/default_margin_large"
+            android:layout_marginVertical="@dimen/default_margin_medium"
+            android:checkable="true"
+            android:text="@string/filter_exclude_subfolders" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/showButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_button_height"
+            android:layout_marginHorizontal="@dimen/default_margin_large"
+            android:layout_marginVertical="@dimen/default_margin_xxlarge"
+            android:animateLayoutChanges="true"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="@dimen/default_corner_radius_small"
+            app:cardElevation="0dp">
+
+            <ProgressBar
+                android:id="@+id/resultProgress"
+                style="@style/Widget.Material3.CircularProgressIndicator"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/colorWhite"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/resultText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
+                android:textColor="@color/colorWhite"
+                android:textSize="14sp"
+                android:visibility="visible" />
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+</ScrollView>

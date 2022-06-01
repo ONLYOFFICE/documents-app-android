@@ -633,6 +633,8 @@
     <string name="app_settings_dark_theme">Dark theme</string>
 
     <string name="filter_toolbar_title">Filters</string>
+    <string name="filter_toolbar_users_title">Select user</string>
+    <string name="filter_toolbar_groups_title">Select group</string>
     <string name="filter_title_type">Type</string>
     <string name="filter_title_author">Author</string>
     <string name="filter_title_search">Search</string>

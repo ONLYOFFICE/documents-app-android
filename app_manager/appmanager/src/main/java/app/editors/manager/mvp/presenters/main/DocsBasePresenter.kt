@@ -774,7 +774,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     protected fun applyFilters(args: Map<String, String> = mapOf()): Map<String, String> {
-        return args.plus(ApiContract.Parameters.ARG_FILTER_BY_TYPE to preferenceTool.filterType.filterVal)
+        val filter = preferenceTool.filter
+        return args.plus(
+            mapOf(
+                ApiContract.Parameters.ARG_FILTER_BY_TYPE to filter.type.filterVal,
+                ApiContract.Parameters.ARG_FILTER_BY_AUTHOR to filter.author.id,
+            )
+        )
     }
 
     private fun cancelGetRequests() {

@@ -97,9 +97,18 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/color_filter_chip_text_selector</item>
         <item name="chipMinTouchTargetSize">0dp</item>
+        <item name="android:textSize">14sp</item>
         <item name="chipBackgroundColor">@color/color_filter_chip_selector</item>
         <item name="chipStrokeWidth">0.5dp</item>
+        <item name="android:padding">10dp</item>
         <item name="chipStrokeColor">@color/color_filter_chip_border_selector</item>
+    </style>
+
+    <style name="FilterChip.Closable">
+        <item name="closeIconEnabled">true</item>
+        <item name="closeIconTint">@color/colorWhite</item>
+        <item name="closeIconVisible">false</item>
+        <item name="android:textColor">@color/color_filter_chip_text_author_selector</item>
     </style>
 
     <style name="FilterTitleTextAppearance" parent="TextAppearance.Material3.TitleMedium">

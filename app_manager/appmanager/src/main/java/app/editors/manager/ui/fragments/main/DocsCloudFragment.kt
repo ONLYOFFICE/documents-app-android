@@ -11,13 +11,13 @@ import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.activities.main.FilterActivity
-import app.editors.manager.ui.activities.main.FilterType
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
@@ -256,7 +256,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private fun setFilterIconEnabled() {
-        filterItem?.icon = if (hasFilter) {
+        filterItem?.icon = if (getFilters()) {
             AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_enable)
         } else AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_disable)
     }
@@ -278,10 +278,10 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    private val hasFilter: Boolean
-        get() = presenter.preferenceTool.filterType != FilterType.None
-                || presenter.preferenceTool.filterSubfolder
-                || presenter.preferenceTool.filterAuthor.isNotEmpty()
+    private fun getFilters(): Boolean {
+        val filter = presenter.preferenceTool.filter
+        return filter.type != FilterType.None || filter.author.id.isNotEmpty() || filter.excludeSubfolder
+    }
 
     val isRoot: Boolean
         get() = presenter.isRoot
