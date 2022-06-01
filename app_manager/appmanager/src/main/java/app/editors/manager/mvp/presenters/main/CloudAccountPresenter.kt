@@ -15,6 +15,7 @@ import app.documents.core.settings.NetworkSettings
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.loginService
 import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.presenters.login.BaseLoginPresenter
@@ -124,17 +125,16 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     fun deleteAccount() {
-        CoroutineScope(Dispatchers.Default).launch {
-            contextAccount?.let { account ->
-                AccountUtils.removeAccount(context, account.getAccountName())
-                accountDao.deleteAccount(account)
-                accountDao.getAccounts().let {
-                    withContext(Dispatchers.Main) {
-                        if (ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
-                            context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
-                        }
-                        viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
+        contextAccount?.let { account ->
+            if (account.isDropbox && account.isOneDrive && account.isGoogleDrive && account.isWebDav) {
+                deleteAccount(account)
+            } else {
+                if (account.isOnline) {
+                    unsubscribePush(account, AccountUtils.getToken(context, account.getAccountName())) {
+                        deleteAccount(account)
                     }
+                } else {
+                    deleteAccount(account)
                 }
             }
         }
@@ -142,14 +142,36 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     fun deleteSelected(selection: List<String>?) {
         CoroutineScope(Dispatchers.Default).launch {
-            selection?.forEach {
-                accountDao.getAccount(it)?.let { account ->
-                    AccountUtils.removeAccount(context, account.getAccountName())
-                    accountDao.deleteAccount(account)
+            selection?.forEach { id ->
+                accountDao.getAccount(id)?.let { account ->
+                    if (account.isOnline) {
+                        unsubscribePush(account, AccountUtils.getToken(context, account.getAccountName())) {
+                            deleteAccount(account)
+                        }
+                    } else {
+                        deleteAccount(account)
+                    }
                 }
             }
+            withContext(Dispatchers.Main) {
+                viewState.onRender(CloudAccountState.AccountLoadedState(accountDao.getAccounts(), null))
+            }
+        }
+    }
+
+    private fun deleteAccount(account: CloudAccount) {
+        CoroutineScope(Dispatchers.Default).launch {
+            AccountUtils.removeAccount(context, account.getAccountName())
+            accountDao.deleteAccount(account)
             accountDao.getAccounts().let {
                 withContext(Dispatchers.Main) {
+                    if (ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
+                        context.contentResolver.delete(
+                            Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"),
+                            null,
+                            null
+                        )
+                    }
                     viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
                 }
             }
@@ -157,6 +179,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     fun checkLogin(account: CloudAccount) {
+        viewState.onWaiting()
         if (!account.isOnline) {
             when {
                 account.isWebDav -> {
@@ -177,8 +200,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     }
                 }
                 account.isOneDrive -> {
-                    AccountUtils.getToken(context, account.getAccountName())?.let {token ->
-                        if(token.isNotEmpty()) {
+                    AccountUtils.getToken(context, account.getAccountName())?.let { token ->
+                        if (token.isNotEmpty()) {
                             loginSuccess(account)
                         } else {
                             viewState.onOneDriveLogin()
@@ -186,8 +209,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     }
                 }
                 account.isDropbox -> {
-                    AccountUtils.getToken(context, account.getAccountName())?.let {token ->
-                        if(token.isNotEmpty()) {
+                    AccountUtils.getToken(context, account.getAccountName())?.let { token ->
+                        if (token.isNotEmpty()) {
                             loginSuccess(account)
                         } else {
                             viewState.onDropboxLogin()
@@ -195,8 +218,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     }
                 }
                 account.isGoogleDrive -> {
-                    AccountUtils.getToken(context, account.getAccountName())?.let {token ->
-                        if(token.isNotEmpty()) {
+                    AccountUtils.getToken(context, account.getAccountName())?.let { token ->
+                        if (token.isNotEmpty()) {
                             loginSuccess(account)
                         } else {
                             viewState.onGoogleDriveLogin()
@@ -244,7 +267,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun login(account: CloudAccount, token: String) {
         setSettings(account)
-        disposable = context.loginService
+        val loginService = context.loginService
+        disposable = loginService
             .getUserInfo(token)
             .map {
                 when (it) {
@@ -252,6 +276,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     is LoginResponse.Error -> throw throw it.error
                 }
             }
+            .flatMap { loginService.subscribe(token, preferenceTool.deviceMessageToken, true) }
             .subscribe({
                 loginSuccess(account)
             }, {
@@ -281,13 +306,25 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     private fun loginSuccess(account: CloudAccount) {
-        CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccountOnline()?.let { onlineAccount ->
-                accountDao.updateAccount(onlineAccount.copyWithToken(isOnline = false))
+        context.accountOnline?.let { onlineAccount ->
+            setSettings(onlineAccount)
+            unsubscribePush(onlineAccount, AccountUtils.getToken(context, onlineAccount.getAccountName())) {
+                CoroutineScope(Dispatchers.Default).launch {
+                    setSettings(account)
+                    accountDao.updateAccount(onlineAccount.copyWithToken(isOnline = false))
+                    accountDao.updateAccount(account.copyWithToken(isOnline = true))
+                    withContext(Dispatchers.Main) {
+                        viewState.onSuccessLogin()
+                    }
+                }
             }
-            accountDao.updateAccount(account.copyWithToken(isOnline = true))
-            withContext(Dispatchers.Main) {
-                viewState.onSuccessLogin()
+        } ?: run {
+            CoroutineScope(Dispatchers.Default).launch {
+                setSettings(account)
+                accountDao.updateAccount(account.copyWithToken(isOnline = true))
+                withContext(Dispatchers.Main) {
+                    viewState.onSuccessLogin()
+                }
             }
         }
     }
@@ -316,7 +353,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         restoreState = null
     }
 
-    fun checkError(throwable: Throwable, account: CloudAccount) {
+    private fun checkError(throwable: Throwable, account: CloudAccount) {
         restoreSettings()
         if (throwable is HttpException && throwable.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
             viewState.onAccountLogin(account.portal ?: "", account.login ?: "")

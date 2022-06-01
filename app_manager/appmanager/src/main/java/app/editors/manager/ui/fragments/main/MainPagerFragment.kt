@@ -227,7 +227,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun onError(message: String?) {
-        message?.let { showSnackBar(it).show() }
+        message?.let { showSnackBar(it) }
         (requireActivity() as? MainActivity)?.onUnauthorized(message)
     }
 

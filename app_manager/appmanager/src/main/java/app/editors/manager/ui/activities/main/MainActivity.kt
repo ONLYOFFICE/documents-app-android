@@ -391,7 +391,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         setAppBarStates(false)
         showNavigationButton(false)
         presenter.clear()
-        viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+        FragmentUtils.showFragment(
+            supportFragmentManager,
+            OnlyOfficeCloudFragment.newInstance(false),
+            R.id.frame_container
+        )
     }
 
     override fun onQuestionDialog(title: String, tag: String, accept: String, cancel: String, question: String?) {

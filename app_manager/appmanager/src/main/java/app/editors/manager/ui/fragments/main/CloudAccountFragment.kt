@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.FrameLayout
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -301,6 +300,10 @@ class CloudAccountFragment : BaseAppFragment(),
         })
     }
 
+    override fun onWaiting() {
+        showWaitingDialog(getString(R.string.dialogs_wait_title))
+    }
+
     private fun setMenuState(isSelect: Boolean) {
         if (isSelect) {
             selectAllItem?.isVisible = false
@@ -362,14 +365,17 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onWebDavLogin(account: String, provider: WebDavApi.Providers) {
+        hideDialog()
         WebDavLoginActivity.show(requireActivity(), provider, account)
     }
 
     override fun onAccountLogin(portal: String, login: String) {
+        hideDialog()
         SignInActivity.showPortalSignIn(this, portal, login)
     }
 
     override fun onGoogleDriveLogin() {
+        hideDialog()
         val storage = Storage(
             ApiContract.Storage.GOOGLEDRIVE,
             Constants.Google.COM_CLIENT_ID,
@@ -379,6 +385,7 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onDropboxLogin() {
+        hideDialog()
         val storage = Storage(
             ApiContract.Storage.DROPBOX,
             Constants.DropBox.COM_CLIENT_ID,
@@ -388,6 +395,7 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onOneDriveLogin() {
+        hideDialog()
         val storage = Storage(
             OneDriveUtils.ONEDRIVE_STORAGE,
             Constants.OneDrive.COM_CLIENT_ID,
@@ -405,6 +413,7 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onError(message: String?) {
+        hideDialog()
         message?.let {
             showSnackBar(message)
         }
