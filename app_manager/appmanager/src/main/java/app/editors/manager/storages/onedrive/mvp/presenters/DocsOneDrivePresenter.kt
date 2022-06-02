@@ -6,10 +6,10 @@ import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import app.documents.core.network.ApiContract
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.oneDriveLoginService
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
@@ -108,11 +108,11 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         val accData = AccountUtils.getAccountData(context, account)
         networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_AUTH_URL)
         val map = mapOf(
-            StorageUtils.ARG_CLIENT_ID to Constants.OneDrive.COM_CLIENT_ID,
+            StorageUtils.ARG_CLIENT_ID to BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
             StorageUtils.ARG_SCOPE to StorageUtils.OneDrive.VALUE_SCOPE,
-            StorageUtils.ARG_REDIRECT_URI to Constants.OneDrive.COM_REDIRECT_URL,
+            StorageUtils.ARG_REDIRECT_URI to BuildConfig.ONE_DRIVE_COM_REDIRECT_URL,
             StorageUtils.OneDrive.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_REFRESH,
-            StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.OneDrive.COM_CLIENT_SECRET,
+            StorageUtils.OneDrive.ARG_CLIENT_SECRET to BuildConfig.ONE_DRIVE_COM_CLIENT_SECRET,
             StorageUtils.OneDrive.ARG_REFRESH_TOKEN to accData.refreshToken
         )
         disposable.add(App.getApp().oneDriveLoginService.getToken(map as Map<String, String>)

@@ -3,16 +3,13 @@ package app.editors.manager.storages.googledrive.ui.fragments
 import android.app.Activity
 import android.content.Intent
 import app.documents.core.network.ApiContract
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
-import app.editors.manager.storages.base.view.BaseStorageDocsView
-import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
-import app.editors.manager.ui.activities.main.ActionButtonFragment
+import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -118,8 +115,8 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
     override fun onRefreshToken() {
         val storage = Storage(
             ApiContract.Storage.GOOGLEDRIVE,
-            Constants.Google.COM_CLIENT_ID,
-            Constants.Google.COM_REDIRECT_URL
+            BuildConfig.GOOGLE_COM_CLIENT_ID,
+            BuildConfig.GOOGLE_COM_REDIRECT_URL
         )
         showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
     }

@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentChooseCloudsBinding
+import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
 import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
-import app.editors.manager.managers.utils.Constants
-import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
@@ -93,8 +93,8 @@ class CloudsFragment : BaseAppFragment() {
         ) {
             val storage = Storage(
                 OneDriveUtils.ONEDRIVE_STORAGE,
-                Constants.OneDrive.COM_CLIENT_ID,
-                Constants.OneDrive.COM_REDIRECT_URL
+                BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
+                BuildConfig.ONE_DRIVE_COM_REDIRECT_URL
             )
             showFragment(OneDriveSignInFragment.newInstance(storage), OneDriveSignInFragment.TAG, false)
         }
@@ -105,8 +105,8 @@ class CloudsFragment : BaseAppFragment() {
         ) {
             val storage = Storage(
                 ApiContract.Storage.DROPBOX,
-                Constants.DropBox.COM_CLIENT_ID,
-                Constants.DropBox.COM_REDIRECT_URL
+                BuildConfig.DROP_BOX_COM_CLIENT_ID,
+                BuildConfig.DROP_BOX_COM_REDIRECT_URL
             )
             showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
         }
@@ -117,11 +117,12 @@ class CloudsFragment : BaseAppFragment() {
         ) {
             val storage = Storage(
                 ApiContract.Storage.GOOGLEDRIVE,
-                Constants.Google.COM_CLIENT_ID,
-                Constants.Google.COM_REDIRECT_URL
+                BuildConfig.GOOGLE_COM_CLIENT_ID,
+                BuildConfig.GOOGLE_COM_REDIRECT_URL
             )
             showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
         }
+
 
         viewBinding?.cloudsItemYandex?.isVisible = false
 //        viewBinding?.cloudsItemYandex?.bind(

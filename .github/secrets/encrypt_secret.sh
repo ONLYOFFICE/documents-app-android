@@ -10,7 +10,6 @@ SECRETS=(
     "../../app_manager/Onlyoffice.jks"
     "../../app_manager/appmanager/google-services.json"
     "../../app_manager/appmanager/src/main/res/values/facebook_id.xml"
-    "../../app_manager/appmanager/src/main/java/app/editors/manager/managers/utils/Constants.java"
     "../../toolkit/libtoolkit/src/main/res/values/auth_strings.xml"
 )
 
