@@ -346,6 +346,8 @@
     <string name="placeholder_media_error">Unable to load media</string>
     <string name="placeholder_try_again">Try again</string>
     <string name="placeholder_loading_files">Loading files…</string>
+    <string name="placeholder_loading_users">Loading users…</string>
+    <string name="placeholder_loading_groups">Loading groups…</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>
@@ -648,6 +650,7 @@
     <string name="filter_type_all">All files</string>
     <string name="filter_author_users">Users</string>
     <string name="filter_author_groups">Groups</string>
+    <string name="filter_author_owner">Me</string>
     <string name="filter_exclude_subfolders">Exclude subfolders</string>
     <string name="filter_show_results">Show %1$s results</string>
     <string name="filter_button_reset">RESET</string>

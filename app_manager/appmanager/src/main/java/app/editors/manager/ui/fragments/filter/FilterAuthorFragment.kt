@@ -4,17 +4,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.setFragmentResult
 import app.editors.manager.R
+import app.editors.manager.mvp.models.filter.Author
 import app.editors.manager.mvp.models.filter.FilterAuthor
 import app.editors.manager.mvp.presenters.filter.FilterAuthorPresenter
 import app.editors.manager.mvp.views.filter.FilterAuthorView
 import app.editors.manager.ui.adapters.AuthorAdapter
 import app.editors.manager.ui.fragments.base.ListFragment
+import app.editors.manager.ui.views.custom.PlaceholderViews
 import moxy.presenter.InjectPresenter
-
-sealed class Author {
-    class Group(val id: String, val title: String) : Author()
-    class User(val id: String, val name: String, val department: String, val avatarUrl: String) : Author()
-}
 
 class FilterAuthorFragment : ListFragment(), FilterAuthorView {
 
@@ -56,14 +53,39 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView {
         init()
     }
 
-    override fun onRefresh() { }
+    override fun onRefresh() {}
 
     override fun onGetUsers(users: List<Author.User>) {
-        authorAdapter?.setItems(users)
+        if (users.isEmpty()) {
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.USERS)
+        } else {
+            authorAdapter?.itemsList = users
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
+        }
     }
 
     override fun onGetGroups(groups: List<Author.Group>) {
-        authorAdapter?.setItems(groups)
+        if (groups.isEmpty()) {
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.GROUPS)
+        } else {
+            authorAdapter?.itemsList = groups
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
+        }
+    }
+
+    override fun onLoadingGroups() {
+        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD_GROUPS)
+    }
+
+    override fun onLoadingUsers() {
+        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD_USERS)
+    }
+
+    override fun onUpdateAvatar(user: Author.User) {
+        authorAdapter?.let { adapter ->
+            val position = adapter.updateItem(user)
+            adapter.notifyItemChanged(position, AuthorAdapter.PAYLOAD_AVATAR)
+        }
     }
 
     override fun onError(message: String?) {

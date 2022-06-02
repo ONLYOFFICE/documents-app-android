@@ -1,11 +1,15 @@
 package app.editors.manager.mvp.presenters.filter
 
 import app.documents.core.share.ShareService
+import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.getShareApi
+import app.editors.manager.managers.utils.GlideUtils
+import app.editors.manager.mvp.models.filter.Author
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.filter.FilterAuthorView
-import app.editors.manager.ui.fragments.filter.Author
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -17,21 +21,44 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
     private val api: ShareService
         get() = App.getApp().appComponent.context.getShareApi()
 
+    private val accountId: String?
+        get() = App.getApp().appComponent.context.accountOnline?.id
+
+    private val avatarMapper: (Author.User) -> Author.User = { user ->
+        user.also {
+            user.avatar = GlideUtils.loadAvatar(user.avatarUrl)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable = null
+    }
+
+    init {
+        App.getApp().appComponent.inject(this)
+    }
+
     fun getUsers() {
         disposable = api.getUsers()
             .subscribeOn(Schedulers.io())
+            .doOnSubscribe { viewState.onLoadingUsers() }
             .map { response ->
-                response.response.map {
-                    Author.User(it.id, it.displayName, it.department, it.avatarMedium)
-                }
+                response.response
+                    .map { Author.User(it.id, it.displayName, it.department, it.avatarMedium) }
+                    .moveOwnerToFirstPosition()
             }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(viewState::onGetUsers, this::fetchError)
+            .subscribe({ users ->
+                viewState.onGetUsers(users)
+                loadAvatars(users)
+            }, this::fetchError)
     }
 
     fun getGroups() {
         disposable = api.getGroups()
             .subscribeOn(Schedulers.io())
+            .doOnSubscribe { viewState.onLoadingGroups() }
             .map { response ->
                 response.response.map {
                     Author.Group(it.id, it.name)
@@ -41,8 +68,30 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
             .subscribe(viewState::onGetGroups, this::fetchError)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable = null
+    private fun loadAvatars(list: List<Author.User>) {
+        disposable = Observable.fromIterable(list)
+            .subscribeOn(Schedulers.io())
+            .map(avatarMapper)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(viewState::onUpdateAvatar, this::fetchError)
+    }
+
+    private fun List<Author.User>.moveOwnerToFirstPosition(): List<Author.User> {
+        return apply {
+            find { it.id == accountId }?.let { user ->
+                (this as MutableList).apply {
+                    remove(user)
+                    add(
+                        index = 0,
+                        element = Author.User(
+                            id = user.id,
+                            name = context.getString(R.string.filter_author_owner),
+                            department = user.department,
+                            avatarUrl = user.avatarUrl
+                        )
+                    )
+                }
+            }
+        }
     }
 }

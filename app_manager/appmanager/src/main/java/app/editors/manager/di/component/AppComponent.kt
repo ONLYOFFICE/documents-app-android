@@ -19,6 +19,7 @@ import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.presenters.filter.FilterAuthorPresenter
 import app.editors.manager.mvp.presenters.filter.FilterPresenter
 import app.editors.manager.mvp.presenters.login.*
 import app.editors.manager.mvp.presenters.main.*
@@ -177,4 +178,5 @@ interface AppComponent {
     fun inject(viewModel: RemoteUrlViewModel)
     fun inject(passcodeActivity: PasscodeActivity?)
     fun inject(docsFilterPresenter: FilterPresenter)
+    fun inject(filterAuthorPresenter: FilterAuthorPresenter)
 }
