@@ -157,7 +157,6 @@
     <string name="list_headers_week">Semana</string>
     <string name="list_headers_year">Año</string>
     <string name="list_headers_yesterday">Ayer</string>
-    <string name="login_accounts_select_add">Añadir cuenta en la nube</string>
     <string name="login_accounts_select_title">Seleccionar cuenta</string>
     <string name="login_api_init_error">Error Init</string>
     <string name="login_api_init_portal_error">Error de sintaxis en nombre de la oficina en nube</string>
@@ -381,7 +380,6 @@
     <string name="cloud_only_office_description">Guarde documentos en la nube y colabore en ellos</string>
     <string name="cloud_accounts_title">Cuentas</string>
     <string name="error_long_file_name">El nombre del archivo es demasiado largo</string>
-    <string name="dialog_remove_account_title">Eliminar la cuenta</string>
     <string name="dialog_remove_account_description">
         La cuenta con el correo electrónico %1$s del portal %2$s será desconectada y eliminada de la lista de cuentas. \¡Aviso! Tendrá que introducir la dirección del portal, el correo y la contraseña. ¡Todos los archivos estarán seguros!
     </string>

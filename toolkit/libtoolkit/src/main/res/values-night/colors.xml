@@ -19,6 +19,9 @@
     <color name="colorOutline">#3F3F3F</color>
     <color name="colorBgDescription">#363636</color>
 
+    <color name="colorGrey">#8AFFFFFF</color>
+    <color name="colorLightRed">#FF5F52</color>
+
     <color name="colorAppBar">@color/colorPrimaryDark</color>
     <color name="colorBottomBar">#191919</color>
 

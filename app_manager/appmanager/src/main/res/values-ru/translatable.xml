@@ -166,7 +166,6 @@
     <string name="list_headers_week">На этой неделе</string>
     <string name="list_headers_year">В этом году</string>
     <string name="list_headers_yesterday">Вчера</string>
-    <string name="login_accounts_select_add">Добавить облачный аккаунт</string>
     <string name="login_accounts_select_title">Выбор аккаунта</string>
     <string name="login_api_init_error">Ошибка инициализации</string>
     <string name="login_api_init_portal_error">Синтаксическая ошибка в адресе облачного офиса</string>
@@ -410,7 +409,6 @@
     <string name="cloud_only_office_description">Храните документы в облаке и работайте над ними совместно</string>
     <string name="cloud_accounts_title">Аккаунты</string>
     <string name="error_long_file_name">Слишком длинное имя файла</string>
-    <string name="dialog_remove_account_title">Удалить аккаунт</string>
     <string name="dialog_remove_account_description">
         Пользователь с %1$s с портала %2$s выйдет из системы и будет удален из списка аккаунтов. \n\nОбратите внимание: для входа в систему потребуется ввести адрес портала, email и пароль. Все файлы останутся в сохранности.
     </string>

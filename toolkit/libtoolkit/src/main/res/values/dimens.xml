@@ -28,6 +28,8 @@
     <dimen name="screen_auth_login_accent_button_height">56dp</dimen>
     <dimen name="screen_auth_accent_button_text_size">14sp</dimen>
 
+    <dimen name="accounts_dialog_fragment_height">600dp</dimen>
+    <dimen name="accounts_dialog_fragment_width">480dp</dimen>
 
     <!-- Margins/Padding -->
     <dimen name="default_margin_xxxlarge">48dp</dimen>

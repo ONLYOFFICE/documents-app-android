@@ -1,5 +1,6 @@
 package app.editors.manager.ui.compose.base
 
+import android.util.LayoutDirection
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -18,10 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.core.text.layoutDirection
 import app.editors.manager.compose.ui.theme.colorAppBar
+import java.util.*
 
 @Composable
 fun Spacer(size: Dp) {
@@ -34,7 +38,7 @@ fun CustomAppBar(@StringRes title: Int, @DrawableRes icon: Int, click: () -> Uni
     TopAppBar(
         title = { Text(text = stringResource(id = title)) },
         navigationIcon = {
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().mirror()) {
                 Icon(
                     painter = painterResource(id = icon),
                     contentDescription = "Back",
@@ -55,4 +59,11 @@ fun Modifier.clickableRipple(onClick: () -> Unit): Modifier = composed {
             onClick()
         }
     )
+}
+
+fun Modifier.mirror(): Modifier {
+    return if (Locale.getDefault().layoutDirection == LayoutDirection.RTL)
+        this.scale(scaleX = -1f, scaleY = 1f)
+    else
+        this
 }

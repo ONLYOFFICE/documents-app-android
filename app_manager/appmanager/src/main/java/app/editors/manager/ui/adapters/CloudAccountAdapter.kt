@@ -33,7 +33,9 @@ class CloudAccountAdapter(
         set(value) {
             if (field != value) {
                 field = value
-                notifyDataSetChanged()
+                repeat(itemList.size) {
+                    notifyItemChanged(it)
+                }
             }
         }
 
@@ -72,7 +74,7 @@ class CloudAccountAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == mList.size - 1) {
+        return if (position == 0) {
             2
         } else {
             1
@@ -80,7 +82,7 @@ class CloudAccountAdapter(
     }
 
     override fun setItems(list: MutableList<CloudAccount>) {
-        list.add(CloudAccount(""))
+        list.add(0, CloudAccount(""))
         super.setItems(list)
     }
 
@@ -100,7 +102,6 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     private val iconSelectableLayout: FrameLayout = view.findViewById(R.id.selectableLayout)
     private val accountName: AppCompatTextView = view.findViewById(R.id.accountItemName)
     private val accountPortal: AppCompatTextView = view.findViewById(R.id.accountItemPortal)
-    private val accountEmail: AppCompatTextView = view.findViewById(R.id.accountItemEmail)
     private val accountContext: AppCompatImageButton = view.findViewById(R.id.accountItemContext)
 
     var itemDetailsLookup: ItemDetailsLookup.ItemDetails<String>? = null
@@ -115,7 +116,6 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         accountName.text = account.name
         accountPortal.text = account.portal
-        accountEmail.text = account.login
         accountContext.visibility = View.VISIBLE
         if (!isSelection) {
             if (account.isOnline) {
@@ -127,14 +127,13 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             checkImage.visibility = View.GONE
         }
         if (account.isWebDav) {
-            accountName.visibility = View.GONE
+            accountName.text = account.login
             ManagerUiUtils.setWebDavImage(account.webDavProvider, iconSelectableImage)
         } else if(account.isOneDrive) {
             iconSelectableImage.setOneDriveImage()
         } else if(account.isDropbox) {
             iconSelectableImage.setDropboxImage(account)
         } else {
-            accountName.visibility = View.VISIBLE
             val url: String = if (account.avatarUrl?.contains("static") == true || account.isGoogleDrive) {
                 account.avatarUrl ?: ""
             } else {
@@ -186,12 +185,11 @@ internal class AddViewHolder(
     private val addLayout: LinearLayoutCompat =
         view.findViewById(R.id.fragment_accounts_add_account)
 
+    private val height = addLayout.layoutParams.height
+
     fun bind(isSelection: Boolean?) {
-        if (isSelection == true) {
-            itemView.visibility = View.GONE
-        } else {
-            itemView.visibility = View.VISIBLE
-        }
+//        addLayout.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+        addLayout.layoutParams.height = if (isSelection == true) 0 else height
         addLayout.setOnClickListener {
             listener?.invoke()
         }

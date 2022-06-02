@@ -155,7 +155,6 @@
     <string name="list_headers_week">W tym tygodniu</string>
     <string name="list_headers_year">W tym roku</string>
     <string name="list_headers_yesterday">Wczoraj</string>
-    <string name="login_accounts_select_add">Dodaj konto w chmurze</string>
     <string name="login_accounts_select_title">Wybierz konto</string>
     <string name="login_api_init_error">Błąd Init</string>
     <string name="login_api_init_portal_error">Błąd składni nazwy portalu</string>
@@ -379,7 +378,6 @@
     <string name="cloud_only_office_description">Przechowuj dokumenty i współpracuj nad nimi w chmurze</string>
     <string name="cloud_accounts_title">Konta</string>
     <string name="error_long_file_name">Nazwa pliku jest zbyt długa</string>
-    <string name="dialog_remove_account_title">Usuń konto</string>
     <string name="dialog_remove_account_description">
         Użytkownicy z %1$s z %2$s portalu zostaną wylogowani i usunięci z listy kont. \n\nUwaga: aby się zalogować, należy wpisać adres portalu, e-mail oraz hasło. Wszystkie Twoje pliki pozostaną bezpieczne.
     </string>
