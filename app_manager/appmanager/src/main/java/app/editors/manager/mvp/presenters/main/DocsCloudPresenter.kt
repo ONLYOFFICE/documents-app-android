@@ -66,7 +66,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         fileProvider = CloudFileProvider()
     }
 
-
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         downloadReceiver.setOnDownloadListener(this)

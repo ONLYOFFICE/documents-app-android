@@ -58,14 +58,11 @@ class MessageService : FirebaseMessagingService() {
                        )
                    )
 
-//                   val uri = Uri.Builder().scheme("oodocuments").path("openfile")
-//                       .appendQueryParameter("data", Json.encodeToString(model))
-//                       .build()
-
                    val uri = Uri.parse("oodocuments://openfile?data=${Json{ encodeDefaults = true}.encodeToString(model)}&push=true#Intent;scheme=oodocuments;package=com.onlyoffice.documents;end;")
 
                     val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data =uri
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        data = uri
                     }
 
                    val contentIntent = PendingIntent.getActivity(

@@ -72,10 +72,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         private const val URL_KEY = "url"
         const val KEY_CODE = "code"
 
-        fun show(context: Context, isCode: Boolean? = true) {
+        fun show(context: Context, isCode: Boolean? = true, bundle: Bundle? = null) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 isCode?.let { putExtra(KEY_CODE, isCode) }
+                bundle?.let { putExtras(bundle)  }
             })
         }
     }
