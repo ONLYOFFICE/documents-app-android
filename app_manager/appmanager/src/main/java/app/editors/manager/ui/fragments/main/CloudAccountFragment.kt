@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.FrameLayout
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -15,7 +14,6 @@ import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.presenters.main.CloudAccountState

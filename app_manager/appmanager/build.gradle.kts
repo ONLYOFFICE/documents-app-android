@@ -105,6 +105,7 @@ android {
         buildConfigField("String", "DROP_BOX_INFO_CLIENT_ID","\"" + keystoreProperties["DROP_BOX_INFO_CLIENT_ID"] + "\"" )
         buildConfigField("String", "DROP_BOX_INFO_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_INFO_REDIRECT_URL"] + "\"" )
         buildConfigField("String", "DROP_BOX_COM_CLIENT_ID","\"" + keystoreProperties["DROP_BOX_COM_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "DROP_BOX_COM_CLIENT_SECRET","\"" + keystoreProperties["DROP_BOX_COM_CLIENT_SECRET"] + "\"" )
         buildConfigField("String", "DROP_BOX_COM_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_COM_REDIRECT_URL"] + "\"" )
         buildConfigField("String", "DROP_BOX_AUTH_URL","\"" + keystoreProperties["DROP_BOX_AUTH_URL"] + "\"" )
         buildConfigField("String", "DROP_BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["DROP_BOX_VALUE_RESPONSE_TYPE"] + "\"" )

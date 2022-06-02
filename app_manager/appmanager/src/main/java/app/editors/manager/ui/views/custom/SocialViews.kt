@@ -8,7 +8,6 @@ import android.view.View
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludeSocialNetworksLayoutBinding
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.isVisible
 import com.facebook.*
 import com.facebook.login.LoginBehavior

@@ -1,50 +1,71 @@
 package app.editors.manager.storages.dropbox.mvp.presenters
 
-import android.accounts.Account
 import app.documents.core.account.CloudAccount
+import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
 import app.editors.manager.app.dropboxLoginService
+import app.editors.manager.storages.base.presenter.BaseStorageSignInPresenter
+import app.editors.manager.storages.base.view.BaseStorageSignInView
 import app.editors.manager.storages.dropbox.dropbox.api.DropboxService
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxResponse
 import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.storages.dropbox.mvp.models.request.AccountRequest
+import app.editors.manager.storages.dropbox.mvp.models.request.TokenType
+import app.editors.manager.storages.dropbox.mvp.models.request.TokenRequest
+import app.editors.manager.storages.dropbox.mvp.models.response.TokenResponse
 import app.editors.manager.storages.dropbox.mvp.models.response.UserResponse
-import app.editors.manager.storages.dropbox.mvp.views.DropboxSignInView
-import app.editors.manager.mvp.presenters.base.BasePresenter
-import app.editors.manager.storages.base.fragment.BaseStorageSignInFragment
-import app.editors.manager.storages.base.presenter.BaseStorageSignInPresenter
-import app.editors.manager.storages.base.view.BaseStorageSignInView
-import io.reactivex.disposables.Disposable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.AccountData
-import lib.toolkit.base.managers.utils.AccountUtils
+import okhttp3.Credentials
 
-class DropboxSignInPresenter: BaseStorageSignInPresenter<BaseStorageSignInView>() {
+class DropboxSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView>() {
 
     init {
         App.getApp().appComponent.inject(this)
     }
 
-    fun getUserInfo(token: String, uid: String) {
-        val accountRequest = AccountRequest(account_id = uid.replace("%3A", ":"))
-        disposable = App.getApp().dropboxLoginService.getUserInfo("Bearer $token", accountRequest)
-            .subscribe { response ->
-                when(response) {
+    fun getUserInfo(token: String) {
+        val request = TokenRequest(code = token, TokenType.GET.type)
+        val service = App.getApp().dropboxLoginService
+
+        var accessToken = ""
+        var refreshToken = ""
+
+        disposable = service.getRefreshToken(
+            Credentials.basic(BuildConfig.DROP_BOX_COM_CLIENT_ID, BuildConfig.DROP_BOX_COM_CLIENT_SECRET),
+            mapOf(
+                TokenRequest::code.name to request.code,
+                TokenRequest::grant_type.name to request.grant_type,
+                TokenRequest::redirect_uri.name to request.redirect_uri
+            )
+        ).flatMap { responseToken ->
+            when (responseToken) {
+                is DropboxResponse.Success -> {
+                    val response = responseToken.response as TokenResponse
+                    accessToken = response.accessToken
+                    refreshToken = response.refreshToken
+
+                    service.getUserInfo("Bearer ${response.accessToken}", AccountRequest(response.accountId))
+                }
+                is DropboxResponse.Error -> {
+                    throw responseToken.error
+                }
+            }
+        }.subscribe({ response ->
+            when(response) {
                     is DropboxResponse.Success -> {
-                        createUser(response.response as UserResponse, token)
+                        createUser(response.response as UserResponse, accessToken, refreshToken)
                     }
                     is DropboxResponse.Error -> {
                         throw response.error
                     }
                 }
-            }
+        }) { error ->
+            fetchError(error)
+        }
+
     }
 
-    private fun createUser(user: UserResponse, accessToken: String) {
+    private fun createUser(user: UserResponse, accessToken: String, refreshToken: String) {
         networkSettings.setBaseUrl(DropboxService.DROPBOX_BASE_URL)
         val cloudAccount = CloudAccount(
             id = user.account_id,
@@ -59,7 +80,8 @@ class DropboxSignInPresenter: BaseStorageSignInPresenter<BaseStorageSignInView>(
             isSslState = networkSettings.getSslState(),
             isSslCiphers = networkSettings.getCipher(),
             name = user.name?.display_name,
-            avatarUrl = user.profile_photo_url
+            avatarUrl = user.profile_photo_url,
+            refreshToken = refreshToken
         )
 
         val accountData = AccountData(
