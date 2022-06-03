@@ -1,5 +1,7 @@
 package app.documents.core.login
 
+import app.documents.core.network.models.login.RequestDeviceToken
+import app.documents.core.network.models.login.RequestPushSubscribe
 import app.documents.core.network.models.login.request.*
 import app.documents.core.network.models.login.response.ResponseSettings
 import com.jakewharton.rxrelay2.BehaviorRelay
@@ -7,6 +9,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
 
@@ -96,6 +99,18 @@ class LoginServiceProvider(
 
     override fun passwordRecovery(request: RequestPassword): Single<LoginResponse> {
         return loginService.forgotPassword(request).map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun setFirebaseToken(token: String, deviceToken: String): Single<Response<ResponseBody>> {
+        return loginService.registerDevice(token, RequestDeviceToken(deviceToken))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun subscribe(token: String, deviceToken: String, isSubscribe: Boolean): Single<Response<ResponseBody>> {
+        return loginService.subscribe(token, RequestPushSubscribe(deviceToken, isSubscribe))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

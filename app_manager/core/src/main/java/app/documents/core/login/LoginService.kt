@@ -1,9 +1,13 @@
 package app.documents.core.login
 
 import app.documents.core.network.ApiContract
+import app.documents.core.network.models.login.RequestDeviceToken
+import app.documents.core.network.models.login.RequestPushSubscribe
 import app.documents.core.network.models.login.request.*
 import app.documents.core.network.models.login.response.*
 import io.reactivex.Single
+import kotlinx.serialization.Serializable
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -114,5 +118,25 @@ interface LoginService {
     )
     @POST("api/" + ApiContract.API_VERSION + "/people/password" + ApiContract.RESPONSE_FORMAT)
     fun forgotPassword(@Body body: RequestPassword?): Single<Response<ResponsePassword>>
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/settings/push/docregisterdevice" + ApiContract.RESPONSE_FORMAT)
+    fun registerDevice(
+        @Header(ApiContract.HEADER_AUTHORIZATION) token: String,
+        @Body body: RequestDeviceToken,
+    ): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/settings/push/docsubscribe" + ApiContract.RESPONSE_FORMAT)
+    fun subscribe(
+        @Header(ApiContract.HEADER_AUTHORIZATION) token: String,
+        @Body body: RequestPushSubscribe
+    ): Single<Response<ResponseBody>>
 
 }

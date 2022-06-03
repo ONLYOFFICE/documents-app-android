@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +15,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
+import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.mvp.models.user.Thirdparty
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.ProfileView
@@ -134,17 +136,31 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
         }
     }
 
+    @SuppressLint("CheckResult")
     fun logout() {
-        CoroutineScope(Dispatchers.Default).launch {
-            AccountUtils.getAccount(context, account.getAccountName())?.let {
-                if (account.isWebDav) {
-                    AccountUtils.setPassword(context, it, null)
-                } else if (account.isDropbox || account.isOneDrive || account.isGoogleDrive) {
-                    AccountUtils.setToken(context, it, "")
-                } else {
-                    AccountUtils.setToken(context, it, null)
+        AccountUtils.getAccount(context, account.getAccountName())?.let { systemAccount ->
+            if (account.isWebDav) {
+                AccountUtils.setPassword(context, systemAccount, null)
+            } else if (account.isDropbox || account.isOneDrive || account.isGoogleDrive) {
+                AccountUtils.setToken(context, systemAccount, "")
+            } else {
+                GoogleUtils.getDeviceToken({ deviceToken ->
+                    context.loginService.subscribe(AccountUtils.getToken(context, account.getAccountName()) ?: "", deviceToken, false).subscribe({
+                        update(systemAccount)
+                    }) {
+                        update(systemAccount)
+                    }
+                }) {
+                    update(systemAccount)
                 }
+
             }
+        }
+    }
+
+    private fun update(systemAccount: Account) {
+        CoroutineScope(Dispatchers.Default).launch {
+            AccountUtils.setToken(context, systemAccount, null)
             accountDao.updateAccount(account.copyWithToken(isOnline = false).apply {
                 token = ""
                 password = ""
@@ -155,5 +171,4 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
             }
         }
     }
-
 }

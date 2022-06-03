@@ -1,6 +1,7 @@
 package app.editors.manager.ui.fragments.main
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,9 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.models.OpenDataModel
+import app.editors.manager.mvp.models.models.OpenFileModel
+import app.editors.manager.mvp.models.models.OpenFolderModel
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerState
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -24,6 +28,8 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.factory.TabFragmentFactory
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -110,7 +116,28 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         restoreStates(savedInstanceState)
         placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.placeholderLayout)
         placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
-        presenter.getState(requireActivity().intent.data)
+        checkBundle()
+//        presenter.getState(requireActivity().intent.data)
+    }
+
+    @Suppress("JSON_FORMAT_REDUNDANT")
+    private fun checkBundle() {
+        val bundle = requireActivity().intent.extras
+        var data = requireActivity().intent.data
+        if (bundle != null && (bundle.containsKey("fileId") || bundle.containsKey("folderId"))){
+            val fileId = bundle.getString("fileId")?.toInt()
+            val folderId = bundle.getString("folderId")?.toInt()
+            val model = OpenDataModel(
+                file = OpenFileModel(
+                    id = fileId
+                ),
+                folder = OpenFolderModel(
+                    id = folderId
+                )
+            )
+            data = Uri.parse("oodocuments://openfile?data=${Json{ encodeDefaults = true}.encodeToString(model)}&push=true")
+        }
+        presenter.getState(data)
     }
 
     private fun restoreStates(savedInstanceState: Bundle?) {
@@ -227,7 +254,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun onError(message: String?) {
-        message?.let { showSnackBar(it).show() }
+        message?.let { showSnackBar(it) }
         (requireActivity() as? MainActivity)?.onUnauthorized(message)
     }
 

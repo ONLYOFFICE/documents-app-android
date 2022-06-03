@@ -300,6 +300,10 @@ class CloudAccountFragment : BaseAppFragment(),
         })
     }
 
+    override fun onWaiting() {
+        showWaitingDialog(getString(R.string.dialogs_wait_title))
+    }
+
     private fun setMenuState(isSelect: Boolean) {
         if (isSelect) {
             selectAllItem?.isVisible = false
@@ -361,14 +365,17 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onWebDavLogin(account: String, provider: WebDavApi.Providers) {
+        hideDialog()
         WebDavLoginActivity.show(requireActivity(), provider, account)
     }
 
     override fun onAccountLogin(portal: String, login: String) {
+        hideDialog()
         SignInActivity.showPortalSignIn(this, portal, login)
     }
 
     override fun onGoogleDriveLogin() {
+        hideDialog()
         val storage = Storage(
             ApiContract.Storage.GOOGLEDRIVE,
             BuildConfig.GOOGLE_COM_CLIENT_ID,
@@ -378,6 +385,7 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onDropboxLogin() {
+        hideDialog()
         val storage = Storage(
             ApiContract.Storage.DROPBOX,
             BuildConfig.DROP_BOX_COM_CLIENT_ID,
@@ -387,6 +395,7 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onOneDriveLogin() {
+        hideDialog()
         val storage = Storage(
             OneDriveUtils.ONEDRIVE_STORAGE,
             BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
@@ -404,6 +413,7 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onError(message: String?) {
+        hideDialog()
         message?.let {
             showSnackBar(message)
         }

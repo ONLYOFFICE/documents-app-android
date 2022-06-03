@@ -238,6 +238,10 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     fun checkFileData(fileData: Uri) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let { account ->
+                if (fileData.queryParameterNames.contains("push")) {
+                    viewState.openFile(account, fileData.getQueryParameter("data") ?: "")
+                    return@launch
+                }
                 val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query))
                 if (data.portal?.equals(
                         account.portal,

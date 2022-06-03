@@ -66,7 +66,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         fileProvider = CloudFileProvider()
     }
 
-
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         downloadReceiver.setOnDownloadListener(this)
@@ -589,6 +588,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
+        if (model.file?.id == null && model.folder?.id != null) {
+            openFolder(model.folder.id.toString(), 0)
+            return
+        }
         fileProvider?.let { provider ->
             disposable.add(provider.fileInfo(CloudFile().apply {
                 id = model.file?.id.toString()
