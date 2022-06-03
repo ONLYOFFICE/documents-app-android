@@ -64,6 +64,8 @@ class App : Application() {
             initCrashlytics()
         }
 
+    var isKeyStore: Boolean = true
+
     private var _appComponent: AppComponent? = null
     val appComponent: AppComponent
         get() = checkNotNull(_appComponent) {

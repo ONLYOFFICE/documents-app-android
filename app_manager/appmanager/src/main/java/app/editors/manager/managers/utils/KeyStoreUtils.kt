@@ -4,10 +4,9 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import app.editors.manager.BuildConfig
-import java.security.KeyPairGenerator
-import java.security.KeyStore
-import java.security.PrivateKey
-import java.security.PublicKey
+import app.editors.manager.app.App
+import lib.toolkit.base.managers.utils.CryptUtils
+import java.security.*
 import javax.crypto.Cipher
 
 object KeyStoreUtils {
@@ -17,56 +16,69 @@ object KeyStoreUtils {
     private const val KEY_ALGORITHM_RSA = "RSA"
 
     fun init() {
+        try {
+            val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
+            ks.load(null)
 
-        val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
-        ks.load(null)
+            val privateKey = ks.getKey(BuildConfig.COMMUNITY_ID, null) as PrivateKey?
+            val publicKey: PublicKey? = ks.getCertificate(BuildConfig.COMMUNITY_ID)?.publicKey
 
-        val privateKey = ks.getKey(BuildConfig.COMMUNITY_ID, null) as PrivateKey?
-        val publicKey: PublicKey? = ks.getCertificate(BuildConfig.COMMUNITY_ID)?.publicKey
-
-        privateKey?.let {
-            publicKey?.let {
-                return
+            privateKey?.let {
+                publicKey?.let {
+                    return
+                }
             }
+
+            val spec = KeyGenParameterSpec.Builder(BuildConfig.COMMUNITY_ID, KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT)
+                .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
+                .build()
+
+            val kpGen = KeyPairGenerator.getInstance(KEY_ALGORITHM_RSA, ANDROID_KEY_STORE)
+            kpGen.initialize(spec)
+            kpGen.generateKeyPair()
+        } catch (error: KeyStoreException) {
+            App.getApp().isKeyStore = false
         }
-
-        val spec = KeyGenParameterSpec.Builder(BuildConfig.COMMUNITY_ID, KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT)
-            .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
-            .build()
-
-        val kpGen = KeyPairGenerator.getInstance(KEY_ALGORITHM_RSA, ANDROID_KEY_STORE)
-        kpGen.initialize(spec)
-        kpGen.generateKeyPair()
     }
 
     fun encryptData(data: String): String {
-        val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
-        ks.load(null)
+        if (App.getApp().isKeyStore) {
+            val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
+            ks.load(null)
 
-        val publicKey = ks.getCertificate(BuildConfig.COMMUNITY_ID).publicKey ?: return ""
+            val publicKey = ks.getCertificate(BuildConfig.COMMUNITY_ID).publicKey ?: return ""
 
-        val cipher = Cipher.getInstance(RSA_ECB_PKCS1_PADDING)
+            val cipher = Cipher.getInstance(RSA_ECB_PKCS1_PADDING)
 
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey)
-        val encryptedData = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey)
+            val encryptedData = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
 
-        return Base64.encodeToString(encryptedData, Base64.DEFAULT)
+            return Base64.encodeToString(encryptedData, Base64.DEFAULT)
+        } else {
+            return CryptUtils.encryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
+        }
+
+
     }
 
     fun decryptData(data: String): String {
-        val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
-        ks.load(null)
+       if (App.getApp().isKeyStore) {
+           val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
+           ks.load(null)
 
-        val privateKey = ks.getKey(BuildConfig.COMMUNITY_ID, null) as PrivateKey
+           val privateKey = ks.getKey(BuildConfig.COMMUNITY_ID, null) as PrivateKey
 
-        val encrypted = Base64.decode(data, Base64.DEFAULT)
+           val encrypted = Base64.decode(data, Base64.DEFAULT)
 
-        val cipher = Cipher.getInstance(RSA_ECB_PKCS1_PADDING)
+           val cipher = Cipher.getInstance(RSA_ECB_PKCS1_PADDING)
 
-        cipher.init(Cipher.DECRYPT_MODE, privateKey)
-        val result = cipher.doFinal(encrypted)
-        return result.toString(Charsets.UTF_8)
+           cipher.init(Cipher.DECRYPT_MODE, privateKey)
+           val result = cipher.doFinal(encrypted)
+           return result.toString(Charsets.UTF_8)
+       } else {
+           return CryptUtils.decryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
+       }
     }
 
 }
