@@ -5,20 +5,20 @@ import app.editors.manager.R
 import lib.toolkit.base.ui.adapters.holder.ViewType
 
 
-sealed class Author : ViewType {
+sealed class Author(open val id: String, open val name: String) : ViewType {
 
     class Group(
-        val id: String,
-        val title: String,
+        override val id: String,
+        override val name: String,
         override val viewType: Int = R.layout.list_author_group_item
-    ) : Author()
+    ) : Author(id, name)
 
     class User(
-        val id: String,
-        val name: String,
+        override val id: String,
+        override val name: String,
         val department: String,
         val avatarUrl: String,
         var avatar: Drawable? = null,
         override val viewType: Int = R.layout.list_author_user_item
-    ) : Author()
+    ) : Author(id, name)
 }

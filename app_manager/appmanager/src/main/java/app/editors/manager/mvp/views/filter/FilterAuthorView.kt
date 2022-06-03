@@ -21,4 +21,7 @@ interface FilterAuthorView : BaseViewExt {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onUpdateAvatar(user: Author.User)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onSearchResult(authors: List<Author>)
 }

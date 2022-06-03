@@ -17,6 +17,9 @@ import io.reactivex.schedulers.Schedulers
 class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
 
     private var disposable: Disposable? = null
+    private val authorStack: MutableList<Author> = mutableListOf()
+    var searchingValue: String = ""
+    var isSearchingMode: Boolean = false
 
     private val api: ShareService
         get() = App.getApp().appComponent.context.getShareApi()
@@ -30,42 +33,13 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable = null
-    }
-
     init {
         App.getApp().appComponent.inject(this)
     }
 
-    fun getUsers() {
-        disposable = api.getUsers()
-            .subscribeOn(Schedulers.io())
-            .doOnSubscribe { viewState.onLoadingUsers() }
-            .map { response ->
-                response.response
-                    .map { Author.User(it.id, it.displayName, it.department, it.avatarMedium) }
-                    .moveOwnerToFirstPosition()
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ users ->
-                viewState.onGetUsers(users)
-                loadAvatars(users)
-            }, this::fetchError)
-    }
-
-    fun getGroups() {
-        disposable = api.getGroups()
-            .subscribeOn(Schedulers.io())
-            .doOnSubscribe { viewState.onLoadingGroups() }
-            .map { response ->
-                response.response.map {
-                    Author.Group(it.id, it.name)
-                }
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(viewState::onGetGroups, this::fetchError)
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable = null
     }
 
     private fun loadAvatars(list: List<Author.User>) {
@@ -74,6 +48,11 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
             .map(avatarMapper)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(viewState::onUpdateAvatar, this::fetchError)
+    }
+
+    private fun setStackItems(items: List<Author>) {
+        authorStack.clear()
+        authorStack.addAll(items)
     }
 
     private fun List<Author.User>.moveOwnerToFirstPosition(): List<Author.User> {
@@ -93,5 +72,39 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
                 }
             }
         }
+    }
+
+    fun getUsers() {
+        disposable = api.getUsers()
+            .subscribeOn(Schedulers.io())
+            .doOnSubscribe { viewState.onLoadingUsers() }
+            .map { response ->
+                response.response
+                    .map { Author.User(it.id, it.displayName, it.department, it.avatarMedium) }
+                    .moveOwnerToFirstPosition()
+                    .also(this::setStackItems)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ users ->
+                viewState.onGetUsers(users)
+                loadAvatars(users)
+            }, this::fetchError)
+    }
+
+    fun getGroups() {
+        disposable = api.getGroups()
+            .subscribeOn(Schedulers.io())
+            .doOnSubscribe { viewState.onLoadingGroups() }
+            .map { response ->
+                response.response.map { Author.Group(it.id, it.name) }.also(this::setStackItems)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(viewState::onGetGroups, this::fetchError)
+    }
+
+    fun search(value: String) {
+        searchingValue = value
+        val authors: List<Author> = authorStack.filter { it.name.contains(value, true) }
+        viewState.onSearchResult(authors)
     }
 }

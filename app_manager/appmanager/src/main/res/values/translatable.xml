@@ -271,6 +271,7 @@
     <!-- Main toolbar menu -->
     <string name="toolbar_menu_search_result">Search result</string>
     <string name="toolbar_menu_search_hint">Search…</string>
+    <string name="toolbar_menu_search_view_hint">Enter your query</string>
     <string name="toolbar_menu_main_options">Options</string>
     <string name="toolbar_menu_main_share">Share</string>
     <string name="toolbar_menu_main_move">Move</string>

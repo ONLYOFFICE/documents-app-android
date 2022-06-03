@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/default_toolbar_height"
             app:navigationIconTint="@color/colorPrimary"
-            app:titleTextColor="@color/colorOnSurface">
+            app:titleTextColor="@color/colorOnSurface"
+            android:theme="@style/MainToolbar">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/resetButton"

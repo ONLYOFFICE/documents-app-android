@@ -87,7 +87,9 @@
         <item name="defaultQueryHint">@string/toolbar_menu_search_hint</item>
     </style>
 
-    <style name="SearchViewTextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Title"/>
+    <style name="SearchViewTextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">20sp</item>
+    </style>
 
     <!-- ======================================================================================= -->
     <!-- Filter views -->

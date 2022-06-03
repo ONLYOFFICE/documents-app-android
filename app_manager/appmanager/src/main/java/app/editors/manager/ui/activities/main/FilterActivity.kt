@@ -1,6 +1,8 @@
 package app.editors.manager.ui.activities.main
 
 import android.os.Bundle
+import android.view.Menu
+import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.ActivityFilterBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
@@ -9,6 +11,7 @@ import lib.toolkit.base.managers.utils.FragmentUtils
 
 interface IFilterActivity {
     fun setResetButtonEnabled(isEnable: Boolean)
+    fun setResetButtonVisible(isVisible: Boolean)
 }
 
 class FilterActivity : BaseAppActivity(), IFilterActivity {
@@ -27,6 +30,11 @@ class FilterActivity : BaseAppActivity(), IFilterActivity {
         init(savedInstanceState)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.docs_filter, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         viewBinding = null
@@ -36,12 +44,8 @@ class FilterActivity : BaseAppActivity(), IFilterActivity {
         viewBinding?.resetButton?.isEnabled = isEnable
     }
 
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0) {
-            supportFragmentManager.popBackStack()
-        } else {
-            super.onBackPressed()
-        }
+    override fun setResetButtonVisible(isVisible: Boolean) {
+        viewBinding?.resetButton?.isVisible = isVisible
     }
 
     private fun init(savedInstanceState: Bundle?) {

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -79,6 +80,11 @@ class FilterFragment : BaseAppFragment(), FilterView {
         init()
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.clear()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         viewBinding = null
@@ -111,6 +117,8 @@ class FilterFragment : BaseAppFragment(), FilterView {
     }
 
     private fun init() {
+        activity?.setResetButtonVisible(true)
+        setHasOptionsMenu(true)
         setActionBarTitle(getString(R.string.filter_toolbar_title))
         initChipGroup()
         initViews()

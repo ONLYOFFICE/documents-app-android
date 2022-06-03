@@ -33,20 +33,17 @@ class AuthorViewHolder(
                     userName.text = item.name
                     arrowImage.isVisible = authorId == item.id
                     item.avatar?.let { drawable -> avatarImage.setAvatar(drawable) }
-                    root.setOnClickListener {
-                        clickListener(FilterAuthor(id = item.id, name = item.name, isGroup = false))
-                    }
                 }
             }
             is Author.Group -> {
                 with(ListAuthorGroupItemBinding.bind(view)) {
-                    groupName.text = item.title
+                    groupName.text = item.name
                     arrowImage.isVisible = authorId == item.id
-                    root.setOnClickListener {
-                        clickListener(FilterAuthor(id = item.id, name = item.title, isGroup = true))
-                    }
                 }
             }
+        }
+        view.setOnClickListener {
+            clickListener(FilterAuthor(item.id, item.name, item is Author.Group))
         }
     }
 }

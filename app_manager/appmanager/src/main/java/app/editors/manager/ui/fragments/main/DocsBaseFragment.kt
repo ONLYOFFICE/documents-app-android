@@ -11,7 +11,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
@@ -31,7 +30,6 @@ import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
-import app.editors.manager.ui.activities.main.FilterActivity
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -45,6 +43,7 @@ import app.editors.manager.ui.dialogs.MoveCopyDialog.DialogButtonOnClick
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.popup.MainActionBarPopup
 import app.editors.manager.ui.popup.SelectActionBarPopup
+import app.editors.manager.ui.views.custom.CommonSearchView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.ActivitiesUtils.createFile
@@ -503,7 +502,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onDocsFilter(list: List<Entity>?) {
         val isEmpty = list != null && list.isEmpty()
         setViewState(isEmpty)
-        setMenuMainEnabled(!isEmpty)
         explorerAdapter?.setItems(list)
     }
 
@@ -593,7 +591,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     mainItem = menu.findItem(R.id.toolbar_item_main)
                     filterItem = menu.findItem(R.id.toolbar_item_filter)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
-                    searchView = initSearchView()
+                    searchView = initSearchView(searchItem?.actionView as? SearchView)
                     presenter.initMenuSearch()
                     presenter.initMenuState()
                 }
@@ -601,25 +599,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    private fun initSearchView(): SearchView? {
-        return (searchItem?.actionView as? SearchView)?.apply {
-            maxWidth = Int.MAX_VALUE
-            isIconified = !presenter.isFilteringMode
-            setOnQueryTextListener(this@DocsBaseFragment)
-            setOnSearchClickListener { presenter.setFiltering(true) } // On search open
-            findViewById<View>(androidx.appcompat.R.id.search_plate)?.background = null
-            findViewById<EditText>(androidx.appcompat.R.id.search_src_text)?.apply {
-                setTextAppearance(lib.toolkit.base.R.style.SearchViewTextAppearance)
-                hint = "Enter your query"
-            }
-            searchCloseButton =
-                findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)?.apply {
-                    setOnClickListener {
-                        if (!isSearchViewClear)
-                            onBackPressed()
-                    }
-                }
-        }
+    private fun initSearchView(searchView: SearchView?): SearchView {
+        return CommonSearchView(
+            searchView = searchView,
+            isIconified = !presenter.isFilteringMode,
+            queryTextListener = this@DocsBaseFragment,
+            searchClickListener = { presenter.setFiltering(true) },
+            closeClickListener = { if (!isSearchViewClear) onBackPressed() }
+        ).also {
+            searchCloseButton = it.closeButton
+        }.build()
     }
 
     override fun onStateMenuSelection() {
