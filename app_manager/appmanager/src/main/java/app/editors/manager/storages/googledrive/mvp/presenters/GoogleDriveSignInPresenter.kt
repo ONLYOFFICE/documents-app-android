@@ -1,9 +1,9 @@
 package app.editors.manager.storages.googledrive.mvp.presenters
 
 import app.documents.core.account.CloudAccount
+import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
 import app.editors.manager.app.googleDriveLoginService
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.storages.base.presenter.BaseStorageSignInPresenter
 import app.editors.manager.storages.base.view.BaseStorageSignInView
@@ -21,9 +21,9 @@ class GoogleDriveSignInPresenter: BaseStorageSignInPresenter<BaseStorageSignInVi
     fun getUserInfo(code: String) {
         val map = mapOf(
             StorageUtils.ARG_CODE to code,
-            StorageUtils.ARG_CLIENT_ID to Constants.Google.COM_CLIENT_ID,
+            StorageUtils.ARG_CLIENT_ID to BuildConfig.GOOGLE_COM_CLIENT_ID,
 //            StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.Google.COM_CLIENT_SECRET,
-            StorageUtils.ARG_REDIRECT_URI to Constants.Google.COM_REDIRECT_URL,
+            StorageUtils.ARG_REDIRECT_URI to BuildConfig.GOOGLE_COM_REDIRECT_URL,
             StorageUtils.OneDrive.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_AUTH,
         )
         disposable = App.getApp().googleDriveLoginService.getUserInfo("Bearer $code")

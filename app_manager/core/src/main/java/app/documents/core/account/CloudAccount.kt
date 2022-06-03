@@ -28,7 +28,8 @@ data class CloudAccount(
     val webDavProvider: String? = null,
     val webDavPath: String? = null,
     val isAdmin: Boolean = false,
-    val isVisitor: Boolean = false
+    val isVisitor: Boolean = false,
+    val refreshToken: String = ""
 ) {
 
     var token: String = ""

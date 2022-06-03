@@ -47,6 +47,25 @@ object ApiContract {
         const val GOOGLE = "google"
     }
 
+    object Modules {
+        const val FILTER_TYPE_HEADER = "filterType"
+        const val FILTER_TYPE_VALUE = 2
+
+        const val FLAG_SUBFOLDERS = "withsubfolders"
+        const val FLAG_TRASH = "withoutTrash"
+        const val FLAG_ADDFOLDERS = "withoutAdditionalFolder"
+
+        const val PROJECT_ID = "1e044602-43b5-4d79-82f3-fd6208a11960"
+        const val CRMP_ID = "6743007C-6F95-4d20-8C88-A8601CE5E76D"
+        const val DOCUMENTS_ID = "E67BE73D-F9AE-4ce1-8FEC-1880CB518CB4"
+        const val PEOPLE_ID = "F4D98AFD-D336-4332-8778-3C6945C81EA0"
+        const val MAIL_ID = "2A923037-8B2D-487b-9A22-5AC0918ACF3F"
+        const val CALENDAR_ID = "32D24CB5-7ECE-4606-9C94-19216BA42086"
+        const val BIRTHDAYS_ID = "37620AE5-C40B-45ce-855A-39DD7D76A1FA"
+        const val TALK_ID = "BF88953E-3C43-4850-A3FB-B1E43AD53A3E"
+        const val VOIP_ID = "46CFA73A-F320-46CF-8D5B-CD82E1D67F26"
+    }
+
     object HttpCodes {
         const val NONE = -1
         const val SUCCESS = 200
@@ -159,15 +178,6 @@ object ApiContract {
         const val DEVICE_DOCUMENTS = 9
         const val CLOUD_FAVORITES = 10
         const val CLOUD_RECENT = 11
-    }
-
-    object Modules {
-        const val FILTER_TYPE_HEADER = "filterType"
-        const val FILTER_TYPE_VALUE = 2
-
-        const val FLAG_SUBFOLDERS = "withsubfolders"
-        const val FLAG_TRASH = "withoutTrash"
-        const val FLAG_ADDFOLDERS = "withoutAdditionalFolder"
     }
 
     object Operation {

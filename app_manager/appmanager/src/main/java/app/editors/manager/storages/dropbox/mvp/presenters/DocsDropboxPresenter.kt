@@ -5,10 +5,10 @@ import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import app.documents.core.network.ApiContract
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.dropboxLoginService
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
@@ -267,6 +267,30 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun refreshToken() {
-        viewState.onRefreshToken()
+       CoroutineScope(Dispatchers.Default).launch {
+           accountDao.getAccountOnline()?.let { account ->
+               val request = TokenRefreshRequest(refresh_token = account.refreshToken)
+               App.getApp().dropboxLoginService.updateRefreshToken(
+                   Credentials.basic(BuildConfig.DROP_BOX_COM_CLIENT_ID, BuildConfig.DROP_BOX_COM_CLIENT_SECRET),
+                   mapOf(
+                       TokenRefreshRequest::refresh_token.name to request.refresh_token,
+                       TokenRequest::grant_type.name to request.grant_type,
+                   )
+               ).subscribe({ responseRefresh ->
+                   if (responseRefresh is DropboxResponse.Success) {
+                       val response = responseRefresh.response as RefreshTokenResponse
+                       AccountUtils.setToken(context, account.getAccountName(), response.accessToken)
+                       setBaseUrl(DropboxService.DROPBOX_BASE_URL)
+                       getItemsById(DropboxUtils.DROPBOX_ROOT)
+                   } else {
+                       viewState.onRefreshToken()
+                   }
+               }) {
+                   viewState.onRefreshToken()
+               }
+           } ?: run {
+               viewState.onRefreshToken()
+           }
+       }
     }
 }
