@@ -20,3 +20,5 @@ data class FilterAuthor(
         }
     }
 }
+
+fun FilterAuthor.isNotEmpty(): Boolean = id.isNotEmpty() || name.isNotEmpty()

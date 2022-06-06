@@ -16,6 +16,7 @@ import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.managers.providers.ProviderError
@@ -776,11 +777,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected fun applyFilters(args: Map<String, String> = mapOf()): Map<String, String> {
         val filter = preferenceTool.filter
         return args.plus(
-            mapOf(
-                ApiContract.Parameters.ARG_FILTER_BY_TYPE to filter.type.filterVal,
-                ApiContract.Parameters.ARG_FILTER_BY_AUTHOR to filter.author.id,
-            )
-        )
+            mutableMapOf<String, String>().apply {
+                put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
+                if (isFilteringMode)
+                    put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
+                if (App.getApp().accountOnline?.isPersonal() == false)
+                    put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)
+            })
     }
 
     private fun cancelGetRequests() {

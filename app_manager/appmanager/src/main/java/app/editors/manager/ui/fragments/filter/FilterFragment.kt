@@ -11,9 +11,12 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
 import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentFilterBinding
 import app.editors.manager.mvp.models.filter.FilterAuthor
 import app.editors.manager.mvp.models.filter.FilterType
+import app.editors.manager.mvp.models.filter.isNotEmpty
 import app.editors.manager.mvp.presenters.filter.FilterPresenter
 import app.editors.manager.mvp.views.filter.FilterView
 import app.editors.manager.ui.activities.main.FilterActivity
@@ -130,15 +133,15 @@ class FilterFragment : BaseAppFragment(), FilterView {
         if (presenter.resultCount >= 0) onFilterResult(presenter.resultCount)
         activity?.setResetButtonEnabled(presenter.hasFilter)
         viewBinding?.let { binding ->
-            binding.users.setOnClickListener {
-                showAuthorFragment(presenter.filterAuthor.id, false)
-            }
-            binding.groups.setOnClickListener {
-                showAuthorFragment(presenter.filterAuthor.id, true)
-            }
-            binding.subfolder.isChecked = presenter.excludeSubfolder
-            binding.subfolder.setOnCheckedChangeListener { _, checked ->
-                presenter.excludeSubfolder = checked
+            // Subfolder search is currently only available for personal portals
+            if (App.getApp().accountOnline?.isPersonal() == true) {
+                binding.subfolder.isChecked = presenter.excludeSubfolder
+                binding.subfolder.setOnCheckedChangeListener { _, checked ->
+                    presenter.excludeSubfolder = checked
+                }
+            } else {
+                binding.searchTitle.isVisible = false
+                binding.subfolder.isVisible = false
             }
             binding.showButton.setOnClickListener {
                 requireActivity().finish()
@@ -148,23 +151,35 @@ class FilterFragment : BaseAppFragment(), FilterView {
 
     private fun setAuthorChips() {
         viewBinding?.let { binding ->
-            val author = presenter.filterAuthor
-            if (author.id.isNotEmpty()) {
-                binding.users.isChecked = !author.isGroup
-                binding.groups.isChecked = author.isGroup
-                binding.users.isCloseIconVisible = !author.isGroup
-                binding.groups.isCloseIconVisible = author.isGroup
-                if (!author.isGroup) {
-                    binding.groups.text = getString(R.string.filter_author_groups)
-                    binding.users.text = author.name
-                    binding.users.setOnCloseIconClickListener { presenter.clearAuthor() }
-                } else {
-                    binding.users.text = getString(R.string.filter_author_users)
-                    binding.groups.text = author.name
-                    binding.groups.setOnCloseIconClickListener { presenter.clearAuthor() }
+            with(binding) {
+                val author = presenter.filterAuthor
+
+                if (App.getApp().accountOnline?.isPersonal() == true) {
+                    authorTitle.isVisible = false
+                    authorLayout.isVisible = false
+                    presenter.filterAuthor = FilterAuthor()
+                    return
                 }
-            } else {
-                setAuthorChipsDefault()
+
+                users.setOnClickListener { showAuthorFragment(author.id, false) }
+                groups.setOnClickListener { showAuthorFragment(author.id, true) }
+                if (author.isNotEmpty()) {
+                    users.isChecked = !author.isGroup
+                    groups.isChecked = author.isGroup
+                    users.isCloseIconVisible = !author.isGroup
+                    groups.isCloseIconVisible = author.isGroup
+                    if (!author.isGroup) {
+                        groups.text = getString(R.string.filter_author_groups)
+                        users.text = author.name
+                        users.setOnCloseIconClickListener { presenter.clearAuthor() }
+                    } else {
+                        users.text = getString(R.string.filter_author_users)
+                        groups.text = author.name
+                        groups.setOnCloseIconClickListener { presenter.clearAuthor() }
+                    }
+                } else {
+                    setAuthorChipsDefault()
+                }
             }
         }
     }

@@ -4,9 +4,7 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.filter.Filter
-import app.editors.manager.mvp.models.filter.FilterAuthor
-import app.editors.manager.mvp.models.filter.FilterType
+import app.editors.manager.mvp.models.filter.*
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.filter.FilterView
 import io.reactivex.disposables.CompositeDisposable
@@ -25,13 +23,15 @@ class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>
         set(value) {
             field = value
             saveFilter()
+            viewState.updateViewState()
         }
 
     private val filters: Map<String, String>
-        get() = mapOf(
-            ApiContract.Parameters.ARG_FILTER_BY_TYPE to filterType.filterVal,
-            ApiContract.Parameters.ARG_FILTER_BY_AUTHOR to filterAuthor.id
-        )
+        get() = mutableMapOf<String, String>().apply {
+            put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filterType.filterVal)
+            if (filterAuthor.isNotEmpty())
+                put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filterAuthor.id)
+        }
 
     val hasFilter: Boolean
         get() = filterAuthor.id.isNotEmpty() || excludeSubfolder || filterType != FilterType.None
