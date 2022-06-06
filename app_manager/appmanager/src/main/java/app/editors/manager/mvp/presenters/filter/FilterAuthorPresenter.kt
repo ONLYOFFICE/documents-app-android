@@ -13,11 +13,17 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.*
 
 class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
 
+    companion object {
+        private const val DEBOUNCE_DURATION = 300L
+    }
+
     private var disposable: Disposable? = null
     private val authorStack: MutableList<Author> = mutableListOf()
+    private var job: Job? = null
     var searchingValue: String = ""
     var isSearchingMode: Boolean = false
 
@@ -40,6 +46,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
     override fun onDestroy() {
         super.onDestroy()
         disposable = null
+        job = null
     }
 
     private fun loadAvatars(list: List<Author.User>) {
@@ -104,7 +111,13 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
 
     fun search(value: String) {
         searchingValue = value
-        val authors: List<Author> = authorStack.filter { it.name.contains(value, true) }
-        viewState.onSearchResult(authors)
+        job?.cancel()
+        job = CoroutineScope(Dispatchers.Default).launch {
+            delay(DEBOUNCE_DURATION)
+            val authors = authorStack.filter { it.name.contains(searchingValue, true) }
+            withContext(Dispatchers.Main) {
+                viewState.onSearchResult(authors)
+            }
+        }
     }
 }

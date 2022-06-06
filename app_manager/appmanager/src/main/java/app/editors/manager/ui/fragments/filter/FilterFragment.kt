@@ -142,6 +142,7 @@ class FilterFragment : BaseAppFragment(), FilterView {
             } else {
                 binding.searchTitle.isVisible = false
                 binding.subfolder.isVisible = false
+                presenter.excludeSubfolder = false
             }
             binding.showButton.setOnClickListener {
                 requireActivity().finish()

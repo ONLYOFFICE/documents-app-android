@@ -242,7 +242,8 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onStateMenuEnabled(isEnabled: Boolean) {
         super.onStateMenuEnabled(isEnabled)
-        setMenuFilterEnabled(true)
+        filterItem?.isVisible = true
+        filterItem?.isEnabled = false
     }
 
     override fun onDestroyView() {
@@ -250,8 +251,18 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         cloudPresenter.setSectionType(section)
     }
 
-    private fun setMenuFilterEnabled(isEnabled: Boolean) {
-        filterItem?.isVisible = isEnabled
+    override fun onDocsGet(list: List<Entity>?) {
+        super.onDocsGet(list)
+        setMenuFilterEnabled()
+    }
+
+    override fun onDocsRefresh(list: List<Entity>?) {
+        super.onDocsRefresh(list)
+        setMenuFilterEnabled()
+    }
+
+    private fun setMenuFilterEnabled() {
+        filterItem?.isEnabled = true
         setFilterIconEnabled()
     }
 

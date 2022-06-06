@@ -136,6 +136,7 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
                 val diffUtils = AuthorDiffUtilsCallback(authors, oldList)
                 val result = DiffUtil.calculateDiff(diffUtils)
                 authorAdapter?.set(authors, result)
+                recyclerView?.smoothScrollToPosition(0)
             } else {
                 if (isGroups) {
                     placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.GROUPS)
