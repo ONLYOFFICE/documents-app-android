@@ -22,7 +22,7 @@ class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>
         set(value) {
             field = value
             saveFilter()
-            viewState.updateViewState()
+            viewState.updateViewState(isChanged = false)
         }
 
     private val filters: Map<String, String>
@@ -57,8 +57,8 @@ class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>
         preferenceTool.filter = Filter(filterType, filterAuthor, excludeSubfolder)
     }
 
-    fun update() {
-        viewState.updateViewState()
+    fun update(initialCall: Boolean = false) {
+        viewState.updateViewState(isChanged = !initialCall)
         disposable?.clear()
         saveFilter()
         fileProvider?.let { provider ->

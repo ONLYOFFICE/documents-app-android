@@ -9,7 +9,7 @@ import moxy.viewstate.strategy.StateStrategyType
 interface FilterView : BaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun updateViewState()
+    fun updateViewState(isChanged: Boolean = true)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onFilterReset()

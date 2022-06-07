@@ -93,9 +93,9 @@ class FilterFragment : BaseAppFragment(), FilterView {
         viewBinding = null
     }
 
-    override fun updateViewState() {
+    override fun updateViewState(isChanged: Boolean) {
+        if (isChanged) requireActivity().setResult(Activity.RESULT_OK)
         activity?.setResetButtonEnabled(presenter.hasFilter)
-        requireActivity().setResult(Activity.RESULT_OK)
         setAuthorChips()
     }
 
@@ -126,7 +126,7 @@ class FilterFragment : BaseAppFragment(), FilterView {
         initChipGroup()
         initViews()
         setAuthorChips()
-        presenter.update()
+        presenter.update(initialCall = true)
     }
 
     private fun initViews() {
