@@ -14,7 +14,6 @@ class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>
     private var fileProvider: CloudFileProvider? = null
     private var disposable: CompositeDisposable? = CompositeDisposable()
 
-    var hasChanged = false
     var filterType: FilterType = FilterType.None
     var filterAuthor: FilterAuthor = FilterAuthor()
     var resultCount = -1
@@ -58,9 +57,8 @@ class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>
         preferenceTool.filter = Filter(filterType, filterAuthor, excludeSubfolder)
     }
 
-    fun update(initialCall: Boolean = false) {
+    fun update() {
         viewState.updateViewState()
-        hasChanged = !initialCall
         disposable?.clear()
         saveFilter()
         fileProvider?.let { provider ->

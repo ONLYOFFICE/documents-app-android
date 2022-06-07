@@ -304,6 +304,7 @@
     <string name="list_context_move">Move</string>
     <string name="list_context_create_copy">Copy</string>
     <string name="list_context_create_download">Download</string>
+    <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
     <string name="list_context_rename_success">Renamed successfully</string>
     <string name="list_context_delete">Delete</string>

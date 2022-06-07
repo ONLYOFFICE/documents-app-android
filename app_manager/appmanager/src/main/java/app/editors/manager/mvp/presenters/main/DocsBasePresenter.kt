@@ -173,8 +173,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, applyFilters())
-                        .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError))
+                    provider.getFiles(id, mapOf<String, String>().putFilters())
+                        .doOnNext { it.filteredType = preferenceTool.filter.type }
+                        .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
+                )
             }
         }
     }
@@ -184,7 +186,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         modelExplorerStack.currentId?.let { id ->
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, applyFilters(getArgs(filteringValue)))
+                    provider.getFiles(id, getArgs(filteringValue).putFilters())
+                        .doOnNext { it.filteredType = preferenceTool.filter.type }
                         .subscribe({ explorer ->
                             modelExplorerStack.refreshStack(explorer)
                             updateViewsState()
@@ -225,8 +228,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             modelExplorerStack.currentId?.let { id ->
                 filteringValue = value
                 fileProvider?.let { provider ->
-                    provider.getFiles(id, applyFilters(getArgs(value)))
+                    provider.getFiles(id, getArgs(value).putFilters())
                         .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
+                        .doOnNext { it.filteredType = preferenceTool.filter.type }
                         .subscribe({ explorer ->
                             modelExplorerStack.setFilter(explorer)
                             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.SEARCH else
@@ -774,9 +778,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    protected fun applyFilters(args: Map<String, String> = mapOf()): Map<String, String> {
+    protected open fun Map<String, String>.putFilters(): Map<String, String> {
         val filter = preferenceTool.filter
-        return args.plus(
+        return plus(
             mutableMapOf<String, String>().apply {
                 put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
                 if (isFilteringMode)
@@ -1015,7 +1019,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         viewState.onStateMenuEnabled(!modelExplorerStack.isListEmpty)
     }
 
-    fun getBackStack(): Boolean {
+    open fun getBackStack(): Boolean {
         cancelGetRequests()
         when {
             isSelectionMode -> {
@@ -1162,7 +1166,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } ?: Explorer()
     }
 
-    fun openFolder(id: String?, position: Int) {
+    protected open fun openFolder(id: String?, position: Int) {
         modelExplorerStack.listPosition = position
         viewState.onSwipeEnable(true)
         getItemsById(id)

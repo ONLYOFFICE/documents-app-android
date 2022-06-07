@@ -95,6 +95,7 @@ class FilterFragment : BaseAppFragment(), FilterView {
 
     override fun updateViewState() {
         activity?.setResetButtonEnabled(presenter.hasFilter)
+        requireActivity().setResult(Activity.RESULT_OK)
         setAuthorChips()
     }
 
@@ -112,7 +113,6 @@ class FilterFragment : BaseAppFragment(), FilterView {
         viewBinding?.resultProgress?.isVisible = false
         viewBinding?.resultText?.isVisible = true
         viewBinding?.resultText?.text = getString(R.string.filter_show_results, count.toString())
-        if (presenter.hasChanged) requireActivity().setResult(Activity.RESULT_OK)
     }
 
     override fun onError(message: String?) {
@@ -126,7 +126,7 @@ class FilterFragment : BaseAppFragment(), FilterView {
         initChipGroup()
         initViews()
         setAuthorChips()
-        presenter.update(initialCall = true)
+        presenter.update()
     }
 
     private fun initViews() {

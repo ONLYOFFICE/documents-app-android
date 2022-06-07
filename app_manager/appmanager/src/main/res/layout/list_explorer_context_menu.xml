@@ -226,6 +226,22 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/list_explorer_context_open_location"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <ImageView
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_toolbar_open"
+                        tools:ignore="ContentDescription" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/ContextListMediumText"
+                        android:text="@string/list_context_open_location" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/list_explorer_context_rename"
                     style="@style/ContextListLayout"
                     android:visibility="gone">

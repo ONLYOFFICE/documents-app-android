@@ -197,6 +197,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             )
             ContextBottomDialog.Buttons.FAVORITE_ADD -> cloudPresenter.addToFavorite()
             ContextBottomDialog.Buttons.FAVORITE_DELETE -> cloudPresenter.deleteFromFavorite()
+            ContextBottomDialog.Buttons.OPEN_LOCATION -> cloudPresenter.openLocation()
             else -> { }
         }
     }
@@ -237,13 +238,12 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onResume() {
         super.onResume()
         cloudPresenter.setSectionType(section)
-        setFilterIconEnabled()
+        onStateUpdateFilterMenu()
     }
 
     override fun onStateMenuEnabled(isEnabled: Boolean) {
         super.onStateMenuEnabled(isEnabled)
-        filterItem?.isVisible = true
-        filterItem?.isEnabled = false
+        setMenuFilterEnabled(isEnabled)
     }
 
     override fun onDestroyView() {
@@ -253,20 +253,26 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onDocsGet(list: List<Entity>?) {
         super.onDocsGet(list)
-        setMenuFilterEnabled()
+        setMenuFilterEnabled(true)
     }
 
     override fun onDocsRefresh(list: List<Entity>?) {
         super.onDocsRefresh(list)
-        setMenuFilterEnabled()
+        setMenuFilterEnabled(true)
     }
 
-    private fun setMenuFilterEnabled() {
-        filterItem?.isEnabled = true
-        setFilterIconEnabled()
+    override fun onDocsFilter(list: List<Entity>?) {
+        super.onDocsFilter(list)
+        setMenuFilterEnabled(true)
     }
 
-    private fun setFilterIconEnabled() {
+    private fun setMenuFilterEnabled(isEnabled: Boolean) {
+        filterItem?.isVisible = true
+        filterItem?.isEnabled = isEnabled
+        onStateUpdateFilterMenu()
+    }
+
+    override fun onStateUpdateFilterMenu() {
         filterItem?.icon = if (getFilters()) {
             AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_enable)
         } else AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_disable)

@@ -21,6 +21,7 @@ import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
+import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestDeleteShare
@@ -136,7 +137,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             val args = getArgs(filteringValue).toMutableMap()
             args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
             fileProvider?.let { provider ->
-                disposable.add(provider.getFiles(id, applyFilters(args)).subscribe({ explorer: Explorer? ->
+                disposable.add(provider.getFiles(id, args.putFilters()).subscribe({ explorer: Explorer? ->
                     modelExplorerStack.addOnNext(explorer)
                     val last = modelExplorerStack.last()
                     if (last != null) {
@@ -258,6 +259,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isTrash = isTrash
         state.isFavorite = isClickedItemFavorite
         state.isPersonalAccount = account.isPersonal()
+        state.isCanOpenLocation = isCanOpenLocation
         if (!isClickedItemFile) {
             if ((itemClicked as CloudFolder).providerKey.isEmpty()) {
                 state.iconResId = R.drawable.ic_type_folder
@@ -368,6 +370,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun onUploadRepeat(path: String, info: String) {
         viewState.onDialogClose()
         viewState.onSnackBar(info)
+    }
+
+    override fun getBackStack(): Boolean {
+        val backStackResult = super.getBackStack()
+        if (modelExplorerStack.last()?.filteredType != preferenceTool.filter.type) {
+            refresh()
+        }
+        return backStackResult
+    }
+
+    override fun openFolder(id: String?, position: Int) {
+        setFiltering(false)
+        resetFilters()
+        super.openFolder(id, position)
     }
 
     fun onEditContextClick() {
@@ -587,6 +603,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    private fun resetFilters() {
+        preferenceTool.filter = Filter()
+        viewState.onStateUpdateFilterMenu()
+    }
+
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
         fileProvider?.let { provider ->
@@ -609,6 +630,17 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             })
         }
 
+    }
+
+    fun openLocation() {
+        resetFilters()
+        if (folderId != itemFolderId) {
+            setFiltering(false)
+            modelExplorerStack.previous()?.let(modelExplorerStack::refreshStack)
+            getItemsById(itemFolderId)
+        } else if (isRoot) {
+            getBackStack()
+        }
     }
 
     /*
@@ -681,6 +713,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val isClickedItemStorage: Boolean
         get() = itemClicked?.providerItem == true
 
+    private val itemFolderId: String?
+        get() = (itemClicked as? CloudFile)?.folderId ?: (itemClicked as? CloudFolder)?.parentId
+
+    private val isCanOpenLocation: Boolean
+        get() = isFilteringMode && !preferenceTool.filter.excludeSubfolder
 
     private fun showDownloadFolderActivity(uri: Uri) {
         viewState.onDownloadActivity(uri)
