@@ -630,4 +630,7 @@
     <string name="app_settings_follow_the_system">Same as system</string>
     <string name="app_settings_light_theme">Light theme</string>
     <string name="app_settings_dark_theme">Dark theme</string>
+    <string name="shortcut_new_doc">New document</string>
+    <string name="shortcut_new_table">New table</string>
+    <string name="shortcut_new_presentation">New presentation</string>
 </resources>

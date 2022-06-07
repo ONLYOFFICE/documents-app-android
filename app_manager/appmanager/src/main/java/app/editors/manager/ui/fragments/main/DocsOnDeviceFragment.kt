@@ -375,6 +375,22 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     private fun init() {
         presenter.checkBackStack()
+        // Check shortcut
+        val bundle = requireActivity().intent.extras
+        if (bundle != null && bundle.containsKey(KEY_SHORTCUT)) {
+            when (bundle.getString(KEY_SHORTCUT)) {
+                LocalContentTools.DOCX_EXTENSION -> {
+                    onActionButtonClick(ActionBottomDialog.Buttons.DOC)
+                }
+                LocalContentTools.XLSX_EXTENSION -> {
+                    onActionButtonClick(ActionBottomDialog.Buttons.SHEET)
+                }
+                LocalContentTools.PPTX_EXTENSION -> {
+                    onActionButtonClick(ActionBottomDialog.Buttons.PRESENTATION)
+                }
+            }
+            requireActivity().intent.extras?.clear()
+        }
     }
 
     private fun makePhoto() {
@@ -450,6 +466,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         private const val TAG_STORAGE_IMPORT = "TAG_STORAGE_IMPORT"
 
         private const val REQUEST_STORAGE_IMPORT = 10007
+
+        private const val KEY_SHORTCUT = "create_type"
 
         fun newInstance(): DocsOnDeviceFragment {
             return DocsOnDeviceFragment()

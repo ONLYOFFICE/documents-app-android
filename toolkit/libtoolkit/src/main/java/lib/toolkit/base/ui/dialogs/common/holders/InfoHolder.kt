@@ -17,22 +17,22 @@ class InfoHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     inner class Builder {
 
         fun setTag(value: String?): Builder {
-            mTag = value
+            holderTag = value
             return this
         }
 
         fun setTopTitle(value: String?): Builder {
-            mTopTitle = value
+            topTitle = value
             return this
         }
 
         fun setBottomTitle(value: String?): Builder {
-            mBottomTitle = value
+            bottomTitle = value
             return this
         }
 
         fun setCancelTitle(value: String?): Builder {
-            mCancelTitle = value
+            cancelTitle = value
             return this
         }
 

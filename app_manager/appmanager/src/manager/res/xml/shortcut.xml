@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:targetApi="25">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/drawable_ic_format_docx"
+        android:shortcutId="docs"
+        android:shortcutShortLabel="@string/shortcut_new_doc">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="app.editors.manager.ui.activities.main.OnBoardingActivity"
+            android:targetPackage="com.onlyoffice.documents">
+            <extra
+                android:name="create_type"
+                android:value="docx" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/drawable_ic_format_xlsx"
+        android:shortcutId="cells"
+        android:shortcutShortLabel="@string/shortcut_new_table">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="app.editors.manager.ui.activities.main.OnBoardingActivity"
+            android:targetPackage="com.onlyoffice.documents">
+            <extra
+                android:name="create_type"
+                android:value="xlsx" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/drawable_ic_format_pptx"
+        android:shortcutId="slides"
+        android:shortcutShortLabel="@string/shortcut_new_presentation">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="app.editors.manager.ui.activities.main.OnBoardingActivity"
+            android:targetPackage="com.onlyoffice.documents">
+            <extra
+                android:name="create_type"
+                android:value="pptx" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>
