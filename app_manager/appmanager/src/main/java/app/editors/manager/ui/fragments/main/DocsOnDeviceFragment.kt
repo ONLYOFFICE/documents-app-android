@@ -138,16 +138,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         when (item.itemId) {
             R.id.toolbar_item_main -> showMainActionBarMenu(item.itemId)
             R.id.toolbar_selection_delete -> presenter.delete()
-//            R.id.toolbar_selection_move -> {
-//                operation = Operation.MOVE
-//                presenter.checkSelectedFiles()
-//            }
-//            R.id.toolbar_selection_copy -> {
-//                operation = Operation.COPY
-//                presenter.checkSelectedFiles()
-//            }
-//            R.id.toolbar_selection_deselect -> presenter.deselectAll()
-//            R.id.toolbar_selection_select_all -> presenter.selectAll()
             R.id.toolbar_item_open -> showSingleFragmentFilePicker()
         }
         return true
@@ -176,10 +166,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 UiUtils.setMenuItemTint(requireContext(), this, lib.toolkit.base.R.color.colorPrimary)
                 isVisible = true
             }
-//            moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
-//            copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
-//            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
-//            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
             activity?.showNavigationButton(true)
         }
     }

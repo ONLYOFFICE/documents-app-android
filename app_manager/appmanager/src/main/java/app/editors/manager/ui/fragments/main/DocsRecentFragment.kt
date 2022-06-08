@@ -167,8 +167,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     private fun updateMenu(isEnable: Boolean) {
-        if (menu != null && sortItem != null && searchItem != null && deleteItem != null) {
-            sortItem?.isEnabled = isEnable
+        if (menu != null && searchItem != null && deleteItem != null) {
             searchItem?.isEnabled = isEnable
             deleteItem?.isVisible = isEnable
         }

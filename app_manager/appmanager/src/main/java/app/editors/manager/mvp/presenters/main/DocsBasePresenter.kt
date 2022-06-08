@@ -51,6 +51,7 @@ import moxy.MvpPresenter
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
+import java.lang.Runnable
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -174,7 +175,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.getFiles(id, mapOf<String, String>().putFilters())
-                        .doOnNext { it.filteredType = preferenceTool.filter.type }
+                        .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
                 )
             }
@@ -187,7 +188,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.getFiles(id, getArgs(filteringValue).putFilters())
-                        .doOnNext { it.filteredType = preferenceTool.filter.type }
+                        .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer ->
                             modelExplorerStack.refreshStack(explorer)
                             updateViewsState()
@@ -229,8 +230,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 filteringValue = value
                 fileProvider?.let { provider ->
                     provider.getFiles(id, getArgs(value).putFilters())
-                        .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                        .doOnNext { it.filteredType = preferenceTool.filter.type }
+                        .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
+                        .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer ->
                             modelExplorerStack.setFilter(explorer)
                             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.SEARCH else
@@ -252,7 +253,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             }
 
             filterRun = Runnable { filter(value, false) }.apply {
-                handler.postDelayed(this, FILTERING_DELAY.toLong())
+                handler.postDelayed(this, FILTERING_DELAY)
             }
         }
     }
@@ -1556,6 +1557,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
          * */
 
         private const val ITEMS_PER_PAGE = 25
-        private const val FILTERING_DELAY = 500
+        private const val FILTERING_DELAY = 500L
     }
 }

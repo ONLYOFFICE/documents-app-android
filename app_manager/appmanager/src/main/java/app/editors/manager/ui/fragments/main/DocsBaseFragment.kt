@@ -77,7 +77,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * */
     protected var searchItem: MenuItem? = null
     protected var openItem: MenuItem? = null
-    protected var sortItem: MenuItem? = null
     protected var mainItem: MenuItem? = null
     protected var deleteItem: MenuItem? = null
     protected var restoreItem: MenuItem? = null
@@ -781,7 +780,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         menu?.let {
             if (explorerAdapter?.itemList?.size == 0) {
                 it.findItem(R.id.toolbar_item_empty_trash).isVisible = false
-                sortItem?.isVisible = false
                 searchItem?.isVisible = false
             }
         }
@@ -861,7 +859,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * Menu methods
      * */
     protected open fun setMenuMainEnabled(isEnabled: Boolean) {
-        sortItem?.isVisible = isEnabled
         mainItem?.isVisible = isEnabled
     }
 

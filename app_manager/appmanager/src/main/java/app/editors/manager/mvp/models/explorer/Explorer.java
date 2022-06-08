@@ -157,11 +157,11 @@ public class Explorer implements Cloneable, Serializable {
         return this;
     }
 
-    public void setFilteredType(FilterType filteredType) {
+    public void setFilterType(FilterType filteredType) {
         this.filterType = filteredType;
     }
 
-    public FilterType getFilteredType() {
+    public FilterType getFilterType() {
         return this.filterType;
     }
 }
