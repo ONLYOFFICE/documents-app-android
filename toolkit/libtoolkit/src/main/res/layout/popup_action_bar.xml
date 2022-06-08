@@ -4,7 +4,7 @@
     android:id="@+id/popupMenu"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/colorBackground"
+    android:background="@color/colorSurface"
     android:orientation="vertical">
 
     <include layout="@layout/include_action_bar_item" />

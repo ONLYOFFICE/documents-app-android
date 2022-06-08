@@ -5,6 +5,7 @@ import android.content.Intent
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.fragment.app.clearFragmentResultListener
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
@@ -20,10 +21,11 @@ import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.activities.main.FilterActivity
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
-import app.editors.manager.ui.dialogs.ActionBottomDialog
-import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.dialogs.MoveCopyDialog
+import app.editors.manager.ui.dialogs.*
+import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
+import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.dialogs.MoveCopyDialog.Companion.newInstance
+import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
@@ -114,13 +116,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_item_filter -> {
-                startActivityForResult(
-                    Intent(requireContext(), FilterActivity::class.java)
-                        .putExtra(FilterActivity.KEY_ID, presenter.folderId),
-                    FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED
-                )
-            }
+            R.id.toolbar_item_filter -> showFilter()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -298,6 +294,22 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     private fun getFilters(): Boolean {
         val filter = presenter.preferenceTool.filter
         return filter.type != FilterType.None || filter.author.id.isNotEmpty() || filter.excludeSubfolder
+    }
+
+    private fun showFilter() {
+        if (isTablet) {
+            FilterDialogFragment.newInstance(presenter.folderId)
+                .show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
+            requireActivity().supportFragmentManager
+                .setFragmentResultListener(REQUEST_KEY_REFRESH, this) { _, bundle ->
+                    if (bundle.getBoolean(BUNDLE_KEY_REFRESH, true)) {
+                        presenter.refresh()
+                        clearFragmentResultListener(REQUEST_KEY_REFRESH)
+                    }
+                }
+        } else {
+            FilterActivity.show(this, presenter.folderId)
+        }
     }
 
     val isRoot: Boolean

@@ -1,8 +1,10 @@
 package app.editors.manager.ui.activities.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import app.editors.manager.R
 import app.editors.manager.databinding.ActivityFilterBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
@@ -19,6 +21,14 @@ class FilterActivity : BaseAppActivity(), IFilterActivity {
     companion object {
         const val KEY_ID = "key_id"
         const val REQUEST_ACTIVITY_FILTERS_CHANGED = 1004
+
+        fun show(fragment: Fragment, folderId: String?) {
+            fragment.startActivityForResult(
+                Intent(fragment.requireContext(), FilterActivity::class.java)
+                    .putExtra(KEY_ID, folderId),
+                REQUEST_ACTIVITY_FILTERS_CHANGED
+            )
+        }
     }
 
     private var viewBinding: ActivityFilterBinding? = null

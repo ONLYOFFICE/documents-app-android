@@ -17,6 +17,7 @@ import app.editors.manager.ui.activities.main.FilterActivity
 import app.editors.manager.ui.activities.main.IFilterActivity
 import app.editors.manager.ui.adapters.AuthorAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.AuthorDiffUtilsCallback
+import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.CommonSearchView
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -49,6 +50,7 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
     private var searchView: SearchView? = null
     private var searchCloseButton: ImageView? = null
     private var activity: IFilterActivity? = null
+    private val dialog: IBaseDialogFragment? get() = getDialogFragment()
 
     private val isGroups: Boolean
         get() = arguments?.getBoolean(KEY_IS_GROUPS) == true
@@ -62,13 +64,15 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        activity = try {
-            context as IFilterActivity
-        } catch (e: ClassCastException) {
-            throw RuntimeException(
-                FilterActivity::class.java.simpleName + " - must implement - " +
-                        IFilterActivity::class.java.simpleName
-            )
+        if (!isTablet) {
+            activity = try {
+                context as IFilterActivity
+            } catch (e: ClassCastException) {
+                throw RuntimeException(
+                    FilterActivity::class.java.simpleName + " - must implement - " +
+                            IFilterActivity::class.java.simpleName
+                )
+            }
         }
     }
 
@@ -79,7 +83,11 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        searchView = initSearchView(menu.findItem(R.id.toolbar_item_search)?.actionView)
+        searchView = if (isTablet) {
+            initSearchView(dialog?.getMenu()?.findItem(R.id.toolbar_item_search)?.actionView)
+        } else {
+            initSearchView(menu.findItem(R.id.toolbar_item_search)?.actionView)
+        }
         if (presenter.isSearchingMode) searchView?.setQuery(presenter.searchingValue, false)
     }
 
@@ -169,13 +177,24 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
         swipeRefreshLayout?.isEnabled = false
         authorAdapter = AuthorAdapter(arguments?.getString(KEY_AUTHOR_ID), clickListener)
         recyclerView?.adapter = authorAdapter
-        activity?.setResetButtonVisible(false)
+
+        initToolbar()
         getAuthorList()
         setHasOptionsMenu(true)
-        setActionBarTitle(
-            if (!isGroups) getString(R.string.filter_toolbar_users_title)
-            else getString(R.string.filter_toolbar_groups_title)
-        )
+    }
+
+    private fun initToolbar() {
+        val toolbarTitle = if (!isGroups) getString(R.string.filter_toolbar_users_title)
+        else getString(R.string.filter_toolbar_groups_title)
+        if (isTablet) {
+            dialog?.setToolbarButtonVisible(isVisible = false)
+            dialog?.setToolbarNavigationIcon(isClose = false)
+            dialog?.setToolbarTitle(title = toolbarTitle)
+            dialog?.getMenu()?.findItem(R.id.toolbar_item_search)?.isVisible = true
+        } else {
+            activity?.setResetButtonVisible(isVisible = false)
+            setActionBarTitle(title = toolbarTitle)
+        }
     }
 
     private fun initSearchView(actionView: View?): SearchView {

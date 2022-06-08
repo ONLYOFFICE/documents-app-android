@@ -58,9 +58,9 @@ class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>
     }
 
     fun update(initialCall: Boolean = false) {
+        saveFilter()
         viewState.updateViewState(isChanged = !initialCall)
         disposable?.clear()
-        saveFilter()
         fileProvider?.let { provider ->
             disposable?.add(
                 provider.getFiles(folderId, filters)

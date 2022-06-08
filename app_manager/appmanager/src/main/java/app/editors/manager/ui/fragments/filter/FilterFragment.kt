@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
@@ -19,9 +20,11 @@ import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.isNotEmpty
 import app.editors.manager.mvp.presenters.filter.FilterPresenter
 import app.editors.manager.mvp.views.filter.FilterView
-import app.editors.manager.ui.activities.main.FilterActivity
 import app.editors.manager.ui.activities.main.IFilterActivity
+import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
+import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import com.google.android.material.chip.Chip
 import lib.toolkit.base.managers.utils.FragmentUtils
 import moxy.presenter.InjectPresenter
@@ -30,10 +33,10 @@ import moxy.presenter.ProvidePresenter
 class FilterFragment : BaseAppFragment(), FilterView {
 
     companion object {
-        private const val KEY_FOLDER_ID = "key_folder_id"
         val TAG = FilterFragment::class.simpleName
+        private const val KEY_FOLDER_ID = "key_folder_id"
 
-        fun newInstance(folderId: String): FilterFragment {
+        fun newInstance(folderId: String?): FilterFragment {
             return FilterFragment().apply {
                 arguments = Bundle(1).apply {
                     putString(KEY_FOLDER_ID, folderId)
@@ -56,16 +59,19 @@ class FilterFragment : BaseAppFragment(), FilterView {
 
     private var viewBinding: FragmentFilterBinding? = null
     private var activity: IFilterActivity? = null
+    private val dialog: IBaseDialogFragment? get() = getDialogFragment()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        activity = try {
-            context as IFilterActivity
-        } catch (e: ClassCastException) {
-            throw RuntimeException(
-                FilterActivity::class.java.simpleName + " - must implement - " +
-                        IFilterActivity::class.java.simpleName
-            )
+        if (!isTablet) {
+            activity = try {
+                context as IFilterActivity
+            } catch (e: ClassCastException) {
+                throw RuntimeException(
+                    FilterFragment::class.java.simpleName + " - must implement - " +
+                            IFilterActivity::class.java.simpleName
+                )
+            }
         }
     }
 
@@ -94,9 +100,15 @@ class FilterFragment : BaseAppFragment(), FilterView {
     }
 
     override fun updateViewState(isChanged: Boolean) {
-        if (isChanged) requireActivity().setResult(Activity.RESULT_OK)
-        activity?.setResetButtonEnabled(presenter.hasFilter)
         setAuthorChips()
+        if (isTablet) {
+            dialog?.setToolbarButtonEnabled(presenter.hasFilter)
+            if (isChanged) requireActivity().supportFragmentManager
+                .setFragmentResult(REQUEST_KEY_REFRESH, bundleOf(BUNDLE_KEY_REFRESH to true))
+        } else {
+            activity?.setResetButtonEnabled(presenter.hasFilter)
+            if (isChanged) requireActivity().setResult(Activity.RESULT_OK)
+        }
     }
 
     override fun onFilterReset() {
@@ -122,7 +134,7 @@ class FilterFragment : BaseAppFragment(), FilterView {
     private fun init() {
         activity?.setResetButtonVisible(true)
         setHasOptionsMenu(true)
-        setActionBarTitle(getString(R.string.filter_toolbar_title))
+        initToolbar()
         initChipGroup()
         initViews()
         setAuthorChips()
@@ -131,7 +143,6 @@ class FilterFragment : BaseAppFragment(), FilterView {
 
     private fun initViews() {
         if (presenter.resultCount >= 0) onFilterResult(presenter.resultCount)
-        activity?.setResetButtonEnabled(presenter.hasFilter)
         viewBinding?.let { binding ->
             // Subfolder search is currently only available for personal portals
             if (App.getApp().accountOnline?.isPersonal() == true) {
@@ -145,8 +156,26 @@ class FilterFragment : BaseAppFragment(), FilterView {
                 presenter.excludeSubfolder = false
             }
             binding.showButton.setOnClickListener {
-                requireActivity().finish()
+                if (isTablet) {
+                    dialog?.dismiss()
+                } else {
+                    requireActivity().finish()
+                }
             }
+        }
+    }
+
+    private fun initToolbar() {
+        if (isTablet) {
+            dialog?.setToolbarButtonVisible(isVisible = true)
+            dialog?.setToolbarNavigationIcon(isClose = true)
+            dialog?.setToolbarTitle(getString(R.string.filter_toolbar_title))
+            dialog?.setToolbarButtonTitle(getString(R.string.filter_button_reset))
+            dialog?.setToolbarButtonClickListener { presenter.reset() }
+            dialog?.getMenu()?.findItem(R.id.toolbar_item_search)?.isVisible = false
+        } else {
+            activity?.setResetButtonEnabled(presenter.hasFilter)
+            setActionBarTitle(getString(R.string.filter_toolbar_title))
         }
     }
 
