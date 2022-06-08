@@ -109,7 +109,7 @@ class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
     }
 
     override fun onError(message: String?) {
-        message?.let { showSnackBar(it)?.show() }
+        message?.let { showSnackBar(it) }
     }
 
     fun actionKeyPress(actionId: Int): Boolean {

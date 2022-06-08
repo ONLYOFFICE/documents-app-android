@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.widget.addTextChangedListener
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginEnterpriseCreateSigninBinding
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.presenters.login.EnterpriseCreateLoginPresenter
 import app.editors.manager.mvp.views.login.EnterpriseCreateSignInView
 import app.editors.manager.ui.activities.main.MainActivity
@@ -76,7 +76,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         }
 
         SafetyNet.getClient(requireContext())
-            .verifyWithRecaptcha(if (requireContext().appComponent.networkSettings.isPortalInfo) Constants.Captcha.PUBLIC_KEY_INFO else Constants.Captcha.PUBLIC_KEY_COM)
+            .verifyWithRecaptcha(if (requireContext().appComponent.networkSettings.isPortalInfo) BuildConfig.CAPTCHA_PUBLIC_KEY_INFO else BuildConfig.CAPTCHA_PUBLIC_KEY_COM)
             .addOnSuccessListener { result ->
                 if (result.tokenResult?.isNotEmpty() == true) {
                     signInPortalPresenter.createPortal(

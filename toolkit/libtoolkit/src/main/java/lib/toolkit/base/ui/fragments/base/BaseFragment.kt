@@ -74,7 +74,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
 
     override fun dispatchTouchEvent(ev: MotionEvent) {
         if (snackBar != null) {
-            if (snackBar!!.isShown) {
+            if (snackBar?.isShown == true) {
                 UiUtils.hideSnackBarOnOutsideTouch(snackBar, ev)
             }
             snackBar = null
@@ -262,17 +262,19 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         Fix SnackBar memory leak
         https://stackoverflow.com/questions/55697904/is-there-a-reason-for-why-accessibilitymanager-sinstance-would-cause-a-memory-leak?
      */
-    protected fun showSnackBar(@StringRes resource: Int): Snackbar {
+    protected fun showSnackBar(@StringRes resource: Int) {
         return showSnackBar(resources.getString(resource))
     }
 
-    protected fun showSnackBar(string: String): Snackbar {
+    protected fun showSnackBar(string: String) {
+        if (view == null) {
+            return
+        }
         val snackbar: Snackbar = UiUtils.getSnackBar(requireView())
         snackbar.setText(string)
         snackbar.setAction(null, null)
         snackbar.show()
         snackBar = snackbar
-        return snackbar
     }
 
     protected fun showSnackBarWithAction(

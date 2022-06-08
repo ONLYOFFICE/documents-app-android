@@ -5,9 +5,9 @@ import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import android.view.View
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludeSocialNetworksLayoutBinding
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.isVisible
 import com.facebook.*
 import com.facebook.login.LoginBehavior
@@ -86,7 +86,7 @@ class SocialViews(private val activity: Activity, view: View?,
     private fun onGoogleClick() {
         val gso: GoogleSignInOptions =
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(Constants.GOOGLE_WEB_ID)
+                .requestIdToken(BuildConfig.GOOGLE_WEB_ID)
                 .requestProfile()
                 .requestEmail()
                 .build()

@@ -38,6 +38,7 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_FINGERPRINT = "KEY_FINGERPRINT"
         private const val KEY_PASSCODE = "KEY_PASSCODE"
         private const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
+        private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
         private const val KEY_FILTER = "KEY_FILTER"
 
         private val PERSONAL_ADDRESSES: Set<String> = object : TreeSet<String>() {
@@ -214,6 +215,12 @@ class PreferenceTool @Inject constructor(val context: Context) {
         get() = sharedPreferences.getLong(KEY_TIMESTAMP, 0L)
         set(value) {
             sharedPreferences.edit().putLong(KEY_TIMESTAMP, value).apply()
+        }
+
+    var deviceMessageToken: String
+        get() = sharedPreferences.getString(KEY_DEVICE_TOKEN, "") ?: ""
+        set(value) {
+            sharedPreferences.edit().putString(KEY_DEVICE_TOKEN, value).apply()
         }
 
     var filter: Filter

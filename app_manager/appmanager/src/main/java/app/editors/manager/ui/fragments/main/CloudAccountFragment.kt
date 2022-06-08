@@ -11,9 +11,9 @@ import androidx.recyclerview.selection.StorageStrategy
 import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.presenters.main.CloudAccountState
@@ -297,6 +297,10 @@ class CloudAccountFragment : BaseAppFragment(),
         })
     }
 
+    override fun onWaiting() {
+        showWaitingDialog(getString(R.string.dialogs_wait_title))
+    }
+
     private fun setMenuState(isSelect: Boolean) {
         if (isSelect) {
             selectAllItem?.isVisible = false
@@ -358,36 +362,41 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onWebDavLogin(account: String, provider: WebDavApi.Providers) {
+        hideDialog()
         WebDavLoginActivity.show(requireActivity(), provider, account)
     }
 
     override fun onAccountLogin(portal: String, login: String) {
+        hideDialog()
         SignInActivity.showPortalSignIn(this, portal, login)
     }
 
     override fun onGoogleDriveLogin() {
+        hideDialog()
         val storage = Storage(
             ApiContract.Storage.GOOGLEDRIVE,
-            Constants.Google.COM_CLIENT_ID,
-            Constants.Google.COM_REDIRECT_URL
+            BuildConfig.GOOGLE_COM_CLIENT_ID,
+            BuildConfig.GOOGLE_COM_REDIRECT_URL
         )
         showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
     }
 
     override fun onDropboxLogin() {
+        hideDialog()
         val storage = Storage(
             ApiContract.Storage.DROPBOX,
-            Constants.DropBox.COM_CLIENT_ID,
-            Constants.DropBox.COM_REDIRECT_URL
+            BuildConfig.DROP_BOX_COM_CLIENT_ID,
+            BuildConfig.DROP_BOX_COM_REDIRECT_URL
         )
         showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
     }
 
     override fun onOneDriveLogin() {
+        hideDialog()
         val storage = Storage(
             OneDriveUtils.ONEDRIVE_STORAGE,
-            Constants.OneDrive.COM_CLIENT_ID,
-            Constants.OneDrive.COM_REDIRECT_URL
+            BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
+            BuildConfig.ONE_DRIVE_COM_REDIRECT_URL
         )
         showFragment(OneDriveSignInFragment.newInstance(storage), OneDriveSignInFragment.TAG, false)
     }
@@ -401,6 +410,7 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onError(message: String?) {
+        hideDialog()
         message?.let {
             showSnackBar(message)
         }

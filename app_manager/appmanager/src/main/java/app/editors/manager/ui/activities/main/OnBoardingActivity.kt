@@ -26,7 +26,7 @@ class OnBoardingActivity : BaseAppActivity() {
                 showFragment(OnBoardingPagerFragment.newInstance(), null)
             }
         } else {
-            MainActivity.show(this, null)
+            MainActivity.show(this, null, intent.extras)
         }
 
     }

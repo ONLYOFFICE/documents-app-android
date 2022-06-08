@@ -73,10 +73,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         private const val URL_KEY = "url"
         const val KEY_CODE = "code"
 
-        fun show(context: Context, isCode: Boolean? = true) {
+        fun show(context: Context, isCode: Boolean? = true, bundle: Bundle? = null) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 isCode?.let { putExtra(KEY_CODE, isCode) }
+                bundle?.let { putExtras(bundle)  }
             })
         }
     }
@@ -392,7 +393,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         setAppBarStates(false)
         showNavigationButton(false)
         presenter.clear()
-        viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+        FragmentUtils.showFragment(
+            supportFragmentManager,
+            OnlyOfficeCloudFragment.newInstance(false),
+            R.id.frame_container
+        )
     }
 
     override fun onQuestionDialog(title: String, tag: String, accept: String, cancel: String, question: String?) {

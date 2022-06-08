@@ -1,6 +1,8 @@
 package app.editors.manager.app
 
 import app.documents.core.network.ApiContract
+import app.documents.core.network.models.login.RequestDeviceToken
+import app.documents.core.network.models.login.RequestPushSubscribe
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.request.*
 import app.editors.manager.mvp.models.response.*
@@ -344,5 +346,23 @@ interface Api {
         @QueryMap filterMap: Map<String, Int>,
         @QueryMap flagMap: Map<String, Boolean>
     ): Observable<ResponseCloudTree>
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/settings/push/docregisterdevice" + ApiContract.RESPONSE_FORMAT)
+    fun registerDevice(
+        @Body body: RequestDeviceToken,
+    ): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/settings/push/docsubscribe" + ApiContract.RESPONSE_FORMAT)
+    fun subscribe(
+        @Body body: RequestPushSubscribe
+    ): Single<Response<ResponseBody>>
 
 }
