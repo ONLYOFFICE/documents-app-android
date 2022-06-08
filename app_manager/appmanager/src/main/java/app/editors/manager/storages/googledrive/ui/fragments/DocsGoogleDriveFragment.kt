@@ -9,6 +9,7 @@ import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
+import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.MainActionBarPopup
 import lib.toolkit.base.managers.utils.StringUtils

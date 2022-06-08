@@ -11,6 +11,7 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:iconTint="@color/colorPrimary"
         app:showAsAction="always"
+        android:visible="false"
         tools:ignore="MenuTitle" />
 
 </menu>

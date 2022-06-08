@@ -14,11 +14,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
 
 class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
 
     companion object {
         private const val DEBOUNCE_DURATION = 300L
+        private const val TIMEOUT_TIME = 5000L
     }
 
     private var disposable: Disposable? = null
@@ -52,6 +54,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
     private fun loadAvatars(list: List<Author.User>) {
         disposable = Observable.fromIterable(list)
             .subscribeOn(Schedulers.io())
+            .onErrorResumeNext(Observable.empty())
             .map(avatarMapper)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(viewState::onUpdateAvatar, this::fetchError)
@@ -85,6 +88,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
         disposable = api.getUsers()
             .subscribeOn(Schedulers.io())
             .doOnSubscribe { viewState.onLoadingUsers() }
+            .timeout(TIMEOUT_TIME, TimeUnit.MILLISECONDS)
             .map { response ->
                 response.response
                     .map { Author.User(it.id, it.displayName, it.department, it.avatarMedium) }
@@ -102,6 +106,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
         disposable = api.getGroups()
             .subscribeOn(Schedulers.io())
             .doOnSubscribe { viewState.onLoadingGroups() }
+            .timeout(TIMEOUT_TIME, TimeUnit.MILLISECONDS)
             .map { response ->
                 response.response.map { Author.Group(it.id, it.name) }.also(this::setStackItems)
             }

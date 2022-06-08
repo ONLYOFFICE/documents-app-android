@@ -130,7 +130,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/showButton"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/default_button_height"
+            android:layout_height="48dp"
             android:layout_marginHorizontal="@dimen/default_margin_large"
             android:layout_marginVertical="@dimen/default_margin_xxlarge"
             android:animateLayoutChanges="true"

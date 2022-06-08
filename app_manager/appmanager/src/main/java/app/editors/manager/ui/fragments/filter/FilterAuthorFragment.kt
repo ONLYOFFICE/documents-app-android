@@ -3,6 +3,7 @@ package app.editors.manager.ui.fragments.filter
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
@@ -48,6 +49,7 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
 
     private var authorAdapter: AuthorAdapter? = null
     private var searchView: SearchView? = null
+    private var searchItem: MenuItem? = null
     private var searchCloseButton: ImageView? = null
     private var activity: IFilterActivity? = null
     private val dialog: IBaseDialogFragment? get() = getDialogFragment()
@@ -83,11 +85,12 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        searchView = if (isTablet) {
-            initSearchView(dialog?.getMenu()?.findItem(R.id.toolbar_item_search)?.actionView)
+        searchItem = if (isTablet) {
+            dialog?.getMenu()?.findItem(R.id.toolbar_item_search)
         } else {
-            initSearchView(menu.findItem(R.id.toolbar_item_search)?.actionView)
+            menu.findItem(R.id.toolbar_item_search)
         }
+        searchView = initSearchView(searchItem?.actionView)
         if (presenter.isSearchingMode) searchView?.setQuery(presenter.searchingValue, false)
     }
 
@@ -105,6 +108,7 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
     override fun onRefresh() {}
 
     override fun onGetUsers(users: List<Author.User>) {
+        searchItem?.isVisible = users.isNotEmpty()
         if (users.isEmpty()) {
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.USERS)
         } else {
@@ -114,6 +118,7 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
     }
 
     override fun onGetGroups(groups: List<Author.Group>) {
+        searchItem?.isVisible = groups.isNotEmpty()
         if (groups.isEmpty()) {
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.GROUPS)
         } else {
@@ -190,7 +195,6 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
             dialog?.setToolbarButtonVisible(isVisible = false)
             dialog?.setToolbarNavigationIcon(isClose = false)
             dialog?.setToolbarTitle(title = toolbarTitle)
-            dialog?.getMenu()?.findItem(R.id.toolbar_item_search)?.isVisible = true
         } else {
             activity?.setResetButtonVisible(isVisible = false)
             setActionBarTitle(title = toolbarTitle)
