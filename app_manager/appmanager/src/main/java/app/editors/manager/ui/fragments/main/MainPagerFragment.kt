@@ -124,18 +124,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private fun checkBundle() {
         val bundle = requireActivity().intent.extras
         var data = requireActivity().intent.data
-        if (bundle != null && (bundle.containsKey("fileId") || bundle.containsKey("folderId"))){
-            val fileId = bundle.getString("fileId")?.toInt()
-            val folderId = bundle.getString("folderId")?.toInt()
-            val model = OpenDataModel(
-                file = OpenFileModel(
-                    id = fileId
-                ),
-                folder = OpenFolderModel(
-                    id = folderId
-                )
-            )
-            data = Uri.parse("oodocuments://openfile?data=${Json{ encodeDefaults = true}.encodeToString(model)}&push=true")
+        if (bundle != null && bundle.containsKey("data")){
+            val model = bundle.getString("data")
+            data = Uri.parse("oodocuments://openfile?data=${model}&push=true")
         }
         presenter.getState(data)
     }
