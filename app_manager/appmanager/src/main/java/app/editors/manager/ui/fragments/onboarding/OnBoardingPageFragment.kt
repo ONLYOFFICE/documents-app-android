@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.content.res.AppCompatResources
 import app.editors.manager.databinding.FragmentOnBoardingPageBinding
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 
@@ -49,7 +50,7 @@ class OnBoardingPageFragment : BaseAppFragment() {
         viewBinding?.let {
             it.onBoardingPageHeader.setText(headerResId)
             it.onBoardingPageInfo.setText(infoResId)
-            it.onBoardingPageImage.setImageResource(imageResId)
+            it.onBoardingPageImage.setImageDrawable(AppCompatResources.getDrawable(requireContext(), imageResId))
         }
     }
 

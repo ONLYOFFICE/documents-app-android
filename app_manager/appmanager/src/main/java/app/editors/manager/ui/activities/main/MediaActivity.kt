@@ -24,11 +24,11 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
     private var viewPropertyAnimator: ViewPropertyAnimator? = null
     private var backDrawable: Drawable? = null
 
-    private val mToolbarRunnableGone = Runnable {
+    private val toolbarRunnableGone = Runnable {
         viewBinding?.appBarToolbar?.visibility = View.GONE
     }
 
-    private val mToolbarRunnableVisible = Runnable {
+    private val toolbarRunnableVisible = Runnable {
         viewBinding?.appBarToolbar?.visibility = View.VISIBLE
     }
 
@@ -41,7 +41,7 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewBinding?.appBarToolbar?.removeCallbacks(mToolbarRunnableGone)
+        viewBinding?.appBarToolbar?.removeCallbacks(toolbarRunnableGone)
         viewBinding = null
         killSelf()
     }
@@ -93,8 +93,8 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
     private fun resetToolbarView(isVisible: Boolean) {
         viewPropertyAnimator?.cancel()
         viewBinding?.appBarToolbar?.run {
-            removeCallbacks(mToolbarRunnableGone)
-            removeCallbacks(mToolbarRunnableVisible)
+            removeCallbacks(toolbarRunnableGone)
+            removeCallbacks(toolbarRunnableVisible)
             visibility = View.VISIBLE
             alpha = if (isVisible) ALPHA_TO else ALPHA_FROM
         }
@@ -119,7 +119,7 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
             appBarToolbar.animate()
                 .alpha(if (isVisible) ALPHA_FROM else ALPHA_TO)
                 .setDuration(ALPHA_DELAY.toLong())
-                .withEndAction(if (isVisible) mToolbarRunnableGone else mToolbarRunnableVisible)
+                .withEndAction(if (isVisible) toolbarRunnableGone else toolbarRunnableVisible)
         }?.apply {
             start()
         }
@@ -130,7 +130,7 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
         get() = viewBinding?.appBarToolbar?.visibility == View.VISIBLE
 
     companion object {
-        val TAG = MediaActivity::class.java.simpleName
+        val TAG: String = MediaActivity::class.java.simpleName
         const val TAG_MEDIA = "TAG_MEDIA"
         const val TAG_WEB_DAV = "TAG_WEB_DAV"
         const val ALPHA_DELAY = 300

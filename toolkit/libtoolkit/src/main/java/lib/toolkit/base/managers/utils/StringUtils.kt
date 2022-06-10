@@ -80,7 +80,7 @@ object StringUtils {
 
     @JvmStatic
     fun getExtension(extension: String): Extension {
-        var ext = extension.replace(".", "")
+        val ext = extension.replace(".", "").lowercase()
         return when {
             Pattern.matches(PATTERN_EXT_FORM, ext) -> Extension.FORM
             Pattern.matches(PATTERN_EXT_DOC, ext) -> Extension.DOC
