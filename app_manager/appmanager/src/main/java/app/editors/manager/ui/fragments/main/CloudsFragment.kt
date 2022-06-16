@@ -17,6 +17,8 @@ import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import com.dropbox.core.DbxRequestConfig
+import com.dropbox.core.android.Auth
 
 class CloudsFragment : BaseAppFragment() {
 
@@ -103,12 +105,11 @@ class CloudsFragment : BaseAppFragment() {
             R.drawable.ic_storage_dropbox,
             R.string.storage_select_drop_box
         ) {
-            val storage = Storage(
-                ApiContract.Storage.DROPBOX,
-                BuildConfig.DROP_BOX_COM_CLIENT_ID,
-                BuildConfig.DROP_BOX_COM_REDIRECT_URL
-            )
-            showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
+            val clientIdentifier = "OnlyOffice/${BuildConfig.VERSION_NAME}"
+            val requestConfig = DbxRequestConfig(clientIdentifier)
+            val scopes = listOf("account_info.read", "files.content.write")
+            val appKey = BuildConfig.DROP_BOX_COM_CLIENT_ID
+            Auth.startOAuth2PKCE(requireContext(), appKey, requestConfig, scopes)
         }
 
         viewBinding?.cloudsItemGoogleDrive?.bind(
