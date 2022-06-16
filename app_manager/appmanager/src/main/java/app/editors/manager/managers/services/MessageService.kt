@@ -90,6 +90,7 @@ class MessageService : FirebaseMessagingService() {
             applicationContext.appComponent.accountsDao.getAccounts().forEach { account ->
                 val token: String? = AccountUtils.getToken(applicationContext, account.getAccountName())
                 if (token != null && token.isNotEmpty()) {
+                    appComponent.networkSettings.setSettingsByAccount(account)
                     applicationContext.loginService.setFirebaseToken(token, p0)
                         .subscribe()
                 } else {

@@ -70,17 +70,21 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         disposable.dispose()
     }
 
-    fun init(isPortal: Boolean = false) {
+    fun init(isPortal: Boolean = false, isShortcut: Boolean = false) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
                 cloudAccount = it
                 setNetworkSetting(it)
+                if (isShortcut) {
+                    viewState.onRender(MainActivityState.OnDeviceState)
+                    return@launch
+                }
                 withContext(Dispatchers.Main) {
                     checkToken(it)
                 }
             } ?: run {
                 withContext(Dispatchers.Main) {
-                    if (isPortal) {
+                    if (isPortal && !isShortcut) {
                         viewState.onRender(MainActivityState.CloudState())
                     } else {
                         viewState.onRender(MainActivityState.OnDeviceState)

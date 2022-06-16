@@ -72,6 +72,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:extractNativeLibs="true"
         android:usesCleartextTraffic="true"
         tools:replace="android:supportsRtl">
         <activity
@@ -231,6 +232,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data android:name="android.app.shortcuts"
+                android:resource="@xml/shortcut" />
         </activity>
         <activity
             android:name=".ui.activities.login.AuthAppActivity"

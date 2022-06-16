@@ -42,12 +42,12 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         when (v.id) {
             R.id.dialogCommonAcceptButton -> {
                 KeyboardUtils.hideKeyboard(editValueView)
-                mOnClickListener?.onAcceptClick(getType(), getValue(), mTag)
+                onClickListener?.onAcceptClick(getType(), getValue(), holderTag)
             }
 
             R.id.dialogCommonCancelButton -> {
                 KeyboardUtils.hideKeyboard(editValueView)
-                mOnClickListener?.onCancelClick(getType(), mTag)
+                onClickListener?.onCancelClick(getType(), holderTag)
             }
         }
     }
@@ -73,14 +73,14 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     override fun show() {
         super.show()
         layout?.visibility = View.VISIBLE
-        mAcceptView.isEnabled = false
+        acceptView.isEnabled = editValue?.isNotEmpty() == true
         dialog.view?.post {
             editValueView?.apply {
                 if (isPassword) {
                     inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
                     doOnTextChanged { _, _, _, _ ->
                         editInputLayout?.error = null
-                        mAcceptView.isEnabled = !text?.trim().isNullOrEmpty()
+                        acceptView.isEnabled = !text?.trim().isNullOrEmpty()
                     }
                 } else {
                     if (!editValue.isNullOrEmpty()) {
@@ -122,6 +122,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     override fun hide() {
         super.hide()
+        editValueView?.addTextChangedListener(null)
         layout?.visibility = View.GONE
         KeyboardUtils.hideKeyboard(editValueView)
     }
@@ -162,19 +163,19 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         ): CharSequence? {
             super.filter(source, start, end, dest, dstart, dend)
             // Hide hint
-            mAcceptView.isEnabled = mResultString.trim { it <= ' ' }.isNotBlank()
+            acceptView.isEnabled = mResultString.trim { it <= ' ' }.isNotBlank()
 
             // Check for allowed symbols
             val checkedString = StringUtils.getAllowedString(mResultString)
             return if (checkedString != null) {
                 errorValue = dialog.getString(R.string.dialogs_edit_forbidden_symbols)
                 editInputLayout?.error = errorValue + StringUtils.DIALOG_FORBIDDEN_SYMBOLS
-                mAcceptView.isEnabled = mResultString.length > 1
+                acceptView.isEnabled = mResultString.length > 1
                 ""
             } else if (StringUtils.getAllowedName(mResultString)) {
                 errorValue = dialog.getString(R.string.dialogs_edit_forbidden_name)
                 editInputLayout?.error = errorValue
-                mAcceptView.isEnabled = false
+                acceptView.isEnabled = false
                 null
             } else {
                 errorValue = null
@@ -187,17 +188,17 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     inner class Builder {
 
         fun setTag(value: String?): Builder {
-            mTag = value
+            holderTag = value
             return this
         }
 
         fun setTopTitle(value: String?): Builder {
-            mTopTitle = value
+            topTitle = value
             return this
         }
 
         fun setBottomTitle(value: String?): Builder {
-            mBottomTitle = value
+            bottomTitle = value
             return this
         }
 
@@ -212,12 +213,12 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         }
 
         fun setAcceptTitle(value: String?): Builder {
-            mAcceptTitle = value
+            acceptTitle = value
             return this
         }
 
         fun setCancelTitle(value: String?): Builder {
-            mCancelTitle = value
+            cancelTitle = value
             return this
         }
 

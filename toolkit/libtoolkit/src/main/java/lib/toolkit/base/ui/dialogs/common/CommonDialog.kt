@@ -48,7 +48,7 @@ class CommonDialog : BaseDialog() {
         fun getType(): Dialogs
         fun getTag(): String?
         fun getValue(): String? = null
-        fun isBackPress(): Boolean
+        var isBackPress: Boolean
     }
 
     enum class Dialogs {
@@ -119,7 +119,7 @@ class CommonDialog : BaseDialog() {
     }
 
     override fun onBackPressed(): Boolean {
-        if (mViewHolders[mDialogType]?.isBackPress() != false) {
+        if (mViewHolders[mDialogType]?.isBackPress != false) {
             super.onBackPressed()
         }
 

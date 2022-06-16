@@ -2,6 +2,7 @@ package app.editors.manager.storages.base.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebBinding
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.storages.base.view.BaseStorageSignInView
@@ -159,6 +161,7 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
     }
 
     override fun onError(message: String?) {
-        TODO("Not yet implemented")
+        Log.e(TAG, "onError: $message")
+        message?.let { FirebaseUtils.addCrash(it) }
     }
 }
