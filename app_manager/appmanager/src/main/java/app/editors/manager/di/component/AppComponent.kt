@@ -26,11 +26,13 @@ import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
+import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.storages.onedrive.mvp.presenters.OneDriveSingInPresenter
 import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.ui.activities.login.PortalsActivity
+import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -113,6 +115,8 @@ interface AppComponent {
     fun inject(onlyOfficeCloudPresenter: OnlyOfficeCloudPresenter)
     fun inject(dropboxLoginHelper: DropboxLoginHelper)
     fun inject(cloudsFragment: CloudsFragment)
+    fun inject(webDavLoginActivity: WebDavLoginActivity)
+    fun inject(DocsDropboxFragment: DocsDropboxFragment)
 
     /*
     * Main

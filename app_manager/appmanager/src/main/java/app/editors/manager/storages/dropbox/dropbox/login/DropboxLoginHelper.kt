@@ -24,11 +24,6 @@ import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
 import javax.inject.Inject
 
-sealed class DropboxLoginState {
-    object LoggingIn : DropboxLoginState()
-    object None : DropboxLoginState()
-}
-
 class DropboxLoginHelper(private val context: Context) {
 
     @Inject
@@ -44,10 +39,8 @@ class DropboxLoginHelper(private val context: Context) {
     private val requestConfig = DbxRequestConfig("OnlyOffice/${BuildConfig.VERSION_NAME}")
     private val scopes = listOf("account_info.read", "files.content.write", "files.content.read")
     private var loginCallback: (() -> Unit)? = null
-    private var loginState: DropboxLoginState = DropboxLoginState.None
 
     fun startSignInActivity(lifecycleOwner: LifecycleOwner, loginCallback: () -> Unit) {
-        loginState = DropboxLoginState.LoggingIn
         this.loginCallback = loginCallback
         Auth.startOAuth2PKCE(context, BuildConfig.DROP_BOX_COM_CLIENT_ID, requestConfig, scopes)
         lifecycleOwner.lifecycle.addObserver(getLifecycleObserver(lifecycleOwner))
@@ -69,17 +62,13 @@ class DropboxLoginHelper(private val context: Context) {
     }
 
     private suspend fun checkAccount() = withContext(Dispatchers.IO) {
-        if (loginState is DropboxLoginState.LoggingIn) {
-            try {
-                Auth.getDbxCredential()?.let { credential ->
-                    val user = DbxClientV2(requestConfig, credential).users().currentAccount
-                    createUser(user, credential.accessToken, credential.refreshToken)
-                }
-            } catch (exception: InvalidAccessTokenException) {
-                Log.e(this::class.simpleName, exception.message ?: exception.toString())
-            } finally {
-                loginState = DropboxLoginState.None
+        try {
+            Auth.getDbxCredential()?.let { credential ->
+                val user = DbxClientV2(requestConfig, credential).users().currentAccount
+                createUser(user, credential.accessToken, credential.refreshToken)
             }
+        } catch (exception: InvalidAccessTokenException) {
+            Log.e(this::class.simpleName, exception.message.toString())
         }
     }
 

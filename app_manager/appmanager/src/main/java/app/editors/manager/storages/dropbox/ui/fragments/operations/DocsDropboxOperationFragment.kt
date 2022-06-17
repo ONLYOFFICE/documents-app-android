@@ -1,14 +1,13 @@
 package app.editors.manager.storages.dropbox.ui.fragments.operations
 
-import app.documents.core.network.ApiContract
-import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
-import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.storages.base.fragment.BaseStorageOperationsFragment
+import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
 import app.editors.manager.storages.dropbox.mvp.presenters.DocsDropboxPresenter
-import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import moxy.presenter.InjectPresenter
+import javax.inject.Inject
 
 class DocsDropboxOperationFragment : BaseStorageOperationsFragment() {
 
@@ -23,14 +22,16 @@ class DocsDropboxOperationFragment : BaseStorageOperationsFragment() {
     @InjectPresenter
     override lateinit var presenter: DocsDropboxPresenter
 
+    @Inject
+    lateinit var dropboxLoginHelper: DropboxLoginHelper
+
     override fun getOperationsPresenter() = presenter
+
     override fun onRefreshToken() {
-        val storage = Storage(
-            ApiContract.Storage.DROPBOX,
-            BuildConfig.DROP_BOX_COM_CLIENT_ID,
-            BuildConfig.DROP_BOX_COM_REDIRECT_URL
-        )
-        showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
+        dropboxLoginHelper.startSignInActivity(this) {
+            MainActivity.show(requireContext())
+            requireActivity().finish()
+        }
     }
 
     init {
