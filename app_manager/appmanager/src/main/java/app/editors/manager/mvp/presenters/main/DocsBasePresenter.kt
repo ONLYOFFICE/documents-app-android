@@ -728,9 +728,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         if (uploadFiles.isNotEmpty()) {
             putNewUploadFiles(id, ArrayList(uploadFiles))
-            for (uri in uriList) {
+            for (uri in uploadFiles) {
                 val workData = Data.Builder()
-                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.uri.toString())
                     .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
                     .putString(UploadWork.TAG_FOLDER_ID, id)
                     .build()
