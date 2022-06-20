@@ -8,7 +8,6 @@ import app.documents.core.account.AccountDao
 import app.documents.core.account.CloudAccount
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.BuildConfig
-import app.editors.manager.app.App
 import app.editors.manager.storages.dropbox.dropbox.api.DropboxService
 import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils
 import com.dropbox.core.DbxRequestConfig
@@ -24,17 +23,11 @@ import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
 import javax.inject.Inject
 
-class DropboxLoginHelper(private val context: Context) {
-
-    @Inject
-    lateinit var networkSettings: NetworkSettings
-
-    @Inject
-    lateinit var accountDao: AccountDao
-
-    init {
-        App.getApp().appComponent.inject(this)
-    }
+class DropboxLoginHelper @Inject constructor(
+    private val context: Context,
+    private val networkSettings: NetworkSettings,
+    private val accountDao: AccountDao
+) {
 
     private val requestConfig = DbxRequestConfig("OnlyOffice/${BuildConfig.VERSION_NAME}")
     private val scopes = listOf("account_info.read", "files.content.write", "files.content.read")

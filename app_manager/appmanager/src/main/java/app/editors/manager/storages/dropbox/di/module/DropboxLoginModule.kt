@@ -1,7 +1,5 @@
 package app.editors.manager.storages.dropbox.di.module
 
-import android.content.Context
-import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginService
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginServiceProvider
 import app.editors.manager.storages.dropbox.dropbox.login.IDropboxLoginServiceProvider
@@ -21,9 +19,6 @@ annotation class DropboxLoginScope
 
 @Module
 class DropboxLoginModule {
-
-    @Provides
-    fun provideDropboxLoginHelper(context: Context): DropboxLoginHelper = DropboxLoginHelper(context)
 
     @Provides
     fun provideDropboxLogin(dropboxLoginService: DropboxLoginService): IDropboxLoginServiceProvider = DropboxLoginServiceProvider(dropboxLoginService)
