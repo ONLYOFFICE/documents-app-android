@@ -171,7 +171,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected var uploadDisposable: Disposable? = null
     private var filterRun: Runnable? = null
     private var isTerminate = false
-    private val downloadDisposable: Disposable? = null
+    protected var downloadDisposable: Disposable? = null
     private var isAccessDenied = false
 
     /**
@@ -675,7 +675,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun cancelDownload() {
         if (downloadDisposable?.isDisposed == false) {
-            downloadDisposable.dispose()
+            downloadDisposable?.dispose()
         }
     }
 
@@ -763,7 +763,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         if (uploadDisposable?.isDisposed == false) {
             uploadDisposable?.dispose()
         } else if (downloadDisposable?.isDisposed == false) {
-            downloadDisposable.dispose()
+            downloadDisposable?.dispose()
         }
     }
 
