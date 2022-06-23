@@ -2,17 +2,13 @@ package app.editors.manager.storages.dropbox.mvp.presenters
 
 import android.content.ClipData
 import android.net.Uri
-import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import app.documents.core.network.ApiContract
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.storages.dropbox.dropbox.api.DropboxService
-import app.editors.manager.storages.dropbox.managers.providers.DropboxFileProvider
-import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils
-import app.editors.manager.storages.dropbox.managers.works.DownloadWork
-import app.editors.manager.storages.dropbox.managers.works.UploadWork
+import app.editors.manager.app.dropboxLoginService
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
@@ -20,6 +16,15 @@ import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.base.work.BaseStorageDownloadWork
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
+import app.editors.manager.storages.dropbox.dropbox.api.DropboxService
+import app.editors.manager.storages.dropbox.dropbox.login.DropboxResponse
+import app.editors.manager.storages.dropbox.managers.providers.DropboxFileProvider
+import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils
+import app.editors.manager.storages.dropbox.managers.works.DownloadWork
+import app.editors.manager.storages.dropbox.managers.works.UploadWork
+import app.editors.manager.storages.dropbox.mvp.models.request.TokenRefreshRequest
+import app.editors.manager.storages.dropbox.mvp.models.request.TokenRequest
+import app.editors.manager.storages.dropbox.mvp.models.response.RefreshTokenResponse
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -31,6 +36,7 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
+import okhttp3.Credentials
 
 
 class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
@@ -125,12 +131,12 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
 
     override fun getNextList() {
-        val id = modelExplorerStack?.currentId
+        val id = modelExplorerStack.currentId
         val args = getArgs(filteringValue)
         fileProvider?.let { provider ->
             disposable.add(provider.getFiles(id, args).subscribe({ explorer: Explorer? ->
-                modelExplorerStack?.addOnNext(explorer)
-                val last = modelExplorerStack?.last()
+                modelExplorerStack.addOnNext(explorer)
+                val last = modelExplorerStack.last()
                 if (last != null) {
                     viewState.onDocsNext(getListWithHeaders(last, true))
                 }
@@ -155,10 +161,10 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             }
         }
 
-        for (uri in uploadUris) {
+        for (uploadUri in uploadUris) {
             val data = Data.Builder()
-                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, modelExplorerStack?.currentId)
-                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uri.toString())
+                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, modelExplorerStack.currentId)
+                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uploadUri.toString())
                 .putString(BaseStorageUploadWork.KEY_TAG, tag)
                 .build()
 
@@ -173,13 +179,13 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun getArgs(filteringValue: String?): Map<String, String> {
         val args = mutableMapOf<String, String>()
-        if(modelExplorerStack?.last()?.current?.providerItem == true) {
+        if(modelExplorerStack.last()?.current?.providerItem == true) {
             args[DropboxUtils.DROPBOX_CONTINUE_CURSOR] =
-                modelExplorerStack?.last()?.current?.parentId!!
+                modelExplorerStack.last()?.current?.parentId!!
         }
-        if(modelExplorerStack?.last()?.current?.providerItem == true && this.filteringValue?.isNotEmpty() == true) {
+        if(modelExplorerStack.last()?.current?.providerItem == true && this.filteringValue.isNotEmpty()) {
             args[DropboxUtils.DROPBOX_SEARCH_CURSOR] =
-                modelExplorerStack?.last()?.current?.parentId!!
+                modelExplorerStack.last()?.current?.parentId!!
         }
         args.putAll(super.getArgs(filteringValue))
         return args
@@ -196,14 +202,6 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            val extension = file.fileExst
-            if (StringUtils.isImage(extension)) {
-                addRecent(file)
-                return
-            }
-        }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
         fileProvider?.let { provider ->
@@ -214,6 +212,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                     { file: CloudFile? ->
                         tempFile = file
                         viewState.onDialogClose()
+                        file?.let { addRecent(it) }
                         viewState.onOpenLocalFile(file)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
@@ -268,6 +267,30 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun refreshToken() {
-        viewState.onRefreshToken()
+       CoroutineScope(Dispatchers.Default).launch {
+           accountDao.getAccountOnline()?.let { account ->
+               val request = TokenRefreshRequest(refresh_token = account.refreshToken)
+               App.getApp().dropboxLoginService.updateRefreshToken(
+                   Credentials.basic(BuildConfig.DROP_BOX_COM_CLIENT_ID, BuildConfig.DROP_BOX_COM_CLIENT_SECRET),
+                   mapOf(
+                       TokenRefreshRequest::refresh_token.name to request.refresh_token,
+                       TokenRequest::grant_type.name to request.grant_type,
+                   )
+               ).subscribe({ responseRefresh ->
+                   if (responseRefresh is DropboxResponse.Success) {
+                       val response = responseRefresh.response as RefreshTokenResponse
+                       AccountUtils.setToken(context, account.getAccountName(), response.accessToken)
+                       setBaseUrl(DropboxService.DROPBOX_BASE_URL)
+                       getItemsById(DropboxUtils.DROPBOX_ROOT)
+                   } else {
+                       viewState.onRefreshToken()
+                   }
+               }) {
+                   viewState.onRefreshToken()
+               }
+           } ?: run {
+               viewState.onRefreshToken()
+           }
+       }
     }
 }

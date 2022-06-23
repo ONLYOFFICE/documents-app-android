@@ -55,9 +55,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         ) {
             accountJson?.let { jsonAccount ->
                 viewState.onFinishRequest()
-                Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
-                    render(cloudAccount, jsonAccount, fileData)
-                }
+                render(Json.decodeFromString(jsonAccount), jsonAccount, fileData)
             } ?: run {
                 throw Exception("Need account")
             }
@@ -115,30 +113,23 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 ApiContract.Modules.FLAG_ADDFOLDERS to false
             )
         )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { cloudTree ->
-                if (cloudTree.response != null) {
-                    for (folder in cloudTree.response) {
-                        if (folder.current?.rootFolderType == ApiContract.SectionType.CLOUD_FAVORITES) {
-                            preferenceTool.setFavoritesEnable(true)
-                            break
-                        } else if(folder.current?.rootFolderType == ApiContract.SectionType.CLOUD_PROJECTS) {
-                            preferenceTool.isProjectDisable = false
-                            break
-                        } else {
-                            preferenceTool.setFavoritesEnable(false)
-                            preferenceTool.isProjectDisable = true
-                        }
-                    }
-                }
-                return@map cloudTree.response
-            }
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .map { cloudTree ->
+            val folderTypes = cloudTree.response.map { explorer -> explorer?.current?.rootFolderType }
+            preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
+            preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
+            return@map cloudTree.response
+        }
     }
 
     private fun checkFileData(account: CloudAccount, fileData: Uri?) {
         fileData?.let { data ->
             if (data.scheme?.equals("oodocuments") == true && data.host.equals("openfile")) {
+                if (fileData.queryParameterNames.contains("push")) {
+                    viewState.setFileData(fileData.getQueryParameter("data") ?: "")
+                    return
+                }
                 val dataModel = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(data.query))
                 if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(
                         account.login,

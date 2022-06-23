@@ -1,24 +1,15 @@
 package app.editors.manager.storages.googledrive.ui.fragments
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.webkit.*
-import androidx.core.content.ContextCompat
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import app.editors.manager.R
-import app.editors.manager.databinding.FragmentStorageWebBinding
-import app.editors.manager.storages.googledrive.mvp.presenters.GoogleDriveSignInPresenter
-import app.editors.manager.storages.googledrive.mvp.views.GoogleDriveSignInView
-import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.storages.base.fragment.BaseStorageSignInFragment
-import app.editors.manager.storages.base.view.BaseStorageSignInView
-import app.editors.manager.ui.activities.main.MainActivity
-import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.storages.googledrive.mvp.presenters.GoogleDriveSignInPresenter
 import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.presenter.InjectPresenter
@@ -26,7 +17,7 @@ import moxy.presenter.InjectPresenter
 class GoogleDriveSignInFragment: BaseStorageSignInFragment(){
 
     companion object {
-        val TAG = GoogleDriveSignInFragment::class.java.simpleName
+        val TAG: String = GoogleDriveSignInFragment::class.java.simpleName
 
         fun newInstance(storage: Storage) = GoogleDriveSignInFragment().apply {
             arguments = Bundle(1).apply {
@@ -58,12 +49,20 @@ class GoogleDriveSignInFragment: BaseStorageSignInFragment(){
             request: WebResourceRequest,
             error: WebResourceError
         ) {
+            if (context == null) {
+                return
+            }
             super.onReceivedError(view, request, error)
             viewBinding?.webStorageSwipe?.isRefreshing = false
             if (!NetworkUtils.isOnline(requireContext())) {
                 showSnackBar(R.string.errors_connection_error)
             }
         }
+    }
+
+    override fun loadWebView(url: String?) {
+        viewBinding?.webStorageSwipe?.isRefreshing = true
+        url?.let { viewBinding?.webStorageWebview?.loadUrl(it.replace("code", "token")) }
     }
 
     override fun getWebViewCallback() = WebViewCallbacks()

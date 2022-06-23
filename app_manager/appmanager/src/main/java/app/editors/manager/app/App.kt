@@ -24,7 +24,6 @@ import app.editors.manager.storages.googledrive.googledrive.login.IGoogleDriveLo
 import app.editors.manager.managers.utils.KeyStoreUtils
 import app.editors.manager.storages.onedrive.di.component.DaggerOneDriveComponent
 import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
-import app.editors.manager.storages.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
 import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -64,6 +63,8 @@ class App : Application() {
             field = value
             initCrashlytics()
         }
+
+    var isKeyStore: Boolean = true
 
     private var _appComponent: AppComponent? = null
     val appComponent: AppComponent
@@ -229,12 +230,6 @@ val Context.dropboxLoginService: IDropboxLoginServiceProvider
     get() = when (this) {
         is App -> this.appComponent.dropboxLoginService
         else -> applicationContext.appComponent.dropboxLoginService
-    }
-
-val Context.oneDriveAuthService: IOneDriveAuthServiceProvider
-    get() = when (this) {
-        is App -> this.appComponent.oneDriveAuthService
-        else -> applicationContext.appComponent.oneDriveAuthService
     }
 
 val Context.googleDriveLoginService: IGoogleDriveLoginServiceProvider

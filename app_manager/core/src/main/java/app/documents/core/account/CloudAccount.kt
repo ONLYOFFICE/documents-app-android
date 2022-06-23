@@ -28,7 +28,8 @@ data class CloudAccount(
     val webDavProvider: String? = null,
     val webDavPath: String? = null,
     val isAdmin: Boolean = false,
-    val isVisitor: Boolean = false
+    val isVisitor: Boolean = false,
+    val refreshToken: String = ""
 ) {
 
     var token: String = ""
@@ -70,6 +71,7 @@ fun CloudAccount.copyWithToken(
     isWebDav: Boolean = this.isWebDav,
     isOneDrive: Boolean = this.isOneDrive,
     isDropbox: Boolean = this.isDropbox,
+    isGoogleDrive: Boolean = this.isGoogleDrive,
     webDavProvider: String? = this.webDavProvider,
     webDavPath: String? = this.webDavPath,
     isAdmin: Boolean = this.isAdmin,
@@ -90,6 +92,7 @@ fun CloudAccount.copyWithToken(
         isWebDav = isWebDav,
         isOneDrive = isOneDrive,
         isDropbox = isDropbox,
+        isGoogleDrive = isGoogleDrive,
         webDavProvider = webDavProvider,
         webDavPath = webDavPath,
         isAdmin = isAdmin,

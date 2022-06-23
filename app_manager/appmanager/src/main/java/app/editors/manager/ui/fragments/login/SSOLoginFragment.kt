@@ -61,7 +61,7 @@ class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        clearCookies(requireContext())
+        clearCookies()
         viewBinding?.webView?.apply {
             clearCache(true)
             webChromeClient = null

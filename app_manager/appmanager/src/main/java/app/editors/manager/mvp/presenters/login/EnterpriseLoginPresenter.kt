@@ -33,6 +33,7 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
     }
 
     override fun onTwoFactorAuth(phoneNoise: String?, request: RequestSignIn) {
+        super.onTwoFactorAuth(phoneNoise, request)
         viewState.onTwoFactorAuth(phoneNoise, Json.encodeToString(request))
     }
 

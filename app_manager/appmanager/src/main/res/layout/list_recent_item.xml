@@ -57,7 +57,7 @@
             style="@style/AlphaImageView"
             android:layout_width="@dimen/image_default_size"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_drawer_menu_on_device"
+            android:src="@drawable/ic_navigation_on_device"
             android:visibility="invisible"
             android:layout_marginEnd="@dimen/screen_margin_large"
             app:layout_constraintBottom_toBottomOf="parent"

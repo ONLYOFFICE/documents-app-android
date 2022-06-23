@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.compose.NavHost
@@ -106,7 +107,7 @@ private fun AboutScreen(
     sdkVersion: String,
     isTablet: Boolean?,
     itemClick: (item: AboutClickedItem) -> Unit,
-    backPressed: () -> Unit
+    backPressed: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -116,56 +117,61 @@ private fun AboutScreen(
                 backPressed()
             }
         }) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(top = 48.dp)
-                    .verticalScroll(state = scrollState, enabled = true)
-            ) {
-                Image(painter = painterResource(id = R.drawable.image_onlyoffice_text), contentDescription = null)
-                Text(
-                    text = stringResource(
-                        id = R.string.about_app_version,
-                        formatArgs = arrayOf(
-                            BuildConfig.VERSION_NAME,
-                            BuildConfig.VERSION_CODE.toString(),
-                            sdkVersion
-                        )
-                    ),
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.onSurface,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-                Spacer(modifier = Modifier.padding(top = 48.dp))
-                AboutItem(
-                    title = stringResource(id = R.string.about_terms),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
+            Surface(color = MaterialTheme.colors.background) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(top = 48.dp)
+                        .verticalScroll(state = scrollState, enabled = true)
                 ) {
-                    itemClick(AboutClickedItem.Terms)
-                }
-                AboutItem(
-                    title = stringResource(id = R.string.about_policy),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
-                ) {
-                    itemClick(AboutClickedItem.Policy)
-                }
-                AboutItem(
-                    title = stringResource(id = R.string.about_license),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
-                ) {
-                    itemClick(AboutClickedItem.License)
-                }
-                AboutItem(
-                    title = stringResource(id = R.string.about_website),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
-                ) {
-                    itemClick(AboutClickedItem.Web)
+                    Image(painter = painterResource(id = R.drawable.image_onlyoffice_text), contentDescription = null)
+                    Text(
+                        text = stringResource(
+                            id = R.string.about_app_version,
+                            formatArgs = arrayOf(
+                                BuildConfig.VERSION_NAME,
+                                BuildConfig.VERSION_CODE.toString(),
+                                sdkVersion
+                            )
+                        ),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(modifier = Modifier.padding(top = 48.dp))
+                    AboutItem(
+                        title = stringResource(id = R.string.about_terms),
+                        icon = R.drawable.ic_open_in_new,
+                        isTablet = isTablet
+                    ) {
+                        itemClick(AboutClickedItem.Terms)
+                    }
+                    AboutItem(
+                        title = stringResource(id = R.string.about_policy),
+                        icon = R.drawable.ic_open_in_new,
+                        isTablet = isTablet
+                    ) {
+                        itemClick(AboutClickedItem.Policy)
+                    }
+                    AboutItem(
+                        title = stringResource(id = R.string.about_license),
+                        icon = R.drawable.ic_open_in_new,
+                        isTablet = isTablet
+                    ) {
+                        itemClick(AboutClickedItem.License)
+                    }
+                    AboutItem(
+                        title = stringResource(id = R.string.about_website),
+                        icon = R.drawable.ic_open_in_new,
+                        isTablet = isTablet
+                    ) {
+                        itemClick(AboutClickedItem.Web)
+                    }
                 }
             }
         }

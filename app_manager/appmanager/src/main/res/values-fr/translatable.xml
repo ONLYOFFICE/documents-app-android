@@ -157,7 +157,6 @@
     <string name="list_headers_week">Cette semaine</string>
     <string name="list_headers_year">Cette année</string>
     <string name="list_headers_yesterday">Hier</string>
-    <string name="login_accounts_select_add">Ajouter un compte dans le nuage</string>
     <string name="login_accounts_select_title">Sélectionner le compte</string>
     <string name="login_api_init_error">Erreur d’initialisation</string>
     <string name="login_api_init_portal_error">Erreur de syntaxe du nom de bureau dans les nuages</string>
@@ -223,7 +222,6 @@
     <string name="media_image_share_chooser">Choisir une application pour partager</string>
     <string name="media_video_error">Erreur inconnue du lecteur : %1$s</string>
     <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
-    <string name="navigation_drawer_menu_about">A propos</string>
     <string name="navigation_drawer_menu_add_account">Ajouter un compte</string>
     <string name="navigation_drawer_menu_common">Documents communs</string>
     <string name="navigation_drawer_menu_help">Aide</string>
@@ -381,7 +379,6 @@
     <string name="cloud_only_office_description">Stockez les documents dans le cloud et co-éditez-les</string>
     <string name="cloud_accounts_title">Comptes</string>
     <string name="error_long_file_name">Le nom de fichier est trop long</string>
-    <string name="dialog_remove_account_title">Supprimer le compte</string>
     <string name="dialog_remove_account_description">
         L\'utilisateur avec le mail %1$s du portail %2$s sera déconnecté et sont compte sera effacé de la liste des comptes. \n\nAttention! Vous devez saisir l\'adresse du portail, le mail et le mot de passe. Tous les fichiers seront en sécurité !
     </string>
@@ -466,5 +463,15 @@
             et les
             <a href="%2$s">Conditions de service</a>
         ]]>
-</string>
+    </string>
+    <string name="login_create_signin_passwords_length">Le mot de passe doit contenir : de 8 à 30 caractères</string>
+    <string name="list_action_import">Importer fichier</string>
+    <string name="storage_google_drive_copy_folder_error">Les dossiers ne peuvent pas être copiés</string>
+    <string name="socials_google_cancel_auth">Annuler la connexion via Google</string>
+    <string name="error_open_project_file">Ce compte n\'a pas accès au projet</string>
+    <string name="switch_account_open_project_file">Changer de compte</string>
+    <string name="app_settings_color_theme">Thème de couleurs</string>
+    <string name="app_settings_follow_the_system">Identique au système</string>
+    <string name="app_settings_light_theme">Thème clair</string>
+    <string name="app_settings_dark_theme">Thème sombre</string>
 </resources>

@@ -4,13 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import app.documents.core.network.ApiContract
-import app.editors.manager.managers.utils.Constants
+import app.editors.manager.BuildConfig
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
-import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.dropbox.mvp.presenters.DocsDropboxPresenter
-import app.editors.manager.storages.dropbox.mvp.views.DocsDropboxView
-import app.editors.manager.ui.activities.main.ActionButtonFragment
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
@@ -34,6 +31,12 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
+
+                BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
+                    mCameraUri?.let { uri ->
+                        presenter.upload(uri, null, KEY_UPLOAD)
+                    }
+                }
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
                     if(data.getBooleanExtra(KEY_MODIFIED, false)) {
                         presenter.upload(
@@ -63,8 +66,8 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
     override fun onRefreshToken() {
         val storage = Storage(
             ApiContract.Storage.DROPBOX,
-            Constants.DropBox.COM_CLIENT_ID,
-            Constants.DropBox.COM_REDIRECT_URL
+            BuildConfig.DROP_BOX_COM_CLIENT_ID,
+            BuildConfig.DROP_BOX_COM_REDIRECT_URL
         )
         showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
     }

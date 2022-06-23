@@ -31,42 +31,43 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
     }
 
     private var file: DocumentFile? = null
-    private var fileName = ""
 
     override fun doWork(): Result {
         getArgs()
 
         when(tag) {
             BaseStorageDocsFragment.KEY_UPLOAD -> {
-                fileName = file?.name.toString()
+                title = file?.name.toString()
             }
             BaseStorageDocsFragment.KEY_UPDATE -> {
-                fileName = path?.let { FileUtils.getFileName(it, true) }.toString()
+                title = path?.let { FileUtils.getFileName(it, true) }.toString()
             }
         }
 
         val request = UploadRequest()
         val response = folderId?.let { folderId ->
-            applicationContext.getOneDriveServiceProvider().uploadFile(
-                folderId, fileName,
-                when (tag) {
-                    BaseStorageDocsFragment.KEY_UPLOAD -> request.copy(
-                        item = app.editors.manager.storages.onedrive.mvp.models.other.Item(
-                            OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME
+            title?.let { title ->
+                applicationContext.getOneDriveServiceProvider().uploadFile(
+                    folderId, title,
+                    when (tag) {
+                        BaseStorageDocsFragment.KEY_UPLOAD -> request.copy(
+                            item = app.editors.manager.storages.onedrive.mvp.models.other.Item(
+                                OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME
+                            )
                         )
-                    )
-                    BaseStorageDocsFragment.KEY_UPDATE -> request.copy(
-                        item = app.editors.manager.storages.onedrive.mvp.models.other.Item(
-                            OneDriveUtils.VAL_CONFLICT_BEHAVIOR_REPLACE
+                        BaseStorageDocsFragment.KEY_UPDATE -> request.copy(
+                            item = app.editors.manager.storages.onedrive.mvp.models.other.Item(
+                                OneDriveUtils.VAL_CONFLICT_BEHAVIOR_REPLACE
+                            )
                         )
-                    )
-                    else -> request.copy(
-                        item = app.editors.manager.storages.onedrive.mvp.models.other.Item(
-                            OneDriveUtils.VAL_CONFLICT_BEHAVIOR_FAIL
+                        else -> request.copy(
+                            item = app.editors.manager.storages.onedrive.mvp.models.other.Item(
+                                OneDriveUtils.VAL_CONFLICT_BEHAVIOR_FAIL
+                            )
                         )
-                    )
-                }
-            ).blockingGet()
+                    }
+                ).blockingGet()
+            }
         }
 
         when(response) {
@@ -74,8 +75,8 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
                 from?.let { uploadSession((response.response as UploadResponse).uploadUrl, it) }
             }
             is OneDriveResponse.Error -> {
-                mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
-                sendBroadcastUnknownError(fileName, path)
+                mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                title?.let { sendBroadcastUnknownError(it, path) }
                 if(tag == BaseStorageDocsFragment.KEY_UPDATE) {
                     file?.delete()
                 }
@@ -117,22 +118,22 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
             if(connection.responseCode == 200 || connection.responseCode == 201) {
                 mNotificationUtils.removeNotification(id.hashCode())
                 if (tag == BaseStorageDocsFragment.KEY_UPLOAD) {
-                    mNotificationUtils.showUploadCompleteNotification(id.hashCode(), fileName)
-                    sendBroadcastUploadComplete(path, fileName, CloudFile(), path)
+                    mNotificationUtils.showUploadCompleteNotification(id.hashCode(), title)
+                    title?.let { sendBroadcastUploadComplete(path, it, CloudFile(), path) }
                 } else {
                     file?.delete()
                 }
             } else {
                 mNotificationUtils.removeNotification(id.hashCode())
-                mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
-                sendBroadcastUnknownError(fileName, path)
+                mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                title?.let { sendBroadcastUnknownError(it, path) }
                 if(tag == BaseStorageDocsFragment.KEY_UPDATE) {
                     file?.delete()
                 }
             }
         } catch (e: Exception) {
-            mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
-            sendBroadcastUnknownError(fileName, path)
+            mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+            title?.let { sendBroadcastUnknownError(it, path) }
             if(tag == BaseStorageDocsFragment.KEY_UPDATE) {
                 file?.delete()
             }
@@ -143,7 +144,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
     override fun getArgs() {
         super.getArgs()
         file = from?.let { DocumentFile.fromSingleUri(applicationContext, it) }
-        path = from?.let { PathUtils.getPath(applicationContext, it) }
+        path = from?.path
     }
 
 

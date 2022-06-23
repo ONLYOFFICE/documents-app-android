@@ -1,11 +1,11 @@
 package app.editors.manager.ui.fragments.main
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
@@ -17,8 +17,6 @@ import app.editors.manager.mvp.views.main.ProfileView
 import app.editors.manager.ui.adapters.ThirdpartyAdapter
 import app.editors.manager.ui.binders.ProfileItemBinder
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.StringUtils.getEncodedString
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
@@ -31,7 +29,6 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
 
         const val KEY_ACCOUNT = "KEY_ACCOUNT"
         private const val TAG_LOGOUT = "TAG_LOGOUT"
-        private const val TAG_REMOVE = "TAG_REMOVE"
 
         fun newInstance(account: String?): ProfileFragment {
             return ProfileFragment().apply {
@@ -54,6 +51,10 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
 
     private var viewBinding: FragmentProfileLayoutBinding? = null
 
+    private val accountDialogFragment: ICloudAccountDialogFragment?
+        get() = requireActivity().supportFragmentManager
+            .findFragmentByTag(CloudAccountDialogFragment.TAG) as? ICloudAccountDialogFragment
+
     override fun onDestroyView() {
         super.onDestroyView()
         viewBinding = null
@@ -74,8 +75,18 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
         arguments?.getString(KEY_ACCOUNT)?.let {
             presenter.setAccount(it)
         }
-        typeBinder?.setTitle(getString(R.string.profile_type_account))
-            ?.setImage(R.drawable.ic_contact_calendar)
+        typeBinder?.setTitle(getString(R.string.profile_type_account))?.setImage(R.drawable.ic_contact_calendar)
+        initToolbar()
+    }
+
+    private fun initToolbar() {
+        if (isTablet) {
+            accountDialogFragment?.setToolbarTitle(getString(R.string.fragment_profile_title))
+            accountDialogFragment?.setToolbarNavigationIcon(isClose = false)
+        } else {
+            setActionBarTitle(getString(R.string.fragment_profile_title))
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
     }
 
     override fun onRender(state: ProfileState) {
@@ -96,16 +107,12 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
                 }
             }
         }
-        initRemoveItem(state.account)
     }
 
     override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
         super.onAcceptClick(dialogs, value, tag)
         if (tag != null) {
             when (tag) {
-                TAG_REMOVE -> {
-                    presenter.removeAccount()
-                }
                 TAG_LOGOUT -> {
                     presenter.logout()
                 }
@@ -141,21 +148,47 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
 
     private fun onOnlineState(account: CloudAccount) {
         if (account.isOnline) {
-            viewBinding?.logoutItem?.root?.visibility = View.VISIBLE
-            viewBinding?.logoutItem?.itemImage?.setImageDrawable(
-                ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_account_logout
+            viewBinding?.logoutItem?.let { item ->
+                UiUtils.setImageTint(item.itemImage, lib.toolkit.base.R.color.colorLightRed)
+                item.root.visibility = View.VISIBLE
+                item.itemImage.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_account_logout
+                    )
                 )
-            )
-            viewBinding?.logoutItem?.itemText?.text = getString(R.string.navigation_drawer_menu_logout)
-            viewBinding?.logoutItem?.root?.setOnClickListener {
-                showQuestionDialog(
-                    getString(R.string.dialog_logout_account_title),
-                    getString(R.string.dialog_logout_account_description),
-                    getString(R.string.navigation_drawer_menu_logout),
-                    getString(R.string.dialogs_common_cancel_button), TAG_LOGOUT
+                item.itemText.text = getString(R.string.navigation_drawer_menu_logout)
+                item.itemText
+                    .setTextColor(item.root.context.getColor(lib.toolkit.base.R.color.colorLightRed))
+                item.root.setOnClickListener {
+                    showQuestionDialog(
+                        getString(R.string.dialog_logout_account_title),
+                        getString(R.string.dialog_logout_account_description),
+                        getString(R.string.navigation_drawer_menu_logout),
+                        getString(R.string.dialogs_common_cancel_button), TAG_LOGOUT
+                    )
+                }
+            }
+        } else {
+            viewBinding?.logoutItem?.let { item ->
+                UiUtils.setImageTint(item.itemImage, lib.toolkit.base.R.color.colorPrimary)
+                item.root.visibility = View.VISIBLE
+                item.itemImage.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_account_login
+                    )
                 )
+                item.itemText.text = getString(R.string.navigation_drawer_menu_sign_in)
+                item.itemText
+                    .setTextColor(item.root.context.getColor(lib.toolkit.base.R.color.colorPrimary))
+                item.root.setOnClickListener {
+                    parentFragmentManager.setFragmentResult(
+                        CloudAccountFragment.REQUEST_PROFILE,
+                        bundleOf(CloudAccountFragment.RESULT_SIGN_IN to null)
+                    )
+                    parentFragmentManager.popBackStack()
+                }
             }
         }
     }
@@ -170,28 +203,6 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
         viewBinding?.recyclerView?.layoutManager = LinearLayoutManager(requireContext())
         viewBinding?.recyclerView?.adapter = adapter
         adapter?.setItems(list)
-    }
-
-    private fun initRemoveItem(account: CloudAccount) {
-        viewBinding?.removeItem?.itemImage?.setImageDrawable(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.ic_trash
-            )
-        )
-        viewBinding?.removeItem?.itemText?.text = getString(R.string.dialog_remove_account_title)
-        viewBinding?.removeItem?.itemText?.setTextColor(ContextCompat.getColor(requireContext(), lib.toolkit.base.R.color.colorLightRed))
-        UiUtils.setImageTint(viewBinding?.removeItem?.itemImage ?: throw Error("Error inflate"), lib.toolkit.base.R.color.colorLightRed)
-
-        viewBinding?.removeItem?.root?.setOnClickListener {
-            showQuestionDialog(
-                getString(R.string.dialog_remove_account_title),
-                getString(R.string.dialog_remove_account_description, account.login, account.portal),
-                getString(R.string.dialogs_question_accept_remove),
-                getString(R.string.dialogs_common_cancel_button),
-                TAG_REMOVE
-            )
-        }
     }
 
     private fun setType(account: CloudAccount) {
@@ -210,13 +221,11 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
     }
 
     override fun onClose(isLogout: Boolean, account: CloudAccount?) {
-        if(isLogout) {
-            requireActivity().intent.putExtra(KEY_ACCOUNT, Json.encodeToString(account))
-            requireActivity().setResult(Activity.RESULT_OK, requireActivity().intent)
-        } else {
-            requireActivity().setResult(Activity.RESULT_CANCELED)
-        }
-        requireActivity().finish()
+        parentFragmentManager.setFragmentResult(
+            CloudAccountFragment.REQUEST_PROFILE,
+            bundleOf(CloudAccountFragment.RESULT_LOG_OUT to null)
+        )
+        parentFragmentManager.popBackStack()
     }
 
     override fun onError(message: String?) {

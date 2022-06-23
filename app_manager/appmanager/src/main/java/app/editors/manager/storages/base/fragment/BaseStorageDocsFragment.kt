@@ -3,20 +3,29 @@ package app.editors.manager.storages.base.fragment
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.mvp.models.explorer.CloudFile
+import app.editors.manager.mvp.models.explorer.Current
+import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
+import app.editors.manager.ui.activities.main.MediaActivity
+import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
+import lib.toolkit.base.managers.utils.PathUtils
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.ui.activities.base.BaseActivity
+import java.io.File
 
 abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment, BaseStorageDocsView {
 
@@ -53,7 +62,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override fun onDestroyView() {
         super.onDestroyView()
         activity?.showAccount(false)
-        activity?.showNavigationButton(false)
     }
 
     override fun setToolbarState(isVisible: Boolean) {
@@ -78,6 +86,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     private fun init() {
         presenter.checkBackStack()
+        activity?.showAccount(true)
     }
 
     private fun loadFiles() {
@@ -113,6 +122,35 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
     }
 
+    override fun onOpenLocalFile(file: CloudFile) {
+        val uri = Uri.parse(file.webUrl)
+        when(StringUtils.getExtension(file.fileExst)) {
+            StringUtils.Extension.IMAGE -> {
+                val state = OpenState.Media(getMediaFile(uri), false)
+                MediaActivity.show(this, state.explorer, state.isWebDav)
+            }
+            else -> super.onOpenLocalFile(file)
+        }
+
+    }
+
+    private fun getMediaFile(uri: Uri): Explorer =
+        Explorer().apply {
+            val file = File(context?.let { PathUtils.getPath(it, uri).toString() })
+            val explorerFile = CloudFile().apply {
+                pureContentLength = file.length()
+                webUrl = file.absolutePath
+                fileExst = StringUtils.getExtensionFromPath(file.name)
+                title = file.name
+                isClicked = true
+            }
+            current = Current().apply {
+                title = file.name
+                filesCount = "1"
+            }
+            files = listOf(explorerFile)
+        }
+
     override fun onStateMenuSelection() {
         super.onStateMenuSelection()
         if (menu != null && menuInflater != null) {
@@ -130,6 +168,15 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
             downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(true)
             restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
             setAccountEnable(false)
+        }
+    }
+
+    override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
+        super.onActionButtonClick(buttons)
+        when (buttons) {
+            ActionBottomDialog.Buttons.PHOTO -> if (checkCameraPermission()) {
+                showCameraActivity(TimeUtils.fileTimeStamp)
+            }
         }
     }
 

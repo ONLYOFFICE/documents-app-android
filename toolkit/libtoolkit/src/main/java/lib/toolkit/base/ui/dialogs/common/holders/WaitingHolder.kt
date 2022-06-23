@@ -25,8 +25,8 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     private lateinit var progressBarView: ProgressBar
 
     @ColorRes
-    private var mProgressColor = 0
-    private var mProgressType: ProgressType =
+    private var progressColor = 0
+    private var progressType: ProgressType =
         ProgressType.HORIZONTAL
 
     @SuppressLint("ResourceType")
@@ -35,7 +35,7 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         dialog.dialog?.setCanceledOnTouchOutside(false)
         dialog.view?.apply {
             rootLayout = findViewById(R.id.dialogCommonWaitingLayout)
-            progressBarView = when (mProgressType) {
+            progressBarView = when (progressType) {
                 ProgressType.CIRCLE -> {
                     findViewById(R.id.dialogCommonWaitingProgressBarCircle)
                 }
@@ -53,8 +53,8 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         rootLayout.visibility = View.VISIBLE
         progressBarView.visibility = View.VISIBLE
 
-        if (mProgressColor > 0) {
-            UiUtils.setProgressBarColorDrawable(progressBarView, mProgressColor)
+        if (progressColor > 0) {
+            UiUtils.setProgressBarColorDrawable(progressBarView, progressColor)
         }
     }
 
@@ -66,16 +66,16 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     override fun save(state: Bundle) {
         super.save(state)
         state.let {
-            it.putInt(TAG_PROGRESS_COLOR, mProgressColor)
-            it.putSerializable(TAG_PROGRESS_TYPE, mProgressType)
+            it.putInt(TAG_PROGRESS_COLOR, progressColor)
+            it.putSerializable(TAG_PROGRESS_TYPE, progressType)
         }
     }
 
     override fun restore(state: Bundle) {
         super.restore(state)
-        state?.let {
-            mProgressColor = it.getInt(TAG_PROGRESS_COLOR)
-            mProgressType = it.getSerializable(TAG_PROGRESS_TYPE) as ProgressType
+        state.let {
+            progressColor = it.getInt(TAG_PROGRESS_COLOR)
+            progressType = it.getSerializable(TAG_PROGRESS_TYPE) as ProgressType
         }
     }
 
@@ -84,42 +84,42 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     inner class Builder {
 
         fun setTag(value: String?): Builder {
-            mTag = value
+            holderTag = value
             return this
         }
 
         fun setTopTitle(value: String?): Builder {
-            mTopTitle = value
+            topTitle = value
             return this
         }
 
         fun setCancelTitle(value: String?): Builder {
-            mCancelTitle = value
+            cancelTitle = value
             return this
         }
 
         fun setProgressColor(@ColorRes colorRes: Int): Builder {
-            mProgressColor = colorRes
+            progressColor = colorRes
             return this
         }
 
         fun setProgressType(progressType: ProgressType): Builder {
-            mProgressType = progressType
+            this@WaitingHolder.progressType = progressType
             return this
         }
 
         fun setTextColor(textColor: Int): Builder {
-            mTextColor = textColor
+            this@WaitingHolder.textColor = textColor
             return this
         }
 
         fun setTopTitleGravity(gravity: Int): Builder {
-            mTopTitleGravity = gravity
+            topTitleGravity = gravity
             return this
         }
 
-        fun setIsBackPress(isBackPress: Boolean = true): Builder {
-            mIsBackPress = isBackPress
+        fun setIsBackPress(isBack: Boolean = true): Builder {
+            isBackPress = isBack
             return this
         }
 

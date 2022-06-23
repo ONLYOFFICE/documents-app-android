@@ -35,7 +35,6 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
     }
 
     private var file: DocumentFile? = null
-    private var fileName = ""
     private var fileId: String? = null
 
     override fun doWork(): Result {
@@ -43,23 +42,33 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
 
         when(tag) {
             BaseStorageDocsFragment.KEY_UPLOAD -> {
-                fileName = file?.name.toString()
+                title = file?.name.toString()
             }
             BaseStorageDocsFragment.KEY_UPDATE, BaseStorageDocsFragment.KEY_CREATE -> {
-                fileName = path?.let { FileUtils.getFileName(it, true) }.toString()
+                title = path?.let { FileUtils.getFileName(it, true) }.toString()
             }
         }
 
-        val request = CreateItemRequest(
-            name = fileName,
-            parents = listOf(folderId) as List<String>
-        )
+        val request = title?.let { title ->
+            CreateItemRequest(
+                name = title,
+                parents = listOf(folderId) as List<String>
+            )
+        }
 
         val response = when(tag) {
-            BaseStorageDocsFragment.KEY_UPLOAD -> applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
-            BaseStorageDocsFragment.KEY_CREATE -> applicationContext.getGoogleDriveServiceProvider().createFile(request).blockingGet()
+            BaseStorageDocsFragment.KEY_UPLOAD -> request?.let { request ->
+                applicationContext.getGoogleDriveServiceProvider().upload(
+                    request
+                ).blockingGet()
+            }
+            BaseStorageDocsFragment.KEY_CREATE -> request?.let { request ->
+                applicationContext.getGoogleDriveServiceProvider().createFile(
+                    request
+                ).blockingGet()
+            }
             BaseStorageDocsFragment.KEY_UPDATE -> fileId?.let { applicationContext.getGoogleDriveServiceProvider().update(it).blockingGet() }
-            else -> applicationContext.getGoogleDriveServiceProvider().upload(request).blockingGet()
+            else -> request?.let { applicationContext.getGoogleDriveServiceProvider().upload(it).blockingGet() }
         }
 
         if(response?.isSuccessful == true) {
@@ -73,8 +82,8 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
                 }
             }
         } else {
-            mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
-            sendBroadcastUnknownError(fileName, path)
+            mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+            title?.let { sendBroadcastUnknownError(it, path) }
             if(tag == BaseStorageDocsFragment.KEY_UPDATE || tag == BaseStorageDocsFragment.KEY_CREATE) {
                 file?.delete()
             }
@@ -114,22 +123,22 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
             if (connection.responseCode == 200 || connection.responseCode == 201) {
                 mNotificationUtils.removeNotification(id.hashCode())
                 if (tag == BaseStorageDocsFragment.KEY_UPLOAD) {
-                    mNotificationUtils.showUploadCompleteNotification(id.hashCode(), fileName)
-                    sendBroadcastUploadComplete(path, fileName, CloudFile(), path)
+                    mNotificationUtils.showUploadCompleteNotification(id.hashCode(), title)
+                    title?.let { sendBroadcastUploadComplete(path, it, CloudFile(), path) }
                 } else if( tag == BaseStorageDocsFragment.KEY_UPDATE) {
                     file?.delete()
                 }
             } else {
                 mNotificationUtils.removeNotification(id.hashCode())
-                mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
-                sendBroadcastUnknownError(fileName, path)
+                mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                title?.let { sendBroadcastUnknownError(it, path) }
                 if(tag == BaseStorageDocsFragment.KEY_UPDATE) {
                     file?.delete()
                 }
             }
         } catch (e: Exception) {
-            mNotificationUtils.showUploadErrorNotification(id.hashCode(), fileName)
-            sendBroadcastUnknownError(fileName, path)
+            mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+            title?.let { sendBroadcastUnknownError(it, path) }
             throw e
         }
     }
@@ -144,7 +153,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
         super.getArgs()
         fileId = data?.getString(KEY_FILE_ID)
         file = from?.let { DocumentFile.fromSingleUri(applicationContext, it) }
-        path = from?.let { PathUtils.getPath(applicationContext, it) }
+        path = from?.path
     }
 }
 

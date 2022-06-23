@@ -31,9 +31,9 @@
     <string name="auth_info_screen_3">Скопируйте ключ и вставьте в приложение Google Authenticator</string>
     <string name="bottom_sheet_cloud_title">Облака</string>
     <string name="bottom_sheet_portal_title">Портал</string>
-    <string name="chooser_activity_not_found">Не найдено приложений для этого действия...</string>
-    <string name="chooser_email_client">Выберите почтовый клиент...</string>
-    <string name="chooser_web_browser">Выберите браузер...</string>
+    <string name="chooser_activity_not_found">Не найдено приложений для этого действия…</string>
+    <string name="chooser_email_client">Выберите почтовый клиент…</string>
+    <string name="chooser_web_browser">Выберите браузер…</string>
     <string name="countries_codes_title">Выбор страны</string>
     <string name="device_path_file_error">Этот файл не существует.</string>
     <string name="device_trash_files_restore">Восстановить</string>
@@ -85,8 +85,8 @@
     <string name="dialog_question_delete_folder">Папка будет безвозвратно удалена.</string>
     <string name="dialogs_sign_in_portal_header_text">Вход в облачный офис</string>
     <string name="dialogs_sign_in_register_portal">Регистрация облачного офиса</string>
-    <string name="dialogs_wait_title">Операция выполняется...</string>
-    <string name="dialogs_wait_title_storage">Подключение хранилища...</string>
+    <string name="dialogs_wait_title">Операция выполняется…</string>
+    <string name="dialogs_wait_title_storage">Подключение хранилища…</string>
     <string name="download_manager_cancel">Скачивание отменено</string>
     <string name="download_manager_complete">Скачивание завершено</string>
     <string name="download_manager_error">Ошибка при скачивании</string>
@@ -166,12 +166,11 @@
     <string name="list_headers_week">На этой неделе</string>
     <string name="list_headers_year">В этом году</string>
     <string name="list_headers_yesterday">Вчера</string>
-    <string name="login_accounts_select_add">Добавить облачный аккаунт</string>
     <string name="login_accounts_select_title">Выбор аккаунта</string>
     <string name="login_api_init_error">Ошибка инициализации</string>
     <string name="login_api_init_portal_error">Синтаксическая ошибка в адресе облачного офиса</string>
     <string name="login_api_portal_name">Неправильный адрес облачного офиса. Пример: example.onlyoffice.com</string>
-    <string name="login_api_portal_name_content">Имя учетной записи должно состоять только из символов A-Z, a-z, 0-9</string>
+    <string name="login_api_portal_name_content">Имя учетной записи должно состоять только из символов A–Z, a–z, 0–9</string>
     <string name="login_api_portal_name_length">Имя учетной записи должно содержать не менее 6 символов</string>
     <string name="login_create_portal_address_hint">Имя учетной записи</string>
     <string name="login_create_portal_email_hint">Email</string>
@@ -294,7 +293,7 @@
     <string name="placeholder_access_denied">Доступ запрещен</string>
     <string name="placeholder_connection">Ошибка подключения</string>
     <string name="placeholder_empty">Пустая папка</string>
-    <string name="placeholder_loading_files">Загрузка файлов...</string>
+    <string name="placeholder_loading_files">Загрузка файлов…</string>
     <string name="placeholder_media_error">Невозможно загрузить медиа-файл</string>
     <string name="placeholder_no_groups">Нет групп</string>
     <string name="placeholder_no_subfolders">Нет подпапок</string>
@@ -370,10 +369,10 @@
     <string name="toolbar_menu_main_options">Параметры</string>
     <string name="toolbar_menu_main_remove_from_list">Убрать из списка</string>
     <string name="toolbar_menu_main_rename">Переименовать</string>
-    <string name="toolbar_menu_main_select">Выбрать...</string>
+    <string name="toolbar_menu_main_select">Выбрать…</string>
     <string name="toolbar_menu_main_select_all">Выбрать все</string>
     <string name="toolbar_menu_main_share">Поделиться</string>
-    <string name="toolbar_menu_search_hint">Поиск...</string>
+    <string name="toolbar_menu_search_hint">Поиск…</string>
     <string name="toolbar_menu_search_result">Результат поиска</string>
     <string name="toolbar_menu_sort_asc">По возрастанию</string>
     <string name="toolbar_menu_sort_by">Сортировать по</string>
@@ -409,7 +408,6 @@
     <string name="cloud_only_office_description">Храните документы в облаке и работайте над ними совместно</string>
     <string name="cloud_accounts_title">Аккаунты</string>
     <string name="error_long_file_name">Слишком длинное имя файла</string>
-    <string name="dialog_remove_account_title">Удалить аккаунт</string>
     <string name="dialog_remove_account_description">
         Пользователь с %1$s с портала %2$s выйдет из системы и будет удален из списка аккаунтов. \n\nОбратите внимание: для входа в систему потребуется ввести адрес портала, email и пароль. Все файлы останутся в сохранности.
     </string>
@@ -484,5 +482,15 @@
             <a href="%2$s">Условиями использования</a>
         ]]>
     </string>
+    <string name="login_create_signin_passwords_length">Пароль должен содержать от 8 до 30 символов</string>
+    <string name="list_action_import">Загрузить файл</string>
+    <string name="storage_google_drive_copy_folder_error">Невозможно скопировать папки</string>
+    <string name="socials_google_cancel_auth">Отменен вход через Google</string>
+    <string name="error_open_project_file">Проект недоступен с этого аккаунта</string>
+    <string name="switch_account_open_project_file">Переключить аккаунт</string>
+    <string name="app_settings_color_theme">Цветовая тема</string>
+    <string name="app_settings_follow_the_system">Как в системе</string>
+    <string name="app_settings_light_theme">Светлая тема</string>
+    <string name="app_settings_dark_theme">Темная тема</string>
 
 </resources>

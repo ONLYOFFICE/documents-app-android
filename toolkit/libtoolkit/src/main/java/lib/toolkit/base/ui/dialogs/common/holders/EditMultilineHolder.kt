@@ -23,7 +23,7 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
     private inner class EditFilter : BaseInputFilter() {
         override fun filter(source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int): CharSequence? {
             super.filter(source, start, end, dest, dstart, dend)
-            mAcceptView.isEnabled = mResultString.isNotEmpty() && !mResultString.trim { it <= ' ' }.isEmpty()
+            acceptView.isEnabled = mResultString.isNotEmpty() && !mResultString.trim { it <= ' ' }.isEmpty()
             return null
         }
     }
@@ -40,12 +40,12 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
         when (v.id) {
             R.id.dialogCommonAcceptButton -> {
                 KeyboardUtils.hideKeyboard(mEditValueView)
-                mOnClickListener?.onAcceptClick(getType(), getValue(), mTag)
+                onClickListener?.onAcceptClick(getType(), getValue(), holderTag)
             }
 
             R.id.dialogCommonCancelButton -> {
                 KeyboardUtils.hideKeyboard(mEditValueView)
-                mOnClickListener?.onCancelClick(getType(), mTag)
+                onClickListener?.onCancelClick(getType(), holderTag)
             }
         }
     }
@@ -104,12 +104,12 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
     inner class Builder {
 
         fun setTag(value: String?): Builder {
-            mTag = value
+            holderTag = value
             return this
         }
 
         fun setTopTitle(value: String?): Builder {
-            mTopTitle = value
+            topTitle = value
             return this
         }
 
@@ -124,12 +124,12 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
         }
 
         fun setAcceptTitle(value: String?): Builder {
-            mAcceptTitle = value
+            acceptTitle = value
             return this
         }
 
         fun setCancelTitle(value: String?): Builder {
-            mCancelTitle = value
+            cancelTitle = value
             return this
         }
 

@@ -13,6 +13,7 @@ import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentAppSettingsLayoutBinding
 import app.editors.manager.ui.activities.main.AboutActivity
+import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.dialogs.AppThemeDialog
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -38,16 +39,24 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
 
     private val viewModel by viewModels<AppSettingsViewModel>()
     private var viewBinding: FragmentAppSettingsLayoutBinding? = null
+    private var activity: IMainActivity? = null
 
     private val getWritePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
         if (result) {
             viewModel.clearCache()
         }
     }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        requireContext().appComponent.inject(viewModel)
+        try {
+            activity = context as IMainActivity
+            requireContext().appComponent.inject(viewModel)
+        } catch (e: ClassCastException) {
+            throw RuntimeException(
+                DocsOnDeviceFragment::class.java.simpleName + " - must implement - " +
+                        IMainActivity::class.java.simpleName
+            )
+        }
     }
 
     override fun onDestroyView() {
@@ -63,6 +72,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
+        initToolbar()
         initSettingItems()
         viewModel.getData()
     }
@@ -73,7 +83,6 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
     }
 
     private fun init() {
-        setActionBarTitle(getString(R.string.settings_item_title))
         viewModel.cacheLiveData.observe(viewLifecycleOwner) { size: Long? ->
             viewBinding?.cacheSizeTextView?.text = StringUtils.getFormattedSize(requireContext(), size ?: -1)
         }
@@ -89,6 +98,15 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
         }
         viewModel.message.observe(viewLifecycleOwner) { message ->
             showSnackBar(message)
+        }
+    }
+
+    private fun initToolbar() {
+        setActionBarTitle(getString(R.string.settings_item_title))
+        activity?.apply {
+            setAppBarStates(false)
+            showNavigationButton(false)
+            showActionButton(false)
         }
     }
 
@@ -115,9 +133,10 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
             binding.settingSupportItem.settingText.text = getString(R.string.navigation_drawer_menu_feedback)
 
             binding.settingsAppTheme.apply {
-                settingIcon.isVisible = false
+                settingIcon.isVisible = true
                 settingText.text = getString(R.string.app_settings_color_theme)
                 settingIconArrow.isVisible = false
+                settingIcon.isVisible = false
             }
         }
     }

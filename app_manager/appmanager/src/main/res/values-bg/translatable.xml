@@ -140,7 +140,6 @@
     <string name="list_headers_week">Тази седмица</string>
     <string name="list_headers_year">Тази година</string>
     <string name="list_headers_yesterday">Вчера</string>
-    <string name="login_accounts_select_add">Добавете акаунт в облака</string>
     <string name="login_accounts_select_title">Изберете профил</string>
     <string name="login_api_init_error">Първоначална грешка</string>
     <string name="login_api_init_portal_error">Синтактична грешка в адреса на офиса в облака</string>
@@ -205,7 +204,6 @@
     <string name="media_image_share_chooser">Изберете приложение за споделяне</string>
     <string name="media_video_error">Грешка при неизвестна играча: %1$s</string>
     <string name="navigation_drawer_close">Затворете чекмеджето за навигация</string>
-    <string name="navigation_drawer_menu_about">Относно</string>
     <string name="navigation_drawer_menu_add_account">Добавяне на профил</string>
     <string name="navigation_drawer_menu_common">Общи документи</string>
     <string name="navigation_drawer_menu_help">Помощ</string>
@@ -381,7 +379,6 @@
     <string name="cloud_only_office_description">Запазете документи в облака и работете по тях</string>
     <string name="cloud_accounts_title">Профили</string>
     <string name="error_long_file_name">Името на файла е твърде дълго</string>
-    <string name="dialog_remove_account_title">Премахни профил</string>
     <string name="dialog_remove_account_description">
         Потребител с %1$s от %2$s портала ще бъде отписан и премахнат от списъка с профили. \n\nМоля, имайте предвид: за да влезете ще е нужно да въведете адрес на портала, имейл и парола. Всички ваши файлове ще бъдат защитени.
 </string>
@@ -460,12 +457,22 @@
     <string name="app_settings_passcode_description"> - това е кодът, изискван при стартирането на приложението.\n\nВнимавайте! Ако забравите паролата, трябва да премахнете или да инсталирате отново приложението. Всички документи на устройството ще бъдат изгубени. </string>
     <string name="app_settings_passcode_fingerprint_title">Достъп до Документи</string>
     <string name="sign_in_terms_and_policy_text">
-<![CDATA[
+        <![CDATA[
            Като продължите, се съгласявате с
             <a href="%1$s">Политиката на поверителност</a>
             и
             <a href="%2$s">Условията за употреба</a>
         ]]>
-</string>
+    </string>
+    <string name="login_create_signin_passwords_length">Паролата трябва да съдържа: от 8 до 30 знака</string>
+    <string name="list_action_import">Импортиране на файл</string>
+    <string name="storage_google_drive_copy_folder_error">Папките не могат да бъдат копирани</string>
+    <string name="socials_google_cancel_auth">Откажете списване с Google</string>
+    <string name="error_open_project_file">Този профил няма достъп до проекта</string>
+    <string name="switch_account_open_project_file">Сменете профил</string>
+    <string name="app_settings_color_theme">Цветна тема</string>
+    <string name="app_settings_follow_the_system">Следвайте системата</string>
+    <string name="app_settings_light_theme">Светла тема</string>
+    <string name="app_settings_dark_theme">Тъмна тема</string>
 
 </resources>

@@ -28,14 +28,12 @@ import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.storages.onedrive.mvp.presenters.OneDriveSingInPresenter
-import app.editors.manager.storages.onedrive.onedrive.authorization.IOneDriveAuthServiceProvider
 import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
-import app.editors.manager.ui.dialogs.AccountBottomDialog
 import app.editors.manager.ui.fragments.login.*
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.WebViewerFragment
@@ -86,7 +84,6 @@ interface AppComponent {
     val accountsDao: AccountDao
     val loginService: ILoginServiceProvider
     val oneDriveLoginService: IOneDriveLoginServiceProvider
-    val oneDriveAuthService: IOneDriveAuthServiceProvider
     val dropboxLoginService: IDropboxLoginServiceProvider
     val googleDriveLoginService: IGoogleDriveLoginServiceProvider
     val accountOnline: CloudAccount?
@@ -113,11 +110,11 @@ interface AppComponent {
     fun inject(splashFragment: SplashFragment?)
     fun inject(dropboxSignInPresenter: DropboxSignInPresenter?)
     fun inject(googleDriveSignInPresenter: GoogleDriveSignInPresenter?)
+    fun inject(onlyOfficeCloudPresenter: OnlyOfficeCloudPresenter)
 
     /*
     * Main
     * */
-    fun inject(accountsPresenter: AccountsPresenter?)
     fun inject(mainActivityPresenter: MainActivityPresenter?)
     fun inject(onlyOfficePresenter: DocsCloudPresenter?)
     fun inject(webDavPresenter: DocsWebDavPresenter?)
@@ -170,7 +167,6 @@ interface AppComponent {
     fun inject(authPagerFragment: AuthPagerFragment?)
     fun inject(enterpriseAppAuthPresenter: EnterpriseAppAuthPresenter?)
     fun inject(selectPresenter: SelectPresenter?)
-    fun inject(accountsBottomFragment: AccountBottomDialog?)
     fun inject(webDavSignInPresenter: WebDavSignInPresenter?)
 
     fun inject(viewModel: AppSettingsViewModel)

@@ -6,8 +6,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import app.documents.core.account.Recent
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
@@ -91,7 +93,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         super.onPrepareOptionsMenu(menu)
         setMenuSearchEnabled(true)
         mainItem?.isVisible = false
-        sortItem?.isVisible = false
+        sortItem?.let {
+            it.isVisible = true
+            it.isEnabled = true
+            it.subMenu.findItem(R.id.toolbar_sort_item_owner).isVisible = false
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -109,6 +115,48 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                     }
                 }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.toolbar_item_sort -> {
+                activity?.setAppBarStates(false)
+                activity?.showNavigationButton(false)
+            }
+            R.id.toolbar_sort_item_title -> {
+                if (item.isChecked) {
+                    presenter.reverseOrder()
+                } else {
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_TITLE)
+                }
+            }
+            R.id.toolbar_sort_item_date_update -> {
+                if (item.isChecked) {
+                    presenter.reverseOrder()
+                } else {
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_UPDATED)
+                }
+            }
+            R.id.toolbar_sort_item_size -> {
+                if (item.isChecked) {
+                    presenter.reverseOrder()
+                } else {
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_SIZE)
+                }
+            }
+            R.id.toolbar_sort_item_type -> {
+                if (item.isChecked) {
+                    presenter.reverseOrder()
+                } else {
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_TYPE)
+                }
+            }
+            R.id.toolbar_sort_item_asc -> presenter.setOrder(isAsc = true)
+            R.id.toolbar_sort_item_desc -> presenter.setOrder(isAsc = false)
+            else -> {}
+        }
+        item.isChecked = true
+        return false
     }
 
     override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
@@ -147,23 +195,16 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         setActionBarTitle(getString(R.string.fragment_recent_title))
     }
 
-    override fun onRecentGet(list: List<Recent>) {
-        adapter?.setRecent(list)
-    }
-
     override fun onListEnd() {
         presenter.loadMore(adapter?.itemCount)
     }
 
-    override fun updateFiles(files: List<Recent>) {
+    override fun updateFiles(files: List<Recent>, sortBy: String, sortOrder: String) {
         if (files.isNotEmpty()) {
-            adapter?.itemsList?.let {
-                adapter?.setRecent(files)
-                recyclerView?.scrollToPosition(0)
-            } ?: run {
-                adapter?.setRecent(files)
-            }
+            adapter?.setRecent(files, sortBy == ApiContract.Parameters.VAL_SORT_BY_UPDATED)
+            recyclerView?.scrollToPosition(0)
             placeholderViews?.setVisibility(false)
+            onReverseSortOrder(sortOrder)
             updateMenu(true)
         } else {
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.SEARCH)
@@ -172,18 +213,19 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     private fun updateMenu(isEnable: Boolean) {
-        if (menu != null && searchItem != null && deleteItem != null) {
+        if (menu != null && sortItem != null && searchItem != null && deleteItem != null) {
+            sortItem?.isEnabled = isEnable
             searchItem?.isEnabled = isEnable
             deleteItem?.isVisible = isEnable
         }
     }
 
-    override fun openFile(file: CloudFile) {
-        val ext = file.fileExst
+    override fun openFile(response: CloudFile) {
+        val ext = response.fileExst
         if (StringUtils.isVideoSupport(ext) || StringUtils.isImage(ext)) {
-            MediaActivity.show(this, getExplorer(file), false)
+            MediaActivity.show(this, getExplorer(response), false)
         } else if (StringUtils.isDocument(ext)) {
-            WebViewerActivity.show(requireActivity(), file)
+            WebViewerActivity.show(requireActivity(), response)
         } else {
             onError(getString(R.string.error_unsupported_format))
         }
@@ -233,15 +275,15 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                 if (state.recents.isEmpty()) {
                     setEmpty()
                 } else {
-                    setRecents(state.recents)
+                    setRecent(state.recents)
                 }
             }
         }
     }
 
-    private fun setRecents(recents: List<Recent>) {
+    private fun setRecent(recent: List<Recent>) {
         setMenuVisibility(true)
-        adapter?.setRecent(recents)
+        presenter.updateFiles(recent)
     }
 
     private fun setEmpty() {

@@ -63,6 +63,8 @@
     <string name="errors_email_already_registered">User with this email is already registered</string>
     <string name="errors_path_url">Invalid URL</string>
     <string name="errors_create_local_file">Failed create file</string>
+    <string name="errors_import_local_file_desc">Permission denied</string>
+    <string name="errors_import_local_file">Access denied. Give read and write permissions</string>
     <string name="errors_webdav_sign_in">Wrong server, username or password</string>
     <string name="errors_webdav_username_password">Wrong username or password</string>
     <string name="errors_webdav_server">Wrong server</string>
@@ -78,14 +80,14 @@
     <string name="login_api_init_portal_error">Portal name syntax error</string>
     <string name="login_api_portal_name">Wrong portal name. Example: example.onlyoffice.com</string>
     <string name="login_api_portal_name_length">Portal name must consist of at least 6 characters</string>
-    <string name="login_api_portal_name_content">Portal name must consist of A-Z, a-z, 0-9</string>
+    <string name="login_api_portal_name_content">Portal name must consist of A–Z, a–z, 0–9</string>
 
 
     <string name="login_retry">Retry connect</string>
 
     <!-- Accounts -->
     <string name="login_accounts_select_title">Select account</string>
-    <string name="login_accounts_select_add">Add cloud account</string>
+    <string name="login_accounts_select_add">Add account</string>
 
     <!-- Portal pager -->
     <string name="login_pager_enterprise">PORTAL</string>
@@ -186,8 +188,8 @@
     <string name="dialogs_sign_in_register_portal">Registering portal</string>
 
     <!-- Waiting -->
-    <string name="dialogs_wait_title">Operation in progress...</string>
-    <string name="dialogs_wait_title_storage">Connecting storage...</string>
+    <string name="dialogs_wait_title">Operation in progress…</string>
+    <string name="dialogs_wait_title_storage">Connecting storage…</string>
 
     <!-- Question -->
     <string name="dialogs_question_accept_yes">YES</string>
@@ -232,14 +234,14 @@
 
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
-    <string name="chooser_web_browser">Choose browser...</string>
-    <string name="chooser_email_client">Choose email client...</string>
+    <string name="chooser_web_browser">Choose browser…</string>
+    <string name="chooser_email_client">Choose email client…</string>
 
     <!-- ======================================================================================= -->
     <!-- Main -->
     <!-- Title -->
     <string name="actionbar_title_main">Documents</string>
-    <string name="chooser_activity_not_found">Could not find any application for this action...</string>
+    <string name="chooser_activity_not_found">Could not find any application for this action…</string>
     <string name="fragment_clouds_title">Clouds</string>
     <string name="fragment_clouds_portal_title">Connect to portal</string>
     <string name="fragment_clouds_storage_title">Connect to storage</string>
@@ -258,9 +260,9 @@
     <string name="navigation_drawer_menu_common">Common documents</string>
     <string name="navigation_drawer_menu_projects">Projects</string>
     <string name="navigation_drawer_menu_trash">Trash</string>
-    <string name="navigation_drawer_menu_about">About</string>
     <string name="navigation_drawer_menu_help">Help</string>
     <string name="navigation_drawer_menu_logout">Log out</string>
+    <string name="navigation_drawer_menu_sign_in">Sign in</string>
     <string name="navigation_drawer_menu_add_account">Add account</string>
     <string name="navigation_drawer_menu_feedback">Feedback and support</string>
     <string name="settings_item_title">Settings</string>
@@ -273,7 +275,7 @@
 
     <!-- Main toolbar menu -->
     <string name="toolbar_menu_search_result">Search result</string>
-    <string name="toolbar_menu_search_hint">Search...</string>
+    <string name="toolbar_menu_search_hint">Search…</string>
     <string name="toolbar_menu_main_options">Options</string>
     <string name="toolbar_menu_main_share">Share</string>
     <string name="toolbar_menu_main_move">Move</string>
@@ -281,7 +283,7 @@
     <string name="toolbar_menu_main_remove_from_list">Remove from list</string>
     <string name="toolbar_menu_main_rename">Rename</string>
     <string name="toolbar_menu_main_delete">Delete</string>
-    <string name="toolbar_menu_main_select">Select...</string>
+    <string name="toolbar_menu_main_select">Select…</string>
     <string name="toolbar_menu_main_select_all">Select all</string>
     <string name="toolbar_menu_main_deselect">Deselect</string>
     <string name="toolbar_menu_sort_by">Sort by</string>
@@ -347,7 +349,7 @@
     <string name="placeholder_no_users_groups">No users and groups</string>
     <string name="placeholder_media_error">Unable to load media</string>
     <string name="placeholder_try_again">Try again</string>
-    <string name="placeholder_loading_files">Loading files...</string>
+    <string name="placeholder_loading_files">Loading files…</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>
@@ -504,6 +506,7 @@
     <string name="socials_facebook_cancel_auth">Cancel login with Facebook</string>
     <string name="socials_facebook_failed_auth">Failed login with Facebook</string>
     <string name="socials_google_failed_auth">Failed login with Google</string>
+    <string name="socials_google_cancel_auth">Cancel login with Google</string>
 
     <!-- ======================================================================================= -->
     <!-- On boarding -->
@@ -580,7 +583,7 @@
     <string name="cloud_only_office_description">Store documents in the cloud and collaborate on them</string>
     <string name="cloud_accounts_title">Accounts</string>
     <string name="error_long_file_name">File name is too long</string>
-    <string name="dialog_remove_account_title">Remove account</string>
+    <string name="dialog_remove_account_title">Delete from device</string>
     <string name="dialog_remove_account_description">
         User with %1$s from the %2$s portal will be logged out and removed from the account list. \n\nPlease, note: to log in, you\'ll need to enter portal address, email and password. All your files will be safe.
     </string>
@@ -631,7 +634,10 @@
         ]]>
     </string>
     <string name="app_settings_color_theme">Color theme</string>
-    <string name="app_settings_follow_the_system">Follow the system</string>
+    <string name="app_settings_follow_the_system">Same as system</string>
     <string name="app_settings_light_theme">Light theme</string>
     <string name="app_settings_dark_theme">Dark theme</string>
+    <string name="shortcut_new_doc">New document</string>
+    <string name="shortcut_new_table">New table</string>
+    <string name="shortcut_new_presentation">New presentation</string>
 </resources>

@@ -35,12 +35,10 @@ class DropboxSignInFragment: BaseStorageSignInFragment() {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             if (redirectUrl?.let { url.startsWith(it) } == true) {
-                val parametersMap = StringUtils.getParametersFromUrl(url.split("#")[1])
-                parametersMap[TAG_ACCESS_TOKEN]?.let { token -> parametersMap[TAG_ACCOUNT_ID]?.let { accountId ->
-                    presenter.getUserInfo(token,
-                        accountId
-                    )
-                } }
+                val parametersMap = StringUtils.getParametersFromUrl(url.split("?")[1])
+                parametersMap["code"]?.let { token ->
+                    presenter.getUserInfo(token)
+                }
             }
         }
 
@@ -60,6 +58,15 @@ class DropboxSignInFragment: BaseStorageSignInFragment() {
             if (!NetworkUtils.isOnline(requireContext())) {
                 showSnackBar(R.string.errors_connection_error)
             }
+        }
+    }
+
+    override fun loadWebView(url: String?) {
+        viewBinding?.webStorageSwipe?.isRefreshing = true
+        url?.let {
+            val correctUrl = StringBuilder(it)
+                .append("&token_access_type=offline")
+            viewBinding?.webStorageWebview?.loadUrl(correctUrl.toString())
         }
     }
 

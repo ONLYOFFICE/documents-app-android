@@ -287,7 +287,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             .sortedWith(groupComparator())
 
         shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {
-            item?.access = it.access.toString()
+            item?.access = it.access
             item?.shared = isShared(it.intAccess)
             externalLink = it.sharedTo.shareLink
         }

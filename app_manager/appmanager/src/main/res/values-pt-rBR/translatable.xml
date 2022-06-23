@@ -155,7 +155,6 @@
     <string name="list_headers_week">Esta semana</string>
     <string name="list_headers_year">Este ano</string>
     <string name="list_headers_yesterday">Ontem</string>
-    <string name="login_accounts_select_add">Adicione conta da nuvem</string>
     <string name="login_accounts_select_title">Selecionar conta</string>
     <string name="login_api_init_error">Erro de inicialização</string>
     <string name="login_api_init_portal_error">Erro de sintaxe no nome do portal</string>
@@ -221,7 +220,6 @@
     <string name="media_image_share_chooser">Escolher app para compartilhar</string>
     <string name="media_video_error">Erro de player desconhecido: %1$s</string>
     <string name="navigation_drawer_close">Fechar a gaveta de navegação</string>
-    <string name="navigation_drawer_menu_about">Sobre</string>
     <string name="navigation_drawer_menu_add_account">Adicionar conta</string>
     <string name="navigation_drawer_menu_common">Documentos comuns</string>
     <string name="navigation_drawer_menu_help">Ajuda</string>
@@ -379,7 +377,6 @@
     <string name="cloud_only_office_description">Armazene documentos na nuvem e colabore neles</string>
     <string name="cloud_accounts_title">Contas</string>
     <string name="error_long_file_name">O nome do arquivo é muito longo</string>
-    <string name="dialog_remove_account_title">Remover conta</string>
     <string name="dialog_remove_account_description">
         O usuário com o email %1$s do portal %2$s será desconectada e removida da lista de contas. \n\nObserve que para fazer log-in precisará digitar o endereço do portal, email e senha. Todos os arquivos estarão seguros.
     </string>
@@ -467,4 +464,14 @@
             <a href="%2$s">Termos de serviço</a>
         ]]>
     </string>
+    <string name="login_create_signin_passwords_length">A senha deve conter: de 8 a 30 caracteres</string>
+    <string name="list_action_import">Importar arquivo</string>
+    <string name="storage_google_drive_copy_folder_error">As pastas não podem ser copiadas</string>
+    <string name="socials_google_cancel_auth">Cancelar login com Google</string>
+    <string name="error_open_project_file">Esta conta não tem acesso ao projeto</string>
+    <string name="switch_account_open_project_file">Mudar de conta</string>
+    <string name="app_settings_color_theme">Tema da cor</string>
+    <string name="app_settings_follow_the_system">Seguir o sistema</string>
+    <string name="app_settings_light_theme">Tema claro</string>
+    <string name="app_settings_dark_theme">Tema Dark</string>
 </resources>

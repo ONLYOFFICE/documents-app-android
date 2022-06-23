@@ -79,7 +79,6 @@
 
     <!-- Accounts -->
     <string name="login_accounts_select_title">Vybrat účet</string>
-    <string name="login_accounts_select_add">Přidat cloudový účet</string>
 
     <!-- Portal pager -->
     <string name="login_pager_enterprise">PORTÁL</string>
@@ -173,8 +172,8 @@
     <string name="dialogs_sign_in_register_portal">Registrování portálu</string>
 
     <!-- Waiting -->
-    <string name="dialogs_wait_title">Probíhá operace...</string>
-    <string name="dialogs_wait_title_storage">Připojování úložiště...</string>
+    <string name="dialogs_wait_title">Probíhá operace…</string>
+    <string name="dialogs_wait_title_storage">Připojování úložiště…</string>
 
     <!-- Question -->
     <string name="dialogs_question_accept_yes">ANO</string>
@@ -217,14 +216,14 @@
 
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
-    <string name="chooser_web_browser">Zvolte prohlížeč...</string>
-    <string name="chooser_email_client">Zvolte e-mailového klienta...</string>
+    <string name="chooser_web_browser">Zvolte prohlížeč…</string>
+    <string name="chooser_email_client">Zvolte e-mailového klienta…</string>
 
     <!-- ======================================================================================= -->
     <!-- Main -->
     <!-- Title -->
     <string name="actionbar_title_main">Dokumenty</string>
-    <string name="chooser_activity_not_found">V rámci této akce nebyla nalezena žádná aplikace...</string>
+    <string name="chooser_activity_not_found">V rámci této akce nebyla nalezena žádná aplikace…</string>
     <string name="fragment_clouds_title">Cloudy</string>
     <string name="fragment_clouds_portal_title">Připojení k portálu</string>
     <string name="fragment_clouds_storage_title">Připojení k úložišti</string>
@@ -243,7 +242,6 @@
     <string name="navigation_drawer_menu_common">Společné dokumenty</string>
     <string name="navigation_drawer_menu_projects">Projekty</string>
     <string name="navigation_drawer_menu_trash">Koš</string>
-    <string name="navigation_drawer_menu_about">O produktu</string>
     <string name="navigation_drawer_menu_help">Nápověda</string>
     <string name="navigation_drawer_menu_logout">Odhlásit se</string>
     <string name="navigation_drawer_menu_add_account">Přidat účet</string>
@@ -257,7 +255,7 @@
 
     <!-- Main toolbar menu -->
     <string name="toolbar_menu_search_result">Výsledek vyhledávání</string>
-    <string name="toolbar_menu_search_hint">Hledat...</string>
+    <string name="toolbar_menu_search_hint">Hledat…</string>
     <string name="toolbar_menu_main_options">Možnosti</string>
     <string name="toolbar_menu_main_share">Sdílet</string>
     <string name="toolbar_menu_main_move">Přesunout</string>
@@ -265,7 +263,7 @@
     <string name="toolbar_menu_main_remove_from_list">Odebrat ze seznamu</string>
     <string name="toolbar_menu_main_rename">Přejmenovat</string>
     <string name="toolbar_menu_main_delete">Odstranit</string>
-    <string name="toolbar_menu_main_select">Vybrat...</string>
+    <string name="toolbar_menu_main_select">Vybrat…</string>
     <string name="toolbar_menu_main_select_all">Vybrat vše</string>
     <string name="toolbar_menu_main_deselect">Zrušit výběr</string>
     <string name="toolbar_menu_sort_by">Řadit podle</string>
@@ -328,7 +326,7 @@
     <string name="placeholder_no_users_groups">Žádní uživatelé ani skupiny</string>
     <string name="placeholder_media_error">Média nelze načíst</string>
     <string name="placeholder_try_again">Zkusit znovu</string>
-    <string name="placeholder_loading_files">Načítání souborů...</string>
+    <string name="placeholder_loading_files">Načítání souborů…</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Složky</string>
@@ -525,7 +523,6 @@
     <string name="cloud_only_office_description">Ukládejte dokumenty v cloudu a spolupracujte na nich</string>
     <string name="cloud_accounts_title">Účty</string>
     <string name="error_long_file_name">Název souboru je příliš dlouhý</string>
-    <string name="dialog_remove_account_title">Odebrat účet</string>
     <string name="dialog_remove_account_description">Uživatel s %1$s z portálu %2$s bude odhlášen a odebrán ze seznamu účtů. \n\nProsím, mějte na paměti: pro přihlášení je třeba zadat adresu portálu, emailovou adresu a heslo. Všechny vaše soubory budou v bezpečí.</string>
     <string name="dialog_logout_account_title">Jste si jisti, že se chcete odhlásit?</string>
     <string name="dialog_logout_account_description">Po odhlášení nemusíte zadávat adresu portálu ani emailovou adresu, pouze heslo. Buďte bez obav, všechny soubory budou v bezpečí v cloudu.</string>
@@ -609,4 +606,14 @@
             <a href="%2$s">Podmínkami služby</a>
         ]]>
     </string>
+    <string name="login_create_signin_passwords_length">Heslo musí obsahovat: 8 až 30 znaků</string>
+    <string name="list_action_import">Importovat soubor</string>
+    <string name="storage_google_drive_copy_folder_error">Složky nelze kopírovat</string>
+    <string name="socials_google_cancel_auth">Zrušit přihlašování se Google účtem</string>
+    <string name="error_open_project_file">Tento účet nemá přístup k projektu</string>
+    <string name="switch_account_open_project_file">Přepnout účet</string>
+    <string name="app_settings_color_theme">Barevné téma</string>
+    <string name="app_settings_follow_the_system">Jako v systému</string>
+    <string name="app_settings_light_theme">Světlý motiv</string>
+    <string name="app_settings_dark_theme">Tmavý motiv</string>
 </resources>

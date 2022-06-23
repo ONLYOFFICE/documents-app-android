@@ -8,6 +8,8 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.PersonalRegisterView
 import io.reactivex.disposables.Disposable
+import lib.toolkit.base.BuildConfig
+import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 import java.util.*
 
@@ -17,6 +19,8 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
     companion object {
         val TAG: String = PersonalSignUpPresenter::class.java.simpleName
         private const val EMAIL_CODE = "201"
+
+        const val TAG_INFO = "/#info"
     }
 
     init {
@@ -34,8 +38,13 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
         disposable?.dispose()
     }
 
-    fun registerPortal(email: String?) {
-        networkSettings.setBaseUrl(ApiContract.PERSONAL_HOST)
+    private fun registerPortal(email: String?, isInfo: Boolean = false) {
+        if (isInfo) {
+            networkSettings.setBaseUrl("${BuildConfig.SUBDOMAIN}.${BuildConfig.DEFAULT_INFO_HOST}")
+        } else {
+            networkSettings.setBaseUrl(ApiContract.PERSONAL_HOST)
+        }
+
 
         email?.let {
             disposable = App.getApp().appComponent.loginService
@@ -62,6 +71,22 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
             viewState.onError(response.response)
         } else {
             viewState.onRegisterPortal()
+        }
+    }
+
+    fun checkMail(email: String) {
+        var isInfo = false
+        var mail = email
+
+        if (email.contains(TAG_INFO)) {
+            isInfo = true
+            mail = email.replace(TAG_INFO, "")
+        }
+        if (StringUtils.isEmailValid(mail.trim())) {
+            viewState.onWaitingDialog()
+            registerPortal(mail, isInfo = isInfo)
+        } else {
+            viewState.onMessage(R.string.errors_email_syntax_error)
         }
     }
 

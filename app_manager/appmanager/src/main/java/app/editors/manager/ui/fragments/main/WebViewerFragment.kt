@@ -285,7 +285,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        NetworkUtils.clearCookies(requireContext())
+        NetworkUtils.clearCookies()
         webView.removeJavascriptInterface(INTERFACE)
         webView.setDownloadListener(null)
         webView.webChromeClient = null
@@ -330,7 +330,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         if (isDesktopMode || UiUtils.isHuaweiDesktopMode(resources.configuration)) {
             webView.settings.userAgentString = DESKTOP_USER_AGENT
         }
-        NetworkUtils.clearCookies(requireContext())
+        NetworkUtils.clearCookies()
         getArgs()
         setStatusBarColor()
         restoreStates(savedInstanceState)

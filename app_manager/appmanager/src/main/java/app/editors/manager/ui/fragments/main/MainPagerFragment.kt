@@ -1,6 +1,7 @@
 package app.editors.manager.ui.fragments.main
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +9,15 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.models.OpenDataModel
+import app.editors.manager.mvp.models.models.OpenFileModel
+import app.editors.manager.mvp.models.models.OpenFolderModel
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerState
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -23,10 +28,10 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.factory.TabFragmentFactory
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
-import java.util.*
-import app.documents.core.network.ApiContract
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener {
 
@@ -111,7 +116,19 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         restoreStates(savedInstanceState)
         placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.placeholderLayout)
         placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
-        presenter.getState(requireActivity().intent.data)
+        checkBundle()
+//        presenter.getState(requireActivity().intent.data)
+    }
+
+    @Suppress("JSON_FORMAT_REDUNDANT")
+    private fun checkBundle() {
+        val bundle = requireActivity().intent.extras
+        var data = requireActivity().intent.data
+        if (bundle != null && bundle.containsKey("data")){
+            val model = bundle.getString("data")
+            data = Uri.parse("oodocuments://openfile?data=${model}&push=true")
+        }
+        presenter.getState(data)
     }
 
     private fun restoreStates(savedInstanceState: Bundle?) {
@@ -228,7 +245,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun onError(message: String?) {
-        message?.let { showSnackBar(it).show() }
+        message?.let { showSnackBar(it) }
         (requireActivity() as? MainActivity)?.onUnauthorized(message)
     }
 
@@ -347,15 +364,17 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     override fun setFileData(fileData: String) {
         viewBinding?.root?.postDelayed({
-            childFragmentManager.fragments.find { it is DocsCloudFragment }?.let { it ->
-                (it as DocsCloudFragment).setFileData(fileData)
-                requireActivity().intent.data = null
+            childFragmentManager.fragments.find { it is DocsCloudFragment }?.let { fragment ->
+                if (fragment.isAdded) {
+                    (fragment as DocsCloudFragment).setFileData(fileData)
+                    requireActivity().intent.data = null
+                }
             }
         }, 1000)
     }
 
-    override fun onOpenProjectFileError(@StringRes error: Int) {
-        showSnackBarWithAction(error, R.string.switch_account_open_project_file, this)
+    override fun onOpenProjectFileError(@StringRes res: Int) {
+        showSnackBarWithAction(res, R.string.switch_account_open_project_file, this)
     }
 
     fun isRoot(): Boolean {

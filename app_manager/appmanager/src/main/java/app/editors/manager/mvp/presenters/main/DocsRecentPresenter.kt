@@ -17,10 +17,8 @@ import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Current
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.views.main.DocsRecentView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
@@ -56,13 +54,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     init {
         App.getApp().appComponent.inject(this)
-        modelExplorerStack = ModelExplorerStack()
-        filteringValue = ""
-        placeholderViewType = PlaceholderViews.Type.NONE
-        isContextClick = false
-        isFilteringMode = false
-        isSelectionMode = false
-        isFoldersMode = false
     }
 
     private var contextPosition = 0
@@ -106,7 +97,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 recentDao.getRecents()
             }
             withContext(Dispatchers.Main) {
-                viewState.onRender(RecentState.RenderList(list))
+                viewState.onRender(RecentState.RenderList(list.sort()))
             }
         }
     }
@@ -127,19 +118,22 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun searchRecent(newText: String?) {
         CoroutineScope(Dispatchers.Default).launch {
-            val list = recentDao.getRecents().filter { it.name.contains(newText ?: "", true) }
+            val list = recentDao.getRecents()
+                .filter { it.name.contains(newText ?: "", true) }
+                .sort()
+
             withContext(Dispatchers.Main) {
-                viewState.updateFiles(list)
+                updateFiles(list)
             }
         }
     }
 
     private suspend fun openFile(recent: Recent) {
-        accountDao.getAccount(recent.ownerId!!)?.let { account ->
+        accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
             AccountUtils.getToken(
                 context,
                 Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-            )?.let { it ->
+            )?.let {
                 disposable.add(
                     context.api()
                         .getFileInfo(recent.idFile)
@@ -192,6 +186,24 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun loadMore(itemCount: Int?) {
 //        mAccountsSqlData.getRecent()
+    }
+
+    fun setOrder(isAsc: Boolean) {
+        if (isAsc) {
+            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
+        } else {
+            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
+        }
+        update()
+    }
+
+    fun reverseOrder() {
+        if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
+            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
+        } else {
+            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
+        }
+        update()
     }
 
     private fun addRecent(recent: Recent) {
@@ -348,7 +360,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             StringUtils.Extension.PRESENTATION -> viewState.onOpenFile(OpenState.Slide(uri))
             StringUtils.Extension.PDF -> viewState.onOpenFile(OpenState.Pdf(uri))
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                viewState.onOpenFile(OpenState.Media(getImages(File(uri.path)), false))
+                viewState.onOpenFile(OpenState.Media(getImages(File(checkNotNull(uri.path))), false))
             }
             else -> viewState.onError(context.getString(R.string.error_unsupported_format))
         }
@@ -435,6 +447,39 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             }
         }
         temp = null
+    }
+
+    fun update(sortBy: String = preferenceTool.sortBy.orEmpty()) {
+        preferenceTool.sortBy = sortBy
+        CoroutineScope(Dispatchers.Default).launch {
+            val list = recentDao.getRecents().sort()
+            withContext(Dispatchers.Main) {
+                updateFiles(list)
+            }
+        }
+    }
+
+    fun updateFiles(list: List<Recent>) {
+        val sortBy = preferenceTool.sortBy.orEmpty()
+        val sortOrder = preferenceTool.sortOrder.orEmpty()
+
+        viewState.updateFiles(list, sortBy, sortOrder)
+    }
+
+    private fun List<Recent>.sort(sortBy: String = preferenceTool.sortBy.orEmpty()): List<Recent> {
+        var sortedList = when (sortBy) {
+            ApiContract.Parameters.VAL_SORT_BY_TITLE -> sortedBy { it.name }
+            ApiContract.Parameters.VAL_SORT_BY_UPDATED -> sortedBy { it.date }
+            ApiContract.Parameters.VAL_SORT_BY_SIZE -> sortedBy { it.size }
+            ApiContract.Parameters.VAL_SORT_BY_TYPE -> sortedBy {
+                StringUtils.getExtensionFromPath(it.name)
+            }
+            else -> this
+        }
+        if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
+            sortedList = sortedList.reversed()
+        }
+        return sortedList
     }
 
 }

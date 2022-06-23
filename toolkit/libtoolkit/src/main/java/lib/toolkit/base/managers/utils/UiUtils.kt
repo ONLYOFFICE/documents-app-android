@@ -618,7 +618,11 @@ object UiUtils {
 
         val text = EditText(context)
         text.setText(value)
+        text.setSelection(value?.length ?: 0)
         text.layoutParams = params
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            text.focusable = View.FOCUSABLE
+        }
         container.addView(text)
 
         AlertDialog.Builder(context)
@@ -637,7 +641,10 @@ object UiUtils {
             .show()
             .apply { if (requireValue) text.requireNotEmpty(getButton(AlertDialog.BUTTON_POSITIVE)) }
 
-        KeyboardUtils.showKeyboard(text)
+        text.postDelayed({
+            text.requestFocus()
+            KeyboardUtils.showKeyboard(text)
+        }, 100)
     }
 
     fun showQuestionDialog(

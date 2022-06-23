@@ -1,23 +1,23 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
-import android.content.Context
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
-import app.documents.core.account.AccountDao
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.RecentDao
 import app.documents.core.account.copyWithToken
 import app.documents.core.login.ILoginServiceProvider
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.models.login.response.ResponseUser
-import app.documents.core.settings.NetworkSettings
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
+import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.mvp.models.user.Thirdparty
+import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.ProfileView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -31,7 +31,6 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import moxy.InjectViewState
-import moxy.MvpPresenter
 import javax.inject.Inject
 
 sealed class ProfileState(val account: CloudAccount) {
@@ -41,19 +40,10 @@ sealed class ProfileState(val account: CloudAccount) {
 }
 
 @InjectViewState
-class ProfilePresenter : MvpPresenter<ProfileView>() {
-
-    @Inject
-    lateinit var context: Context
-
-    @Inject
-    lateinit var accountDao: AccountDao
+class ProfilePresenter : BasePresenter<ProfileView>() {
 
     @Inject
     lateinit var recentDao: RecentDao
-
-    @Inject
-    lateinit var networkSettings: NetworkSettings
 
     init {
         App.getApp().appComponent.inject(this)
@@ -100,7 +90,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                 .map { it.response }
                 .subscribe({ list: List<Thirdparty> ->
                     viewState.onRender(ProfileState.ProvidersState(list, account))
-                }) { throwable: Throwable -> viewState.onError(throwable.message) })
+                }) { throwable: Throwable -> fetchError(throwable = throwable) })
         } catch (error: RuntimeException) {
             //nothing
         }
@@ -137,7 +127,7 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
                     )
                 }
                 is LoginResponse.Error -> {
-                    viewState.onError(response.error.message)
+                    fetchError(response.error)
                 }
                 else -> {
                     // Nothing
@@ -146,36 +136,31 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
         }
     }
 
-    fun removeAccount() {
-        CoroutineScope(Dispatchers.Default).launch {
-            AccountUtils.removeAccount(
-                context,
-                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-            )
-            accountDao.deleteAccount(account)
-            recentDao.removeAllByOwnerId(account.id)
-            if (ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
-                context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
-            }
-            withContext(Dispatchers.Main) {
-                viewState.onClose(false)
+    @SuppressLint("CheckResult")
+    fun logout() {
+        AccountUtils.getAccount(context, account.getAccountName())?.let { systemAccount ->
+            if (account.isWebDav) {
+                AccountUtils.setPassword(context, systemAccount, null)
+            } else if (account.isDropbox || account.isOneDrive || account.isGoogleDrive) {
+                AccountUtils.setToken(context, systemAccount, "")
+            } else {
+                GoogleUtils.getDeviceToken({ deviceToken ->
+                    context.loginService.subscribe(AccountUtils.getToken(context, account.getAccountName()) ?: "", deviceToken, false).subscribe({
+                        update(systemAccount)
+                    }) {
+                        update(systemAccount)
+                    }
+                }) {
+                    update(systemAccount)
+                }
+
             }
         }
-
-
     }
 
-    fun logout() {
+    private fun update(systemAccount: Account) {
         CoroutineScope(Dispatchers.Default).launch {
-            AccountUtils.getAccount(context, account.getAccountName())?.let {
-                if (account.isWebDav) {
-                    AccountUtils.setPassword(context, it, null)
-                } else if (account.isDropbox || account.isOneDrive || account.isGoogleDrive) {
-                    AccountUtils.setToken(context, it, "")
-                } else {
-                    AccountUtils.setToken(context, it, null)
-                }
-            }
+            AccountUtils.setToken(context, systemAccount, null)
             accountDao.updateAccount(account.copyWithToken(isOnline = false).apply {
                 token = ""
                 password = ""
@@ -186,5 +171,4 @@ class ProfilePresenter : MvpPresenter<ProfileView>() {
             }
         }
     }
-
 }

@@ -7,15 +7,14 @@
 
     <ImageView
         android:id="@+id/image"
-        style="@style/CommonImageView"
-        android:tint="@color/colorOnSurface"
         android:layout_width="@dimen/image_default_size"
         android:layout_height="@dimen/image_default_size"
         android:layout_marginStart="@dimen/default_margin_large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        app:tint="@color/colorGrey" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
@@ -26,6 +25,7 @@
         app:layout_constraintBottom_toTopOf="@+id/text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image"
+        app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Title" />
 

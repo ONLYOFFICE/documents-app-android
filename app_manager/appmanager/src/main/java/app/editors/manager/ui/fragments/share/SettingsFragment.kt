@@ -117,8 +117,8 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         return super.onBackPressed()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.share_settings, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.share_settings, menu)
         menu.findItem(R.id.menu_share_settings).isVisible = !settingsPresenter.isPersonalAccount
     }
 
@@ -160,9 +160,9 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         setExternalViewState(accessCode, false)
     }
 
-    override fun onGetShareItem(entity: ViewType, position: Int, accessCode: Int) {
+    override fun onGetShareItem(entity: ViewType, sharePosition: Int, accessCode: Int) {
         viewBinding?.shareSettingsListSwipeRefresh?.isRefreshing = false
-        shareSettingsAdapter?.setItem(entity, position)
+        shareSettingsAdapter?.setItem(entity, sharePosition)
         setExternalViewState(accessCode, false)
     }
 
@@ -461,7 +461,6 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         private const val TAG_ITEM = "TAG_ITEM"
         private const val TAG_SHOW_POPUP = "TAG_SHOW_POPUP"
         private const val TAG_POSITION_POPUP = "TAG_POSITION_POPUP"
-        private val TAG = SettingsFragment::class.java.simpleName
 
         fun newInstance(item: Item): SettingsFragment {
             return SettingsFragment().apply {

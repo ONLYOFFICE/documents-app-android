@@ -71,7 +71,7 @@ class NetworkSettings(context: Context) {
     }
 
     fun getBaseUrl(): String {
-        val url: String =  preferences.getString(KEY_URL, "") ?: ""
+        val url: String =  preferences.getString(KEY_URL, ApiContract.DEFAULT_HOST) ?: ApiContract.DEFAULT_HOST
         return if (url.contains(ApiContract.SCHEME_HTTPS) || url.contains(ApiContract.SCHEME_HTTP)) {
             url
         } else {

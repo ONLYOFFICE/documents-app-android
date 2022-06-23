@@ -1,17 +1,16 @@
 package app.editors.manager.storages.onedrive.mvp.presenters
 
 import app.documents.core.account.CloudAccount
+import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
-import app.editors.manager.app.oneDriveAuthService
 import app.editors.manager.app.oneDriveLoginService
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.StorageUtils
-import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import app.editors.manager.storages.base.presenter.BaseStorageSignInPresenter
 import app.editors.manager.storages.base.view.BaseStorageSignInView
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.mvp.models.response.AuthResponse
 import app.editors.manager.storages.onedrive.mvp.models.user.User
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import app.editors.manager.storages.onedrive.onedrive.api.OneDriveService
 import lib.toolkit.base.managers.utils.AccountData
 import moxy.InjectViewState
@@ -25,22 +24,24 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
 
     fun getToken(code: String) {
         val map = mapOf(
-            StorageUtils.ARG_CLIENT_ID to Constants.OneDrive.COM_CLIENT_ID,
+            StorageUtils.ARG_CLIENT_ID to BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
             StorageUtils.ARG_SCOPE to StorageUtils.OneDrive.VALUE_SCOPE,
-            StorageUtils.ARG_REDIRECT_URI to Constants.OneDrive.COM_REDIRECT_URL,
+            StorageUtils.ARG_REDIRECT_URI to BuildConfig.ONE_DRIVE_COM_REDIRECT_URL,
             StorageUtils.OneDrive.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_AUTH,
-            StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.OneDrive.COM_CLIENT_SECRET,
+            StorageUtils.OneDrive.ARG_CLIENT_SECRET to BuildConfig.ONE_DRIVE_COM_CLIENT_SECRET,
             StorageUtils.ARG_CODE to code
         )
         var accessToken = ""
         var refreshToken = ""
-        disposable = App.getApp().oneDriveAuthService.getToken(map)
+        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_AUTH_URL)
+        disposable = App.getApp().oneDriveLoginService.getToken(map)
             .map { oneDriveResponse ->
                 viewState.onStartLogin()
                 when(oneDriveResponse) {
                     is OneDriveResponse.Success -> {
                         accessToken = (oneDriveResponse.response as AuthResponse).access_token
                         refreshToken = oneDriveResponse.response.refresh_token
+                        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_BASE_URL)
                         return@map oneDriveResponse.response
                     }
                     is OneDriveResponse.Error -> {
@@ -54,7 +55,7 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
                         createUser((oneDriveResponse.response as User), accessToken, refreshToken)
                     }
                     is OneDriveResponse.Error -> {
-                        throw oneDriveResponse.error
+                        viewState.onError(oneDriveResponse.error.message)
                     }
                 }
             }

@@ -44,6 +44,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
     }
 
     override fun onTwoFactorAuth(phoneNoise: String?, request: RequestSignIn) {
+        super.onTwoFactorAuth(phoneNoise, request)
         viewState.onTwoFactorAuth(phoneNoise, Json.encodeToString(request))
     }
 

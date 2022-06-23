@@ -5,6 +5,7 @@ import android.content.*
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
@@ -17,7 +18,6 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.providers.BaseFileProvider
-import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.managers.providers.ProviderError
 import app.editors.manager.managers.providers.ProviderError.Companion.throwInterruptException
 import app.editors.manager.managers.providers.WebDavFileProvider
@@ -26,8 +26,6 @@ import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.managers.works.UploadWork
-import app.editors.manager.managers.works.UploadWork.Companion.getUploadFiles
-import app.editors.manager.managers.works.UploadWork.Companion.putNewUploadFiles
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.list.Header
@@ -40,32 +38,13 @@ import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import lib.toolkit.base.managers.utils.ContentResolverUtils.getName
-import lib.toolkit.base.managers.utils.ContentResolverUtils.getSize
-import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.managers.utils.NetworkUtils.isOnline
-import lib.toolkit.base.managers.utils.NetworkUtils.isWifiEnable
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.StringUtils.equals
-import lib.toolkit.base.managers.utils.StringUtils.getExtension
-import lib.toolkit.base.managers.utils.StringUtils.getFormattedSize
-import lib.toolkit.base.managers.utils.StringUtils.getJsonObject
-import lib.toolkit.base.managers.utils.StringUtils.getNameWithoutExtension
-import lib.toolkit.base.managers.utils.StringUtils.isDocument
-import lib.toolkit.base.managers.utils.StringUtils.isImage
-import lib.toolkit.base.managers.utils.StringUtils.isVideoSupport
-import lib.toolkit.base.managers.utils.TimeUtils.monthMs
-import lib.toolkit.base.managers.utils.TimeUtils.todayMs
-import lib.toolkit.base.managers.utils.TimeUtils.weekMs
-import lib.toolkit.base.managers.utils.TimeUtils.yearMs
-import lib.toolkit.base.managers.utils.TimeUtils.yesterdayMs
+import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import okhttp3.ResponseBody
@@ -103,16 +82,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * Handler for some common job
      * */
 
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
 
     /**
      * Saved values
      * */
 
     protected var fileProvider: BaseFileProvider? = null
-    protected var modelExplorerStack: ModelExplorerStack? = null
-    protected var filteringValue: String? = null
-    protected var placeholderViewType: PlaceholderViews.Type? = null
+    protected var modelExplorerStack: ModelExplorerStack = ModelExplorerStack()
+    protected var filteringValue: String = ""
+    private var placeholderViewType: PlaceholderViews.Type = PlaceholderViews.Type.NONE
     protected var destFolderId: String? = null
     protected var operationStack: ExplorerStackMap? = null
     private var isSubmitted = false
@@ -178,7 +157,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * Download WorkManager
      */
 
-    private var downloadManager = WorkManager.getInstance()
+    private var downloadManager = WorkManager.getInstance(App.getApp().applicationContext)
     private var isMultipleDelete = false
 
     override fun onDestroy() {
@@ -194,45 +173,25 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.getFiles(id, getArgs(null))
-                        .subscribe( { explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError))
+                        .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError))
             }
         }
     }
 
     open fun refresh(): Boolean {
         setPlaceholderType(PlaceholderViews.Type.LOAD)
-        modelExplorerStack?.let { stack ->
-            stack.currentId?.let { id ->
-                fileProvider?.let { provider ->
-                    if (filteringValue?.isEmpty() == true) {
-                        disposable.add(
-                            provider.getFiles(id, getArgs(filteringValue))
-                                .subscribe({ explorer ->
-                                    stack.refreshStack(explorer)
-                                    updateViewsState()
-                                    viewState.onDocsRefresh(getListWithHeaders(stack.last(), true))
-                                }, this::fetchError)
-                        )
-                    } else if (isFilteringMode && provider is CloudFileProvider) {
-                        provider.search(filteringValue)?.let { observable ->
-                            disposable.add(
-                                observable.subscribe({ items ->
-                                    try {
-                                        stack.refreshStack(getSearchExplorer(items))
-                                    } catch (exception: JSONException) {
-                                        throw exception
-                                    }
-                                    setPlaceholderType( if (stack.isListEmpty)
-                                        PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
-                                    updateViewsState()
-                                    viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
-                                }, this::fetchError)
-                            )
-                        }
-                    }
-                    viewState.onSwipeEnable(true)
-                    return true
-                }
+        modelExplorerStack.currentId?.let { id ->
+            fileProvider?.let { provider ->
+                disposable.add(
+                    provider.getFiles(id, getArgs(filteringValue))
+                        .subscribe({ explorer ->
+                            modelExplorerStack.refreshStack(explorer)
+                            updateViewsState()
+                            viewState.onDocsRefresh(getListWithHeaders(modelExplorerStack.last(), true))
+                        }, this::fetchError)
+                )
+                viewState.onSwipeEnable(true)
+                return true
             }
         }
         return false
@@ -264,84 +223,23 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     open fun filter(value: String, isSubmitted: Boolean): Boolean {
         if (isFilteringMode) {
             this.isSubmitted = isSubmitted
-            modelExplorerStack?.let { stack ->
-                 stack.currentId?.let { id ->
-                     filteringValue = value
-                     fileProvider?.let { provider ->
-                         if (provider !is CloudFileProvider ||
-                             App.getApp().appComponent.accountOnline?.isPersonal() == true) {
-                             getSearchedFiles(id, value)
-                         } else {
-                             if (value.isNotEmpty()) {
-                                 provider.search(value)?.let { observable ->
-                                     disposable.add(
-                                         observable.subscribe({ items ->
-                                             try {
-                                                 stack.setFilter(getSearchExplorer(items))
-                                             } catch (exception: JSONException) {
-                                                 throw exception
-                                             }
-                                             setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.SEARCH else
-                                                 PlaceholderViews.Type.NONE)
-                                             updateViewsState()
-                                             viewState.onDocsFilter(getListWithHeaders(stack.last(), true))
-                                         }, this::fetchError)
-                                     )
-                                 }
-                             } else {
-                                 getSearchedFiles(id, value)
-                             }
-                         }
-                     }
-                 }
-            }
-        }
-        return false
-    }
-
-    private fun getSearchedFiles(id: String, value: String) {
-        fileProvider?.let { provider ->
-            disposable.add(
-                provider.getFiles(id, getArgs(value))
-                    .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                    .subscribe({ explorer ->
-                        modelExplorerStack?.setFilter(explorer)
-                        setPlaceholderType(if (modelExplorerStack?.isListEmpty == true) PlaceholderViews.Type.SEARCH else
-                            PlaceholderViews.Type.NONE)
-                        updateViewsState()
-                        viewState.onDocsFilter(getListWithHeaders(modelExplorerStack?.last(), true))
-                    }, this::fetchError)
-            )
-        }
-    }
-
-    @Throws(JSONException::class)
-    private fun getSearchExplorer(items: String): Explorer {
-        return Explorer().apply {
-            current = modelExplorerStack?.last()?.current
-            getSearchResult(items)?.filter(::checkFolderRootType)?.let { items ->
-                files = items.filterIsInstance<CloudFile>()
-                folders = items.filterIsInstance<CloudFolder>()
-            }
-        }
-    }
-
-    private fun checkFolderRootType(item: Item): Boolean {
-        return item.rootFolderType.toInt() == modelExplorerStack?.rootFolderType
-                && item.title.contains(filteringValue.orEmpty(), true)
-    }
-
-    @Throws(JSONException::class)
-    private fun getSearchResult(response: String): List<Item>? {
-        return StringUtils.getJsonObject(response)?.let { jsonObject ->
-            return JsonParser().parse(jsonObject.getString("response")).asJsonArray?.map {
-                if (it.toString().contains("parentId")) {
-                    Gson().fromJson(it, CloudFolder::class.java)
-                } else {
-                    Gson().fromJson(it, CloudFile::class.java)
+            modelExplorerStack.currentId?.let { id ->
+                filteringValue = value
+                fileProvider?.let { provider ->
+                    provider.getFiles(id, getArgs(value))
+                        .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
+                        .subscribe({ explorer ->
+                            modelExplorerStack.setFilter(explorer)
+                            setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.SEARCH else
+                                PlaceholderViews.Type.NONE)
+                            updateViewsState()
+                            viewState.onDocsFilter(getListWithHeaders(modelExplorerStack.last(), true))
+                        }, this::fetchError)
                 }
             }
         }
+
+        return false
     }
 
     fun filterWait(value: String) {
@@ -365,7 +263,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             addAnalyticsCreateEntity(it, false, null)
         }
 
-        modelExplorerStack?.currentId?.let { id ->
+        modelExplorerStack.currentId?.let { id ->
             val requestCreate = RequestCreate().apply {
                 setTitle(title?.takeIf { title.isNotEmpty() } ?: context.getString(R.string.dialogs_edit_create_docs))
             }
@@ -384,7 +282,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     private fun renameFolder(id: Item, title: String) {
-        modelExplorerStack?.currentId?.let { currentId ->
+        modelExplorerStack.currentId?.let { currentId ->
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.rename(id, title, null)
@@ -399,7 +297,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     private fun renameFile(id: Item, title: String, version: Int) {
-        modelExplorerStack?.currentId?.let { currentId ->
+        modelExplorerStack.currentId?.let { currentId ->
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.rename(id, title, version)
@@ -415,98 +313,94 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
 
     protected fun loadSuccess(explorer: Explorer?) {
-        modelExplorerStack?.let { stack ->
-            stack.addStack(explorer)
-            updateViewsState()
-            setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-            stack.last()?.let { last -> viewState.onDocsGet(getListWithHeaders(last, true)) }
-        }
+        modelExplorerStack.addStack(explorer)
+        updateViewsState()
+        setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+        modelExplorerStack.last()?.let { last -> viewState.onDocsGet(getListWithHeaders(last, true)) }
+
     }
 
     open fun deleteItems() {
-        modelExplorerStack?.let { stack ->
-            val items = mutableListOf<Item>().apply {
-                if (stack.countSelectedItems > 0) {
-                    addAll(stack.selectedFiles)
-                    addAll(stack.selectedFolders)
-                } else if (itemClicked != null) {
-                    stack.getItemById(itemClicked)?.let { item -> add(item) }
-                }
-            }
-
-            showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
-            fileProvider?.let { provider ->
-                batchDisposable = provider.delete(items, null)
-                    .switchMap { status }
-                    .subscribe({ progress ->
-                        viewState.onDialogProgress(100, progress ?: 0)
-                    }, this::fetchError) {
-
-                        if (stack.countSelectedItems > 0) {
-                            stack.removeSelected()
-                            getBackStack()
-                        } else if (itemClicked != null) {
-                            stack.removeItemById(itemClicked?.id)
-                        }
-
-                        resetDatesHeaders()
-                        setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                        viewState.onDeleteBatch(getListWithHeaders(stack.last(), true))
-
-                        if (isMultipleDelete) {
-                            onFileDeleteProtected()
-                            isMultipleDelete = false
-                        } else {
-                            onBatchOperations()
-                        }
-                    }
+        val items = mutableListOf<Item>().apply {
+            if (modelExplorerStack.countSelectedItems > 0) {
+                addAll(modelExplorerStack.selectedFiles)
+                addAll(modelExplorerStack.selectedFolders)
+            } else if (itemClicked != null) {
+                modelExplorerStack.getItemById(itemClicked)?.let { item -> add(item) }
             }
         }
+
+        showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
+        fileProvider?.let { provider ->
+            batchDisposable = provider.delete(items, null)
+                .switchMap { status }
+                .subscribe({ progress ->
+                    viewState.onDialogProgress(100, progress ?: 0)
+                }, this::fetchError) {
+
+                    if (modelExplorerStack.countSelectedItems > 0) {
+                        modelExplorerStack.removeSelected()
+                        getBackStack()
+                    } else if (itemClicked != null) {
+                        modelExplorerStack.removeItemById(itemClicked?.id)
+                    }
+
+                    resetDatesHeaders()
+                    setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    viewState.onDeleteBatch(getListWithHeaders(modelExplorerStack.last(), true))
+
+                    if (isMultipleDelete) {
+                        onFileDeleteProtected()
+                        isMultipleDelete = false
+                    } else {
+                        onBatchOperations()
+                    }
+                }
+        }
+
     }
 
     open fun delete(): Boolean {
-        modelExplorerStack?.let { stack ->
-            if (stack.countSelectedItems > 0) {
-                for (item in stack.selectedFiles) {
-                    isFileDeleteProtected(item)?.let { observable ->
-                        disposable.add(
-                            observable.subscribe({ isFileProtected ->
-                                if (isFileProtected) {
-                                    isMultipleDelete = true
-                                    stack.setSelectById(item, false)
-                                }
-                            }, this::fetchError)
-                        )
-                    }
+        if (modelExplorerStack.countSelectedItems > 0) {
+            for (item in modelExplorerStack.selectedFiles) {
+                isFileDeleteProtected(item)?.let { observable ->
+                    disposable.add(
+                        observable.subscribe({ isFileProtected ->
+                            if (isFileProtected) {
+                                isMultipleDelete = true
+                                modelExplorerStack.setSelectById(item, false)
+                            }
+                        }, this::fetchError)
+                    )
                 }
-                viewState.onDialogQuestion(
-                    context.getString(R.string.dialogs_question_delete), null,
-                    TAG_DIALOG_BATCH_DELETE_SELECTED
-                )
-            } else if (!isSelectionMode) {
-                if (itemClicked is CloudFile) {
-                    fileProvider?.let { provider ->
-                        disposable.add(
-                            getFileInfo(provider, itemClicked as CloudFile).subscribe({ response ->
-                                if (response.fileStatus.isNotEmpty()) {
-                                    val statusMask = response.fileStatus.toInt() and ApiContract.FileStatus.IS_EDITING
-                                    if (statusMask != 0) {
-                                        onFileDeleteProtected()
-                                    } else {
-                                        deleteItems()
-                                    }
+            }
+            viewState.onDialogQuestion(
+                context.getString(R.string.dialogs_question_delete), null,
+                TAG_DIALOG_BATCH_DELETE_SELECTED
+            )
+        } else if (!isSelectionMode) {
+            if (itemClicked is CloudFile) {
+                fileProvider?.let { provider ->
+                    disposable.add(
+                        getFileInfo(provider, itemClicked as CloudFile).subscribe({ response ->
+                            if (response.fileStatus.isNotEmpty()) {
+                                val statusMask = response.fileStatus.toInt() and ApiContract.FileStatus.IS_EDITING
+                                if (statusMask != 0) {
+                                    onFileDeleteProtected()
                                 } else {
                                     deleteItems()
                                 }
-                            }, this::fetchError)
-                        )
-                    }
-                } else {
-                    deleteItems()
+                            } else {
+                                deleteItems()
+                            }
+                        }, this::fetchError)
+                    )
                 }
             } else {
-                viewState.onSnackBar(context.getString(R.string.operation_empty_lists_data))
+                deleteItems()
             }
+        } else {
+            viewState.onSnackBar(context.getString(R.string.operation_empty_lists_data))
         }
         return true
     }
@@ -520,20 +414,24 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return fileProvider?.let { provider ->
             Observable.just(provider.fileInfo(item))
                 .flatMap { response: Observable<CloudFile> ->
-                    response.flatMap { file: CloudFile ->
-                        val statusMask = file.fileStatus.toInt() and ApiContract.FileStatus.IS_EDITING
-                        if (statusMask != 0) {
-                            Observable.just(true)
-                        } else {
-                            Observable.just(false)
+                    response.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap { file: CloudFile ->
+                            val fileStatus = if (file.fileStatus.isEmpty())
+                                ApiContract.FileStatus.NONE else file.fileStatus.toInt()
+                            val statusMask = fileStatus and ApiContract.FileStatus.IS_EDITING
+                            if (statusMask != 0) {
+                                Observable.just(true)
+                            } else {
+                                Observable.just(false)
+                            }
                         }
-                    }
                 }
         }
     }
 
     open fun move(): Boolean {
-        modelExplorerStack?.currentId?.also { destFolder ->
+        modelExplorerStack.currentId?.also { destFolder ->
             destFolderId = destFolder
             operationStack?.let { stack ->
                 if (destFolder == stack.currentId) {
@@ -568,20 +466,19 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                             { progress: Int? -> viewState.onDialogProgress(100, progress ?: 0) },
                             this::fetchError
                         ) {
-                            modelExplorerStack?.let { stack ->
-                                if (!operationStack.currentId.equals(destFolderId, ignoreCase = true)) {
-                                    operationStack.setSelectionAll(false)
-                                    operationStack.explorer?.also {
-                                        it.destFolderId = destFolderId
-                                        operationsState.insert(stack.rootFolderType, it.takeIf {
-                                            stack.rootFolderType== ApiContract.SectionType.CLOUD_USER
-                                        } ?: setAccess(it))
-                                    }
+                            if (!operationStack.currentId.equals(destFolderId, ignoreCase = true)) {
+                                operationStack.setSelectionAll(false)
+                                operationStack.explorer?.also {
+                                    it.destFolderId = destFolderId
+                                    operationsState.insert(modelExplorerStack.rootFolderType, it.takeIf {
+                                        modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_USER
+                                    } ?: setAccess(it))
                                 }
-                                setPlaceholderType(if (stack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                                onBatchOperations()
                             }
+                            setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                            onBatchOperations()
                         }
+
                 }
             }
 
@@ -626,7 +523,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun copy(): Boolean {
-        modelExplorerStack?.currentId?.also { destFolder ->
+        modelExplorerStack.currentId?.also { destFolder ->
             destFolderId = destFolder
             operationStack?.let { stack ->
                 if (destFolder == stack.currentId) {
@@ -658,7 +555,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     open fun rename(title: String?) {
         itemClicked?.let { item ->
             if (title?.isNotEmpty() == true) {
-                modelExplorerStack?.getItemById(item)?.let { stackItem ->
+                modelExplorerStack.getItemById(item)?.let { stackItem ->
                     when (stackItem) {
                         is CloudFolder -> renameFolder(stackItem, title)
                         is CloudFile -> renameFile(stackItem, title, stackItem.nextVersion)
@@ -674,26 +571,24 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * */
 
     open fun createDownloadFile() {
-        modelExplorerStack?.let { stack ->
-            if (stack.selectedFiles.isNotEmpty() || stack.selectedFolders.isNotEmpty()) {
-                if (stack.selectedFiles.size == 1) {
-                    viewState.onCreateDownloadFile(stack.selectedFiles[0].title)
-                } else {
-                    viewState.onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME)
-                }
-            } else if (itemClicked is CloudFile) {
-                viewState.onCreateDownloadFile((itemClicked as CloudFile).title)
-            } else if (itemClicked is CloudFolder) {
+        if (modelExplorerStack.selectedFiles.isNotEmpty() || modelExplorerStack.selectedFolders.isNotEmpty()) {
+            if (modelExplorerStack.selectedFiles.size == 1) {
+                viewState.onCreateDownloadFile(modelExplorerStack.selectedFiles[0].title)
+            } else {
                 viewState.onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME)
             }
+        } else if (itemClicked is CloudFile) {
+            viewState.onCreateDownloadFile((itemClicked as CloudFile).title)
+        } else if (itemClicked is CloudFolder) {
+            viewState.onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME)
         }
+
     }
 
     open fun download(downloadTo: Uri) {
-        if (preferenceTool.uploadWifiState && !isWifiEnable(context)) {
+        if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
             viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
-        }
-        else if (modelExplorerStack?.countSelectedItems!! > 0) {
+        } else if (modelExplorerStack.countSelectedItems > 0) {
             downloadSelected(downloadTo)
         } else {
             itemClicked?.let { item ->
@@ -706,10 +601,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     private fun downloadSelected(downloadTo: Uri) {
-        val files = modelExplorerStack?.selectedFiles
-        val folders = modelExplorerStack?.selectedFolders
+        val files = modelExplorerStack.selectedFiles
+        val folders = modelExplorerStack.selectedFolders
 
-        if (fileProvider is WebDavFileProvider && folders?.isNotEmpty() == true) {
+        if (fileProvider is WebDavFileProvider && folders.isNotEmpty()) {
             viewState.onError(context.getString(R.string.download_manager_folders_download))
         } else {
             bulkDownload(files, folders, downloadTo)
@@ -754,10 +649,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun upload(uri: Uri?, uris: ClipData?) {
-        if (preferenceTool.uploadWifiState && !isWifiEnable(context)) {
+        if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
             viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
         } else {
-            modelExplorerStack?.currentId?.let { id ->
+            modelExplorerStack.currentId?.let { id ->
                 val uriList = mutableListOf<Uri>().apply {
                     if (uri != null) {
                         uploadUri = uri
@@ -786,14 +681,14 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     private fun addUploadFiles(uriList: List<Uri>, id: String) {
         val uploadFiles = mutableListOf<UploadFile>()
         for (uri in uriList) {
-            if (getSize(context, uri) > FileUtils.STRICT_SIZE) {
+            if (ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE) {
                 viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
                 continue
             }
             uploadFiles.add(UploadFile().apply {
                 progress = 0
                 folderId = id
-                name = getName(context, uri)
+                name = ContentResolverUtils.getName(context, uri)
                 size = setSize(uri)
                 setUri(uri)
                 setId(uri.path)
@@ -801,7 +696,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
 
         if (uploadFiles.isNotEmpty()) {
-            putNewUploadFiles(id, ArrayList(uploadFiles))
+            UploadWork.putNewUploadFiles(id, ArrayList(uploadFiles))
             for (uri in uriList) {
                 val workData = Data.Builder()
                     .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
@@ -811,7 +706,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 startUpload(workData)
             }
 
-            if (modelExplorerStack?.last()?.itemsCount == 0) {
+            if (modelExplorerStack.last()?.itemsCount == 0) {
                 refresh()
             } else {
                 viewState.onAddUploadsFile(uploadFiles)
@@ -830,7 +725,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     private fun setSize(uri: Uri): String {
-        return getFormattedSize(context, getSize(context, uri))
+        return StringUtils.getFormattedSize(context, ContentResolverUtils.getSize(context, uri))
     }
 
     fun cancelUpload() {
@@ -842,19 +737,15 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     protected fun addFile(file: CloudFile?) {
-        modelExplorerStack?.let { stack ->
-            file?.isJustCreated = true
-            stack.addFileFirst(file)
-            viewState.onDocsGet(getListWithHeaders(stack.last(), true))
-        }
+        file?.isJustCreated = true
+        modelExplorerStack.addFileFirst(file)
+        viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
     }
 
     private fun addFolder(folder: CloudFolder) {
-        modelExplorerStack?.let { stack ->
-            folder.isJustCreated = true
-            stack.addFolderFirst(folder)
-            viewState.onDocsGet(getListWithHeaders(stack.last(), true))
-        }
+        folder.isJustCreated = true
+        modelExplorerStack.addFolderFirst(folder)
+        viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
     }
 
     fun addFolderAndOpen(folder: CloudFolder?, position: Int) {
@@ -909,39 +800,35 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * */
 
     fun moveSelected() {
-        modelExplorerStack?.let { stack ->
-            if (stack.countSelectedItems > 0) {
-                stack.clone()?.let { clonedStack ->
-                    clonedStack.removeUnselected()
-                    viewState.onBatchMove(clonedStack.explorer)
-                    getBackStack()
-                }
-            } else {
-                viewState.onError(context.getString(R.string.operation_empty_lists_data))
+        if (modelExplorerStack.countSelectedItems > 0) {
+            modelExplorerStack.clone()?.let { clonedStack ->
+                clonedStack.removeUnselected()
+                viewState.onBatchMove(clonedStack.explorer)
+                getBackStack()
             }
+        } else {
+            viewState.onError(context.getString(R.string.operation_empty_lists_data))
         }
     }
 
     fun moveContext() {
-        modelExplorerStack?.last()?.clone()?.let { explorer ->
+        modelExplorerStack.last()?.clone()?.let { explorer ->
             viewState.onBatchMove(getBatchExplorer(explorer))
         }
     }
 
     open fun copySelected() {
-        modelExplorerStack?.let { stack ->
-            if (stack.countSelectedItems > 0) {
-                stack.clone()?.let { clonedStack ->
-                    clonedStack.removeUnselected()
-                    viewState.onBatchCopy(clonedStack.explorer)
-                }
+        if (modelExplorerStack.countSelectedItems > 0) {
+            modelExplorerStack.clone()?.let { clonedStack ->
+                clonedStack.removeUnselected()
+                viewState.onBatchCopy(clonedStack.explorer)
             }
-            viewState.onError(context.getString(R.string.operation_empty_lists_data))
         }
+        viewState.onError(context.getString(R.string.operation_empty_lists_data))
     }
 
     fun copyContext() {
-        modelExplorerStack?.last()?.clone()?.let { explorer ->
+        modelExplorerStack.last()?.clone()?.let { explorer ->
             viewState.onBatchCopy(getBatchExplorer(explorer))
         }
     }
@@ -971,114 +858,112 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     protected fun getListWithHeaders(explorer: Explorer?, isResetHeaders: Boolean): List<Entity> {
         explorer?.let {
-            modelExplorerStack?.let { stack ->
-                val entityList: MutableList<Entity> = mutableListOf()
+            val entityList: MutableList<Entity> = mutableListOf()
 
-                // Reset headers, when new list
-                if (isResetHeaders) {
-                    resetDatesHeaders()
+            // Reset headers, when new list
+            if (isResetHeaders) {
+                resetDatesHeaders()
+            }
+
+            UploadWork.getUploadFiles(modelExplorerStack.currentId)?.let { uploadFiles ->
+                if (uploadFiles.size != 0) {
+                    entityList.add(Header(context.getString(R.string.upload_manager_progress_title)))
+                    entityList.addAll(uploadFiles)
                 }
+            }
 
-                getUploadFiles(stack.currentId)?.let { uploadFiles ->
-                    if (uploadFiles.size != 0) {
-                        entityList.add(Header(context.getString(R.string.upload_manager_progress_title)))
-                        entityList.addAll(uploadFiles)
+            // Set folders headers
+            if (explorer.folders.isNotEmpty()) {
+                if (!isFolderHeader) {
+                    isFolderHeader = true
+                    entityList.add(Header(context.getString(R.string.list_headers_folder)))
+                }
+                entityList.addAll(explorer.folders)
+            }
+
+            // Set files headers
+            if (explorer.files.isNotEmpty() && !isFoldersMode) {
+                val sortBy = preferenceTool.sortBy
+                val sortOrder = preferenceTool.sortOrder
+                val fileList = explorer.files
+
+                if (ApiContract.Parameters.VAL_SORT_BY_UPDATED == sortBy) { // For date sort add times headers
+                    val todayMs = TimeUtils.todayMs
+                    val yesterdayMs = TimeUtils.yesterdayMs
+                    val weekMs = TimeUtils.weekMs
+                    val monthMs = TimeUtils.monthMs
+                    val yearMs = TimeUtils.yearMs
+                    var itemMs: Long
+
+                    // Set time headers
+                    fileList.sortWith { o1: CloudFile, o2: CloudFile -> o1.updated.compareTo(o2.updated) }
+
+                    if (sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
+                        fileList.reverse()
                     }
-                }
 
-                // Set folders headers
-                if (explorer.folders.isNotEmpty()) {
-                    if (!isFolderHeader) {
-                        isFolderHeader = true
-                        entityList.add(Header(context.getString(R.string.list_headers_folder)))
-                    }
-                    entityList.addAll(explorer.folders)
-                }
+                    for (item in fileList) {
+                        itemMs = item.updated.time
 
-                // Set files headers
-                if (explorer.files.isNotEmpty() && !isFoldersMode) {
-                    val sortBy = preferenceTool.sortBy
-                    val sortOrder = preferenceTool.sortOrder
-                    val fileList = explorer.files
+                        // Check created property
+                        if (item.isJustCreated) {
+                            if (!isCreatedHeader) {
+                                isCreatedHeader = true
+                                entityList.add(Header(context.getString(R.string.list_headers_created)))
+                            }
+                        } else {
 
-                    if (ApiContract.Parameters.VAL_SORT_BY_UPDATED == sortBy) { // For date sort add times headers
-                        val todayMs = todayMs
-                        val yesterdayMs = yesterdayMs
-                        val weekMs = weekMs
-                        val monthMs = monthMs
-                        val yearMs = yearMs
-                        var itemMs: Long
-
-                        // Set time headers
-                        fileList.sortWith { o1: CloudFile, o2: CloudFile -> o1.updated.compareTo(o2.updated) }
-
-                        if (sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
-                            fileList.reverse()
-                        }
-
-                        for (item in fileList) {
-                            itemMs = item.updated.time
-
-                            // Check created property
-                            if (item.isJustCreated) {
-                                if (!isCreatedHeader) {
-                                    isCreatedHeader = true
-                                    entityList.add(Header(context.getString(R.string.list_headers_created)))
+                            // Check time intervals
+                            if (itemMs >= todayMs) {
+                                if (!isTodayHeader) {
+                                    isTodayHeader = true
+                                    entityList.add(Header(context.getString(R.string.list_headers_today)))
                                 }
-                            } else {
-
-                                // Check time intervals
-                                if (itemMs >= todayMs) {
-                                    if (!isTodayHeader) {
-                                        isTodayHeader = true
-                                        entityList.add(Header(context.getString(R.string.list_headers_today)))
-                                    }
-                                } else if (itemMs in (yesterdayMs + 1) until todayMs) {
-                                    if (!isYesterdayHeader) {
-                                        isYesterdayHeader = true
-                                        entityList.add(Header(context.getString(R.string.list_headers_yesterday)))
-                                    }
-                                } else if (itemMs in (weekMs + 1) until yesterdayMs) {
-                                    if (!isWeekHeader) {
-                                        isWeekHeader = true
-                                        entityList.add(Header(context.getString(R.string.list_headers_week)))
-                                    }
-                                } else if (itemMs in (monthMs + 1) until weekMs) {
-                                    if (!isMonthHeader) {
-                                        isMonthHeader = true
-                                        entityList.add(Header(context.getString(R.string.list_headers_month)))
-                                    }
-                                } else if (itemMs in (yearMs + 1) until monthMs) {
-                                    if (!isYearHeader) {
-                                        isYearHeader = true
-                                        entityList.add(Header(context.getString(R.string.list_headers_year)))
-                                    }
-                                } else if (itemMs < yearMs) {
-                                    if (!isMoreYearHeader) {
-                                        isMoreYearHeader = true
-                                        entityList.add(Header(context.getString(R.string.list_headers_more_year)))
-                                    }
+                            } else if (itemMs in (yesterdayMs + 1) until todayMs) {
+                                if (!isYesterdayHeader) {
+                                    isYesterdayHeader = true
+                                    entityList.add(Header(context.getString(R.string.list_headers_yesterday)))
+                                }
+                            } else if (itemMs in (weekMs + 1) until yesterdayMs) {
+                                if (!isWeekHeader) {
+                                    isWeekHeader = true
+                                    entityList.add(Header(context.getString(R.string.list_headers_week)))
+                                }
+                            } else if (itemMs in (monthMs + 1) until weekMs) {
+                                if (!isMonthHeader) {
+                                    isMonthHeader = true
+                                    entityList.add(Header(context.getString(R.string.list_headers_month)))
+                                }
+                            } else if (itemMs in (yearMs + 1) until monthMs) {
+                                if (!isYearHeader) {
+                                    isYearHeader = true
+                                    entityList.add(Header(context.getString(R.string.list_headers_year)))
+                                }
+                            } else if (itemMs < yearMs) {
+                                if (!isMoreYearHeader) {
+                                    isMoreYearHeader = true
+                                    entityList.add(Header(context.getString(R.string.list_headers_more_year)))
                                 }
                             }
-                            entityList.add(item)
                         }
-                    } else {
-                        if (!isFileHeader) {
-                            isFileHeader = true
-                            entityList.add(Header(context.getString(R.string.list_headers_files)))
-                        }
-                        entityList.addAll(fileList)
+                        entityList.add(item)
                     }
-                }
-
-                if (isFilteringMode) {
-                    setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
                 } else {
-                    setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    if (!isFileHeader) {
+                        isFileHeader = true
+                        entityList.add(Header(context.getString(R.string.list_headers_files)))
+                    }
+                    entityList.addAll(fileList)
                 }
-
-                return entityList
             }
+
+            if (isFilteringMode) {
+                setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
+            } else {
+                setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+            }
+
+            return entityList
         }
         return emptyList()
     }
@@ -1091,13 +976,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun initViews() {
         setPlaceholderType(placeholderViewType)
-        modelExplorerStack?.let { stack ->
-            if (!isAccessDenied) {
-                viewState.onDocsGet(getListWithHeaders(stack.last(), true))
-            }
-            refresh()
-            updateOperationStack(stack.currentId)
+        if (!isAccessDenied) {
+            viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
         }
+        refresh()
+        updateOperationStack(modelExplorerStack.currentId)
     }
 
     fun initMenu() {
@@ -1118,7 +1001,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     fun initMenuState() {
-        viewState.onStateMenuEnabled(modelExplorerStack?.isListEmpty == false)
+        viewState.onStateMenuEnabled(!modelExplorerStack.isListEmpty)
     }
 
     fun getBackStack(): Boolean {
@@ -1131,7 +1014,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             }
             isFilteringMode -> {
                 setFiltering(false)
-                if (modelExplorerStack?.isStackFilter!!) {
+                if (modelExplorerStack.isStackFilter) {
                     popBackStack()
                 }
                 updateViewsState()
@@ -1140,24 +1023,24 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             else -> {
                 popBackStack()
                 updateViewsState()
-                return !modelExplorerStack?.isStackEmpty!!
+                return !modelExplorerStack.isStackEmpty
             }
         }
     }
 
     private fun popBackStack() {
-        modelExplorerStack?.previous()?.let {
-            val entities = getListWithHeaders(modelExplorerStack?.last(), true)
-            setPlaceholderType(if (modelExplorerStack?.isListEmpty!!) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+        modelExplorerStack.previous()?.let {
+            val entities = getListWithHeaders(modelExplorerStack.last(), true)
+            setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
             viewState.onDocsGet(entities)
-            viewState.onScrollToPosition(modelExplorerStack?.listPosition!!)
+            viewState.onScrollToPosition(modelExplorerStack.listPosition)
         }
     }
 
     private fun updateOperationStack(folderId: String?) {
-        modelExplorerStack?.rootFolderType?.let { type ->
+        modelExplorerStack.rootFolderType.let { type ->
             operationsState.getOperations(type, folderId)
-                .find { it.operationType == OperationsState.OperationType.INSERT}?.let { refresh() }
+                .find { it.operationType == OperationsState.OperationType.INSERT }?.let { refresh() }
         }
     }
 
@@ -1178,7 +1061,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         isSubmitted = false
         if (isFilteringMode != isFiltering) {
             isFilteringMode = isFiltering
-            if (!isFiltering) { filteringValue = "" }
+            if (!isFiltering) {
+                filteringValue = ""
+            }
             viewState.onStateUpdateFilter(isFiltering, filteringValue)
         }
     }
@@ -1191,7 +1076,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         if (isSelectionMode != isSelection) {
             isSelectionMode = isSelection
             if (!isSelection) {
-                modelExplorerStack?.setSelection(false)
+                modelExplorerStack.setSelection(false)
             }
             viewState.onStateUpdateSelection(isSelection)
         }
@@ -1203,18 +1088,18 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     fun selectAll() {
-        viewState.onItemsSelection(modelExplorerStack?.setSelection(true).toString())
+        viewState.onItemsSelection(modelExplorerStack.setSelection(true).toString())
         viewState.onStateUpdateSelection(true)
     }
 
     fun deselectAll() {
-        viewState.onItemsSelection(modelExplorerStack?.setSelection(false).toString())
+        viewState.onItemsSelection(modelExplorerStack.setSelection(false).toString())
         viewState.onStateUpdateSelection(false)
         getBackStack()
     }
 
     val isSelectedAll: Boolean
-        get() = modelExplorerStack?.countSelectedItems == modelExplorerStack?.totalCount
+        get() = modelExplorerStack.countSelectedItems == modelExplorerStack.totalCount
 
     /**
      * Get clicked item and do action with current state
@@ -1222,7 +1107,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     protected fun onClickEvent(item: Item?, position: Int) {
         itemClickedPosition = position
-        itemClicked = modelExplorerStack?.getItemById(item)
+        itemClicked = modelExplorerStack.getItemById(item)
     }
 
     open fun onItemClick(item: Item, position: Int) {
@@ -1230,10 +1115,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         isContextClick = false
         itemClicked?.let { itemClicked ->
             if (isSelectionMode) {
-                modelExplorerStack?.setSelectById(item, !itemClicked.isSelected)
+                modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
                 if (!isSelectedItemsEmpty) {
                     viewState.onStateUpdateSelection(true)
-                    viewState.onItemSelected(position, modelExplorerStack?.countSelectedItems.toString())
+                    viewState.onItemSelected(position, modelExplorerStack.countSelectedItems.toString())
                 }
             } else {
                 if (itemClicked is CloudFolder) {
@@ -1246,29 +1131,28 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     protected val isSelectedItemsEmpty: Boolean
-        get() = modelExplorerStack?.let { stack ->
+        get() = modelExplorerStack.let { stack ->
             if (stack.countSelectedItems <= 0) {
                 getBackStack()
                 true
             } else {
                 false
             }
-        } ?: false
+        }
 
     fun getListMedia(clickedId: String?): Explorer {
-        return modelExplorerStack?.last()?.clone()?.also { explorer ->
-            explorer.files
-            explorer.folders = listOf()
-            explorer.files
-                .filter { file -> !isImage(file.fileExst) && !isVideoSupport(file.fileExst) }
-                .forEach { file ->
-                    file.isClicked = file.id.equals(clickedId, ignoreCase = true)
-                }
+        return modelExplorerStack.last()?.let { explorer ->
+            Explorer().apply {
+                folders = listOf()
+                files = explorer.files
+                    .filter { StringUtils.isImage(it.fileExst) || StringUtils.isVideoSupport(it.fileExst) }
+                    .onEach { it.isClicked = it.id.equals(clickedId, ignoreCase = true) }
+            }
         } ?: Explorer()
     }
 
     fun openFolder(id: String?, position: Int) {
-        modelExplorerStack?.listPosition = position
+        modelExplorerStack.listPosition = position
         viewState.onSwipeEnable(true)
         getItemsById(id)
     }
@@ -1281,14 +1165,14 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         get() {
             itemClicked?.let { item ->
                 if (item is CloudFile) {
-                    return getExtension(item.fileExst) == StringUtils.Extension.PDF
+                    return StringUtils.getExtension(item.fileExst) == StringUtils.Extension.PDF
                 }
             }
             return false
         }
 
     protected fun getIconContext(ext: String): Int {
-        return when (getExtension(ext)) {
+        return when (StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
             StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
             StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
@@ -1306,7 +1190,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     val itemTitle: String
         get() = itemClicked?.let { item ->
-            getNameWithoutExtension(item.title)
+            StringUtils.getNameWithoutExtension(item.title)
         } ?: ""
 
     fun setItemsShared(isShared: Boolean) {
@@ -1358,13 +1242,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     val isRoot: Boolean
-        get() = modelExplorerStack?.isRoot == true
+        get() = modelExplorerStack.isRoot
 
     private val isBackStackEmpty: Boolean
-        get() = modelExplorerStack?.isStackEmpty == true
+        get() = modelExplorerStack.isStackEmpty
 
     protected val currentTitle: String
-        get() = modelExplorerStack?.currentTitle ?: ""
+        get() = modelExplorerStack.currentTitle
 
     protected val itemClickedTitle: String
         get() = itemClicked?.title ?: ""
@@ -1373,12 +1257,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         get() = itemClicked is CloudFile
 
     protected val isClickedItemDocs: Boolean
-        get() = itemClicked?.let { item -> isClickedItemFile && isDocument((item as CloudFile).fileExst) } == true
+        get() = itemClicked?.let { item -> isClickedItemFile && StringUtils.isDocument((item as CloudFile).fileExst) } == true
 
     protected val itemClickedDate: Date?
         get() = itemClicked?.updated
 
-    protected fun setPlaceholderType(placeholderType: PlaceholderViews.Type?) {
+    protected fun setPlaceholderType(placeholderType: PlaceholderViews.Type) {
         this.placeholderViewType = placeholderType
         if (isFoldersMode && placeholderType == PlaceholderViews.Type.EMPTY) {
             this.placeholderViewType = PlaceholderViews.Type.SUBFOLDER
@@ -1395,12 +1279,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         while (fileList.hasNext()) {
             val file = fileList.next()
             val currentFolder = CloudFolder()
-            currentFolder.id = modelExplorerStack?.currentId
+            currentFolder.id = modelExplorerStack.currentId
             if (file.fileType.isEmpty() && file.fileExst.isEmpty()) {
                 fileList.remove()
                 fileProvider?.let { provider ->
                     disposable.add(provider.delete(listOf(file), currentFolder)
-                            .subscribe({ modelExplorerStack?.refreshStack(explorer) }, this::fetchError))
+                        .subscribe({ modelExplorerStack.refreshStack(explorer) }, this::fetchError))
                 }
             }
         }
@@ -1408,11 +1292,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     private fun isContainsInPath(folderId: String): Boolean {
-         modelExplorerStack?.path?.let { foldersPath ->
-            for (item in foldersPath) {
-                if (equals(item, folderId)) {
-                    return true
-                }
+        for (item in modelExplorerStack.path) {
+            if (StringUtils.equals(item, folderId)) {
+                return true
             }
         }
         return false
@@ -1433,7 +1315,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             checkStatusOperation()
         } else if (throwable.message == ProviderError.FORBIDDEN) {
             viewState.onError(context.getString(R.string.dialogs_edit_forbidden_symbols))
-        } else if (!isOnline(context) && throwable is UnknownHostException) {
+        } else if (!NetworkUtils.isOnline(context) && throwable is UnknownHostException) {
             viewState.onError(context.getString(R.string.errors_connection_error))
         } else {
             viewState.onDialogClose()
@@ -1444,8 +1326,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                         viewState.onError(context.getString(R.string.operation_move_file_existing, throwable.suppressed[0].message))
                     } else if (response.code() >= ApiContract.HttpCodes.CLIENT_ERROR && response.code() < ApiContract.HttpCodes.SERVER_ERROR) {
                         if (!isRoot) {
-                            modelExplorerStack?.previous()
-                            getItemsById(modelExplorerStack?.currentId)
+                            modelExplorerStack.previous()
+                            getItemsById(modelExplorerStack.currentId)
                         }
                     } else if (response.code() >= ApiContract.HttpCodes.SERVER_ERROR) {
                         setPlaceholderType(PlaceholderViews.Type.ACCESS)
@@ -1475,7 +1357,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         // Get Json error message
         responseMessage?.let {
-            getJsonObject(responseMessage)?.let { jsonObject ->
+            StringUtils.getJsonObject(responseMessage)?.let { jsonObject ->
                 try {
                     //errorCode = jsonObject.getInt(KEY_ERROR_CODE);
                     errorMessage = jsonObject.getJSONObject(KEY_ERROR_INFO).getString(KEY_ERROR_INFO_MESSAGE)
@@ -1491,7 +1373,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         if (responseCode >= ApiContract.HttpCodes.REDIRECTION && responseCode < ApiContract.HttpCodes.CLIENT_ERROR) {
             viewState.onError(context.getString(R.string.errors_redirect_error) + responseCode)
         } else if (responseCode >= ApiContract.HttpCodes.CLIENT_ERROR &&
-            responseCode < ApiContract.HttpCodes.SERVER_ERROR) {
+            responseCode < ApiContract.HttpCodes.SERVER_ERROR
+        ) {
 
             // Add here new message for common errors
             when (responseCode) {
@@ -1567,7 +1450,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         context.registerReceiver(
             object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
-                    if (isOnline(context)) {
+                    if (NetworkUtils.isOnline(context)) {
                         refresh()
                         context.unregisterReceiver(this)
                     }
@@ -1581,7 +1464,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     val stack: Explorer?
-        get() = modelExplorerStack?.last()
+        get() = modelExplorerStack.last()
 
     private fun setAccess(explorer: Explorer?): Explorer {
         return explorer?.also {
@@ -1600,7 +1483,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     fun clearStack() {
-        modelExplorerStack?.clear()
+        modelExplorerStack.clear()
     }
 
     fun recreateStack() {
@@ -1623,15 +1506,15 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     companion object {
 
-        val TAG = DocsBasePresenter::class.java.simpleName
+        val TAG: String = DocsBasePresenter::class.java.simpleName
 
         private const val KEY_ERROR_CODE = "statusCode"
         private const val KEY_ERROR_INFO = "error"
         private const val KEY_ERROR_INFO_MESSAGE = "message"
 
         /**
-        * Tags for dialog action callback
-        * */
+         * Tags for dialog action callback
+         * */
 
         const val TAG_DIALOG_CONTEXT_RENAME = "TAG_DIALOG_CONTEXT_RENAME"
         const val TAG_DIALOG_CONTEXT_SHARE_DELETE = "TAG_DIALOG_CONTEXT_SHARE_DELETE"

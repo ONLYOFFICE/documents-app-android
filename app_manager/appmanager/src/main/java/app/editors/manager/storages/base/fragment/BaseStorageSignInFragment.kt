@@ -2,6 +2,7 @@ package app.editors.manager.storages.base.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +13,10 @@ import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebBinding
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.storages.base.view.BaseStorageSignInView
-import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 
@@ -23,7 +24,7 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
 
 
     companion object {
-        val TAG = OneDriveSignInFragment::class.java.simpleName
+        val TAG: String = BaseStorageSignInFragment::class.java.simpleName
         const val TAG_STORAGE = "TAG_MEDIA"
         const val TAG_WEB_VIEW = "TAG_WEB_VIEW"
         const val TAG_PAGE_LOAD = "TAG_PAGE_LOAD"
@@ -70,6 +71,7 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewBinding = null
         CookieManager.getInstance().removeAllCookies(null)
     }
 
@@ -143,7 +145,7 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
         }
     }
 
-    private fun loadWebView(url: String?) {
+    protected open fun loadWebView(url: String?) {
         viewBinding?.webStorageSwipe?.isRefreshing = true
         url?.let { viewBinding?.webStorageWebview?.loadUrl(it) }
     }
@@ -159,6 +161,7 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
     }
 
     override fun onError(message: String?) {
-        TODO("Not yet implemented")
+        Log.e(TAG, "onError: $message")
+        message?.let { FirebaseUtils.addCrash(it) }
     }
 }

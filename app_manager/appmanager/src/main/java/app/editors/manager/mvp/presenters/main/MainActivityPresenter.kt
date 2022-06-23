@@ -28,8 +28,8 @@ import moxy.InjectViewState
 sealed class MainActivityState {
     object RecentState : MainActivityState()
     object OnDeviceState : MainActivityState()
+    object SettingsState : MainActivityState()
     class CloudState(val account: CloudAccount? = null) : MainActivityState()
-    class AccountsState(val isAccounts: Boolean = false) : MainActivityState()
 }
 
 @InjectViewState
@@ -70,17 +70,21 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         disposable.dispose()
     }
 
-    fun init(isPortal: Boolean = false) {
+    fun init(isPortal: Boolean = false, isShortcut: Boolean = false) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
                 cloudAccount = it
                 setNetworkSetting(it)
+                if (isShortcut) {
+                    viewState.onRender(MainActivityState.OnDeviceState)
+                    return@launch
+                }
                 withContext(Dispatchers.Main) {
                     checkToken(it)
                 }
             } ?: run {
                 withContext(Dispatchers.Main) {
-                    if (isPortal) {
+                    if (isPortal && !isShortcut) {
                         viewState.onRender(MainActivityState.CloudState())
                     } else {
                         viewState.onRender(MainActivityState.OnDeviceState)
@@ -106,7 +110,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     }
 
     private fun setNetworkSetting(cloudAccount: CloudAccount) {
-        networkSettings.setBaseUrl(cloudAccount.portal ?: "")
+        networkSettings.setBaseUrl(cloudAccount.portal ?: ApiContract.DEFAULT_HOST)
         networkSettings.setScheme(cloudAccount.scheme ?: ApiContract.SCHEME_HTTPS)
         networkSettings.setSslState(cloudAccount.isSslState)
         networkSettings.setCipher(cloudAccount.isSslCiphers)
@@ -206,32 +210,13 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     fun navigationItemClick(itemId: Int) {
         when (itemId) {
             R.id.menu_item_recent -> viewState.onRender(MainActivityState.RecentState)
+            R.id.menu_item_on_device -> viewState.onRender(MainActivityState.OnDeviceState)
+            R.id.menu_item_settings -> viewState.onRender(MainActivityState.SettingsState)
             R.id.menu_item_cloud -> {
                 CoroutineScope(Dispatchers.Default).launch {
-                    accountDao.getAccountOnline()?.let {
-                        cloudAccount = it
-                    } ?: run {
-                        cloudAccount = null
-                    }
+                    cloudAccount = accountDao.getAccountOnline()
                     withContext(Dispatchers.Main) {
                         viewState.onRender(MainActivityState.CloudState(cloudAccount))
-                    }
-                }
-            }
-            R.id.menu_item_on_device -> viewState.onRender(
-                MainActivityState.OnDeviceState
-            )
-            R.id.menu_item_setting -> {
-                CoroutineScope(Dispatchers.Default).launch {
-                    if (accountDao.getAccounts().isNotEmpty()) {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(MainActivityState.AccountsState(true))
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(MainActivityState.AccountsState(false))
-                        }
-
                     }
                 }
             }
@@ -257,6 +242,10 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     fun checkFileData(fileData: Uri) {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let { account ->
+                if (fileData.queryParameterNames.contains("push")) {
+                    viewState.openFile(account, fileData.getQueryParameter("data") ?: "")
+                    return@launch
+                }
                 val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query))
                 if (data.portal?.equals(
                         account.portal,

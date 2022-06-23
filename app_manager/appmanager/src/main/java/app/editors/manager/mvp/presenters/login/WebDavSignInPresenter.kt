@@ -126,7 +126,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             val path = correctUrl.path.removeSuffix("/").removePrefix("/")
 
             networkSettings.setDefault()
-            networkSettings.setBaseUrl(correctUrl.protocol + "://" + correctUrl.host + "/")
+            networkSettings.setBaseUrl(correctUrl.protocol + "://" + correctUrl.host + if (correctUrl.port != -1 ) ":${correctUrl.port}" else "" + "/")
             networkSettings.setScheme(correctUrl.protocol + "://")
 
             viewState.onDialogWaiting(context.getString(R.string.dialogs_check_portal_header_text))

@@ -3,6 +3,7 @@ package app.editors.manager.managers.tools
 import android.content.Context
 import android.content.SharedPreferences
 import app.documents.core.network.ApiContract
+import com.google.firebase.messaging.FirebaseMessaging
 import java.util.*
 import javax.inject.Inject
 
@@ -37,6 +38,7 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_FINGERPRINT = "KEY_FINGERPRINT"
         private const val KEY_PASSCODE = "KEY_PASSCODE"
         private const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
+        private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
 
         private val PERSONAL_ADDRESSES: Set<String> = object : TreeSet<String>() {
             init {
@@ -214,4 +216,9 @@ class PreferenceTool @Inject constructor(val context: Context) {
             sharedPreferences.edit().putLong(KEY_TIMESTAMP, value).apply()
         }
 
+    var deviceMessageToken: String
+        get() = sharedPreferences.getString(KEY_DEVICE_TOKEN, "") ?: ""
+        set(value) {
+            sharedPreferences.edit().putString(KEY_DEVICE_TOKEN, value).apply()
+        }
 }

@@ -6,10 +6,10 @@ import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import app.documents.core.network.ApiContract
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.oneDriveAuthService
-import app.editors.manager.managers.utils.Constants
+import app.editors.manager.app.oneDriveLoginService
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
@@ -25,6 +25,7 @@ import app.editors.manager.storages.onedrive.managers.works.UploadWork
 import app.editors.manager.storages.onedrive.mvp.models.request.ExternalLinkRequest
 import app.editors.manager.storages.onedrive.mvp.models.response.AuthResponse
 import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveService
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -80,7 +81,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                     withContext(Dispatchers.Main) {
-                        getItemsById(null)
+                        getItemsById("")
                     }
 
                 }
@@ -101,18 +102,20 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun refreshToken() {
         val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
         val accData = AccountUtils.getAccountData(context, account)
+        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_AUTH_URL)
         val map = mapOf(
-            StorageUtils.ARG_CLIENT_ID to Constants.OneDrive.COM_CLIENT_ID,
+            StorageUtils.ARG_CLIENT_ID to BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
             StorageUtils.ARG_SCOPE to StorageUtils.OneDrive.VALUE_SCOPE,
-            StorageUtils.ARG_REDIRECT_URI to Constants.OneDrive.COM_REDIRECT_URL,
+            StorageUtils.ARG_REDIRECT_URI to BuildConfig.ONE_DRIVE_COM_REDIRECT_URL,
             StorageUtils.OneDrive.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_REFRESH,
-            StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.OneDrive.COM_CLIENT_SECRET,
+            StorageUtils.OneDrive.ARG_CLIENT_SECRET to BuildConfig.ONE_DRIVE_COM_CLIENT_SECRET,
             StorageUtils.OneDrive.ARG_REFRESH_TOKEN to accData.refreshToken
         )
-        disposable.add(App.getApp().oneDriveAuthService.getToken(map as Map<String, String>)
+        disposable.add(App.getApp().oneDriveLoginService.getToken(map as Map<String, String>)
             .subscribe {oneDriveResponse ->
                 when(oneDriveResponse) {
                     is OneDriveResponse.Success -> {
@@ -122,7 +125,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                         refresh()
                     }
                     is OneDriveResponse.Error -> {
-                        throw oneDriveResponse.error
+                       viewState.onError(oneDriveResponse.error.message)
                     }
                 }
             })
@@ -142,8 +145,8 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun getNextList() {
-        val id = modelExplorerStack?.currentId
-        val loadPosition = modelExplorerStack?.loadPosition ?: 0
+        val id = modelExplorerStack.currentId
+        val loadPosition = modelExplorerStack.loadPosition
 
         id?.let {
             if(loadPosition > 0) {
@@ -151,8 +154,8 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                 args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
                 fileProvider?.let { provider ->
                     disposable.add(provider.getFiles(id, args).subscribe({ explorer: Explorer? ->
-                        modelExplorerStack?.addOnNext(explorer)
-                        val last = modelExplorerStack?.last()
+                        modelExplorerStack.addOnNext(explorer)
+                        val last = modelExplorerStack.last()
 
                         last?.let {
                             viewState.onDocsNext(getListWithHeaders(it, true))
@@ -165,18 +168,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun getFileInfo() {
-
-        itemClicked?.let {
-            if(it is CloudFile) {
-                val file = itemClicked as CloudFile
-                val extension = file.fileExst
-                if (StringUtils.isImage(extension)) {
-                    addRecent(file)
-                    return
-                }
-            }
-        }
-
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         fileProvider?.let { provider ->
             downloadDisposable = provider.fileInfo(itemClicked)
@@ -186,6 +177,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                     { file: CloudFile? ->
                         tempFile = file
                         viewState.onDialogClose()
+                        file?.let { addRecent(it) }
                         viewState.onOpenLocalFile(file)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
@@ -207,10 +199,10 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             }
         }
 
-        for (uri in uploadUris) {
+        for (uploadUri in uploadUris) {
             val data = Data.Builder()
-                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, modelExplorerStack?.currentId)
-                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uri.toString())
+                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, modelExplorerStack.currentId)
+                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uploadUri.toString())
                 .putString(BaseStorageUploadWork.KEY_TAG, tag)
                 .build()
 
@@ -273,6 +265,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         }
     }
 
-    fun isFoldersInSelection(): Boolean = modelExplorerStack?.selectedFolders?.isEmpty() == true
+    fun isFoldersInSelection(): Boolean = modelExplorerStack.selectedFolders.isEmpty()
 
 }

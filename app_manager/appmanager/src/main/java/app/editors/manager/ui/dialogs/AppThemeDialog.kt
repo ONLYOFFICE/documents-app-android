@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.editors.manager.R
@@ -87,9 +89,14 @@ private fun MainScreen(themeMode: Int, cancel: () -> Unit, ok: (mode: Int) -> Un
 @Composable
 private fun RadioItem(title: String, selected: Boolean, onClick: () -> Unit) {
     Row(modifier = Modifier
-        .padding(top = 14.dp, bottom = 14.dp)) {
+        .clickable { onClick() }
+        .fillMaxWidth()
+        .height(dimensionResource(id = lib.toolkit.base.R.dimen.item_one_line_height))) {
         RadioButton(selected = selected,
-            onClick = onClick)
-        Text(text = title, modifier = Modifier.padding(start = 26.dp), style = MaterialTheme.typography.subtitle1)
+            onClick = onClick,
+            modifier = Modifier.align(Alignment.CenterVertically))
+        Text(text = title, modifier = Modifier
+            .padding(start = 26.dp)
+            .align(Alignment.CenterVertically), style = MaterialTheme.typography.subtitle1)
     }
 }
