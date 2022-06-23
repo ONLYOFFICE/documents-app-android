@@ -5,6 +5,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
+import app.documents.core.network.models.share.response.ResponseShare
 import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
@@ -24,9 +25,7 @@ import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestDeleteShare
-import app.editors.manager.mvp.models.request.RequestExternal
 import app.editors.manager.mvp.models.request.RequestFavorites
-import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
@@ -50,8 +49,6 @@ import java.util.*
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
     OnDownloadListener,
     OnUploadListener {
-
-    private var externalAccessType: String? = null
 
     private val downloadReceiver: DownloadReceiver = DownloadReceiver()
     private val uploadReceiver: UploadReceiver = UploadReceiver()
@@ -415,37 +412,24 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    val externalLink: Unit
-        get() {
-            if (itemClicked != null) {
-                externalAccessType = ApiContract.ShareType.READ
-                val requestExternal = RequestExternal()
-                requestExternal.share = externalAccessType
-                fileProvider?.let { provider ->
-                    disposable.add(provider.share(itemClicked!!.id, requestExternal)!!
-                        .subscribe({ responseExternal: ResponseExternal ->
-                            itemClicked!!.shared = !itemClicked!!.shared
-                            when (externalAccessType) {
-                                ApiContract.ShareType.NONE -> viewState.onDocsAccess(
-                                    false,
-                                    context.getString(R.string.share_access_denied)
-                                )
-                                ApiContract.ShareType.READ, ApiContract.ShareType.READ_WRITE, ApiContract.ShareType.REVIEW -> {
-                                    KeyboardUtils.setDataToClipboard(
-                                        context,
-                                        responseExternal.response,
-                                        context.getString(R.string.share_clipboard_external_link_label)
-                                    )
-                                    viewState.onDocsAccess(
-                                        true,
-                                        context.getString(R.string.share_clipboard_external_copied)
-                                    )
-                                }
-                            }
-                        }) { throwable: Throwable -> fetchError(throwable) })
-                }
-            }
+    fun saveExternalLinkToClipboard() {
+        itemClicked?.let { item ->
+            val shareApi = App.getApp().getShareService()
+            disposable.add(shareApi.getShareFile(item.id)
+                .subscribeOn(Schedulers.io())
+                .map { response: ResponseShare ->
+                    response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink
+                }.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ externalLink ->
+                    if (!externalLink.isNullOrEmpty()) {
+                        setDataToClipboard(externalLink)
+                    } else {
+                        viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
+                    }
+                }, this::fetchError)
+            )
         }
+    }
 
     fun addToFavorite() {
         val requestFavorites = RequestFavorites()
@@ -525,6 +509,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     refresh()
                 }
         }
+    }
+
+    private fun setDataToClipboard(value: String) {
+        KeyboardUtils.setDataToClipboard(context,
+            value, context.getString(R.string.share_clipboard_external_link_label))
+        viewState.onDocsAccess(true, context.getString(R.string.share_clipboard_external_copied))
     }
 
     private fun checkMoveCopyFiles(action: String) {
@@ -668,8 +658,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = StringUtils.equals(itemClicked?.createdBy?.id, account.id)
 
     private val isItemReadWrite: Boolean
-        get() = itemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE ||
-                itemClicked?.intAccess == ApiContract.ShareCode.NONE
+        get() = itemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE || isUserSection
 
     private val isItemEditable: Boolean
         get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
