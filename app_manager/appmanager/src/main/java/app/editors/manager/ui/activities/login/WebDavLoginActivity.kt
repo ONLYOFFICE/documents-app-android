@@ -6,12 +6,11 @@ import android.os.Bundle
 import android.view.MenuItem
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.BuildConfig
 import app.editors.manager.databinding.ActivityWebDavLoginBinding
 import app.editors.manager.managers.utils.isVisible
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.BuildConfig
-import app.editors.manager.R
 import app.editors.manager.mvp.models.account.Storage
+import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
 import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils

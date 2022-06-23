@@ -84,7 +84,6 @@ class WebDavStorageFragment : WebDavBaseFragment(), ConnectView {
         supportActionBar?.setHomeButtonEnabled(true)
         requireActivity().window
             .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        initViews()
     }
 
     private fun getArgs() {

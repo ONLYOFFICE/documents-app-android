@@ -74,7 +74,6 @@ class WebDavSignInFragment : WebDavBaseFragment(), WebDavSignInView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         restoreState(savedInstanceState)
-        initViews()
     }
 
     private fun restoreState(bundle: Bundle?) {

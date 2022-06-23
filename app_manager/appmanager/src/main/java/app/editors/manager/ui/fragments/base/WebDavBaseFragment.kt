@@ -81,7 +81,7 @@ abstract class WebDavBaseFragment : BaseAppFragment(), BaseView {
     protected fun TextInputEditText.setActionDoneListener(listener: () -> Unit) {
         imeOptions = EditorInfo.IME_ACTION_DONE
         setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
+            if (actionId == EditorInfo.IME_ACTION_DONE && !text.isNullOrEmpty()) {
                 listener()
                 return@setOnEditorActionListener true
             }
