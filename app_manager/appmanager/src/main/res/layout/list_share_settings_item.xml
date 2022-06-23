@@ -36,8 +36,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             app:layout_constraintBottom_toTopOf="@+id/list_share_settings_info"
-            app:layout_constraintEnd_toStartOf="@+id/list_share_settings_owner"
-            app:layout_constraintRight_toLeftOf="@+id/list_share_settings_image"
+            app:layout_constraintEnd_toStartOf="@+id/contextBarrier"
             app:layout_constraintStart_toEndOf="@+id/list_share_settings_image"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
@@ -54,6 +53,13 @@
             app:layout_constraintStart_toStartOf="@+id/list_share_settings_name"
             app:layout_constraintTop_toBottomOf="@+id/list_share_settings_name"
             tools:text="Item info" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/contextBarrier"
+            app:barrierDirection="start"
+            app:constraint_referenced_ids="list_share_settings_owner, list_share_settings_context_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
 
         <include
             android:id="@+id/list_share_settings_context_layout"
@@ -73,7 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/screen_margin_large"
             android:text="@string/toolbar_menu_sort_owner"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/list_share_settings_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/list_share_settings_name" />
