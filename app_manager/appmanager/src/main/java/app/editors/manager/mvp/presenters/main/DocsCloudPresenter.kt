@@ -426,9 +426,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     } else {
                         viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
                     }
-                },
-                    this::fetchError
-                )
+                }, this::fetchError)
             )
         }
     }
