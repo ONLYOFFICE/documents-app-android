@@ -222,7 +222,8 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun setLocalState() {
         viewBinding?.let {
-            setUploadToPortal(!state.isFolder && !(state.isGoogleDrive || state.isDropBox || state.isOneDrive))
+            setUploadToPortal(!state.isFolder && !(state.isGoogleDrive || state.isDropBox
+                    || state.isOneDrive || state.isVisitor))
             it.listExplorerContextMove.isVisible = true
             it.listExplorerContextCopy.isVisible = true
             it.listExplorerContextDelete.isVisible = true
@@ -321,7 +322,8 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isOneDrive: Boolean = false,
         var isDropBox: Boolean = false,
         var isPersonalAccount: Boolean = false,
-        var isGoogleDrive: Boolean = false
+        var isGoogleDrive: Boolean = false,
+        var isVisitor: Boolean = false
     ) : Serializable
 }
 

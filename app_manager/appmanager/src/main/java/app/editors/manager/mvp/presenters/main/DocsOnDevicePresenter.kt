@@ -160,6 +160,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         state.isDropBox = onlineAccount?.isDropbox == true
         state.isOneDrive = onlineAccount?.isOneDrive == true
         state.isGoogleDrive = onlineAccount?.isGoogleDrive == true
+        state.isVisitor = onlineAccount?.isVisitor == true
         state.isLocal = true
         state.title = item.title
         state.info = TimeUtils.formatDate(itemClickedDate)
