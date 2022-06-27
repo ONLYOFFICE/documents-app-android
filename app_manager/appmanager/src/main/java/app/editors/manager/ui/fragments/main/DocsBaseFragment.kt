@@ -328,7 +328,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onOpenLocalFile(file: CloudFile) {
         val uri = Uri.parse(file.webUrl)
         when (getExtension(file.fileExst)) {
-            StringUtils.Extension.DOC -> {
+            StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
                 presenter.addRecent(file)
                 showEditors(uri, EditorsType.DOCS)
             }

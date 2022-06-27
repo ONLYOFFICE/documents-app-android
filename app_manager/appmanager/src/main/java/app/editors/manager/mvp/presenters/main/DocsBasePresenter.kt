@@ -150,7 +150,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected var uploadDisposable: Disposable? = null
     private var filterRun: Runnable? = null
     private var isTerminate = false
-    private val downloadDisposable: Disposable? = null
+    protected var downloadDisposable: Disposable? = null
     private var isAccessDenied = false
 
     /**
@@ -238,7 +238,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 }
             }
         }
-
         return false
     }
 
@@ -357,7 +356,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     }
                 }
         }
-
     }
 
     open fun delete(): Boolean {
@@ -478,10 +476,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
                             onBatchOperations()
                         }
-
                 }
             }
-
             showDialogWaiting(TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
         }
     }
@@ -582,7 +578,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } else if (itemClicked is CloudFolder) {
             viewState.onCreateDownloadFile(ApiContract.DOWNLOAD_ZIP_NAME)
         }
-
     }
 
     open fun download(downloadTo: Uri) {
@@ -644,7 +639,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun cancelDownload() {
         if (downloadDisposable?.isDisposed == false) {
-            downloadDisposable.dispose()
+            downloadDisposable?.dispose()
         }
     }
 
@@ -697,9 +692,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         if (uploadFiles.isNotEmpty()) {
             UploadWork.putNewUploadFiles(id, ArrayList(uploadFiles))
-            for (uri in uriList) {
+            for (uri in uploadFiles) {
                 val workData = Data.Builder()
-                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.uri.toString())
                     .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
                     .putString(UploadWork.TAG_FOLDER_ID, id)
                     .build()
@@ -732,7 +727,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         if (uploadDisposable?.isDisposed == false) {
             uploadDisposable?.dispose()
         } else if (downloadDisposable?.isDisposed == false) {
-            downloadDisposable.dispose()
+            downloadDisposable?.dispose()
         }
     }
 
