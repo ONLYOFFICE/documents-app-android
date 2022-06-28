@@ -14,9 +14,9 @@ class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         super.show()
         dialog.dialog!!.setCanceledOnTouchOutside(false)
         dialog.view?.post {
-            mFrameLayout.visibility = View.GONE
+            frameLayout.visibility = View.GONE
             acceptView.isEnabled = true
-            mCancelView.isEnabled = true
+            cancelView.isEnabled = true
             if (tintedAcceptTags.contains(holderTag)) {
                 val color = dialog.requireContext().getColor(R.color.colorLightRed)
                 acceptView.setTextColor(color)

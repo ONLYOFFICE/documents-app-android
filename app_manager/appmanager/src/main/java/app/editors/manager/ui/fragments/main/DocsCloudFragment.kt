@@ -64,7 +64,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    mCameraUri?.let { uri ->
+                    cameraUri?.let { uri ->
                         cloudPresenter.upload(uri, null)
                     }
                 }

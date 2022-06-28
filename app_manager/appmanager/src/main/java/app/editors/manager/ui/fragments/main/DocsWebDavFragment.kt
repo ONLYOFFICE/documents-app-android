@@ -64,7 +64,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
                     webDavPresenter.upload(data!!.data, data.clipData)
                 }
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    webDavPresenter.upload(mCameraUri, null)
+                    webDavPresenter.upload(cameraUri, null)
                 }
                 REQUEST_PRESENTATION, REQUEST_PDF, REQUEST_DOCS, REQUEST_SHEETS -> {
                     if (data?.data != null) {

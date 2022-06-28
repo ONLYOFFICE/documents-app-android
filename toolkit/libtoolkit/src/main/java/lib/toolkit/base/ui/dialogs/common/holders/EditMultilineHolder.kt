@@ -28,23 +28,23 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
         }
     }
 
-    private lateinit var mLayout: ConstraintLayout
-    private lateinit var mEditInputLayout: TextInputLayout
-    private lateinit var mEditValueView: AppCompatEditText
+    private var layout: ConstraintLayout? = null
+    private var editInputLayout: TextInputLayout? = null
+    private var editValueView: AppCompatEditText? = null
 
     private var mEditValue: String? = null
-    private var mEditHintValue: String? = null
+    private var editHintValue: String? = null
     private var mCursorPosition: Int? = null
 
     override fun onClick(v: View) {
         when (v.id) {
             R.id.dialogCommonAcceptButton -> {
-                KeyboardUtils.hideKeyboard(mEditValueView)
+                KeyboardUtils.hideKeyboard(editValueView)
                 onClickListener?.onAcceptClick(getType(), getValue(), holderTag)
             }
 
             R.id.dialogCommonCancelButton -> {
-                KeyboardUtils.hideKeyboard(mEditValueView)
+                KeyboardUtils.hideKeyboard(editValueView)
                 onClickListener?.onCancelClick(getType(), holderTag)
             }
         }
@@ -53,9 +53,9 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
     override fun init() {
         super.init()
         dialog.view?.apply {
-            mLayout = findViewById(R.id.dialogCommonEditMultilineLayout)
-            mEditInputLayout = findViewById(R.id.dialogCommonEditMultilineTextInputLayout)
-            mEditValueView = findViewById<AppCompatEditText>(R.id.dialogCommonEditMultilineValueEdit).apply {
+            layout = findViewById(R.id.dialogCommonEditMultilineLayout)
+            editInputLayout = findViewById(R.id.dialogCommonEditMultilineTextInputLayout)
+            editValueView = findViewById<AppCompatEditText>(R.id.dialogCommonEditMultilineValueEdit).apply {
                 filters = arrayOf<InputFilter>(EditFilter())
             }
         }
@@ -63,25 +63,25 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
 
     override fun show() {
         super.show()
-        mLayout.visibility = View.VISIBLE
-        mEditValueView.setText(mEditValue)
-        mEditValueView.hint = mEditHintValue
-        mEditValueView.setSelection(mCursorPosition ?: 0)
-        mEditValueView.post { KeyboardUtils.showKeyboard(mEditValueView) }
+        layout?.visibility = View.VISIBLE
+        editValueView?.setText(mEditValue)
+        editValueView?.hint = editHintValue
+        editValueView?.setSelection(mCursorPosition ?: 0)
+        editValueView?.post { KeyboardUtils.showKeyboard(editValueView) }
     }
 
     override fun hide() {
         super.hide()
-        mLayout.visibility = View.GONE
-        KeyboardUtils.hideKeyboard(mEditValueView)
+        layout?.visibility = View.GONE
+        KeyboardUtils.hideKeyboard(editValueView)
     }
 
     override fun save(state: Bundle) {
         super.save(state)
         state.let { bundle ->
-            bundle.putString(TAG_EDIT_VALUE, mEditValueView.text.toString())
-            bundle.putString(TAG_EDIT_HINT_VALUE, mEditHintValue)
-            bundle.putInt(TAG_CURSOR_POSITION, mEditValueView.selectionEnd)
+            bundle.putString(TAG_EDIT_VALUE, editValueView?.text.toString())
+            bundle.putString(TAG_EDIT_HINT_VALUE, editHintValue)
+            bundle.putInt(TAG_CURSOR_POSITION, editValueView?.selectionEnd ?: -1)
         }
     }
 
@@ -89,13 +89,13 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
         super.restore(state)
         state.let {
             mEditValue = it.getString(TAG_EDIT_VALUE)
-            mEditHintValue = it.getString(TAG_EDIT_HINT_VALUE)
+            editHintValue = it.getString(TAG_EDIT_HINT_VALUE)
             mCursorPosition = state.getInt(TAG_CURSOR_POSITION, 0)
         }
     }
 
     override fun getValue(): String? {
-        return mEditValueView.text.toString()
+        return editValueView?.text.toString()
     }
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.EDIT_MULTILINE
@@ -119,7 +119,7 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
         }
 
         fun setEditHintValue(value: String?): Builder {
-            mEditHintValue = value
+            editHintValue = value
             return this
         }
 

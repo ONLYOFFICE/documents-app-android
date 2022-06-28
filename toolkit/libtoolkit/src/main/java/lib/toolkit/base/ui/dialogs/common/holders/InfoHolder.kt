@@ -9,7 +9,7 @@ class InfoHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     override fun show() {
         super.show()
-        mFrameLayout.visibility = View.GONE
+        frameLayout.visibility = View.GONE
     }
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.INFO

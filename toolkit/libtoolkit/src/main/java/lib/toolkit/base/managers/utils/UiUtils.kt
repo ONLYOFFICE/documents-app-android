@@ -1,6 +1,7 @@
 package lib.toolkit.base.managers.utils
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -26,13 +27,13 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.R
 import java.lang.ref.WeakReference
 import java.nio.IntBuffer
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.ceil
 
@@ -436,11 +437,12 @@ object UiUtils {
     }
 
     @JvmStatic
-    fun setProgressBarColorDrawable(progressBar: ProgressBar, @ColorRes colorId: Int) {
-        progressBar.indeterminateDrawable.setColorFilter(
-            ContextCompat.getColor(progressBar.context, colorId),
-            PorterDuff.Mode.SRC_ATOP
-        )
+    fun setProgressBarColorDrawable(progressBar: ProgressBar?, color: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            progressBar?.indeterminateDrawable?.colorFilter = BlendModeColorFilter(color, BlendMode.SRC_IN)
+        } else {
+            progressBar?.indeterminateDrawable?.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+        }
     }
 
     @JvmStatic
@@ -598,14 +600,59 @@ object UiUtils {
         }
     }
 
+    fun getWaitingDialog(
+        context: Context,
+        title: String,
+        cancelTitle: String? = context.getString(android.R.string.cancel),
+        isCircle: Boolean = false,
+        cancelListener: () -> Unit
+    ): Dialog {
+        val container = FrameLayout(context)
+        val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        params.marginEnd = context.resources.getDimensionPixelSize(R.dimen.alert_dialog_start_end_margin)
+        params.marginStart = context.resources.getDimensionPixelSize(R.dimen.alert_dialog_start_end_margin)
+        params.topMargin = context.resources.getDimensionPixelSize(R.dimen.default_margin_large)
+        params.gravity = Gravity.CENTER
+
+        val progress = ProgressBar(context, null, if (isCircle) android.R.attr.progressBarStyle else android.R.attr.progressBarStyleHorizontal)
+            .apply {
+                isIndeterminate = true
+                layoutParams = params
+
+                val color = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorPrimary)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    indeterminateDrawable.colorFilter = BlendModeColorFilter(color, BlendMode.SRC_IN)
+                } else {
+                    indeterminateDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+                }
+            }
+
+        container.addView(progress)
+        return AlertDialog.Builder(context)
+            .setTitle(title)
+            .setNegativeButton(cancelTitle) { dialog, _ ->
+                cancelListener()
+                dialog.dismiss()
+            }
+            .setView(container)
+            .show()
+    }
+
+    fun getProgressDialog(
+        context: Context
+    ): Dialog {
+        return AlertDialog.Builder(context).create()
+    }
+
     fun showEditDialog(
         context: Context,
         title: String,
         value: String? = null,
         description: String? = null,
         acceptListener: (value: String) -> Unit,
-        acceptTitle: String? = "Ok",
-        cancelTitle: String? = "Cancel",
+        acceptTitle: String? = context.getString(android.R.string.ok),
+        cancelTitle: String? = context.getString(android.R.string.cancel),
         requireValue: Boolean = false
     ) {
         val container = FrameLayout(context)
@@ -653,8 +700,8 @@ object UiUtils {
         description: String? = null,
         acceptListener: () -> Unit,
         cancelListener: (() -> Unit)? = null,
-        acceptTitle: String? = "Ok",
-        cancelTitle: String? = "Cancel"
+        acceptTitle: String? = context.getString(android.R.string.ok),
+        cancelTitle: String? = context.getString(android.R.string.cancel)
     ) {
         AlertDialog.Builder(context)
             .setTitle(title)

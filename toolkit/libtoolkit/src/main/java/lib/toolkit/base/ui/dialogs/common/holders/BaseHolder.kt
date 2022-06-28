@@ -17,7 +17,7 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 
 abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewHolder,
-        View.OnClickListener {
+    View.OnClickListener {
 
     companion object {
         protected const val TAG_USER_TAG = "TAG_USER_TAG"
@@ -28,11 +28,11 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     }
 
     protected var onClickListener: CommonDialog.OnClickListener? = null
-    protected lateinit var mFrameLayout: FrameLayout
-    protected lateinit var mTopTitleView: AppCompatTextView
-    protected lateinit var mBottomTitleView: AppCompatTextView
+    protected lateinit var frameLayout: FrameLayout
+    protected lateinit var topTitleView: AppCompatTextView
+    protected lateinit var bottomTitleView: AppCompatTextView
     protected lateinit var acceptView: MaterialButton
-    protected lateinit var mCancelView: MaterialButton
+    protected lateinit var cancelView: MaterialButton
 
     protected var holderTag: String? = null
     protected var topTitle: String? = null
@@ -65,33 +65,33 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     override fun init() {
         dialog.isCancelable = true
         dialog.view?.apply {
-            mFrameLayout = findViewById(R.id.dialogCommonFrameLayout)
-            mTopTitleView = findViewById(R.id.dialogCommonTopTitleText)
-            mBottomTitleView = findViewById(R.id.dialogCommonBottomTitleText)
+            frameLayout = findViewById(R.id.dialogCommonFrameLayout)
+            topTitleView = findViewById(R.id.dialogCommonTopTitleText)
+            bottomTitleView = findViewById(R.id.dialogCommonBottomTitleText)
             acceptView = findViewById(R.id.dialogCommonAcceptButton)
-            mCancelView = findViewById(R.id.dialogCommonCancelButton)
+            cancelView = findViewById(R.id.dialogCommonCancelButton)
         }
         setTint()
     }
 
     override fun show() {
-        mFrameLayout.visibility = View.VISIBLE
+        frameLayout.visibility = View.VISIBLE
         acceptView.setOnClickListener(this)
-        mCancelView.setOnClickListener(this)
+        cancelView.setOnClickListener(this)
 
         if (topTitle.isNullOrBlank()) {
-            mTopTitleView.visibility = View.GONE
+            topTitleView.visibility = View.GONE
         } else {
-            mTopTitleView.visibility = View.VISIBLE
-            mTopTitleView.text = topTitle
-            mTopTitleView.gravity = topTitleGravity
+            topTitleView.visibility = View.VISIBLE
+            topTitleView.text = topTitle
+            topTitleView.gravity = topTitleGravity
         }
 
         if (bottomTitle.isNullOrBlank()) {
-            mBottomTitleView.visibility = View.GONE
+            bottomTitleView.visibility = View.GONE
         } else {
-            mBottomTitleView.visibility = View.VISIBLE
-            mBottomTitleView.text = bottomTitle
+            bottomTitleView.visibility = View.VISIBLE
+            bottomTitleView.text = bottomTitle
         }
 
         if (acceptTitle.isNullOrBlank()) {
@@ -102,10 +102,10 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
         }
 
         if (cancelTitle.isNullOrBlank()) {
-            mCancelView.visibility = View.GONE
+            cancelView.visibility = View.GONE
         } else {
-            mCancelView.visibility = View.VISIBLE
-            mCancelView.text = cancelTitle
+            cancelView.visibility = View.VISIBLE
+            cancelView.text = cancelTitle
         }
 
         dialog.view?.let { TransitionManager.beginDelayedTransition(it as ViewGroup, Fade()) }
@@ -146,7 +146,7 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     protected open fun setTint() {
         val colorDisabled = dialog.requireContext().getColor(R.color.colorOnSurface)
 
-        arrayOf(mCancelView, acceptView).forEach { view ->
+        arrayOf(cancelView, acceptView).forEach { view ->
             view.rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(colorPrimary, 60))
             view.setTextColor(
                 ColorStateList(

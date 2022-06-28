@@ -6,9 +6,7 @@ import android.os.Bundle
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
-import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
-import app.editors.manager.ui.activities.main.ActionButtonFragment
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
@@ -40,7 +38,7 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
         } else if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    mCameraUri?.let { uri ->
+                    cameraUri?.let { uri ->
                         presenter.upload(uri, null, KEY_UPLOAD)
                     }
                 }

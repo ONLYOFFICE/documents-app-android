@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
-import androidx.annotation.ColorRes
+import com.google.android.material.color.MaterialColors
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -13,7 +13,6 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     companion object {
-        private const val TAG_PROGRESS_COLOR = "TAG_PROGRESS_COLOR"
         private const val TAG_PROGRESS_TYPE = "TAG_PROGRESS_TYPE"
     }
 
@@ -21,11 +20,9 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         CIRCLE, HORIZONTAL
     }
 
-    private lateinit var rootLayout: FrameLayout
-    private lateinit var progressBarView: ProgressBar
+    private var rootLayout: FrameLayout? = null
+    private var progressBarView: ProgressBar? = null
 
-    @ColorRes
-    private var progressColor = 0
     private var progressType: ProgressType =
         ProgressType.HORIZONTAL
 
@@ -50,33 +47,28 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     @SuppressLint("ResourceType")
     override fun show() {
         super.show()
-        rootLayout.visibility = View.VISIBLE
-        progressBarView.visibility = View.VISIBLE
+        rootLayout?.visibility = View.VISIBLE
+        progressBarView?.visibility = View.VISIBLE
 
-        if (progressColor > 0) {
-            UiUtils.setProgressBarColorDrawable(progressBarView, progressColor)
-        }
+        UiUtils.setProgressBarColorDrawable(
+            progressBarView,
+            MaterialColors.getColor(checkNotNull(progressBarView), androidx.appcompat.R.attr.colorPrimary)
+        )
     }
 
     override fun hide() {
         super.hide()
-        rootLayout.visibility = View.GONE
+        rootLayout?.visibility = View.GONE
     }
 
     override fun save(state: Bundle) {
         super.save(state)
-        state.let {
-            it.putInt(TAG_PROGRESS_COLOR, progressColor)
-            it.putSerializable(TAG_PROGRESS_TYPE, progressType)
-        }
+        state.putSerializable(TAG_PROGRESS_TYPE, progressType)
     }
 
     override fun restore(state: Bundle) {
         super.restore(state)
-        state.let {
-            progressColor = it.getInt(TAG_PROGRESS_COLOR)
-            progressType = it.getSerializable(TAG_PROGRESS_TYPE) as ProgressType
-        }
+        progressType = state.getSerializable(TAG_PROGRESS_TYPE) as ProgressType
     }
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.WAITING
@@ -95,11 +87,6 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
         fun setCancelTitle(value: String?): Builder {
             cancelTitle = value
-            return this
-        }
-
-        fun setProgressColor(@ColorRes colorRes: Int): Builder {
-            progressColor = colorRes
             return this
         }
 
