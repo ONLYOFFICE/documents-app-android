@@ -389,6 +389,14 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
+    override fun onError(message: String?) {
+        if(message?.contains(getString(R.string.errors_import_local_file_desc)) == true) {
+            showSnackBar(R.string.errors_import_local_file)
+        } else {
+            super.onError(message)
+        }
+    }
+
     private fun checkStorage(tag: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
             !Environment.isExternalStorageManager() &&

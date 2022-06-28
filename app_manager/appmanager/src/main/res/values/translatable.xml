@@ -63,6 +63,8 @@
     <string name="errors_email_already_registered">User with this email is already registered</string>
     <string name="errors_path_url">Invalid URL</string>
     <string name="errors_create_local_file">Failed create file</string>
+    <string name="errors_import_local_file_desc">Permission denied</string>
+    <string name="errors_import_local_file">Access denied. Give read and write permissions</string>
 
     <!-- SignIn -->
     <string name="errors_sign_in_splash_error">Failed to access the portal</string>

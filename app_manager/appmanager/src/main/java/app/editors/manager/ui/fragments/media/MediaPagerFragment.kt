@@ -1,13 +1,14 @@
 package app.editors.manager.ui.fragments.media
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -20,8 +21,6 @@ import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.fragments.media.MediaImageFragment.Companion.newInstance
-import app.editors.manager.ui.fragments.media.MediaVideoFragment.Companion.newInstance
 import app.editors.manager.ui.views.pager.PagingViewPager
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
@@ -42,11 +41,19 @@ class MediaPagerFragment : BaseAppFragment() {
     private var isWebDav = false
     private var viewBinding: FragmentMediaPagerBinding? = null
 
-    private val mPagerPositionRunnableGone = Runnable {
+    private val writePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            shareFile()
+        } else {
+            showSnackBar("Not permission")
+        }
+    }
+
+    private val pagerPositionRunnableGone = Runnable {
         viewBinding?.mediaPagerPosition?.isVisible = false
     }
 
-    private val mPagerPositionRunnableVisible = Runnable {
+    private val pagerPositionRunnableVisible = Runnable {
         viewBinding?.mediaPagerPosition?.isVisible = true
     }
 
@@ -76,25 +83,9 @@ class MediaPagerFragment : BaseAppFragment() {
         init()
     }
 
-    @SuppressLint("MissingPermission")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            PERMISSION_WRITE_STORAGE -> {
-                if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    shareFile()
-                }
-            }
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
-        viewBinding?.mediaPagerPosition?.removeCallbacks(mPagerPositionRunnableGone)
+        viewBinding?.mediaPagerPosition?.removeCallbacks(pagerPositionRunnableGone)
         viewBinding = null
     }
 
@@ -110,6 +101,7 @@ class MediaPagerFragment : BaseAppFragment() {
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun initViews() {
         mediaActivity?.setToolbarState(true)
         toolbarView = layoutInflater.inflate(R.layout.include_media_header_pager, null)
@@ -147,15 +139,15 @@ class MediaPagerFragment : BaseAppFragment() {
     @SuppressLint("SetTextI18n")
     private fun showPagerPosition(isVisible: Boolean) {
         viewBinding?.mediaPagerPosition?.let {
-            it.removeCallbacks(mPagerPositionRunnableGone)
-            it.removeCallbacks(mPagerPositionRunnableVisible)
+            it.removeCallbacks(pagerPositionRunnableGone)
+            it.removeCallbacks(pagerPositionRunnableVisible)
             it.text = "${selectedPosition + 1}/${mediaExplorer?.files?.size}"
             it.isVisible = true
             it.alpha = if (isVisible) MediaActivity.ALPHA_TO else MediaActivity.ALPHA_FROM
             it.animate()
                 .alpha(if (isVisible) MediaActivity.ALPHA_FROM else MediaActivity.ALPHA_TO)
                 .setDuration(MediaActivity.ALPHA_DELAY.toLong())
-                .withEndAction(if (isVisible) mPagerPositionRunnableGone else mPagerPositionRunnableVisible)
+                .withEndAction(if (isVisible) pagerPositionRunnableGone else pagerPositionRunnableVisible)
                 .start()
         }
     }
@@ -198,10 +190,15 @@ class MediaPagerFragment : BaseAppFragment() {
                 if (files.size > 0) {
                     val file = files[position]
                     return when (getExtension(file.fileExst)) {
-                        StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF ->
-                            newInstance(file, arguments?.getBoolean(TAG_WEB_DAV)!!)
-                        StringUtils.Extension.VIDEO_SUPPORT -> newInstance(file)
-                        else -> throw RuntimeException("${file.fileExst} is unsupported format")
+                        StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF -> {
+                            MediaImageFragment.newInstance(file, arguments?.getBoolean(TAG_WEB_DAV)!!)
+                        }
+                        StringUtils.Extension.VIDEO_SUPPORT -> {
+                            MediaVideoFragment.newInstance(file)
+                        }
+                        else -> {
+                            throw RuntimeException("${file.fileExst} is unsupported format")
+                        }
                     }
                 }
             }
@@ -277,12 +274,10 @@ class MediaPagerFragment : BaseAppFragment() {
     /*
      * Custom view for toolbar
      * */
-    inner class ToolbarViewHolder(view: View?) {
-        private var viewBinding = IncludeMediaHeaderPagerBinding.bind(view!!).apply {
+    private inner class ToolbarViewHolder(view: View?) {
+        private var viewBinding = IncludeMediaHeaderPagerBinding.bind(checkNotNull(view)).apply {
             mediaPagerHeaderShare.setOnClickListener {
-                if (checkWritePermission()) {
-                    shareFile()
-                }
+                writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
             mediaPagerHeaderViewMode.setOnClickListener {
                 showFragment(MediaListFragment.newInstance(mediaExplorer, isWebDav), null, false)
@@ -294,7 +289,7 @@ class MediaPagerFragment : BaseAppFragment() {
     }
 
     companion object {
-        val TAG = MediaPagerFragment::class.java.simpleName
+        val TAG: String = MediaPagerFragment::class.java.simpleName
         private const val TAG_MEDIA = "TAG_MEDIA"
         private const val TAG_WEB_DAV = "TAG_WEB_DAV"
 

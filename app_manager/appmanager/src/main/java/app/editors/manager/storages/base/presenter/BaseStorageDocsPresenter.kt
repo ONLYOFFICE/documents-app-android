@@ -3,8 +3,6 @@ package app.editors.manager.storages.base.presenter
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
@@ -19,11 +17,7 @@ import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
-import app.editors.manager.storages.dropbox.dropbox.api.DropboxService
-import app.editors.manager.storages.dropbox.mvp.views.DocsDropboxView
-import app.editors.manager.storages.googledrive.managers.works.DownloadWork
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,7 +26,6 @@ import java.util.*
 
 abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePresenter<view>(), UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
 
-    var downloadDisposable: Disposable? = null
     var tempFile: CloudFile? = null
 
     val workManager = WorkManager.getInstance(App.getApp())
