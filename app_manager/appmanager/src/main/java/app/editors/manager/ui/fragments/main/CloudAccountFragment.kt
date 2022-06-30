@@ -18,7 +18,6 @@ import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.presenters.main.CloudAccountState
 import app.editors.manager.mvp.views.main.CloudAccountView
-import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
 import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
@@ -385,13 +384,11 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onDropboxLogin() {
-        hideDialog()
-        val storage = Storage(
-            ApiContract.Storage.DROPBOX,
-            BuildConfig.DROP_BOX_COM_CLIENT_ID,
-            BuildConfig.DROP_BOX_COM_REDIRECT_URL
-        )
-        showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
+        hideDialog(forceHide = true)
+        presenter.dropboxLogin(this) {
+            MainActivity.show(requireContext())
+            requireActivity().finish()
+        }
     }
 
     override fun onOneDriveLogin() {

@@ -2,7 +2,6 @@ package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import app.documents.core.account.CloudAccount
@@ -29,7 +28,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.ActivitiesUtils
 import moxy.InjectViewState
 import javax.inject.Inject
 
@@ -141,8 +139,10 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
         AccountUtils.getAccount(context, account.getAccountName())?.let { systemAccount ->
             if (account.isWebDav) {
                 AccountUtils.setPassword(context, systemAccount, null)
+                update(systemAccount)
             } else if (account.isDropbox || account.isOneDrive || account.isGoogleDrive) {
                 AccountUtils.setToken(context, systemAccount, "")
+                update(systemAccount)
             } else {
                 GoogleUtils.getDeviceToken({ deviceToken ->
                     context.loginService.subscribe(AccountUtils.getToken(context, account.getAccountName()) ?: "", deviceToken, false).subscribe({
@@ -153,7 +153,6 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
                 }) {
                     update(systemAccount)
                 }
-
             }
         }
     }

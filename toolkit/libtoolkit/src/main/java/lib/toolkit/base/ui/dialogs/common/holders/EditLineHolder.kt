@@ -122,7 +122,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     override fun hide() {
         super.hide()
-        editValueView?.addTextChangedListener(null)
+//        editValueView?.addTextChangedListener(null)
         layout?.visibility = View.GONE
         KeyboardUtils.hideKeyboard(editValueView)
     }

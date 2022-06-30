@@ -124,8 +124,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         hideDialog()
     }
 
-    protected fun hideDialog() {
-        baseActivity.hideDialog()
+    protected fun hideDialog(forceHide: Boolean = false) {
+        baseActivity.hideDialog(forceHide)
     }
 
     protected fun getEditDialogDialog(
