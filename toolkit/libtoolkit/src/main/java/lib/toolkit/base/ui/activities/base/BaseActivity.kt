@@ -30,7 +30,7 @@ import lib.toolkit.base.ui.dialogs.common.holders.*
 import moxy.MvpAppCompatActivity
 
 
-abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStackChangedListener {
+abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStackChangedListener, CommonDialog.OnClickListener {
 
     companion object {
         protected val TAG: String = BaseActivity::class.java.simpleName
@@ -57,20 +57,6 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         const val PERMISSION_READ_WRITE_STORAGE = 103
     }
 
-    inner class OnCommonDialogClick : CommonDialog.OnClickListener {
-        override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
-            this@BaseActivity.onAcceptClick(dialogs, value, tag)
-        }
-
-        override fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
-            this@BaseActivity.onCancelClick(dialogs, tag)
-        }
-
-        override fun onCloseCommonDialog() {
-            this@BaseActivity.onCloseCommonDialog()
-        }
-    }
-
     val isTablet: Boolean
         get() = UiUtils.isTablet(this)
 
@@ -86,13 +72,12 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     val isFragmentManagerEmpty: Boolean
         get() = supportFragmentManager.fragments.isEmpty()
 
-    protected var mOnDispatchTouchEvent: MutableMap<Int, OnDispatchTouchEvent>? = null
-    protected var mToast: Toast? = null
-    protected var mSnackBar: Snackbar? = null
+    private var onDispatchTouchEvent: MutableMap<Int, OnDispatchTouchEvent>? = null
+    private var toast: Toast? = null
+    protected var snackBar: Snackbar? = null
     protected var commonDialog: CommonDialog? = null
-    protected var mOnDialogClickListener: CommonDialog.OnClickListener? = OnCommonDialogClick()
 
-    val dialogListeners: HashSet<CommonDialog.OnClickListener> = hashSetOf()
+    private val dialogListeners: HashSet<CommonDialog.OnClickListener> = hashSetOf()
 
     interface OnBackPressFragment {
         fun onBackPressed(): Boolean
@@ -111,9 +96,8 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         super.onDestroy()
         supportFragmentManager.removeOnBackStackChangedListener(this)
         commonDialog = null
-        mToast = null
-        mSnackBar = null
-        mOnDialogClickListener = null
+        toast = null
+        snackBar = null
     }
 
     override fun onBackStackChanged() {
@@ -157,15 +141,15 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         onTouchAction(event)
 
-        mOnDispatchTouchEvent?.let {
+        onDispatchTouchEvent?.let {
             for ((_, value) in it) {
                 value.dispatchTouchEvent(event)
             }
         }
 
-        if (mSnackBar != null) {
-            UiUtils.hideSnackBarOnOutsideTouch(mSnackBar, event)
-            mSnackBar = null
+        if (snackBar != null) {
+            UiUtils.hideSnackBarOnOutsideTouch(snackBar, event)
+            snackBar = null
         }
 
         return super.dispatchTouchEvent(event)
@@ -197,19 +181,19 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
 
     private fun initViews() {
         supportFragmentManager.addOnBackStackChangedListener(this)
-        mToast = UiUtils.getToast(this)
+        toast = UiUtils.getToast(this)
     }
 
     fun addOnDispatchTouchEvent(onDispatchTouchEvent: OnDispatchTouchEvent) {
-        if (mOnDispatchTouchEvent == null) {
-            mOnDispatchTouchEvent = HashMap()
+        if (this.onDispatchTouchEvent == null) {
+            this.onDispatchTouchEvent = HashMap()
         }
-        mOnDispatchTouchEvent!![onDispatchTouchEvent.hashCode()] = onDispatchTouchEvent
+        this.onDispatchTouchEvent!![onDispatchTouchEvent.hashCode()] = onDispatchTouchEvent
     }
 
     fun removeOnDispatchTouchEvent(onDispatchTouchEvent: OnDispatchTouchEvent) {
-        if (!mOnDispatchTouchEvent.isNullOrEmpty()) {
-            mOnDispatchTouchEvent!!.remove(onDispatchTouchEvent.hashCode())
+        if (!this.onDispatchTouchEvent.isNullOrEmpty()) {
+            this.onDispatchTouchEvent!!.remove(onDispatchTouchEvent.hashCode())
         }
     }
 
@@ -218,9 +202,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         if (commonDialog == null) {
             commonDialog = CommonDialog.newInstance()
         }
-
-        commonDialog!!.setFragmentManager(supportFragmentManager)
-        commonDialog!!.setOnClickListener(mOnDialogClickListener!!)
+        commonDialog?.setFragmentManager(supportFragmentManager)
     }
 
     fun addDialogListener(onDialogClickListener: CommonDialog.OnClickListener?) {
@@ -241,23 +223,21 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         }
     }
 
-    open fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
+    override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
         Log.d(TAG, "onAcceptClick() - $dialogs - value: $value - tag: $tag")
-//        mOnFragmentDialogClickListener?.onAcceptClick(dialogs, value, tag)
         dialogListeners.forEach {
             it.onAcceptClick(dialogs, value, tag)
         }
     }
 
-    open fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
+    override fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
         Log.d(TAG, "onCancelClick() - $dialogs - tag: $tag")
-//        mOnFragmentDialogClickListener?.onCancelClick(dialogs, tag)
         dialogListeners.forEach {
             it.onCancelClick(dialogs, tag)
         }
     }
 
-    open fun onCloseCommonDialog() {
+    override fun onCloseCommonDialog() {
         dialogListeners.forEach {
             it.onCloseCommonDialog()
         }
@@ -283,7 +263,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
             setText(string)
             setAction(button, action)
             show()
-            mSnackBar = this
+            snackBar = this
         }
     }
 
@@ -292,8 +272,8 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     protected fun showToast(string: String) {
-        mToast?.setText(string)
-        mToast?.show()
+        toast?.setText(string)
+        toast?.show()
     }
 
     /*
@@ -412,7 +392,6 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         getWaitingDialog(topTitle, cancelTitle, tag)?.run {
             setProgressType(type)
             setTextColor(textColor)
-            setProgressColor(progressColor)
             setTopTitleGravity(textGravity)
             show()
         }
@@ -509,21 +488,11 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     protected fun setAppBarLayoutElevation(appBarLayout: AppBarLayout) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val stateListAnimator = AnimatorInflater.loadStateListAnimator(this, R.animator.appbar_layout_elevation)
-            appBarLayout.stateListAnimator = stateListAnimator
-        } else {
-            appBarLayout.elevation = resources.getDimension(R.dimen.default_elevation_height)
-        }
+        appBarLayout.stateListAnimator = AnimatorInflater.loadStateListAnimator(this, R.animator.appbar_layout_elevation)
     }
 
     protected fun removeAppBarLayoutElevation(appBarLayout: AppBarLayout) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val stateListAnimator = AnimatorInflater.loadStateListAnimator(this, R.animator.appbar_layout_no_elevation)
-            appBarLayout.stateListAnimator = stateListAnimator
-        } else {
-            appBarLayout.elevation = 0.0f
-        }
+        appBarLayout.stateListAnimator = AnimatorInflater.loadStateListAnimator(this, R.animator.appbar_layout_no_elevation)
     }
 
     protected fun expandAppBar(appBarLayout: AppBarLayout, isAnimate: Boolean) {

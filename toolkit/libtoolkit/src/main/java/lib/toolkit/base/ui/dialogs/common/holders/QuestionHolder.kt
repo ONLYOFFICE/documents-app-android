@@ -14,13 +14,13 @@ class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         super.show()
         dialog.dialog!!.setCanceledOnTouchOutside(false)
         dialog.view?.post {
-            mFrameLayout.visibility = View.GONE
-            mAcceptView.isEnabled = true
-            mCancelView.isEnabled = true
-            if (tintedAcceptTags.contains(mTag)) {
+            frameLayout.visibility = View.GONE
+            acceptView.isEnabled = true
+            cancelView.isEnabled = true
+            if (tintedAcceptTags.contains(holderTag)) {
                 val color = dialog.requireContext().getColor(R.color.colorLightRed)
-                mAcceptView.setTextColor(color)
-                mAcceptView.rippleColor = ColorStateList.valueOf(color).withAlpha(30)
+                acceptView.setTextColor(color)
+                acceptView.rippleColor = ColorStateList.valueOf(color).withAlpha(30)
             }
         }
     }
@@ -30,32 +30,32 @@ class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     inner class Builder {
 
         fun setTag(value: String?): Builder {
-            mTag = value
+            holderTag = value
             return this
         }
 
         fun setTopTitle(value: String?): Builder {
-            mTopTitle = value
+            topTitle = value
             return this
         }
 
         fun setQuestion(value: String?): Builder {
-            mBottomTitle = value
+            bottomTitle = value
             return this
         }
 
         fun setAcceptTitle(value: String?): Builder {
-            mAcceptTitle = value
+            acceptTitle = value
             return this
         }
 
         fun setCancelTitle(value: String?): Builder {
-            mCancelTitle = value
+            cancelTitle = value
             return this
         }
 
-        fun setIsBackPress(isBackPress: Boolean = true): Builder {
-            mIsBackPress = isBackPress
+        fun setIsBackPress(isBack: Boolean = true): Builder {
+            isBackPress = isBack
             return this
         }
 

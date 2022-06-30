@@ -36,7 +36,7 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    mCameraUri?.let { uri ->
+                    cameraUri?.let { uri ->
                         presenter.upload(uri, null, KEY_UPLOAD)
                     }
                 }

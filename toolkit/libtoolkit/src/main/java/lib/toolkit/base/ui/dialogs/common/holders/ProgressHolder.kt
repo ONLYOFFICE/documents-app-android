@@ -19,95 +19,95 @@ class ProgressHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         private const val TAG_MAX_PROGRESS_VALUE = "TAG_MAX_PROGRESS_VALUE"
     }
 
-    private lateinit var mLayout: ConstraintLayout
-    private lateinit var mProgressBarView: ProgressBar
-    private lateinit var mProgressTextView: AppCompatTextView
+    private var layout: ConstraintLayout? = null
+    private var progressBarView: ProgressBar? = null
+    private var progressTextView: AppCompatTextView? = null
 
     @ColorRes
-    private var mProgressColor = 0
-    private var mProgress = 0
-    private var mMaxProgress = 0
+    private var progressColor = 0
+    private var progress = 0
+    private var maxProgress = 0
 
     @SuppressLint("ResourceType")
     override fun init() {
         super.init()
         dialog.isCancelable = false
         dialog.view?.apply {
-            mLayout = findViewById(R.id.dialogCommonProgressLayout)
-            mProgressBarView = findViewById(R.id.dialogCommonProgressProgressBar)
-            mProgressTextView = findViewById(R.id.dialogCommonProgressText)
+            layout = findViewById(R.id.dialogCommonProgressLayout)
+            progressBarView = findViewById(R.id.dialogCommonProgressProgressBar)
+            progressTextView = findViewById(R.id.dialogCommonProgressText)
         }
     }
 
     @SuppressLint("ResourceType")
     override fun show() {
         super.show()
-        mLayout.visibility = View.VISIBLE
+        layout?.visibility = View.VISIBLE
         setViewProgress()
 
-        if (mProgressColor > 0) {
-            UiUtils.setProgressBarColorTint(mProgressBarView, mProgressColor)
+        if (progressColor > 0) {
+            UiUtils.setProgressBarColorTint(checkNotNull(progressBarView), progressColor)
         }
     }
 
     override fun hide() {
         super.hide()
-        mLayout.visibility = View.GONE
+        layout?.visibility = View.GONE
     }
 
     override fun save(state: Bundle) {
         super.save(state)
-        state?.let {
-            it.putInt(TAG_PROGRESS_COLOR, mProgressColor)
-            it.putInt(TAG_PROGRESS_VALUE, mProgress)
-            it.putInt(TAG_MAX_PROGRESS_VALUE, mMaxProgress)
+        state.let {
+            it.putInt(TAG_PROGRESS_COLOR, progressColor)
+            it.putInt(TAG_PROGRESS_VALUE, progress)
+            it.putInt(TAG_MAX_PROGRESS_VALUE, maxProgress)
         }
     }
 
     override fun restore(state: Bundle) {
         super.restore(state)
-        state?.let {
-            mProgressColor = it.getInt(TAG_PROGRESS_COLOR)
-            mProgress = it.getInt(TAG_PROGRESS_VALUE)
-            mMaxProgress = it.getInt(TAG_MAX_PROGRESS_VALUE)
+        state.let {
+            progressColor = it.getInt(TAG_PROGRESS_COLOR)
+            progress = it.getInt(TAG_PROGRESS_VALUE)
+            maxProgress = it.getInt(TAG_MAX_PROGRESS_VALUE)
         }
     }
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.PROGRESS
 
     private fun setViewProgress() {
-        if (mProgressBarView != null && mProgressTextView != null) {
-            mProgressBarView.max = mMaxProgress
-            mProgressBarView.progress = mProgress
-            mProgressTextView.text = "$mProgress %"
+        if (progressBarView != null && progressTextView != null) {
+            progressBarView?.max = maxProgress
+            progressBarView?.progress = progress
+            progressTextView?.text = "$progress %"
         }
     }
 
     inner class Builder {
 
         fun setTag(value: String?): Builder {
-            mTag = value
+            holderTag = value
             return this
         }
 
         fun setTopTitle(value: String?): Builder {
-            mTopTitle = value
+            topTitle = value
             return this
         }
 
         fun setCancelTitle(value: String?): Builder {
-            mCancelTitle = value
+            cancelTitle = value
             return this
         }
 
         fun setProgressColor(@ColorRes colorRes: Int): Builder {
-            mProgressColor = colorRes
+            progressColor = colorRes
             return this
         }
 
         fun setProgress(maxProgress: Int, progress: Int): Builder {
-            mProgress = progress
-            mMaxProgress = maxProgress
+            this@ProgressHolder.progress = progress
+            this@ProgressHolder.maxProgress = maxProgress
             return this
         }
 

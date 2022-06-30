@@ -21,10 +21,10 @@ object Koin {
 }
 
 object AndroidX {
-    private const val androidxVersion = "1.4.1"
+    private const val androidxVersion = "1.4.2"
     private const val recyclerViewVersion = "1.2.1"
     private const val recyclerViewSelectionVersion = "1.1.0"
-    private const val kotlinKtxVersion = "1.7.0"
+    private const val kotlinKtxVersion = "1.8.0"
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
@@ -32,7 +32,7 @@ object AndroidX {
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     const val recyclerViewSelection = "androidx.recyclerview:recyclerview-selection:$recyclerViewSelectionVersion"
     const val cardView = "androidx.cardview:cardview:1.0.0"
-    const val constraint = "androidx.constraintlayout:constraintlayout:2.1.3"
+    const val constraint = "androidx.constraintlayout:constraintlayout:2.1.4"
     const val ktx = "androidx.core:core-ktx:$kotlinKtxVersion"
     const val biometric = "androidx.biometric:biometric:1.1.0"
 
@@ -62,9 +62,9 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "20.1.0"
+    private const val playServicesAuthVersion = "20.2.0"
     private const val playCoreVersion = "1.10.3"
-    private const val materialVersion = "1.5.0"
+    private const val materialVersion = "1.6.1"
     private const val gsonVersion = "2.8.6"
     private const val safetynetVersion = "18.0.1"
 
@@ -78,10 +78,10 @@ object Google {
 }
 
 object Firebase {
-    private const val firebaseCoreVersion = "20.1.2"
-    private const val firebaseConfigVersion = "21.0.2"
-    private const val firebaseMessagingVersion = "23.0.3"
-    private const val firebaseCrashlyticsVersion = "18.2.9"
+    private const val firebaseCoreVersion = "21.0.0"
+    private const val firebaseConfigVersion = "21.1.0"
+    private const val firebaseMessagingVersion = "23.0.5"
+    private const val firebaseCrashlyticsVersion = "18.2.11"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"

@@ -20,7 +20,6 @@ import app.editors.manager.mvp.views.main.DocsWebDavView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +48,6 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
 
     private val exportReceiver: ExportReceiver = ExportReceiver()
     private var tempFile: CloudFile? = null
-    private var downloadDisposable: Disposable? = null
 
     init {
         App.getApp().appComponent.inject(this)

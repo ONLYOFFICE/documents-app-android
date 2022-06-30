@@ -33,7 +33,7 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
             when(requestCode) {
 
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    mCameraUri?.let { uri ->
+                    cameraUri?.let { uri ->
                         presenter.upload(uri, null, KEY_UPLOAD)
                     }
                 }

@@ -45,20 +45,10 @@ class MessageService : FirebaseMessagingService() {
                            .build()
                    )
                }
-               message.data.containsKey("fileId") || message.data.containsKey("folderId") -> {
-                   val fileId = message.data["fileId"]?.toInt()
-                   val folderId = message.data["folderId"]?.toInt()
+               message.data.containsKey("data") -> {
+                   val model = message.data["data"]?.replace("#", "")
 
-                   val model = OpenDataModel(
-                       file = OpenFileModel(
-                           id = fileId
-                       ),
-                       folder = OpenFolderModel(
-                           id = folderId
-                       )
-                   )
-
-                   val uri = Uri.parse("oodocuments://openfile?data=${Json{ encodeDefaults = true}.encodeToString(model)}&push=true#Intent;scheme=oodocuments;package=com.onlyoffice.documents;end;")
+                   val uri = Uri.parse("oodocuments://openfile?data=${model}&push=true#Intent;scheme=oodocuments;package=com.onlyoffice.documents;end;")
 
                     val intent = Intent(Intent.ACTION_VIEW).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -100,6 +90,7 @@ class MessageService : FirebaseMessagingService() {
             applicationContext.appComponent.accountsDao.getAccounts().forEach { account ->
                 val token: String? = AccountUtils.getToken(applicationContext, account.getAccountName())
                 if (token != null && token.isNotEmpty()) {
+                    appComponent.networkSettings.setSettingsByAccount(account)
                     applicationContext.loginService.setFirebaseToken(token, p0)
                         .subscribe()
                 } else {

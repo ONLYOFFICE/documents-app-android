@@ -9,7 +9,7 @@ class InfoHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     override fun show() {
         super.show()
-        mFrameLayout.visibility = View.GONE
+        frameLayout.visibility = View.GONE
     }
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.INFO
@@ -17,22 +17,22 @@ class InfoHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     inner class Builder {
 
         fun setTag(value: String?): Builder {
-            mTag = value
+            holderTag = value
             return this
         }
 
         fun setTopTitle(value: String?): Builder {
-            mTopTitle = value
+            topTitle = value
             return this
         }
 
         fun setBottomTitle(value: String?): Builder {
-            mBottomTitle = value
+            bottomTitle = value
             return this
         }
 
         fun setCancelTitle(value: String?): Builder {
-            mCancelTitle = value
+            cancelTitle = value
             return this
         }
 

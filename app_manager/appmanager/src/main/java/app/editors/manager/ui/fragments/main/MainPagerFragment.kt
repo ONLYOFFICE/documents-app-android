@@ -15,9 +15,6 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.models.OpenDataModel
-import app.editors.manager.mvp.models.models.OpenFileModel
-import app.editors.manager.mvp.models.models.OpenFolderModel
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerState
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -28,8 +25,6 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.factory.TabFragmentFactory
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -124,18 +119,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private fun checkBundle() {
         val bundle = requireActivity().intent.extras
         var data = requireActivity().intent.data
-        if (bundle != null && (bundle.containsKey("fileId") || bundle.containsKey("folderId"))){
-            val fileId = bundle.getString("fileId")?.toInt()
-            val folderId = bundle.getString("folderId")?.toInt()
-            val model = OpenDataModel(
-                file = OpenFileModel(
-                    id = fileId
-                ),
-                folder = OpenFolderModel(
-                    id = folderId
-                )
-            )
-            data = Uri.parse("oodocuments://openfile?data=${Json{ encodeDefaults = true}.encodeToString(model)}&push=true")
+        if (bundle != null && bundle.containsKey("data")){
+            val model = bundle.getString("data")
+            data = Uri.parse("oodocuments://openfile?data=${model}&push=true")
         }
         presenter.getState(data)
     }
@@ -330,6 +316,12 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 )
             )
         }
+        fragments.add(
+            ViewPagerAdapter.Container(
+                DocsTrashFragment.newInstance(stringAccount),
+                getString(R.string.main_pager_docs_trash)
+            )
+        )
         setAdapter(fragments)
     }
 

@@ -335,6 +335,22 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     private fun init() {
         presenter.checkBackStack()
+        // Check shortcut
+        val bundle = requireActivity().intent.extras
+        if (bundle != null && bundle.containsKey(KEY_SHORTCUT)) {
+            when (bundle.getString(KEY_SHORTCUT)) {
+                LocalContentTools.DOCX_EXTENSION -> {
+                    onActionButtonClick(ActionBottomDialog.Buttons.DOC)
+                }
+                LocalContentTools.XLSX_EXTENSION -> {
+                    onActionButtonClick(ActionBottomDialog.Buttons.SHEET)
+                }
+                LocalContentTools.PPTX_EXTENSION -> {
+                    onActionButtonClick(ActionBottomDialog.Buttons.PRESENTATION)
+                }
+            }
+            requireActivity().intent.extras?.clear()
+        }
     }
 
     private fun makePhoto() {
@@ -346,6 +362,14 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             openFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
         } catch (e: ActivityNotFoundException) {
             onError(e.message)
+        }
+    }
+
+    override fun onError(message: String?) {
+        if(message?.contains(getString(R.string.errors_import_local_file_desc)) == true) {
+            showSnackBar(R.string.errors_import_local_file)
+        } else {
+            super.onError(message)
         }
     }
 
@@ -427,6 +451,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         private const val TAG_STORAGE_IMPORT = "TAG_STORAGE_IMPORT"
 
         private const val REQUEST_STORAGE_IMPORT = 10007
+
+        private const val KEY_SHORTCUT = "create_type"
 
         fun newInstance(): DocsOnDeviceFragment {
             return DocsOnDeviceFragment()

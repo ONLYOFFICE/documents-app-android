@@ -250,11 +250,16 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         savedInstanceState?.let {
             viewBinding.appBarToolbar.bind(Json.decodeFromString(it.getString(ACCOUNT_KEY) ?: ""))
         } ?: run {
-            presenter.init()
-            accountOnline?.let {
-                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
-            } ?: run {
+            val isShortcut = intent?.extras?.containsKey("create_type") == true
+            presenter.init(isShortcut = isShortcut)
+            if (isShortcut) {
                 viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
+            } else {
+                accountOnline?.let {
+                    viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+                } ?: run {
+                    viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
+                }
             }
         }
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)

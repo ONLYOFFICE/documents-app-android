@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
-import androidx.annotation.ColorRes
+import com.google.android.material.color.MaterialColors
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -13,7 +13,6 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     companion object {
-        private const val TAG_PROGRESS_COLOR = "TAG_PROGRESS_COLOR"
         private const val TAG_PROGRESS_TYPE = "TAG_PROGRESS_TYPE"
     }
 
@@ -21,12 +20,10 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         CIRCLE, HORIZONTAL
     }
 
-    private lateinit var rootLayout: FrameLayout
-    private lateinit var progressBarView: ProgressBar
+    private var rootLayout: FrameLayout? = null
+    private var progressBarView: ProgressBar? = null
 
-    @ColorRes
-    private var mProgressColor = 0
-    private var mProgressType: ProgressType =
+    private var progressType: ProgressType =
         ProgressType.HORIZONTAL
 
     @SuppressLint("ResourceType")
@@ -35,7 +32,7 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         dialog.dialog?.setCanceledOnTouchOutside(false)
         dialog.view?.apply {
             rootLayout = findViewById(R.id.dialogCommonWaitingLayout)
-            progressBarView = when (mProgressType) {
+            progressBarView = when (progressType) {
                 ProgressType.CIRCLE -> {
                     findViewById(R.id.dialogCommonWaitingProgressBarCircle)
                 }
@@ -50,33 +47,28 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     @SuppressLint("ResourceType")
     override fun show() {
         super.show()
-        rootLayout.visibility = View.VISIBLE
-        progressBarView.visibility = View.VISIBLE
+        rootLayout?.visibility = View.VISIBLE
+        progressBarView?.visibility = View.VISIBLE
 
-        if (mProgressColor > 0) {
-            UiUtils.setProgressBarColorDrawable(progressBarView, mProgressColor)
-        }
+        UiUtils.setProgressBarColorDrawable(
+            progressBarView,
+            MaterialColors.getColor(checkNotNull(progressBarView), androidx.appcompat.R.attr.colorPrimary)
+        )
     }
 
     override fun hide() {
         super.hide()
-        rootLayout.visibility = View.GONE
+        rootLayout?.visibility = View.GONE
     }
 
     override fun save(state: Bundle) {
         super.save(state)
-        state.let {
-            it.putInt(TAG_PROGRESS_COLOR, mProgressColor)
-            it.putSerializable(TAG_PROGRESS_TYPE, mProgressType)
-        }
+        state.putSerializable(TAG_PROGRESS_TYPE, progressType)
     }
 
     override fun restore(state: Bundle) {
         super.restore(state)
-        state?.let {
-            mProgressColor = it.getInt(TAG_PROGRESS_COLOR)
-            mProgressType = it.getSerializable(TAG_PROGRESS_TYPE) as ProgressType
-        }
+        progressType = state.getSerializable(TAG_PROGRESS_TYPE) as ProgressType
     }
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.WAITING
@@ -84,42 +76,37 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     inner class Builder {
 
         fun setTag(value: String?): Builder {
-            mTag = value
+            holderTag = value
             return this
         }
 
         fun setTopTitle(value: String?): Builder {
-            mTopTitle = value
+            topTitle = value
             return this
         }
 
         fun setCancelTitle(value: String?): Builder {
-            mCancelTitle = value
-            return this
-        }
-
-        fun setProgressColor(@ColorRes colorRes: Int): Builder {
-            mProgressColor = colorRes
+            cancelTitle = value
             return this
         }
 
         fun setProgressType(progressType: ProgressType): Builder {
-            mProgressType = progressType
+            this@WaitingHolder.progressType = progressType
             return this
         }
 
         fun setTextColor(textColor: Int): Builder {
-            mTextColor = textColor
+            this@WaitingHolder.textColor = textColor
             return this
         }
 
         fun setTopTitleGravity(gravity: Int): Builder {
-            mTopTitleGravity = gravity
+            topTitleGravity = gravity
             return this
         }
 
-        fun setIsBackPress(isBackPress: Boolean = true): Builder {
-            mIsBackPress = isBackPress
+        fun setIsBackPress(isBack: Boolean = true): Builder {
+            isBackPress = isBack
             return this
         }
 

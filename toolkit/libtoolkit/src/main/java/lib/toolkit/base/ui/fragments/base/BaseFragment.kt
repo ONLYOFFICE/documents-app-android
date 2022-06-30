@@ -45,9 +45,22 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
 
     protected var toolbarTitle: String? = null
 
-    @JvmField
-    protected var mCameraUri: Uri? = null
+    protected var cameraUri: Uri? = null
 
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            baseActivity = context as BaseActivity
+            baseActivity.addDialogListener(this)
+            addOnDispatchTouchEvent()
+        } catch (e: ClassCastException) {
+            throw RuntimeException(
+                BaseFragment::class.java.simpleName + " - must implement - " +
+                        BaseActivity::class.java.simpleName
+            )
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,7 +70,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         toolbarTitle?.let { outState.putString(TAG_TITLE, it) }
-        mCameraUri?.let { outState.putParcelable(TAG_CAMERA, it) }
+        cameraUri?.let { outState.putParcelable(TAG_CAMERA, it) }
     }
 
     override fun onBackPressed(): Boolean {
@@ -82,9 +95,6 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected open fun init(view: View, savedInstanceState: Bundle?) {
-        if (lifecycle.currentState == Lifecycle.State.CREATED) {
-            baseActivity.addDialogListener(this)
-        }
         toast = UiUtils.getToast(requireActivity())
         restoreStates(savedInstanceState)
     }
@@ -96,7 +106,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
             }
 
             if (it.containsKey(TAG_CAMERA)) {
-                mCameraUri = savedInstanceState.getParcelable(TAG_CAMERA)
+                cameraUri = savedInstanceState.getParcelable(TAG_CAMERA)
             }
         }
     }
@@ -346,19 +356,6 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     protected val isLandscape: Boolean
         get() = UiUtils.isLandscape(requireContext())
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            baseActivity = context as BaseActivity
-            addOnDispatchTouchEvent()
-        } catch (e: ClassCastException) {
-            throw RuntimeException(
-                BaseFragment::class.java.simpleName + " - must implement - " +
-                        BaseActivity::class.java.simpleName
-            )
-        }
-    }
-
     /*
     * Keyboard
     * */
@@ -439,7 +436,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     * */
     @SuppressLint("MissingPermission")
     protected fun showCameraActivity(name: String) {
-        mCameraUri = ActivitiesUtils.showCamera(this, BaseActivity.REQUEST_ACTIVITY_CAMERA, name)
+        cameraUri = ActivitiesUtils.showCamera(this, BaseActivity.REQUEST_ACTIVITY_CAMERA, name)
     }
 
     @SuppressLint("MissingPermission")

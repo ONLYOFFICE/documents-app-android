@@ -19,7 +19,7 @@ data class DriveItemValue(
     val createdBy: DriveItemOperation,
     val lastModifiedBy: DriveItemOperation? = null,
     val parentReference: DriveItemParentReference,
-    val fileSystemInfo: DriveItemFileSystemInfo,
+    val fileSystemInfo: DriveItemFileSystemInfo? = null,
     val folder: DriveItemFolder? = null,
     val file: DriveItemFile? = null,
     val specialFolder: DriveItemSpecialFolder? = null

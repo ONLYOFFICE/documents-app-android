@@ -12,7 +12,6 @@ import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
@@ -73,7 +72,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    mCameraUri?.let { uri ->
+                    cameraUri?.let { uri ->
                         cloudPresenter.upload(uri, null)
                     }
                 }
@@ -182,7 +181,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             )
             ContextBottomDialog.Buttons.EXTERNAL -> {
                 setContextDialogExternalLinkEnable(false)
-                cloudPresenter.externalLink
+                cloudPresenter.saveExternalLinkToClipboard()
             }
             ContextBottomDialog.Buttons.SHARE_DELETE -> showQuestionDialog(
                 getString(R.string.dialogs_question_share_remove),

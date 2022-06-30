@@ -18,6 +18,9 @@ import app.editors.manager.mvp.models.explorer.Current
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.views.main.DocsRecentView
+import app.editors.manager.storages.dropbox.managers.providers.DropboxFileProvider
+import app.editors.manager.storages.googledrive.managers.providers.GoogleDriveFileProvider
+import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -343,12 +346,43 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                         }
                     } else if (recentAccount.isWebDav) {
                         openWebDavFile(recent, position)
+                    } else if (recentAccount.isDropbox || recentAccount.isGoogleDrive || recentAccount.isOneDrive) {
+                        openStorageFile(recent = recent, recentAccount)
                     } else {
                         openFile(recent)
                     }
                 }
 
             }
+        }
+    }
+
+    private fun openStorageFile(recent: Recent, recentAccount: CloudAccount) {
+        when {
+            recentAccount.isOneDrive -> OneDriveFileProvider()
+            recentAccount.isGoogleDrive -> GoogleDriveFileProvider()
+            recentAccount.isDropbox -> DropboxFileProvider()
+            else -> null
+        }?.let { provider ->
+            showDialogWaiting(TAG_DIALOG_CANCEL_DOWNLOAD)
+            val cloudFile = CloudFile().apply {
+                title = recent.name
+                id = recent.idFile
+                fileExst = StringUtils.getExtensionFromPath(recent.name)
+                pureContentLength = recent.size
+            }
+            downloadDisposable = provider.fileInfo(cloudFile)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { file: CloudFile? ->
+                        viewState.onDialogClose()
+                        file?.let { addRecent(it) }
+                        viewState.onOpenLocalFile(file)
+                    }
+                ) { throwable: Throwable -> fetchError(throwable) }
+        } ?: run {
+            viewState.onError(context.getString(R.string.error_recent_enter_account))
         }
     }
 

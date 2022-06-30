@@ -17,7 +17,7 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 
 abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewHolder,
-        View.OnClickListener {
+    View.OnClickListener {
 
     companion object {
         protected const val TAG_USER_TAG = "TAG_USER_TAG"
@@ -27,21 +27,21 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
         protected const val TAG_CANCEL_TITLE = "TAG_CANCEL_TITLE"
     }
 
-    protected var mOnClickListener: CommonDialog.OnClickListener? = null
-    protected lateinit var mFrameLayout: FrameLayout
-    protected lateinit var mTopTitleView: AppCompatTextView
-    protected lateinit var mBottomTitleView: AppCompatTextView
-    protected lateinit var mAcceptView: MaterialButton
-    protected lateinit var mCancelView: MaterialButton
+    protected var onClickListener: CommonDialog.OnClickListener? = null
+    protected lateinit var frameLayout: FrameLayout
+    protected lateinit var topTitleView: AppCompatTextView
+    protected lateinit var bottomTitleView: AppCompatTextView
+    protected lateinit var acceptView: MaterialButton
+    protected lateinit var cancelView: MaterialButton
 
-    protected var mTag: String? = null
-    protected var mTopTitle: String? = null
-    protected var mBottomTitle: String? = null
-    protected var mAcceptTitle: String? = null
-    protected var mCancelTitle: String? = null
-    protected var mTextColor: Int = 0
-    protected var mTopTitleGravity: Int = Gravity.START
-    protected var mIsBackPress: Boolean = true
+    protected var holderTag: String? = null
+    protected var topTitle: String? = null
+    protected var bottomTitle: String? = null
+    protected var acceptTitle: String? = null
+    protected var cancelTitle: String? = null
+    protected var textColor: Int = 0
+    protected var topTitleGravity: Int = Gravity.START
+    override var isBackPress: Boolean = true
 
     protected val colorPrimary: Int
         get() {
@@ -53,10 +53,10 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     override fun onClick(v: View) {
         when (v.id) {
             R.id.dialogCommonAcceptButton -> {
-                mOnClickListener?.onAcceptClick(getType(), getValue(), mTag)
+                onClickListener?.onAcceptClick(getType(), getValue(), holderTag)
             }
             R.id.dialogCommonCancelButton -> {
-                mOnClickListener?.onCancelClick(getType(), mTag)
+                onClickListener?.onCancelClick(getType(), holderTag)
                 hide()
             }
         }
@@ -65,92 +65,88 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     override fun init() {
         dialog.isCancelable = true
         dialog.view?.apply {
-            mFrameLayout = findViewById(R.id.dialogCommonFrameLayout)
-            mTopTitleView = findViewById(R.id.dialogCommonTopTitleText)
-            mBottomTitleView = findViewById(R.id.dialogCommonBottomTitleText)
-            mAcceptView = findViewById(R.id.dialogCommonAcceptButton)
-            mCancelView = findViewById(R.id.dialogCommonCancelButton)
+            frameLayout = findViewById(R.id.dialogCommonFrameLayout)
+            topTitleView = findViewById(R.id.dialogCommonTopTitleText)
+            bottomTitleView = findViewById(R.id.dialogCommonBottomTitleText)
+            acceptView = findViewById(R.id.dialogCommonAcceptButton)
+            cancelView = findViewById(R.id.dialogCommonCancelButton)
         }
         setTint()
     }
 
     override fun show() {
-        mFrameLayout.visibility = View.VISIBLE
-        mAcceptView.setOnClickListener(this)
-        mCancelView.setOnClickListener(this)
+        frameLayout.visibility = View.VISIBLE
+        acceptView.setOnClickListener(this)
+        cancelView.setOnClickListener(this)
 
-        if (mTopTitle.isNullOrBlank()) {
-            mTopTitleView.visibility = View.GONE
+        if (topTitle.isNullOrBlank()) {
+            topTitleView.visibility = View.GONE
         } else {
-            mTopTitleView.visibility = View.VISIBLE
-            mTopTitleView.text = mTopTitle
-            mTopTitleView.gravity = mTopTitleGravity
+            topTitleView.visibility = View.VISIBLE
+            topTitleView.text = topTitle
+            topTitleView.gravity = topTitleGravity
         }
 
-        if (mBottomTitle.isNullOrBlank()) {
-            mBottomTitleView.visibility = View.GONE
+        if (bottomTitle.isNullOrBlank()) {
+            bottomTitleView.visibility = View.GONE
         } else {
-            mBottomTitleView.visibility = View.VISIBLE
-            mBottomTitleView.text = mBottomTitle
+            bottomTitleView.visibility = View.VISIBLE
+            bottomTitleView.text = bottomTitle
         }
 
-        if (mAcceptTitle.isNullOrBlank()) {
-            mAcceptView.visibility = View.GONE
+        if (acceptTitle.isNullOrBlank()) {
+            acceptView.visibility = View.GONE
         } else {
-            mAcceptView.visibility = View.VISIBLE
-            mAcceptView.text = mAcceptTitle
+            acceptView.visibility = View.VISIBLE
+            acceptView.text = acceptTitle
         }
 
-        if (mCancelTitle.isNullOrBlank()) {
-            mCancelView.visibility = View.GONE
+        if (cancelTitle.isNullOrBlank()) {
+            cancelView.visibility = View.GONE
         } else {
-            mCancelView.visibility = View.VISIBLE
-            mCancelView.text = mCancelTitle
+            cancelView.visibility = View.VISIBLE
+            cancelView.text = cancelTitle
         }
 
         dialog.view?.let { TransitionManager.beginDelayedTransition(it as ViewGroup, Fade()) }
     }
 
     override fun hide() {
-        mOnClickListener = null
+        onClickListener = null
     }
 
     override fun setClickListener(listener: CommonDialog.OnClickListener?) {
-        mOnClickListener = listener
+        onClickListener = listener
     }
 
     override fun save(state: Bundle) {
         state.let { bundle ->
-            bundle.putString(TAG_USER_TAG, mTag)
-            bundle.putString(TAG_TOP_TITLE, mTopTitle)
-            bundle.putString(TAG_BOTTOM_TITLE, mBottomTitle)
-            bundle.putString(TAG_ACCEPT_TITLE, mAcceptTitle)
-            bundle.putString(TAG_CANCEL_TITLE, mCancelTitle)
+            bundle.putString(TAG_USER_TAG, holderTag)
+            bundle.putString(TAG_TOP_TITLE, topTitle)
+            bundle.putString(TAG_BOTTOM_TITLE, bottomTitle)
+            bundle.putString(TAG_ACCEPT_TITLE, acceptTitle)
+            bundle.putString(TAG_CANCEL_TITLE, cancelTitle)
         }
     }
 
     override fun restore(state: Bundle) {
         state.let { bundle ->
-            mTag = bundle.getString(TAG_USER_TAG)
-            mTopTitle = bundle.getString(TAG_TOP_TITLE)
-            mBottomTitle = bundle.getString(TAG_BOTTOM_TITLE)
-            mAcceptTitle = bundle.getString(TAG_ACCEPT_TITLE)
-            mCancelTitle = bundle.getString(TAG_CANCEL_TITLE)
+            holderTag = bundle.getString(TAG_USER_TAG)
+            topTitle = bundle.getString(TAG_TOP_TITLE)
+            bottomTitle = bundle.getString(TAG_BOTTOM_TITLE)
+            acceptTitle = bundle.getString(TAG_ACCEPT_TITLE)
+            cancelTitle = bundle.getString(TAG_CANCEL_TITLE)
         }
     }
 
     override fun getTag(): String? {
-        return mTag
-    }
-
-    override fun isBackPress(): Boolean {
-        return mIsBackPress
+        return holderTag
     }
 
     protected open fun setTint() {
         val colorDisabled = dialog.requireContext().getColor(R.color.colorOnSurface)
 
-        arrayOf(mCancelView, mAcceptView).forEach { view ->
+        arrayOf(cancelView, acceptView).forEach { view ->
             view.rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(colorPrimary, 60))
             view.setTextColor(
                 ColorStateList(
