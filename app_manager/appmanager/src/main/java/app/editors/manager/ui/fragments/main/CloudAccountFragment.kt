@@ -32,6 +32,7 @@ import app.editors.manager.ui.adapters.AccountKeyProvider
 import app.editors.manager.ui.adapters.CloudAccountAdapter
 import app.editors.manager.ui.dialogs.AccountContextDialog
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -71,9 +72,7 @@ class CloudAccountFragment : BaseAppFragment(),
 
     private var selectedTracker: SelectionTracker<String>? = null
 
-    private val accountDialogFragment: ICloudAccountDialogFragment?
-        get() = requireActivity().supportFragmentManager
-            .findFragmentByTag(CloudAccountDialogFragment.TAG) as? ICloudAccountDialogFragment
+    private val accountDialogFragment: IBaseDialogFragment? get() = getDialogFragment()
 
     private val selectionObserver: SelectionTracker.SelectionObserver<String> = object :
         SelectionTracker.SelectionObserver<String>() {
@@ -191,8 +190,8 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.selectAll -> selectedTracker?.setItemsSelected(adapter?.getIds() ?: emptyList(), true)
-            R.id.deselect -> selectedTracker?.setItemsSelected(adapter?.getIds() ?: emptyList(), false)
+            R.id.selectAll -> selectedTracker?.setItemsSelected(adapter?.getIds().orEmpty(), true)
+            R.id.deselect -> selectedTracker?.setItemsSelected(adapter?.getIds().orEmpty(), false)
             R.id.deleteSelected -> presenter.deleteSelected(selectedTracker?.selection?.toList())
         }
         return true
@@ -249,8 +248,8 @@ class CloudAccountFragment : BaseAppFragment(),
     private fun setTabletToolbar() {
         accountDialogFragment?.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.selectAll -> selectedTracker?.setItemsSelected(adapter?.getIds() ?: emptyList(), true)
-                R.id.deselect -> selectedTracker?.setItemsSelected(adapter?.getIds() ?: emptyList(), false)
+                R.id.selectAll -> selectedTracker?.setItemsSelected(adapter?.getIds().orEmpty(), true)
+                R.id.deselect -> selectedTracker?.setItemsSelected(adapter?.getIds().orEmpty(), false)
                 R.id.deleteSelected -> presenter.deleteSelected(selectedTracker?.selection?.toList())
             }
             return@setOnMenuItemClickListener true
@@ -270,7 +269,6 @@ class CloudAccountFragment : BaseAppFragment(),
         if (isTablet) {
             accountDialogFragment?.setToolbarTitle(count)
             accountDialogFragment?.setToolbarNavigationIcon(false)
-            accountDialogFragment?.isSelectMode = true
         } else {
             setActionBarTitle(count)
         }
@@ -281,7 +279,6 @@ class CloudAccountFragment : BaseAppFragment(),
         if (isTablet) {
             accountDialogFragment?.setToolbarTitle(getString(R.string.cloud_accounts_title))
             accountDialogFragment?.setToolbarNavigationIcon(true)
-            accountDialogFragment?.isSelectMode = false
             selectedTracker?.clearSelection()
         } else {
             setActionBarTitle(getString(R.string.cloud_accounts_title))

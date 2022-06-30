@@ -89,8 +89,6 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
     private fun showMenu() {
         if (cloudPresenter.isSelectionMode) {
             deleteItem?.isVisible = true
-            restoreItem?.isVisible = true
-            copyItem?.isVisible = false
         } else {
             setActionBarTitle("")
             emptyTrashItem?.let { item ->

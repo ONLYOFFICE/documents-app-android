@@ -263,6 +263,10 @@
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
+            android:name=".ui.activities.main.FilterActivity"
+            android:theme="@style/NoActionBarTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"
             android:launchMode="singleTask"

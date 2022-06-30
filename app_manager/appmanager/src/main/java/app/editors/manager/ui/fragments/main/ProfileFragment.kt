@@ -17,6 +17,7 @@ import app.editors.manager.mvp.views.main.ProfileView
 import app.editors.manager.ui.adapters.ThirdpartyAdapter
 import app.editors.manager.ui.binders.ProfileItemBinder
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import lib.toolkit.base.managers.utils.StringUtils.getEncodedString
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
@@ -51,9 +52,7 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
 
     private var viewBinding: FragmentProfileLayoutBinding? = null
 
-    private val accountDialogFragment: ICloudAccountDialogFragment?
-        get() = requireActivity().supportFragmentManager
-            .findFragmentByTag(CloudAccountDialogFragment.TAG) as? ICloudAccountDialogFragment
+    private val accountDialogFragment: IBaseDialogFragment? get() = getDialogFragment()
 
     override fun onDestroyView() {
         super.onDestroyView()

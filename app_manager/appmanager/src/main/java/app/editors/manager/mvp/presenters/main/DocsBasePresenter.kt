@@ -16,6 +16,7 @@ import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.managers.providers.ProviderError
@@ -50,6 +51,7 @@ import moxy.MvpPresenter
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
+import java.lang.Runnable
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -172,8 +174,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, getArgs(null))
-                        .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError))
+                    provider.getFiles(id, mapOf<String, String>().putFilters())
+                        .doOnNext { it.filterType = preferenceTool.filter.type }
+                        .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
+                )
             }
         }
     }
@@ -183,7 +187,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         modelExplorerStack.currentId?.let { id ->
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, getArgs(filteringValue))
+                    provider.getFiles(id, getArgs(filteringValue).putFilters())
+                        .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer ->
                             modelExplorerStack.refreshStack(explorer)
                             updateViewsState()
@@ -208,10 +213,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected fun reverseSortOrder() {
         if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
-            viewState.onReverseSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_DESC)
         } else {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
-            viewState.onReverseSortOrder(ApiContract.Parameters.VAL_SORT_ORDER_ASC)
         }
     }
 
@@ -226,8 +229,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             modelExplorerStack.currentId?.let { id ->
                 filteringValue = value
                 fileProvider?.let { provider ->
-                    provider.getFiles(id, getArgs(value))
-                        .debounce(FILTERING_DELAY.toLong(), TimeUnit.MILLISECONDS)
+                    provider.getFiles(id, getArgs(value).putFilters())
+                        .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
+                        .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer ->
                             modelExplorerStack.setFilter(explorer)
                             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.SEARCH else
@@ -248,7 +252,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             }
 
             filterRun = Runnable { filter(value, false) }.apply {
-                handler.postDelayed(this, FILTERING_DELAY.toLong())
+                handler.postDelayed(this, FILTERING_DELAY)
             }
         }
     }
@@ -770,6 +774,18 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
+    protected open fun Map<String, String>.putFilters(): Map<String, String> {
+        val filter = preferenceTool.filter
+        return plus(
+            mutableMapOf<String, String>().apply {
+                put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
+                if (isFilteringMode)
+                    put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
+                if (App.getApp().accountOnline?.isPersonal() == false)
+                    put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)
+            })
+    }
+
     private fun cancelGetRequests() {
         disposable.clear()
     }
@@ -999,7 +1015,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         viewState.onStateMenuEnabled(!modelExplorerStack.isListEmpty)
     }
 
-    fun getBackStack(): Boolean {
+    open fun getBackStack(): Boolean {
         cancelGetRequests()
         when {
             isSelectionMode -> {
@@ -1146,7 +1162,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } ?: Explorer()
     }
 
-    fun openFolder(id: String?, position: Int) {
+    protected open fun openFolder(id: String?, position: Int) {
         modelExplorerStack.listPosition = position
         viewState.onSwipeEnable(true)
         getItemsById(id)
@@ -1461,6 +1477,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     val stack: Explorer?
         get() = modelExplorerStack.last()
 
+    val folderId: String?
+        get() = modelExplorerStack.currentId
+
     private fun setAccess(explorer: Explorer?): Explorer {
         return explorer?.also {
             explorer.files.map { file ->
@@ -1533,6 +1552,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
          * */
 
         private const val ITEMS_PER_PAGE = 25
-        private const val FILTERING_DELAY = 500
+        private const val FILTERING_DELAY = 500L
     }
 }

@@ -348,10 +348,8 @@
     <string name="toolbar_menu_search_result">Resultado de la búsqueda</string>
     <string name="toolbar_menu_sort_asc">Ascendente</string>
     <string name="toolbar_menu_sort_by">Ordenar por</string>
-    <string name="toolbar_menu_sort_date_modified">Fecha de última modificación</string>
     <string name="toolbar_menu_sort_desc">Descendente</string>
     <string name="toolbar_menu_sort_order">Orden de ordenar</string>
-    <string name="toolbar_menu_sort_owner">Propietario</string>
     <string name="toolbar_menu_sort_size">Tamaño</string>
     <string name="toolbar_menu_sort_title">Título</string>
     <string name="toolbar_menu_sort_type">Tipo</string>

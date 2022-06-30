@@ -346,10 +346,8 @@
     <string name="toolbar_menu_search_result">Risultati ricerca</string>
     <string name="toolbar_menu_sort_asc">Crescente</string>
     <string name="toolbar_menu_sort_by">Ordina per</string>
-    <string name="toolbar_menu_sort_date_modified">Ultima modifica</string>
     <string name="toolbar_menu_sort_desc">Decrescente</string>
     <string name="toolbar_menu_sort_order">Ordinamento</string>
-    <string name="toolbar_menu_sort_owner">Proprietario</string>
     <string name="toolbar_menu_sort_size">Dimensioni</string>
     <string name="toolbar_menu_sort_title">Titolo</string>
     <string name="toolbar_menu_sort_type">Tipo</string>
