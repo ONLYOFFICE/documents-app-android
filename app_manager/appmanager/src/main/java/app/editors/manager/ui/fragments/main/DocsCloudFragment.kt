@@ -12,6 +12,7 @@ import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
