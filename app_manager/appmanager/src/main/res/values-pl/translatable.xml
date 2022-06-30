@@ -346,10 +346,8 @@
     <string name="toolbar_menu_search_result">Wyniki wyszukiwania</string>
     <string name="toolbar_menu_sort_asc">Rosnąco</string>
     <string name="toolbar_menu_sort_by">Sortuj według</string>
-    <string name="toolbar_menu_sort_date_modified">Ostatnio modyfikowane</string>
     <string name="toolbar_menu_sort_desc">Malejąco</string>
     <string name="toolbar_menu_sort_order">Porządek sortowania</string>
-    <string name="toolbar_menu_sort_owner">Właściciel</string>
     <string name="toolbar_menu_sort_size">Rozmiar</string>
     <string name="toolbar_menu_sort_title">Tytuł</string>
     <string name="toolbar_menu_sort_type">Rodzaj</string>

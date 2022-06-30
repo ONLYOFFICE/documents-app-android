@@ -141,4 +141,5 @@ object Libs {
     const val documentFile = "androidx.documentfile:documentfile:1.0.1"
     const val pdfView = "com.github.TalbotGooday:AndroidPdfViewer:3.1.0-beta.3"
     const val colorPicker = "com.github.skydoves:colorpickerview:2.2.4"
+    const val dropboxSdk = "com.dropbox.core:dropbox-core-sdk:5.2.0"
 }

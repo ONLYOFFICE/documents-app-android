@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/accountsLayout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -17,13 +18,28 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorSurface"
-            android:theme="@style/MainToolbar" />
+            android:theme="@style/MainToolbar" >
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/toolbarButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"
+                android:minWidth="0dp"
+                android:text="@string/filter_button_reset"
+                android:textSize="16sp"
+                app:cornerRadius="8dp" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/frame_container"
-        android:layout_width="@dimen/accounts_dialog_fragment_width"
-        android:layout_height="@dimen/accounts_dialog_fragment_height" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

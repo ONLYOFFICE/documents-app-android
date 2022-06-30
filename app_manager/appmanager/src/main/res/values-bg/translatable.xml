@@ -319,10 +319,8 @@
     <string name="toolbar_menu_search_result">Резултат от търсенето</string>
     <string name="toolbar_menu_sort_asc">Възходящ</string>
     <string name="toolbar_menu_sort_by">Сортиране по</string>
-    <string name="toolbar_menu_sort_date_modified">Последно модифициран</string>
     <string name="toolbar_menu_sort_desc">Низходящо</string>
     <string name="toolbar_menu_sort_order">Ред на сортиране</string>
-    <string name="toolbar_menu_sort_owner">Собственик</string>
     <string name="toolbar_menu_sort_size">Размер</string>
     <string name="toolbar_menu_sort_title">Заглавие</string>
     <string name="toolbar_menu_sort_type">Тип</string>

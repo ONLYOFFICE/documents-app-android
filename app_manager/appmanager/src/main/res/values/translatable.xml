@@ -273,6 +273,7 @@
     <!-- Main toolbar menu -->
     <string name="toolbar_menu_search_result">Search result</string>
     <string name="toolbar_menu_search_hint">Search…</string>
+    <string name="toolbar_menu_search_view_hint">Enter your query</string>
     <string name="toolbar_menu_main_options">Options</string>
     <string name="toolbar_menu_main_share">Share</string>
     <string name="toolbar_menu_main_move">Move</string>
@@ -285,15 +286,16 @@
     <string name="toolbar_menu_main_deselect">Deselect</string>
     <string name="toolbar_menu_sort_by">Sort by</string>
     <string name="toolbar_menu_sort_order">Sort order</string>
-    <string name="toolbar_menu_sort_date_modified">Last modified</string>
+    <string name="toolbar_menu_sort_date_modified">Date</string>
     <string name="toolbar_menu_sort_title">Title</string>
     <string name="toolbar_menu_sort_type">Type</string>
     <string name="toolbar_menu_sort_size">Size</string>
-    <string name="toolbar_menu_sort_owner">Owner</string>
+    <string name="toolbar_menu_sort_owner">Author</string>
     <string name="toolbar_menu_sort_asc">Ascending</string>
     <string name="toolbar_menu_sort_desc">Descending</string>
     <string name="toolbar_menu_main_download">Download</string>
     <string name="toolbar_menu_main_open">Open</string>
+    <string name="toolbar_menu_main_filter">Filter</string>
 
     <!-- List context menu -->
     <string name="list_context_folder_name">Folder name</string>
@@ -304,6 +306,7 @@
     <string name="list_context_move">Move</string>
     <string name="list_context_create_copy">Copy</string>
     <string name="list_context_create_download">Download</string>
+    <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
     <string name="list_context_rename_success">Renamed successfully</string>
     <string name="list_context_delete">Delete</string>
@@ -347,6 +350,8 @@
     <string name="placeholder_media_error">Unable to load media</string>
     <string name="placeholder_try_again">Try again</string>
     <string name="placeholder_loading_files">Loading files…</string>
+    <string name="placeholder_loading_users">Loading users…</string>
+    <string name="placeholder_loading_groups">Loading groups…</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>
@@ -632,6 +637,28 @@
     <string name="app_settings_follow_the_system">Same as system</string>
     <string name="app_settings_light_theme">Light theme</string>
     <string name="app_settings_dark_theme">Dark theme</string>
+
+    <string name="filter_toolbar_title">Filters</string>
+    <string name="filter_toolbar_users_title">Select user</string>
+    <string name="filter_toolbar_groups_title">Select group</string>
+    <string name="filter_title_type">Type</string>
+    <string name="filter_title_author">Author</string>
+    <string name="filter_title_search">Search</string>
+    <string name="filter_type_folders">Folders</string>
+    <string name="filter_type_documents">Documents</string>
+    <string name="filter_type_presentations">Presentations</string>
+    <string name="filter_type_spreadsheets">Spreadsheets</string>
+    <string name="filter_type_images">Images</string>
+    <string name="filter_type_media">Media</string>
+    <string name="filter_type_archives">Archives</string>
+    <string name="filter_type_all">All files</string>
+    <string name="filter_author_users">Users</string>
+    <string name="filter_author_groups">Groups</string>
+    <string name="filter_author_owner">Me</string>
+    <string name="filter_exclude_subfolders">Exclude subfolders</string>
+    <string name="filter_show_results">Show %1$s results</string>
+    <string name="filter_button_reset">RESET</string>
+
     <string name="shortcut_new_doc">New document</string>
     <string name="shortcut_new_table">New table</string>
     <string name="shortcut_new_presentation">New presentation</string>

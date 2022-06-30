@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,15 +9,18 @@ import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentChooseCloudsBinding
 import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
 import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
+import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import javax.inject.Inject
 
 class CloudsFragment : BaseAppFragment() {
 
@@ -34,8 +38,16 @@ class CloudsFragment : BaseAppFragment() {
         }
     }
 
+    @Inject
+    lateinit var dropboxLoginHelper: DropboxLoginHelper
+
     private var isBack = false
     private var viewBinding: FragmentChooseCloudsBinding? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        App.getApp().appComponent.inject(this)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -103,12 +115,10 @@ class CloudsFragment : BaseAppFragment() {
             R.drawable.ic_storage_dropbox,
             R.string.storage_select_drop_box
         ) {
-            val storage = Storage(
-                ApiContract.Storage.DROPBOX,
-                BuildConfig.DROP_BOX_COM_CLIENT_ID,
-                BuildConfig.DROP_BOX_COM_REDIRECT_URL
-            )
-            showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
+            dropboxLoginHelper.startSignInActivity(this) {
+                MainActivity.show(requireContext())
+                requireActivity().finish()
+            }
         }
 
         viewBinding?.cloudsItemGoogleDrive?.bind(

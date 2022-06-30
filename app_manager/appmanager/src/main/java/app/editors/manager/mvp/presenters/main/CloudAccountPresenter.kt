@@ -3,6 +3,7 @@ package app.editors.manager.mvp.presenters.main
 import android.accounts.Account
 import android.net.Uri
 import android.os.Bundle
+import androidx.lifecycle.LifecycleOwner
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.copyWithToken
 import app.documents.core.login.LoginResponse
@@ -20,6 +21,7 @@ import app.editors.manager.app.loginService
 import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.presenters.login.BaseLoginPresenter
 import app.editors.manager.mvp.views.main.CloudAccountView
+import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -34,6 +36,7 @@ import lib.toolkit.base.managers.utils.ActivitiesUtils
 import moxy.InjectViewState
 import okhttp3.Credentials
 import retrofit2.HttpException
+import javax.inject.Inject
 
 sealed class CloudAccountState {
     class AccountLoadedState(val account: List<CloudAccount>, val state: Bundle?) : CloudAccountState()
@@ -63,6 +66,9 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     companion object {
         val TAG: String = CloudAccountPresenter::class.java.simpleName
     }
+
+    @Inject
+    lateinit var dropboxLoginHelper: DropboxLoginHelper
 
     init {
         App.getApp().appComponent.inject(this)
@@ -179,8 +185,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     fun checkLogin(account: CloudAccount) {
-        viewState.onWaiting()
         if (!account.isOnline) {
+            viewState.onWaiting()
             when {
                 account.isWebDav -> {
                     AccountUtils.getPassword(context, account.getAccountName())?.let { password ->
@@ -263,6 +269,10 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         } ?: run {
             viewState.onError("Error login")
         }
+    }
+
+    fun dropboxLogin(lifecycleOwner: LifecycleOwner, onLoginCallback: () -> Unit) {
+        dropboxLoginHelper.startSignInActivity(lifecycleOwner, onLoginCallback)
     }
 
     private fun login(account: CloudAccount, token: String) {

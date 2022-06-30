@@ -197,11 +197,9 @@
     <string name="toolbar_menu_main_deselect">Abwählen</string>
     <string name="toolbar_menu_sort_by">Sortieren nach</string>
     <string name="toolbar_menu_sort_order">Sortierfolge</string>
-    <string name="toolbar_menu_sort_date_modified">Zuletzt bearbeitet</string>
     <string name="toolbar_menu_sort_title">Titel</string>
     <string name="toolbar_menu_sort_type">Typ</string>
     <string name="toolbar_menu_sort_size">Größe</string>
-    <string name="toolbar_menu_sort_owner">Besitzer</string>
     <string name="toolbar_menu_sort_asc">Aufsteigend</string>
     <string name="toolbar_menu_sort_desc">Absteigend</string>
     <string name="toolbar_menu_main_download">Herunterladen</string>

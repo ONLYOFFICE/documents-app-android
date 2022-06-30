@@ -21,10 +21,13 @@ import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
+import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import java.io.File
 
 abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment, BaseStorageDocsView {
@@ -163,10 +166,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
                 )
                 isVisible = true
             }
-            moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
-            copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
-            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(true)
-            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
             setAccountEnable(false)
         }
     }
@@ -193,8 +192,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        menu?.findItem(R.id.toolbar_sort_item_type)?.isVisible = false
-        menu?.findItem(R.id.toolbar_sort_item_owner)?.isVisible = false
         searchCloseButton?.setOnClickListener { v: View? ->
             onBackPressed()
         }
@@ -226,6 +223,17 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     override fun onUpdateItemFavorites() {
         TODO("Not yet implemented")
+    }
+
+    override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(
+            itemId = itemId,
+            excluded = listOf(MainActionBarPopup.Type, MainActionBarPopup.Author)
+        )
+    }
+
+    override fun showSelectedActionBarMenu(view: View, excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(view, listOf(SelectActionBarPopup.Restore))
     }
 
     abstract fun getDocsPresenter(): BaseStorageDocsPresenter<out BaseStorageDocsView>

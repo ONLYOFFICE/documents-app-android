@@ -377,10 +377,8 @@
     <string name="toolbar_menu_search_result">Результат поиска</string>
     <string name="toolbar_menu_sort_asc">По возрастанию</string>
     <string name="toolbar_menu_sort_by">Сортировать по</string>
-    <string name="toolbar_menu_sort_date_modified">Последнее изменение</string>
     <string name="toolbar_menu_sort_desc">По убыванию</string>
     <string name="toolbar_menu_sort_order">Порядок</string>
-    <string name="toolbar_menu_sort_owner">Владелец</string>
     <string name="toolbar_menu_sort_size">Размер</string>
     <string name="toolbar_menu_sort_title">Название</string>
     <string name="toolbar_menu_sort_type">Тип</string>

@@ -11,7 +11,7 @@
     <item
         android:id="@+id/menu_share_add"
         android:enabled="true"
-        android:icon="@drawable/drawable_menu_main"
+        android:icon="@drawable/ic_toolbar_menu"
         android:title="@string/toolbar_menu_main_select"
         android:visible="true"
         app:showAsAction="never">

@@ -17,7 +17,7 @@
     <color name="colorOnError">@color/colorBlack</color>
     <color name="colorBackgroundSecond">@null</color>
     <color name="colorOutline">#3F3F3F</color>
-    <color name="colorBgDescription">#363636</color>
+    <color name="colorBgDescription">#80363636</color>
 
     <color name="colorGrey">#8AFFFFFF</color>
     <color name="colorLightRed">#FF5F52</color>

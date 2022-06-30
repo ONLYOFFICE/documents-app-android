@@ -23,6 +23,7 @@ import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment
 import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
 import app.editors.manager.ui.fragments.main.*
 import app.editors.manager.viewModels.main.RecentViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView

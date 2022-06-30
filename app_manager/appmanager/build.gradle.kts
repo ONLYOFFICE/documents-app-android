@@ -102,13 +102,15 @@ android {
         buildConfigField("String", "BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["BOX_VALUE_RESPONSE_TYPE"] + "\"" )
 
         //DropBox
+        val dropboxKey = keystoreProperties["DROP_BOX_COM_CLIENT_ID"] as String
+        buildConfigField("String", "DROP_BOX_COM_CLIENT_ID","\"" + dropboxKey + "\"" )
         buildConfigField("String", "DROP_BOX_INFO_CLIENT_ID","\"" + keystoreProperties["DROP_BOX_INFO_CLIENT_ID"] + "\"" )
         buildConfigField("String", "DROP_BOX_INFO_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_INFO_REDIRECT_URL"] + "\"" )
-        buildConfigField("String", "DROP_BOX_COM_CLIENT_ID","\"" + keystoreProperties["DROP_BOX_COM_CLIENT_ID"] + "\"" )
         buildConfigField("String", "DROP_BOX_COM_CLIENT_SECRET","\"" + keystoreProperties["DROP_BOX_COM_CLIENT_SECRET"] + "\"" )
         buildConfigField("String", "DROP_BOX_COM_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_COM_REDIRECT_URL"] + "\"" )
         buildConfigField("String", "DROP_BOX_AUTH_URL","\"" + keystoreProperties["DROP_BOX_AUTH_URL"] + "\"" )
         buildConfigField("String", "DROP_BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["DROP_BOX_VALUE_RESPONSE_TYPE"] + "\"" )
+        manifestPlaceholders["dropboxKey"] = dropboxKey
 
         //OneDrive
         buildConfigField("String", "ONE_DRIVE_INFO_CLIENT_ID","\"" + keystoreProperties["ONE_DRIVE_INFO_CLIENT_ID"] + "\"" )
@@ -330,6 +332,7 @@ dependencies {
     implementation(Libs.glide)
     implementation(Libs.photoView)
     implementation(Libs.androidWork)
+    implementation(Libs.dropboxSdk)
 
     //TODO add to base module
     implementation(Lifecycle.viewModel)

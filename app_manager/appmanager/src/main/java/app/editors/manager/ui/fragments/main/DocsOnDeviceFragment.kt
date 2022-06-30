@@ -30,12 +30,15 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 import java.util.*
 
@@ -128,52 +131,13 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        menu?.let {
-            openItem?.isVisible = true
-            it.findItem(R.id.toolbar_sort_item_owner).isVisible = false
-        }
+        openItem?.isVisible = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_item_search, R.id.toolbar_item_sort -> item.isChecked = true
-            R.id.toolbar_sort_item_date_update -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_title -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_type -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_size -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_asc -> {
-                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_ASC)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_desc -> {
-                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_DESC)
-                item.isChecked = true
-            }
-            R.id.toolbar_main_item_select -> presenter.setSelection(true)
-            R.id.toolbar_main_item_select_all -> presenter.setSelectionAll()
+            R.id.toolbar_item_main -> showMainActionBarMenu(item.itemId)
             R.id.toolbar_selection_delete -> presenter.delete()
-            R.id.toolbar_selection_move -> {
-                operation = Operation.MOVE
-                presenter.checkSelectedFiles()
-            }
-            R.id.toolbar_selection_copy -> {
-                operation = Operation.COPY
-                presenter.checkSelectedFiles()
-            }
-            R.id.toolbar_selection_deselect -> presenter.deselectAll()
-            R.id.toolbar_selection_select_all -> presenter.selectAll()
             R.id.toolbar_item_open -> showSingleFragmentFilePicker()
         }
         return true
@@ -202,10 +166,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 UiUtils.setMenuItemTint(requireContext(), this, lib.toolkit.base.R.color.colorPrimary)
                 isVisible = true
             }
-            moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
-            copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
-            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
-            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
             activity?.showNavigationButton(true)
         }
     }
@@ -459,6 +419,23 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override val isWebDav: Boolean
         get() = false
+
+    override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(
+            itemId = itemId,
+            excluded = listOf(MainActionBarPopup.Author)
+        )
+    }
+
+    override fun showSelectedActionBarMenu(view: View, excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(
+            view = view,
+            excluded = listOf(
+                SelectActionBarPopup.Restore,
+                SelectActionBarPopup.Download
+            )
+        )
+    }
 
     fun showRoot() {
         presenter.recreateStack()

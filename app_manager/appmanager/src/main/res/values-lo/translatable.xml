@@ -271,11 +271,9 @@
     <string name="toolbar_menu_main_deselect">ຍົກເລີກການເລືອກ </string>
     <string name="toolbar_menu_sort_by">ຮຽງຕາມ</string>
     <string name="toolbar_menu_sort_order">ຈັດລຽງລຳດັບ </string>
-    <string name="toolbar_menu_sort_date_modified">ດັດແກ້ຫຼ້າສຸດ</string>
     <string name="toolbar_menu_sort_title">ຫົວຂໍ້</string>
     <string name="toolbar_menu_sort_type">ພິມ </string>
     <string name="toolbar_menu_sort_size">ຂະ ໜາດ</string>
-    <string name="toolbar_menu_sort_owner">ເຈົ້າຂອງ </string>
     <string name="toolbar_menu_sort_asc">ຈາກໜ້ອຍໄປຫາຫຼາຍ</string>
     <string name="toolbar_menu_sort_desc">ຈາກຫຼາຍໄປຫາໜ້ອຍ</string>
     <string name="toolbar_menu_main_download">ດາວໂຫລດ </string>
