@@ -72,15 +72,29 @@ class MainToolbar @JvmOverloads constructor(
             context,
             account?.getAccountName() ?: ""
         )?.let {
-            val url = if (cloudAccount.avatarUrl?.contains("static") == true || cloudAccount.avatarUrl?.contains("default") == true || cloudAccount.isDropbox || cloudAccount.isGoogleDrive) {
-                cloudAccount.avatarUrl
+            if (account?.isDropbox == true) {
+                if (!account?.avatarUrl.isNullOrEmpty()) {
+                    Glide.with(context)
+                        .load(account?.avatarUrl)
+                        .apply(GlideUtils.avatarOptions)
+                        .into(toolbarIcon)
+                } else {
+                    Glide.with(context).load(R.drawable.ic_account_placeholder)
+                        .into(toolbarIcon)
+                }
             } else {
-                cloudAccount.scheme + cloudAccount.portal + cloudAccount.avatarUrl
+                val url = if (cloudAccount.avatarUrl?.contains("static") == true ||
+                    cloudAccount.avatarUrl?.contains("default") == true || cloudAccount.isGoogleDrive
+                ) {
+                    cloudAccount.avatarUrl
+                } else {
+                    cloudAccount.scheme + cloudAccount.portal + cloudAccount.avatarUrl
+                }
+                Glide.with(context)
+                    .load(GlideUtils.getCorrectLoad(url ?: "", it))
+                    .apply(GlideUtils.avatarOptions)
+                    .into(toolbarIcon)
             }
-            Glide.with(context)
-                .load(GlideUtils.getCorrectLoad(url ?: "", it))
-                .apply(GlideUtils.avatarOptions)
-                .into(toolbarIcon)
         } ?: run {
             Glide.with(context).load(R.drawable.ic_account_placeholder)
                 .into(toolbarIcon)
