@@ -167,7 +167,7 @@ platform :android do
     gradle(
       task: 'bundle',
       build_type: 'Release',
-      project_dir: 'app_manager/'
+      project_dir: 'app_manager/',
       flavor: 'manager'
     )
 
@@ -226,7 +226,7 @@ platform :android do
     gradle(
       task: 'assemble',
       build_type: 'Release',
-      project_dir: 'app_manager/'
+      project_dir: 'app_manager/',
       flavor: 'manager'
     )
 
