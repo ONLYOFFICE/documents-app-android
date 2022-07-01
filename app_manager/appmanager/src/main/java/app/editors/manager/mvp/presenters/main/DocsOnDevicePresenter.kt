@@ -324,7 +324,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     fun import(uri: Uri) {
         disposable.add((fileProvider as LocalFileProvider).import(
             context,
-            modelExplorerStack?.currentId!!,
+            modelExplorerStack.currentId ?: throw RuntimeException(),
             uri
         )
             .subscribe(
@@ -340,12 +340,15 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun deleteImportFailedFile(uri: Uri) {
-        val parentFile = File(modelExplorerStack?.currentId)
-        val path = PathUtils.getPath(context, uri)
-        val file = File(Uri.parse(path).path)
-        var movedFile = File(parentFile, file.name)
-        FileUtils.deletePath(movedFile)
+    private fun deleteImportFailedFile(uri: Uri?) {
+        uri?.let {
+            val parentFile = File(modelExplorerStack.currentId ?: return)
+            val path = PathUtils.getPath(context, uri)
+            Uri.parse(path).path?.let { filePath -> File(filePath) }?.let { file ->
+                FileUtils.deletePath(File(parentFile, file.name))
+            }
+        }
+
     }
 
     private fun openFile(file: CloudFile) {
