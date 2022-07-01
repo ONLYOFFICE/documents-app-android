@@ -14,6 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
+import moxy.presenterScope
 import java.util.concurrent.TimeUnit
 
 class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
@@ -117,7 +118,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
     fun search(value: String) {
         searchingValue = value
         job?.cancel()
-        job = CoroutineScope(Dispatchers.Default).launch {
+        job = presenterScope.launch {
             delay(DEBOUNCE_DURATION)
             val authors = authorStack.filter { it.name.contains(searchingValue, true) }
             withContext(Dispatchers.Main) {

@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresPermission
+import androidx.lifecycle.lifecycleScope
 import app.documents.core.account.AccountDao
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -28,7 +29,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -210,7 +210,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     }
 
     private fun loadCloudImage() {
-        CoroutineScope(Dispatchers.Default).launch {
+        lifecycleScope.launch {
             accountsDao.getAccountOnline()?.let { account ->
                 AccountUtils.getToken(
                     requireContext(),
@@ -233,7 +233,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     }
 
     private fun loadWebDavImage() {
-        CoroutineScope(Dispatchers.Default).launch {
+        lifecycleScope.launch {
             accountsDao.getAccountOnline()?.let { account ->
                 AccountUtils.getPassword(
                     requireContext(),

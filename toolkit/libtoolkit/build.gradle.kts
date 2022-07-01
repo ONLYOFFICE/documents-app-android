@@ -74,6 +74,7 @@ dependencies {
     // Moxy
     implementation(Moxy.moxyAndroid)
     implementation(Moxy.moxyMaterial)
+    implementation(Moxy.moxyKtx)
     kapt(Moxy.moxyCompiler)
 
     // Dagger

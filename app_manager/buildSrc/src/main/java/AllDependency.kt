@@ -11,6 +11,7 @@ object Moxy {
     const val moxyAndroid = "com.github.moxy-community:moxy-androidx:$version"
     const val moxyMaterial = "com.github.moxy-community:moxy-material:$version"
     const val moxyCompiler = "com.github.moxy-community:moxy-compiler:$version"
+    const val moxyKtx = "com.github.moxy-community:moxy-ktx:$version"
 }
 
 object Koin {

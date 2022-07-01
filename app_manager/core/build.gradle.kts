@@ -3,6 +3,7 @@ plugins {
     id("kotlinx-serialization")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp") version "1.6.10-1.0.4"
 }
 
 android {
@@ -76,7 +77,7 @@ dependencies {
     // Room
     implementation(Room.roomRuntime)
     implementation(Room.roomKtx)
-    kapt(Room.roomCompiler)
+    ksp(Room.roomCompiler)
 
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")

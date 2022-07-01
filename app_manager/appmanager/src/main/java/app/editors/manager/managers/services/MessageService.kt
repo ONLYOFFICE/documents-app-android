@@ -6,17 +6,12 @@ import android.net.Uri
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.NotificationUtils
-import app.editors.manager.mvp.models.models.OpenDataModel
-import app.editors.manager.mvp.models.models.OpenFileModel
-import app.editors.manager.mvp.models.models.OpenFolderModel
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 

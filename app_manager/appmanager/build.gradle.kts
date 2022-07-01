@@ -10,6 +10,7 @@ plugins {
     id("kotlinx-serialization")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp") version "1.6.10-1.0.4"
 }
 
 // Onlyoffice
@@ -308,6 +309,7 @@ dependencies {
     // Moxy
     implementation(Moxy.moxyAndroid)
     implementation(Moxy.moxyMaterial)
+    implementation(Moxy.moxyKtx)
     kapt(Moxy.moxyCompiler)
 
     // Kotlin
@@ -323,7 +325,7 @@ dependencies {
     // Room
     implementation(Room.roomRuntime)
     implementation(Room.roomKtx)
-    kapt(Room.roomCompiler)
+    ksp(Room.roomCompiler)
 
     // Other
     implementation(Libs.phoneNumber)

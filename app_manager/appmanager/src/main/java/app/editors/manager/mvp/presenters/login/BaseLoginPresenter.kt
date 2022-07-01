@@ -30,6 +30,7 @@ import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils.getUrlWithoutScheme
 import lib.toolkit.base.managers.utils.StringUtils.isValidUrl
+import moxy.presenterScope
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import javax.net.ssl.SSLHandshakeException
@@ -162,7 +163,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         AccountUtils.setToken(context, account, token.token)
 
         val accountDao = App.getApp().appComponent.accountsDao
-        CoroutineScope(Dispatchers.IO).launch {
+        presenterScope.launch {
             accountDao.getAccountOnline()?.let {
                 unsubscribePush(it)
                 accountDao.updateAccount(it.copyWithToken(isOnline = false))
@@ -238,7 +239,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
             return
         }
         this.account = account
-        goggleJob = CoroutineScope(Dispatchers.IO).launch {
+        goggleJob = presenterScope.launch((Dispatchers.IO)) {
             val scope = context.getString(R.string.google_scope)
             try {
                 if (account != null) {
