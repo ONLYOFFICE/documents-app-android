@@ -9,6 +9,7 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.oneDriveLoginService
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
@@ -29,7 +30,6 @@ import app.editors.manager.storages.onedrive.onedrive.api.OneDriveService
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,6 +38,7 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 import retrofit2.HttpException
 
 
@@ -78,8 +79,8 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun getProvider() {
         fileProvider?.let {
-            CoroutineScope(Dispatchers.Default).launch {
-                App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
+            presenterScope.launch {
+                context.accountOnline?.let {
                     withContext(Dispatchers.Main) {
                         getItemsById("")
                     }
@@ -87,8 +88,8 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                 }
             }
         } ?: run {
-            CoroutineScope(Dispatchers.Default).launch {
-                App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
+            presenterScope.launch {
+                context.accountOnline?.let { cloudAccount ->
                     AccountUtils.getAccount(context, cloudAccount.getAccountName())?.let {
                         fileProvider = OneDriveFileProvider()
                         withContext(Dispatchers.Main) {
@@ -96,7 +97,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                         }
                     }
                 } ?: run {
-                    throw Error("Not accounts")
+                    viewState.onUnauthorized("Not accounts")
                 }
             }
         }
