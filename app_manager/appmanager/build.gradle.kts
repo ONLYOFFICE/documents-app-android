@@ -173,6 +173,7 @@ android {
 
         debug {
             isMinifyEnabled = false
+            extra["enableCrashlytics"] = false
         }
 
         applicationVariants.all {
@@ -180,7 +181,7 @@ android {
             variant.outputs
                 .map { it as BaseVariantOutputImpl }
                 .forEach { output ->
-                    val timeMark = SimpleDateFormat("MMMMM.dd_HH-mm").format(Date())
+                    val timeMark = SimpleDateFormat("MMMMM.dd_HH-mm", Locale.ENGLISH).format(Date())
                     val buildAbi = output.filters.find { it.filterType == "ABI" }?.identifier
                     val buildType = if (buildType.isDebuggable) "debug" else "release"
                     val buildCode = "_build-${output.versionCode}"
@@ -202,8 +203,8 @@ android {
 
 
     lint {
-        isCheckReleaseBuilds = false
-        isAbortOnError = false
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 
     buildFeatures {
@@ -212,12 +213,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     bundle {
