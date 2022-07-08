@@ -30,6 +30,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.tools.GlideTool
@@ -38,7 +39,6 @@ import lib.toolkit.base.managers.utils.ContentResolverUtils.OnUriListener
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getBitmapUriAsync
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.managers.utils.WeakAsyncUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import javax.inject.Inject
 
@@ -52,7 +52,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
 
     private var bitmap: Bitmap? = null
     private var gifDrawable: GifDrawable? = null
-    private var asyncTaskShare: WeakAsyncUtils<*, *, *, *>? = null
+    private var asyncTaskShare: Job? = null
     private var isWebDav: Boolean = false
     private var image: CloudFile? = null
     private var placeholderViews: PlaceholderViews? = null
@@ -118,7 +118,8 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
             showWaitingDialog(null, getString(R.string.dialogs_common_cancel_button), TAG_DIALOG_SHARE)
             asyncTaskShare = getBitmapUriAsync(
                 requireContext(), it, this,
-                StringUtils.getNameWithoutExtension(image?.title!!)
+                StringUtils.getNameWithoutExtension(image?.title ?: ""),
+                lifecycleScope
             )
         }
     }

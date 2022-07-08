@@ -102,7 +102,6 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
         viewBinding?.webStorageWebview?.apply {
             settings.apply {
                 javaScriptEnabled = true
-                setAppCacheEnabled(false)
                 cacheMode = WebSettings.LOAD_NO_CACHE
                 userAgentString = getString(R.string.google_user_agent)
             }

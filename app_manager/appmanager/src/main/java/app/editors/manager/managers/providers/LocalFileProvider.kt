@@ -237,7 +237,7 @@ class LocalFileProvider(private val localContentTools: LocalContentTools) : Base
         var tempExplorer = Explorer()
         val root = File(id)
         val listFiles = root.listFiles()
-        for (item in listFiles) {
+        listFiles?.forEach { item ->
             if (item.name.lowercase(Locale.getDefault()).contains(value?.lowercase(Locale.getDefault()).toString())) {
                 files.add(item)
                 tempExplorer = getExplorer(files, File(id))

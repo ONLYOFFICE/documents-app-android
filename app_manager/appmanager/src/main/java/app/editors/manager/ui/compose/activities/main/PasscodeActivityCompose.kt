@@ -129,6 +129,9 @@ private fun EnterPasscode(
                 }, 1000)
             }
 
+            else -> {
+                // Stub
+            }
         }
     }
 }
@@ -177,6 +180,9 @@ private fun SetPasscode(
                 }, 300)
 
             }
+            else -> {
+                // Stub
+            }
         }
     }
 }
@@ -224,6 +230,9 @@ private fun ConfirmPasscode(
                     }
                 }, 1000)
             }
+            else -> {
+                // Stub
+            }
         }
     }
 }
@@ -266,6 +275,9 @@ private fun ChangePasscode(
                         launchSingleTop = true
                     }
                 }, 1000)
+            }
+            else -> {
+                // Stub
             }
         }
     }
@@ -313,6 +325,9 @@ private fun DisablePasscode(
                         launchSingleTop = true
                     }
                 }, 1000)
+            }
+            else -> {
+                // Stub
             }
         }
     }

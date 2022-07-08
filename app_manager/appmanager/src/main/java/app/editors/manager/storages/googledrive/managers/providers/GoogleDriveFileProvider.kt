@@ -8,15 +8,6 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
-import app.editors.manager.storages.googledrive.googledrive.login.GoogleDriveResponse
-import app.editors.manager.storages.googledrive.managers.utils.GoogleDriveUtils
-import app.editors.manager.storages.googledrive.managers.works.UploadWork
-import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveFile
-import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemRequest
-import app.editors.manager.storages.googledrive.mvp.models.request.RenameRequest
-import app.editors.manager.storages.googledrive.mvp.models.request.ShareRequest
-import app.editors.manager.storages.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
-import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment
 import app.editors.manager.managers.providers.BaseFileProvider
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
@@ -27,6 +18,14 @@ import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
+import app.editors.manager.storages.googledrive.googledrive.login.GoogleDriveResponse
+import app.editors.manager.storages.googledrive.managers.utils.GoogleDriveUtils
+import app.editors.manager.storages.googledrive.managers.works.UploadWork
+import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveFile
+import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemRequest
+import app.editors.manager.storages.googledrive.mvp.models.request.RenameRequest
+import app.editors.manager.storages.googledrive.mvp.models.request.ShareRequest
+import app.editors.manager.storages.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -106,7 +105,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
                     file.folderId = item.parents[0]
                     file.pureContentLength = if(item.size.isNotEmpty()) item.size.toLong() else 0
                     file.webUrl = item.webViewLink
-                    file.fileExst = StringUtils.getExtensionFromPath(file.title.toLowerCase())
+                    file.fileExst = StringUtils.getExtensionFromPath(file.title.lowercase())
                     file.created =
                         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.createdTime)
                     file.updated =
@@ -142,8 +141,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
         return Observable.just(1)
             .map { _ ->
                 val title = body.title
-                val path = PATH_TEMPLATES + body.title.lowercase()
-                    .let { title -> StringUtils.getExtensionFromPath(title) }.let { ext ->
+                val path = PATH_TEMPLATES + body.title.lowercase().let { templateTitle -> StringUtils.getExtensionFromPath(templateTitle) }.let { ext ->
                         FileUtils.getTemplates(
                             App.getApp(), App.getLocale(),
                             ext
@@ -357,8 +355,11 @@ class GoogleDriveFileProvider: BaseFileProvider {
                     File(Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice")
                 return FileUtils.createFile(parent, file.title)
             }
+            else -> {
+                // Stub
+            }
         }
-        val local = File(Uri.parse(file.webUrl).path)
+        val local = File(Uri.parse(file.webUrl).path.toString())
         return if (local.exists()) {
             local
         } else {

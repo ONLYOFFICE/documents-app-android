@@ -14,7 +14,7 @@ class DocsGoogleDriveOperationFragment: BaseStorageOperationsFragment() {
 
     companion object {
 
-        val TAG = DocsCloudOperationFragment::class.java.simpleName
+        val TAG: String = DocsCloudOperationFragment::class.java.simpleName
 
         fun newInstance(): DocsGoogleDriveOperationFragment = DocsGoogleDriveOperationFragment()
     }

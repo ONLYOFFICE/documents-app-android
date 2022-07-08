@@ -91,14 +91,12 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
         return Point(position.left, position.top)
     }
 
-    @JvmOverloads
     open fun hide() {
         if (popupWindow.isShowing) {
             popupWindow.dismiss()
         }
     }
 
-    @JvmOverloads
     open fun showInsideAt(view: View, positionRect: Rect) {
         checkAnchorRect(positionRect)
         val viewRect = UiUtils.getViewRectOnScreen(view)
@@ -107,9 +105,8 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
         popupWindow.showAtLocation(view, Gravity.START or Gravity.TOP, offset.x, offset.y)
     }
 
-    @JvmOverloads
     open fun showOverlap(view: View, restrictRect: Rect? = null) {
-        var restrict = restrictRect ?: UiUtils.getScreenRect(view.context)
+        val restrict = restrictRect ?: UiUtils.getScreenRect(view.context)
         val viewRect = UiUtils.getViewRectOnScreen(view)
         val offset = getPopupPosition(restrict, viewRect).apply {
             offset(-restrict.left, -restrict.top)
@@ -118,13 +115,11 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
         popupWindow.showAtLocation(view, Gravity.START or Gravity.TOP, offset.x, offset.y)
     }
 
-    @JvmOverloads
     open fun showOverlap(view: View, activity: Activity) {
         val restrictRect = UiUtils.getActivityVisibleRect(activity)
         showOverlap(view, restrictRect)
     }
 
-    @JvmOverloads
     open fun showDropAt(view: View, restrictRect: Rect? = null) {
         val restrict = restrictRect ?: UiUtils.getScreenRect(view.context)
         val viewRect = UiUtils.getViewRectOnScreen(view)
@@ -135,7 +130,6 @@ abstract class BasePopup(protected val context: Context, @LayoutRes protected va
         popupWindow.showAtLocation(view, Gravity.START or Gravity.TOP, offset.x, offset.y)
     }
 
-    @JvmOverloads
     open fun showDropAt(view: View, activity: Activity) {
         val restrictRect = UiUtils.getActivityVisibleRect(activity)
         showDropAt(view, restrictRect)

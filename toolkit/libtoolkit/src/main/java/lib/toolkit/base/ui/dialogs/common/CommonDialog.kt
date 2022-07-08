@@ -116,7 +116,7 @@ class CommonDialog : BaseDialog() {
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        mCloseHandler.postDelayed({
+        closeHandler.postDelayed({
             onClickListener?.onCancelClick(dialogType, viewHolders[dialogType]?.getTag())
         }, 100)
     }
@@ -137,7 +137,7 @@ class CommonDialog : BaseDialog() {
 
     private fun init(savedInstanceState: Bundle?) {
         restoreValues(savedInstanceState)
-        mBaseActivity.setCommonDialogOpen()
+        baseActivity.setCommonDialogOpen()
         initViews()
     }
 

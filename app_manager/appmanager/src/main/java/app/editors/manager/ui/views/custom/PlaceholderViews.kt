@@ -64,7 +64,7 @@ class PlaceholderViews(val view: View?) {
 
     fun setTemplatePlaceholder(type: Type?) {
         when (type) {
-            Type.NONE -> {
+            Type.NONE, null -> {
                 setVisibility(false)
                 return
             }

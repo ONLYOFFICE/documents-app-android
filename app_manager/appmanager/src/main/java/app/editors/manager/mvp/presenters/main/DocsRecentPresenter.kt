@@ -331,12 +331,12 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 }
             }
         } else {
-            checkCloudFile(recent, position)
+            checkCloudFile(recent)
         }
         addRecent(recent)
     }
 
-    private fun checkCloudFile(recent: Recent, position: Int) {
+    private fun checkCloudFile(recent: Recent) {
         CoroutineScope(Dispatchers.Default).launch {
             recent.ownerId?.let { id ->
                 accountDao.getAccount(id)?.let { recentAccount ->
@@ -345,7 +345,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                             viewState.onError(context.getString(R.string.error_recent_enter_account))
                         }
                     } else if (recentAccount.isWebDav) {
-                        openWebDavFile(recent, position)
+                        openWebDavFile(recent)
                     } else if (recentAccount.isDropbox || recentAccount.isGoogleDrive || recentAccount.isOneDrive) {
                         openStorageFile(recent = recent, recentAccount)
                     } else {
@@ -400,7 +400,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private suspend fun openWebDavFile(recent: Recent, position: Int) {
+    private suspend fun openWebDavFile(recent: Recent) {
         accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
             WebDavFileProvider(
                 context.webDavApi(),

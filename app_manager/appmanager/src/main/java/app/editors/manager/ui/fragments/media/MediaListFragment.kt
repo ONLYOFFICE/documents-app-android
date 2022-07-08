@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentMediaListBinding
@@ -94,7 +95,7 @@ class MediaListFragment : ListFragment(), BaseAdapter.OnItemClickListener {
             toolbarViewHolder = ToolbarViewHolder(toolbarView)
             mediaActivity?.setToolbarView(toolbarView)
             columnsCount = resources.getInteger(lib.toolkit.base.R.integer.screen_media_grid_columns)
-            mediaAdapter = MediaAdapter(getCellSize(columnsCount)).apply {
+            mediaAdapter = MediaAdapter(getCellSize(columnsCount), lifecycleScope).apply {
                 setOnItemClickListener(this@MediaListFragment)
                 setItems(mediaExplorer?.files!!)
             }

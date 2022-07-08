@@ -201,6 +201,9 @@ class EnterprisePhoneFragment : BaseAppFragment() {
                 is EnterprisePhoneState.Error -> {
                     onError(state.message)
                 }
+                else -> {
+                    // Stub
+                }
             }
         }
     }

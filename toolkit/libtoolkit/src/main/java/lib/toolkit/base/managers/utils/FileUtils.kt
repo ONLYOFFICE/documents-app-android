@@ -476,7 +476,7 @@ object FileUtils {
 
     @JvmStatic
     fun bitmapToBytes(bitmap: Bitmap): ByteArray {
-        return ByteArrayOutputStream()?.use {
+        return ByteArrayOutputStream().use {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
             it.toByteArray()
         }

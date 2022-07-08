@@ -17,7 +17,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.editors.manager.compose.ui.theme.Typography
 import app.editors.manager.ui.compose.activities.main.PasscodeScreens
@@ -108,10 +107,12 @@ fun PasscodeLock(
 
             Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
 
+            val header = stringResource(id = app.editors.manager.R.string.app_settings_passcode)
+
             Text(
-                buildAnnotatedString {
+                text = buildAnnotatedString {
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(id = app.editors.manager.R.string.app_settings_passcode))
+                        append(header)
                     }
                     append(stringResource(id = app.editors.manager.R.string.app_settings_passcode_description))
                 },
@@ -153,8 +154,7 @@ fun PasscodeSwitchItem(isEnable: Boolean, text: String, onCheckedChange: (Boolea
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .padding(start = dimensionResource(id = R.dimen.default_margin_medium))
-                .fillMaxWidth(0.75f)
-            ,
+                .fillMaxWidth(0.75f),
             color = MaterialTheme.colors.onSurface
         )
         Switch(

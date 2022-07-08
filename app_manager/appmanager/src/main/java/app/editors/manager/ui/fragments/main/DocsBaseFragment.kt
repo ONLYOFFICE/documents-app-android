@@ -14,8 +14,8 @@ import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
@@ -89,12 +89,19 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     var actionBottomDialog: ActionBottomDialog? = null
     var moveCopyDialog: MoveCopyDialog? = null
 
-    private var mLastClickTime: Long = 0
+    private var lastClickTime: Long = 0
     private var selectItem: MenuItem? = null
-    private val mTypeFactory: TypeFactory = factory
+    private val typeFactory: TypeFactory = factory
 
     protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
     protected abstract val isWebDav: Boolean?
+
+    private val lifecycleEventObserver = LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_RESUME ) {
+            contextBottomDialog?.onClickListener = this
+            actionBottomDialog?.onClickListener = this
+        }
+    }
 
     companion object {
         private const val CLICK_TIME_INTERVAL: Long = 350
@@ -110,14 +117,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycle.addObserver(this)
+        lifecycle.addObserver(lifecycleEventObserver)
         setHasOptionsMenu(true)
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onDialogListener() {
-        contextBottomDialog?.onClickListener = this
-        actionBottomDialog?.onClickListener = this
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -191,8 +192,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, menuInflater)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         presenter.initMenu()
     }
@@ -263,10 +264,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     private val isFastClick: Boolean
         get() {
             val now = System.currentTimeMillis()
-            return if (now - mLastClickTime < CLICK_TIME_INTERVAL) {
+            return if (now - lastClickTime < CLICK_TIME_INTERVAL) {
                 true
             } else {
-                mLastClickTime = now
+                lastClickTime = now
                 false
             }
         }
@@ -351,6 +352,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_common_cancel_button),
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
+            else -> {}
         }
     }
 
@@ -393,6 +395,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_common_cancel_button)
             )
             ActionBottomDialog.Buttons.UPLOAD -> presenter.uploadPermission()
+            else -> {}
         }
     }
 
@@ -871,7 +874,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * */
     private fun init() {
         setDialogs()
-        explorerAdapter = ExplorerAdapter(mTypeFactory).apply {
+        explorerAdapter = ExplorerAdapter(typeFactory).apply {
             setOnItemContextListener(this@DocsBaseFragment)
             setOnItemClickListener(this@DocsBaseFragment)
             setOnItemLongClickListener(this@DocsBaseFragment)

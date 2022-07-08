@@ -139,7 +139,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     private fun getMediaFile(uri: Uri): Explorer =
         Explorer().apply {
-            val file = File(context?.let { PathUtils.getPath(it, uri).toString() })
+            val file = File(context?.let { PathUtils.getPath(it, uri).toString() }.toString())
             val explorerFile = CloudFile().apply {
                 pureContentLength = file.length()
                 webUrl = file.absolutePath
@@ -171,10 +171,12 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
-        super.onActionButtonClick(buttons)
         when (buttons) {
             ActionBottomDialog.Buttons.PHOTO -> if (checkCameraPermission()) {
                 showCameraActivity(TimeUtils.fileTimeStamp)
+            }
+            else -> {
+                super.onActionButtonClick(buttons)
             }
         }
     }
@@ -192,7 +194,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        searchCloseButton?.setOnClickListener { v: View? ->
+        searchCloseButton?.setOnClickListener {
             onBackPressed()
         }
     }
@@ -222,7 +224,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         get() = getDocsPresenter()
 
     override fun onUpdateItemFavorites() {
-        TODO("Not yet implemented")
+        // Stub
     }
 
     override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
@@ -237,4 +239,5 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     }
 
     abstract fun getDocsPresenter(): BaseStorageDocsPresenter<out BaseStorageDocsView>
+
 }

@@ -512,6 +512,9 @@ class DropboxFileProvider : BaseFileProvider {
                     File(Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice")
                 return FileUtils.createFile(parent, file.title)
             }
+            else -> {
+                // Stub
+            }
         }
         val local = File(Uri.parse(file.webUrl).path ?: "")
         return if (local.exists()) {

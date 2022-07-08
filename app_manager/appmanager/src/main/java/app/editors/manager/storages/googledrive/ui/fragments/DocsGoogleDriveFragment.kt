@@ -20,7 +20,7 @@ import moxy.presenter.InjectPresenter
 class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
 
     companion object {
-        val TAG = DocsGoogleDriveFragment::class.java.simpleName
+        val TAG: String = DocsGoogleDriveFragment::class.java.simpleName
 
         fun newInstance(): DocsGoogleDriveFragment = DocsGoogleDriveFragment()
 
@@ -99,6 +99,9 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
             }
             ContextBottomDialog.Buttons.EDIT -> {
                 presenter.getFileInfo()
+            }
+            else -> {
+                super.onContextButtonClick(buttons)
             }
         }
     }

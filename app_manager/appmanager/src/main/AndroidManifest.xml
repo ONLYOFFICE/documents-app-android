@@ -24,7 +24,8 @@
     <uses-permission android:name="${permissionId}.permission.READ" />
 
     <queries>
-        <provider android:authorities="com.onlyoffice.projects.accounts"
+        <provider
+            android:authorities="com.onlyoffice.projects.accounts"
             tools:ignore="ExportedContentProvider" />
     </queries>
 
@@ -64,6 +65,7 @@
         android:name=".app.App"
         android:allowBackup="true"
         android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation"
+        android:extractNativeLibs="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name_full"
         android:largeHeap="true"
@@ -72,7 +74,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:extractNativeLibs="true"
         android:usesCleartextTraffic="true"
         tools:replace="android:supportsRtl">
         <activity
@@ -217,7 +218,8 @@
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|stateHidden">
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            tools:ignore="LockedOrientationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
@@ -232,7 +234,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="android.app.shortcuts"
+            <meta-data
+                android:name="android.app.shortcuts"
                 android:resource="@xml/shortcut" />
         </activity>
         <activity
@@ -269,16 +272,18 @@
         <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"
-            android:launchMode="singleTask"
-            android:exported="true" >
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <!-- Using a Manifest Placeholder to hide our app key -->
                 <data android:scheme="db-${dropboxKey}" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <service
             android:name=".managers.services.AuthenticatorService"
             android:exported="false">
@@ -331,9 +336,9 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorTransparent" />
-        <!--        <meta-data-->
-        <!--            android:name="com.facebook.sdk.ClientToken"-->
-        <!--            android:value="@string/facebook_client_token" />-->
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_app_id" />
     </application>
 
 </manifest>

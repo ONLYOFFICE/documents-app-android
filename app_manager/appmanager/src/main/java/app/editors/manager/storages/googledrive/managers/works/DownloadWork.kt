@@ -33,9 +33,9 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): BaseSt
     override fun doWork(): Result {
         getArgs()
 
-        val response = applicationContext.getGoogleDriveServiceProvider().download(id!!).blockingGet()
-        response.body()?.let { response ->
-            FileUtils.writeFromResponseBody(response, to!!, applicationContext, object: FileUtils.Progress {
+        val response = applicationContext.getGoogleDriveServiceProvider().download(id ?: "").blockingGet()
+        response.body()?.let { body ->
+            FileUtils.writeFromResponseBody(body, to!!, applicationContext, object: FileUtils.Progress {
                 override fun onProgress(total: Long, progress: Long): Boolean {
                     showProgress(total, progress, false)
                     return isStopped

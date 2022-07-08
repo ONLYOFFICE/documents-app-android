@@ -7,8 +7,7 @@ import java.util.*
 
 object TimeUtils {
 
-    @JvmField
-    val TAG = TimeUtils::class.java!!.simpleName
+    val TAG: String = TimeUtils::class.java.simpleName
 
     /*
     * Time constant
@@ -20,7 +19,7 @@ object TimeUtils {
     /*
     * Patterns
     * */
-    @JvmField val OUTPUT_PATTERN_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZ"
+    val OUTPUT_PATTERN_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZ"
     private val OUTPUT_PATTERN_DATE = "dd MMM yyyy"
     private val OUTPUT_PATTERN_TIME = "dd MMM yyyy HH:mm"
     private val OUTPUT_PATTERN_FILE = "yyyyMMdd_HHmmssSSS"

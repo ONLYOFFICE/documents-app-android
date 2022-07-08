@@ -1,5 +1,5 @@
 object Dagger {
-    private const val version = "2.41"
+    private const val version = "2.42"
 
     const val dagger = "com.google.dagger:dagger:$version"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$version"
@@ -51,8 +51,8 @@ object Retrofit {
 }
 
 object Kotlin {
-    const val version = "1.6.10"
-    const val pluginVersion = "1.5.21"
+    const val version = "1.7.0"
+    const val kspVersion = "1.7.0-1.0.6"
     private const val coroutinesVersion = "1.6.0"
     private const val serializationVersion = "1.3.2"
 
@@ -115,6 +115,7 @@ object Lifecycle {
 
 object Compose {
     const val version = "1.1.1"
+    const val versionCompiler = "1.2.0"
     private const val navigationVersion = "2.4.1"
 
     const val ui = "androidx.compose.ui:ui:$version"

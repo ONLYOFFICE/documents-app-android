@@ -109,15 +109,15 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     override fun rename(item: Item, newName: String, version: Int?): Observable<Item> {
-        var newName = newName
+        var name = newName
         val correctPath: String
         return if (item is CloudFile && version != null) {
-            newName = getEncodedString(newName) + item.fileExst
-            correctPath = filePath(item.getId(), newName)
-            renameFile(correctPath, newName, item)
+            name = getEncodedString(name) + item.fileExst
+            correctPath = filePath(item.getId(), name)
+            renameFile(correctPath, name, item)
         } else if (item is CloudFolder) {
-            correctPath = folderPath(item.getId(), newName)
-            renameFolder(correctPath, newName, item)
+            correctPath = folderPath(item.getId(), name)
+            renameFolder(correctPath, name, item)
         } else {
             Observable.just(Item())
         }
@@ -337,6 +337,9 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
                 val parent = File(Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice")
                 return createFile(parent, file.title)
             }
+            else -> {
+                // Stub
+            }
         }
         val local = File(Uri.parse(file.webUrl).path ?: "")
         return if (local.exists()) {
@@ -536,10 +539,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     private fun folderPath(id: String, newName: String): String {
-        var id = id
-        val builder = StringBuilder()
-        id = id.substring(0, id.lastIndexOf('/'))
-        return builder.append(filePath(id, newName)).append("/").toString()
+        return StringBuilder().append(filePath(id.substring(0, id.lastIndexOf('/')), newName)).append("/").toString()
     }
 
     private fun filePath(id: String, newName: String): String {

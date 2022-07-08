@@ -3,7 +3,6 @@ package lib.toolkit.base.ui.activities.base
 import android.Manifest
 import android.animation.AnimatorInflater
 import android.graphics.Rect
-import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
