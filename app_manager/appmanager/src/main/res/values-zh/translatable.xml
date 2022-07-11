@@ -83,8 +83,6 @@
     <string name="login_enterprise_info">ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以及实时协同编辑。</string>
     <string name="login_not_authorization_info">无法在%2$s登录到%1$s</string>
     <string name="login_not_authorization_button">再试一次</string>
-    <string name="errors_first_name">名字无效。不得包含数字。</string>
-    <string name="errors_last_name">姓氏无效。不得包含数字。</string>
     <!-- Portal personal -->
     <string name="login_personal_edit_email_hint">邮箱</string>
     <string name="login_personal_edit_password_hint">密码</string>

@@ -102,8 +102,6 @@
     </string>
     <string name="login_not_authorization_info">ບໍ່ສາມາດລົງຊື່ເຂົ້າໃຊ້ %1$s ທີ່ %2$s</string>
     <string name="login_not_authorization_button"> ລອງອີກຄັ້ງ </string>
-    <string name="errors_first_name">ຊື່ໃຫ້ຖືກຕ້ອງ. ຕ້ອງບໍ່ມີຕົວເລກ.</string>
-    <string name="errors_last_name">ນາມສະກຸນບໍ່ຖືກຕ້ອງ. ມັນຕ້ອງບໍ່ມີຕົວເລກ..</string>
 
     <!-- Portal personal -->
     <string name="login_personal_edit_email_hint">ອີເມວ</string>

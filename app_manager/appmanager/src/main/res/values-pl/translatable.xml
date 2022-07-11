@@ -102,8 +102,6 @@
     <string name="errors_connection_error">Sprawdź połączenie z Internetem</string>
     <string name="errors_email_already_registered">Podany adres e-mail jest już zarejestrowany</string>
     <string name="errors_email_syntax_error">Nieprawidłowy adres e-mail</string>
-    <string name="errors_first_name">Nieprawidłowe Imię Nie może zawierać cyfr</string>
-    <string name="errors_last_name">Nieprawidłowe nazwisko Nie może zawierać cyfr</string>
     <string name="errors_path_url">Nieprawidłowy URL</string>
     <string name="errors_redirect_error">Nieznany błąd przekierowywania kod:\u0020</string>
     <string name="errors_server_auth_error">Błąd uwierzytelniania</string>
