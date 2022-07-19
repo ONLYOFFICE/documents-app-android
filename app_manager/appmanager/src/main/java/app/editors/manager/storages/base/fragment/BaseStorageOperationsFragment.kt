@@ -103,8 +103,6 @@ abstract class BaseStorageOperationsFragment: DocsBaseFragment(), OperationActiv
         presenter.getProvider()
     }
 
-    override fun onUpdateItemFavorites() { }
-
     override fun onActionClick() {
         when (operationType) {
             OperationsState.OperationType.COPY -> presenter.copy()

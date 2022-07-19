@@ -33,8 +33,6 @@ class DocsCommonFragment : DocsCloudFragment() {
         cloudPresenter.getItemsById(ID)
     }
 
-    override fun onUpdateItemFavorites() { }
-
     private fun init() {
         cloudPresenter.checkBackStack()
     }
