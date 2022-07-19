@@ -251,7 +251,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         cancelButton: String?
     ) {
         baseActivity.addDialogListener(this)
-        baseActivity.showEditDialog(title, null, value, hint, null, acceptButton, cancelButton, false, null, tag)
+        baseActivity.showEditDialog(title, null, value, null, hint, acceptButton, cancelButton, false, null, tag)
     }
 
 

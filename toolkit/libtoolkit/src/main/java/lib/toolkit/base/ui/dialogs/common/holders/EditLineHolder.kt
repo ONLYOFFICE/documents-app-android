@@ -83,8 +83,8 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
                         acceptView.isEnabled = !text?.trim().isNullOrEmpty()
                     }
                 } else {
-                    if (!editValue.isNullOrEmpty()) {
-                        setText(editValue)
+                    editValue?.let { value ->
+                        setText(value)
                         if (!text.isNullOrEmpty()) {
                             setSelection(0, editValue?.length ?: 0)
                         }
@@ -94,7 +94,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             }
 
             editInputLayout?.apply {
-                hintValue?.let(::setHint)
+                hint = hintValue.orEmpty()
                 if (!errorValue.isNullOrEmpty()) {
                     isErrorEnabled = true
                     error = errorValue
