@@ -239,7 +239,18 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         cancelButton: String?
     ) {
         baseActivity.addDialogListener(this)
-        baseActivity.showEditDialog(title, null, value, hint, endHint, acceptButton, cancelButton, false, null, tag)
+        baseActivity.showEditDialog(
+            title = title,
+            bottomTitle = null,
+            value = value,
+            editHint = hint,
+            acceptTitle = acceptButton,
+            cancelTitle = cancelButton,
+            isPassword = false,
+            error = null,
+            tag = tag,
+            suffix = endHint
+        )
     }
 
     protected fun showEditDialogRename(
@@ -248,10 +259,22 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         hint: String?,
         tag: String,
         acceptButton: String?,
-        cancelButton: String?
+        cancelButton: String?,
+        suffix: String?
     ) {
         baseActivity.addDialogListener(this)
-        baseActivity.showEditDialog(title, null, value, hint, null, acceptButton, cancelButton, false, null, tag)
+        baseActivity.showEditDialog(
+            title = title,
+            bottomTitle = null,
+            value = value,
+            editHint = hint,
+            acceptTitle = acceptButton,
+            cancelTitle = cancelButton,
+            isPassword = false,
+            error = null,
+            tag = tag,
+            suffix = suffix
+        )
     }
 
 
