@@ -249,32 +249,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             }
     }
 
-    override fun sortBy(value: String, isRepeatedTap: Boolean): Boolean {
-        preferenceTool.sortBy = value
-        if (isRepeatedTap) {
-            reverseSortOrder()
-        }
-        if (!isFilteringMode) {
-            getItemsById(modelExplorerStack.currentId)
-        } else {
-            loadSuccess(modelExplorerStack.last()
-                ?.let { explorer -> (fileProvider as LocalFileProvider).sortExplorer(explorer, getArgs(null)) })
-        }
-        return true
-    }
-
-    override fun orderBy(value: String): Boolean {
-        preferenceTool.sortOrder = value
-
-        if (!isFilteringMode) {
-            getItemsById(modelExplorerStack.currentId)
-        } else {
-            loadSuccess(modelExplorerStack.last()
-                ?.let { explorer -> (fileProvider as LocalFileProvider).sortExplorer(explorer, getArgs(null)) })
-        }
-        return true
-    }
-
     override fun rename(title: String?) {
         val item = modelExplorerStack.getItemById(itemClicked)
         if (item != null) {
