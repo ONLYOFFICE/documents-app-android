@@ -12,14 +12,12 @@ import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.GoogleDriveFolder
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
-import app.editors.manager.storages.base.view.BaseStorageDocsView
+import app.editors.manager.storages.base.view.DocsGoogleDriveView
 import app.editors.manager.storages.base.work.BaseStorageDownloadWork
-import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.storages.googledrive.managers.providers.GoogleDriveFileProvider
 import app.editors.manager.storages.googledrive.managers.receiver.GoogleDriveUploadReceiver
 import app.editors.manager.storages.googledrive.managers.utils.GoogleDriveUtils
 import app.editors.manager.storages.googledrive.managers.works.DownloadWork
-import app.editors.manager.storages.googledrive.managers.works.UploadWork
 import app.editors.manager.storages.googledrive.mvp.models.request.ShareRequest
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -33,7 +31,7 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 
-class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<BaseStorageDocsView>(), GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
+class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>(), GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
 
     private var uploadGoogleDriveReceiver: GoogleDriveUploadReceiver = GoogleDriveUploadReceiver()
 
@@ -227,21 +225,12 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<BaseStorageDocsView>()
             }
         }
 
-        for (uploadUri in uploadUris) {
-            val data = Data.Builder()
-                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, modelExplorerStack.currentId)
-                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uploadUri.toString())
-                .putString(BaseStorageUploadWork.KEY_TAG, tag)
-                .putString(UploadWork.KEY_FILE_ID, itemClicked?.id)
-                .build()
-
-            val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
-                .setInputData(data)
-                .build()
-
-            workManager.enqueue(request)
-        }
-
+        viewState.onUpload(
+            uploadUris = uploadUris,
+            folderId = modelExplorerStack.currentId.orEmpty(),
+            fileId = itemClicked?.id.orEmpty(),
+            tag = tag
+        )
     }
 
     override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {

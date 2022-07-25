@@ -2,6 +2,10 @@ package app.editors.manager.storages.googledrive.ui.fragments
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
@@ -9,6 +13,9 @@ import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
+import app.editors.manager.storages.base.view.DocsGoogleDriveView
+import app.editors.manager.storages.base.work.BaseStorageUploadWork
+import app.editors.manager.storages.googledrive.managers.works.UploadWork
 import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.MainActionBarPopup
@@ -17,7 +24,7 @@ import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
-class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
+class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
 
     companion object {
         val TAG: String = DocsGoogleDriveFragment::class.java.simpleName
@@ -110,6 +117,25 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
         onDialogClose()
         onSnackBar(getString(R.string.operation_complete_message))
         onRefresh()
+    }
+
+    override fun onUpload(uploadUris: List<Uri>, folderId: String, fileId: String, tag: String) {
+        val workManager = WorkManager.getInstance(requireContext())
+
+        for (uploadUri in uploadUris) {
+            val data = Data.Builder()
+                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, folderId)
+                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uploadUri.toString())
+                .putString(BaseStorageUploadWork.KEY_TAG, tag)
+                .putString(UploadWork.KEY_FILE_ID, fileId)
+                .build()
+
+            val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
+                .setInputData(data)
+                .build()
+
+            workManager.enqueue(request)
+        }
     }
 
     override fun onRefreshToken() {

@@ -21,6 +21,7 @@ import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.storages.googledrive.googledrive.login.GoogleDriveResponse
 import app.editors.manager.storages.googledrive.managers.utils.GoogleDriveUtils
 import app.editors.manager.storages.googledrive.managers.works.UploadWork
+import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveCloudFile
 import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveFile
 import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.storages.googledrive.mvp.models.request.RenameRequest
@@ -31,8 +32,10 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import okhttp3.ResponseBody
 import retrofit2.HttpException
 import java.io.File
 import java.io.FileOutputStream
@@ -42,8 +45,40 @@ import java.util.*
 
 class GoogleDriveFileProvider: BaseFileProvider {
 
+    enum class GoogleMimeType(val value: String) {
+        Docs("application/vnd.google-apps.document"),
+        Cells("application/vnd.google-apps.spreadsheet"),
+        Slides("application/vnd.google-apps.presentation")
+    }
+
     companion object {
         private const val PATH_TEMPLATES = "templates/"
+
+        private const val docx = ".${LocalContentTools.DOCX_EXTENSION}"
+        private const val xlsx = ".${LocalContentTools.XLSX_EXTENSION}"
+        private const val pptx = ".${LocalContentTools.PPTX_EXTENSION}"
+
+        private val googleMimeTypes = GoogleMimeType.values().map { it.value }
+
+        private fun checkItemExtension(name: String, mimeType: String): String {
+            if (!name.contains(Regex("$docx|$xlsx|$pptx"))) {
+                return name + when (mimeType) {
+                    GoogleMimeType.Docs.value -> docx
+                    GoogleMimeType.Cells.value -> xlsx
+                    GoogleMimeType.Slides.value -> pptx
+                    else -> return name
+                }
+            } else return name
+        }
+
+        private fun getCommonMimeType(googleMimeType: String): String {
+            return when (googleMimeType) {
+                GoogleMimeType.Docs.value -> LocalContentTools.MIME_TYPE_DOCX
+                GoogleMimeType.Cells.value -> LocalContentTools.MIME_TYPE_XLSX
+                GoogleMimeType.Slides.value -> LocalContentTools.MIME_TYPE_XLSX
+                else -> ""
+            }
+        }
     }
 
     private val api = App.getApp().getGoogleDriveComponent()
@@ -99,9 +134,10 @@ class GoogleDriveFileProvider: BaseFileProvider {
                         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(item.modifiedTime)
                     folders.add(folder)
                 } else  {
-                    val file = CloudFile()
+                    val file = GoogleDriveCloudFile()
                     file.id = item.id
-                    file.title = item.name
+                    file.title = checkItemExtension(item.name, item.mimeType)
+                    file.mimeType = item.mimeType
                     file.folderId = item.parents[0]
                     file.pureContentLength = if(item.size.isNotEmpty()) item.size.toLong() else 0
                     file.webUrl = item.webViewLink
@@ -306,15 +342,15 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
     override fun fileInfo(item: Item?): Observable<CloudFile> {
         return Observable.create { emitter: ObservableEmitter<CloudFile> ->
-            val outputFile = item?.let { checkDirectory(it) }
-
-            outputFile?.let {
-                if(it.exists()) {
-                    if (item is CloudFile) {
-                        if (item.pureContentLength != outputFile.length()) {
-                            download(emitter, item, outputFile)
+            if (item != null && item is GoogleDriveCloudFile) {
+                checkDirectory(item)?.let { outputFile ->
+                    if (outputFile.exists()) {
+                         if (googleMimeTypes.contains(item.mimeType)) {
+                             export(emitter, item, outputFile)
+                        } else if (item.pureContentLength != outputFile.length()) {
+                             download(emitter, item, outputFile)
                         } else {
-                            setFile(item, outputFile).let { emitter.onNext(it) }
+                            emitter.onNext(setFile(item, outputFile))
                             emitter.onComplete()
                         }
                     }
@@ -323,25 +359,40 @@ class GoogleDriveFileProvider: BaseFileProvider {
         }
     }
 
-    @Throws(IOException::class)
-    private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
-        val result = api.download(item.id).blockingGet()
-        result.body()?.let { file ->
+    private fun export(emitter: Emitter<CloudFile?>, item: GoogleDriveCloudFile, outputFile: File) {
+        val result = api.export(item.id, getCommonMimeType(item.mimeType)).blockingGet()
+        result.body()?.let { response ->
             try {
-                file.byteStream().use { inputStream ->
-                    FileOutputStream(outputFile).use { outputStream ->
-                        val buffer = ByteArray(4096)
-                        var count: Int
-                        while (inputStream.read(buffer).also { count = it } != -1) {
-                            outputStream.write(buffer, 0, count)
-                        }
-                        outputStream.flush()
-                        emitter.onNext(setFile(item, outputFile))
-                        emitter.onComplete()
-                    }
-                }
+                emitter.onNext(writeToFile(item, response, outputFile))
+                emitter.onComplete()
             } catch (error: IOException) {
                 emitter.onError(error)
+            }
+        }
+    }
+
+    private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
+        val result = api.download(item.id).blockingGet()
+        result.body()?.let { response ->
+            try {
+                emitter.onNext(writeToFile(item, response, outputFile))
+                emitter.onComplete()
+            } catch (error: IOException) {
+                emitter.onError(error)
+            }
+        }
+    }
+
+    private fun writeToFile(item: Item, response: ResponseBody, outputFile: File): CloudFile {
+        response.byteStream().use { inputStream ->
+            FileOutputStream(outputFile).use { outputStream ->
+                val buffer = ByteArray(4096)
+                var count: Int
+                while (inputStream.read(buffer).also { count = it } != -1) {
+                    outputStream.write(buffer, 0, count)
+                }
+                outputStream.flush()
+                return setFile(item, outputFile)
             }
         }
     }

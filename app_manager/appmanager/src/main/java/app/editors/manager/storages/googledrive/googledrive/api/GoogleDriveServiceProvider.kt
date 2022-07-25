@@ -105,6 +105,12 @@ class GoogleDriveServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    override fun export(fileId: String, mimeType: String): Single<Response<ResponseBody>> {
+        return googleDriveServiceProvider.export(fileId, mapOf("mimeType" to mimeType))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     private fun <T> fetchResponse(response: Response<T>): GoogleDriveResponse {
         return if (response.isSuccessful && response.body() != null) {
             GoogleDriveResponse.Success(response.body()!!)
