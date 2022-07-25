@@ -102,8 +102,6 @@
     <string name="errors_connection_error">Controlla la connessione internet</string>
     <string name="errors_email_already_registered">L’utente con questa email è già registrato</string>
     <string name="errors_email_syntax_error">Email non valida</string>
-    <string name="errors_first_name">Il nome non è valido. Non deve contenere cifre.</string>
-    <string name="errors_last_name">Cognome non valido. Non deve contenere cifre.</string>
     <string name="errors_path_url">URL non valido</string>
     <string name="errors_redirect_error">Errore di reindirizzamento sconosciuto con codice:\u0020</string>
     <string name="errors_server_auth_error">Errore di autenticazione</string>

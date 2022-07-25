@@ -101,8 +101,6 @@
     </string>
     <string name="login_not_authorization_info">V %2$s se nepodařilo přihlásit se do %1$s</string>
     <string name="login_not_authorization_button">ZKUSIT ZNOVU</string>
-    <string name="errors_first_name">Jméno je neplatné. Nesmí obsahovat číslice.</string>
-    <string name="errors_last_name">Příjmení je neplatné. Nesmí obsahovat číslice.</string>
 
     <!-- Portal personal -->
     <string name="login_personal_edit_email_hint">E-mail</string>

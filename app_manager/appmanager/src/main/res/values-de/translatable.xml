@@ -66,8 +66,6 @@
     <string name="login_enterprise_info">Über ONLYOFFICE Portal können Sie Dateien im Cloud-Speicher sichern und diese mit Kollegen zu teilen und gemeinsam in Echtzeit zu bearbeiten </string>
     <string name="login_not_authorization_info">Anmeldung bei %1$s um %2$s nicht möglich</string>
     <string name="login_not_authorization_button">ERNEUT VERSUCHEN</string>
-    <string name="errors_first_name">Vorname ist ungültig. Er darf keine Ziffern enthalten.</string>
-    <string name="errors_last_name">Nachname ist ungültig. Er darf keine Ziffern enthalten.</string>
     <string name="login_personal_edit_email_hint">E-Mail</string>
     <string name="login_personal_edit_password_hint">Passwort</string>
     <string name="login_personal_signin_button">ANMELDEN</string>

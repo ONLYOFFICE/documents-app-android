@@ -112,8 +112,6 @@
     <string name="errors_connection_error">Проверьте подключение к Интернету</string>
     <string name="errors_email_already_registered">Пользователь с таким email-адресом уже зарегистрирован</string>
     <string name="errors_email_syntax_error">Недопустимый email</string>
-    <string name="errors_first_name">Недопустимое имя. Оно не должно содержать цифры.</string>
-    <string name="errors_last_name">Недопустимая фамилия. Она не должна содержать цифры.</string>
     <string name="errors_path_url">Недопустимый URL-адрес</string>
     <string name="errors_redirect_error">Неизвестная ошибка перенаправления с кодом:\u0020</string>
     <string name="errors_server_auth_error">Ошибка аутентификации</string>

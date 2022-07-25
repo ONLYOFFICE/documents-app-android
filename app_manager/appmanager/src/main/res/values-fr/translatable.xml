@@ -104,8 +104,6 @@
     <string name="errors_connection_error">Vérifiez votre connexion internet</string>
     <string name="errors_email_already_registered">L’utilisateur avec cet e-mail est déjà enregistré</string>
     <string name="errors_email_syntax_error">Adresse mail invalide</string>
-    <string name="errors_first_name">Prénom n’est pas valide. Il ne doit pas contenir de chiffres.</string>
-    <string name="errors_last_name">Nom n’est pas valide. Il ne doit pas contenir de chiffres.</string>
     <string name="errors_path_url">URL invalide</string>
     <string name="errors_redirect_error">Erreur de redirection inconnue avec le code:\u0020</string>
     <string name="errors_server_auth_error">Erreur d’authentification</string>
