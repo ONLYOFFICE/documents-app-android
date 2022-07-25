@@ -37,7 +37,7 @@
         android:orderInCategory="10"
         android:title="@string/toolbar_menu_main_filter"
         android:visible="false"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         tools:ignore="MenuTitle" />
 
     <item
