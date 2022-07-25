@@ -454,7 +454,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             disposable.add(provider.addToFavorites(requestFavorites)!!
                 .subscribe({
                     (itemClicked as? CloudFile)?.fileStatus = ApiContract.FileStatus.FAVORITE.toString()
-                    viewState.onUpdateItemFavorites()
+                    viewState.onUpdateFavoriteItem()
                     viewState.onSnackBar(context.getString(R.string.operation_add_to_favorites))
                 }) { throwable: Throwable -> fetchError(throwable) })
         }
@@ -467,7 +467,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             disposable.add(provider.deleteFromFavorites(requestFavorites)!!
                 .subscribe({
                     (itemClicked as? CloudFile)?.fileStatus = ApiContract.FileStatus.NONE.toString()
-                    viewState.onUpdateItemFavorites()
+                    viewState.onUpdateFavoriteItem()
                     viewState.onSnackBar(context.getString(R.string.operation_remove_from_favorites))
                 }) { throwable: Throwable -> fetchError(throwable) })
         }

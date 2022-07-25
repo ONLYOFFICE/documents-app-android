@@ -130,8 +130,6 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         super.onDeleteBatch(list)
     }
 
-    override fun onUpdateItemFavorites() { }
-
     override fun onResume() {
         super.onResume()
         cloudPresenter.isTrashMode = true

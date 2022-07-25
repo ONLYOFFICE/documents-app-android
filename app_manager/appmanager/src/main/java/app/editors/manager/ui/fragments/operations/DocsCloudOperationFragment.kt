@@ -81,8 +81,6 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
         getDocs()
     }
 
-    override fun onUpdateItemFavorites() { }
-
     override fun onActionClick() {
         when (operationType) {
             OperationsState.OperationType.COPY -> cloudPresenter.copy()

@@ -221,10 +221,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override val presenter: BaseStorageDocsPresenter<out BaseStorageDocsView>
         get() = getDocsPresenter()
 
-    override fun onUpdateItemFavorites() {
-        TODO("Not yet implemented")
-    }
-
     override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
         super.showMainActionBarMenu(
             itemId = itemId,
