@@ -208,8 +208,8 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         cloudPresenter.transfer(operationType, action != MoveCopyDialog.ACTION_COPY)
     }
 
-    override fun showSelectedActionBarMenu(view: View, excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(view, mutableListOf<ActionBarPopupItem>().apply {
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(mutableListOf<ActionBarPopupItem>().apply {
             if (!cloudPresenter.isContextItemEditable) add(SelectActionBarPopup.Move)
             if (!cloudPresenter.isTrashMode) add(SelectActionBarPopup.Restore)
             if (cloudPresenter.isTrashMode) add(SelectActionBarPopup.Download)

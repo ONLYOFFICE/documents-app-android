@@ -266,10 +266,9 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onUpdateItemFavorites() { }
 
-    override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
         super.showMainActionBarMenu(
-            itemId = itemId,
-            excluded = listOf(
+            listOf(
                 MainActionBarPopup.Author,
                 MainActionBarPopup.SelectAll,
                 MainActionBarPopup.Select

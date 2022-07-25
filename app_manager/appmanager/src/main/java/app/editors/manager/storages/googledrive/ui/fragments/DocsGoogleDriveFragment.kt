@@ -121,10 +121,7 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
         showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
     }
 
-    override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
-        super.showMainActionBarMenu(
-            itemId = itemId,
-            excluded = listOf(MainActionBarPopup.Size)
-        )
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(listOf(MainActionBarPopup.Size))
     }
 }

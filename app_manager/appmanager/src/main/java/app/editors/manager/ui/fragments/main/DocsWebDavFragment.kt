@@ -114,12 +114,12 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         }
     }
 
-    override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
-        super.showMainActionBarMenu(itemId, listOf(MainActionBarPopup.Size))
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(listOf(MainActionBarPopup.Size))
     }
 
-    override fun showSelectedActionBarMenu(view: View, excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(view, listOf(SelectActionBarPopup.Restore))
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(listOf(SelectActionBarPopup.Restore))
     }
 
     override fun onListEnd() {}

@@ -136,7 +136,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_item_main -> showMainActionBarMenu(item.itemId)
+            R.id.toolbar_item_main -> showMainActionBarMenu()
             R.id.toolbar_selection_delete -> presenter.delete()
             R.id.toolbar_item_open -> showSingleFragmentFilePicker()
         }
@@ -420,16 +420,12 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     override val isWebDav: Boolean
         get() = false
 
-    override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
-        super.showMainActionBarMenu(
-            itemId = itemId,
-            excluded = listOf(MainActionBarPopup.Author)
-        )
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(listOf(MainActionBarPopup.Author))
     }
 
-    override fun showSelectedActionBarMenu(view: View, excluded: List<ActionBarPopupItem>) {
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
         super.showSelectedActionBarMenu(
-            view = view,
             excluded = listOf(
                 SelectActionBarPopup.Restore,
                 SelectActionBarPopup.Download
