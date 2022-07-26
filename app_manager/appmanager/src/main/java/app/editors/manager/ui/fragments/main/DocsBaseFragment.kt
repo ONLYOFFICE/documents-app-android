@@ -996,6 +996,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
+    override fun onUpdateFavoriteItem() {
+        explorerAdapter?.updateItem(presenter.itemClicked)
+    }
+
     /*
      * Parent ViewPager methods. Check instanceof for trash fragment
      * */

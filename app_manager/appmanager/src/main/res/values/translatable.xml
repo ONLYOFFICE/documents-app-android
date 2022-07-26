@@ -110,8 +110,8 @@
     <string name="login_not_authorization_info">Could not sign in to %1$s at %2$s</string>
     <string name="login_not_authorization_info_token">Session time is over</string>
     <string name="login_not_authorization_button">TRY AGAIN</string>
-    <string name="errors_first_name">First name is not valid. It must not contain digits.</string>
-    <string name="errors_last_name">Last name is not valid. It must not contain digits.</string>
+    <string name="errors_first_name">First name is not valid</string>
+    <string name="errors_last_name">Last name is not valid</string>
     <string name="login_password_recovery_hint">Enter the email which you used for registration on the portal. The instructions for password recovery will be sent to this email.</string>
     <string name="login_password_recovery_button_text">RETURN TO ENTER SCREEN</string>
     <string name="login_password_recovery_success_hint">If a user with the email %1$s exists, the instructions for password change were sent to this email.</string>

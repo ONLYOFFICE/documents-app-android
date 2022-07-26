@@ -104,8 +104,6 @@
     <string name="errors_connection_error">Compruebe la conexión a Internet</string>
     <string name="errors_email_already_registered">Ya se ha registrado un usuario con este correo electrónico</string>
     <string name="errors_email_syntax_error">Correo electrónico no válido</string>
-    <string name="errors_first_name">El nombre no es válido. No debe contener dígitos.</string>
-    <string name="errors_last_name">El apellido no es válido. No debe contener dígitos.</string>
     <string name="errors_path_url">URL no válida:</string>
     <string name="errors_redirect_error">Error de redirección desconocido con código:\u0020</string>
     <string name="errors_server_auth_error">Error de autenticación</string>

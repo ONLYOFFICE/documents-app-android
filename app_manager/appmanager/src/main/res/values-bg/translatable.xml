@@ -96,8 +96,6 @@
     <string name="errors_client_unauthorized">Неразрешено искане</string>
     <string name="errors_connection_error">Проверете интернет връзката</string>
     <string name="errors_email_syntax_error">Имейлът е невалиден</string>
-    <string name="errors_first_name">Името не е валидно. Не трябва да съдържа цифри.</string>
-    <string name="errors_last_name">Фамилното име не е валидно. Не трябва да съдържа цифри.</string>
     <string name="errors_redirect_error">Неизвестна грешка при пренасочване с код:\u0020</string>
     <string name="errors_server_auth_error">Грешка при удостоверяване</string>
     <string name="errors_server_error">Неизвестна грешка на сървъра с код:\u0020</string>

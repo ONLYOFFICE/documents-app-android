@@ -128,8 +128,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         setActionBarTitle(title)
     }
 
-    override fun onUpdateItemFavorites() { }
-
     override fun onActionDialog() {
         actionBottomDialog?.isLocal = true
         actionBottomDialog?.isWebDav = true
