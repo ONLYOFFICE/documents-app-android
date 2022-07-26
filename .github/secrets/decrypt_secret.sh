@@ -8,7 +8,6 @@ SECRETS=(
     "../../app_manager/google_api.json"
     "../../app_manager/Onlyoffice-keystore.properties"
     "../../app_manager/Onlyoffice.jks"
-    "../../app_manager/facebook_id.xml"
     "../../app_manager/appmanager/google-services.json"
     "../../app_manager/auth_strings.xml"
 )
@@ -29,5 +28,4 @@ for secret in ${SECRETS[@]}; do
     decrypt $secret
 done
 
-mv ../../app_manager/facebook_id.xml ../../app_manager/appmanager/src/main/res/values/facebook_id.xml
 mv ../../app_manager/auth_strings.xml ../../toolkit/libtoolkit/src/main/res/values/auth_strings.xml

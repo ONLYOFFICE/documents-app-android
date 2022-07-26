@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
@@ -258,7 +259,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         socialViews = SocialViews(
             requireActivity(),
             viewBinding?.socialNetworkLayout?.socialNetworkLayout,
-            getString(R.string.facebook_app_id)
+            BuildConfig.FACEBOOK_APP_ID
         )
         socialViews?.setOnSocialNetworkCallbacks(this)
         viewBinding?.loginPersonalPortalEmailEdit?.clearFocus()

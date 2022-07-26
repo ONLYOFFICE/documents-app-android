@@ -328,7 +328,7 @@
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
+            android:value="${facebookId}" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -338,7 +338,7 @@
             android:resource="@color/colorTransparent" />
         <meta-data
             android:name="com.facebook.sdk.ClientToken"
-            android:value="@string/facebook_app_id" />
+            android:value="${facebookId}" />
     </application>
 
 </manifest>

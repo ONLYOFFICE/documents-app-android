@@ -65,7 +65,6 @@ android {
         versionName = "5.5.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
-        manifestPlaceholders["permissionId"] = appIdBeta
 
         ndk {
             abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))  //comment to armv7
@@ -75,6 +74,9 @@ android {
         }
 
         val keystoreProperties = getKeystore("Onlyoffice-keystore.properties")
+
+        manifestPlaceholders["permissionId"] = appIdBeta
+        manifestPlaceholders["facebookId"] = keystoreProperties["FACEBOOK_APP_ID"] as String? ?: ""
 
         flavorDimensions += "version"
         productFlavors {
@@ -142,6 +144,11 @@ android {
         //Captcha
         buildConfigField("String", "CAPTCHA_PUBLIC_KEY_INFO","\"" + keystoreProperties["CAPTCHA_PUBLIC_KEY_INFO"] + "\"" )
         buildConfigField("String", "CAPTCHA_PUBLIC_KEY_COM","\"" + keystoreProperties["CAPTCHA_PUBLIC_KEY_COM"] + "\"" )
+
+        //Facebook
+        buildConfigField("String", "FACEBOOK_APP_ID_INFO","\"" + keystoreProperties["FACEBOOK_APP_ID_INFO"] + "\"" )
+        buildConfigField("String", "FACEBOOK_APP_ID","\"" + keystoreProperties["FACEBOOK_APP_ID"] + "\"" )
+
     }
 
     splits {

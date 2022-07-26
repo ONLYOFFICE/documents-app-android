@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import app.documents.core.settings.NetworkSettings
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentLoginEnterpriseSigninBinding
@@ -350,10 +351,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         }
 
     private fun initViews() {
-        val facebookId =
-            if (networkSettings.isPortalInfo) getString(R.string.facebook_app_id_info) else getString(
-                R.string.facebook_app_id
-            )
+        val facebookId = if (networkSettings.isPortalInfo) BuildConfig.FACEBOOK_APP_ID_INFO else BuildConfig.FACEBOOK_APP_ID
         socialViews = SocialViews(requireActivity(), viewBinding?.socialNetworkLayout?.socialNetworkLayout, facebookId)
         socialViews?.setOnSocialNetworkCallbacks(this)
         fieldsWatcher = FieldsWatcher()

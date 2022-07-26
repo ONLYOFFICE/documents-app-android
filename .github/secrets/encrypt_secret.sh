@@ -9,7 +9,6 @@ SECRETS=(
     "../../app_manager/Onlyoffice-keystore.properties"
     "../../app_manager/Onlyoffice.jks"
     "../../app_manager/appmanager/google-services.json"
-    "../../app_manager/appmanager/src/main/res/values/facebook_id.xml"
     "../../toolkit/libtoolkit/src/main/res/values/auth_strings.xml"
 )
 
@@ -29,5 +28,4 @@ for secret in ${SECRETS[@]}; do
     encrypt $secret
 done
 
-mv ../../app_manager/appmanager/src/main/res/values/facebook_id.xml.gpg ../../app_manager/facebook_id.xml.gpg
 mv ../../toolkit/libtoolkit/src/main/res/values/auth_strings.xml.gpg ../../app_manager/auth_strings.xml.gpg

@@ -60,7 +60,7 @@ class SocialViews(private val activity: Activity, view: View?,
     * Facebook initWithPreferences
     * */
     private fun initFacebook() {
-        Log.d(TAG, "initFacebook() - app ID: " + activity.getString(R.string.facebook_app_id))
+        Log.d(TAG, "initFacebook() - app ID: " + BuildConfig.FACEBOOK_APP_ID)
         if (FacebookSdk.isInitialized()) {
             facebookId?.let { FacebookSdk.setApplicationId(it) }
             loginPersonalSocialFacebookNativeButton = LoginButton(activity)
