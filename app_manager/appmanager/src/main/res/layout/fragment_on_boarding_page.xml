@@ -70,7 +70,6 @@
 
                 <ImageView
                     android:id="@+id/on_boarding_page_image"
-                    style="@style/CommonImageView"
                     android:layout_width="@dimen/screen_on_boarding_image_width"
                     android:layout_height="@dimen/screen_on_boarding_image_height"
                     android:layout_gravity="bottom"
