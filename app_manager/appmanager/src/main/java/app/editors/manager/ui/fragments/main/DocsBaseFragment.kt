@@ -200,7 +200,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_item_main -> showMainActionBarMenu(item.itemId)
+            R.id.toolbar_item_main -> showMainActionBarMenu()
             R.id.toolbar_selection_delete -> presenter.delete()
         }
         return super.onOptionsItemSelected(item)
@@ -1094,11 +1094,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected open fun showMainActionBarMenu(
-        itemId: Int,
-        excluded: List<ActionBarPopupItem> = emptyList()
-    ) {
-        val view = requireActivity().findViewById<View>(itemId)
+    protected open fun showMainActionBarMenu(excluded: List<ActionBarPopupItem> = emptyList()) {
         if (!presenter.isSelectionMode) {
             MainActionBarPopup(
                 context = requireContext(),
@@ -1106,21 +1102,18 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 sortBy = presenter.preferenceTool.sortBy.orEmpty(),
                 isAsc = isAsc,
                 excluded = excluded
-            ).show(view)
+            ).show(requireActivity().window.decorView)
         } else {
-            showSelectedActionBarMenu(view)
+            showSelectedActionBarMenu()
         }
     }
 
-    protected open fun showSelectedActionBarMenu(
-        view: View,
-        excluded: List<ActionBarPopupItem> = emptyList()
-    ) {
+    protected open fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem> = emptyList()) {
         SelectActionBarPopup(
             context = requireContext(),
             clickListener = selectActionBarClickListener,
             excluded = excluded
-        ).show(view)
+        ).show(requireActivity().window.decorView)
     }
 
     private val isAsc: Boolean

@@ -2,6 +2,7 @@ package lib.toolkit.base.ui.popup
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +17,7 @@ open class ActionBarPopupItem(val title: Int)
 abstract class ActionBarPopup(context: Context) : PopupWindow(
     null, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true
 ) {
-    private val margin = context.resources.getDimension(R.dimen.default_margin_large).toInt()
+    private val margin = context.resources.getDimension(R.dimen.default_margin_medium).toInt()
     private val shape = ContextCompat.getDrawable(context, R.drawable.shape_action_bar_popup)
 
     protected val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -30,7 +31,12 @@ abstract class ActionBarPopup(context: Context) : PopupWindow(
 
     fun show(view: View) {
         setBackgroundDrawable(shape)
-        showAtLocation(view, Gravity.END or Gravity.TOP, margin / 2, margin * 2)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val insets = view.rootWindowInsets.displayCutout?.safeInsetTop ?: 0
+            showAtLocation(view, Gravity.END or Gravity.TOP, margin, margin + insets)
+        } else {
+            showAtLocation(view, Gravity.END or Gravity.TOP, margin, margin)
+        }
     }
 
     open fun hide() {

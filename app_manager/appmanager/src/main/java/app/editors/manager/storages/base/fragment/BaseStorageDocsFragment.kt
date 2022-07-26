@@ -227,15 +227,12 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         // Stub
     }
 
-    override fun showMainActionBarMenu(itemId: Int, excluded: List<ActionBarPopupItem>) {
-        super.showMainActionBarMenu(
-            itemId = itemId,
-            excluded = listOf(MainActionBarPopup.Type, MainActionBarPopup.Author)
-        )
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(listOf(MainActionBarPopup.Type, MainActionBarPopup.Author))
     }
 
-    override fun showSelectedActionBarMenu(view: View, excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(view, listOf(SelectActionBarPopup.Restore))
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(listOf(SelectActionBarPopup.Restore))
     }
 
     abstract fun getDocsPresenter(): BaseStorageDocsPresenter<out BaseStorageDocsView>

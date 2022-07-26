@@ -69,8 +69,8 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
     }
 
 
-    override fun showSelectedActionBarMenu(view: View, excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(view, mutableListOf<ActionBarPopupItem>().apply {
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(mutableListOf<ActionBarPopupItem>().apply {
             if (!presenter.isFoldersInSelection()) add(SelectActionBarPopup.Download)
         })
     }
