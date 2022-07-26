@@ -223,10 +223,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override val presenter: BaseStorageDocsPresenter<out BaseStorageDocsView>
         get() = getDocsPresenter()
 
-    override fun onUpdateItemFavorites() {
-        // Stub
-    }
-
     override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
         super.showMainActionBarMenu(listOf(MainActionBarPopup.Type, MainActionBarPopup.Author))
     }

@@ -264,8 +264,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun onUpdateItemFavorites() { }
-
     override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
         super.showMainActionBarMenu(
             listOf(
