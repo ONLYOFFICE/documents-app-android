@@ -438,6 +438,22 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         onScrollToPosition(0)
     }
 
+    override val selectActionBarClickListener: (ActionBarPopupItem) -> Unit = {
+        when (it) {
+            SelectActionBarPopup.Copy -> {
+                operation = Operation.COPY
+                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
+            }
+            SelectActionBarPopup.Move -> {
+                operation = Operation.MOVE
+                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
+            }
+            else -> {
+                super.selectActionBarClickListener(it)
+            }
+        }
+    }
+
     companion object {
         val TAG: String = DocsOnDeviceFragment::class.java.simpleName
 
