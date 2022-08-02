@@ -255,9 +255,13 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
             }
             ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
-                getString(R.string.dialogs_edit_rename_title), presenter.itemTitle,
-                getString(R.string.dialogs_edit_hint), DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                getString(R.string.dialogs_edit_accept_rename), getString(R.string.dialogs_common_cancel_button)
+                getString(R.string.dialogs_edit_rename_title),
+                presenter.itemTitle,
+                getString(R.string.dialogs_edit_hint),
+                DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
+                getString(R.string.dialogs_edit_accept_rename),
+                getString(R.string.dialogs_common_cancel_button),
+                presenter.itemExtension
             )
             else -> {
             }
