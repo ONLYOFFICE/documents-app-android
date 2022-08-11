@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dialogCommonEditLineLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,16 +10,17 @@
         android:id="@+id/dialogCommonEditLineTextInputLayout"
         style="@style/DialogTextInputLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:suffixTextColor="@color/colorPrimary">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/dialogCommonEditLineValueEdit"
-            android:textAppearance="@style/MediumTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
             android:importantForAutofill="noExcludeDescendants"
-            android:inputType="textNoSuggestions" />
+            android:inputType="textNoSuggestions"
+            android:textAppearance="@style/MediumTextView" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

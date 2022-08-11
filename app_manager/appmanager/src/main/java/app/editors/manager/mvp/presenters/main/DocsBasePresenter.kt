@@ -1204,6 +1204,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             StringUtils.getNameWithoutExtension(item.title)
         } ?: ""
 
+    val itemExtension: String
+        get() = itemClicked?.let { item ->
+            StringUtils.getExtensionFromPath(item.title)
+        } ?: ""
+
     fun setItemsShared(isShared: Boolean) {
         itemClicked?.shared = isShared
     }

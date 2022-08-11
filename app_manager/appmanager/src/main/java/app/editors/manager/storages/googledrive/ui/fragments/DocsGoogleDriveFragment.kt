@@ -77,30 +77,16 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
             ContextBottomDialog.Buttons.MOVE -> presenter.moveContext()
             ContextBottomDialog.Buttons.COPY -> presenter.copy()
             ContextBottomDialog.Buttons.DOWNLOAD -> onFileDownloadPermission()
-            ContextBottomDialog.Buttons.RENAME -> if (presenter.itemClicked is CloudFile) {
-                showEditDialogRename(
-                    getString(R.string.dialogs_edit_rename_title),
-                    StringUtils.getNameWithoutExtension(presenter.itemTitle),
-                    getString(R.string.dialogs_edit_hint),
-                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                    getString(R.string.dialogs_edit_accept_rename),
-                    getString(R.string.dialogs_common_cancel_button))
-            } else {
-                showEditDialogRename(
-                    getString(R.string.dialogs_edit_rename_title),
-                    presenter.itemTitle,
-                    getString(R.string.dialogs_edit_hint),
-                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                    getString(R.string.dialogs_edit_accept_rename),
-                    getString(R.string.dialogs_common_cancel_button))
-            }
-            ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
-                getString(R.string.dialogs_question_delete),
+            ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
+                getString(R.string.dialogs_edit_rename_title),
                 presenter.itemTitle,
-                getString(R.string.dialogs_question_accept_remove),
+                getString(R.string.dialogs_edit_hint),
+                DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
+                getString(R.string.dialogs_edit_accept_rename),
                 getString(R.string.dialogs_common_cancel_button),
-                DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
+                presenter.itemExtension
             )
+
             ContextBottomDialog.Buttons.EXTERNAL -> {
                 presenter.externalLink
             }

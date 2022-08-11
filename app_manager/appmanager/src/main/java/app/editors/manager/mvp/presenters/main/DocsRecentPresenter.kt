@@ -328,33 +328,37 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     } else {
                         openLocalFile(Uri.fromFile(File(path)))
                     }
+                    addRecent(recent)
                 }
             }
         } else {
-            checkCloudFile(recent)
-        }
-        addRecent(recent)
-    }
-
-    private fun checkCloudFile(recent: Recent) {
-        CoroutineScope(Dispatchers.Default).launch {
-            recent.ownerId?.let { id ->
-                accountDao.getAccount(id)?.let { recentAccount ->
-                    if (!recentAccount.isOnline) {
-                        withContext(Dispatchers.Main) {
-                            viewState.onError(context.getString(R.string.error_recent_enter_account))
-                        }
-                    } else if (recentAccount.isWebDav) {
-                        openWebDavFile(recent)
-                    } else if (recentAccount.isDropbox || recentAccount.isGoogleDrive || recentAccount.isOneDrive) {
-                        openStorageFile(recent = recent, recentAccount)
-                    } else {
-                        openFile(recent)
-                    }
+            CoroutineScope(Dispatchers.Default).launch {
+                if (checkCloudFile(recent, position)) {
+                    addRecent(recent)
                 }
-
             }
         }
+    }
+
+    private suspend fun checkCloudFile(recent: Recent, position: Int): Boolean {
+        recent.ownerId?.let { id ->
+            accountDao.getAccount(id)?.let { recentAccount ->
+                if (!recentAccount.isOnline) {
+                    withContext(Dispatchers.Main) {
+                        viewState.onError(context.getString(R.string.error_recent_enter_account))
+                    }
+                    return false
+                } else if (recentAccount.isWebDav) {
+                    openWebDavFile(recent, position)
+                } else if (recentAccount.isDropbox || recentAccount.isGoogleDrive || recentAccount.isOneDrive) {
+                    openStorageFile(recent = recent, recentAccount)
+                } else {
+                    openFile(recent)
+                }
+                return true
+            }
+        }
+        return false
     }
 
     private fun openStorageFile(recent: Recent, recentAccount: CloudAccount) {
@@ -400,7 +404,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private suspend fun openWebDavFile(recent: Recent) {
+    private suspend fun openWebDavFile(recent: Recent, position: Int) {
         accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
             WebDavFileProvider(
                 context.webDavApi(),

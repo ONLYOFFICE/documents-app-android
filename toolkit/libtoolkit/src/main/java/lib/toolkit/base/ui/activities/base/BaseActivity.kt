@@ -291,7 +291,8 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         editHint: String? = null,
         acceptTitle: String? = null,
         cancelTitle: String? = null,
-        tag: String? = null
+        tag: String? = null,
+        suffix: String? = null
     ): EditLineHolder.Builder? {
         return commonDialog?.editLine()?.apply {
             setTopTitle(title)
@@ -301,6 +302,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
             setAcceptTitle(acceptTitle)
             setCancelTitle(cancelTitle)
             setTag(tag)
+            setSuffix(suffix)
         }
     }
 
@@ -426,19 +428,19 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         bottomTitle: String?,
         value: String?,
         editHint: String?,
-        endHint: String?,
         acceptTitle: String?,
         cancelTitle: String?,
         isPassword: Boolean = false,
         error: String?,
         tag: String?,
-        tintColor: Int? = null
+        tintColor: Int? = null,
+        suffix: String? = null
     ) {
         getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)?.run {
-            setEditHintValue(endHint)
             setIsPassword(isPassword)
             setError(error)
             setColorTint(tintColor)
+            setSuffix(suffix)
             show()
         }
     }

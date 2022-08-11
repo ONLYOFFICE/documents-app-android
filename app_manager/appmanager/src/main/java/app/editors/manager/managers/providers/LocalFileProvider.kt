@@ -35,15 +35,10 @@ class LocalFileProvider(private val localContentTools: LocalContentTools) : Base
                 }
             }
             .flatMap { files: List<File?> -> Observable.just(getExplorer(files, File(checkNotNull(id)))) }
-            .map { explorer: Explorer -> sortExplorer(explorer, filter) }
             .flatMap { explorer: Explorer ->
-                filter?.let {
-                    if (it.containsKey("filterValue")) {
-                        return@flatMap getFilterExplorer(explorer, it["filterValue"])
-                    }
-                }
-                Observable.just(explorer)
+                getFilterExplorer(explorer, filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE))
             }
+            .map { explorer: Explorer -> sortExplorer(explorer, filter) }
     }
 
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
@@ -237,8 +232,8 @@ class LocalFileProvider(private val localContentTools: LocalContentTools) : Base
         var tempExplorer = Explorer()
         val root = File(id)
         val listFiles = root.listFiles()
-        listFiles?.forEach { item ->
-            if (item.name.lowercase(Locale.getDefault()).contains(value?.lowercase(Locale.getDefault()).toString())) {
+        for (item in listFiles) {
+            if (item.name.contains(value.toString(), true)) {
                 files.add(item)
                 tempExplorer = getExplorer(files, File(id))
             }

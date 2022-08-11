@@ -35,6 +35,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     private var editValue: String? = null
     private var hintValue: String? = null
     private var errorValue: String? = null
+    private var suffixValue: String? = null
     private var colorTint: Int? = null
     private var isPassword: Boolean = false
 
@@ -94,6 +95,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             }
 
             editInputLayout?.apply {
+                suffixText = suffixValue.orEmpty()
                 hintValue?.let(::setHint)
                 if (!errorValue.isNullOrEmpty()) {
                     isErrorEnabled = true
@@ -234,6 +236,11 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
         fun setColorTint(int: Int?): Builder {
             colorTint = int
+            return this
+        }
+
+        fun setSuffix(value: String?): Builder {
+            suffixValue = value
             return this
         }
 
