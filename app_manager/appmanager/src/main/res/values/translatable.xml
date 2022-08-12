@@ -660,6 +660,6 @@
     <string name="filter_button_reset">RESET</string>
 
     <string name="shortcut_new_doc">New document</string>
-    <string name="shortcut_new_table">New table</string>
+    <string name="shortcut_new_spreadsheet">New spreadsheet</string>
     <string name="shortcut_new_presentation">New presentation</string>
 </resources>

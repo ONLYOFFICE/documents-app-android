@@ -23,7 +23,7 @@
         android:enabled="true"
         android:icon="@drawable/drawable_ic_format_xlsx"
         android:shortcutId="cells"
-        android:shortcutShortLabel="@string/shortcut_new_table">
+        android:shortcutShortLabel="@string/shortcut_new_spreadsheet">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="app.editors.manager.ui.activities.main.OnBoardingActivity"
