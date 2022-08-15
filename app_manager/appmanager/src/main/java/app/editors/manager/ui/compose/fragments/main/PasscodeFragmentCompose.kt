@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.navigation.NavController
 import app.editors.manager.compose.ui.theme.Typography
+import app.editors.manager.managers.utils.BiometricsUtils
 import app.editors.manager.ui.compose.activities.main.PasscodeScreens
 import app.editors.manager.ui.compose.base.CustomAppBar
 import app.editors.manager.ui.compose.base.Spacer
@@ -124,7 +126,7 @@ fun PasscodeLock(
                 color = MaterialTheme.colors.onBackground
             )
 
-            if (isEnablePasscode) {
+            if (isEnablePasscode && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
 
                 Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
 
