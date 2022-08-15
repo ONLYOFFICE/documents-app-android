@@ -90,10 +90,12 @@ fun PasscodeOperation(
 
         val margins = if (UiUtils.isTablet(LocalContext.current)) 128.dp else 32.dp
 
-        LazyRow(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp),
-            horizontalArrangement = Arrangement.SpaceBetween) {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             items(MAX_PASSCODE_LENGTH) {
                 if (!isError) {
                     if (it <= codeCount) {
@@ -121,9 +123,11 @@ fun PasscodeOperation(
 
         Spacer(size = dimensionResource(id = R.dimen.passcode_keyboard_margin))
 
-        LazyColumn(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             items(keyboard.chunked(KEYBOARD_COLUMN_VALUE)) { rowItem ->
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     for (number in rowItem) {
@@ -154,9 +158,11 @@ fun PasscodeOperation(
         }
 
 
-        LazyRow(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp), horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             items(lastRow) { item ->
                 when (item) {
                     KeyboardLastRow.FingerprintImage -> {
@@ -166,10 +172,17 @@ fun PasscodeOperation(
                                     painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
                                     contentDescription = "fingerprint_icon",
                                     tint = MaterialTheme.colors.primary,
-                                    modifier = Modifier.width(68.dp)
+                                    modifier = Modifier
+                                        .width(68.dp)
                                         .height(58.dp)
                                 )
                             }
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .width(68.dp)
+                                    .height(58.dp)
+                            )
                         }
                     }
                     KeyboardLastRow.ImageItem -> {
@@ -183,7 +196,8 @@ fun PasscodeOperation(
                                 painter = painterResource(id = app.editors.manager.R.drawable.ic_backspace),
                                 contentDescription = "backspace_icon",
                                 tint = MaterialTheme.colors.onBackground,
-                                modifier = Modifier.width(68.dp)
+                                modifier = Modifier
+                                    .width(68.dp)
                                     .height(58.dp)
 
                             )
@@ -200,7 +214,10 @@ fun PasscodeOperation(
                             ),
                             elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
                             modifier = Modifier
-                                .padding(bottom = dimensionResource(id = R.dimen.default_margin_xlarge), start = if (fingerprintState == false) 68.dp else 0.dp)
+                                .padding(
+                                    bottom = dimensionResource(id = R.dimen.default_margin_xlarge),
+                                    start = if (fingerprintState == false) 68.dp else 0.dp
+                                )
                                 .width(68.dp)
                                 .height(58.dp)
                         ) {
