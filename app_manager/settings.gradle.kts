@@ -2,6 +2,7 @@ rootProject.name = "app_manager"
 
 include(
     ":appmanager",
+    ":appmanager:docspace",
     ":core",
     ":libtoolkit",
     ":libx2t",
