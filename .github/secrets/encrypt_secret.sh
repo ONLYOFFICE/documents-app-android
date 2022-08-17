@@ -10,6 +10,7 @@ SECRETS=(
     "../../app_manager/Onlyoffice.jks"
     "../../app_manager/appmanager/google-services.json"
     "../../toolkit/libtoolkit/src/main/res/values/auth_strings.xml"
+    "../../app_manager/appmanager/src/main/assets/onlyoffice_82491479-356e-4ee1-928d-f9870b6da6d4.lic"
 )
 
 if [ -z "$GIT_ANDROID_DOCUMENTS_PASSPHRASE" ]
@@ -29,3 +30,4 @@ for secret in ${SECRETS[@]}; do
 done
 
 mv ../../toolkit/libtoolkit/src/main/res/values/auth_strings.xml.gpg ../../app_manager/auth_strings.xml.gpg
+mv ../../app_manager/appmanager/src/main/assets/onlyoffice_82491479-356e-4ee1-928d-f9870b6da6d4.lic.gpg ../../app_manager/onlyoffice_82491479-356e-4ee1-928d-f9870b6da6d4.lic.gpg
