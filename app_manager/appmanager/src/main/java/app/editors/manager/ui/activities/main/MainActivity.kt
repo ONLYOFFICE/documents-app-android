@@ -36,6 +36,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.PermissionUtils
+import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.views.animation.collapse
@@ -192,7 +193,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 }
             }
             if (data != null && data.extras != null) {
-                if (data.extras?.containsKey("fragment_error") == true) {
+                if (data.extras?.contains("fragment_error") == true) {
                     val dialog = getInfoDialog(
                         getString(R.string.app_internal_error),
                         getString(R.string.app_fragment_crash_error),
@@ -250,7 +251,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         savedInstanceState?.let {
             viewBinding.appBarToolbar.bind(Json.decodeFromString(it.getString(ACCOUNT_KEY) ?: ""))
         } ?: run {
-            val isShortcut = intent?.extras?.containsKey("create_type") == true
+            val isShortcut = intent?.extras?.contains("create_type") == true
             presenter.init(isShortcut = isShortcut)
             if (isShortcut) {
                 viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
@@ -263,7 +264,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             }
         }
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-        if (intent.extras?.containsKey(KEY_CODE) == true) {
+        if (intent.extras?.contains(KEY_CODE) == true) {
             presenter.checkPassCode(true)
         } else {
             presenter.checkPassCode()
@@ -666,6 +667,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     private fun isNotification(): Boolean =
-        intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) == true && intent.extras?.containsKey(URL_KEY) == true
+        intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) == true && intent.extras?.contains(URL_KEY) == true
 
 }
