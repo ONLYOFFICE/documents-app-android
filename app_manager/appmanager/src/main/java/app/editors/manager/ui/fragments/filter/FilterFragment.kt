@@ -144,16 +144,9 @@ class FilterFragment : BaseAppFragment(), FilterView {
     private fun initViews() {
         if (presenter.resultCount >= 0) onFilterResult(presenter.resultCount)
         viewBinding?.let { binding ->
-            // Subfolder search is currently only available for personal portals
-            if (App.getApp().accountOnline?.isPersonal() == true) {
-                binding.subfolder.isChecked = presenter.excludeSubfolder
-                binding.subfolder.setOnCheckedChangeListener { _, checked ->
-                    presenter.excludeSubfolder = checked
-                }
-            } else {
-                binding.searchTitle.isVisible = false
-                binding.subfolder.isVisible = false
-                presenter.excludeSubfolder = false
+            binding.subfolder.isChecked = presenter.excludeSubfolder
+            binding.subfolder.setOnCheckedChangeListener { _, checked ->
+                presenter.excludeSubfolder = checked
             }
             binding.showButton.setOnClickListener {
                 if (isTablet) {
