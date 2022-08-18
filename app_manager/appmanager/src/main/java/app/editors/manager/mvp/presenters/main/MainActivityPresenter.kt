@@ -7,6 +7,7 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainActivityView
@@ -60,6 +61,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         preferenceTool.setUserSession()
+        preferenceTool.filter = Filter()
         if (isAppColdStart) {
             isAppColdStart = false
         }
