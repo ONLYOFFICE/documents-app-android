@@ -11,7 +11,7 @@ import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.OperationActivity.OnActionClickListener
-import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.ui.fragments.main.DocsCloudFragment
 
 class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
@@ -86,7 +86,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
             OperationsState.OperationType.COPY -> cloudPresenter.copy()
             OperationsState.OperationType.MOVE -> cloudPresenter.move()
             OperationsState.OperationType.RESTORE -> cloudPresenter.move()
-            else -> { }
+            else -> {}
         }
     }
 
@@ -102,7 +102,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
         arguments?.let {
             sectionType = it.getInt(TAG_OPERATION_SECTION_TYPE)
             operationType = requireActivity().intent
-                    .getSerializableExtra(OperationActivity.TAG_OPERATION_TYPE) as
+                .getSerializableExtra(OperationActivity.TAG_OPERATION_TYPE) as
                     OperationsState.OperationType
             savedInstanceState ?: run {
                 requireActivity().intent
@@ -122,20 +122,15 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
     private fun getDocs() {
         cloudPresenter.isFoldersMode = true
         when (sectionType) {
-            ApiContract.SectionType.CLOUD_USER -> cloudPresenter.getItemsById(DocsMyFragment.ID)
-            ApiContract.SectionType.CLOUD_SHARE -> cloudPresenter.getItemsById(DocsShareFragment.ID)
-            ApiContract.SectionType.CLOUD_COMMON ->
-                cloudPresenter.getItemsById(DocsCommonFragment.ID)
-            ApiContract.SectionType.CLOUD_PROJECTS ->
-                cloudPresenter.getItemsById(DocsProjectsFragment.ID)
+            ApiContract.SectionType.CLOUD_USER -> cloudPresenter.getItemsById(ApiContract.SectionPath.MY)
+            ApiContract.SectionType.CLOUD_SHARE -> cloudPresenter.getItemsById(ApiContract.SectionPath.SHARED)
+            ApiContract.SectionType.CLOUD_COMMON -> cloudPresenter.getItemsById(ApiContract.SectionPath.COMMON)
+            ApiContract.SectionType.CLOUD_PROJECTS -> cloudPresenter.getItemsById(ApiContract.SectionPath.PROJECTS)
         }
     }
 
-    override val section: Int
-        get() = ApiContract.SectionType.UNKNOWN
-
     companion object {
-        val TAG = DocsCloudOperationFragment::class.java.simpleName
+        val TAG: String = DocsCloudOperationFragment::class.java.simpleName
         private const val TAG_OPERATION_SECTION_TYPE = "TAG_OPERATION_SECTION_TYPE"
 
         fun newInstance(sectionType: Int): DocsCloudOperationFragment =

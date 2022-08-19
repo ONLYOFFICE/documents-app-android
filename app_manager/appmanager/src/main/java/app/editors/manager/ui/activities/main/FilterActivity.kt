@@ -22,6 +22,12 @@ class FilterActivity : BaseAppActivity(), IFilterActivity {
         const val KEY_ID = "key_id"
         const val REQUEST_ACTIVITY_FILTERS_CHANGED = 1004
 
+        fun getIntent(fragment: Fragment, folderId: String?): Intent {
+            return  Intent(fragment.requireContext(), FilterActivity::class.java).apply {
+                putExtra(KEY_ID, folderId)
+            }
+        }
+
         fun show(fragment: Fragment, folderId: String?) {
             fragment.startActivityForResult(
                 Intent(fragment.requireContext(), FilterActivity::class.java)

@@ -189,6 +189,16 @@ object ApiContract {
         const val DEVICE_DOCUMENTS = 9
         const val CLOUD_FAVORITES = 10
         const val CLOUD_RECENT = 11
+        const val CLOUD_PRIVATE_ROOM = 13
+    }
+
+    object SectionPath {
+        const val MY = "@my"
+        const val COMMON = "@common"
+        const val SHARED = "@share"
+        const val PROJECTS = "@projects"
+        const val TRASH = "@trash"
+        const val FAVORITES = "@favorites"
     }
 
     object Operation {

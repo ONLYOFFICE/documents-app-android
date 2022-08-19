@@ -17,15 +17,6 @@ import java.util.*
 
 class CloudFileProvider : BaseFileProvider {
 
-    enum class Section(var path: String) {
-        My("@my"),
-        Common("@common"),
-        Shared("@share"),
-        Projects("@projects"),
-        Trash("@trash"),
-        Favorites("@favorites")
-    }
-
     var api: Api = App.getApp().getApi()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {

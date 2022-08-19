@@ -2,8 +2,10 @@ package app.editors.manager.ui.fragments.main
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.clearFragmentResultListener
 import app.documents.core.network.ApiContract
@@ -35,10 +37,16 @@ import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
-abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
+open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     @InjectPresenter
     lateinit var cloudPresenter: DocsCloudPresenter
+
+    private val filterActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            onRefresh()
+        }
+    }
 
     @ProvidePresenter
     fun providePresenter(): DocsCloudPresenter {
@@ -59,17 +67,12 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     onRefresh()
                 }
                 BaseActivity.REQUEST_ACTIVITY_STORAGE -> {
-                    val folder =
-                        data?.getSerializableExtra(StorageActivity.TAG_RESULT) as CloudFolder?
-                    cloudPresenter.addFolderAndOpen(
-                        folder,
-                        linearLayoutManager!!.findFirstVisibleItemPosition()
-                    )
+                    val folder = data?.getSerializableExtra(StorageActivity.TAG_RESULT) as CloudFolder?
+                    cloudPresenter.addFolderAndOpen(folder, linearLayoutManager?.findFirstVisibleItemPosition() ?: -1)
                 }
                 BaseActivity.REQUEST_ACTIVITY_SHARE -> {
                     if (data?.hasExtra(ShareActivity.TAG_RESULT) == true) {
-                        cloudPresenter.setItemsShared(data
-                            .getBooleanExtra(ShareActivity.TAG_RESULT, false))
+                        cloudPresenter.setItemsShared(data.getBooleanExtra(ShareActivity.TAG_RESULT, false))
                     }
                 }
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
@@ -90,6 +93,11 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init()
     }
 
     override fun onActionBarTitle(title: String) {
@@ -158,7 +166,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             ActionBottomDialog.Buttons.STORAGE -> {
                 showStorageActivity(cloudPresenter.isUserSection)
             }
-            else -> { }
+            else -> {}
         }
     }
 
@@ -194,7 +202,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             ContextBottomDialog.Buttons.FAVORITE_ADD -> cloudPresenter.addToFavorite()
             ContextBottomDialog.Buttons.FAVORITE_DELETE -> cloudPresenter.deleteFromFavorite()
             ContextBottomDialog.Buttons.OPEN_LOCATION -> cloudPresenter.openLocation()
-            else -> { }
+            else -> {}
         }
     }
 
@@ -229,6 +237,9 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
      * */
     override fun onScrollPage() {
         cloudPresenter.initViews()
+        if (cloudPresenter.stack == null) {
+            cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
+        }
     }
 
     override fun onResume() {
@@ -283,12 +294,32 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override val isWebDav: Boolean
         get() = false
 
-    protected abstract val section: Int
+    protected val section: Int
+        get() = arguments?.getInt(KEY_SECTION) ?: ApiContract.SectionType.UNKNOWN
 
     private fun disableMenu() {
         menu?.let {
             deleteItem?.isEnabled = false
         }
+    }
+
+    private fun init() {
+        explorerAdapter?.isSectionMy = section == ApiContract.SectionType.CLOUD_USER
+        cloudPresenter.checkBackStack()
+    }
+
+    override fun onSwipeRefresh(): Boolean {
+        if (!super.onSwipeRefresh()) {
+            cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
+            return true
+        }
+        return false
+    }
+
+    override fun onStateEmptyBackStack() {
+        super.onStateEmptyBackStack()
+        swipeRefreshLayout?.isRefreshing = true
+        cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
     }
 
     private fun getFilters(): Boolean {
@@ -308,7 +339,8 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
         } else {
-            FilterActivity.show(this, presenter.folderId)
+            filterActivity.launch(FilterActivity.getIntent(this, presenter.folderId))
+//            FilterActivity.show(this, presenter.folderId)
         }
     }
 
@@ -316,6 +348,18 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         get() = presenter.isRoot
 
     companion object {
-        var KEY_ACCOUNT = "key_account"
+        const val KEY_SECTION = "section"
+        const val KEY_PATH = "path"
+        const val KEY_ACCOUNT = "key_account"
+
+        fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
+            return DocsCloudFragment().apply {
+                arguments = Bundle(3).apply {
+                    putString(KEY_ACCOUNT, stringAccount)
+                    putString(KEY_PATH, rootPath)
+                    putInt(KEY_SECTION, section)
+                }
+            }
+        }
     }
 }
