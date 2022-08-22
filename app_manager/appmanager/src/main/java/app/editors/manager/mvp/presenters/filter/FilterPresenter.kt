@@ -21,8 +21,7 @@ class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>
     var excludeSubfolder: Boolean = false
         set(value) {
             field = value
-            saveFilter()
-            viewState.updateViewState(isChanged = false)
+            update()
         }
 
     private val filters: Map<String, String>
@@ -30,6 +29,9 @@ class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>
             put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filterType.filterVal)
             if (filterAuthor.isNotEmpty())
                 put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filterAuthor.id)
+            if (filterType != FilterType.None) {
+                put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!excludeSubfolder).toString())
+            }
         }
 
     val hasFilter: Boolean
