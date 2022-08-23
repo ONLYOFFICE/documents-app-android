@@ -328,6 +328,7 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isGoogleDrive: Boolean = false,
         var isVisitor: Boolean = false,
         var isCanOpenLocation: Boolean = false,
+        var isRoom: Boolean = false,
     ) : Serializable
 }
 

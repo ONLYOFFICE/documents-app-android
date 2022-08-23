@@ -29,6 +29,14 @@ public class CloudFolder extends Item implements Serializable, Entity, Cloneable
     @Expose
     private String providerKey = "";
 
+    @SerializedName("pinned")
+    @Expose
+    private Boolean pinned = false;
+
+    @SerializedName("roomType")
+    @Expose
+    private int roomType = -1;
+
     private String etag = "";
 
     public String getParentId() {
@@ -69,6 +77,26 @@ public class CloudFolder extends Item implements Serializable, Entity, Cloneable
 
     public void setEtag(String etag) {
         this.etag = etag;
+    }
+
+    public Boolean getPinned() {
+        return pinned;
+    }
+
+    public void setPinned(Boolean pinned) {
+        this.pinned = pinned;
+    }
+
+    public int getRoomType() {
+        return roomType;
+    }
+
+    public void setRoomType(int roomType) {
+        this.roomType = roomType;
+    }
+
+    public boolean isRoom() {
+        return roomType != -1;
     }
 
     public void setFolder(CloudFolder folder) {

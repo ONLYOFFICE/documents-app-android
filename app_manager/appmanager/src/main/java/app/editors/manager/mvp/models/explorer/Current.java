@@ -65,6 +65,14 @@ public class Current implements Cloneable, Serializable {
     @Expose
     private boolean providerItem;
 
+    @SerializedName("pinned")
+    @Expose
+    private Boolean pinned = false;
+
+    @SerializedName("roomType")
+    @Expose
+    private int roomType = -1;
+
     public String getParentId() {
         return parentId;
     }
@@ -175,6 +183,22 @@ public class Current implements Cloneable, Serializable {
 
     public void setProviderItem(boolean providerItem) {
         this.providerItem = providerItem;
+    }
+
+    public Boolean getPinned() {
+        return pinned;
+    }
+
+    public void setPinned(Boolean pinned) {
+        this.pinned = pinned;
+    }
+
+    public int getRoomType() {
+        return roomType;
+    }
+
+    public void setRoomType(int roomType) {
+        this.roomType = roomType;
     }
 
     @Override

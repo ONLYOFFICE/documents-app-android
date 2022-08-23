@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.Capabilities
+import app.documents.core.network.models.login.response.ResponseAllSettings
 import app.documents.core.network.models.login.response.ResponseCapabilities
 import app.documents.core.network.models.login.response.ResponseSettings
 import app.editors.manager.R
@@ -108,9 +109,11 @@ class EnterprisePortalViewModel: BaseLoginViewModel() {
                                 true
                             )
                         }
-                    } else {
+                    } else if (response.response is ResponseSettings) {
                         networkSettings.serverVersion =
                             (response.response as ResponseSettings).response.communityServer ?: ""
+                    } else if (response.response is ResponseAllSettings) {
+                        networkSettings.isDocSpace = (response.response as ResponseAllSettings).response.docSpace
                     }
                 } else {
                     fetchError((response as LoginResponse.Error).error)

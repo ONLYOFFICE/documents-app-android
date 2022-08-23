@@ -36,6 +36,13 @@ interface LoginService {
     @GET("api/" + ApiContract.API_VERSION + "/settings/version/build" + ApiContract.RESPONSE_FORMAT)
     fun getSettings(): Single<Response<ResponseSettings>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/settings" + ApiContract.RESPONSE_FORMAT)
+    fun getAllSettings(): Single<Response<ResponseAllSettings>>
+
     /*
      * Auth with SMS code
      * */

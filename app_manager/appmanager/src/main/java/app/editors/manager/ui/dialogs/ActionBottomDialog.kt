@@ -12,7 +12,7 @@ import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 class ActionBottomDialog : BaseBottomDialog() {
 
     enum class Buttons {
-        NONE, SHEET, PRESENTATION, DOC, FOLDER, PHOTO, UPLOAD, STORAGE, IMPORT
+        NONE, SHEET, PRESENTATION, DOC, FOLDER, PHOTO, UPLOAD, STORAGE, IMPORT, ROOM
     }
 
     interface OnClickListener {
@@ -25,6 +25,7 @@ class ActionBottomDialog : BaseBottomDialog() {
     var isDocs = true
     var isLocal = false
     var isWebDav = false
+    var isRoom = false
     var onClickListener: OnClickListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

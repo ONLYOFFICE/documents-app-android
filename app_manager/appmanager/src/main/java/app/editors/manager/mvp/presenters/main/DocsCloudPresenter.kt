@@ -649,7 +649,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
      * A&(B&(Cv(D&!E)))v((FvGvH)&D&!E)
      * */
     private val isContextEditable: Boolean
-        get() = isUserSection || isCommonSection && (isAdmin || isContextReadWrite && !isRoot) ||
+        get() = isUserSection || isCommonSection || isRoom && (isAdmin || isContextReadWrite && !isRoot) ||
                 (isShareSection || isProjectsSection || isBunchSection) && isContextReadWrite && !isRoot
 
     /*
@@ -679,6 +679,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private val isBunchSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_BUNCH
+
+    private val isRoom: Boolean
+        get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM
 
     private val isClickedItemShared: Boolean
         get() = itemClicked?.shared == true

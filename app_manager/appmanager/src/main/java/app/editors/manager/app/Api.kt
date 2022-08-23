@@ -17,14 +17,14 @@ import app.documents.core.network.models.login.response.ResponseUser
 
 interface Api {
 
-    @GET("api/" + ApiContract.API_VERSION + "/files/thirdparty/capabilities" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/files/thirdparty/capabilities")
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     fun thirdpartyCapabilities(): Single<ResponseBody>
 
-    @GET("api/" + ApiContract.API_VERSION + "/files/thirdparty" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/files/thirdparty")
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
@@ -34,7 +34,7 @@ interface Api {
     /*
      * Counts of users
      * */
-    @GET("api/" + ApiContract.API_VERSION + "/portal/userscount" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/portal/userscount")
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
@@ -44,7 +44,7 @@ interface Api {
     /*
      * Users info
      * */
-    @GET("api/" + ApiContract.API_VERSION + "/people/@self" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/people/@self")
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
@@ -58,7 +58,7 @@ interface Api {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/{item_id}" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/files/{item_id}")
     fun getItemById(
         @Path(value = "item_id") folderId: String,
         @QueryMap options: Map<String, String>?
@@ -69,7 +69,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/@search/{query}" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/files/@search/{query}")
     fun search(@Path(value = "query") query: String): Observable<Response<ResponseBody>>
 
     /*
@@ -79,7 +79,7 @@ interface Api {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/file" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/file")
     fun createDocs(
         @Path(value = "folder_id") folderId: String,
         @Body body: RequestCreate
@@ -92,7 +92,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
     fun getFileInfo(@Path(value = "file_id") fileId: String?): Observable<Response<ResponseFile>>
 
     /*
@@ -102,7 +102,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/files/folder/{folder_id}" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/files/folder/{folder_id}")
     fun createFolder(
         @Path(value = "folder_id") folderId: String,
         @Body body: RequestCreate
@@ -115,7 +115,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/delete" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/delete")
     fun deleteBatch(@Body body: RequestBatchBase): Call<ResponseOperation>
 
     /*
@@ -125,7 +125,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/move" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/move")
     fun move(@Body body: RequestBatchOperation): Observable<Response<ResponseOperation>>
 
     /*
@@ -135,7 +135,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/copy" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/copy")
     fun copy(@Body body: RequestBatchOperation): Observable<Response<ResponseOperation>>
 
     /*
@@ -145,7 +145,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/terminate" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/terminate")
     fun terminate(): Call<ResponseOperation>
 
     /*
@@ -155,7 +155,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/fileops" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/files/fileops")
     fun status(): Single<ResponseOperation>
 
     /*
@@ -165,7 +165,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{folder_id}" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{folder_id}")
     fun renameFolder(
         @Path(value = "folder_id") folderId: String,
         @Body body: RequestTitle
@@ -178,7 +178,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{file_id}" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
     fun renameFile(
         @Path(value = "file_id") folderId: String,
         @Body body: RequestRenameFile
@@ -191,7 +191,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/{file_id}/sharedlink" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/{file_id}/sharedlink")
     fun getExternalLink(
         @Path(value = "file_id") fileId: String,
         @Body body: RequestExternal
@@ -206,7 +206,7 @@ interface Api {
     )
     @HTTP(
         method = "DELETE",
-        path = "api/" + ApiContract.API_VERSION + "/files/share" + ApiContract.RESPONSE_FORMAT,
+        path = "api/" + ApiContract.API_VERSION + "/files/share",
         hasBody = true
     )
     fun deleteShare(@Body body: RequestDeleteShare): Call<Base>
@@ -215,7 +215,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/people/{user_id}" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/people/{user_id}")
     fun updateUser(
         @Path(value = "user_id") userId: String,
         @Body body: RequestUser
@@ -228,7 +228,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/portal" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/portal")
     fun getPortal(@Header(ApiContract.HEADER_AUTHORIZATION) token: String): Call<ResponsePortal>
 
     /*
@@ -238,7 +238,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/emptytrash" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/emptytrash")
     fun emptyTrash(): Observable<Response<ResponseOperation>>
 
     /*
@@ -248,14 +248,14 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/files/thirdparty" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/files/thirdparty")
     fun connectStorage(@Body body: RequestStorage): Observable<ResponseFolder>
 
     @Headers(
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @DELETE("api/" + ApiContract.API_VERSION + "/files/thirdparty/{folder_id}" + ApiContract.RESPONSE_FORMAT)
+    @DELETE("api/" + ApiContract.API_VERSION + "/files/thirdparty/{folder_id}")
     fun deleteStorage(@Path(value = "folder_id") id: String): Observable<Response<ResponseBody>>
 
     /*
@@ -265,35 +265,35 @@ interface Api {
     @GET
     fun downloadFile(@Url url: String, @Header("Cookie") cookie: String): Call<ResponseBody>
 
-    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/bulkdownload" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/bulkdownload")
     fun downloadFiles(@Body requestDownload: RequestDownload): Single<ResponseDownload>
 
     /*
      * Upload  file
      * */
     @Multipart
-    @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/upload" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/upload")
     fun uploadFile(
         @Path(value = "folder_id") folderId: String,
         @Part part: MultipartBody.Part
     ): Call<ResponseFile>
 
     @Multipart
-    @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/upload" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/upload")
     fun uploadMultiFiles(
         @Path(value = "folder_id") folderId: String,
         @Part part: Array<MultipartBody.Part>
     ): Single<Response<ResponseBody>>
 
     @Multipart
-    @POST("api/" + ApiContract.API_VERSION + "/files/@my/upload" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/files/@my/upload")
     fun uploadFileToMy(@Part part: MultipartBody.Part): Call<ResponseFile>
 
     /*
      * Insert  file
      * */
     @Multipart
-    @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/insert" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/insert")
     fun insertFile(
         @Header(ApiContract.HEADER_AUTHORIZATION) token: String,
         @Path(value = "folder_id") folderId: String,
@@ -305,7 +305,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/fileops/move" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/files/fileops/move")
     fun checkFiles(
         @Query("destFolderId") destFolderId: String?,
         @Query("folderIds") folderIds: List<String>?,
@@ -316,14 +316,14 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/settings/security" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/settings/security")
     fun getModules(@Query("ids") modulesIds: List<String>): Observable<ResponseModules>
 
     @Headers(
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/files/favorites" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/files/favorites")
     fun addToFavorites(@Body body: RequestFavorites): Observable<Response<Base>>
 
     @Headers(
@@ -332,7 +332,7 @@ interface Api {
     )
     @HTTP(
         method = "DELETE",
-        path = "api/" + ApiContract.API_VERSION + "/files/favorites" + ApiContract.RESPONSE_FORMAT,
+        path = "api/" + ApiContract.API_VERSION + "/files/favorites",
         hasBody = true
     )
     fun deleteFromFavorites(@Body body: RequestFavorites): Observable<Response<Base>>
@@ -341,7 +341,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/@root" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/files/@root")
     fun getRootFolder(
         @QueryMap filterMap: Map<String, Int>,
         @QueryMap flagMap: Map<String, Boolean>
@@ -351,7 +351,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/settings/push/docregisterdevice" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/settings/push/docregisterdevice")
     fun registerDevice(
         @Body body: RequestDeviceToken,
     ): Single<Response<ResponseBody>>
@@ -360,7 +360,7 @@ interface Api {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/settings/push/docsubscribe" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/settings/push/docsubscribe")
     fun subscribe(
         @Body body: RequestPushSubscribe
     ): Single<Response<ResponseBody>>

@@ -21,7 +21,7 @@ class CloudFileProvider : BaseFileProvider {
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return id?.let {
-            api.getItemById(it, filter)
+            api.getItemById(it, mapOf())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { responseExplorerResponse: Response<ResponseExplorer> ->

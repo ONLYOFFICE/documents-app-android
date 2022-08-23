@@ -190,6 +190,17 @@ object ApiContract {
         const val CLOUD_FAVORITES = 10
         const val CLOUD_RECENT = 11
         const val CLOUD_PRIVATE_ROOM = 13
+        const val CLOUD_VIRTUAL_ROOM = 14
+        const val CLOUD_FILLING_FORMS_ROOM = 15
+        const val CLOUD_EDITING_ROOM = 16
+        const val CLOUD_REVIEW_ROOM = 17
+        const val CLOUD_READ_ONLY_ROOM = 18
+        const val CLOUD_CUSTOM_ROOM = 19
+        const val CLOUD_ARCHIVE_ROOM = 20
+
+        fun isRoom(type: Int): Boolean {
+            return type >= 14
+        }
     }
 
     object SectionPath {

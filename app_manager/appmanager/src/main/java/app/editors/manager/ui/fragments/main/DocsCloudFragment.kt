@@ -26,7 +26,6 @@ import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.*
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
-import app.editors.manager.ui.dialogs.MoveCopyDialog.Companion.newInstance
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
@@ -152,7 +151,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showMoveCopyDialog(names: ArrayList<String>, action: String, titleFolder: String) {
-        moveCopyDialog = newInstance(names, action, titleFolder)
+        moveCopyDialog = MoveCopyDialog.newInstance(names, action, titleFolder)
         moveCopyDialog?.dialogButtonOnClick = this
         moveCopyDialog?.show(parentFragmentManager, MoveCopyDialog.TAG)
     }
@@ -340,7 +339,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 }
         } else {
             filterActivity.launch(FilterActivity.getIntent(this, presenter.folderId))
-//            FilterActivity.show(this, presenter.folderId)
         }
     }
 
