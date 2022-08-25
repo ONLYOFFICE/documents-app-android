@@ -177,12 +177,6 @@ fun PasscodeOperation(
                                         .height(58.dp)
                                 )
                             }
-                        } else {
-                            Box(
-                                modifier = Modifier
-                                    .width(68.dp)
-                                    .height(58.dp)
-                            )
                         }
                     }
                     KeyboardLastRow.ImageItem -> {
@@ -216,7 +210,7 @@ fun PasscodeOperation(
                             modifier = Modifier
                                 .padding(
                                     bottom = dimensionResource(id = R.dimen.default_margin_xlarge),
-                                    start = if (fingerprintState == false) 68.dp else 0.dp
+                                    start = if (fingerprintState == false || !isEnterCodeFragment) 68.dp else 0.dp
                                 )
                                 .width(68.dp)
                                 .height(58.dp)
