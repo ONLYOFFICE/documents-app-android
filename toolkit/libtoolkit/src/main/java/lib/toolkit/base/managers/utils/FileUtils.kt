@@ -146,7 +146,7 @@ object FileUtils {
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
     @JvmOverloads
-    fun assetUnpack(context: Context, from: List<String>, isExternal: Boolean = true): String? {
+    fun assetUnpack(context: Context, from: List<String>, isExternal: Boolean = true, delete: Boolean = false): String? {
         val path = "${getCachePath(context, isExternal)}/assets"
 
         val packVersion = readSdkVersion(context, "sdk.version")
@@ -157,7 +157,7 @@ object FileUtils {
                 it.readText()
             }
 
-            if (packVersion == localVersion) {
+            if (packVersion == localVersion && !delete) {
                 return path
             }
         }
@@ -534,9 +534,10 @@ object FileUtils {
         return getDefault(templates, extension)
     }
 
+
     private fun getDefault(templates: Array<String>?, extension: String): String? {
         val default = "empty-en$extension"
-        templates!!.forEach { template ->
+        templates?.forEach { template ->
             if (template == default) {
                 return template
             }
@@ -544,12 +545,23 @@ object FileUtils {
         return ""
     }
 
+    fun getFontsDir(context: Context): String {
+        val path = "${context.filesDir.path}/Fonts"
+
+        val folder = File(path)
+        if (!folder.exists()) {
+            folder.mkdir()
+        }
+        return path
+
+    }
+
     @JvmStatic
     fun getSize(file: File?): Long {
         return if (file != null && file.exists()) {
             var result: Long = 0
             val files = file.listFiles()
-            files.forEach {
+            files?.forEach {
                 result += if (it.isDirectory) {
                     getSize(it)
                 } else {
@@ -577,6 +589,7 @@ object FileUtils {
         fun onProgress(total: Long, progress: Long): Boolean
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     @JvmStatic
     fun downloadFromUrl(
         context: Context,
