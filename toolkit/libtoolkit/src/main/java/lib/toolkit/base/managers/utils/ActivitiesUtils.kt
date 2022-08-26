@@ -310,6 +310,20 @@ class ImagePicker(
 
 }
 
+class FontPicker(
+    private val activityResultRegistry: ActivityResultRegistry,
+    private val callback: (uris: List<Uri>?) -> Unit
+) {
+
+    private val getContent: ActivityResultLauncher<String> =
+        activityResultRegistry.register("Font", ActivityResultContracts.GetMultipleContents(), callback)
+
+    fun pickFonts() {
+        getContent.launch("font/*")
+    }
+
+}
+
 fun Bundle.contains(key: String): Boolean {
     return try {
         this.containsKey(key)
