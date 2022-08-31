@@ -5,9 +5,9 @@ import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.KeyStoreUtils
 import lib.toolkit.base.managers.utils.SingleLiveEvent
 
-sealed class PasscodeLockState() {
-    class SetPasscode(): PasscodeLockState()
-    class ConfirmPasscode(): PasscodeLockState()
+sealed class PasscodeLockState {
+    object SetPasscode : PasscodeLockState()
+    object ConfirmPasscode : PasscodeLockState()
     data class Error(val errorMessage: String): PasscodeLockState()
 }
 
@@ -73,7 +73,7 @@ class SetPasscodeViewModel(private val preferencesTool: PreferenceTool): ViewMod
         if(code.length < MAX_PASSCODE_LENGTH) {
             code += digit
             if(code.length == MAX_PASSCODE_LENGTH) {
-                _passcodeLockState.value = PasscodeLockState.SetPasscode()
+                _passcodeLockState.value = PasscodeLockState.SetPasscode
             }
         }
     }
@@ -85,7 +85,7 @@ class SetPasscodeViewModel(private val preferencesTool: PreferenceTool): ViewMod
             if(confirmCode.length == MAX_PASSCODE_LENGTH ) {
                 if(confirmCode == if(code.isEmpty()) passcode.value else code) {
                     code = ""
-                    _passcodeLockState.value = PasscodeLockState.ConfirmPasscode()
+                    _passcodeLockState.value = PasscodeLockState.ConfirmPasscode
                 } else {
                     setError(true)
                     code = ""

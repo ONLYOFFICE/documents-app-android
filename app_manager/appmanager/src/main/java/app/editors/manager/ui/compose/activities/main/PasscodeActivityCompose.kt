@@ -3,6 +3,7 @@ package app.editors.manager.ui.compose.activities.main
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -98,6 +99,13 @@ private fun EnterPasscode(
             }
         }
     }
+
+    LaunchedEffect(key1 = null, block = {
+        if (viewModel.isFingerprintEnable.value == true) {
+            viewModel.biometric.value = true
+        }
+    })
+
     PasscodeOperation(
         viewModel = viewModel,
         title = stringResource(R.string.app_settings_passscode_enter_full_title),
