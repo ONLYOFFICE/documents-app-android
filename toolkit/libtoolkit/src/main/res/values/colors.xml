@@ -27,6 +27,13 @@
     <color name="colorAppBar">@color/colorWhite</color>
     <color name="colorBottomBar">#FF0D3F6D</color>
 
+    <color name="colorPropertyToolbar">@color/colorWhite</color>
+    <color name="colorPropertyOnToolbar">#DE000000</color>
+    <color name="colorPropertyOnToolbarSecondary">#99000000</color>
+    <color name="colorPropertyOnToolbarActive">?attr/colorPrimary</color>
+
+    <color name="colorButtonBackground">#EFF0F5</color>
+
     <color name="colorDark">#de000000</color>
     <color name="colorDarkGrey">#b2000000</color>
     <color name="colorGrey">#8a000000</color>
