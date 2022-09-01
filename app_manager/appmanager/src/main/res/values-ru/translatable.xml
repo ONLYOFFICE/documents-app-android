@@ -455,8 +455,6 @@
     <string name="auth_edit_hint">Код</string>
     <string name="app_settings_security">Безопасность</string>
     <string name="app_settings_passcode">Код блокировки</string>
-    <string name="app_settings_disable">Отключить</string>
-    <string name="app_settings_enable">Включить</string>
     <string name="app_Settings_passcode_enable">Включить код доступа</string>
     <string name="app_settings_passcode_change">Изменить код доступа</string>
     <string name="app_settings_passcode_fingerprint">Использовать отпечаток пальца для разблокировки</string>

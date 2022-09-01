@@ -503,8 +503,8 @@
     <string name="auth_edit_hint">代码</string>
     <string name="app_settings_security">安全性</string>
     <string name="app_settings_passcode">密码锁</string>
-    <string name="app_settings_disable">禁用</string>
-    <string name="app_settings_enable">启用</string>
+    <string name="app_settings_disabled">禁用</string>
+    <string name="app_settings_enabled">启用</string>
     <string name="app_Settings_passcode_enable">启用密码</string>
     <string name="app_settings_passcode_change">更改密码</string>
     <string name="app_settings_passcode_fingerprint">使用指纹解锁</string>

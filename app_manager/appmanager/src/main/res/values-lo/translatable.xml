@@ -590,8 +590,6 @@
     <string name="auth_edit_hint">ລະຫັດ</string>
     <string name="app_settings_security">ຄວາມປອດໄພ</string>
     <string name="app_settings_passcode">ລັອກລະຫັດ</string>
-    <string name="app_settings_disable">ປິດໃຊ້ງານ</string>
-    <string name="app_settings_enable">ເປີດ</string>
     <string name="app_Settings_passcode_enable">ເປີດໃຊ້ລະຫັດຜ່ານ</string>
     <string name="app_settings_passcode_change">ປ່ຽນລະຫັດຜ່ານ</string>
     <string name="app_settings_passcode_fingerprint">ໃຊ້ລາຍນິ້ວມືເພື່ອປົດລັອກ</string>

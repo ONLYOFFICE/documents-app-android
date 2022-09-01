@@ -438,8 +438,6 @@
     <string name="auth_edit_hint">Код</string>
     <string name="app_settings_security">Сигурност</string>
     <string name="app_settings_passcode">Заключване с парола</string>
-    <string name="app_settings_disable">Деактивирай</string>
-    <string name="app_settings_enable">Активирай</string>
     <string name="app_Settings_passcode_enable">Активирай парола</string>
     <string name="app_settings_passcode_change">Смени парола</string>
     <string name="app_settings_passcode_fingerprint">Използвайте пръстов отпечатък за отключване</string>

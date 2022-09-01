@@ -437,8 +437,6 @@
     <string name="auth_edit_hint">Kod</string>
     <string name="app_settings_security">Bezpieczeństwo</string>
     <string name="app_settings_passcode">Blokada z kodem dostępu</string>
-    <string name="app_settings_disable">Wyłącz</string>
-    <string name="app_settings_enable">Włącz</string>
     <string name="app_Settings_passcode_enable">Włącz kod dostępu</string>
     <string name="app_settings_passcode_change">Zmień kod dostępu</string>
     <string name="app_settings_passcode_fingerprint">Użyj odcisku palca, aby odblokować</string>

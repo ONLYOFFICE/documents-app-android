@@ -606,8 +606,8 @@
     //passcode
     <string name="app_settings_security">Security</string>
     <string name="app_settings_passcode">Passcode lock</string>
-    <string name="app_settings_disable">Disable</string>
-    <string name="app_settings_enable">Enable</string>
+    <string name="app_settings_disabled">Disabled</string>
+    <string name="app_settings_enabled">Enabled</string>
     <string name="app_Settings_passcode_enable">Enable passcode</string>
     <string name="app_settings_passcode_change">Change passcode</string>
     <string name="app_settings_passcode_fingerprint">Use fingerprint to unlock</string>

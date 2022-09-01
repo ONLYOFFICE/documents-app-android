@@ -447,8 +447,6 @@
     <string name="auth_edit_hint">Code</string>
     <string name="app_settings_security">Sicherheit</string>
     <string name="app_settings_passcode">Passwortsperre</string>
-    <string name="app_settings_disable">Deaktivieren</string>
-    <string name="app_settings_enable">Aktivieren</string>
     <string name="app_Settings_passcode_enable">Passcode aktivieren</string>
     <string name="app_settings_passcode_change">Passcode ändern</string>
     <string name="app_settings_passcode_fingerprint">Fingerabdruck zum Entsperren verwenden</string>

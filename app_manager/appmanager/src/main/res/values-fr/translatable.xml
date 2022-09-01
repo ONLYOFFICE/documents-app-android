@@ -437,8 +437,6 @@
     <string name="auth_edit_hint">Code</string>
     <string name="app_settings_security">Sécurité</string>
     <string name="app_settings_passcode">Code de Verrouillage</string>
-    <string name="app_settings_disable">Désactiver</string>
-    <string name="app_settings_enable">Activer</string>
     <string name="app_Settings_passcode_enable">Activer le code d\'accès</string>
     <string name="app_settings_passcode_change">Modifier le code d\'accès</string>
     <string name="app_settings_passcode_fingerprint">Utiliser l\'empreinte digitale pour déverrouiller</string>

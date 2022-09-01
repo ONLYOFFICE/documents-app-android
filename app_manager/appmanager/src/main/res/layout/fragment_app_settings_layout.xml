@@ -125,7 +125,7 @@
                     android:layout_marginStart="@dimen/default_margin_xlarge"
                     android:layout_marginTop="23dp"
                     android:layout_marginBottom="25dp"
-                    android:src="@drawable/ic_settings_passcode_lock"
+                    android:src="@drawable/ic_passcode_enabled"
                     app:tint="@color/colorOnSurface"
                     tools:ignore="ContentDescription" />
 
@@ -147,7 +147,7 @@
                     android:layout_below="@+id/passcodeTextView"
                     android:layout_marginStart="@dimen/default_margin_xlarge"
                     android:layout_toEndOf="@+id/passcodeImageView"
-                    android:text="@string/app_settings_disable" />
+                    android:text="@string/app_settings_disabled" />
 
             </RelativeLayout>
         </FrameLayout>

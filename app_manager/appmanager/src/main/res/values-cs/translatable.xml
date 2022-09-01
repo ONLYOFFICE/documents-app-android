@@ -579,8 +579,6 @@
     <string name="auth_edit_hint">Kód</string>
     <string name="app_settings_security">Zabezpečení</string>
     <string name="app_settings_passcode">Zámek přístupového kódu</string>
-    <string name="app_settings_disable">Zakázat</string>
-    <string name="app_settings_enable">Povolit</string>
     <string name="app_Settings_passcode_enable">Povolit přístupový kód</string>
     <string name="app_settings_passcode_change">Změnit přístupový kód</string>
     <string name="app_settings_passcode_fingerprint">Pro odemknutí použít otisk prstu</string>
