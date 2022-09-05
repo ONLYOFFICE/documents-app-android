@@ -355,7 +355,7 @@ object UiUtils {
 
     @JvmStatic
     fun setMenuItemTint(context: Context, menuTint: MenuItem, @ColorRes colorRes: Int): MenuItem {
-        menuTint.icon.setColorFilter(
+        menuTint.icon?.setColorFilter(
             ContextCompat.getColor(context, colorRes),
             PorterDuff.Mode.SRC_IN
         )
