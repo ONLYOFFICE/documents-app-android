@@ -1,5 +1,6 @@
 package app.editors.manager.ui.compose.activities.main
 
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ enum class PasscodeScreens(val screen: String){
 @Composable
 fun PasscodeActivity(
     preferenceTool: PreferenceTool,
+    data: Bundle?,
     backPressed: () -> Unit
 ) {
 
@@ -51,7 +53,7 @@ fun PasscodeActivity(
         startDestination = if(!isEnterPasscode) PasscodeScreens.Common.screen else PasscodeScreens.EnterPasscode.screen,
     ) {
         composable(PasscodeScreens.EnterPasscode.screen) {
-            EnterPasscode(navController = navController, viewModel)
+            EnterPasscode(navController = navController, viewModel,data)
         }
         composable(PasscodeScreens.Common.screen) {
             CommonPasscode(navController = navController, viewModel, backPressed)
@@ -74,7 +76,8 @@ fun PasscodeActivity(
 @Composable
 private fun EnterPasscode(
     navController: NavController,
-    viewModel: SetPasscodeViewModel
+    viewModel: SetPasscodeViewModel,
+    data: Bundle?
 ) {
 
     val fingerprintTitle = stringResource(R.string.app_settings_passcode_fingerprint_title)
@@ -91,7 +94,7 @@ private fun EnterPasscode(
                 ),
                 context,
                 {
-                    MainActivity.show(context, true)
+                    MainActivity.show(context = context, isCode = true, bundle = data)
                     context.finish()
                 }) { errorMessage ->
                 context.onBiometricError(errorMessage)
@@ -120,7 +123,7 @@ private fun EnterPasscode(
         when(state) {
             is PasscodeLockState.ConfirmPasscode -> {
                 viewModel.setNullState()
-                MainActivity.show(context, true)
+                MainActivity.show(context, true, data)
                 context.finish()
             }
             is PasscodeLockState.Error -> {

@@ -184,7 +184,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
                 viewModel.setAnalytic(viewBinding?.analyticSwitch?.isChecked ?: false)
             }
             R.id.passcodeLayout -> {
-                PasscodeActivity.show(requireContext())
+                PasscodeActivity.show(requireContext(), bundle = null)
             }
             R.id.settingsAppTheme -> {
                 AppThemeDialog().show(parentFragmentManager, null)
