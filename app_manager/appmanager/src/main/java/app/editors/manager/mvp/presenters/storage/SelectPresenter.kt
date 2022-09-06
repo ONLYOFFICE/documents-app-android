@@ -115,7 +115,7 @@ class SelectPresenter : MvpPresenter<SelectView>() {
                 }
                 ApiContract.Storage.KDRIVE -> {
                     url = StorageUtils.WevDav.URL_KDRIVE
-                    title = "kDrive"
+                    title = context.getString(R.string.storage_select_kdrive)
                 }
                 ApiContract.Storage.SHAREPOINT -> {
                     title = context.getString(R.string.storage_select_share_point)
