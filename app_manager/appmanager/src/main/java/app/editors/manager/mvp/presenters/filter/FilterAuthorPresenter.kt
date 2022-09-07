@@ -75,7 +75,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
                         index = 0,
                         element = Author.User(
                             id = user.id,
-                            name = context.getString(R.string.filter_author_owner),
+                            name = context.getString(R.string.item_owner_self),
                             department = user.department,
                             avatarUrl = user.avatarUrl
                         )

@@ -220,7 +220,7 @@
     <string name="media_image_share_chooser">Seleccionar aplicación para compartir</string>
     <string name="media_video_error">Error desconocido del reproductor: %1$s</string>
     <string name="navigation_drawer_close">Cerrar el panel de navegación</string>
-    <string name="navigation_drawer_menu_add_account">Añadir cuenta</string>
+    <string name="login_accounts_select_add">Añadir cuenta</string>
     <string name="navigation_drawer_menu_common">Documentos comunes</string>
     <string name="navigation_drawer_menu_help">Ayuda</string>
     <string name="navigation_drawer_menu_logout">Cerrar sesión</string>
@@ -384,7 +384,7 @@
         Después de cerrar la sesión no necesitará introducir la dirección del portal y el correo, ¡sólo la contraseña! ¡No se preocupe! Todos los archivos estarán seguros en la nube.
     </string>
     <string name="profile_username_title">Nombre de usuario</string>
-    <string name="profile_type_account">Tipo</string>
+    <string name="filter_title_type">Tipo</string>
     <string name="profile_portal_address">Dirección del portal</string>
     <string name="profile_type_admin">Administrador</string>
     <string name="profile_type_visitor">Visitante</string>

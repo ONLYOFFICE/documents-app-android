@@ -172,7 +172,6 @@
     <string name="navigation_drawer_menu_trash">Papierkorb</string>
     <string name="navigation_drawer_menu_help">Hilfe</string>
     <string name="navigation_drawer_menu_logout">Abmelden</string>
-    <string name="navigation_drawer_menu_add_account">Konto hinzufügen</string>
     <string name="settings_item_title">Einstellungen</string>
     <string name="settings_item_change_account">Konto wechseln</string>
     <string name="settings_clear_cache">Cache löschen</string>
@@ -388,7 +387,7 @@
     <string name="dialog_logout_account_title">Möchten Sie wirklich abmelden?</string>
     <string name="dialog_logout_account_description">Wenn Sie abmelden, müssen Sie nicht die Adresse des Portals und E-Mail-Adresse eingeben,  nur das Passwort. Hinweis! Keine Sorge! Wenn Sie abmelden, werden alle Dateien in der Cloud sicher gespeichert.</string>
     <string name="profile_username_title">Benutzername</string>
-    <string name="profile_type_account">Typ</string>
+    <string name="filter_title_type">Typ</string>
     <string name="profile_portal_address">Adresse des Portals</string>
     <string name="profile_type_admin">Admin</string>
     <string name="profile_type_visitor">Gast</string>

@@ -208,7 +208,7 @@
     <string name="navigation_drawer_menu_trash">垃圾</string>
     <string name="navigation_drawer_menu_help">帮助</string>
     <string name="navigation_drawer_menu_logout">注销</string>
-    <string name="navigation_drawer_menu_add_account">添加账户</string>
+    <string name="login_accounts_select_add">添加账户</string>
     <string name="settings_item_title">设置</string>
     <string name="settings_item_change_account">更改账户</string>
     <string name="settings_clear_cache">清除缓存</string>
@@ -453,7 +453,7 @@
         登出后，您将不需要输入门户地址或邮箱，仅需输入密码即可。别担心，所有文件都将被安全地存储于云端。
     </string>
     <string name="profile_username_title">用户名</string>
-    <string name="profile_type_account">类型</string>
+    <string name="filter_title_type">类型</string>
     <string name="profile_portal_address">门户地址</string>
     <string name="profile_type_admin">管理员</string>
     <string name="profile_type_visitor">访客</string>
