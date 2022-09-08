@@ -336,7 +336,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun onCodeActivity() {
-        PasscodeActivity.show(this, true)
+        PasscodeActivity.show(this, true, intent.extras)
         finish()
     }
 

@@ -218,7 +218,7 @@
     <string name="media_image_share_chooser">Escolher app para compartilhar</string>
     <string name="media_video_error">Erro de player desconhecido: %1$s</string>
     <string name="navigation_drawer_close">Fechar a gaveta de navegação</string>
-    <string name="navigation_drawer_menu_add_account">Adicionar conta</string>
+    <string name="login_accounts_select_add">Adicionar conta</string>
     <string name="navigation_drawer_menu_common">Documentos comuns</string>
     <string name="navigation_drawer_menu_help">Ajuda</string>
     <string name="navigation_drawer_menu_logout">Sair</string>
@@ -382,7 +382,7 @@
         Quando você sair, não precisará digitar o endereço do portal e do email, apenas a senha. Não se preocupe, todos os seus arquivos ficam seguros na nuvem.
     </string>
     <string name="profile_username_title">Nome do usuário</string>
-    <string name="profile_type_account">Tipo</string>
+    <string name="filter_title_type">Tipo</string>
     <string name="profile_portal_address">Endereço de portal</string>
     <string name="profile_type_admin">Admin</string>
     <string name="profile_type_visitor">Hóspede</string>
@@ -437,8 +437,6 @@
     <string name="auth_edit_hint">Código</string>
     <string name="app_settings_security">Segurança</string>
     <string name="app_settings_passcode">Bloqueio por código de acesso</string>
-    <string name="app_settings_disable">Desabilitar</string>
-    <string name="app_settings_enable">Habilitar</string>
     <string name="app_Settings_passcode_enable">Habilitar código de acesso</string>
     <string name="app_settings_passcode_change">Alterar código de acesso</string>
     <string name="app_settings_passcode_fingerprint">Usar impressão digital para desbloquear</string>

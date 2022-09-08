@@ -218,7 +218,7 @@
     <string name="media_image_share_chooser">Wybierz aplikację do udostępniania</string>
     <string name="media_video_error">Nieznany błąd odtwarzacza: %1$s</string>
     <string name="navigation_drawer_close">Zamknij szufladę nawigacji</string>
-    <string name="navigation_drawer_menu_add_account">Dodaj konto</string>
+    <string name="login_accounts_select_add">Dodaj konto</string>
     <string name="navigation_drawer_menu_common">Wspólne dokumenty</string>
     <string name="navigation_drawer_menu_help">Pomoc</string>
     <string name="navigation_drawer_menu_logout">Wyloguj się</string>
@@ -382,7 +382,7 @@
         Jeśli się wylogujesz, nie trzeba będzie podawać swojego adresu portalu lub e-mail, wystarczy tylko hasło. Nie martw się, wszystkie pliki pozostaną bezpieczne w chmurze.
     </string>
     <string name="profile_username_title">Nazwa użytkownika</string>
-    <string name="profile_type_account">Rodzaj</string>
+    <string name="filter_title_type">Rodzaj</string>
     <string name="profile_portal_address">Adres portalu</string>
     <string name="profile_type_admin">Admin</string>
     <string name="profile_type_visitor">Gość</string>
@@ -437,8 +437,6 @@
     <string name="auth_edit_hint">Kod</string>
     <string name="app_settings_security">Bezpieczeństwo</string>
     <string name="app_settings_passcode">Blokada z kodem dostępu</string>
-    <string name="app_settings_disable">Wyłącz</string>
-    <string name="app_settings_enable">Włącz</string>
     <string name="app_Settings_passcode_enable">Włącz kod dostępu</string>
     <string name="app_settings_passcode_change">Zmień kod dostępu</string>
     <string name="app_settings_passcode_fingerprint">Użyj odcisku palca, aby odblokować</string>

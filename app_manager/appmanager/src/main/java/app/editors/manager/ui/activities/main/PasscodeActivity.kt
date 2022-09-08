@@ -19,9 +19,10 @@ class PasscodeActivity : BaseAppActivity() {
         const val ENTER_PASSCODE_KEY = "ENTER_PASSCODE_KEY"
 
 
-        fun show(context: Context, isEnterPasscode: Boolean = false) {
+        fun show(context: Context, isEnterPasscode: Boolean = false, bundle: Bundle? = null) {
             context.startActivity(Intent(context, PasscodeActivity::class.java).apply {
                 putExtra(ENTER_PASSCODE_KEY, isEnterPasscode)
+                bundle?.let { putExtras(it) }
             })
         }
     }
@@ -40,7 +41,7 @@ class PasscodeActivity : BaseAppActivity() {
 
         setContent {
             AppManagerTheme() {
-                PasscodeActivity(preferencesTool) {
+                PasscodeActivity(preferencesTool, intent.extras) {
                     onBackPressed()
                 }
             }

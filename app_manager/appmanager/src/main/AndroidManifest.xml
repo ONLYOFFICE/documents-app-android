@@ -95,6 +95,7 @@
         <activity
             android:name=".ui.activities.main.MainActivity"
             android:exported="true"
+            android:filterTouchesWhenObscured="true"
             android:finishOnTaskLaunch="true"
             android:launchMode="singleTask"
             android:supportsPictureInPicture="true"
@@ -173,6 +174,7 @@
             android:name=".ui.activities.main.WebViewerActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation|locale|layoutDirection"
+            android:filterTouchesWhenObscured="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleTask"
             android:process=":WebViewerActivity"

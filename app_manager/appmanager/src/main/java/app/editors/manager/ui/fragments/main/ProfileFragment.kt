@@ -74,7 +74,7 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
         arguments?.getString(KEY_ACCOUNT)?.let {
             presenter.setAccount(it)
         }
-        typeBinder?.setTitle(getString(R.string.profile_type_account))?.setImage(R.drawable.ic_contact_calendar)
+        typeBinder?.setTitle(getString(R.string.filter_title_type))?.setImage(R.drawable.ic_contact_calendar)
         initToolbar()
     }
 

@@ -238,7 +238,7 @@
     <string name="media_image_share_chooser">Выберите приложение, чтобы поделиться</string>
     <string name="media_video_error">Неизвестная ошибка воспроизведения: %1$s</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
-    <string name="navigation_drawer_menu_add_account">Добавить аккаунт</string>
+    <string name="login_accounts_select_add">Добавить аккаунт</string>
     <string name="navigation_drawer_menu_common">Общие</string>
     <string name="navigation_drawer_menu_feedback">Обратная связь и поддержка</string>
     <string name="navigation_drawer_menu_help">Справка</string>
@@ -413,7 +413,7 @@
         После выхода из системы вам не потребуется вводить адрес портала или email, только пароль. Не беспокойтесь, все файлы останутся в сохранности в облаке.
     </string>
     <string name="profile_username_title">Имя пользователя</string>
-    <string name="profile_type_account">Тип</string>
+    <string name="filter_title_type">Тип</string>
     <string name="profile_portal_address">Адрес портала</string>
     <string name="profile_type_admin">Администратор</string>
     <string name="profile_type_visitor">Гость</string>
@@ -455,8 +455,6 @@
     <string name="auth_edit_hint">Код</string>
     <string name="app_settings_security">Безопасность</string>
     <string name="app_settings_passcode">Код блокировки</string>
-    <string name="app_settings_disable">Отключить</string>
-    <string name="app_settings_enable">Включить</string>
     <string name="app_Settings_passcode_enable">Включить код доступа</string>
     <string name="app_settings_passcode_change">Изменить код доступа</string>
     <string name="app_settings_passcode_fingerprint">Использовать отпечаток пальца для разблокировки</string>

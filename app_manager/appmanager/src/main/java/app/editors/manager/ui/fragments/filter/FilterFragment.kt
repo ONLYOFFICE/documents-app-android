@@ -192,11 +192,11 @@ class FilterFragment : BaseAppFragment(), FilterView {
                     users.isCloseIconVisible = !author.isGroup
                     groups.isCloseIconVisible = author.isGroup
                     if (!author.isGroup) {
-                        groups.text = getString(R.string.filter_author_groups)
+                        groups.text = getString(R.string.share_add_common_header_groups)
                         users.text = author.name
                         users.setOnCloseIconClickListener { presenter.clearAuthor() }
                     } else {
-                        users.text = getString(R.string.filter_author_users)
+                        users.text = getString(R.string.share_add_common_header_users)
                         groups.text = author.name
                         groups.setOnCloseIconClickListener { presenter.clearAuthor() }
                     }
@@ -213,8 +213,8 @@ class FilterFragment : BaseAppFragment(), FilterView {
             binding.groups.isChecked = false
             binding.users.isCloseIconVisible = false
             binding.groups.isCloseIconVisible = false
-            binding.users.text = getString(R.string.filter_author_users)
-            binding.groups.text = getString(R.string.filter_author_groups)
+            binding.users.text = getString(R.string.share_add_common_header_users)
+            binding.groups.text = getString(R.string.share_add_common_header_groups)
         }
     }
 

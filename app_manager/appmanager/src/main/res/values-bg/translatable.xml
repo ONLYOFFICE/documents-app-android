@@ -202,7 +202,7 @@
     <string name="media_image_share_chooser">Изберете приложение за споделяне</string>
     <string name="media_video_error">Грешка при неизвестна играча: %1$s</string>
     <string name="navigation_drawer_close">Затворете чекмеджето за навигация</string>
-    <string name="navigation_drawer_menu_add_account">Добавяне на профил</string>
+    <string name="login_accounts_select_add">Добавяне на профил</string>
     <string name="navigation_drawer_menu_common">Общи документи</string>
     <string name="navigation_drawer_menu_help">Помощ</string>
     <string name="navigation_drawer_menu_logout">Излез от профила си</string>
@@ -384,7 +384,7 @@
         След като излезете няма да е нужно да въвеждате адрес на портала или имейл, а само паролата. Не се притеснявайте, всички файлове ще бъдат защитени в облака.
 </string>
     <string name="profile_username_title">Потребителско име</string>
-    <string name="profile_type_account">Тип</string>
+    <string name="filter_title_type">Тип</string>
     <string name="profile_portal_address">Адрес на портал</string>
     <string name="profile_type_admin">Администратор</string>
     <string name="profile_type_visitor">Гост</string>
@@ -438,8 +438,6 @@
     <string name="auth_edit_hint">Код</string>
     <string name="app_settings_security">Сигурност</string>
     <string name="app_settings_passcode">Заключване с парола</string>
-    <string name="app_settings_disable">Деактивирай</string>
-    <string name="app_settings_enable">Активирай</string>
     <string name="app_Settings_passcode_enable">Активирай парола</string>
     <string name="app_settings_passcode_change">Смени парола</string>
     <string name="app_settings_passcode_fingerprint">Използвайте пръстов отпечатък за отключване</string>
