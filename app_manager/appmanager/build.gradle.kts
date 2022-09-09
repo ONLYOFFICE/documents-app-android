@@ -149,6 +149,8 @@ android {
         buildConfigField("String", "FACEBOOK_APP_ID_INFO","\"" + keystoreProperties["FACEBOOK_APP_ID_INFO"] + "\"" )
         buildConfigField("String", "FACEBOOK_APP_ID","\"" + keystoreProperties["FACEBOOK_APP_ID"] + "\"" )
 
+        //Tasks
+        manifestPlaceholders["tasks"] = keystoreProperties["CUSTOM_TASKS"] as String? ?: ""
     }
 
     splits {
