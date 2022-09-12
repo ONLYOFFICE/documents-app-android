@@ -7,7 +7,7 @@
         android:enabled="true"
         android:icon="@drawable/drawable_ic_format_docx"
         android:shortcutId="docs"
-        android:shortcutShortLabel="@string/shortcut_new_doc">
+        android:shortcutShortLabel="@string/dialogs_edit_create_docs">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="app.editors.manager.ui.activities.main.OnBoardingActivity"
@@ -23,7 +23,7 @@
         android:enabled="true"
         android:icon="@drawable/drawable_ic_format_xlsx"
         android:shortcutId="cells"
-        android:shortcutShortLabel="@string/shortcut_new_spreadsheet">
+        android:shortcutShortLabel="@string/dialogs_edit_create_sheet">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="app.editors.manager.ui.activities.main.OnBoardingActivity"
@@ -39,7 +39,7 @@
         android:enabled="true"
         android:icon="@drawable/drawable_ic_format_pptx"
         android:shortcutId="slides"
-        android:shortcutShortLabel="@string/shortcut_new_presentation">
+        android:shortcutShortLabel="@string/dialogs_edit_create_presentation">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="app.editors.manager.ui.activities.main.OnBoardingActivity"

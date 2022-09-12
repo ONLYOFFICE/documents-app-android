@@ -138,7 +138,8 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(currentTitle)
+            viewState.onActionBarTitle(currentTitle.takeIf(String::isNotEmpty)
+                ?: context.getString(R.string.toolbar_menu_search_result))
         } else {
             if (isFoldersMode) {
                 viewState.onActionBarTitle(context.getString(R.string.operation_title))
@@ -228,6 +229,11 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                 uploadWebDav(account.webDavPath ?: "", listOf(uri))
             }
         }
+    }
+
+    override fun openFolder(id: String?, position: Int) {
+        setFiltering(false)
+        super.openFolder(id, position)
     }
 
     private fun uploadWebDav(id: String, uriList: List<Uri>) {

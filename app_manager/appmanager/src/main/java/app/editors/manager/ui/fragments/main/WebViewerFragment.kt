@@ -315,7 +315,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
         webView.settings.loadWithOverviewMode = true
         webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
-        webView.settings.setAppCacheEnabled(false)
+//        webView.settings.setAppCacheEnabled(false)
         webView.settings.domStorageEnabled = true
         webView.webViewClient = WebViewCallbacks()
         webView.setDownloadListener(WebViewDownload())

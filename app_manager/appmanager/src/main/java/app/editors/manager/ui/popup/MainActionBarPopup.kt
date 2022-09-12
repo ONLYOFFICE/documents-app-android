@@ -25,7 +25,7 @@ class MainActionBarPopup(
     object Title : ActionBarPopupItem(R.string.toolbar_menu_sort_title)
     object Type : ActionBarPopupItem(R.string.toolbar_menu_sort_type)
     object Size : ActionBarPopupItem(R.string.toolbar_menu_sort_size)
-    object Author : ActionBarPopupItem(R.string.toolbar_menu_sort_owner)
+    object Author : ActionBarPopupItem(R.string.filter_title_author)
 
     companion object {
         private val items: MutableList<ActionBarPopupItem> =

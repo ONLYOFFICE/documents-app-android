@@ -61,7 +61,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 389
+        versionCode = 398
         versionName = "5.5.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -105,7 +105,7 @@ android {
         buildConfigField("String", "BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["BOX_VALUE_RESPONSE_TYPE"] + "\"" )
 
         //DropBox
-        val dropboxKey = keystoreProperties["DROP_BOX_COM_CLIENT_ID"] as String
+        val dropboxKey = keystoreProperties["DROP_BOX_COM_CLIENT_ID"] as String?
         buildConfigField("String", "DROP_BOX_COM_CLIENT_ID","\"" + dropboxKey + "\"" )
         buildConfigField("String", "DROP_BOX_INFO_CLIENT_ID","\"" + keystoreProperties["DROP_BOX_INFO_CLIENT_ID"] + "\"" )
         buildConfigField("String", "DROP_BOX_INFO_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_INFO_REDIRECT_URL"] + "\"" )
@@ -113,7 +113,7 @@ android {
         buildConfigField("String", "DROP_BOX_COM_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_COM_REDIRECT_URL"] + "\"" )
         buildConfigField("String", "DROP_BOX_AUTH_URL","\"" + keystoreProperties["DROP_BOX_AUTH_URL"] + "\"" )
         buildConfigField("String", "DROP_BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["DROP_BOX_VALUE_RESPONSE_TYPE"] + "\"" )
-        manifestPlaceholders["dropboxKey"] = dropboxKey
+        manifestPlaceholders["dropboxKey"] = dropboxKey ?: ""
 
         //OneDrive
         buildConfigField("String", "ONE_DRIVE_INFO_CLIENT_ID","\"" + keystoreProperties["ONE_DRIVE_INFO_CLIENT_ID"] + "\"" )
@@ -149,6 +149,8 @@ android {
         buildConfigField("String", "FACEBOOK_APP_ID_INFO","\"" + keystoreProperties["FACEBOOK_APP_ID_INFO"] + "\"" )
         buildConfigField("String", "FACEBOOK_APP_ID","\"" + keystoreProperties["FACEBOOK_APP_ID"] + "\"" )
 
+        //Tasks
+        manifestPlaceholders["tasks"] = keystoreProperties["CUSTOM_TASKS"] as String? ?: ""
     }
 
     splits {

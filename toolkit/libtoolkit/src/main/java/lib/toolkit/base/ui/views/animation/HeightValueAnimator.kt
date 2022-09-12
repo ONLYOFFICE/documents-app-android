@@ -7,7 +7,7 @@ import android.animation.ValueAnimator
 import android.view.View
 import android.view.ViewTreeObserver
 
-class HeightValueAnimator(private val mView: View, private val mDuration: Int = DEFAULT_DURATION) {
+class HeightValueAnimator(private val view: View, private val duration: Int = DEFAULT_DURATION) {
 
     companion object {
         private const val DEFAULT_DURATION = 300
@@ -18,31 +18,31 @@ class HeightValueAnimator(private val mView: View, private val mDuration: Int = 
     private inner class AnimationAdapter : AnimatorListenerAdapter(), ValueAnimator.AnimatorUpdateListener {
 
         override fun onAnimationStart(animation: Animator) {
-            mView.visibility = View.VISIBLE
+            view.visibility = View.VISIBLE
             onAnimationListener?.onAnimationStart(animation)
         }
 
         override fun onAnimationEnd(animation: Animator) {
             if (isHideView) {
-                mView.visibility = if(isShow) View.VISIBLE else View.GONE
+                view.visibility = if(isShow) View.VISIBLE else View.GONE
             }
             onAnimationListener?.onAnimationEnd(animation)
         }
 
-        override fun onAnimationRepeat(animation: Animator?) {
+        override fun onAnimationRepeat(animation: Animator) {
             super.onAnimationRepeat(animation)
             onAnimationListener?.onAnimationRepeat(animation)
         }
 
-        override fun onAnimationCancel(animation: Animator?) {
+        override fun onAnimationCancel(animation: Animator) {
             super.onAnimationCancel(animation)
             onAnimationListener?.onAnimationCancel(animation)
         }
 
         override fun onAnimationUpdate(animation: ValueAnimator) {
             val value = animation.animatedValue as Int
-            mView.layoutParams.height = value
-            mView.requestLayout()
+            view.layoutParams.height = value
+            view.requestLayout()
             onAnimationUpdateListener?.onAnimationUpdate(animation)
         }
     }
@@ -54,7 +54,7 @@ class HeightValueAnimator(private val mView: View, private val mDuration: Int = 
         private set
 
     val viewHeight: Int
-        get() = mView.height
+        get() = view.height
 
     var onAnimationListener: Animator.AnimatorListener? = null
     var onAnimationUpdateListener: ValueAnimator.AnimatorUpdateListener? = null
@@ -64,23 +64,22 @@ class HeightValueAnimator(private val mView: View, private val mDuration: Int = 
     var viewMaxHeight = MAX_HEIGHT
     var viewMeasuredHeight = 0
 
-    private var mLayoutAnimation: ValueAnimator? = null
-    private var mAnimationAdapter: AnimationAdapter
+    private var layoutAnimation: ValueAnimator? = null
+    private var animationAdapter: AnimationAdapter = AnimationAdapter()
 
     init {
-        mAnimationAdapter = AnimationAdapter()
-        mView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                mView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                view.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 onLayoutTree()
             }
         })
     }
 
     protected fun onLayoutTree() {
-        viewMeasuredHeight = mView.height
+        viewMeasuredHeight = view.height
         viewMaxHeight = viewMeasuredHeight
-        onLayoutTreeListener?.invoke(mView)
+        onLayoutTreeListener?.invoke(view)
     }
 
     fun animate(isShow: Boolean, isHideView: Boolean = true) {
@@ -89,14 +88,14 @@ class HeightValueAnimator(private val mView: View, private val mDuration: Int = 
         this@HeightValueAnimator.isShow = isShow
         this@HeightValueAnimator.isHideView = isHideView
 
-        mLayoutAnimation = if (isShow) {
+        layoutAnimation = if (isShow) {
             ValueAnimator.ofInt(viewMinHeight, viewMaxHeight)
         } else {
             ValueAnimator.ofInt(viewMaxHeight, viewMinHeight)
         }.apply {
-            duration = mDuration.toLong()
-            addListener(mAnimationAdapter)
-            addUpdateListener(mAnimationAdapter)
+            duration = duration.toLong()
+            addListener(animationAdapter)
+            addUpdateListener(animationAdapter)
         }.also {
             it.start()
         }
@@ -104,14 +103,14 @@ class HeightValueAnimator(private val mView: View, private val mDuration: Int = 
 
     fun animate(isShow: Boolean) {
         val newVisibility = if (isShow) View.VISIBLE else View.GONE
-        val viewVisibility = mView.visibility
+        val viewVisibility = view.visibility
         if (newVisibility != viewVisibility) {
             animate(isShow, true)
         }
     }
 
     fun clear() {
-        mLayoutAnimation?.apply {
+        layoutAnimation?.apply {
             cancel()
             removeAllListeners()
             removeAllUpdateListeners()

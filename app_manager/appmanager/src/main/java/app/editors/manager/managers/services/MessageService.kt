@@ -46,7 +46,7 @@ class MessageService : FirebaseMessagingService() {
                    val uri = Uri.parse("oodocuments://openfile?data=${model}&push=true#Intent;scheme=oodocuments;package=com.onlyoffice.documents;end;")
 
                     val intent = Intent(Intent.ACTION_VIEW).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         data = uri
                     }
 

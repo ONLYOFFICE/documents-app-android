@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
+import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter
 import app.editors.manager.mvp.views.login.WebDavSignInView
 import app.editors.manager.ui.activities.login.NextCloudLoginActivity
@@ -122,6 +124,14 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
     private fun initKDriveState() {
         viewBinding?.storageWebDavUrlEdit?.setText("https://connect.drive.infomaniak.com")
         viewBinding?.storageWebDavUrlLayout?.visibility = View.GONE
+        // TODO for KDrive
+//        viewBinding?.storageWebDavLoginLayout?.hint = getString(R.string.login_enterprise_email_hint)
+//        viewBinding?.storageWebDavPasswordLayout?.helperText = getString(R.string.krdive_password_helper_text)
+//        viewBinding?.storageWebDavSaveButton?.text = getString(R.string.storage_email_connection)
+//        viewBinding?.storageInfoTitle?.apply {
+//            isVisible = true
+//            text = getString(R.string.kdrive_info_title)
+//        }
     }
 
     @SuppressLint("SetTextI18n")

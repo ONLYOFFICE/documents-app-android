@@ -4,6 +4,7 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
@@ -32,6 +33,7 @@ import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 import retrofit2.HttpException
 import java.io.File
 import java.util.*
@@ -93,7 +95,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     fun getRecentFiles(checkFiles: Boolean = true) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             val list = if (checkFiles) {
                 recentDao.getRecents().filter { recent -> checkFiles(recent) }
             } else {
@@ -105,13 +107,26 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private suspend fun checkFiles(recent: Recent): Boolean {
+    private fun checkFiles(recent: Recent): Boolean {
         return if (recent.isLocal) {
+            val uri = Uri.parse(recent.path)
+            if (uri.scheme != null) {
+                return if (DocumentFile.fromSingleUri(context, uri)?.exists() == true) {
+                    true
+                } else {
+                    presenterScope.launch {
+                        recentDao.deleteRecent(recent)
+                    }
+                    false
+                }
+            }
             val file = File(recent.path ?: "")
             if (file.exists()) {
                 true
             } else {
-                recentDao.deleteRecent(recent)
+                presenterScope.launch {
+                    recentDao.deleteRecent(recent)
+                }
                 false
             }
         } else {
@@ -120,7 +135,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     fun searchRecent(newText: String?) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             val list = recentDao.getRecents()
                 .filter { it.name.contains(newText ?: "", true) }
                 .sort()
@@ -210,14 +225,14 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     private fun addRecent(recent: Recent) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             recentDao.updateRecent(recent.copy(date = Date().time))
             getRecentFiles()
         }
     }
 
     fun contextClick(recent: Recent, position: Int) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             contextItem = recent
             contextPosition = position
             val state = ContextBottomDialog.State()
@@ -274,7 +289,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     fun deleteRecent() {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             contextItem?.let {
                 recentDao.deleteRecent(it)
                 withContext(Dispatchers.Main) {
@@ -332,7 +347,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 }
             }
         } else {
-            CoroutineScope(Dispatchers.Default).launch {
+            presenterScope.launch {
                 if (checkCloudFile(recent, position)) {
                     addRecent(recent)
                 }
@@ -445,7 +460,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             item?.let {
                 recentDao.updateRecent(it.copy(date = Date().time))
             }
@@ -489,7 +504,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun update(sortBy: String = preferenceTool.sortBy.orEmpty()) {
         preferenceTool.sortBy = sortBy
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             val list = recentDao.getRecents().sort()
             withContext(Dispatchers.Main) {
                 updateFiles(list)

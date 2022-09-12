@@ -245,7 +245,7 @@
     <string name="navigation_drawer_menu_trash">ກະຕ່າຂີ້ເຫຍື້ອ</string>
     <string name="navigation_drawer_menu_help">ຊ່ວຍເຫຼືອ </string>
     <string name="navigation_drawer_menu_logout">ລະບົບ</string>
-    <string name="navigation_drawer_menu_add_account">ເພີ່ມບັນຊີ</string>
+    <string name="login_accounts_select_add">ເພີ່ມບັນຊີ</string>
     <string name="settings_item_title">ການຕັ້ງຄ່າ</string>
     <string name="settings_item_change_account">ປ່ຽນບັນຊີ </string>
     <string name="settings_clear_cache">ເຊັດຖານຄວາມຈຳ </string>
@@ -534,7 +534,7 @@
         ຫຼັງຈາກທ່ານອອກຈາກລະບົບ, ທ່ານບໍ່ຈຳເປັນຕ້ອງໃສ່ທີ່ຢູ່ຫຼືອີເມວຂອງທ່ານ, ພຽງແຕ່ລະຫັດຜ່ານ. ຢ່າກັງວົນ, ເອກະສານທັງໝົດຈະປອດໄພໃນຄລາວ
     </string>
     <string name="profile_username_title">ຊື່ຜູ້ໃຊ້</string>
-    <string name="profile_type_account">ພິມ</string>
+    <string name="filter_title_type">ພິມ</string>
     <string name="profile_portal_address">ທີ່ຢູ່Portal </string>
     <string name="profile_type_admin">ບໍລິຫານ</string>
     <string name="profile_type_visitor">ແຂກ</string>
@@ -590,8 +590,6 @@
     <string name="auth_edit_hint">ລະຫັດ</string>
     <string name="app_settings_security">ຄວາມປອດໄພ</string>
     <string name="app_settings_passcode">ລັອກລະຫັດ</string>
-    <string name="app_settings_disable">ປິດໃຊ້ງານ</string>
-    <string name="app_settings_enable">ເປີດ</string>
     <string name="app_Settings_passcode_enable">ເປີດໃຊ້ລະຫັດຜ່ານ</string>
     <string name="app_settings_passcode_change">ປ່ຽນລະຫັດຜ່ານ</string>
     <string name="app_settings_passcode_fingerprint">ໃຊ້ລາຍນິ້ວມືເພື່ອປົດລັອກ</string>

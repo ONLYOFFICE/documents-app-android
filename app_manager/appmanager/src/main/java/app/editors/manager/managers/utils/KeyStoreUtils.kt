@@ -8,6 +8,7 @@ import app.editors.manager.app.App
 import lib.toolkit.base.managers.utils.CryptUtils
 import java.security.*
 import javax.crypto.Cipher
+import javax.crypto.IllegalBlockSizeException
 
 object KeyStoreUtils {
 
@@ -52,14 +53,18 @@ object KeyStoreUtils {
             val cipher = Cipher.getInstance(RSA_ECB_PKCS1_PADDING)
 
             cipher.init(Cipher.ENCRYPT_MODE, publicKey)
-            val encryptedData = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
+
+            val encryptedData: ByteArray?
+            try {
+                encryptedData = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
+            } catch (error: IllegalBlockSizeException) {
+                return CryptUtils.encryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
+            }
 
             return Base64.encodeToString(encryptedData, Base64.DEFAULT)
         } else {
             return CryptUtils.encryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
         }
-
-
     }
 
     fun decryptData(data: String): String {
@@ -74,7 +79,13 @@ object KeyStoreUtils {
            val cipher = Cipher.getInstance(RSA_ECB_PKCS1_PADDING)
 
            cipher.init(Cipher.DECRYPT_MODE, privateKey)
-           val result = cipher.doFinal(encrypted)
+
+           val result: ByteArray?
+           try {
+               result = cipher.doFinal(encrypted)
+           } catch (error: IllegalBlockSizeException) {
+               return CryptUtils.decryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
+           }
            return result.toString(Charsets.UTF_8)
        } else {
            return CryptUtils.decryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""

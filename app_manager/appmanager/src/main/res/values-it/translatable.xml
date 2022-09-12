@@ -218,7 +218,7 @@
     <string name="media_image_share_chooser">Seleziona app per la condivisione</string>
     <string name="media_video_error">Errore sconosciuto lettore: %1$s</string>
     <string name="navigation_drawer_close">Chiudi il cassetto di navigazione</string>
-    <string name="navigation_drawer_menu_add_account">Aggiungi account</string>
+    <string name="login_accounts_select_add">Aggiungi account</string>
     <string name="navigation_drawer_menu_common">Documenti comuni</string>
     <string name="navigation_drawer_menu_help">Guida</string>
     <string name="navigation_drawer_menu_logout">Esci</string>
@@ -382,7 +382,7 @@
         Dopo la disconnessione, non sarà necessario inserire l\'indirizzo del portale o l\'e-mail, ma solo la password. Non ti preoccupare, tutti i file saranno al sicuro nel cloud.
     </string>
     <string name="profile_username_title">Nome utente</string>
-    <string name="profile_type_account">Tipo</string>
+    <string name="filter_title_type">Tipo</string>
     <string name="profile_portal_address">Indirizzo del portale</string>
     <string name="profile_type_admin">Amministratore</string>
     <string name="profile_type_visitor">Ospite</string>
@@ -437,8 +437,6 @@
     <string name="auth_edit_hint">Codice</string>
     <string name="app_settings_security">Sicurezza</string>
     <string name="app_settings_passcode">Codice di accesso</string>
-    <string name="app_settings_disable">Disattivare</string>
-    <string name="app_settings_enable">Attivare</string>
     <string name="app_Settings_passcode_enable">Attivare codice di accesso</string>
     <string name="app_settings_passcode_change">Cambiare codice di accesso</string>
     <string name="app_settings_passcode_fingerprint">Usa l\'impronta digitale per sbloccare</string>

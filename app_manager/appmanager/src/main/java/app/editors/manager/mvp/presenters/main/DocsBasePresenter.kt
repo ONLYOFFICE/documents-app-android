@@ -29,6 +29,7 @@ import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.*
+import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
@@ -779,7 +780,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return plus(
             mutableMapOf<String, String>().apply {
                 put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
-                if (isFilteringMode)
+                if (filter.type != FilterType.None || isFilteringMode)
                     put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
                 if (App.getApp().accountOnline?.isPersonal() == false)
                     put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)

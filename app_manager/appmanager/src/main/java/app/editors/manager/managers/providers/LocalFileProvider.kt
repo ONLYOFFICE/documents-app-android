@@ -2,26 +2,28 @@ package app.editors.manager.managers.providers
 
 import android.content.Context
 import android.net.Uri
-import app.editors.manager.managers.providers.ProviderError.Companion.throwErrorCreate
+import app.documents.core.network.ApiContract
 import app.editors.manager.app.App.Companion.getLocale
-import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
+import app.editors.manager.managers.providers.ProviderError.Companion.throwErrorCreate
 import app.editors.manager.managers.providers.ProviderError.Companion.throwExistException
 import app.editors.manager.managers.providers.ProviderError.Companion.throwUnsupportedException
-import lib.toolkit.base.managers.tools.LocalContentTools
-import app.editors.manager.mvp.models.request.RequestCreate
-import app.documents.core.network.ApiContract
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
+import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestExternal
-import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
+import app.editors.manager.mvp.models.response.ResponseOperation
 import io.reactivex.Observable
+import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.PathUtils
+import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
+import kotlin.io.path.name
 
 class LocalFileProvider(private val localContentTools: LocalContentTools) : BaseFileProvider {
 
@@ -156,7 +158,7 @@ class LocalFileProvider(private val localContentTools: LocalContentTools) : Base
 
     override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
 
-    fun import(context: Context, folderId: String, uri: Uri?):Observable<Int> {
+    fun import(context: Context, folderId: String, uri: Uri?): Observable<Int> {
         val folder = File(folderId)
         return Observable.just(uri).map { file ->
             val path = PathUtils.getPath(context, file)
@@ -229,21 +231,17 @@ class LocalFileProvider(private val localContentTools: LocalContentTools) : Base
     private fun search(value: String?, id: String): Explorer {
         val files: MutableList<File?> = mutableListOf()
         val resultExplorer = Explorer()
-        var tempExplorer = Explorer()
-        val root = File(id)
-        val listFiles = root.listFiles()
-        for (item in listFiles) {
-            if (item.name.contains(value.toString(), true)) {
-                files.add(item)
-                tempExplorer = getExplorer(files, File(id))
-            }
-            if (item.isDirectory) {
-                tempExplorer.add(search(value, item.absolutePath))
-            }
-            resultExplorer.add(tempExplorer)
+        var tempExplorer: Explorer?
+        Files.walk(Paths.get(id)).use { walkStream ->
+            walkStream.filter { item -> item.name.contains(value.toString(), true) }
+                .forEach { item ->
+                    files.add(item.toFile())
+                    tempExplorer = getExplorer(files, File(id))
+                    resultExplorer.add(tempExplorer)
+                }
         }
 
-        if(resultExplorer.count == 0) {
+        if (resultExplorer.count == 0) {
             val current = Current()
             current.id = id
             resultExplorer.current = current
@@ -252,7 +250,7 @@ class LocalFileProvider(private val localContentTools: LocalContentTools) : Base
         return resultExplorer
     }
 
-    fun sortExplorer(explorer: Explorer, filter: Map<String, String>?): Explorer {
+    private fun sortExplorer(explorer: Explorer, filter: Map<String, String>?): Explorer {
         val folders = explorer.folders
         val files = explorer.files
         filter?.let {

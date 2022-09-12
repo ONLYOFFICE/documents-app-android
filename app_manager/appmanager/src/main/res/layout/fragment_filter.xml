@@ -32,7 +32,7 @@
             <com.google.android.material.chip.Chip
                 android:id="@+id/folders"
                 style="@style/FilterChip"
-                android:text="@string/filter_type_folders" />
+                android:text="@string/list_headers_folder" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/documents"
@@ -94,14 +94,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/default_margin_large"
-                android:text="@string/filter_author_users" />
+                android:text="@string/share_add_common_header_users" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/groups"
                 style="@style/FilterChip.Closable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/filter_author_groups" />
+                android:text="@string/share_add_common_header_groups" />
 
         </LinearLayout>
 
