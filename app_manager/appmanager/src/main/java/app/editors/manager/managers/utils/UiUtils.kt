@@ -100,7 +100,7 @@ object ManagerUiUtils {
         alpha = 1.0f
     }
 
-    fun setFolderIcon(view: ImageView, folder: CloudFolder, isRoot: Boolean) {
+    fun ImageView.setFolderIcon(folder: CloudFolder, isRoot: Boolean) {
         @DrawableRes var resId = R.drawable.ic_type_folder
         if (folder.shared && folder.providerKey.isEmpty()) {
             resId = R.drawable.ic_type_folder_shared
@@ -117,15 +117,24 @@ object ManagerUiUtils {
                 ApiContract.Storage.YANDEX -> resId = R.drawable.ic_storage_yandex
                 ApiContract.Storage.WEBDAV -> {
                     resId = R.drawable.ic_storage_webdav
-                    view.setImageResource(resId)
+                    this.setImageResource(resId)
                     return
                 }
             }
-            view.setImageResource(resId)
-            view.alpha = 1.0f
+            this.setImageResource(resId)
+            this.alpha = 1.0f
             return
         }
-        view.setImageResource(resId)
+        if (folder.isRoom) {
+            when (folder.roomType) {
+                ApiContract.RoomType.FILLING_FORM_ROOM -> resId = R.drawable.ic_room_fill_forms
+                ApiContract.RoomType.CUSTOM_ROOM -> resId = R.drawable.ic_room_custom
+                ApiContract.RoomType.READ_ONLY_ROOM -> resId = R.drawable.ic_room_view_only
+                ApiContract.RoomType.REVIEW_ROOM -> resId = R.drawable.ic_room_review
+                ApiContract.RoomType.EDITING_ROOM -> resId = R.drawable.ic_room_collaboration
+            }
+        }
+        this.setImageResource(resId)
     }
 
     fun setAccessIcon(imageView: ImageView, accessCode: Int) {
@@ -151,9 +160,3 @@ object ManagerUiUtils {
         this.layoutParams = layoutParams
     }
 }
-
-var View.isVisible: Boolean
-    get() = this.visibility == View.VISIBLE
-    set(isVisible) {
-        this.visibility = if (isVisible) View.VISIBLE else View.GONE
-    }

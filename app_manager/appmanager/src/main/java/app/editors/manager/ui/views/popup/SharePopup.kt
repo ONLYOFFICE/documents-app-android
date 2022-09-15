@@ -3,8 +3,8 @@ package app.editors.manager.ui.views.popup
 import android.content.Context
 import android.view.Gravity
 import android.view.View
+import androidx.core.view.isVisible
 import app.editors.manager.databinding.PopupShareMenuBinding
-import app.editors.manager.managers.utils.isVisible
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.popup.BasePopup
 

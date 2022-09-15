@@ -3,10 +3,10 @@ package app.editors.manager.ui.views.custom
 import android.app.Activity
 import android.text.Editable
 import android.view.View
+import androidx.core.view.isVisible
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludeSharePanelBinding
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.ui.views.popup.SharePopup

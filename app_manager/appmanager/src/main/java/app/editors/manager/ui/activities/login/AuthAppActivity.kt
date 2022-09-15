@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.ActivityOnBoardingBinding
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.login.AuthPagerFragment
 import lib.toolkit.base.managers.tools.ResourcesProvider

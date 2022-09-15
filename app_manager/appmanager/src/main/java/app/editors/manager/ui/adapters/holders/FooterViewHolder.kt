@@ -3,9 +3,9 @@ package app.editors.manager.ui.adapters.holders
 import android.graphics.PorterDuff
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFooterBinding
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.ui.adapters.ExplorerAdapter
 

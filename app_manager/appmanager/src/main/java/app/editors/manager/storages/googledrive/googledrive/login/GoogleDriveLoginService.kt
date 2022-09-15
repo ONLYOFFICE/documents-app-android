@@ -10,7 +10,7 @@ import retrofit2.http.*
 interface GoogleDriveLoginService {
 
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + "application/x-www-form-urlencoded",
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + "application/x-www-form-urlencoded",
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @FormUrlEncoded
@@ -19,7 +19,7 @@ interface GoogleDriveLoginService {
 
 
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("drive/v3/about/")

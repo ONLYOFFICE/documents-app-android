@@ -10,7 +10,9 @@ import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
+import app.editors.manager.app.roomApi
 import app.editors.manager.managers.providers.CloudFileProvider
+import app.editors.manager.managers.providers.RoomProvider
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
 import app.editors.manager.managers.receivers.UploadReceiver
@@ -55,12 +57,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val uploadReceiver: UploadReceiver = UploadReceiver()
 
     private var api: Api? = null
+    private var roomProvider: RoomProvider? = null
 
     private var currentSectionType = ApiContract.SectionType.UNKNOWN
 
     init {
         App.getApp().appComponent.inject(this)
         api = context.api()
+        roomProvider = RoomProvider(context.roomApi)
         fileProvider = CloudFileProvider()
     }
 
@@ -225,7 +229,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
                 else -> {
                     viewState.onActionBarTitle("")
-                    viewState.onStateActionButton(isContextEditable)
+                    viewState.onStateActionButton(isContextEditable && modelExplorerStack.last()?.current?.isCanEdit == true)
                 }
             }
             viewState.onStateAdapterRoot(true)
@@ -273,6 +277,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (state.isShared && state.isFolder) {
             state.iconResId = R.drawable.ic_type_folder_shared
         }
+        state.isRoom = item is CloudFolder && item.isRoom
+        state.isPin = item is CloudFolder && item.pinned
         viewState.onItemContext(state)
     }
 
@@ -714,11 +720,53 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val isCanOpenLocation: Boolean
         get() = isFilteringMode && !preferenceTool.filter.excludeSubfolder
 
+    val isCurrentRoom: Boolean
+        get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM && modelExplorerStack.last()?.current?.isCanEdit == true
+
     private fun showDownloadFolderActivity(uri: Uri) {
         viewState.onDownloadActivity(uri)
     }
 
     fun setSectionType(sectionType: Int) {
         currentSectionType = sectionType
+    }
+
+    fun archiveRoom() {
+        roomProvider?.let {
+            disposable.add(
+                it.archiveRoom(itemClicked?.id ?: "").subscribe({
+                    viewState.onSnackBar("Done")
+//                    viewState.onDeleteBatch(listOf(itemClicked))
+                }) { throwable: Throwable ->
+                    fetchError(throwable)
+                }
+            )
+        }
+    }
+
+    fun renameRoom(newTitle: String) {
+        roomProvider?.let {
+            disposable.add(
+                it.renameRoom(itemClicked?.id ?: "", newTitle).subscribe({
+                    viewState.onSnackBar("Done")
+//                    refresh()
+                }) { throwable: Throwable ->
+                    fetchError(throwable)
+                }
+            )
+        }
+    }
+
+    fun createRoom(title: String, roomType: Int) {
+        roomProvider?.let {
+            disposable.add(
+                it.createRoom(title, roomType).subscribe({
+                    viewState.onSnackBar("Done")
+//                    refresh()
+                }) { throwable: Throwable ->
+                    fetchError(throwable)
+                }
+            )
+        }
     }
 }

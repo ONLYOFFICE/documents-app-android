@@ -1,10 +1,10 @@
 package app.editors.manager.ui.adapters.holders
 
 import android.view.View
+import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.StringUtils

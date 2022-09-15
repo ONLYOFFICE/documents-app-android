@@ -11,13 +11,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresPermission
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import app.documents.core.account.AccountDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentMediaImageBinding
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.media.MediaPagerFragment.OnMediaListener

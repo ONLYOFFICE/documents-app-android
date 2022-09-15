@@ -1,5 +1,6 @@
 package app.editors.manager.di.component
 
+import app.documents.core.room.RoomApi
 import app.editors.manager.app.Api
 import app.editors.manager.di.module.ApiModule
 import app.editors.manager.di.module.ApiScope
@@ -19,5 +20,5 @@ interface ApiComponent {
     }
 
     val api: Api
-
+    val roomApi: RoomApi
 }

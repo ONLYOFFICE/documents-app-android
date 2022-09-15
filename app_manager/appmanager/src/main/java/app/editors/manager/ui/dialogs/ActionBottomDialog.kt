@@ -5,8 +5,8 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import app.editors.manager.databinding.ListExplorerActionMenuBinding
-import app.editors.manager.managers.utils.isVisible
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 
 class ActionBottomDialog : BaseBottomDialog() {
@@ -25,7 +25,6 @@ class ActionBottomDialog : BaseBottomDialog() {
     var isDocs = true
     var isLocal = false
     var isWebDav = false
-    var isRoom = false
     var onClickListener: OnClickListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

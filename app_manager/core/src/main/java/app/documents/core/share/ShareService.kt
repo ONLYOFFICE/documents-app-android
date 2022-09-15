@@ -18,7 +18,7 @@ interface ShareService {
      * Get share folder
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/folder/{folder_id}/share" + ApiContract.RESPONSE_FORMAT)
@@ -28,7 +28,7 @@ interface ShareService {
      * Get share file
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/share" + ApiContract.RESPONSE_FORMAT)
@@ -38,7 +38,7 @@ interface ShareService {
      * Get external link
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/{file_id}/sharedlink" + ApiContract.RESPONSE_FORMAT)
@@ -51,7 +51,7 @@ interface ShareService {
      * Set external link access
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/{file_id}/setacelink" + ApiContract.RESPONSE_FORMAT)
@@ -64,7 +64,7 @@ interface ShareService {
      * Set access for folder
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{folder_id}/share" + ApiContract.RESPONSE_FORMAT)
@@ -77,7 +77,7 @@ interface ShareService {
      * Set access for file
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/share" + ApiContract.RESPONSE_FORMAT)
@@ -90,7 +90,7 @@ interface ShareService {
      * Delete share setting
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @HTTP(
@@ -107,7 +107,7 @@ interface ShareService {
      * Get groups
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/group" + ApiContract.RESPONSE_FORMAT)
@@ -119,7 +119,7 @@ interface ShareService {
      * Get users
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/people" + ApiContract.RESPONSE_FORMAT)

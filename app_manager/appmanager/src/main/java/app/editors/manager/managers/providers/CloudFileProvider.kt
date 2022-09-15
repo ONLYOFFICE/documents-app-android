@@ -13,11 +13,10 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
-import java.util.*
 
 class CloudFileProvider : BaseFileProvider {
 
-    var api: Api = App.getApp().getApi()
+    var api: Api = App.getApp().getApi().api
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return id?.let {

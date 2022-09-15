@@ -8,13 +8,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.view.isVisible
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
-import app.editors.manager.managers.utils.isVisible
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -25,8 +25,8 @@ import java.io.Serializable
 class ContextBottomDialog : BaseBottomDialog() {
 
     enum class Buttons {
-        NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD, 
-        RENAME, DELETE, SHARE_DELETE, FAVORITE_ADD, FAVORITE_DELETE, RESTORE, OPEN_LOCATION
+        NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD,
+        RENAME, DELETE, SHARE_DELETE, FAVORITE_ADD, FAVORITE_DELETE, RESTORE, OPEN_LOCATION, ARCHIVE
     }
 
     interface OnClickListener {
@@ -101,6 +101,10 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun setViewState() {
         viewBinding?.let { binding ->
+            if (state.isRoom) {
+                setRoomState()
+                return
+            }
             if (state.isRecent) {
                 setRecentState()
                 return
@@ -138,7 +142,8 @@ class ContextBottomDialog : BaseBottomDialog() {
                 /** File can downloaded */
                 binding.listExplorerContextDownload.isVisible = true
                 if (StringUtils.convertServerVersion(networkSettings.serverVersion)
-                    >= 11 && preferenceTool.isFavoritesEnabled) {
+                    >= 11 && preferenceTool.isFavoritesEnabled
+                ) {
                     binding.viewLineSeparatorFavorites.root.isVisible = true
                     if (state.isFavorite) {
                         binding.listExplorerContextDeleteFromFavorite.isVisible = true
@@ -179,6 +184,14 @@ class ContextBottomDialog : BaseBottomDialog() {
                 binding.viewLineSeparatorShare.root.isVisible = !state.isFolder
                 binding.listExplorerContextExternalLink.isVisible = false
             }
+        }
+    }
+
+    private fun setRoomState() {
+        viewBinding?.let { binding ->
+            binding.listExplorerContextDelete.isVisible = true
+            binding.listExplorerContextDeleteText.text = requireContext().getString(R.string.context_room_archive)
+            binding.listExplorerContextDeleteImage.setImageResource(R.drawable.ic_room_archive)
         }
     }
 
@@ -224,8 +237,10 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun setLocalState() {
         viewBinding?.let {
-            setUploadToPortal(!state.isFolder && !(state.isGoogleDrive || state.isDropBox
-                    || state.isOneDrive || state.isVisitor))
+            setUploadToPortal(
+                !state.isFolder && !(state.isGoogleDrive || state.isDropBox
+                        || state.isOneDrive || state.isVisitor)
+            )
             it.listExplorerContextMove.isVisible = true
             it.listExplorerContextCopy.isVisible = true
             it.listExplorerContextDelete.isVisible = true
@@ -276,7 +291,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextCopy.setOnClickListener(Buttons.COPY)
             it.listExplorerContextDownload.setOnClickListener(Buttons.DOWNLOAD)
             it.listExplorerContextRename.setOnClickListener(Buttons.RENAME)
-            it.listExplorerContextDelete.setOnClickListener(Buttons.DELETE)
+            it.listExplorerContextDelete.setOnClickListener(if (state.isRoom) Buttons.ARCHIVE else Buttons.DELETE)
             it.listExplorerContextShareDelete.setOnClickListener(Buttons.SHARE_DELETE)
             it.listExplorerContextAddToFavorite.setOnClickListener(Buttons.FAVORITE_ADD)
             it.listExplorerContextDeleteFromFavorite.setOnClickListener(Buttons.FAVORITE_DELETE)
@@ -303,7 +318,7 @@ class ContextBottomDialog : BaseBottomDialog() {
         }
     }
 
-    data class State (
+    data class State(
         var title: String = "",
         var info: String = "",
         var iconResId: Int = 0,
@@ -329,6 +344,7 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isVisitor: Boolean = false,
         var isCanOpenLocation: Boolean = false,
         var isRoom: Boolean = false,
+        var isPin: Boolean = false
     ) : Serializable
 }
 

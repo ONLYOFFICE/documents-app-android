@@ -33,7 +33,7 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
 
     @SerializedName("rootFolderType")
     @Expose
-    private String rootFolderType = "";
+    private String rootFolderType = "-1";
 
     @SerializedName("updatedBy")
     @Expose

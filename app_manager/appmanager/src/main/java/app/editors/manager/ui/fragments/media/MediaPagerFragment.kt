@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -17,7 +18,6 @@ import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentMediaPagerBinding
 import app.editors.manager.databinding.IncludeMediaHeaderPagerBinding
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment

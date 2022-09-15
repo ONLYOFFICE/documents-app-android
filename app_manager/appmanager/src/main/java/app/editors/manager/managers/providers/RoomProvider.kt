@@ -2,6 +2,8 @@ package app.editors.manager.managers.providers
 
 import app.documents.core.network.models.Base
 import app.documents.core.network.models.room.RequestArchive
+import app.documents.core.network.models.room.RequestCreateRoom
+import app.documents.core.network.models.room.RequestRenameRoom
 import app.documents.core.room.RoomApi
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -38,6 +40,26 @@ class RoomProvider(
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.body() }
         }
+
+    }
+
+    fun renameRoom(id: String, newTitle: String): Observable<Base> {
+        return roomApi.renameRoom(id, RequestRenameRoom(newTitle))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { it.body() }
+    }
+
+    fun createRoom(title: String, type: Int): Observable<Base> {
+        return roomApi.createRoom(
+            RequestCreateRoom(
+                title = title,
+                roomType = type
+            )
+        )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { it.body() }
 
     }
 

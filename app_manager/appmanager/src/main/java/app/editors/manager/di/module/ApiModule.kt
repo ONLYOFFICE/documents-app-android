@@ -3,16 +3,23 @@ package app.editors.manager.di.module
 import android.content.Context
 import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
+import app.documents.core.room.RoomApi
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.app.Api
 import app.editors.manager.managers.retrofit.BaseInterceptor
 import com.google.gson.GsonBuilder
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.http.NetworkClient
+import lib.toolkit.base.managers.http.NetworkClient.ClientSettings.CONNECT_TIMEOUT
+import lib.toolkit.base.managers.http.NetworkClient.ClientSettings.READ_TIMEOUT
+import lib.toolkit.base.managers.http.NetworkClient.ClientSettings.WRITE_TIMEOUT
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.TimeUtils
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import retrofit2.Retrofit
@@ -30,12 +37,6 @@ annotation class ApiScope
 @Module
 class ApiModule {
 
-    companion object {
-        private const val READ_TIMEOUT = 60L
-        private const val WRITE_TIMEOUT = 60L
-        private const val CONNECT_TIMEOUT = 60L
-    }
-
     @Provides
     @ApiScope
     fun provideApi(factory: GsonConverterFactory, client: OkHttpClient, settings: NetworkSettings): Api {
@@ -50,6 +51,19 @@ class ApiModule {
             .client(client)
             .build().create(Api::class.java)
     }
+
+    @Provides
+    @ApiScope
+    fun provideRoomService(okHttpClient: OkHttpClient, settings: NetworkSettings): RoomApi = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(settings.getBaseUrl())
+        .addConverterFactory(Json {
+            isLenient = true
+            ignoreUnknownKeys = true
+        }.asConverterFactory(MediaType.get("application/json")))
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .build()
+        .create(RoomApi::class.java)
 
     @Provides
     @ApiScope

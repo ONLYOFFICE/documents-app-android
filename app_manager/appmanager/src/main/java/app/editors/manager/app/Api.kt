@@ -19,14 +19,14 @@ interface Api {
 
     @GET("api/" + ApiContract.API_VERSION + "/files/thirdparty/capabilities")
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     fun thirdpartyCapabilities(): Single<ResponseBody>
 
     @GET("api/" + ApiContract.API_VERSION + "/files/thirdparty")
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     fun thirdPartyList(): Observable<ResponseThirdparty>
@@ -36,7 +36,7 @@ interface Api {
      * */
     @GET("api/" + ApiContract.API_VERSION + "/portal/userscount")
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     fun countUsers(): Call<ResponseCount>
@@ -46,7 +46,7 @@ interface Api {
      * */
     @GET("api/" + ApiContract.API_VERSION + "/people/@self")
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     fun userInfo(): Observable<ResponseUser>
@@ -55,7 +55,7 @@ interface Api {
      * Get folder/files by id
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/{item_id}")
@@ -76,7 +76,7 @@ interface Api {
      * Create docs file
      * */
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/file")

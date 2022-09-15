@@ -73,6 +73,14 @@ public class Current implements Cloneable, Serializable {
     @Expose
     private int roomType = -1;
 
+    @SerializedName("canShare")
+    @Expose
+    private boolean canShare = false;
+
+    @SerializedName("canEdit")
+    @Expose
+    private boolean canEdit = false;
+
     public String getParentId() {
         return parentId;
     }
@@ -220,5 +228,21 @@ public class Current implements Cloneable, Serializable {
         }catch (NumberFormatException error) {
             return ApiContract.ShareType.INSTANCE.getCode(getAccess());
         }
+    }
+
+    public boolean isCanShare() {
+        return canShare;
+    }
+
+    public void setCanShare(boolean canShare) {
+        this.canShare = canShare;
+    }
+
+    public boolean isCanEdit() {
+        return canEdit;
+    }
+
+    public void setCanEdit(boolean canEdit) {
+        this.canEdit = canEdit;
     }
 }

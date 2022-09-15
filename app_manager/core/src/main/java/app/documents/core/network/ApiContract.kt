@@ -30,7 +30,8 @@ object ApiContract {
      * */
     const val HEADER_AUTHORIZATION = "Authorization"
     const val HEADER_HOST = "Host"
-    const val HEADER_CONTENT_TYPE = "Content-OperationType"
+    const val HEADER_CONTENT_OPERATION_TYPE = "Content-OperationType"
+    const val HEADER_CONTENT_TYPE = "Content-Type"
     const val HEADER_ACCEPT = "Accept"
     const val HEADER_AGENT = "User-Agent"
     const val HEADER_CACHE = "Cache-Control"
@@ -201,6 +202,14 @@ object ApiContract {
         fun isRoom(type: Int): Boolean {
             return type >= 14
         }
+    }
+
+    object RoomType {
+        const val FILLING_FORM_ROOM = 1
+        const val EDITING_ROOM = 2
+        const val REVIEW_ROOM = 3
+        const val READ_ONLY_ROOM = 4
+        const val CUSTOM_ROOM = 5
     }
 
     object SectionPath {

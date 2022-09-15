@@ -29,6 +29,7 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.R
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
@@ -201,6 +202,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             ContextBottomDialog.Buttons.FAVORITE_ADD -> cloudPresenter.addToFavorite()
             ContextBottomDialog.Buttons.FAVORITE_DELETE -> cloudPresenter.deleteFromFavorite()
             ContextBottomDialog.Buttons.OPEN_LOCATION -> cloudPresenter.openLocation()
+            ContextBottomDialog.Buttons.ARCHIVE -> {
+                cloudPresenter.archiveRoom()
+            }
             else -> {}
         }
     }
@@ -282,6 +286,34 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         filterItem?.icon = if (getFilters()) {
             AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_enable)
         } else AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_disable)
+    }
+
+    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
+        if (cloudPresenter.isCurrentRoom) {
+            AddRoomBottomDialog().apply {
+                onClickListener = object : AddRoomBottomDialog.OnClickListener {
+                    override fun onActionButtonClick(roomType: Int) {
+                        UiUtils.showEditDialog(
+                            requireContext(),
+                            "Room title",
+                            value = "New room",
+                            acceptListener = { title ->
+                                cloudPresenter.createRoom(title, roomType)
+                            },
+                            requireValue = true
+
+                        )
+                    }
+
+                    override fun onActionDialogClose() {
+                       this@DocsCloudFragment.onActionDialogClose()
+                    }
+
+                }
+            }.show(parentFragmentManager, AddRoomBottomDialog.TAG)
+        } else {
+            super.onActionDialog(isThirdParty, isDocs)
+        }
     }
 
     override val isActivePage: Boolean

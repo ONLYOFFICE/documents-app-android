@@ -4,11 +4,11 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareSettingsItemBinding
 import app.editors.manager.managers.utils.GlideUtils.setAvatar
 import app.editors.manager.managers.utils.ManagerUiUtils
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.ui.adapters.ShareAdapter
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder

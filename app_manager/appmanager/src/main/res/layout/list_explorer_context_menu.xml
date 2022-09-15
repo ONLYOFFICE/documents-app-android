@@ -288,6 +288,7 @@
                     android:visibility="gone">
 
                     <ImageView
+                        android:id="@+id/list_explorer_context_delete_image"
                         style="@style/ContextListImage"
                         app:srcCompat="@drawable/ic_list_context_delete"
                         tools:ignore="ContentDescription" />

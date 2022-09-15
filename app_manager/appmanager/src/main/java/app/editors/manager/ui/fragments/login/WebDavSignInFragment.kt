@@ -7,9 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import app.documents.core.webdav.WebDavApi
-import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter
 import app.editors.manager.mvp.views.login.WebDavSignInView
 import app.editors.manager.ui.activities.login.NextCloudLoginActivity

@@ -5,9 +5,9 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
-import app.editors.manager.managers.utils.isVisible
 import lib.toolkit.base.managers.tools.ResourcesProvider
 
 class PlaceholderViews(val view: View?) {
