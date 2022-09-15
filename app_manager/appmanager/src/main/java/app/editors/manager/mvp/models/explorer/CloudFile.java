@@ -55,6 +55,22 @@ public class CloudFile extends Item implements Serializable, Entity, Cloneable {
     @Expose
     private String comment = "";
 
+    @SerializedName("canWebRestrictedEditing")
+    @Expose
+    private boolean canWebRestrictedEditing = true;
+
+    @SerializedName("canFillForms")
+    @Expose
+    private boolean canFillForms = true;
+
+    @SerializedName("denyDownload")
+    @Expose
+    private boolean denyDownload = false;
+
+    @SerializedName("denySharing")
+    @Expose
+    private boolean denySharing = false;
+
     public String getFolderId() {
         return folderId;
     }
@@ -170,6 +186,38 @@ public class CloudFile extends Item implements Serializable, Entity, Cloneable {
     @Override
     public int getType(TypeFactory factory) {
         return factory.type(this);
+    }
+
+    public boolean isCanWebRestrictedEditing() {
+        return canWebRestrictedEditing;
+    }
+
+    public void setCanWebRestrictedEditing(boolean canWebRestrictedEditing) {
+        this.canWebRestrictedEditing = canWebRestrictedEditing;
+    }
+
+    public boolean isCanFillForms() {
+        return canFillForms;
+    }
+
+    public void setCanFillForms(boolean canFillForms) {
+        this.canFillForms = canFillForms;
+    }
+
+    public boolean isDenyDownload() {
+        return denyDownload;
+    }
+
+    public void setDenyDownload(boolean denyDownload) {
+        this.denyDownload = denyDownload;
+    }
+
+    public boolean isDenySharing() {
+        return denySharing;
+    }
+
+    public void setDenySharing(boolean denySharing) {
+        this.denySharing = denySharing;
     }
 
     /*

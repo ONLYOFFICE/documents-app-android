@@ -59,6 +59,13 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
     @Expose
     private boolean favorite = false;
 
+    @SerializedName("canShare")
+    @Expose
+    private boolean canShare = false;
+
+    @SerializedName("canEdit")
+    @Expose
+    private boolean canEdit = false;
 
     public boolean getFavorite() {
         return favorite;
@@ -146,6 +153,22 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
 
     public void setProviderItem(boolean providerItem) {
         this.providerItem = providerItem;
+    }
+
+    public boolean isCanShare() {
+        return canShare;
+    }
+
+    public void setCanShare(boolean canShare) {
+        this.canShare = canShare;
+    }
+
+    public boolean isCanEdit() {
+        return canEdit;
+    }
+
+    public void setCanEdit(boolean canEdit) {
+        this.canEdit = canEdit;
     }
 
     public int getIntAccess() {
