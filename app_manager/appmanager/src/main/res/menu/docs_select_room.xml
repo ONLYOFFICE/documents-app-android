@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--<item-->
+    <!--andrfolderIdd:idfolderId@+id/toolbar_selection_share"-->
+    <!--android:image_onlyoffice="@drawable/ic_toolbar_share_add"-->
+    <!--android:iconTint="@color/colorGrey"-->
+    <!--android:orderInCategory="0"-->
+    <!--app:showAsAction="always"-->
+    <!--tools:ignore="MenuTitle" />-->
+
+    <item
+        android:id="@+id/toolbar_selection_archive"
+        android:icon="@drawable/ic_room_archive"
+        android:orderInCategory="10"
+        app:showAsAction="ifRoom"
+        tools:ignore="MenuTitle" />
+
+    <item
+        android:id="@+id/toolbar_item_main"
+        android:icon="@drawable/ic_toolbar_menu"
+        android:orderInCategory="20"
+        app:showAsAction="always"
+        tools:ignore="MenuTitle" />
+</menu>

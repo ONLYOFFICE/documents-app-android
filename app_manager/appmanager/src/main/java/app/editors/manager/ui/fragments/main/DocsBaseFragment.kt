@@ -934,7 +934,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     private fun showContextDialog(state: ContextBottomDialog.State) {
-        contextBottomDialog =  ContextBottomDialog.newInstance(checkNotNull(presenter.itemClicked), presenter.getSectionType())
+//        contextBottomDialog =  ContextBottomDialog.newInstance(checkNotNull(presenter.itemClicked), presenter.getSectionType())
         contextBottomDialog?.let { dialog ->
             dialog.state = state
             dialog.onClickListener = this

@@ -3,6 +3,7 @@ package app.editors.manager.ui.fragments.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -100,6 +101,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         init()
     }
 
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(excluded)
+    }
+    
     override fun onActionBarTitle(title: String) {
         if (isActivePage) {
             setActionBarTitle(title)
@@ -112,11 +117,18 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onStateMenuSelection() {
         menu?.let { menu ->
             menuInflater?.let { menuInflater ->
-                menuInflater.inflate(R.menu.docs_select, menu)
-                deleteItem = menu.findItem(R.id.toolbar_selection_delete)
-                    .setVisible(cloudPresenter.isContextItemEditable).also {
-                        setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
-                    }
+                if (ApiContract.SectionType.isRoom(section)) {
+                    menuInflater.inflate(R.menu.docs_select_room, menu)
+                    menu.findItem(R.id.toolbar_selection_archive).setVisible(true).also {
+                            setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
+                        }
+                } else {
+                    menuInflater.inflate(R.menu.docs_select, menu)
+                    deleteItem = menu.findItem(R.id.toolbar_selection_delete)
+                        .setVisible(cloudPresenter.isContextItemEditable).also {
+                            setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
+                        }
+                }
                 setAccountEnable(false)
             }
         }
@@ -265,17 +277,18 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onDocsGet(list: List<Entity>?) {
         super.onDocsGet(list)
-        setMenuFilterEnabled(true)
+        setMenuFilterEnabled(!ApiContract.SectionType.isRoom(section))
     }
+
 
     override fun onDocsRefresh(list: List<Entity>?) {
         super.onDocsRefresh(list)
-        setMenuFilterEnabled(true)
+        setMenuFilterEnabled(!ApiContract.SectionType.isRoom(section))
     }
 
     override fun onDocsFilter(list: List<Entity>?) {
         super.onDocsFilter(list)
-        setMenuFilterEnabled(true)
+        setMenuFilterEnabled(!ApiContract.SectionType.isRoom(section))
     }
 
     private fun setMenuFilterEnabled(isEnabled: Boolean) {
@@ -287,7 +300,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onStateUpdateFilterMenu() {
         filterItem?.icon = if (getFilters()) {
             AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_enable)
-        } else AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_disable)
+        } else {
+            AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_disable)
+        }
     }
 
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {

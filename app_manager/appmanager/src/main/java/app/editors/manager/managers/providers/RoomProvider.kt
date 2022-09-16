@@ -13,6 +13,12 @@ class RoomProvider(
     private val roomApi: RoomApi
 ) {
 
+//    fun getAllRooms(): Observable<Base<>> {
+//        return roomApi.getAllRooms()
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//    }
+
     fun archiveRoom(id: String, isArchive: Boolean = true): Observable<Base> {
         return if (isArchive) {
             roomApi.archive(id, RequestArchive())

@@ -10,16 +10,14 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
-import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.mvp.models.explorer.Item
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.KeyboardUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import java.io.Serializable
@@ -91,84 +89,113 @@ class ContextBottomDialog : BaseBottomDialog() {
         viewBinding = ListExplorerContextMenuBinding.inflate(LayoutInflater.from(context))
         viewBinding?.let {
             dialog.setContentView(it.root)
-        }
-//        setViewState()
-        lifecycleScope.launch {
-            viewModel.state.collect { items ->
-                items.forEach { contextItem ->
-                    when (contextItem) {
-                        ContextItems.Archive -> {
-                            viewBinding?.listExplorerContextArchive?.isVisible = true
-                        }
-                        ContextItems.Copy -> {
-                            viewBinding?.listExplorerContextCopy?.isVisible = true
-                        }
-                        ContextItems.Move -> {
-                            viewBinding?.listExplorerContextMove?.isVisible = true
-                        }
-                        is ContextItems.Delete -> {
-//                            viewBinding?.viewLineSeparatorDelete?.root?.isVisible = true
-                            viewBinding?.listExplorerContextDelete?.isVisible = true
-                            contextItem.title?.let {
-                                viewBinding?.listExplorerContextDeleteText?.setText(contextItem.title)
-                            }
-                        }
-                        ContextItems.Disconnect -> {
-
-                        }
-                        ContextItems.Download -> {
-                            viewBinding?.listExplorerContextDownload?.isVisible = true
-                        }
-                        is ContextItems.Favorites -> {
-                            viewBinding?.listExplorerContextFavorite?.isVisible = true
-                            if (contextItem.isFavorite) {
-                                viewBinding?.favoriteImage?.setImageResource(R.drawable.ic_favorites_fill)
-                                viewBinding?.favoriteText?.setText(R.string.list_context_delete_from_favorite)
-                            } else {
-                                viewBinding?.favoriteText?.setText(R.string.list_context_add_to_favorite)
-                            }
-                        }
-                        is ContextItems.Header -> {
-                            viewBinding?.listExplorerContextHeaderTitleText?.text = contextItem.title
-                            viewBinding?.listExplorerContextHeaderInfoText?.text = contextItem.info
-                            viewBinding?.listExplorerContextHeaderImage?.setImageResource(contextItem.icon)
-                        }
-                        ContextItems.InternalShare -> {
-                            viewBinding?.listExplorerContextExternalLink?.isVisible = true
-                        }
-                        is ContextItems.Pin -> {
-                            if (contextItem.isPinned) {
-                                viewBinding?.listExplorerContextPin?.isVisible = true
-                                viewBinding?.listExplorerContextPinText?.setText(R.string.list_context_unpin)
-                            } else {
-                                viewBinding?.listExplorerContextPin?.isVisible = true
-                            }
-                        }
-                        ContextItems.Rename -> {
-                            viewBinding?.listExplorerContextRename?.isVisible = true
-                        }
-                        ContextItems.Restore -> {
-                            viewBinding?.listExplorerContextRestore?.isVisible = true
-                        }
-                        ContextItems.Share -> {
-                            viewBinding?.listExplorerContextShare?.isVisible = true
-                        }
-                        ContextItems.Upload -> {
-                            viewBinding?.listExplorerContextDownload?.isVisible = true
-                            viewBinding?.contextDownloadText?.setText(R.string.upload_to_portal)
-                            viewBinding?.contextDownloadImage?.setImageResource(R.drawable.ic_list_action_upload)
-                        }
-                        else -> {}
-                    }
-                }
+            it.listExplorerContextHeaderTitleText.text = state.title
+            it.listExplorerContextHeaderInfoText.text = state.info
+            it.listExplorerContextHeaderImage.setImageResource(state.iconResId)
+            it.listExplorerContextHeaderImage.alpha = 1f
+            if (!state.isFolder) {
+                it.listExplorerContextHeaderImage.setFileIcon(StringUtils.getExtensionFromPath(state.title))
             }
         }
+        setViewState()
+//        lifecycleScope.launch {
+//            viewModel.state.collect { items ->
+//                items.forEach { contextItem ->
+//                    when (contextItem) {
+//                        ContextItems.Archive -> {
+//                            viewBinding?.listExplorerContextArchive?.isVisible = true
+//                        }
+//                        ContextItems.Copy -> {
+//                            viewBinding?.listExplorerContextCopy?.isVisible = true
+//                        }
+//                        ContextItems.Move -> {
+//                            viewBinding?.listExplorerContextMove?.isVisible = true
+//                        }
+//                        is ContextItems.Delete -> {
+////                            viewBinding?.viewLineSeparatorDelete?.root?.isVisible = true
+//                            viewBinding?.listExplorerContextDelete?.isVisible = true
+//                            contextItem.title?.let {
+//                                viewBinding?.listExplorerContextDeleteText?.setText(contextItem.title)
+//                            }
+//                        }
+//                        ContextItems.Disconnect -> {
+//
+//                        }
+//                        ContextItems.Download -> {
+//                            viewBinding?.listExplorerContextDownload?.isVisible = true
+//                        }
+//                        is ContextItems.Favorites -> {
+//                            viewBinding?.listExplorerContextFavorite?.isVisible = true
+//                            if (contextItem.isFavorite) {
+//                                viewBinding?.favoriteImage?.setImageResource(R.drawable.ic_favorites_fill)
+//                                viewBinding?.favoriteText?.setText(R.string.list_context_delete_from_favorite)
+//                            } else {
+//                                viewBinding?.favoriteText?.setText(R.string.list_context_add_to_favorite)
+//                            }
+//                        }
+//                        is ContextItems.Header -> {
+//                            viewBinding?.listExplorerContextHeaderTitleText?.text = contextItem.title
+//                            viewBinding?.listExplorerContextHeaderInfoText?.text = contextItem.info
+//                            viewBinding?.listExplorerContextHeaderImage?.setImageResource(contextItem.icon)
+//                        }
+//                        ContextItems.InternalShare -> {
+//                            viewBinding?.listExplorerContextExternalLink?.isVisible = true
+//                        }
+//                        is ContextItems.Pin -> {
+//                            if (contextItem.isPinned) {
+//                                viewBinding?.listExplorerContextPin?.isVisible = true
+//                                viewBinding?.listExplorerContextPinText?.setText(R.string.list_context_unpin)
+//                            } else {
+//                                viewBinding?.listExplorerContextPin?.isVisible = true
+//                            }
+//                        }
+//                        ContextItems.Rename -> {
+//                            viewBinding?.listExplorerContextRename?.isVisible = true
+//                        }
+//                        ContextItems.Restore -> {
+//                            viewBinding?.listExplorerContextRestore?.isVisible = true
+//                        }
+//                        ContextItems.Share -> {
+//                            viewBinding?.listExplorerContextShare?.isVisible = true
+//                        }
+//                        ContextItems.Upload -> {
+//                            viewBinding?.listExplorerContextDownload?.isVisible = true
+//                            viewBinding?.contextDownloadText?.setText(R.string.upload_to_portal)
+//                            viewBinding?.contextDownloadImage?.setImageResource(R.drawable.ic_list_action_upload)
+//                        }
+//                        else -> {}
+//                    }
+//                }
+//            }
+//        }
         initListeners()
     }
 
     private fun setViewState() {
         viewBinding?.let { binding ->
+            if (state.isRoom) {
+                setRoomState()
+                return
+            }
+            if (state.isRecent) {
+                setRecentState()
+                return
+            }
+            if (state.isTrash) {
+                setTrashState()
+                return
+            }
 
+            /** Common */
+            binding.listExplorerContextCopy.isVisible = true
+            if (state.isWebDav) {
+                setWebDav()
+                return
+            }
+            if (state.isLocal) {
+                setLocalState()
+                return
+            }
             /** Folders or Files */
             if (state.isFolder) {
                 /** Folder is storage */
@@ -222,9 +249,9 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun setRoomState() {
         viewBinding?.let { binding ->
-            binding.listExplorerContextDelete.isVisible = true
-            binding.listExplorerContextDeleteText.text = requireContext().getString(R.string.context_room_archive)
-            binding.listExplorerContextDeleteImage.setImageResource(R.drawable.ic_room_archive)
+            binding.listExplorerContextArchive.isVisible = true
+            binding.listExplorerContextRename.isVisible = true
+            binding.listExplorerContextPin.isVisible = true
         }
     }
 
@@ -386,6 +413,8 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isPersonalAccount: Boolean = false,
         var isGoogleDrive: Boolean = false,
         var isVisitor: Boolean = false,
+        var isRoom: Boolean = false,
+        var isPin: Boolean = false
     ) : Serializable
 }
 

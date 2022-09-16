@@ -177,7 +177,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, mapOf<String, String>().putFilters())
+                    provider.getFiles(id, if (ApiContract.SectionType.isRoom(currentSectionType)) mapOf() else mapOf<String, String>().putFilters())
                         .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
                 )
@@ -190,7 +190,15 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         modelExplorerStack.currentId?.let { id ->
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, getArgs(filteringValue).putFilters())
+                    provider.getFiles(id,
+                        if (ApiContract.SectionType.isRoom(currentSectionType)) {
+                            mapOf(ApiContract.Parameters.ARG_FILTER_VALUE to filteringValue)
+                        } else {
+                            getArgs(
+                                filteringValue
+                            ).putFilters()
+                        }
+                    )
                         .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer ->
                             modelExplorerStack.refreshStack(explorer)
@@ -237,8 +245,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                         .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer ->
                             modelExplorerStack.setFilter(explorer)
-                            setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.SEARCH else
-                                PlaceholderViews.Type.NONE)
+                            setPlaceholderType(
+                                if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.SEARCH else
+                                    PlaceholderViews.Type.NONE
+                            )
                             updateViewsState()
                             viewState.onDocsFilter(getListWithHeaders(modelExplorerStack.last(), true))
                         }, this::fetchError)
@@ -297,7 +307,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                             viewState.onDialogClose()
                             viewState.onSnackBar(context.getString(R.string.list_context_rename_success))
                             loadSuccess(item)
-                        }, this::fetchError))
+                        }, this::fetchError)
+                )
             }
         }
     }
@@ -312,7 +323,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                             viewState.onDialogClose()
                             viewState.onSnackBar(context.getString(R.string.list_context_rename_success))
                             loadSuccess(item)
-                        }, this::fetchError))
+                        }, this::fetchError)
+                )
             }
         }
     }
@@ -521,7 +533,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     .subscribe({
                         isTerminate = false
                         onBatchOperations()
-                    }, this::fetchError))
+                    }, this::fetchError)
+            )
         }
     }
 
@@ -1252,8 +1265,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     private fun onFileDeleteProtected() {
         viewState.onDialogClose()
         if (isMultipleDelete) {
-            viewState.onSnackBar(context.getString(R.string.operation_complete_message)
-                    + context.getString(R.string.operation_delete_multiple))
+            viewState.onSnackBar(
+                context.getString(R.string.operation_complete_message)
+                        + context.getString(R.string.operation_delete_multiple)
+            )
         } else {
             viewState.onSnackBar(context.getString(R.string.operation_delete_impossible))
         }
@@ -1302,8 +1317,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             if (file.fileType.isEmpty() && file.fileExst.isEmpty()) {
                 fileList.remove()
                 fileProvider?.let { provider ->
-                    disposable.add(provider.delete(listOf(file), currentFolder)
-                        .subscribe({ modelExplorerStack.refreshStack(explorer) }, this::fetchError))
+                    disposable.add(
+                        provider.delete(listOf(file), currentFolder)
+                            .subscribe({ modelExplorerStack.refreshStack(explorer) }, this::fetchError)
+                    )
                 }
             }
         }

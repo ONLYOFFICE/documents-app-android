@@ -255,7 +255,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isOneDrive = false
         state.isGoogleDrive = false
         state.isDropBox = false
-        state.isTrash = isTrash
+        state.isTrash = currentSectionType == ApiContract.SectionType.CLOUD_TRASH
         state.isFavorite = isClickedItemFavorite
         state.isPersonalAccount = account.isPersonal()
         if (!isClickedItemFile) {
@@ -275,6 +275,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (state.isShared && state.isFolder) {
             state.iconResId = R.drawable.ic_type_folder_shared
         }
+        state.isRoom = item is CloudFolder && item.isRoom
+        state.isPin = item is CloudFolder && item.pinned
         viewState.onItemContext(state)
     }
 
