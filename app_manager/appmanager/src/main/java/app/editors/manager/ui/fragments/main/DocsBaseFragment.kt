@@ -53,7 +53,6 @@ import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
-import lib.toolkit.base.managers.utils.StringUtils.getNameWithoutExtension
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.adapters.BaseAdapter
@@ -935,6 +934,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     private fun showContextDialog(state: ContextBottomDialog.State) {
+        contextBottomDialog =  ContextBottomDialog.newInstance(checkNotNull(presenter.itemClicked), presenter.getSectionType())
         contextBottomDialog?.let { dialog ->
             dialog.state = state
             dialog.onClickListener = this

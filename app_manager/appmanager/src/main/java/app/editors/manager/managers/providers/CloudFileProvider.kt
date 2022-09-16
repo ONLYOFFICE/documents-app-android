@@ -275,18 +275,18 @@ class CloudFileProvider : BaseFileProvider {
             }
     }
 
-    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base> {
-        return api.addToFavorites(requestFavorites)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { baseResponse: Response<Base> -> baseResponse.body() }
-    }
-
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base> {
-        return api.deleteFromFavorites(requestFavorites)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { baseResponse: Response<Base> -> baseResponse.body() }
+    fun addToFavorites(requestFavorites: RequestFavorites, isAdd: Boolean): Observable<Base> {
+        return if (isAdd) {
+            api.addToFavorites(requestFavorites)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { baseResponse: Response<Base> -> baseResponse.body() }
+        } else {
+            api.deleteFromFavorites(requestFavorites)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { baseResponse: Response<Base> -> baseResponse.body() }
+        }
     }
 
     fun clearTrash(): Observable<List<Operation>> {

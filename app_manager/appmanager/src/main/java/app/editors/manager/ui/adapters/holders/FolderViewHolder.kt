@@ -50,6 +50,8 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
             viewIconSelectableLayout.viewIconSelectableMask.background = null
             viewIconSelectableLayout.viewIconSelectableImage.setFolderIcon(folder, adapter.isRoot)
 
+            listExplorerRoomPin.isVisible = folder.pinned
+
             // Show/hide context button
             if (adapter.isSelectMode || adapter.isFoldersMode) {
                 listExplorerFolderContext.isVisible = false

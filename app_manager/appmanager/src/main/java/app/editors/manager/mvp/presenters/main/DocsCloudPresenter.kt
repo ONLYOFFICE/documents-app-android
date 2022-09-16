@@ -59,7 +59,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private var api: Api? = null
     private var roomProvider: RoomProvider? = null
 
-    private var currentSectionType = ApiContract.SectionType.UNKNOWN
 
     init {
         App.getApp().appComponent.inject(this)
@@ -259,7 +258,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isTrash = isTrash
         state.isFavorite = isClickedItemFavorite
         state.isPersonalAccount = account.isPersonal()
-        state.isCanOpenLocation = isCanOpenLocation
         if (!isClickedItemFile) {
             if ((itemClicked as CloudFolder).providerKey.isEmpty()) {
                 state.iconResId = R.drawable.ic_type_folder
@@ -277,8 +275,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (state.isShared && state.isFolder) {
             state.iconResId = R.drawable.ic_type_folder_shared
         }
-        state.isRoom = item is CloudFolder && item.isRoom
-        state.isPin = item is CloudFolder && item.pinned
         viewState.onItemContext(state)
     }
 
@@ -437,52 +433,45 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
             val shareApi = App.getApp().getShareService()
-            disposable.add(shareApi.getShareFile(item.id)
-                .subscribeOn(Schedulers.io())
-                .map { response: ResponseShare ->
-                    response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink
-                }.observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ externalLink ->
-                    if (!externalLink.isNullOrEmpty()) {
-                        setDataToClipboard(externalLink)
-                    } else {
-                        viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
-                    }
-                }, this::fetchError)
+            disposable.add(
+                shareApi.getShareFile(item.id)
+                    .subscribeOn(Schedulers.io())
+                    .map { response: ResponseShare ->
+                        response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink
+                    }.observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ externalLink ->
+                        if (!externalLink.isNullOrEmpty()) {
+                            setDataToClipboard(externalLink)
+                        } else {
+                            viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
+                        }
+                    }, this::fetchError)
             )
         }
     }
 
     fun addToFavorite() {
         val requestFavorites = RequestFavorites()
-        requestFavorites.fileIds = ArrayList(listOf(itemClicked!!.id))
-        fileProvider?.let { provider ->
-            disposable.add(provider.addToFavorites(requestFavorites)!!
-                .subscribe({
-                    (itemClicked as? CloudFile)?.fileStatus = ApiContract.FileStatus.FAVORITE.toString()
-                    viewState.onUpdateFavoriteItem()
-                    viewState.onSnackBar(context.getString(R.string.operation_add_to_favorites))
-                }) { throwable: Throwable -> fetchError(throwable) })
-        }
-    }
+        requestFavorites.fileIds = ArrayList(listOf(itemClicked?.id))
+        (fileProvider as CloudFileProvider).let { provider ->
+            val isAdd = itemClicked?.favorite?.not() == true
 
-    fun deleteFromFavorite() {
-        val requestFavorites = RequestFavorites()
-        requestFavorites.fileIds = ArrayList(listOf(itemClicked!!.id))
-        fileProvider?.let { provider ->
-            disposable.add(provider.deleteFromFavorites(requestFavorites)!!
+            disposable.add(provider.addToFavorites(requestFavorites, isAdd)
                 .subscribe({
-                    (itemClicked as? CloudFile)?.fileStatus = ApiContract.FileStatus.NONE.toString()
+                    (itemClicked as? CloudFile)?.fileStatus = if (isAdd) {
+                        ApiContract.FileStatus.FAVORITE.toString()
+                    } else {
+                        ApiContract.FileStatus.NONE.toString()
+                    }
                     viewState.onUpdateFavoriteItem()
-                    viewState.onSnackBar(context.getString(R.string.operation_remove_from_favorites))
+                    viewState.onSnackBar(
+                        if (isAdd) {
+                            context.getString(R.string.operation_add_to_favorites)
+                        } else {
+                            context.getString(R.string.operation_remove_from_favorites)
+                        }
+                    )
                 }) { throwable: Throwable -> fetchError(throwable) })
-        }
-    }
-
-    fun removeFromFavorites() {
-        if (itemClicked?.id != null) {
-            modelExplorerStack.removeItemById(itemClicked?.id)
-            viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
         }
     }
 
@@ -503,8 +492,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     if (itemClicked != null) {
                         modelExplorerStack.removeItemById(itemClicked?.id)
                     }
-                    setPlaceholderType(if (modelExplorerStack.isListEmpty)
-                        PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    setPlaceholderType(
+                        if (modelExplorerStack.isListEmpty)
+                            PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE
+                    )
                     viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
                     onBatchOperations()
                 }) { throwable: Throwable -> fetchError(throwable) })
@@ -534,8 +525,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     private fun setDataToClipboard(value: String) {
-        KeyboardUtils.setDataToClipboard(context,
-            value, context.getString(R.string.share_clipboard_external_link_label))
+        KeyboardUtils.setDataToClipboard(
+            context,
+            value, context.getString(R.string.share_clipboard_external_link_label)
+        )
         viewState.onDocsAccess(true, context.getString(R.string.share_clipboard_external_copied))
     }
 
@@ -717,9 +710,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val itemFolderId: String?
         get() = (itemClicked as? CloudFile)?.folderId ?: (itemClicked as? CloudFolder)?.parentId
 
-    private val isCanOpenLocation: Boolean
-        get() = isFilteringMode && !preferenceTool.filter.excludeSubfolder
-
     val isCurrentRoom: Boolean
         get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM && modelExplorerStack.last()?.current?.isCanEdit == true
 
@@ -727,14 +717,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onDownloadActivity(uri)
     }
 
-    fun setSectionType(sectionType: Int) {
-        currentSectionType = sectionType
-    }
-
     fun archiveRoom() {
         roomProvider?.let {
             disposable.add(
                 it.archiveRoom(itemClicked?.id ?: "").subscribe({
+                    viewState.onSnackBar("Done")
+//                    viewState.onDeleteBatch(listOf(itemClicked))
+                }) { throwable: Throwable ->
+                    fetchError(throwable)
+                }
+            )
+        }
+    }
+
+    fun pinRoom() {
+        roomProvider?.let {
+            disposable.add(
+                it.pinRoom(itemClicked?.id ?: "", !(itemClicked as CloudFolder).pinned).subscribe({
                     viewState.onSnackBar("Done")
 //                    viewState.onDeleteBatch(listOf(itemClicked))
                 }) { throwable: Throwable ->

@@ -479,11 +479,4 @@ class GoogleDriveFileProvider: BaseFileProvider {
         TODO("Not yet implemented")
     }
 
-    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? {
-        TODO("Not yet implemented")
-    }
 }

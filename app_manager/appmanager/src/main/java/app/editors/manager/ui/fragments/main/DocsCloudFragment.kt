@@ -199,11 +199,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 getString(R.string.dialogs_common_cancel_button),
                 DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE
             )
-            ContextBottomDialog.Buttons.FAVORITE_ADD -> cloudPresenter.addToFavorite()
-            ContextBottomDialog.Buttons.FAVORITE_DELETE -> cloudPresenter.deleteFromFavorite()
+            ContextBottomDialog.Buttons.FAVORITE -> cloudPresenter.addToFavorite()
             ContextBottomDialog.Buttons.OPEN_LOCATION -> cloudPresenter.openLocation()
             ContextBottomDialog.Buttons.ARCHIVE -> {
                 cloudPresenter.archiveRoom()
+            }
+            ContextBottomDialog.Buttons.PIN -> {
+                cloudPresenter.pinRoom()
             }
             else -> {}
         }

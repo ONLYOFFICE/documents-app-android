@@ -471,14 +471,6 @@ class DropboxFileProvider : BaseFileProvider {
         TODO("Not yet implemented")
     }
 
-    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? {
-        TODO("Not yet implemented")
-    }
-
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
         val request = "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox((item as CloudFile).id)}\"}"

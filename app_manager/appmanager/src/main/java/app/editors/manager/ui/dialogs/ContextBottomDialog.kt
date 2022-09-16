@@ -9,15 +9,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
+import app.editors.manager.mvp.models.explorer.Item
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import java.io.Serializable
@@ -26,7 +28,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     enum class Buttons {
         NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD,
-        RENAME, DELETE, SHARE_DELETE, FAVORITE_ADD, FAVORITE_DELETE, RESTORE, OPEN_LOCATION, ARCHIVE
+        RENAME, DELETE, SHARE_DELETE, FAVORITE, RESTORE, OPEN_LOCATION, ARCHIVE, PIN
     }
 
     interface OnClickListener {
@@ -34,9 +36,11 @@ class ContextBottomDialog : BaseBottomDialog() {
         fun onContextDialogClose()
     }
 
-    private val preferenceTool: PreferenceTool = App.getApp().appComponent.preference
-    private val networkSettings: NetworkSettings = App.getApp().appComponent.networkSettings
     private var viewBinding: ListExplorerContextMenuBinding? = null
+
+    private val viewModel by viewModels<ContextBottomViewModel> {
+        ContextBottomViewModelFactory(checkNotNull(arguments?.getSerializable(ARG_ITEM)) as Item, checkNotNull(arguments?.getInt(ARG_SECTION)))
+    }
 
     var onClickListener: OnClickListener? = null
 
@@ -87,43 +91,83 @@ class ContextBottomDialog : BaseBottomDialog() {
         viewBinding = ListExplorerContextMenuBinding.inflate(LayoutInflater.from(context))
         viewBinding?.let {
             dialog.setContentView(it.root)
-            it.listExplorerContextHeaderTitleText.text = state.title
-            it.listExplorerContextHeaderInfoText.text = state.info
-            it.listExplorerContextHeaderImage.setImageResource(state.iconResId)
-            it.listExplorerContextHeaderImage.alpha = 1f
-            if (!state.isFolder) {
-                it.listExplorerContextHeaderImage.setFileIcon(StringUtils.getExtensionFromPath(state.title))
+        }
+//        setViewState()
+        lifecycleScope.launch {
+            viewModel.state.collect { items ->
+                items.forEach { contextItem ->
+                    when (contextItem) {
+                        ContextItems.Archive -> {
+                            viewBinding?.listExplorerContextArchive?.isVisible = true
+                        }
+                        ContextItems.Copy -> {
+                            viewBinding?.listExplorerContextCopy?.isVisible = true
+                        }
+                        ContextItems.Move -> {
+                            viewBinding?.listExplorerContextMove?.isVisible = true
+                        }
+                        is ContextItems.Delete -> {
+//                            viewBinding?.viewLineSeparatorDelete?.root?.isVisible = true
+                            viewBinding?.listExplorerContextDelete?.isVisible = true
+                            contextItem.title?.let {
+                                viewBinding?.listExplorerContextDeleteText?.setText(contextItem.title)
+                            }
+                        }
+                        ContextItems.Disconnect -> {
+
+                        }
+                        ContextItems.Download -> {
+                            viewBinding?.listExplorerContextDownload?.isVisible = true
+                        }
+                        is ContextItems.Favorites -> {
+                            viewBinding?.listExplorerContextFavorite?.isVisible = true
+                            if (contextItem.isFavorite) {
+                                viewBinding?.favoriteImage?.setImageResource(R.drawable.ic_favorites_fill)
+                                viewBinding?.favoriteText?.setText(R.string.list_context_delete_from_favorite)
+                            } else {
+                                viewBinding?.favoriteText?.setText(R.string.list_context_add_to_favorite)
+                            }
+                        }
+                        is ContextItems.Header -> {
+                            viewBinding?.listExplorerContextHeaderTitleText?.text = contextItem.title
+                            viewBinding?.listExplorerContextHeaderInfoText?.text = contextItem.info
+                            viewBinding?.listExplorerContextHeaderImage?.setImageResource(contextItem.icon)
+                        }
+                        ContextItems.InternalShare -> {
+                            viewBinding?.listExplorerContextExternalLink?.isVisible = true
+                        }
+                        is ContextItems.Pin -> {
+                            if (contextItem.isPinned) {
+                                viewBinding?.listExplorerContextPin?.isVisible = true
+                                viewBinding?.listExplorerContextPinText?.setText(R.string.list_context_unpin)
+                            } else {
+                                viewBinding?.listExplorerContextPin?.isVisible = true
+                            }
+                        }
+                        ContextItems.Rename -> {
+                            viewBinding?.listExplorerContextRename?.isVisible = true
+                        }
+                        ContextItems.Restore -> {
+                            viewBinding?.listExplorerContextRestore?.isVisible = true
+                        }
+                        ContextItems.Share -> {
+                            viewBinding?.listExplorerContextShare?.isVisible = true
+                        }
+                        ContextItems.Upload -> {
+                            viewBinding?.listExplorerContextDownload?.isVisible = true
+                            viewBinding?.contextDownloadText?.setText(R.string.upload_to_portal)
+                            viewBinding?.contextDownloadImage?.setImageResource(R.drawable.ic_list_action_upload)
+                        }
+                        else -> {}
+                    }
+                }
             }
         }
-        setViewState()
         initListeners()
     }
 
     private fun setViewState() {
         viewBinding?.let { binding ->
-            if (state.isRoom) {
-                setRoomState()
-                return
-            }
-            if (state.isRecent) {
-                setRecentState()
-                return
-            }
-            if (state.isTrash) {
-                setTrashState()
-                return
-            }
-
-            /** Common */
-            binding.listExplorerContextCopy.isVisible = true
-            if (state.isWebDav) {
-                setWebDav()
-                return
-            }
-            if (state.isLocal) {
-                setLocalState()
-                return
-            }
 
             /** Folders or Files */
             if (state.isFolder) {
@@ -141,16 +185,6 @@ class ContextBottomDialog : BaseBottomDialog() {
             } else {
                 /** File can downloaded */
                 binding.listExplorerContextDownload.isVisible = true
-                if (StringUtils.convertServerVersion(networkSettings.serverVersion)
-                    >= 11 && preferenceTool.isFavoritesEnabled
-                ) {
-                    binding.viewLineSeparatorFavorites.root.isVisible = true
-                    if (state.isFavorite) {
-                        binding.listExplorerContextDeleteFromFavorite.isVisible = true
-                    } else {
-                        binding.listExplorerContextAddToFavorite.isVisible = true
-                    }
-                }
 
                 /** File is document */
                 if (state.isDocs && !state.isPdf) {
@@ -177,7 +211,6 @@ class ContextBottomDialog : BaseBottomDialog() {
             /** Only for share section, instead of delete */
             binding.listExplorerContextShareDelete.isVisible = state.isDeleteShare
 
-            binding.listExplorerContextOpenLocation.isVisible = state.isCanOpenLocation
 
             if (state.isPersonalAccount) {
                 binding.listExplorerContextShare.isVisible = !state.isFolder
@@ -291,12 +324,11 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextCopy.setOnClickListener(Buttons.COPY)
             it.listExplorerContextDownload.setOnClickListener(Buttons.DOWNLOAD)
             it.listExplorerContextRename.setOnClickListener(Buttons.RENAME)
-            it.listExplorerContextDelete.setOnClickListener(if (state.isRoom) Buttons.ARCHIVE else Buttons.DELETE)
+            it.listExplorerContextDelete.setOnClickListener(Buttons.DELETE)
             it.listExplorerContextShareDelete.setOnClickListener(Buttons.SHARE_DELETE)
-            it.listExplorerContextAddToFavorite.setOnClickListener(Buttons.FAVORITE_ADD)
-            it.listExplorerContextDeleteFromFavorite.setOnClickListener(Buttons.FAVORITE_DELETE)
+            it.listExplorerContextFavorite.setOnClickListener(Buttons.FAVORITE)
             it.listExplorerContextRestore.setOnClickListener(Buttons.RESTORE)
-            it.listExplorerContextOpenLocation.setOnClickListener(Buttons.OPEN_LOCATION)
+            it.listExplorerContextPin.setOnClickListener(Buttons.PIN)
         }
     }
 
@@ -308,13 +340,25 @@ class ContextBottomDialog : BaseBottomDialog() {
     }
 
     companion object {
-        @JvmField
         val TAG: String = ContextBottomDialog::class.java.simpleName
+
         private const val TAG_STATE = "TAG_STATE"
+        private const val ARG_ITEM = "item"
+        private const val ARG_SECTION = "section"
+
 
         @JvmStatic
         fun newInstance(): ContextBottomDialog {
             return ContextBottomDialog()
+        }
+
+        fun newInstance(item: Item, section: Int): ContextBottomDialog {
+            val dialog = ContextBottomDialog()
+            dialog.arguments = Bundle().apply {
+                putSerializable(ARG_ITEM, item)
+                putInt(ARG_SECTION, section)
+            }
+            return dialog
         }
     }
 
@@ -342,9 +386,6 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isPersonalAccount: Boolean = false,
         var isGoogleDrive: Boolean = false,
         var isVisitor: Boolean = false,
-        var isCanOpenLocation: Boolean = false,
-        var isRoom: Boolean = false,
-        var isPin: Boolean = false
     ) : Serializable
 }
 

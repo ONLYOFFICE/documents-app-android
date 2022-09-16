@@ -9,6 +9,7 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.managers.utils.ManagerUiUtils.setFolderIcon
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
@@ -135,6 +136,41 @@ object ManagerUiUtils {
             }
         }
         this.setImageResource(resId)
+    }
+
+    fun getFolderIcon(folder: CloudFolder): Int {
+        @DrawableRes var resId = R.drawable.ic_type_folder
+        if (folder.shared && folder.providerKey.isEmpty()) {
+            resId = R.drawable.ic_type_folder_shared
+        } else if ( folder.providerItem && folder.providerKey.isNotEmpty()) {
+            when (folder.providerKey) {
+                ApiContract.Storage.BOXNET -> resId = R.drawable.ic_storage_box
+                ApiContract.Storage.NEXTCLOUD -> resId = R.drawable.ic_storage_nextcloud
+                ApiContract.Storage.DROPBOX -> resId = R.drawable.ic_storage_dropbox
+                ApiContract.Storage.SHAREPOINT -> resId = R.drawable.ic_storage_sharepoint
+                ApiContract.Storage.GOOGLEDRIVE -> resId = R.drawable.ic_storage_google
+                ApiContract.Storage.KDRIVE -> resId = R.drawable.ic_storage_kdrive
+                ApiContract.Storage.ONEDRIVE, ApiContract.Storage.SKYDRIVE -> resId =
+                    R.drawable.ic_storage_onedrive
+                ApiContract.Storage.YANDEX -> resId = R.drawable.ic_storage_yandex
+                ApiContract.Storage.WEBDAV -> {
+                    resId = R.drawable.ic_storage_webdav
+                    return resId
+                }
+            }
+
+            return resId
+        }
+        if (folder.isRoom) {
+            when (folder.roomType) {
+                ApiContract.RoomType.FILLING_FORM_ROOM -> resId = R.drawable.ic_room_fill_forms
+                ApiContract.RoomType.CUSTOM_ROOM -> resId = R.drawable.ic_room_custom
+                ApiContract.RoomType.READ_ONLY_ROOM -> resId = R.drawable.ic_room_view_only
+                ApiContract.RoomType.REVIEW_ROOM -> resId = R.drawable.ic_room_review
+                ApiContract.RoomType.EDITING_ROOM -> resId = R.drawable.ic_room_collaboration
+            }
+        }
+        return resId
     }
 
     fun setAccessIcon(imageView: ImageView, accessCode: Int) {

@@ -163,6 +163,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     private var downloadManager = WorkManager.getInstance(App.getApp().applicationContext)
     private var isMultipleDelete = false
 
+    protected var currentSectionType = ApiContract.SectionType.UNKNOWN
+
     override fun onDestroy() {
         super.onDestroy()
         disposable.clear()
@@ -1509,6 +1511,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     fun recreateStack() {
         modelExplorerStack = ModelExplorerStack()
     }
+
+    fun setSectionType(sectionType: Int) {
+        currentSectionType = sectionType
+    }
+
+    fun getSectionType() = currentSectionType
 
     abstract fun getNextList()
 

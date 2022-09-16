@@ -199,6 +199,8 @@ object ApiContract {
         const val CLOUD_CUSTOM_ROOM = 19
         const val CLOUD_ARCHIVE_ROOM = 20
 
+        const val WEB_DAV = 100
+
         fun isRoom(type: Int): Boolean {
             return type >= 14
         }
