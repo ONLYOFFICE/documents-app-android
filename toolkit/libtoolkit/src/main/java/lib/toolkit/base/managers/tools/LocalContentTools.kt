@@ -378,18 +378,4 @@ class LocalContentTools @Inject constructor(val context: Context) {
         }
     }
 
-    fun getFontsDir(): String {
-        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-            "${context.filesDir.path}/Fonts"
-        } else {
-            "${Environment.getExternalStorageDirectory().absolutePath}/Fonts"
-        }
-        val folder = File(path)
-        if (!folder.exists()) {
-            folder.mkdir()
-        }
-        return path
-
-    }
-
 }
