@@ -11,7 +11,7 @@
     <color name="colorSurface">#252525</color>
     <color name="colorBackground">#121212</color>
     <color name="colorOnBackground">#FFFFFFDE</color>
-    <color name="colorOnSurface">#FFFFFFDE</color>
+    <color name="colorOnSurface">#DEFFFFFF</color>
     <color name="colorOnSurfaceSecond">#FFFFFFDE</color>
     <color name="colorOnSecondary">@color/colorBlack</color>
     <color name="colorOnError">@color/colorBlack</color>
@@ -24,6 +24,14 @@
 
     <color name="colorAppBar">@color/colorPrimaryDark</color>
     <color name="colorBottomBar">#191919</color>
+
+    <color name="colorPropertyToolbar">#333333</color>
+    <color name="colorPropertyOnToolbar">#DEFFFFFF</color>
+    <color name="colorPropertyOnToolbarSecondary">#99FFFFFF</color>
+    <color name="colorPropertyOnToolbarActive">?attr/colorPrimary</color>
+
+    <color name="colorButtonBackground">#333333</color>
+    <color name="colorButtonText">#3E9CF0</color>
 
     <!--    Clouds-->
     <color name="colorCloudItem">@color/colorOutline</color>
