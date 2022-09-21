@@ -469,5 +469,37 @@
     <string name="app_settings_follow_the_system">Igual que el sistema</string>
     <string name="app_settings_light_theme">Tema claro</string>
     <string name="app_settings_dark_theme">Tema oscuro</string>
+    <string name="errors_import_local_file_desc">Permiso denegado</string>
+    <string name="errors_import_local_file">Acceso denegado. Es necesario dar permisos de lectura y escritura</string>
+    <string name="errors_first_name">Nombre no es válido</string>
+    <string name="errors_last_name">Apellido no es válido</string>
+    <string name="navigation_drawer_menu_sign_in">Acceso</string>
+    <string name="toolbar_menu_search_view_hint">Introduzca su solicitud </string>
+    <string name="toolbar_menu_sort_date_modified">Fecha</string>
+    <string name="toolbar_menu_main_filter">Filtro</string>
+    <string name="list_context_open_location">Abrir ubicación</string>
+    <string name="placeholder_loading_users">Cargando usuarios…</string>
+    <string name="placeholder_loading_groups">Cargando grupos…</string>
+    <string name="krdive_password_helper_text">Si usted activó la autenticación doble, genere una aplicación CDM desde el gestor de Infomaniak.</string>
+    <string name="kdrive_info_title">Para utilizar este servicio es necesario tener una versión de pago del reproductor.</string>
+    <string name="storage_email_connection">Conexión de correo electrónico</string>
+    <string name="dialog_remove_account_title">Eliminar del dispositivo</string>
+    <string name="app_settings_disabled">Desactivado</string>
+    <string name="app_settings_enabled">Activado</string>
+    <string name="filter_toolbar_title">Filtros</string>
+    <string name="filter_toolbar_users_title">Seleccionar usuario</string>
+    <string name="filter_toolbar_groups_title">Seleccionar grupo</string>
+    <string name="filter_title_author">Autor</string>
+    <string name="filter_title_search">Buscar</string>
+    <string name="filter_type_documents">Documentos</string>
+    <string name="filter_type_presentations">Presentaciones</string>
+    <string name="filter_type_spreadsheets">Hojas de cálculo</string>
+    <string name="filter_type_images">Imágenes</string>
+    <string name="filter_type_media">Multimedia</string>
+    <string name="filter_type_archives">Archivos</string>
+    <string name="filter_type_all">Todos los archivos</string>
+    <string name="filter_exclude_subfolders">No hay subcarpetas</string>
+    <string name="filter_show_results">Mostrar %1$s resultados</string>
+    <string name="filter_button_reset">RESTABLECER</string>
 
 </resources>
