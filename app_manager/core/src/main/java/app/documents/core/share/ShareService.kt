@@ -2,10 +2,7 @@ package app.documents.core.share
 
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.Base
-import app.documents.core.network.models.share.request.RequestDeleteShare
-import app.documents.core.network.models.share.request.RequestExternal
-import app.documents.core.network.models.share.request.RequestExternalAccess
-import app.documents.core.network.models.share.request.RequestShare
+import app.documents.core.network.models.share.request.*
 import app.documents.core.network.models.share.response.*
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -31,7 +28,7 @@ interface ShareService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/share" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/share")
     fun getShareFile(@Path(value = "file_id") fileId: String): Observable<ResponseShare>
 
     /*
@@ -80,7 +77,7 @@ interface ShareService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/share" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/share")
     fun setFileAccess(
         @Path(value = "file_id") fileId: String,
         @Body body: RequestShare
@@ -126,4 +123,14 @@ interface ShareService {
     fun getUsers(
         @QueryMap options: Map<String, String> = mapOf()
     ): Observable<ResponseUsers>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links/send" + ApiContract.RESPONSE_FORMAT)
+    fun sendInviteLink(
+        @Path(value = "id") id: String,
+        @Body body: RequestInviteLink
+    ): Observable<ResponseInvite>
 }
