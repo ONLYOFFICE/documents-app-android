@@ -70,8 +70,18 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
                 preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
                 return@map cloudTree.response.apply {
-                    Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }), this.lastIndex)
+                    Collections.swap(
+                        this,
+                        this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }),
+                        this.lastIndex
+                    )
                     Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_USER }), 0)
+                    Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }), 1)
+                    Collections.swap(
+                        this,
+                        this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }),
+                        this.lastIndex - 1
+                    )
                 }
             }
     }

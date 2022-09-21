@@ -252,6 +252,8 @@ class ContextBottomDialog : BaseBottomDialog() {
             binding.listExplorerContextArchive.isVisible = true
             binding.listExplorerContextRename.isVisible = true
             binding.listExplorerContextPin.isVisible = true
+            binding.listExplorerContextAddUser.isVisible = true
+            binding.viewLineSeparatorDelete.root.isVisible = true
         }
     }
 
@@ -346,6 +348,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextFolderName.setOnClickListener(Buttons.FOLDER)
             it.listExplorerContextEdit.setOnClickListener(Buttons.EDIT)
             it.listExplorerContextShare.setOnClickListener(Buttons.SHARE)
+            it.listExplorerContextAddUser.setOnClickListener(Buttons.SHARE)
             it.listExplorerContextExternalLink.setOnClickListener(Buttons.EXTERNAL)
             it.listExplorerContextMove.setOnClickListener(Buttons.MOVE)
             it.listExplorerContextCopy.setOnClickListener(Buttons.COPY)

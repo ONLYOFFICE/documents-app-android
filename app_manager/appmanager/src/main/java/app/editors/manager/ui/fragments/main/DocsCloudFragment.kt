@@ -3,7 +3,6 @@ package app.editors.manager.ui.fragments.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,10 +23,13 @@ import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.activities.main.FilterActivity
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
-import app.editors.manager.ui.dialogs.*
+import app.editors.manager.ui.dialogs.ActionBottomDialog
+import app.editors.manager.ui.dialogs.AddRoomBottomDialog
+import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.dialogs.MoveCopyDialog
+import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
-import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.UiUtils

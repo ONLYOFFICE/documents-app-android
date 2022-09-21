@@ -244,6 +244,22 @@
                         android:text="@string/list_context_pin_to_top" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/list_explorer_context_add_user"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <ImageView
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_add_users"
+                        tools:ignore="ContentDescription" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/list_explorer_context_add_user_text"
+                        style="@style/ContextListMediumText"
+                        android:text="@string/list_context_add_users" />
+                </LinearLayout>
+
                 <include
                     android:id="@+id/view_line_separator_delete"
                     layout="@layout/view_line_separator"

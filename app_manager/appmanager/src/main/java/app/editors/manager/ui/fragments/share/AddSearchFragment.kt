@@ -27,12 +27,17 @@ import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 
 class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListener,
     BaseAdapter.OnItemClickListener, SharePanelViews.OnEventListener {
 
     @InjectPresenter
     lateinit var addPresenter: AddPresenter
+    @ProvidePresenter
+    fun providePresenter(): AddPresenter {
+        return AddPresenter(arguments?.getSerializable(TAG_ITEM) as Item, AddFragment.Type.NONE)
+    }
     
     private var shareActivity: ShareActivity? = null
     private var shareAdapter: ShareAdapter? = null
@@ -237,20 +242,15 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         supportActionBar?.setHomeButtonEnabled(true)
         shareActivity?.expandAppBar()
         resetChecked()
-        getArgs()
         restoreViews(savedInstanceState)
         initViews()
         addPresenter.startSearch()
     }
 
-    private fun getArgs() {
-        addPresenter.item = arguments?.getSerializable(TAG_ITEM) as Item
-    }
-
     private fun initViews() {
         viewBinding?.let { binding ->
             sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, shareActivity!!).apply {
-                val ext = StringUtils.getExtensionFromPath(checkNotNull(addPresenter.item?.title))
+                val ext = StringUtils.getExtensionFromPath(checkNotNull(addPresenter.item.title))
 
                 setExtension(StringUtils.getExtension(ext)
                     .takeIf { it != StringUtils.Extension.FORM } ?: StringUtils.getFormExtension(ext))
@@ -291,7 +291,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     companion object {
-        val TAG = AddSearchFragment::class.java.simpleName
+        val TAG: String = AddSearchFragment::class.java.simpleName
         const val TAG_ITEM = "TAG_ITEM"
 
         fun newInstance(item: Item?): AddSearchFragment {

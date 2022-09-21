@@ -46,7 +46,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/list_explorer_folder_name"
         app:layout_constraintEnd_toStartOf="@+id/list_explorer_folder_context"
         app:layout_constraintTop_toTopOf="@+id/list_explorer_folder_name"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        app:tint="?attr/colorOnSurface" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_explorer_folder_info"

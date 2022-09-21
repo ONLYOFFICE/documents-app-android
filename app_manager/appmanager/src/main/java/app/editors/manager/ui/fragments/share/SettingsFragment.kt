@@ -37,11 +37,16 @@ import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 
 class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     @InjectPresenter
     lateinit var settingsPresenter: SettingsPresenter
+    @ProvidePresenter
+    fun provideSettingsPresenter(): SettingsPresenter {
+        return SettingsPresenter(arguments?.getSerializable(TAG_ITEM) as Item)
+    }
 
     private var sharePopup: SharePopup? = null
     private var shareActivity: ShareActivity? = null
@@ -202,7 +207,12 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     }
 
     override fun onAddShare(item: Item) {
-        showFragment(AddPagerFragment.newInstance(item), AddFragment.TAG, false)
+        if (item is CloudFolder && item.isRoom) {
+            showFragment(ShareInviteFragment.newInstance(item), ShareInviteFragment.TAG, false)
+        } else {
+            showFragment(AddPagerFragment.newInstance(item), AddFragment.TAG, false)
+        }
+
     }
 
     override fun onPlaceholderState(type: PlaceholderViews.Type) {
@@ -249,7 +259,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                     if (settingsPresenter.item is CloudFolder) {
                         popup.setIsFolder()
                     } else {
-                        val ext = getExtensionFromPath(checkNotNull(settingsPresenter.item?.title))
+                        val ext = getExtensionFromPath(checkNotNull(settingsPresenter.item.title))
                         popup.extension = getExtension(ext).takeIf { it != StringUtils.Extension.FORM }
                             ?: StringUtils.getFormExtension(ext)
                     }
@@ -268,17 +278,10 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             actionBar.setHomeButtonEnabled(true)
         }
         shareActivity?.expandAppBar()
-        getArgs()
         initViews()
         initClickListeners()
         restoreViews(savedInstanceState)
         ModelShareStack.getInstance().clearModel()
-    }
-
-    private fun getArgs() {
-        val bundle = arguments
-        val item = bundle?.getSerializable(TAG_ITEM) as Item
-        settingsPresenter.item = item
     }
 
     private fun initViews() {
@@ -412,7 +415,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             if (settingsPresenter.item is CloudFolder) {
                 popup.setIsFolder()
             } else {
-                val ext = getExtensionFromPath(checkNotNull(settingsPresenter.item?.title))
+                val ext = getExtensionFromPath(checkNotNull(settingsPresenter.item.title))
                 popup.extension = getExtension(ext).takeIf { it != StringUtils.Extension.FORM }
                     ?: StringUtils.getFormExtension(ext)
             }

@@ -30,7 +30,10 @@ import moxy.InjectViewState
 import java.util.concurrent.TimeUnit
 
 @InjectViewState
-class AddPresenter : BasePresenter<AddView>() {
+class AddPresenter(
+    val item: Item,
+    val type: AddFragment.Type
+) : BasePresenter<AddView>() {
 
     companion object {
         val TAG: String = AddPresenter::class.java.simpleName
@@ -41,9 +44,6 @@ class AddPresenter : BasePresenter<AddView>() {
     private var searchValue: String? = null
     private var publishSearch: PublishSubject<String>? = null
     private var disposable: Disposable? = null
-
-    var item: Item? = null
-    var type: AddFragment.Type? = null
 
     init {
         App.getApp().appComponent.inject(this)
@@ -64,7 +64,7 @@ class AddPresenter : BasePresenter<AddView>() {
         disposable = shareApi.getUsers()
             .subscribeOn(Schedulers.io())
             .map { response ->
-                response.response.filter { it.id != account.id && it.id != item?.createdBy?.id }.map {
+                response.response.filter { it.id != account.id && it.id != item.createdBy?.id }.map {
                     UserUi(it.id, it.department, it.displayName, it.avatarMedium)
                 }
             }
@@ -116,8 +116,10 @@ class AddPresenter : BasePresenter<AddView>() {
     fun getFilter(searchValue: String) {
         isCommon = true
 
-        disposable = Observable.zip(shareApi.getUsers(getOptions(searchValue)),
-            shareApi.getGroups(getOptions(searchValue, true))) { users, groups ->
+        disposable = Observable.zip(
+            shareApi.getUsers(getOptions(searchValue)),
+            shareApi.getGroups(getOptions(searchValue, true))
+        ) { users, groups ->
             shareStack.clearModel()
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
             shareStack.addUsers(users.response.filter { it.id != account.id }.map {
@@ -154,9 +156,11 @@ class AddPresenter : BasePresenter<AddView>() {
             disposable = shareApi.setFileAccess(id, request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
+                .subscribe({
                     shareStack.resetChecked()
                     viewState.onSuccessAdd()
+                }) { error ->
+                    fetchError(error)
                 }
         }
 
@@ -167,9 +171,11 @@ class AddPresenter : BasePresenter<AddView>() {
             disposable = shareApi.setFolderAccess(id, request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
+                .subscribe({
                     shareStack.resetChecked()
                     viewState.onSuccessAdd()
+                }) { error ->
+                    fetchError(error)
                 }
         }
     }
@@ -250,11 +256,9 @@ class AddPresenter : BasePresenter<AddView>() {
         }
 
     fun shareItem() {
-        item?.let {
-            when (it) {
-                is CloudFolder -> shareFolderTo(it.id)
-                is CloudFile -> shareFileTo(it.id)
-            }
+        when (item) {
+            is CloudFolder -> shareFolderTo(item.id)
+            is CloudFile -> shareFileTo(item.id)
         }
     }
 
@@ -276,9 +280,7 @@ class AddPresenter : BasePresenter<AddView>() {
         when (type) {
             AddFragment.Type.USERS -> viewState.onGetUsers(userListItems)
             AddFragment.Type.GROUPS -> viewState.onGetGroups(groupListItems)
-            else -> {
-                // Stub
-            }
+            else -> {}
         }
     }
 
@@ -310,6 +312,9 @@ class AddPresenter : BasePresenter<AddView>() {
                     shareStack.userSet.filter { it.isSelected }.size == shareStack.userSet.size
                 AddFragment.Type.GROUPS ->
                     shareStack.groupSet.filter { it.isSelected }.size == shareStack.groupSet.size
+                else -> {
+                    false
+                }
             }
         } else {
             false
@@ -320,6 +325,7 @@ class AddPresenter : BasePresenter<AddView>() {
         return when (type) {
             AddFragment.Type.USERS -> shareStack.userSet.any { it.isSelected }
             AddFragment.Type.GROUPS -> shareStack.groupSet.any { it.isSelected }
+            else -> { false }
         }
     }
 

@@ -17,15 +17,24 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 
 class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
     enum class Type {
-        USERS, GROUPS
+        USERS, GROUPS, NONE
     }
 
     @InjectPresenter
     lateinit var addPresenter: AddPresenter
+
+    @ProvidePresenter
+    fun providePresenter(): AddPresenter {
+        return AddPresenter(
+            arguments?.getSerializable(TAG_ITEM) as Item,
+            arguments?.getSerializable(TAG_TYPE) as Type
+        )
+    }
 
     private var shareAdapter: ShareAdapter? = null
     private var type: Type? = null
@@ -125,8 +134,6 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
     private fun getArgs() {
         arguments?.let {
-            addPresenter.item = it.getSerializable(TAG_ITEM) as Item
-            addPresenter.type = it.getSerializable(TAG_TYPE) as Type
             type = it.getSerializable(TAG_TYPE) as Type
         }
     }
@@ -153,11 +160,15 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
     private fun setPlaceholder(isUsers: Boolean, isEmpty: Boolean) {
         if (isUsers) {
-            placeholderViews?.setTemplatePlaceholder(if (isEmpty)
-                PlaceholderViews.Type.NONE else PlaceholderViews.Type.USERS)
+            placeholderViews?.setTemplatePlaceholder(
+                if (isEmpty)
+                    PlaceholderViews.Type.NONE else PlaceholderViews.Type.USERS
+            )
         } else {
-            placeholderViews?.setTemplatePlaceholder(if (isEmpty)
-                PlaceholderViews.Type.NONE else PlaceholderViews.Type.GROUPS)
+            placeholderViews?.setTemplatePlaceholder(
+                if (isEmpty)
+                    PlaceholderViews.Type.NONE else PlaceholderViews.Type.GROUPS
+            )
         }
     }
 
@@ -187,7 +198,7 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
                 Type.GROUPS -> adapter.setItems(adapter.itemsList
                     .filterIsInstance(GroupUi::class.java)
                     .map { it.apply { this.isSelected = isSelected } })
-                else -> { }
+                else -> {}
             }
         }
         setCountChecked()
@@ -206,7 +217,7 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     companion object {
-        val TAG = AddFragment::class.java.simpleName
+        val TAG: String = AddFragment::class.java.simpleName
         const val TAG_ITEM = "TAG_ITEM"
         const val TAG_TYPE = "TAG_TYPE"
 

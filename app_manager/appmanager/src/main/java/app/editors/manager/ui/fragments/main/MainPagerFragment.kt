@@ -186,7 +186,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                                 section.current?.rootFolderType?.let { folderType ->
                                     DocsCloudFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
                                 },
-                                section.current.title
+                                getTabTitle(section.current?.rootFolderType ?: -1)
                             )
                         )
                     }
@@ -251,6 +251,23 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private val activeFragment: Fragment?
         get() = adapter?.getActiveFragment(viewBinding?.mainViewPager)
 
+    override fun onClick(view: View?) {
+        activity?.onSwitchAccount()
+    }
+
+    private fun getTabTitle(tab: Int): String =
+        when (tab) {
+            ApiContract.SectionType.CLOUD_COMMON -> requireContext().getString(R.string.main_pager_docs_common)
+            ApiContract.SectionType.CLOUD_USER -> requireContext().getString(R.string.main_pager_docs_my)
+            ApiContract.SectionType.CLOUD_FAVORITES -> requireContext().getString(R.string.main_pager_docs_favorites)
+            ApiContract.SectionType.CLOUD_SHARE -> requireContext().getString(R.string.main_pager_docs_share)
+            ApiContract.SectionType.CLOUD_TRASH -> requireContext().getString(R.string.main_pager_docs_trash)
+            ApiContract.SectionType.CLOUD_PROJECTS -> requireContext().getString(R.string.main_pager_docs_projects)
+            ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> requireContext().getString(R.string.main_pager_docs_virtual_room)
+            ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> requireContext().getString(R.string.main_pager_docs_archive_room)
+            else -> ""
+        }
+
     /*
      * Adapter and page change listener
      * */
@@ -265,9 +282,5 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             this@MainPagerFragment.selectedPage = mSelectedPage
             (getActiveFragment(viewBinding?.mainViewPager) as DocsCloudFragment).onScrollPage()
         }
-    }
-
-    override fun onClick(view: View?) {
-        activity?.onSwitchAccount()
     }
 }
