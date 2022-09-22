@@ -70,18 +70,17 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
                 preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
                 return@map cloudTree.response.apply {
-                    Collections.swap(
-                        this,
-                        this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }),
-                        this.lastIndex
-                    )
+                    // My section
                     Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_USER }), 0)
-                    Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }), 1)
-                    Collections.swap(
-                        this,
-                        this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }),
-                        this.lastIndex - 1
-                    )
+                    // Trash section
+                    Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }), this.lastIndex)
+                    //Rooms sections
+                    if (this.contains(this.find { it.current?.rootFolderType ==  ApiContract.SectionType.CLOUD_VIRTUAL_ROOM})) {
+                        Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }), 1)
+                    }
+                    if (this.contains(this.find { it.current?.rootFolderType ==  ApiContract.SectionType.CLOUD_ARCHIVE_ROOM})) {
+                        Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }), this.lastIndex - 1)
+                    }
                 }
             }
     }
