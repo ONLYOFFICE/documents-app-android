@@ -552,8 +552,6 @@
     <string name="kdrive_info_title">您必须有该播放器的付费版本才能使用这项服务。</string>
     <string name="storage_email_connection">电子邮箱连接</string>
     <string name="dialog_remove_account_title">从设备中删除</string>
-    <string name="app_settings_disabled">已禁用</string>
-    <string name="app_settings_enabled">已启用</string>
     <string name="filter_toolbar_title">过滤</string>
     <string name="filter_toolbar_users_title">选择用户</string>
     <string name="filter_toolbar_groups_title">选择小组</string>
