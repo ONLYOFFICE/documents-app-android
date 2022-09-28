@@ -99,7 +99,7 @@
             android:taskAffinity="${tasks}"
             android:filterTouchesWhenObscured="true"
             android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
             android:supportsPictureInPicture="true"
             android:theme="@style/NoActionBarTheme"
