@@ -75,9 +75,9 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         fun getDir(context: Context): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-                "${context.filesDir.path}/Onlyoffice"
+                "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
             } else {
-                "${Environment.getExternalStorageDirectory().absolutePath}/OnlyOffice"
+                "${Environment.getExternalStorageDirectory().absolutePath}/${BuildConfig.ROOT_FOLDER}"
             }
         }
 

@@ -151,6 +151,8 @@ android {
 
         //Tasks
         manifestPlaceholders["tasks"] = keystoreProperties["CUSTOM_TASKS"] as String? ?: ""
+
+        buildConfigField("String", "PUSH_SCHEME","\"" + "oodocuments" + "\"" )
     }
 
     splits {
