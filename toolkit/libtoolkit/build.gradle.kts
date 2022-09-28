@@ -16,6 +16,8 @@ android {
         buildConfigField("String", "SUBDOMAIN", "\"personal\"")
         buildConfigField("String", "DEFAULT_HOST", "\"onlyoffice.com\"")
         buildConfigField("String", "DEFAULT_INFO_HOST", "\"teamlab.info\"")
+        buildConfigField("String", "ROOT_FOLDER","\"" + "Onlyoffice" + "\"" )
+
     }
 
     buildTypes {
