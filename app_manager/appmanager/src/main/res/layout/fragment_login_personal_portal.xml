@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:scrollbars="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/screen_padding_medium_left_right">
-
-        <CheckBox
-            android:id="@+id/terms_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            tools:ignore="MissingConstraints" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_personal_portal_email_layout"
@@ -63,16 +57,26 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <CheckBox
+            android:id="@+id/terms_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin_xlarge"
+            android:buttonTint="@color/colorPrimary"
+            app:layout_constraintStart_toStartOf="@+id/login_enterprise_forgot_pwd_button"
+            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_forgot_pwd_button" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_personal_signin_button"
             style="@style/AccentButton"
             android:layout_width="0dp"
-            android:layout_marginTop="@dimen/default_margin_large"
+            android:layout_marginTop="@dimen/default_margin_xlarge"
+            android:enabled="false"
             android:text="@string/login_personal_signin_button"
             app:layout_constraintEnd_toEndOf="@+id/login_personal_portal_email_layout"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/login_personal_portal_email_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_forgot_pwd_button" />
+            app:layout_constraintTop_toBottomOf="@+id/terms_checkbox" />
 
         <include
             android:id="@+id/social_network_layout"
@@ -136,22 +140,17 @@
             style="@style/ItemSmallGreyText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="24dp"
             android:gravity="center"
             android:lines="6"
             android:linksClickable="true"
             android:maxLines="6"
             android:minLines="1"
             android:singleLine="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/login_personal_signup_button"
-            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintBottom_toBottomOf="@+id/terms_checkbox"
+            app:layout_constraintEnd_toEndOf="@+id/login_personal_portal_email_layout"
+            app:layout_constraintStart_toEndOf="@+id/terms_checkbox"
+            app:layout_constraintTop_toTopOf="@+id/terms_checkbox"
             tools:text="By proceeding, you agree to the Privacy Policy and the Terms of Service." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
-
