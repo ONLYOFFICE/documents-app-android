@@ -24,7 +24,6 @@ import app.editors.manager.ui.activities.main.FilterActivity
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
-import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
@@ -32,7 +31,6 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.B
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
@@ -106,7 +104,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
         super.showMainActionBarMenu(excluded)
     }
-    
+
     override fun onActionBarTitle(title: String) {
         if (isActivePage) {
             setActionBarTitle(title)
@@ -119,18 +117,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onStateMenuSelection() {
         menu?.let { menu ->
             menuInflater?.let { menuInflater ->
-                if (ApiContract.SectionType.isRoom(section)) {
-                    menuInflater.inflate(R.menu.docs_select_room, menu)
-                    menu.findItem(R.id.toolbar_selection_archive).setVisible(true).also {
-                            setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
-                        }
-                } else {
-                    menuInflater.inflate(R.menu.docs_select, menu)
-                    deleteItem = menu.findItem(R.id.toolbar_selection_delete)
-                        .setVisible(cloudPresenter.isContextItemEditable).also {
-                            setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
-                        }
-                }
+                menuInflater.inflate(R.menu.docs_select, menu)
+                deleteItem = menu.findItem(R.id.toolbar_selection_delete)
+                    .setVisible(cloudPresenter.isContextItemEditable).also {
+                        setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
+                    }
                 setAccountEnable(false)
             }
         }
@@ -215,12 +206,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             )
             ContextBottomDialog.Buttons.FAVORITE -> cloudPresenter.addToFavorite()
             ContextBottomDialog.Buttons.OPEN_LOCATION -> cloudPresenter.openLocation()
-            ContextBottomDialog.Buttons.ARCHIVE -> {
-                cloudPresenter.archiveRoom()
-            }
-            ContextBottomDialog.Buttons.PIN -> {
-                cloudPresenter.pinRoom()
-            }
             else -> {}
         }
     }
@@ -293,7 +278,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         setMenuFilterEnabled(!ApiContract.SectionType.isRoom(section))
     }
 
-    private fun setMenuFilterEnabled(isEnabled: Boolean) {
+    protected open fun setMenuFilterEnabled(isEnabled: Boolean) {
         filterItem?.isVisible = true
         filterItem?.isEnabled = isEnabled
         onStateUpdateFilterMenu()
@@ -304,34 +289,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_enable)
         } else {
             AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_disable)
-        }
-    }
-
-    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
-        if (cloudPresenter.isCurrentRoom) {
-            AddRoomBottomDialog().apply {
-                onClickListener = object : AddRoomBottomDialog.OnClickListener {
-                    override fun onActionButtonClick(roomType: Int) {
-                        UiUtils.showEditDialog(
-                            requireContext(),
-                            "Room title",
-                            value = "New room",
-                            acceptListener = { title ->
-                                cloudPresenter.createRoom(title, roomType)
-                            },
-                            requireValue = true
-
-                        )
-                    }
-
-                    override fun onActionDialogClose() {
-                       this@DocsCloudFragment.onActionDialogClose()
-                    }
-
-                }
-            }.show(parentFragmentManager, AddRoomBottomDialog.TAG)
-        } else {
-            super.onActionDialog(isThirdParty, isDocs)
         }
     }
 
@@ -367,7 +324,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onStateEmptyBackStack() {
-        super.onStateEmptyBackStack()
         swipeRefreshLayout?.isRefreshing = true
         cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
     }

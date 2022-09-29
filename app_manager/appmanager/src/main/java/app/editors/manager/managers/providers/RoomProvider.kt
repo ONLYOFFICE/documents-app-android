@@ -3,6 +3,7 @@ package app.editors.manager.managers.providers
 import app.documents.core.network.models.Base
 import app.documents.core.network.models.room.RequestArchive
 import app.documents.core.network.models.room.RequestCreateRoom
+import app.documents.core.network.models.room.RequestDeleteRoom
 import app.documents.core.network.models.room.RequestRenameRoom
 import app.documents.core.room.RoomApi
 import io.reactivex.Observable
@@ -66,6 +67,26 @@ class RoomProvider(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { it.body() }
+
+    }
+
+    fun deleteRoom(id: String = "", items: List<String>? = null): Observable<Base> {
+        return if (items != null && id.isEmpty()) {
+            Observable.fromIterable(items)
+                .subscribeOn(Schedulers.io())
+                .flatMap { itemId -> roomApi.deleteRoom(itemId, RequestDeleteRoom()) }
+                .map { it.body() }
+                .buffer(items.size)
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { responses -> responses[0] }
+        } else if (id.isNotEmpty()) {
+            roomApi.deleteRoom(id, RequestDeleteRoom())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { it.body() }
+        } else {
+            Observable.empty()
+        }
 
     }
 

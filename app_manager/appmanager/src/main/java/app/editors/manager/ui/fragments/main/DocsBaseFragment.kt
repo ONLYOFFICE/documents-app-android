@@ -617,10 +617,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onStateEmptyBackStack() {
-        // Stub
-    }
-
     /*
      * Changes
      * */

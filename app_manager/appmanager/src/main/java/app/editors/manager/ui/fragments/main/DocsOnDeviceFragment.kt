@@ -172,7 +172,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun onStateEmptyBackStack() {
-        super.onStateEmptyBackStack()
         swipeRefreshLayout?.isRefreshing = true
         presenter.getItemsById(LocalContentTools.getDir(requireContext()))
     }

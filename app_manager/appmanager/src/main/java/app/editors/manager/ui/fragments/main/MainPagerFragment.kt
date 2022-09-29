@@ -184,7 +184,17 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                         fragments.add(
                             ViewPagerAdapter.Container(
                                 section.current?.rootFolderType?.let { folderType ->
-                                    DocsCloudFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
+                                    when (folderType) {
+                                        ApiContract.SectionType.CLOUD_TRASH, ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
+                                            DocsTrashFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
+                                        }
+                                        ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
+                                            DocsRoomFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
+                                        }
+                                        else -> {
+                                            DocsCloudFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
+                                        }
+                                    }
                                 },
                                 getTabTitle(section.current?.rootFolderType ?: -1)
                             )

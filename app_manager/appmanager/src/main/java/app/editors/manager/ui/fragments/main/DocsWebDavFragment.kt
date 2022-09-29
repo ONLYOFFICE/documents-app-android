@@ -100,7 +100,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     }
 
     override fun onStateEmptyBackStack() {
-        super.onStateEmptyBackStack()
         loadFiles()
         swipeRefreshLayout?.isRefreshing = true
     }

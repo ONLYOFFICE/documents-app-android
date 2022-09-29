@@ -177,7 +177,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, if (ApiContract.SectionType.isRoom(currentSectionType)) mapOf() else mapOf<String, String>().putFilters())
+                    provider.getFiles(id, if (ApiContract.SectionType.isRoom(currentSectionType)) {
+                        mapOf()
+                    } else {
+                        mapOf<String, String>().putFilters()
+                    })
                         .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
                 )
@@ -391,10 +395,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     )
                 }
             }
-            viewState.onDialogQuestion(
-                context.getString(R.string.dialogs_question_delete), null,
-                TAG_DIALOG_BATCH_DELETE_SELECTED
-            )
+            viewState.onDialogQuestion(context.getString(R.string.dialogs_question_delete), null, TAG_DIALOG_BATCH_DELETE_SELECTED)
         } else if (!isSelectionMode) {
             if (itemClicked is CloudFile) {
                 fileProvider?.let { provider ->

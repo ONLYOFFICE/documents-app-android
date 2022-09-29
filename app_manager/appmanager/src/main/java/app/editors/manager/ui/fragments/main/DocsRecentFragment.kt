@@ -126,6 +126,10 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
+    override fun onStateEmptyBackStack() {
+        // stub
+    }
+
     private fun init() {
         activity?.let { activity ->
             activity.setAppBarStates(false)

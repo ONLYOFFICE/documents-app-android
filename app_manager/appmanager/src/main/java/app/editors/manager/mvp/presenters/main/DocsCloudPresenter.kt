@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.Recent
@@ -768,6 +769,30 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     fetchError(throwable)
                 }
             )
+        }
+    }
+
+    fun deleteRoom() {
+        if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
+            val ids = modelExplorerStack.selectedFolders.map {
+                it.id
+            }
+            roomProvider?.let { provider ->
+                disposable.add(
+                    provider.deleteRoom(items = ids).subscribe({
+                        Log.d(TAG, "deleteRoom: ")
+                    }) { fetchError(it)}
+                )
+            }
+        } else if (itemClicked != null) {
+            roomProvider?.let { provider ->
+                disposable.add(
+                    provider.deleteRoom(itemClicked?.id ?: "").subscribe({
+                        Log.d(TAG, "deleteRoom: ")
+                    }) { fetchError(it)}
+                )
+            }
+
         }
     }
 }

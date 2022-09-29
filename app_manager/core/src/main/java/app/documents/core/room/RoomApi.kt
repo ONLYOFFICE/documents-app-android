@@ -2,10 +2,7 @@ package app.documents.core.room
 
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.Base
-import app.documents.core.network.models.room.RequestArchive
-import app.documents.core.network.models.room.RequestCreateRoom
-import app.documents.core.network.models.room.RequestRenameRoom
-import app.documents.core.network.models.room.RequestSendLinks
+import app.documents.core.network.models.room.*
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.http.*
@@ -25,6 +22,17 @@ interface RoomApi {
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/unarchive")
     fun unarchive(@Path(value = "id") id: String, @Body body: RequestArchive): Observable<Response<Base>>
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @HTTP(
+        method = "DELETE",
+        path = "api/" + ApiContract.API_VERSION + "/files/rooms/{id}",
+        hasBody = true
+    )
+    fun deleteRoom(@Path(value = "id") id: String, @Body body: RequestDeleteRoom): Observable<Response<Base>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

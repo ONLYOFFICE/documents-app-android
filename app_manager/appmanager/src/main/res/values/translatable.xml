@@ -675,4 +675,7 @@
     <string name="rooms_add_custom">Custom room</string>
     <string name="rooms_add_custom_des">Apply your own settings to use this room for any custom purpose</string>
 
+    <string name="dialog_create_room">Create room</string>
+    <string name="dialog_create_room_value">New room</string>
+
 </resources>
