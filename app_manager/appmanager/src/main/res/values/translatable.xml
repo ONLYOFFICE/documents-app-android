@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Documents</string>
     <string name="app_name_full">ONLYOFFICE Documents</string>
 
@@ -179,7 +179,7 @@
 
     <!-- Common -->
     <string name="dialogs_common_ok_button">ACCEPT</string>
-    <string name="dialogs_common_cancel_button">CANCEL</string>
+    <string name="dialogs_common_cancel_button" tools:ignore="ButtonCase">CANCEL</string>
     <string name="dialogs_check_portal_header_text">Check portal capabilities</string>
     <string name="dialogs_sign_in_portal_header_text">Sign in to portal</string>
     <string name="dialogs_sign_in_register_portal">Registering portal</string>
