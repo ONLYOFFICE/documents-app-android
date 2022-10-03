@@ -4,22 +4,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import app.documents.core.account.AccountDao
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityOperationBinding
-import app.editors.manager.storages.dropbox.ui.fragments.operations.DocsDropboxOperationFragment
-import app.editors.manager.storages.googledrive.ui.fragments.operations.DocsGoogleDriveOperationFragment
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
+import app.editors.manager.storages.dropbox.ui.fragments.operations.DocsDropboxOperationFragment
+import app.editors.manager.storages.googledrive.ui.fragments.operations.DocsGoogleDriveOperationFragment
 import app.editors.manager.storages.onedrive.ui.fragments.operations.DocsOneDriveOperationFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
 import app.editors.manager.ui.fragments.operations.DocsWebDavOperationFragment
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -108,7 +108,7 @@ class OperationActivity : BaseAppActivity(){
     }
 
     private fun initState() {
-        CoroutineScope(Dispatchers.Default).launch {
+       lifecycleScope.launch {
             accountDao.getAccountOnline()?.let { account ->
                 withContext(Dispatchers.Main) {
                     if (account.isWebDav) {

@@ -4,6 +4,7 @@ import android.net.Uri
 import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
@@ -55,9 +56,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         ) {
             accountJson?.let { jsonAccount ->
                 viewState.onFinishRequest()
-                Json.decodeFromString<CloudAccount>(jsonAccount).let { cloudAccount ->
-                    render(cloudAccount, jsonAccount, fileData)
-                }
+                render(Json.decodeFromString(jsonAccount), jsonAccount, fileData)
             } ?: run {
                 throw Exception("Need account")
             }
@@ -127,7 +126,11 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
 
     private fun checkFileData(account: CloudAccount, fileData: Uri?) {
         fileData?.let { data ->
-            if (data.scheme?.equals("oodocuments") == true && data.host.equals("openfile")) {
+            if (data.scheme?.equals(BuildConfig.PUSH_SCHEME) == true && data.host.equals("openfile")) {
+                if (fileData.queryParameterNames.contains("push")) {
+                    viewState.setFileData(fileData.getQueryParameter("data") ?: "")
+                    return
+                }
                 val dataModel = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(data.query))
                 if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(
                         account.login,

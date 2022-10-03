@@ -104,8 +104,6 @@
     <string name="errors_connection_error">Compruebe la conexión a Internet</string>
     <string name="errors_email_already_registered">Ya se ha registrado un usuario con este correo electrónico</string>
     <string name="errors_email_syntax_error">Correo electrónico no válido</string>
-    <string name="errors_first_name">El nombre no es válido. No debe contener dígitos.</string>
-    <string name="errors_last_name">El apellido no es válido. No debe contener dígitos.</string>
     <string name="errors_path_url">URL no válida:</string>
     <string name="errors_redirect_error">Error de redirección desconocido con código:\u0020</string>
     <string name="errors_server_auth_error">Error de autenticación</string>
@@ -157,7 +155,6 @@
     <string name="list_headers_week">Semana</string>
     <string name="list_headers_year">Año</string>
     <string name="list_headers_yesterday">Ayer</string>
-    <string name="login_accounts_select_add">Añadir cuenta en la nube</string>
     <string name="login_accounts_select_title">Seleccionar cuenta</string>
     <string name="login_api_init_error">Error Init</string>
     <string name="login_api_init_portal_error">Error de sintaxis en nombre de la oficina en nube</string>
@@ -223,7 +220,7 @@
     <string name="media_image_share_chooser">Seleccionar aplicación para compartir</string>
     <string name="media_video_error">Error desconocido del reproductor: %1$s</string>
     <string name="navigation_drawer_close">Cerrar el panel de navegación</string>
-    <string name="navigation_drawer_menu_add_account">Añadir cuenta</string>
+    <string name="login_accounts_select_add">Añadir cuenta</string>
     <string name="navigation_drawer_menu_common">Documentos comunes</string>
     <string name="navigation_drawer_menu_help">Ayuda</string>
     <string name="navigation_drawer_menu_logout">Cerrar sesión</string>
@@ -349,10 +346,8 @@
     <string name="toolbar_menu_search_result">Resultado de la búsqueda</string>
     <string name="toolbar_menu_sort_asc">Ascendente</string>
     <string name="toolbar_menu_sort_by">Ordenar por</string>
-    <string name="toolbar_menu_sort_date_modified">Fecha de última modificación</string>
     <string name="toolbar_menu_sort_desc">Descendente</string>
     <string name="toolbar_menu_sort_order">Orden de ordenar</string>
-    <string name="toolbar_menu_sort_owner">Propietario</string>
     <string name="toolbar_menu_sort_size">Tamaño</string>
     <string name="toolbar_menu_sort_title">Título</string>
     <string name="toolbar_menu_sort_type">Tipo</string>
@@ -381,7 +376,6 @@
     <string name="cloud_only_office_description">Guarde documentos en la nube y colabore en ellos</string>
     <string name="cloud_accounts_title">Cuentas</string>
     <string name="error_long_file_name">El nombre del archivo es demasiado largo</string>
-    <string name="dialog_remove_account_title">Eliminar la cuenta</string>
     <string name="dialog_remove_account_description">
         La cuenta con el correo electrónico %1$s del portal %2$s será desconectada y eliminada de la lista de cuentas. \¡Aviso! Tendrá que introducir la dirección del portal, el correo y la contraseña. ¡Todos los archivos estarán seguros!
     </string>
@@ -390,7 +384,7 @@
         Después de cerrar la sesión no necesitará introducir la dirección del portal y el correo, ¡sólo la contraseña! ¡No se preocupe! Todos los archivos estarán seguros en la nube.
     </string>
     <string name="profile_username_title">Nombre de usuario</string>
-    <string name="profile_type_account">Tipo</string>
+    <string name="filter_title_type">Tipo</string>
     <string name="profile_portal_address">Dirección del portal</string>
     <string name="profile_type_admin">Administrador</string>
     <string name="profile_type_visitor">Visitante</string>
@@ -443,8 +437,6 @@
     <string name="auth_edit_hint">Código</string>
     <string name="app_settings_security">Seguridad</string>
     <string name="app_settings_passcode">Bloqueo por código</string>
-    <string name="app_settings_disable">Deshabilitar</string>
-    <string name="app_settings_enable">Habilitar</string>
     <string name="app_Settings_passcode_enable">Habilitar código de acceso</string>
     <string name="app_settings_passcode_change">Cambiar código de acceso</string>
     <string name="app_settings_passcode_fingerprint">Utilizar huella digital para desbloquear</string>
@@ -477,5 +469,37 @@
     <string name="app_settings_follow_the_system">Igual que el sistema</string>
     <string name="app_settings_light_theme">Tema claro</string>
     <string name="app_settings_dark_theme">Tema oscuro</string>
+    <string name="errors_import_local_file_desc">Permiso denegado</string>
+    <string name="errors_import_local_file">Acceso denegado. Es necesario dar permisos de lectura y escritura</string>
+    <string name="errors_first_name">Nombre no es válido</string>
+    <string name="errors_last_name">Apellido no es válido</string>
+    <string name="navigation_drawer_menu_sign_in">Acceso</string>
+    <string name="toolbar_menu_search_view_hint">Introduzca su solicitud </string>
+    <string name="toolbar_menu_sort_date_modified">Fecha</string>
+    <string name="toolbar_menu_main_filter">Filtro</string>
+    <string name="list_context_open_location">Abrir ubicación</string>
+    <string name="placeholder_loading_users">Cargando usuarios…</string>
+    <string name="placeholder_loading_groups">Cargando grupos…</string>
+    <string name="krdive_password_helper_text">Si usted activó la autenticación doble, genere una aplicación CDM desde el gestor de Infomaniak.</string>
+    <string name="kdrive_info_title">Para utilizar este servicio es necesario tener una versión de pago del reproductor.</string>
+    <string name="storage_email_connection">Conexión de correo electrónico</string>
+    <string name="dialog_remove_account_title">Eliminar del dispositivo</string>
+    <string name="app_settings_disabled">Desactivado</string>
+    <string name="app_settings_enabled">Activado</string>
+    <string name="filter_toolbar_title">Filtros</string>
+    <string name="filter_toolbar_users_title">Seleccionar usuario</string>
+    <string name="filter_toolbar_groups_title">Seleccionar grupo</string>
+    <string name="filter_title_author">Autor</string>
+    <string name="filter_title_search">Buscar</string>
+    <string name="filter_type_documents">Documentos</string>
+    <string name="filter_type_presentations">Presentaciones</string>
+    <string name="filter_type_spreadsheets">Hojas de cálculo</string>
+    <string name="filter_type_images">Imágenes</string>
+    <string name="filter_type_media">Multimedia</string>
+    <string name="filter_type_archives">Archivos</string>
+    <string name="filter_type_all">Todos los archivos</string>
+    <string name="filter_exclude_subfolders">No hay subcarpetas</string>
+    <string name="filter_show_results">Mostrar %1$s resultados</string>
+    <string name="filter_button_reset">RESTABLECER</string>
 
 </resources>

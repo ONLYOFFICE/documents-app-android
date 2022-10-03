@@ -36,10 +36,6 @@ class DocsMyFragment : DocsCloudFragment() {
         cloudPresenter.getItemsById(ID)
     }
 
-    override fun onUpdateItemFavorites() {
-        explorerAdapter?.updateItem(cloudPresenter.itemClicked)
-    }
-
     private fun init() {
         explorerAdapter?.isSectionMy = true
         cloudPresenter.checkBackStack()

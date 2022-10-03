@@ -15,7 +15,6 @@ import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.views.main.DocsWebDavView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
@@ -47,19 +46,11 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     }
 
 
-    private val exportReceiver: ExportReceiver
+    private val exportReceiver: ExportReceiver = ExportReceiver()
     private var tempFile: CloudFile? = null
 
     init {
         App.getApp().appComponent.inject(this)
-        modelExplorerStack = ModelExplorerStack()
-        filteringValue = ""
-        placeholderViewType = PlaceholderViews.Type.NONE
-        isContextClick = false
-        isFilteringMode = false
-        isSelectionMode = false
-        isFoldersMode = false
-        exportReceiver = ExportReceiver()
     }
 
     fun getProvider() {
@@ -99,7 +90,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     }
 
     override fun createDocs(title: String) {
-        val id = modelExplorerStack?.currentId
+        val id = modelExplorerStack.currentId
         if (id != null) {
             val requestCreate = RequestCreate()
             requestCreate.title = title
@@ -163,15 +154,15 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     override fun updateViewsState() {
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(modelExplorerStack?.countSelectedItems.toString())
-            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
+            viewState.onActionBarTitle(modelExplorerStack.countSelectedItems.toString())
+            viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
         } else if (isFilteringMode) {
             viewState.onActionBarTitle(context.getString(R.string.toolbar_menu_search_result))
             viewState.onStateUpdateFilter(true, filteringValue)
-            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
+            viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
-        } else if (!modelExplorerStack?.isRoot!!) {
+        } else if (!modelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
@@ -244,7 +235,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
             return
         }
-        val id = modelExplorerStack?.currentId
+        val id = modelExplorerStack.currentId
         if (id != null) {
             val uploadUris: MutableList<Uri> = ArrayList()
             if (uri != null) {
@@ -281,12 +272,12 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
 
     @SuppressLint("MissingPermission")
     private fun uploadWebDav(id: String, uriList: List<Uri>) {
-        var id = id
-        if (id[id.length - 1] != '/') {
-            id = "$id/"
+        var uploadId = id
+        if (uploadId[uploadId.length - 1] != '/') {
+            uploadId = "$uploadId/"
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        uploadDisposable = fileProvider?.upload(id, uriList)!!
+        uploadDisposable = fileProvider?.upload(uploadId, uriList)!!
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ }, { throwable: Throwable ->

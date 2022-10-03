@@ -30,12 +30,15 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 import java.util.*
 
@@ -128,52 +131,13 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        menu?.let {
-            openItem?.isVisible = true
-            it.findItem(R.id.toolbar_sort_item_owner).isVisible = false
-        }
+        openItem?.isVisible = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_item_search, R.id.toolbar_item_sort -> item.isChecked = true
-            R.id.toolbar_sort_item_date_update -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_title -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_type -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_size -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_asc -> {
-                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_ASC)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_desc -> {
-                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_DESC)
-                item.isChecked = true
-            }
-            R.id.toolbar_main_item_select -> presenter.setSelection(true)
-            R.id.toolbar_main_item_select_all -> presenter.setSelectionAll()
+            R.id.toolbar_item_main -> showMainActionBarMenu()
             R.id.toolbar_selection_delete -> presenter.delete()
-            R.id.toolbar_selection_move -> {
-                operation = Operation.MOVE
-                presenter.checkSelectedFiles()
-            }
-            R.id.toolbar_selection_copy -> {
-                operation = Operation.COPY
-                presenter.checkSelectedFiles()
-            }
-            R.id.toolbar_selection_deselect -> presenter.deselectAll()
-            R.id.toolbar_selection_select_all -> presenter.selectAll()
             R.id.toolbar_item_open -> showSingleFragmentFilePicker()
         }
         return true
@@ -202,10 +166,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 UiUtils.setMenuItemTint(requireContext(), this, lib.toolkit.base.R.color.colorPrimary)
                 isVisible = true
             }
-            moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
-            copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
-            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
-            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
             activity?.showNavigationButton(true)
         }
     }
@@ -228,8 +188,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     override fun onActionBarTitle(title: String) {
         setActionBarTitle(title)
     }
-
-    override fun onUpdateItemFavorites() { }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
         super.onActionButtonClick(buttons)
@@ -297,9 +255,13 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
             }
             ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
-                getString(R.string.dialogs_edit_rename_title), presenter.itemTitle,
-                getString(R.string.dialogs_edit_hint), DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                getString(R.string.dialogs_edit_accept_rename), getString(R.string.dialogs_common_cancel_button)
+                getString(R.string.dialogs_edit_rename_title),
+                presenter.itemTitle,
+                getString(R.string.dialogs_edit_hint),
+                DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
+                getString(R.string.dialogs_edit_accept_rename),
+                getString(R.string.dialogs_common_cancel_button),
+                presenter.itemExtension
             )
             else -> {
             }
@@ -375,6 +337,22 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     private fun init() {
         presenter.checkBackStack()
+        // Check shortcut
+        val bundle = requireActivity().intent.extras
+        if (bundle != null && bundle.containsKey(KEY_SHORTCUT)) {
+            when (bundle.getString(KEY_SHORTCUT)) {
+                LocalContentTools.DOCX_EXTENSION -> {
+                    onActionButtonClick(ActionBottomDialog.Buttons.DOC)
+                }
+                LocalContentTools.XLSX_EXTENSION -> {
+                    onActionButtonClick(ActionBottomDialog.Buttons.SHEET)
+                }
+                LocalContentTools.PPTX_EXTENSION -> {
+                    onActionButtonClick(ActionBottomDialog.Buttons.PRESENTATION)
+                }
+            }
+            requireActivity().intent.extras?.clear()
+        }
     }
 
     private fun makePhoto() {
@@ -444,11 +422,40 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     override val isWebDav: Boolean
         get() = false
 
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(listOf(MainActionBarPopup.Author))
+    }
+
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(
+            excluded = listOf(
+                SelectActionBarPopup.Restore,
+                SelectActionBarPopup.Download
+            )
+        )
+    }
+
     fun showRoot() {
         presenter.recreateStack()
         presenter.getItemsById(LocalContentTools.getDir(requireContext()))
         presenter.updateState()
         onScrollToPosition(0)
+    }
+
+    override val selectActionBarClickListener: (ActionBarPopupItem) -> Unit = {
+        when (it) {
+            SelectActionBarPopup.Copy -> {
+                operation = Operation.COPY
+                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
+            }
+            SelectActionBarPopup.Move -> {
+                operation = Operation.MOVE
+                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
+            }
+            else -> {
+                super.selectActionBarClickListener(it)
+            }
+        }
     }
 
     companion object {
@@ -458,6 +465,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         private const val TAG_STORAGE_IMPORT = "TAG_STORAGE_IMPORT"
 
         private const val REQUEST_STORAGE_IMPORT = 10007
+
+        private const val KEY_SHORTCUT = "create_type"
 
         fun newInstance(): DocsOnDeviceFragment {
             return DocsOnDeviceFragment()

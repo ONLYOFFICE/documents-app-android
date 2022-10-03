@@ -3,16 +3,14 @@ package app.editors.manager.storages.dropbox.ui.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import app.documents.core.network.ApiContract
-import app.editors.manager.managers.utils.Constants
-import app.editors.manager.mvp.models.account.Storage
+import app.editors.manager.app.App
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
-import app.editors.manager.storages.base.view.BaseStorageDocsView
+import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
 import app.editors.manager.storages.dropbox.mvp.presenters.DocsDropboxPresenter
-import app.editors.manager.storages.dropbox.mvp.views.DocsDropboxView
-import app.editors.manager.ui.activities.main.ActionButtonFragment
+import app.editors.manager.ui.activities.main.MainActivity
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
+import javax.inject.Inject
 
 class DocsDropboxFragment: BaseStorageDocsFragment() {
 
@@ -30,13 +28,20 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
     @InjectPresenter
     override lateinit var presenter: DocsDropboxPresenter
 
+    @Inject
+    lateinit var dropboxLoginHelper: DropboxLoginHelper
+
+    init {
+        App.getApp().appComponent.inject(this)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
 
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    mCameraUri?.let { uri ->
+                    cameraUri?.let { uri ->
                         presenter.upload(uri, null, KEY_UPLOAD)
                     }
                 }
@@ -66,13 +71,12 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
     }
 
     override fun getDocsPresenter() = presenter
+
     override fun onRefreshToken() {
-        val storage = Storage(
-            ApiContract.Storage.DROPBOX,
-            Constants.DropBox.COM_CLIENT_ID,
-            Constants.DropBox.COM_REDIRECT_URL
-        )
-        showFragment(DropboxSignInFragment.newInstance(storage), DropboxSignInFragment.TAG, false)
+        dropboxLoginHelper.startSignInActivity(this) {
+            MainActivity.show(requireContext())
+            requireActivity().finish()
+        }
     }
 
 }

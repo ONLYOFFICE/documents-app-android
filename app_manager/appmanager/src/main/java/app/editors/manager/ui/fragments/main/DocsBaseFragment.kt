@@ -14,13 +14,12 @@ import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
@@ -42,6 +41,9 @@ import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog.DialogButtonOnClick
 import app.editors.manager.ui.fragments.base.ListFragment
+import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.SelectActionBarPopup
+import app.editors.manager.ui.views.custom.CommonSearchView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.ActivitiesUtils.createFile
@@ -60,6 +62,7 @@ import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog.OnBottomDialogCloseList
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 
 abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnItemClickListener,
     OnItemContextListener, BaseAdapter.OnItemLongClickListener, ContextBottomDialog.OnClickListener,
@@ -74,13 +77,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * */
     protected var searchItem: MenuItem? = null
     protected var openItem: MenuItem? = null
-    protected var sortItem: MenuItem? = null
     protected var mainItem: MenuItem? = null
     protected var deleteItem: MenuItem? = null
-    protected var moveItem: MenuItem? = null
     protected var restoreItem: MenuItem? = null
-    protected var copyItem: MenuItem? = null
-    protected var downloadItem: MenuItem? = null
+    protected var filterItem: MenuItem? = null
     protected var searchView: SearchView? = null
     protected var searchCloseButton: ImageView? = null
     protected var explorerAdapter: ExplorerAdapter? = null
@@ -89,12 +89,19 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     var actionBottomDialog: ActionBottomDialog? = null
     var moveCopyDialog: MoveCopyDialog? = null
 
-    private var mLastClickTime: Long = 0
+    private var lastClickTime: Long = 0
     private var selectItem: MenuItem? = null
-    private val mTypeFactory: TypeFactory = factory
+    private val typeFactory: TypeFactory = factory
 
     protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
     protected abstract val isWebDav: Boolean?
+
+    private val lifecycleEventObserver = LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_RESUME ) {
+            contextBottomDialog?.onClickListener = this
+            actionBottomDialog?.onClickListener = this
+        }
+    }
 
     companion object {
         private const val CLICK_TIME_INTERVAL: Long = 350
@@ -110,19 +117,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycle.addObserver(this)
+        lifecycle.addObserver(lifecycleEventObserver)
         setHasOptionsMenu(true)
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onDialogListener() {
-        contextBottomDialog?.onClickListener = this
-        actionBottomDialog?.onClickListener = this
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        init(savedInstanceState)
+        init()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -191,60 +192,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, menuInflater)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         presenter.initMenu()
     }
 
-    override fun onReverseSortOrder(order: String) {
-        if (order == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
-            menu?.findItem(R.id.toolbar_sort_item_asc)?.isChecked = true
-        } else {
-            menu?.findItem(R.id.toolbar_sort_item_desc)?.isChecked = true
-        }
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_item_search, R.id.toolbar_item_sort -> item.isChecked = true
-            R.id.toolbar_sort_item_date_update -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_title -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_type -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_size -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_owner -> {
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, item.isChecked)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_asc -> {
-                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_ASC)
-                item.isChecked = true
-            }
-            R.id.toolbar_sort_item_desc -> {
-                presenter.orderBy(ApiContract.Parameters.VAL_SORT_ORDER_DESC)
-                item.isChecked = true
-            }
-            R.id.toolbar_main_item_select -> presenter.setSelection(true)
-            R.id.toolbar_main_item_select_all -> presenter.setSelectionAll()
+            R.id.toolbar_item_main -> showMainActionBarMenu()
             R.id.toolbar_selection_delete -> presenter.delete()
-            R.id.toolbar_selection_move -> presenter.moveSelected()
-            R.id.toolbar_selection_restore -> presenter.moveSelected()
-            R.id.toolbar_selection_copy -> presenter.copySelected()
-            R.id.toolbar_selection_deselect -> presenter.deselectAll()
-            R.id.toolbar_selection_select_all -> presenter.selectAll()
-            R.id.toolbar_selection_download -> presenter.createDownloadFile()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -307,10 +264,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     private val isFastClick: Boolean
         get() {
             val now = System.currentTimeMillis()
-            return if (now - mLastClickTime < CLICK_TIME_INTERVAL) {
+            return if (now - lastClickTime < CLICK_TIME_INTERVAL) {
                 true
             } else {
-                mLastClickTime = now
+                lastClickTime = now
                 false
             }
         }
@@ -369,25 +326,15 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             ContextBottomDialog.Buttons.MOVE -> presenter.moveContext()
             ContextBottomDialog.Buttons.COPY -> presenter.copyContext()
             ContextBottomDialog.Buttons.DOWNLOAD -> onFileDownloadPermission()
-            ContextBottomDialog.Buttons.RENAME -> if (presenter.itemClicked is CloudFile) {
-                showEditDialogRename(
-                    getString(R.string.dialogs_edit_rename_title),
-                    getNameWithoutExtension(presenter.itemTitle),
-                    getString(R.string.dialogs_edit_hint),
-                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                    getString(R.string.dialogs_edit_accept_rename),
-                    getString(R.string.dialogs_common_cancel_button)
-                )
-            } else {
-                showEditDialogRename(
-                    getString(R.string.dialogs_edit_rename_title),
-                    presenter.itemTitle,
-                    getString(R.string.dialogs_edit_hint),
-                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                    getString(R.string.dialogs_edit_accept_rename),
-                    getString(R.string.dialogs_common_cancel_button)
-                )
-            }
+            ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
+                getString(R.string.dialogs_edit_rename_title),
+                presenter.itemTitle,
+                getString(R.string.dialogs_edit_hint),
+                DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
+                getString(R.string.dialogs_edit_accept_rename),
+                getString(R.string.dialogs_common_cancel_button),
+                presenter.itemExtension
+            )
             ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
                 getString(R.string.dialogs_question_delete),
                 presenter.itemTitle,
@@ -395,6 +342,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_common_cancel_button),
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
+            else -> {}
         }
     }
 
@@ -437,6 +385,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_common_cancel_button)
             )
             ActionBottomDialog.Buttons.UPLOAD -> presenter.uploadPermission()
+            else -> {}
         }
     }
 
@@ -545,7 +494,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onDocsFilter(list: List<Entity>?) {
         val isEmpty = list != null && list.isEmpty()
         setViewState(isEmpty)
-        setMenuMainEnabled(!isEmpty)
         explorerAdapter?.setItems(list)
     }
 
@@ -617,7 +565,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
             menu?.let {
                 onCreateOptionsMenu(it, requireActivity().menuInflater)
-                it.findItem(R.id.toolbar_selection_select_all)?.isVisible = !presenter.isSelectedAll
+//                it.findItem(R.id.toolbar_selection_select_all)?.isVisible = !presenter.isSelectedAll
             }
         }
     }
@@ -631,52 +579,28 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             menu?.let { menu ->
                 menuInflater?.let { inflater ->
                     inflater.inflate(R.menu.docs_main, menu)
-                    sortItem = menu.findItem(R.id.toolbar_item_sort)
                     openItem = menu.findItem(R.id.toolbar_item_open)
                     mainItem = menu.findItem(R.id.toolbar_item_main)
-                    selectItem = menu.findItem(R.id.toolbar_main_item_options)
+                    filterItem = menu.findItem(R.id.toolbar_item_filter)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
-                    searchView = (searchItem?.actionView as SearchView).apply {
-                        setOnQueryTextListener(this@DocsBaseFragment)
-                        maxWidth = Int.MAX_VALUE
-                        isIconified = !presenter.isFilteringMode
-                        searchCloseButton = findViewById(androidx.appcompat.R.id.search_close_btn)
-                        searchCloseButton?.apply {
-                            isEnabled = false
-                            isVisible = true
-                            setOnClickListener {
-                                if (!isSearchViewClear)
-                                    onBackPressed()
-                            }
-                        }
-
-                        // On search open
-                        setOnSearchClickListener { presenter.setFiltering(true) }
-                    }
-
-                    // Init order by
-                    menu.findItem(
-                        if (isAsc) R.id.toolbar_sort_item_asc else
-                            R.id.toolbar_sort_item_desc
-                    ).isChecked = true
-
-                    when (sortBy) {
-                        ApiContract.Parameters.VAL_SORT_BY_UPDATED -> menu.findItem(R.id.toolbar_sort_item_date_update)
-                            .setEnabled(false).setChecked(true).isEnabled = true
-                        ApiContract.Parameters.VAL_SORT_BY_TITLE -> menu.findItem(R.id.toolbar_sort_item_title)
-                            .setEnabled(false).setChecked(true).isEnabled = true
-                        ApiContract.Parameters.VAL_SORT_BY_TYPE -> menu.findItem(R.id.toolbar_sort_item_type)
-                            .setEnabled(false).setChecked(true).isEnabled = true
-                        ApiContract.Parameters.VAL_SORT_BY_SIZE -> menu.findItem(R.id.toolbar_sort_item_size)
-                            .setEnabled(false).setChecked(true).isEnabled = true
-                        ApiContract.Parameters.VAL_SORT_BY_OWNER -> menu.findItem(R.id.toolbar_sort_item_owner)
-                            .setEnabled(false).setChecked(true).isEnabled = true
-                    }
+                    searchView = initSearchView(searchItem?.actionView as? SearchView)
                     presenter.initMenuSearch()
                     presenter.initMenuState()
                 }
             }
         }
+    }
+
+    private fun initSearchView(searchView: SearchView?): SearchView {
+        return CommonSearchView(
+            searchView = searchView,
+            isIconified = !presenter.isFilteringMode,
+            queryTextListener = this@DocsBaseFragment,
+            searchClickListener = { presenter.setFiltering(true) },
+            closeClickListener = { if (!isSearchViewClear) onBackPressed() }
+        ).also {
+            searchCloseButton = it.closeButton
+        }.build()
     }
 
     override fun onStateMenuSelection() {
@@ -849,7 +773,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         menu?.let {
             if (explorerAdapter?.itemList?.size == 0) {
                 it.findItem(R.id.toolbar_item_empty_trash).isVisible = false
-                sortItem?.isVisible = false
                 searchItem?.isVisible = false
             }
         }
@@ -929,7 +852,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * Menu methods
      * */
     protected open fun setMenuMainEnabled(isEnabled: Boolean) {
-        sortItem?.isVisible = isEnabled
         mainItem?.isVisible = isEnabled
     }
 
@@ -940,9 +862,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     /*
      * Initialisations
      * */
-    private fun init(savedInstanceState: Bundle?) {
+    private fun init() {
         setDialogs()
-        explorerAdapter = ExplorerAdapter(mTypeFactory).apply {
+        explorerAdapter = ExplorerAdapter(typeFactory).apply {
             setOnItemContextListener(this@DocsBaseFragment)
             setOnItemClickListener(this@DocsBaseFragment)
             setOnItemLongClickListener(this@DocsBaseFragment)
@@ -1064,6 +986,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
+    override fun onUpdateFavoriteItem() {
+        explorerAdapter?.updateItem(presenter.itemClicked)
+    }
+
     /*
      * Parent ViewPager methods. Check instanceof for trash fragment
      * */
@@ -1162,5 +1088,60 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
+    protected open fun showMainActionBarMenu(excluded: List<ActionBarPopupItem> = emptyList()) {
+        if (!presenter.isSelectionMode) {
+            MainActionBarPopup(
+                context = requireContext(),
+                clickListener = mainActionBarClickListener,
+                sortBy = presenter.preferenceTool.sortBy.orEmpty(),
+                isAsc = isAsc,
+                excluded = excluded
+            ).show(requireActivity().window.decorView)
+        } else {
+            showSelectedActionBarMenu()
+        }
+    }
 
+    protected open fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem> = emptyList()) {
+        SelectActionBarPopup(
+            context = requireContext(),
+            clickListener = selectActionBarClickListener,
+            excluded = excluded
+        ).show(requireActivity().window.decorView)
+    }
+
+    private val isAsc: Boolean
+        get() = presenter.preferenceTool.sortOrder.equals(
+            ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+            ignoreCase = true
+        )
+
+    protected open val mainActionBarClickListener: (ActionBarPopupItem) -> Unit = { item ->
+        val isRepeatedTap = item == MainActionBarPopup.getSortPopupItem(presenter.preferenceTool.sortBy)
+        when (item) {
+            MainActionBarPopup.Select -> presenter.setSelection(true)
+            MainActionBarPopup.SelectAll -> presenter.setSelectionAll()
+            MainActionBarPopup.Date ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, isRepeatedTap)
+            MainActionBarPopup.Type ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, isRepeatedTap)
+            MainActionBarPopup.Size ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, isRepeatedTap)
+            MainActionBarPopup.Title ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, isRepeatedTap)
+            MainActionBarPopup.Author ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, isRepeatedTap)
+        }
+    }
+
+    protected open val selectActionBarClickListener: (ActionBarPopupItem) -> Unit = { item ->
+        when (item) {
+            SelectActionBarPopup.Move -> presenter.moveSelected()
+            SelectActionBarPopup.Restore -> presenter.moveSelected()
+            SelectActionBarPopup.Copy -> presenter.copySelected()
+            SelectActionBarPopup.Deselect -> presenter.deselectAll()
+            SelectActionBarPopup.SelectAll -> presenter.selectAll()
+            SelectActionBarPopup.Download -> presenter.createDownloadFile()
+        }
+    }
 }

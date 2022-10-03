@@ -1,7 +1,7 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
-import android.net.Uri
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import app.documents.core.account.CloudAccount
@@ -14,6 +14,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
+import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.mvp.models.user.Thirdparty
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.ProfileView
@@ -27,7 +28,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.ActivitiesUtils
 import moxy.InjectViewState
 import javax.inject.Inject
 
@@ -134,36 +134,32 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
         }
     }
 
-    fun removeAccount() {
-        CoroutineScope(Dispatchers.Default).launch {
-            AccountUtils.removeAccount(
-                context,
-                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-            )
-            accountDao.deleteAccount(account)
-            recentDao.removeAllByOwnerId(account.id)
-            if (ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
-                context.contentResolver.delete(Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"), null, null)
-            }
-            withContext(Dispatchers.Main) {
-                viewState.onClose(false)
-            }
-        }
-
-
-    }
-
+    @SuppressLint("CheckResult")
     fun logout() {
-        CoroutineScope(Dispatchers.Default).launch {
-            AccountUtils.getAccount(context, account.getAccountName())?.let {
-                if (account.isWebDav) {
-                    AccountUtils.setPassword(context, it, null)
-                } else if (account.isDropbox || account.isOneDrive || account.isGoogleDrive) {
-                    AccountUtils.setToken(context, it, "")
-                } else {
-                    AccountUtils.setToken(context, it, null)
+        AccountUtils.getAccount(context, account.getAccountName())?.let { systemAccount ->
+            if (account.isWebDav) {
+                AccountUtils.setPassword(context, systemAccount, null)
+                update(systemAccount)
+            } else if (account.isDropbox || account.isOneDrive || account.isGoogleDrive) {
+                AccountUtils.setToken(context, systemAccount, "")
+                update(systemAccount)
+            } else {
+                GoogleUtils.getDeviceToken({ deviceToken ->
+                    context.loginService.subscribe(AccountUtils.getToken(context, account.getAccountName()) ?: "", deviceToken, false).subscribe({
+                        update(systemAccount)
+                    }) {
+                        update(systemAccount)
+                    }
+                }) {
+                    update(systemAccount)
                 }
             }
+        }
+    }
+
+    private fun update(systemAccount: Account) {
+        CoroutineScope(Dispatchers.Default).launch {
+            AccountUtils.setToken(context, systemAccount, null)
             accountDao.updateAccount(account.copyWithToken(isOnline = false).apply {
                 token = ""
                 password = ""
@@ -174,5 +170,4 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
             }
         }
     }
-
 }

@@ -21,10 +21,13 @@ import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
+import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import java.io.File
 
 abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment, BaseStorageDocsView {
@@ -62,7 +65,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override fun onDestroyView() {
         super.onDestroyView()
         activity?.showAccount(false)
-        activity?.showNavigationButton(false)
     }
 
     override fun setToolbarState(isVisible: Boolean) {
@@ -87,6 +89,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     private fun init() {
         presenter.checkBackStack()
+        activity?.showAccount(true)
     }
 
     private fun loadFiles() {
@@ -136,7 +139,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     private fun getMediaFile(uri: Uri): Explorer =
         Explorer().apply {
-            val file = File(context?.let { PathUtils.getPath(it, uri).toString() })
+            val file = File(context?.let { PathUtils.getPath(it, uri).toString() }.toString())
             val explorerFile = CloudFile().apply {
                 pureContentLength = file.length()
                 webUrl = file.absolutePath
@@ -163,19 +166,17 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
                 )
                 isVisible = true
             }
-            moveItem = menu?.findItem(R.id.toolbar_selection_move)?.setVisible(true)
-            copyItem = menu?.findItem(R.id.toolbar_selection_copy)?.setVisible(true)
-            downloadItem = menu?.findItem(R.id.toolbar_selection_download)?.setVisible(true)
-            restoreItem = menu?.findItem(R.id.toolbar_selection_restore)?.setVisible(false)
             setAccountEnable(false)
         }
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
-        super.onActionButtonClick(buttons)
         when (buttons) {
             ActionBottomDialog.Buttons.PHOTO -> if (checkCameraPermission()) {
                 showCameraActivity(TimeUtils.fileTimeStamp)
+            }
+            else -> {
+                super.onActionButtonClick(buttons)
             }
         }
     }
@@ -193,9 +194,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        menu?.findItem(R.id.toolbar_sort_item_type)?.isVisible = false
-        menu?.findItem(R.id.toolbar_sort_item_owner)?.isVisible = false
-        searchCloseButton?.setOnClickListener { v: View? ->
+        searchCloseButton?.setOnClickListener {
             onBackPressed()
         }
     }
@@ -224,9 +223,14 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override val presenter: BaseStorageDocsPresenter<out BaseStorageDocsView>
         get() = getDocsPresenter()
 
-    override fun onUpdateItemFavorites() {
-        TODO("Not yet implemented")
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(listOf(MainActionBarPopup.Type, MainActionBarPopup.Author))
+    }
+
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(listOf(SelectActionBarPopup.Restore))
     }
 
     abstract fun getDocsPresenter(): BaseStorageDocsPresenter<out BaseStorageDocsView>
+
 }

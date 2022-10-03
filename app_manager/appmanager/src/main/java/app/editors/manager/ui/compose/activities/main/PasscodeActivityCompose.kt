@@ -1,9 +1,10 @@
 package app.editors.manager.ui.compose.activities.main
 
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,10 +33,10 @@ enum class PasscodeScreens(val screen: String){
     ChangePasscode("change")
 }
 
-@ExperimentalFoundationApi
 @Composable
 fun PasscodeActivity(
     preferenceTool: PreferenceTool,
+    data: Bundle?,
     backPressed: () -> Unit
 ) {
 
@@ -52,7 +53,7 @@ fun PasscodeActivity(
         startDestination = if(!isEnterPasscode) PasscodeScreens.Common.screen else PasscodeScreens.EnterPasscode.screen,
     ) {
         composable(PasscodeScreens.EnterPasscode.screen) {
-            EnterPasscode(navController = navController, viewModel)
+            EnterPasscode(navController = navController, viewModel,data)
         }
         composable(PasscodeScreens.Common.screen) {
             CommonPasscode(navController = navController, viewModel, backPressed)
@@ -72,11 +73,11 @@ fun PasscodeActivity(
     }
 }
 
-@ExperimentalFoundationApi
 @Composable
 private fun EnterPasscode(
     navController: NavController,
-    viewModel: SetPasscodeViewModel
+    viewModel: SetPasscodeViewModel,
+    data: Bundle?
 ) {
 
     val fingerprintTitle = stringResource(R.string.app_settings_passcode_fingerprint_title)
@@ -93,7 +94,7 @@ private fun EnterPasscode(
                 ),
                 context,
                 {
-                    MainActivity.show(context, true)
+                    MainActivity.show(context = context, isCode = true, bundle = data)
                     context.finish()
                 }) { errorMessage ->
                 context.onBiometricError(errorMessage)
@@ -101,6 +102,13 @@ private fun EnterPasscode(
             }
         }
     }
+
+    LaunchedEffect(key1 = null, block = {
+        if (viewModel.isFingerprintEnable.value == true) {
+            viewModel.biometric.value = true
+        }
+    })
+
     PasscodeOperation(
         viewModel = viewModel,
         title = stringResource(R.string.app_settings_passscode_enter_full_title),
@@ -115,7 +123,7 @@ private fun EnterPasscode(
         when(state) {
             is PasscodeLockState.ConfirmPasscode -> {
                 viewModel.setNullState()
-                MainActivity.show(context, true)
+                MainActivity.show(context, true, data)
                 context.finish()
             }
             is PasscodeLockState.Error -> {
@@ -132,6 +140,9 @@ private fun EnterPasscode(
                 }, 1000)
             }
 
+            else -> {
+                // Stub
+            }
         }
     }
 }
@@ -150,7 +161,6 @@ private fun CommonPasscode(
     )
 }
 
-@ExperimentalFoundationApi
 @Composable
 private fun SetPasscode(
     navController: NavController,
@@ -181,12 +191,14 @@ private fun SetPasscode(
                 }, 300)
 
             }
+            else -> {
+                // Stub
+            }
         }
     }
 }
 
 
-@ExperimentalFoundationApi
 @Composable
 private fun ConfirmPasscode(
     navController: NavController,
@@ -229,11 +241,13 @@ private fun ConfirmPasscode(
                     }
                 }, 1000)
             }
+            else -> {
+                // Stub
+            }
         }
     }
 }
 
-@ExperimentalFoundationApi
 @Composable
 private fun ChangePasscode(
     navController: NavController,
@@ -273,11 +287,13 @@ private fun ChangePasscode(
                     }
                 }, 1000)
             }
+            else -> {
+                // Stub
+            }
         }
     }
 }
 
-@ExperimentalFoundationApi
 @Composable
 private fun DisablePasscode(
     navController: NavController,
@@ -320,6 +336,9 @@ private fun DisablePasscode(
                         launchSingleTop = true
                     }
                 }, 1000)
+            }
+            else -> {
+                // Stub
             }
         }
     }

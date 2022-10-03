@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
@@ -24,6 +23,7 @@ import app.editors.manager.ui.activities.main.WebViewerActivity
 import app.editors.manager.ui.adapters.RecentAdapter
 import app.editors.manager.ui.adapters.holders.factory.RecentHolderFactory
 import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.popup.MainActionBarPopup
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +31,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
 class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
@@ -92,12 +93,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         setMenuSearchEnabled(true)
-        mainItem?.isVisible = false
-        sortItem?.let {
-            it.isVisible = true
-            it.isEnabled = true
-            it.subMenu.findItem(R.id.toolbar_sort_item_owner).isVisible = false
-        }
+        mainItem?.isVisible = true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -115,48 +111,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                     }
                 }
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.toolbar_item_sort -> {
-                activity?.setAppBarStates(false)
-                activity?.showNavigationButton(false)
-            }
-            R.id.toolbar_sort_item_title -> {
-                if (item.isChecked) {
-                    presenter.reverseOrder()
-                } else {
-                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_TITLE)
-                }
-            }
-            R.id.toolbar_sort_item_date_update -> {
-                if (item.isChecked) {
-                    presenter.reverseOrder()
-                } else {
-                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_UPDATED)
-                }
-            }
-            R.id.toolbar_sort_item_size -> {
-                if (item.isChecked) {
-                    presenter.reverseOrder()
-                } else {
-                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_SIZE)
-                }
-            }
-            R.id.toolbar_sort_item_type -> {
-                if (item.isChecked) {
-                    presenter.reverseOrder()
-                } else {
-                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_TYPE)
-                }
-            }
-            R.id.toolbar_sort_item_asc -> presenter.setOrder(isAsc = true)
-            R.id.toolbar_sort_item_desc -> presenter.setOrder(isAsc = false)
-            else -> {}
-        }
-        item.isChecked = true
-        return false
     }
 
     override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
@@ -204,7 +158,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             adapter?.setRecent(files, sortBy == ApiContract.Parameters.VAL_SORT_BY_UPDATED)
             recyclerView?.scrollToPosition(0)
             placeholderViews?.setVisibility(false)
-            onReverseSortOrder(sortOrder)
             updateMenu(true)
         } else {
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.SEARCH)
@@ -213,19 +166,18 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     private fun updateMenu(isEnable: Boolean) {
-        if (menu != null && sortItem != null && searchItem != null && deleteItem != null) {
-            sortItem?.isEnabled = isEnable
+        if (menu != null && searchItem != null && deleteItem != null) {
             searchItem?.isEnabled = isEnable
             deleteItem?.isVisible = isEnable
         }
     }
 
-    override fun openFile(file: CloudFile) {
-        val ext = file.fileExst
+    override fun openFile(response: CloudFile) {
+        val ext = response.fileExst
         if (StringUtils.isVideoSupport(ext) || StringUtils.isImage(ext)) {
-            MediaActivity.show(this, getExplorer(file), false)
+            MediaActivity.show(this, getExplorer(response), false)
         } else if (StringUtils.isDocument(ext)) {
-            WebViewerActivity.show(requireActivity(), file)
+            WebViewerActivity.show(requireActivity(), response)
         } else {
             onError(getString(R.string.error_unsupported_format))
         }
@@ -311,7 +263,15 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun onUpdateItemFavorites() { }
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(
+            listOf(
+                MainActionBarPopup.Author,
+                MainActionBarPopup.SelectAll,
+                MainActionBarPopup.Select
+            )
+        )
+    }
 
     override val isWebDav: Boolean
         get() = false
@@ -327,6 +287,23 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                     delay(timeMillis)
                     isClickable = true
                 }
+            }
+        }
+    }
+
+    override val mainActionBarClickListener: (ActionBarPopupItem) -> Unit = { item ->
+        if (item == MainActionBarPopup.getSortPopupItem(presenter.preferenceTool.sortBy)) {
+            presenter.reverseOrder()
+        } else {
+            when (item) {
+                MainActionBarPopup.Date ->
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_UPDATED)
+                MainActionBarPopup.Type ->
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_TYPE)
+                MainActionBarPopup.Size ->
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_SIZE)
+                MainActionBarPopup.Title ->
+                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_TITLE)
             }
         }
     }

@@ -23,9 +23,9 @@
     <string name="auth_info_screen_1">Моля, задайте приложение за генериране на кодове за достъп до портала (напр. Google Authenticator), за да продължите работата в портала</string>
     <string name="auth_info_screen_2">Стартирайте приложението и докоснете иконата на новия профил</string>
     <string name="auth_info_screen_3">Копирайте ключа и го поставете в приложението Google Authenticator</string>
-    <string name="chooser_activity_not_found">Заявлението за това действие не можа да бъде намерено ...</string>
-    <string name="chooser_email_client">Изберете имейл клиент ...</string>
-    <string name="chooser_web_browser">Изберете браузър ...</string>
+    <string name="chooser_activity_not_found">Заявлението за това действие не можа да бъде намерено …</string>
+    <string name="chooser_email_client">Изберете имейл клиент …</string>
+    <string name="chooser_web_browser">Изберете браузър …</string>
     <string name="countries_codes_title">Изберете държава</string>
     <string name="dialog_move_copy_copy">Създайте копие на файла</string>
     <string name="dialog_move_copy_overwrite">Презаписване с актуализация на версията</string>
@@ -73,8 +73,8 @@
     <string name="dialog_question_delete_folder">Папката ще бъде безвъзвратно изтрита.</string>
     <string name="dialogs_sign_in_portal_header_text">Влезте в облачния офис</string>
     <string name="dialogs_sign_in_register_portal">Регистриране на облачния офис</string>
-    <string name="dialogs_wait_title">Операцията е в ход ...</string>
-    <string name="dialogs_wait_title_storage">Свързването на хранилището ...</string>
+    <string name="dialogs_wait_title">Операцията е в ход …</string>
+    <string name="dialogs_wait_title_storage">Свързването на хранилището …</string>
     <string name="download_manager_cancel">Изтеглянето е анулирано</string>
     <string name="download_manager_complete">Изтеглянето е завършено</string>
     <string name="download_manager_error">Грешка при изтегляне</string>
@@ -96,8 +96,6 @@
     <string name="errors_client_unauthorized">Неразрешено искане</string>
     <string name="errors_connection_error">Проверете интернет връзката</string>
     <string name="errors_email_syntax_error">Имейлът е невалиден</string>
-    <string name="errors_first_name">Името не е валидно. Не трябва да съдържа цифри.</string>
-    <string name="errors_last_name">Фамилното име не е валидно. Не трябва да съдържа цифри.</string>
     <string name="errors_redirect_error">Неизвестна грешка при пренасочване с код:\u0020</string>
     <string name="errors_server_auth_error">Грешка при удостоверяване</string>
     <string name="errors_server_error">Неизвестна грешка на сървъра с код:\u0020</string>
@@ -140,12 +138,11 @@
     <string name="list_headers_week">Тази седмица</string>
     <string name="list_headers_year">Тази година</string>
     <string name="list_headers_yesterday">Вчера</string>
-    <string name="login_accounts_select_add">Добавете акаунт в облака</string>
     <string name="login_accounts_select_title">Изберете профил</string>
     <string name="login_api_init_error">Първоначална грешка</string>
     <string name="login_api_init_portal_error">Синтактична грешка в адреса на офиса в облака</string>
     <string name="login_api_portal_name">Грешен адрес на офиса на облака. Пример: example.onlyoffice.com</string>
-    <string name="login_api_portal_name_content">Името на профила трябва да се състои от AZ, az, 0-9</string>
+    <string name="login_api_portal_name_content">Името на профила трябва да се състои от AZ, az, 0–9</string>
     <string name="login_api_portal_name_length">Името на профила трябва да съдържа най-малко 6 знака</string>
     <string name="login_create_portal_address_hint">Име на акаунта</string>
     <string name="login_create_portal_email_hint">Електронна поща</string>
@@ -205,7 +202,7 @@
     <string name="media_image_share_chooser">Изберете приложение за споделяне</string>
     <string name="media_video_error">Грешка при неизвестна играча: %1$s</string>
     <string name="navigation_drawer_close">Затворете чекмеджето за навигация</string>
-    <string name="navigation_drawer_menu_add_account">Добавяне на профил</string>
+    <string name="login_accounts_select_add">Добавяне на профил</string>
     <string name="navigation_drawer_menu_common">Общи документи</string>
     <string name="navigation_drawer_menu_help">Помощ</string>
     <string name="navigation_drawer_menu_logout">Излез от профила си</string>
@@ -246,7 +243,7 @@
     <string name="placeholder_access_denied">Отказан достъп</string>
     <string name="placeholder_connection">Грешка при свързването</string>
     <string name="placeholder_empty">Празна папка</string>
-    <string name="placeholder_loading_files">Файловете се зареждат ...</string>
+    <string name="placeholder_loading_files">Файловете се зареждат …</string>
     <string name="placeholder_media_error">Носителят не може да се зареди</string>
     <string name="placeholder_no_groups">Няма групи</string>
     <string name="placeholder_no_subfolders">Няма подпапки</string>
@@ -313,17 +310,15 @@
     <string name="toolbar_menu_main_options">Настроики</string>
     <string name="toolbar_menu_main_remove_from_list">Премахни от списъка</string>
     <string name="toolbar_menu_main_rename">Преименувам</string>
-    <string name="toolbar_menu_main_select">Изберете ...</string>
+    <string name="toolbar_menu_main_select">Изберете …</string>
     <string name="toolbar_menu_main_select_all">Избери всички</string>
     <string name="toolbar_menu_main_share">Дял</string>
-    <string name="toolbar_menu_search_hint">Търсене...</string>
+    <string name="toolbar_menu_search_hint">Търсене…</string>
     <string name="toolbar_menu_search_result">Резултат от търсенето</string>
     <string name="toolbar_menu_sort_asc">Възходящ</string>
     <string name="toolbar_menu_sort_by">Сортиране по</string>
-    <string name="toolbar_menu_sort_date_modified">Последно модифициран</string>
     <string name="toolbar_menu_sort_desc">Низходящо</string>
     <string name="toolbar_menu_sort_order">Ред на сортиране</string>
-    <string name="toolbar_menu_sort_owner">Собственик</string>
     <string name="toolbar_menu_sort_size">Размер</string>
     <string name="toolbar_menu_sort_title">Заглавие</string>
     <string name="toolbar_menu_sort_type">Тип</string>
@@ -381,7 +376,6 @@
     <string name="cloud_only_office_description">Запазете документи в облака и работете по тях</string>
     <string name="cloud_accounts_title">Профили</string>
     <string name="error_long_file_name">Името на файла е твърде дълго</string>
-    <string name="dialog_remove_account_title">Премахни профил</string>
     <string name="dialog_remove_account_description">
         Потребител с %1$s от %2$s портала ще бъде отписан и премахнат от списъка с профили. \n\nМоля, имайте предвид: за да влезете ще е нужно да въведете адрес на портала, имейл и парола. Всички ваши файлове ще бъдат защитени.
 </string>
@@ -390,7 +384,7 @@
         След като излезете няма да е нужно да въвеждате адрес на портала или имейл, а само паролата. Не се притеснявайте, всички файлове ще бъдат защитени в облака.
 </string>
     <string name="profile_username_title">Потребителско име</string>
-    <string name="profile_type_account">Тип</string>
+    <string name="filter_title_type">Тип</string>
     <string name="profile_portal_address">Адрес на портал</string>
     <string name="profile_type_admin">Администратор</string>
     <string name="profile_type_visitor">Гост</string>
@@ -444,8 +438,6 @@
     <string name="auth_edit_hint">Код</string>
     <string name="app_settings_security">Сигурност</string>
     <string name="app_settings_passcode">Заключване с парола</string>
-    <string name="app_settings_disable">Деактивирай</string>
-    <string name="app_settings_enable">Активирай</string>
     <string name="app_Settings_passcode_enable">Активирай парола</string>
     <string name="app_settings_passcode_change">Смени парола</string>
     <string name="app_settings_passcode_fingerprint">Използвайте пръстов отпечатък за отключване</string>
@@ -477,5 +469,36 @@
     <string name="app_settings_follow_the_system">Следвайте системата</string>
     <string name="app_settings_light_theme">Светла тема</string>
     <string name="app_settings_dark_theme">Тъмна тема</string>
-
+    <string name="errors_import_local_file_desc">Разрешението е отказано</string>
+    <string name="errors_import_local_file">Достъпът е отказан. Дайте разрешение за четене и запис</string>
+    <string name="errors_first_name">Името не е валидно</string>
+    <string name="errors_last_name">Фамилното име не е валидно</string>
+    <string name="navigation_drawer_menu_sign_in">Впиши се</string>
+    <string name="toolbar_menu_search_view_hint">Въведете заявката си</string>
+    <string name="toolbar_menu_sort_date_modified">Дата</string>
+    <string name="toolbar_menu_main_filter">Филтър</string>
+    <string name="list_context_open_location">Отворено местоположение</string>
+    <string name="placeholder_loading_users">Зареждане на потребители…</string>
+    <string name="placeholder_loading_groups">Зареждане на групи…</string>
+    <string name="krdive_password_helper_text">Ако сте активирали двойно удостоверяване, моля, генерирайте CDM приложение от мениджъра на Infomaniak.</string>
+    <string name="kdrive_info_title">Трябва да имате платена версия на плейъра, за да използвате тази услуга.</string>
+    <string name="storage_email_connection">Имейл връзка</string>
+    <string name="dialog_remove_account_title">Изтрий от устройство</string>
+    <string name="app_settings_disabled">Хора с увреждания</string>
+    <string name="app_settings_enabled">Активиран</string>
+    <string name="filter_toolbar_title">Филтри</string>
+    <string name="filter_toolbar_users_title">Избери потребител</string>
+    <string name="filter_toolbar_groups_title">Избери група</string>
+    <string name="filter_title_author">Автор</string>
+    <string name="filter_title_search">Търси</string>
+    <string name="filter_type_documents">Документи</string>
+    <string name="filter_type_presentations">Презентации</string>
+    <string name="filter_type_spreadsheets">Електронни таблици</string>
+    <string name="filter_type_images">Снимки</string>
+    <string name="filter_type_media">Мултимедия</string>
+    <string name="filter_type_archives">Архиви</string>
+    <string name="filter_type_all">Всички файлове</string>
+    <string name="filter_exclude_subfolders">Няма подпапки</string>
+    <string name="filter_show_results">Покажи %1$s резултати</string>
+    <string name="filter_button_reset">НУЛИРАНЕ</string>
 </resources>

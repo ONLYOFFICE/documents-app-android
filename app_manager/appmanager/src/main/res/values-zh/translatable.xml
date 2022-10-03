@@ -65,7 +65,6 @@
     <string name="login_retry">重试连接</string>
     <!-- Accounts -->
     <string name="login_accounts_select_title">选择账户</string>
-    <string name="login_accounts_select_add">添加云账户</string>
     <!-- Portal pager -->
     <string name="login_pager_enterprise">门户</string>
     <string name="login_pager_personal">个人</string>
@@ -84,8 +83,6 @@
     <string name="login_enterprise_info">ONLYOFFICE门户允许您将文件保存在云中，并与同事进行共享以及实时协同编辑。</string>
     <string name="login_not_authorization_info">无法在%2$s登录到%1$s</string>
     <string name="login_not_authorization_button">再试一次</string>
-    <string name="errors_first_name">名字无效。不得包含数字。</string>
-    <string name="errors_last_name">姓氏无效。不得包含数字。</string>
     <!-- Portal personal -->
     <string name="login_personal_edit_email_hint">邮箱</string>
     <string name="login_personal_edit_password_hint">密码</string>
@@ -211,7 +208,7 @@
     <string name="navigation_drawer_menu_trash">垃圾</string>
     <string name="navigation_drawer_menu_help">帮助</string>
     <string name="navigation_drawer_menu_logout">注销</string>
-    <string name="navigation_drawer_menu_add_account">添加账户</string>
+    <string name="login_accounts_select_add">添加账户</string>
     <string name="settings_item_title">设置</string>
     <string name="settings_item_change_account">更改账户</string>
     <string name="settings_clear_cache">清除缓存</string>
@@ -234,11 +231,9 @@
     <string name="toolbar_menu_main_deselect">取消选择</string>
     <string name="toolbar_menu_sort_by">排序方式</string>
     <string name="toolbar_menu_sort_order">排序顺序</string>
-    <string name="toolbar_menu_sort_date_modified">最后修改</string>
     <string name="toolbar_menu_sort_title">标题</string>
     <string name="toolbar_menu_sort_type">类型</string>
     <string name="toolbar_menu_sort_size">大小</string>
-    <string name="toolbar_menu_sort_owner">所有者</string>
     <string name="toolbar_menu_sort_asc">升序</string>
     <string name="toolbar_menu_sort_desc">降序</string>
     <string name="toolbar_menu_main_download">下载</string>
@@ -450,7 +445,6 @@
     <string name="cloud_only_office_description">将文档存储与云端并就其展开协作</string>
     <string name="cloud_accounts_title">账户</string>
     <string name="error_long_file_name">文件名过长</string>
-    <string name="dialog_remove_account_title">移除账户</string>
     <string name="dialog_remove_account_description">
         %2$s门户中带有%1$s的用户将被登出，并从账户列表中移除。\n\n请注意：如需登录，您需要输入门户地址、邮箱以及密码。您的所有文件均将被安全存储。
     </string>
@@ -459,7 +453,7 @@
         登出后，您将不需要输入门户地址或邮箱，仅需输入密码即可。别担心，所有文件都将被安全地存储于云端。
     </string>
     <string name="profile_username_title">用户名</string>
-    <string name="profile_type_account">类型</string>
+    <string name="filter_title_type">类型</string>
     <string name="profile_portal_address">门户地址</string>
     <string name="profile_type_admin">管理员</string>
     <string name="profile_type_visitor">访客</string>
@@ -509,8 +503,8 @@
     <string name="auth_edit_hint">代码</string>
     <string name="app_settings_security">安全性</string>
     <string name="app_settings_passcode">密码锁</string>
-    <string name="app_settings_disable">禁用</string>
-    <string name="app_settings_enable">启用</string>
+    <string name="app_settings_disabled">禁用</string>
+    <string name="app_settings_enabled">启用</string>
     <string name="app_Settings_passcode_enable">启用密码</string>
     <string name="app_settings_passcode_change">更改密码</string>
     <string name="app_settings_passcode_fingerprint">使用指纹解锁</string>
@@ -543,4 +537,34 @@
     <string name="app_settings_follow_the_system">跟随系统</string>
     <string name="app_settings_light_theme">浅色主题</string>
     <string name="app_settings_dark_theme">深色主题</string>
+    <string name="errors_import_local_file_desc">拒绝许可</string>
+    <string name="errors_import_local_file">拒绝访问。提供读写权限</string>
+    <string name="errors_first_name">名字无效</string>
+    <string name="errors_last_name">姓氏无效</string>
+    <string name="navigation_drawer_menu_sign_in">登录</string>
+    <string name="toolbar_menu_search_view_hint">请输入您要查询的信息</string>
+    <string name="toolbar_menu_sort_date_modified">日期</string>
+    <string name="toolbar_menu_main_filter">过滤</string>
+    <string name="list_context_open_location">开放位置</string>
+    <string name="placeholder_loading_users">正在加载用户。。。</string>
+    <string name="placeholder_loading_groups">正在加载小组。。。</string>
+    <string name="krdive_password_helper_text">如果您已经激活了双重认证，请从Infomaniak管理器中安装CDM应用程序。</string>
+    <string name="kdrive_info_title">您必须有该播放器的付费版本才能使用这项服务。</string>
+    <string name="storage_email_connection">电子邮箱连接</string>
+    <string name="dialog_remove_account_title">从设备中删除</string>
+    <string name="filter_toolbar_title">过滤</string>
+    <string name="filter_toolbar_users_title">选择用户</string>
+    <string name="filter_toolbar_groups_title">选择小组</string>
+    <string name="filter_title_author">作者</string>
+    <string name="filter_title_search">搜索</string>
+    <string name="filter_type_documents">文档</string>
+    <string name="filter_type_presentations">幻灯片</string>
+    <string name="filter_type_spreadsheets">表格</string>
+    <string name="filter_type_images">图片</string>
+    <string name="filter_type_media">媒体</string>
+    <string name="filter_type_archives">档案室</string>
+    <string name="filter_type_all">所有文件</string>
+    <string name="filter_exclude_subfolders">没有子文件夹</string>
+    <string name="filter_show_results">显示 %1$s 结果</string>
+    <string name="filter_button_reset">重置</string>
 </resources>

@@ -58,9 +58,9 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
 
             when(val response = api.upload(request, createMultipartBody(from)).blockingGet()) {
                 is DropboxResponse.Success -> {
-                    mNotificationUtils.removeNotification(id.hashCode())
+                    notificationUtils.removeNotification(id.hashCode())
                     if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
-                        mNotificationUtils.showUploadCompleteNotification(id.hashCode(), title)
+                        notificationUtils.showUploadCompleteNotification(id.hashCode(), title)
                         sendBroadcastUploadComplete(
                             path,
                             title!!,
@@ -73,7 +73,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
                 }
                 is DropboxResponse.Error -> {
                     if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
-                        mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                        notificationUtils.showUploadErrorNotification(id.hashCode(), title)
                     } else {
                         from?.let { DocumentFile.fromSingleUri(applicationContext, it)?.delete() }
                     }
@@ -85,11 +85,11 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
             }
         } catch (e: IOException) {
             if (isStopped) {
-                mNotificationUtils.showCanceledUploadNotification(id.hashCode(), title)
+                notificationUtils.showCanceledUploadNotification(id.hashCode(), title)
                 sendBroadcastUploadCanceled(path)
             } else {
                 if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
-                    mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                    notificationUtils.showUploadErrorNotification(id.hashCode(), title)
                 } else {
                     from?.let { DocumentFile.fromSingleUri(applicationContext, it)?.delete() }
                 }

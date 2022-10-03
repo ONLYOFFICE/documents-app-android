@@ -16,6 +16,8 @@ import app.editors.manager.ui.activities.main.OperationActivity.Companion.showRe
 import app.editors.manager.ui.activities.main.ShareActivity.Companion.show
 import app.editors.manager.ui.activities.main.StorageActivity.Companion.show
 import app.editors.manager.ui.activities.main.WebViewerActivity.Companion.show
+import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
+import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.interfaces.ContextDialogInterface
 import lib.toolkit.base.managers.utils.FragmentUtils.showFragment
 import lib.toolkit.base.ui.fragments.base.BaseFragment
@@ -101,6 +103,11 @@ abstract class BaseAppFragment : BaseFragment() {
 
     protected fun showStorageActivity(isMySection: Boolean) {
         show(this, isMySection)
+    }
+
+    protected fun getDialogFragment(): IBaseDialogFragment? {
+        return requireActivity().supportFragmentManager
+            .fragments.findLast { it is BaseDialogFragment } as? IBaseDialogFragment
     }
 
     companion object {

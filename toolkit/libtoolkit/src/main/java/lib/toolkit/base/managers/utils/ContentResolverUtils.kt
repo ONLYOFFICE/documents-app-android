@@ -2,7 +2,6 @@ package lib.toolkit.base.managers.utils
 
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -17,6 +16,7 @@ import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
+import kotlinx.coroutines.*
 import java.io.File
 
 
@@ -88,7 +88,7 @@ object ContentResolverUtils {
     fun rename(context: Context, uri: Uri, newName: String): Boolean {
         when (uri.scheme) {
             ContentResolver.SCHEME_FILE -> {
-                return File(uri.path).let {
+                return File(uri.path ?: "").let {
                     it.renameTo(File(it.parent, newName))
                 }
             }
@@ -134,11 +134,7 @@ object ContentResolverUtils {
             }
 
             ContentResolver.SCHEME_CONTENT -> {
-                context.contentResolver.query(uri, null, null, null, null)?.use {
-                    if (it.moveToFirst()) {
-                        return it.getLong(it.getColumnIndex(DocumentsContract.Document.COLUMN_SIZE))
-                    }
-                }
+                return DocumentFile.fromSingleUri(context, uri)?.length() ?: 0
             }
         }
         return 0
@@ -156,11 +152,7 @@ object ContentResolverUtils {
                     return it
                 }
 
-                context.contentResolver.query(uri, null, null, null, null)?.use {
-                    if (it.moveToFirst()) {
-                        return it.getString(it.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE))
-                    }
-                }
+               return StringUtils.getMimeTypeFromPath(DocumentFile.fromSingleUri(context, uri)?.name ?: "")
             }
         }
         return StringUtils.COMMON_MIME_TYPE
@@ -182,78 +174,52 @@ object ContentResolverUtils {
 
     @JvmStatic
     fun getFrameFromWebVideoAsync(path: String, headers: Map<String, String>,
-                                  size: Point?, onFrameFromWebVideo: OnWebVideoListener
-    ): WeakAsyncUtils<Void, Void, Bitmap, OnWebVideoListener> {
-        val keyForAsync = OnWebVideoListener::class.java.simpleName + "_" + path
-        val asyncTask = object : WeakAsyncUtils<Void, Void, Bitmap, OnWebVideoListener>(keyForAsync) {
-
-            override fun doInBackground(vararg voids: Void): Bitmap? {
-                var bitmap =
-                        getFrameFromWebVideoSync(
-                                path,
-                                headers
-                        )
+                                  size: Point?, onFrameFromWebVideo: OnWebVideoListener,
+                                  scope: CoroutineScope
+    ): Job {
+        val job = scope.launch(Dispatchers.Main) {
+            val image = async(Dispatchers.IO) {
+                val bitmap = getFrameFromWebVideoSync(path, headers)
                 if (size != null && bitmap != null) {
-                    bitmap = FileUtils.getResizedBitmap(
-                            bitmap,
-                            size.x,
-                            size.y
+                    return@async FileUtils.getResizedBitmap(
+                        bitmap,
+                        size.x,
+                        size.y
                     )
+                } else {
+                    return@async null
                 }
-                return bitmap
+            }
+            image.await()?.let { bitmap ->
+                onFrameFromWebVideo.onGetFrame(bitmap)
             }
 
-            override fun onPostExecute(bitmap: Bitmap) {
-                super.onPostExecute(bitmap)
-                if (mWeakReference != null) {
-                    val listener = mWeakReference!!.get()
-                    if (listener != null) {
-                        listener.onGetFrame(bitmap)
-                    }
-                }
-            }
         }
-
-        asyncTask.setWeakReference(onFrameFromWebVideo)
-        asyncTask.execute(false)
-        return asyncTask
+        return job
     }
 
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     @JvmStatic
-    fun getBitmapUriAsync(context: Context, bitmap: Bitmap, onUriListener: OnUriListener, name: String): WeakAsyncUtils<Void, Void, Uri, OnUriListener> {
-        val keyForAsync = OnUriListener::class.java.simpleName + "_" + bitmap.toString()
-        val asyncTask = object : WeakAsyncUtils<Void, Void, Uri, OnUriListener>(keyForAsync) {
-
-            @SuppressLint("MissingPermission")
-            override fun doInBackground(vararg voids: Void): Uri? {
+    fun getBitmapUriAsync(context: Context, bitmap: Bitmap, onUriListener: OnUriListener, name: String, scope: CoroutineScope): Job {
+        val job = scope.launch(Dispatchers.Main) {
+            val image = async(Dispatchers.IO) {
                 val file = FileUtils.createBitmapFile(
-                        context,
-                        bitmap,
-                        name
+                    context,
+                    bitmap,
+                    name
                 )
-                return if (file != null) {
-                    getFileUri(
-                            context,
-                            file
+                if (file != null) {
+                    return@async getFileUri(
+                        context,
+                        file
                     )
-                } else null
+                } else return@async null
             }
-
-            override fun onPostExecute(uri: Uri) {
-                super.onPostExecute(uri)
-                if (mWeakReference != null) {
-                    val listener = mWeakReference!!.get()
-                    if (listener != null) {
-                        listener.onGetUri(uri)
-                    }
-                }
+            image.await()?.let { uri ->
+                onUriListener.onGetUri(uri)
             }
         }
-
-        asyncTask.setWeakReference(onUriListener)
-        asyncTask.execute(false)
-        return asyncTask
+        return job
     }
 
 }

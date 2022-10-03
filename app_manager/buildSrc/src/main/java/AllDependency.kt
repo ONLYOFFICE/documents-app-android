@@ -1,5 +1,5 @@
 object Dagger {
-    private const val version = "2.41"
+    private const val version = "2.42"
 
     const val dagger = "com.google.dagger:dagger:$version"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$version"
@@ -11,20 +11,21 @@ object Moxy {
     const val moxyAndroid = "com.github.moxy-community:moxy-androidx:$version"
     const val moxyMaterial = "com.github.moxy-community:moxy-material:$version"
     const val moxyCompiler = "com.github.moxy-community:moxy-compiler:$version"
+    const val moxyKtx = "com.github.moxy-community:moxy-ktx:$version"
 }
 
 object Koin {
-    private const val version = "3.1.5"
+    private const val version = "3.1.6"
 
     const val koinAndroid = "io.insert-koin:koin-android:$version"
     const val koinCompose = "io.insert-koin:koin-androidx-compose:$version"
 }
 
 object AndroidX {
-    private const val androidxVersion = "1.4.1"
+    private const val androidxVersion = "1.4.2"
     private const val recyclerViewVersion = "1.2.1"
     private const val recyclerViewSelectionVersion = "1.1.0"
-    private const val kotlinKtxVersion = "1.7.0"
+    private const val kotlinKtxVersion = "1.8.0"
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
@@ -32,7 +33,7 @@ object AndroidX {
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     const val recyclerViewSelection = "androidx.recyclerview:recyclerview-selection:$recyclerViewSelectionVersion"
     const val cardView = "androidx.cardview:cardview:1.0.0"
-    const val constraint = "androidx.constraintlayout:constraintlayout:2.1.3"
+    const val constraint = "androidx.constraintlayout:constraintlayout:2.1.4"
     const val ktx = "androidx.core:core-ktx:$kotlinKtxVersion"
     const val biometric = "androidx.biometric:biometric:1.1.0"
 
@@ -50,9 +51,9 @@ object Retrofit {
 }
 
 object Kotlin {
-    const val version = "1.5.31"
-    const val pluginVersion = "1.5.21"
-    private const val coroutinesVersion = "1.5.0"
+    const val version = "1.7.0"
+    const val kspVersion = "1.7.0-1.0.6"
+    private const val coroutinesVersion = "1.6.0"
     private const val serializationVersion = "1.3.2"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
@@ -62,9 +63,9 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "20.1.0"
+    private const val playServicesAuthVersion = "20.2.0"
     private const val playCoreVersion = "1.10.3"
-    private const val materialVersion = "1.5.0"
+    private const val materialVersion = "1.6.1"
     private const val gsonVersion = "2.8.6"
     private const val safetynetVersion = "18.0.1"
 
@@ -78,10 +79,10 @@ object Google {
 }
 
 object Firebase {
-    private const val firebaseCoreVersion = "20.1.1"
-    private const val firebaseConfigVersion = "21.0.2"
-    private const val firebaseMessagingVersion = "23.0.2"
-    private const val firebaseCrashlyticsVersion = "18.2.9"
+    private const val firebaseCoreVersion = "21.0.0"
+    private const val firebaseConfigVersion = "21.1.0"
+    private const val firebaseMessagingVersion = "23.0.5"
+    private const val firebaseCrashlyticsVersion = "18.2.11"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"
@@ -113,7 +114,8 @@ object Lifecycle {
 }
 
 object Compose {
-    const val version = "1.0.5"
+    const val version = "1.1.1"
+    const val versionCompiler = "1.2.0"
     private const val navigationVersion = "2.4.1"
 
     const val ui = "androidx.compose.ui:ui:$version"
@@ -133,12 +135,13 @@ object Jackson {
 
 object Libs {
     const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
-    const val facebookLogin = "com.facebook.android:facebook-login:12.2.0"
+    const val facebookLogin = "com.facebook.android:facebook-login:13.2.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
-    const val glide = "com.github.bumptech.glide:glide:4.13.1"
+    const val glide = "com.github.bumptech.glide:glide:4.13.2"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
     const val androidWork = "androidx.work:work-runtime:2.7.1"
     const val documentFile = "androidx.documentfile:documentfile:1.0.1"
     const val pdfView = "com.github.TalbotGooday:AndroidPdfViewer:3.1.0-beta.3"
     const val colorPicker = "com.github.skydoves:colorpickerview:2.2.4"
+    const val dropboxSdk = "com.dropbox.core:dropbox-core-sdk:5.2.0"
 }

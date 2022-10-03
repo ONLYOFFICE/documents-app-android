@@ -1,16 +1,16 @@
 package app.editors.manager.storages.onedrive.mvp.presenters
 
 import app.documents.core.account.CloudAccount
+import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
 import app.editors.manager.app.oneDriveLoginService
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.StorageUtils
-import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import app.editors.manager.storages.base.presenter.BaseStorageSignInPresenter
 import app.editors.manager.storages.base.view.BaseStorageSignInView
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.mvp.models.response.AuthResponse
 import app.editors.manager.storages.onedrive.mvp.models.user.User
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import app.editors.manager.storages.onedrive.onedrive.api.OneDriveService
 import lib.toolkit.base.managers.utils.AccountData
 import moxy.InjectViewState
@@ -24,11 +24,11 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
 
     fun getToken(code: String) {
         val map = mapOf(
-            StorageUtils.ARG_CLIENT_ID to Constants.OneDrive.COM_CLIENT_ID,
+            StorageUtils.ARG_CLIENT_ID to BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
             StorageUtils.ARG_SCOPE to StorageUtils.OneDrive.VALUE_SCOPE,
-            StorageUtils.ARG_REDIRECT_URI to Constants.OneDrive.COM_REDIRECT_URL,
+            StorageUtils.ARG_REDIRECT_URI to BuildConfig.ONE_DRIVE_COM_REDIRECT_URL,
             StorageUtils.OneDrive.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_AUTH,
-            StorageUtils.OneDrive.ARG_CLIENT_SECRET to Constants.OneDrive.COM_CLIENT_SECRET,
+            StorageUtils.OneDrive.ARG_CLIENT_SECRET to BuildConfig.ONE_DRIVE_COM_CLIENT_SECRET,
             StorageUtils.ARG_CODE to code
         )
         var accessToken = ""

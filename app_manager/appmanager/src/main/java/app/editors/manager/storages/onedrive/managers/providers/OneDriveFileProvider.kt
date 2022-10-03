@@ -477,8 +477,11 @@ class OneDriveFileProvider : BaseFileProvider {
                     File(Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice")
                 return createFile(parent, file.title)
             }
+            else -> {
+                // Stub
+            }
         }
-        val local = File(Uri.parse(file.webUrl).path)
+        val local = File(Uri.parse(file.webUrl).path.toString())
         return if (local.exists()) {
             local
         } else {

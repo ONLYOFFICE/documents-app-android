@@ -86,7 +86,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
                 .getColor(requireContext(),lib.toolkit.base.R.color.colorSecondary))
             webView = it.webStorageWebview.apply {
                 settings.javaScriptEnabled = true
-                settings.setAppCacheEnabled(false)
+//                settings.setAppCacheEnabled(false)
                 settings.cacheMode = WebSettings.LOAD_NO_CACHE
                 settings.userAgentString = getString(R.string.google_user_agent)
                 webViewClient = WebViewCallbacks()

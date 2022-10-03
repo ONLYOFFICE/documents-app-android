@@ -26,21 +26,6 @@ class DocsShareFragment : DocsCloudFragment() {
         return false
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, menuInflater)
-        if (cloudPresenter.isSelectionMode) {
-            val mShareDeleteItem = menu.findItem(R.id.toolbar_selection_share_delete)
-            mShareDeleteItem.isVisible = true
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.toolbar_selection_share_delete) {
-            cloudPresenter.removeShare()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onScrollPage() {
         super.onScrollPage()
         if (cloudPresenter.stack == null) {
@@ -63,8 +48,6 @@ class DocsShareFragment : DocsCloudFragment() {
         swipeRefreshLayout?.isRefreshing = true
         cloudPresenter.getItemsById(ID)
     }
-
-    override fun onUpdateItemFavorites() { }
 
     private fun init() {
         cloudPresenter.checkBackStack()

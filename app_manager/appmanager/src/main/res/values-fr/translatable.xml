@@ -104,8 +104,6 @@
     <string name="errors_connection_error">Vérifiez votre connexion internet</string>
     <string name="errors_email_already_registered">L’utilisateur avec cet e-mail est déjà enregistré</string>
     <string name="errors_email_syntax_error">Adresse mail invalide</string>
-    <string name="errors_first_name">Prénom n’est pas valide. Il ne doit pas contenir de chiffres.</string>
-    <string name="errors_last_name">Nom n’est pas valide. Il ne doit pas contenir de chiffres.</string>
     <string name="errors_path_url">URL invalide</string>
     <string name="errors_redirect_error">Erreur de redirection inconnue avec le code:\u0020</string>
     <string name="errors_server_auth_error">Erreur d’authentification</string>
@@ -157,7 +155,6 @@
     <string name="list_headers_week">Cette semaine</string>
     <string name="list_headers_year">Cette année</string>
     <string name="list_headers_yesterday">Hier</string>
-    <string name="login_accounts_select_add">Ajouter un compte dans le nuage</string>
     <string name="login_accounts_select_title">Sélectionner le compte</string>
     <string name="login_api_init_error">Erreur d’initialisation</string>
     <string name="login_api_init_portal_error">Erreur de syntaxe du nom de bureau dans les nuages</string>
@@ -223,7 +220,7 @@
     <string name="media_image_share_chooser">Choisir une application pour partager</string>
     <string name="media_video_error">Erreur inconnue du lecteur : %1$s</string>
     <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
-    <string name="navigation_drawer_menu_add_account">Ajouter un compte</string>
+    <string name="login_accounts_select_add">Ajouter un compte</string>
     <string name="navigation_drawer_menu_common">Documents communs</string>
     <string name="navigation_drawer_menu_help">Aide</string>
     <string name="navigation_drawer_menu_logout">Se déconnecter</string>
@@ -349,10 +346,8 @@
     <string name="toolbar_menu_search_result">Résultat de recherche</string>
     <string name="toolbar_menu_sort_asc">Ascendant</string>
     <string name="toolbar_menu_sort_by">Trier par</string>
-    <string name="toolbar_menu_sort_date_modified">Date de dernière modification</string>
     <string name="toolbar_menu_sort_desc">Descendant</string>
     <string name="toolbar_menu_sort_order">Ordre de classement</string>
-    <string name="toolbar_menu_sort_owner">Propriétaire</string>
     <string name="toolbar_menu_sort_size">Taille</string>
     <string name="toolbar_menu_sort_title">Titre</string>
     <string name="toolbar_menu_sort_type">Type</string>
@@ -381,7 +376,6 @@
     <string name="cloud_only_office_description">Stockez les documents dans le cloud et co-éditez-les</string>
     <string name="cloud_accounts_title">Comptes</string>
     <string name="error_long_file_name">Le nom de fichier est trop long</string>
-    <string name="dialog_remove_account_title">Supprimer le compte</string>
     <string name="dialog_remove_account_description">
         L\'utilisateur avec le mail %1$s du portail %2$s sera déconnecté et sont compte sera effacé de la liste des comptes. \n\nAttention! Vous devez saisir l\'adresse du portail, le mail et le mot de passe. Tous les fichiers seront en sécurité !
     </string>
@@ -390,7 +384,7 @@
         Lorsque vous vous déconnectez, vous ne devez pas saisir l\'adresse du portail et le mail, seul le mot de passe est requis ! Attention ! Lorsque vous vous déconnectez tous vos fichiers demeurent sauvegardés dans le cloud.
     </string>
     <string name="profile_username_title">Nom d\'utilisateur</string>
-    <string name="profile_type_account">Type</string>
+    <string name="filter_title_type">Type</string>
     <string name="profile_portal_address">Adresse du portail</string>
     <string name="profile_type_admin">Administrateur</string>
     <string name="profile_type_visitor">Invité</string>
@@ -443,8 +437,6 @@
     <string name="auth_edit_hint">Code</string>
     <string name="app_settings_security">Sécurité</string>
     <string name="app_settings_passcode">Code de Verrouillage</string>
-    <string name="app_settings_disable">Désactiver</string>
-    <string name="app_settings_enable">Activer</string>
     <string name="app_Settings_passcode_enable">Activer le code d\'accès</string>
     <string name="app_settings_passcode_change">Modifier le code d\'accès</string>
     <string name="app_settings_passcode_fingerprint">Utiliser l\'empreinte digitale pour déverrouiller</string>
@@ -477,4 +469,36 @@
     <string name="app_settings_follow_the_system">Identique au système</string>
     <string name="app_settings_light_theme">Thème clair</string>
     <string name="app_settings_dark_theme">Thème sombre</string>
+    <string name="errors_import_local_file_desc">Permission refusée</string>
+    <string name="errors_import_local_file">Accès refusé. Accordez des droits de lecture et d\'écriture</string>
+    <string name="errors_first_name">Prénom n\'est pas valide</string>
+    <string name="errors_last_name">Nom n\'est pas valide</string>
+    <string name="navigation_drawer_menu_sign_in">Se connecter</string>
+    <string name="toolbar_menu_search_view_hint">Entrez votre requête</string>
+    <string name="toolbar_menu_sort_date_modified">Date</string>
+    <string name="toolbar_menu_main_filter">Filtre</string>
+    <string name="list_context_open_location">Ouvrir un emplacement </string>
+    <string name="placeholder_loading_users">Chargement des utilisateurs…</string>
+    <string name="placeholder_loading_groups">Chargement des groupes…</string>
+    <string name="krdive_password_helper_text">Si vous avez activé l\'authentification à deux facteurs, veuillez générer une demande MDP à partir du gestionnaire Infomaniak.</string>
+    <string name="kdrive_info_title">Vous devez disposer d\'une version payante du lecteur pour utiliser ce service.</string>
+    <string name="storage_email_connection">Connexion e-mail</string>
+    <string name="dialog_remove_account_title">Supprimer de l\'appareil</string>
+    <string name="app_settings_disabled">Désactivé</string>
+    <string name="app_settings_enabled">Activé</string>
+    <string name="filter_toolbar_title">Filtres</string>
+    <string name="filter_toolbar_users_title">Sélectionner un utilisateur</string>
+    <string name="filter_toolbar_groups_title">Sélectionner un groupe</string>
+    <string name="filter_title_author">Auteur</string>
+    <string name="filter_title_search">Recherche</string>
+    <string name="filter_type_documents">Documents</string>
+    <string name="filter_type_presentations">Présentations</string>
+    <string name="filter_type_spreadsheets">Feuilles de calcul</string>
+    <string name="filter_type_images">Images</string>
+    <string name="filter_type_media">Médias</string>
+    <string name="filter_type_archives">Archives</string>
+    <string name="filter_type_all">Tous les fichiers</string>
+    <string name="filter_exclude_subfolders">Pas de sous-dossiers</string>
+    <string name="filter_show_results">Afficher %1$s résultats </string>
+    <string name="filter_button_reset">RÉINITIALISER</string>
 </resources>

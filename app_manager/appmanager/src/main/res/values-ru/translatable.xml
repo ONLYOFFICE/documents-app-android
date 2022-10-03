@@ -112,8 +112,6 @@
     <string name="errors_connection_error">Проверьте подключение к Интернету</string>
     <string name="errors_email_already_registered">Пользователь с таким email-адресом уже зарегистрирован</string>
     <string name="errors_email_syntax_error">Недопустимый email</string>
-    <string name="errors_first_name">Недопустимое имя. Оно не должно содержать цифры.</string>
-    <string name="errors_last_name">Недопустимая фамилия. Она не должна содержать цифры.</string>
     <string name="errors_path_url">Недопустимый URL-адрес</string>
     <string name="errors_redirect_error">Неизвестная ошибка перенаправления с кодом:\u0020</string>
     <string name="errors_server_auth_error">Ошибка аутентификации</string>
@@ -166,7 +164,6 @@
     <string name="list_headers_week">На этой неделе</string>
     <string name="list_headers_year">В этом году</string>
     <string name="list_headers_yesterday">Вчера</string>
-    <string name="login_accounts_select_add">Добавить облачный аккаунт</string>
     <string name="login_accounts_select_title">Выбор аккаунта</string>
     <string name="login_api_init_error">Ошибка инициализации</string>
     <string name="login_api_init_portal_error">Синтаксическая ошибка в адресе облачного офиса</string>
@@ -241,7 +238,7 @@
     <string name="media_image_share_chooser">Выберите приложение, чтобы поделиться</string>
     <string name="media_video_error">Неизвестная ошибка воспроизведения: %1$s</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
-    <string name="navigation_drawer_menu_add_account">Добавить аккаунт</string>
+    <string name="login_accounts_select_add">Добавить аккаунт</string>
     <string name="navigation_drawer_menu_common">Общие</string>
     <string name="navigation_drawer_menu_feedback">Обратная связь и поддержка</string>
     <string name="navigation_drawer_menu_help">Справка</string>
@@ -378,10 +375,8 @@
     <string name="toolbar_menu_search_result">Результат поиска</string>
     <string name="toolbar_menu_sort_asc">По возрастанию</string>
     <string name="toolbar_menu_sort_by">Сортировать по</string>
-    <string name="toolbar_menu_sort_date_modified">Последнее изменение</string>
     <string name="toolbar_menu_sort_desc">По убыванию</string>
     <string name="toolbar_menu_sort_order">Порядок</string>
-    <string name="toolbar_menu_sort_owner">Владелец</string>
     <string name="toolbar_menu_sort_size">Размер</string>
     <string name="toolbar_menu_sort_title">Название</string>
     <string name="toolbar_menu_sort_type">Тип</string>
@@ -410,7 +405,6 @@
     <string name="cloud_only_office_description">Храните документы в облаке и работайте над ними совместно</string>
     <string name="cloud_accounts_title">Аккаунты</string>
     <string name="error_long_file_name">Слишком длинное имя файла</string>
-    <string name="dialog_remove_account_title">Удалить аккаунт</string>
     <string name="dialog_remove_account_description">
         Пользователь с %1$s с портала %2$s выйдет из системы и будет удален из списка аккаунтов. \n\nОбратите внимание: для входа в систему потребуется ввести адрес портала, email и пароль. Все файлы останутся в сохранности.
     </string>
@@ -419,7 +413,7 @@
         После выхода из системы вам не потребуется вводить адрес портала или email, только пароль. Не беспокойтесь, все файлы останутся в сохранности в облаке.
     </string>
     <string name="profile_username_title">Имя пользователя</string>
-    <string name="profile_type_account">Тип</string>
+    <string name="filter_title_type">Тип</string>
     <string name="profile_portal_address">Адрес портала</string>
     <string name="profile_type_admin">Администратор</string>
     <string name="profile_type_visitor">Гость</string>
@@ -461,8 +455,6 @@
     <string name="auth_edit_hint">Код</string>
     <string name="app_settings_security">Безопасность</string>
     <string name="app_settings_passcode">Код блокировки</string>
-    <string name="app_settings_disable">Отключить</string>
-    <string name="app_settings_enable">Включить</string>
     <string name="app_Settings_passcode_enable">Включить код доступа</string>
     <string name="app_settings_passcode_change">Изменить код доступа</string>
     <string name="app_settings_passcode_fingerprint">Использовать отпечаток пальца для разблокировки</string>
@@ -495,5 +487,37 @@
     <string name="app_settings_follow_the_system">Как в системе</string>
     <string name="app_settings_light_theme">Светлая тема</string>
     <string name="app_settings_dark_theme">Темная тема</string>
+    <string name="errors_import_local_file_desc">В доступе отказано</string>
+    <string name="errors_import_local_file">Доступ запрещен. Предоставьте права на чтение и запись</string>
+    <string name="errors_first_name">Некорректное имя</string>
+    <string name="errors_last_name">Некорректная фамилия</string>
+    <string name="navigation_drawer_menu_sign_in">Вход</string>
+    <string name="toolbar_menu_search_view_hint">Введите запрос</string>
+    <string name="toolbar_menu_sort_date_modified">Дата</string>
+    <string name="toolbar_menu_main_filter">Фильтр</string>
+    <string name="list_context_open_location">Открыть папку</string>
+    <string name="placeholder_loading_users">Загрузка пользователей…</string>
+    <string name="placeholder_loading_groups">Загрузка групп…</string>
+    <string name="krdive_password_helper_text">Если вы активировали двухфакторную аутентификацию, пожалуйста, установите приложение CDM из учетной записи Infomaniak (Менеджер).</string>
+    <string name="kdrive_info_title">Чтобы воспользоваться этим сервисом, необходимо приобрести платную версию плеера.</string>
+    <string name="storage_email_connection">Подключение по Email</string>
+    <string name="dialog_remove_account_title">Удалить с устройства</string>
+    <string name="app_settings_disabled">Отключено</string>
+    <string name="app_settings_enabled">Включено</string>
+    <string name="filter_toolbar_title">Фильтры</string>
+    <string name="filter_toolbar_users_title">Выбрать пользователя</string>
+    <string name="filter_toolbar_groups_title">Выбрать группу</string>
+    <string name="filter_title_author">Автор</string>
+    <string name="filter_title_search">Поиск</string>
+    <string name="filter_type_documents">Документы</string>
+    <string name="filter_type_presentations">Презентации</string>
+    <string name="filter_type_spreadsheets">Таблицы</string>
+    <string name="filter_type_images">Изображения</string>
+    <string name="filter_type_media">Медиа</string>
+    <string name="filter_type_archives">Архивы</string>
+    <string name="filter_type_all">Все файлы</string>
+    <string name="filter_exclude_subfolders">Без подпапок</string>
+    <string name="filter_show_results">Показать %1$s результатов</string>
+    <string name="filter_button_reset">СБРОС</string>
 
 </resources>

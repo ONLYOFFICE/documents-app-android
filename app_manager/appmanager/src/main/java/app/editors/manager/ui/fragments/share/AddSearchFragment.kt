@@ -97,8 +97,8 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         return super.onBackPressed()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.share_add_search, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.share_add_search, menu)
         toolbarMenu = menu
         searchItem = menu.findItem(R.id.menu_share_add_search)
         searchView = (searchItem?.actionView as SearchView).apply {

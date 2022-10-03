@@ -3,13 +3,13 @@ package app.editors.manager.storages.onedrive.ui.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import app.editors.manager.R
+import android.view.View
 import app.editors.manager.app.App
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
-import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
-import app.editors.manager.ui.activities.main.ActionButtonFragment
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
 class DocsOneDriveFragment : BaseStorageDocsFragment() {
@@ -40,7 +40,7 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
         } else if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    mCameraUri?.let { uri ->
+                    cameraUri?.let { uri ->
                         presenter.upload(uri, null, KEY_UPLOAD)
                     }
                 }
@@ -68,13 +68,11 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
         }
     }
 
-    override fun onStateUpdateSelection(isSelection: Boolean) {
-        super.onStateUpdateSelection(isSelection)
-        downloadItem = if(presenter.isFoldersInSelection()) {
-            menu?.findItem(R.id.toolbar_selection_download)?.setVisible(true)
-        } else {
-            menu?.findItem(R.id.toolbar_selection_download)?.setVisible(false)
-        }
+
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(mutableListOf<ActionBarPopupItem>().apply {
+            if (!presenter.isFoldersInSelection()) add(SelectActionBarPopup.Download)
+        })
     }
 
     override fun onRefreshToken() {

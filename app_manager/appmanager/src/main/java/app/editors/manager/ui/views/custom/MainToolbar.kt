@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import app.documents.core.account.CloudAccount
+import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
@@ -72,7 +73,11 @@ class MainToolbar @JvmOverloads constructor(
             context,
             account?.getAccountName() ?: ""
         )?.let {
-            val url = if (cloudAccount.avatarUrl?.contains("static") == true || cloudAccount.avatarUrl?.contains("default") == true || cloudAccount.isDropbox || cloudAccount.isGoogleDrive) {
+            val url = if (
+                cloudAccount.avatarUrl?.contains(ApiContract.SCHEME_HTTP) == true ||
+                cloudAccount.avatarUrl?.contains(ApiContract.SCHEME_HTTPS) == true ||
+                cloudAccount.isDropbox ||
+                cloudAccount.isGoogleDrive) {
                 cloudAccount.avatarUrl
             } else {
                 cloudAccount.scheme + cloudAccount.portal + cloudAccount.avatarUrl

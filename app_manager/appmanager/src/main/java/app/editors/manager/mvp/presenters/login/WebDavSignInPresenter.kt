@@ -254,6 +254,9 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             }
             WebDavApi.Providers.Yandex, WebDavApi.Providers.WebDav -> {
             }
+            else -> {
+                // Stub
+            }
         }
         if (copyUrl.startsWith(ApiContract.SCHEME_HTTP)) {
             correctUrl.append(ApiContract.SCHEME_HTTPS).append(copyUrl.replace(ApiContract.SCHEME_HTTP.toRegex(), ""))

@@ -45,8 +45,6 @@ class DocsProjectsFragment : DocsCloudFragment() {
         }
     }
 
-    override fun onUpdateItemFavorites() { }
-
     override val section: Int
         get() = ApiContract.SectionType.CLOUD_PROJECTS
 

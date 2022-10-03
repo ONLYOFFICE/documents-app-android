@@ -14,7 +14,7 @@ class PlaceholderViews(val view: View?) {
 
     enum class Type {
         NONE, CONNECTION, EMPTY, SEARCH, SHARE, ACCESS,
-        SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD
+        SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD, LOAD_GROUPS, LOAD_USERS
     }
 
     interface OnClickListener {
@@ -64,7 +64,7 @@ class PlaceholderViews(val view: View?) {
 
     fun setTemplatePlaceholder(type: Type?) {
         when (type) {
-            Type.NONE -> {
+            Type.NONE, null -> {
                 setVisibility(false)
                 return
             }
@@ -78,6 +78,8 @@ class PlaceholderViews(val view: View?) {
             Type.GROUPS -> setTitle(R.string.placeholder_no_groups)
             Type.COMMON -> setTitle(R.string.placeholder_no_users_groups)
             Type.LOAD -> setTitle(R.string.placeholder_loading_files)
+            Type.LOAD_USERS -> setTitle(R.string.placeholder_loading_users)
+            Type.LOAD_GROUPS -> setTitle(R.string.placeholder_loading_groups)
             Type.MEDIA -> {
                 setImage(R.drawable.ic_media_error)
                 setImageTint(lib.toolkit.base.R.color.colorLightWhite)

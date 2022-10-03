@@ -7,15 +7,15 @@
         android:title="@string/fragment_recent_title" />
     <item
         android:id="@+id/menu_item_cloud"
-        android:icon="@drawable/ic_header_cloud"
+        android:icon="@drawable/ic_navigation_clouds"
         android:title="@string/fragment_clouds_title" />
     <item
         android:id="@+id/menu_item_on_device"
-        android:icon="@drawable/ic_drawer_menu_on_device"
+        android:icon="@drawable/ic_navigation_on_device"
         android:title="@string/fragment_on_device_title" />
     <item
-        android:id="@+id/menu_item_setting"
-        android:icon="@drawable/ic_account_circle"
-        android:title="@string/cloud_accounts_title" />
+        android:id="@+id/menu_item_settings"
+        android:icon="@drawable/ic_navigation_settings"
+        android:title="@string/settings_item_title" />
 
 </menu>

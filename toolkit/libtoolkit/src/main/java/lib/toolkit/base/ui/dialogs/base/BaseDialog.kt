@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Size
 import android.view.Gravity
 import android.view.View
@@ -35,15 +36,15 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
         protected const val MARGIN_OFFSET = 4
     }
 
-    protected lateinit var mBaseActivity: BaseActivity
-    protected var mCloseHandler: Handler = Handler()
-    protected var mAnchorView: View? = null
-    protected var mMarginOffset: Int = 0
-    protected var mIsPercentWidth: Boolean = true
+    protected lateinit var baseActivity: BaseActivity
+    protected var closeHandler: Handler = Handler(Looper.getMainLooper())
+    protected var anchorView: View? = null
+    protected var marginOffset: Int = 0
+    protected var isPercentWidth: Boolean = true
 
 
     protected val anchorSize: Rect?
-        get() = mAnchorView?.let {
+        get() = anchorView?.let {
             Rect().apply {
                 it.getGlobalVisibleRect(this)
             }
@@ -74,7 +75,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
-            mBaseActivity = context as BaseActivity
+            baseActivity = context as BaseActivity
         } catch (e: ClassCastException) {
             throw RuntimeException("${BaseDialog::class.java.simpleName} - must implement - ${BaseActivity::class.java.simpleName}")
         }
@@ -82,7 +83,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mMarginOffset = (MARGIN_OFFSET * resources.displayMetrics.density + 0.5f).toInt()
+        marginOffset = (MARGIN_OFFSET * resources.displayMetrics.density + 0.5f).toInt()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,7 +103,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     }
 
     private fun setVisibleView(decorView: View?) {
-        if (mAnchorView != null && isTablet() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (anchorView != null && isTablet() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             decorView?.isInvisible = true
         }
     }
@@ -126,7 +127,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     }
 
     override fun onShow(dialogInterface: DialogInterface) {
-        if (mAnchorView != null) {
+        if (anchorView != null) {
             setDialogAnchorPosition()
         } else {
             setLayout()
@@ -159,7 +160,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     }
 
     override fun show(manager: FragmentManager, tag: String?) {
-        mCloseHandler.removeCallbacksAndMessages(null)
+        closeHandler.removeCallbacksAndMessages(null)
         manager.findFragmentByTag(tag)?.let { dialog ->
             try {
                 if (dialog.isAdded) {
@@ -179,8 +180,8 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     }
 
     protected fun setDialogAnchorPosition() {
-        if (mAnchorView != null && dialog != null) {
-            val offset = Point(mMarginOffset, mMarginOffset)
+        if (anchorView != null && dialog != null) {
+            val offset = Point(marginOffset, marginOffset)
             val restrict = UiUtils.getWindowVisibleRect(requireActivity().window.decorView)
             val position = UiUtils.getOverlapViewRect(anchorSize!!, dialogSize!!, restrict, offset)
 
@@ -199,7 +200,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     }
 
     fun setAnchor(view: View?) {
-        mAnchorView = view
+        anchorView = view
     }
 
     protected fun showKeyboard(editText: AppCompatEditText) {

@@ -37,7 +37,7 @@ import lib.toolkit.base.managers.utils.UiUtils.setImageTint
 import lib.toolkit.base.managers.utils.UiUtils.setLayoutParams
 import javax.inject.Inject
 
-class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
+class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapter<CloudFile?>() {
 
     companion object {
         private const val ALPHA_DELAY = 500
@@ -108,6 +108,9 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
                 val mViewHolder = viewHolder as ViewHolderVideo
                 mViewHolder.bind(file)
             }
+            else -> {
+                // Stub
+            }
         }
     }
 
@@ -177,7 +180,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
         }
 
         fun bind(file: CloudFile?) {
-            CoroutineScope(Dispatchers.Default).launch {
+            scope.launch {
                 accountDao.getAccountOnline()?.let { account ->
                     when {
                         account.isWebDav && file?.id != "" -> {
@@ -283,7 +286,7 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
                             showVideo()
                         }
 
-                    })
+                    }, scope)
             } else {
                 videoView.setImageBitmap(bitmap)
                 showVideo()
@@ -297,8 +300,6 @@ class MediaAdapter(cellSize: Int) : BaseAdapter<CloudFile?>() {
             videoView.animate()?.alpha(ALPHA_TO)?.setDuration(ALPHA_DELAY.toLong())?.start()
         }
 
-
     }
-
 
 }

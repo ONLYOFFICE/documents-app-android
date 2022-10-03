@@ -3,6 +3,7 @@ package app.editors.manager.ui.views.popup
 import android.content.Context
 import android.view.Gravity
 import android.view.View
+import app.editors.manager.BuildConfig
 import app.editors.manager.databinding.PopupShareMenuBinding
 import app.editors.manager.managers.utils.isVisible
 import lib.toolkit.base.managers.utils.StringUtils
@@ -24,7 +25,13 @@ class SharePopup(context: Context, layoutId: Int) : BasePopup(context, layoutId)
         set(value) = when (value) {
             StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION -> disableViews(fillFormsView, reviewView)
             StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> disableViews(fillFormsView)
-            StringUtils.Extension.OFORM -> disableViews(commentView, reviewView)
+            StringUtils.Extension.OFORM -> {
+                if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
+                    disableViews(commentView, reviewView)
+                } else {
+                    disableViews(commentView, reviewView, fillFormsView)
+                }
+            }
             else -> disableViews(commentView, reviewView, fillFormsView)
         }
 

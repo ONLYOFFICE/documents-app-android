@@ -15,7 +15,6 @@ import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.storages.googledrive.managers.receiver.GoogleDriveUploadReceiver
 import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveFile
 import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.managers.utils.PathUtils
 import java.io.DataOutputStream
 import java.io.OutputStream
 import java.net.HttpURLConnection
@@ -50,6 +49,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
         }
 
         val request = title?.let { title ->
+            @Suppress("UNCHECKED_CAST")
             CreateItemRequest(
                 name = title,
                 parents = listOf(folderId) as List<String>
@@ -82,7 +82,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
                 }
             }
         } else {
-            mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+            notificationUtils.showUploadErrorNotification(id.hashCode(), title)
             title?.let { sendBroadcastUnknownError(it, path) }
             if(tag == BaseStorageDocsFragment.KEY_UPDATE || tag == BaseStorageDocsFragment.KEY_CREATE) {
                 file?.delete()
@@ -121,23 +121,23 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
                 }
             }
             if (connection.responseCode == 200 || connection.responseCode == 201) {
-                mNotificationUtils.removeNotification(id.hashCode())
+                notificationUtils.removeNotification(id.hashCode())
                 if (tag == BaseStorageDocsFragment.KEY_UPLOAD) {
-                    mNotificationUtils.showUploadCompleteNotification(id.hashCode(), title)
+                    notificationUtils.showUploadCompleteNotification(id.hashCode(), title)
                     title?.let { sendBroadcastUploadComplete(path, it, CloudFile(), path) }
                 } else if( tag == BaseStorageDocsFragment.KEY_UPDATE) {
                     file?.delete()
                 }
             } else {
-                mNotificationUtils.removeNotification(id.hashCode())
-                mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                notificationUtils.removeNotification(id.hashCode())
+                notificationUtils.showUploadErrorNotification(id.hashCode(), title)
                 title?.let { sendBroadcastUnknownError(it, path) }
                 if(tag == BaseStorageDocsFragment.KEY_UPDATE) {
                     file?.delete()
                 }
             }
         } catch (e: Exception) {
-            mNotificationUtils.showUploadErrorNotification(id.hashCode(), title)
+            notificationUtils.showUploadErrorNotification(id.hashCode(), title)
             title?.let { sendBroadcastUnknownError(it, path) }
             throw e
         }

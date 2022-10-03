@@ -5,9 +5,9 @@ import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import android.view.View
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludeSocialNetworksLayoutBinding
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.managers.utils.isVisible
 import com.facebook.*
 import com.facebook.login.LoginBehavior
@@ -60,12 +60,17 @@ class SocialViews(private val activity: Activity, view: View?,
     * Facebook initWithPreferences
     * */
     private fun initFacebook() {
-        Log.d(TAG, "initFacebook() - app ID: " + activity.getString(R.string.facebook_app_id))
-        facebookId?.let { FacebookSdk.setApplicationId(it) }
-        loginPersonalSocialFacebookNativeButton = LoginButton(activity)
-        loginPersonalSocialFacebookNativeButton?.loginBehavior = LoginBehavior.WEB_ONLY
-        facebookCallbackManager = CallbackManager.Factory.create()
-        LoginManager.getInstance().registerCallback(facebookCallbackManager, FacebookAuthCallback())
+        Log.d(TAG, "initFacebook() - app ID: " + BuildConfig.FACEBOOK_APP_ID)
+        if (FacebookSdk.isInitialized()) {
+            facebookId?.let { FacebookSdk.setApplicationId(it) }
+            loginPersonalSocialFacebookNativeButton = LoginButton(activity)
+            loginPersonalSocialFacebookNativeButton?.loginBehavior = LoginBehavior.WEB_ONLY
+            facebookCallbackManager = CallbackManager.Factory.create()
+            LoginManager.getInstance().registerCallback(facebookCallbackManager, FacebookAuthCallback())
+        } else {
+            viewBinding?.loginSocialFacebookButton?.isVisible = false
+        }
+
     }
 
     private fun initListeners() {
@@ -81,7 +86,7 @@ class SocialViews(private val activity: Activity, view: View?,
     private fun onGoogleClick() {
         val gso: GoogleSignInOptions =
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(Constants.GOOGLE_WEB_ID)
+                .requestIdToken(BuildConfig.GOOGLE_WEB_ID)
                 .requestProfile()
                 .requestEmail()
                 .build()
@@ -138,7 +143,9 @@ class SocialViews(private val activity: Activity, view: View?,
     * Lifecycle methods
     * */
     fun onDestroyView() {
-        LoginManager.getInstance().unregisterCallback(facebookCallbackManager)
+        if (FacebookSdk.isInitialized()) {
+            LoginManager.getInstance().unregisterCallback(facebookCallbackManager)
+        }
         setOnSocialNetworkCallbacks(null)
         viewBinding = null
     }

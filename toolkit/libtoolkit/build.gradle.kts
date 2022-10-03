@@ -16,6 +16,8 @@ android {
         buildConfigField("String", "SUBDOMAIN", "\"personal\"")
         buildConfigField("String", "DEFAULT_HOST", "\"onlyoffice.com\"")
         buildConfigField("String", "DEFAULT_INFO_HOST", "\"teamlab.info\"")
+        buildConfigField("String", "ROOT_FOLDER","\"" + "Onlyoffice" + "\"" )
+
     }
 
     buildTypes {
@@ -33,12 +35,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_1_8)
-        targetCompatibility(JavaVersion.VERSION_1_8)
+        sourceCompatibility(JavaVersion.VERSION_11)
+        targetCompatibility(JavaVersion.VERSION_11)
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }
 
@@ -74,6 +76,7 @@ dependencies {
     // Moxy
     implementation(Moxy.moxyAndroid)
     implementation(Moxy.moxyMaterial)
+    implementation(Moxy.moxyKtx)
     kapt(Moxy.moxyCompiler)
 
     // Dagger

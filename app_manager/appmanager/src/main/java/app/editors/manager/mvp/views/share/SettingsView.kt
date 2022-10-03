@@ -13,7 +13,7 @@ import moxy.viewstate.strategy.StateStrategyType
 interface SettingsView : BaseViewExt {
     fun onGetShare(list: List<ViewType>, accessCode: Int)
     fun onRemove(share: ShareUi, sharePosition: Int)
-    fun onGetShareItem(entity: ViewType, mSharePosition: Int, access: Int)
+    fun onGetShareItem(entity: ViewType, sharePosition: Int, accessCode: Int)
     fun onExternalAccess(accessCode: Int, isMessage: Boolean)
     fun onInternalLink(internalLink: String)
     fun onItemType(isFolder: Boolean)
@@ -22,8 +22,8 @@ interface SettingsView : BaseViewExt {
     fun onActionButtonState(isVisible: Boolean)
     fun onResultState(isShared: Boolean)
     fun onSendLink(intent: Intent)
-    fun onButtonState(state: Boolean)
+    fun onButtonState(isVisible: Boolean)
     fun onPopupState(state: Boolean)
-    fun onShowPopup(mSharePosition: Int, isVisitor: Boolean)
+    fun onShowPopup(sharePosition: Int, isVisitor: Boolean)
     fun onUpdateAvatar(share: ShareUi)
 }

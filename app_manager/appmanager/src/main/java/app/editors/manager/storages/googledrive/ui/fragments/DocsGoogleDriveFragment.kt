@@ -2,26 +2,32 @@ package app.editors.manager.storages.googledrive.ui.fragments
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import app.documents.core.network.ApiContract
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
-import app.editors.manager.managers.utils.Constants
 import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
-import app.editors.manager.storages.base.view.BaseStorageDocsView
-import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
-import app.editors.manager.ui.activities.main.ActionButtonFragment
+import app.editors.manager.storages.base.view.DocsGoogleDriveView
+import app.editors.manager.storages.base.work.BaseStorageUploadWork
+import app.editors.manager.storages.googledrive.managers.works.UploadWork
+import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.popup.MainActionBarPopup
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
-class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
+class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
 
     companion object {
-        val TAG = DocsGoogleDriveFragment::class.java.simpleName
+        val TAG: String = DocsGoogleDriveFragment::class.java.simpleName
 
         fun newInstance(): DocsGoogleDriveFragment = DocsGoogleDriveFragment()
 
@@ -37,7 +43,7 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    mCameraUri?.let { uri ->
+                    cameraUri?.let { uri ->
                         presenter.upload(uri, null, KEY_UPLOAD)
                     }
                 }
@@ -71,42 +77,26 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
             ContextBottomDialog.Buttons.MOVE -> presenter.moveContext()
             ContextBottomDialog.Buttons.COPY -> presenter.copy()
             ContextBottomDialog.Buttons.DOWNLOAD -> onFileDownloadPermission()
-            ContextBottomDialog.Buttons.RENAME -> if (presenter.itemClicked is CloudFile) {
-                showEditDialogRename(
-                    getString(R.string.dialogs_edit_rename_title),
-                    StringUtils.getNameWithoutExtension(presenter.itemTitle),
-                    getString(R.string.dialogs_edit_hint),
-                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                    getString(R.string.dialogs_edit_accept_rename),
-                    getString(R.string.dialogs_common_cancel_button))
-            } else {
-                showEditDialogRename(
-                    getString(R.string.dialogs_edit_rename_title),
-                    presenter.itemTitle,
-                    getString(R.string.dialogs_edit_hint),
-                    DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                    getString(R.string.dialogs_edit_accept_rename),
-                    getString(R.string.dialogs_common_cancel_button))
-            }
-            ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
-                getString(R.string.dialogs_question_delete),
+            ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
+                getString(R.string.dialogs_edit_rename_title),
                 presenter.itemTitle,
-                getString(R.string.dialogs_question_accept_remove),
+                getString(R.string.dialogs_edit_hint),
+                DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
+                getString(R.string.dialogs_edit_accept_rename),
                 getString(R.string.dialogs_common_cancel_button),
-                DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
+                presenter.itemExtension
             )
+
             ContextBottomDialog.Buttons.EXTERNAL -> {
                 presenter.externalLink
             }
             ContextBottomDialog.Buttons.EDIT -> {
                 presenter.getFileInfo()
             }
+            else -> {
+                super.onContextButtonClick(buttons)
+            }
         }
-    }
-
-    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
-        super.onStateMenuDefault(sortBy, isAsc)
-        menu?.findItem(R.id.toolbar_sort_item_size)?.isVisible = false
     }
 
     override fun onDocsBatchOperation() {
@@ -115,12 +105,35 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment() {
         onRefresh()
     }
 
+    override fun onUpload(uploadUris: List<Uri>, folderId: String, fileId: String, tag: String) {
+        val workManager = WorkManager.getInstance(requireContext())
+
+        for (uploadUri in uploadUris) {
+            val data = Data.Builder()
+                .putString(BaseStorageUploadWork.TAG_FOLDER_ID, folderId)
+                .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uploadUri.toString())
+                .putString(BaseStorageUploadWork.KEY_TAG, tag)
+                .putString(UploadWork.KEY_FILE_ID, fileId)
+                .build()
+
+            val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
+                .setInputData(data)
+                .build()
+
+            workManager.enqueue(request)
+        }
+    }
+
     override fun onRefreshToken() {
         val storage = Storage(
             ApiContract.Storage.GOOGLEDRIVE,
-            Constants.Google.COM_CLIENT_ID,
-            Constants.Google.COM_REDIRECT_URL
+            BuildConfig.GOOGLE_COM_CLIENT_ID,
+            BuildConfig.GOOGLE_COM_REDIRECT_URL
         )
         showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
+    }
+
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(listOf(MainActionBarPopup.Size))
     }
 }

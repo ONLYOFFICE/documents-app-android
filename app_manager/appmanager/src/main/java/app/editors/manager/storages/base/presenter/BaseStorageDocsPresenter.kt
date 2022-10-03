@@ -13,7 +13,6 @@ import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
@@ -30,8 +29,8 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
 
     val workManager = WorkManager.getInstance(App.getApp())
 
-    private val uploadReceiver: UploadReceiver
-    private val downloadReceiver: DownloadReceiver
+    private val uploadReceiver: UploadReceiver = UploadReceiver()
+    private val downloadReceiver: DownloadReceiver = DownloadReceiver()
 
     companion object {
         const val DOWNLOAD_ZIP_NAME =  "storage.zip"
@@ -39,18 +38,6 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
 
     abstract fun startDownload(downloadTo: Uri, item: Item?)
     abstract fun refreshToken()
-
-    init {
-        modelExplorerStack = ModelExplorerStack()
-        filteringValue = ""
-        placeholderViewType = PlaceholderViews.Type.NONE
-        isContextClick = false
-        isFilteringMode = false
-        isSelectionMode = false
-        isFoldersMode = false
-        uploadReceiver = UploadReceiver()
-        downloadReceiver = DownloadReceiver()
-    }
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -70,7 +57,7 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     abstract val externalLink: Unit
 
     override fun createDownloadFile() {
-        if (modelExplorerStack?.countSelectedItems!! == 0) {
+        if (modelExplorerStack.countSelectedItems == 0) {
             if (itemClicked is CloudFolder) {
                 viewState.onCreateDownloadFile(DOWNLOAD_ZIP_NAME)
             } else if (itemClicked is CloudFile) {
@@ -82,10 +69,10 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     }
 
     override fun download(downloadTo: Uri) {
-        if (modelExplorerStack?.countSelectedItems == 0) {
+        if (modelExplorerStack.countSelectedItems == 0) {
             startDownload(downloadTo, itemClicked)
         } else {
-            val itemList =  modelExplorerStack?.selectedFiles!! + modelExplorerStack?.selectedFolders!!
+            val itemList =  modelExplorerStack.selectedFiles + modelExplorerStack.selectedFolders
             itemList.forEach { item ->
                 val fileName = if (item is CloudFile) item.title else DOWNLOAD_ZIP_NAME
                 val doc = DocumentFile.fromTreeUri(context, downloadTo)?.createFile(
@@ -97,7 +84,7 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     }
 
     override fun createDocs(title: String) {
-        val id = modelExplorerStack?.currentId
+        val id = modelExplorerStack.currentId
         id?.let {
             val requestCreate = RequestCreate()
             requestCreate.title = title
@@ -144,7 +131,7 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     }
 
     override fun delete(): Boolean {
-        if (modelExplorerStack?.countSelectedItems!! > 0) {
+        if (modelExplorerStack.countSelectedItems > 0) {
             viewState.onDialogQuestion(
                 context.getString(R.string.dialogs_question_delete), null,
                 TAG_DIALOG_BATCH_DELETE_SELECTED
@@ -158,19 +145,19 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     override fun updateViewsState() {
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(modelExplorerStack?.countSelectedItems.toString())
-            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
+            viewState.onActionBarTitle(modelExplorerStack.countSelectedItems.toString())
+            viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
         } else if (isFilteringMode) {
             viewState.onActionBarTitle(context.getString(R.string.toolbar_menu_search_result))
             viewState.onStateUpdateFilter(true, filteringValue)
-            viewState.onStateAdapterRoot(modelExplorerStack?.isNavigationRoot!!)
+            viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
-        } else if (!modelExplorerStack?.isRoot!!) {
+        } else if (!modelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(if(currentTitle.isEmpty()) { itemClicked?.title } else { currentTitle } )
+            viewState.onActionBarTitle(currentTitle.ifEmpty { itemClicked?.title })
         } else {
             if (isFoldersMode) {
                 viewState.onActionBarTitle(context.getString(R.string.operation_title))
@@ -250,7 +237,7 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        if (modelExplorerStack?.currentId == folderId) {
+        if (folderId != null && id != null && modelExplorerStack.currentId == folderId) {
             viewState.onUploadFileProgress(progress, id)
         }
     }
@@ -258,9 +245,9 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     override fun onUploadCanceled(path: String?, info: String?, id: String?) {
         info?.let { viewState.onSnackBar(it) }
         viewState.onDeleteUploadFile(id)
-        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(modelExplorerStack?.currentId)?.isEmpty() == true) {
+        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(modelExplorerStack.currentId)?.isEmpty() == true) {
             viewState.onRemoveUploadHead()
-            getListWithHeaders(modelExplorerStack?.last(), true)
+            getListWithHeaders(modelExplorerStack.last(), true)
         }
     }
 

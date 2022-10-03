@@ -1,8 +1,10 @@
 package app.editors.manager.mvp.presenters.login
 
 import android.accounts.Account
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import android.webkit.URLUtil
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.copyWithToken
@@ -17,6 +19,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
+import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseView
 import com.google.android.gms.auth.GoogleAuthUtil
@@ -27,6 +30,7 @@ import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils.getUrlWithoutScheme
 import lib.toolkit.base.managers.utils.StringUtils.isValidUrl
+import moxy.presenterScope
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import javax.net.ssl.SSLHandshakeException
@@ -72,14 +76,58 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         disposable = context.loginService.getUserInfo(token.token ?: "")
             .subscribe({ response ->
                 when (response) {
-                    is LoginResponse.Success -> createAccount(
-                        (response.response as ResponseUser).response,
-                        request,
-                        token
-                    )
+                    is LoginResponse.Success -> {
+                        subscribePush((response.response as ResponseUser).response, request, token)
+                    }
                     is LoginResponse.Error -> fetchError(response.error)
                 }
             }, { fetchError(it) })
+    }
+
+    private fun subscribePush(response: User, request: RequestSignIn, token: Token) {
+        GoogleUtils.getDeviceToken({ deviceToken ->
+            disposable = context.loginService.setFirebaseToken(token.token ?: "", deviceToken)
+                .flatMap { responseRegisterToken ->
+                    if (responseRegisterToken.isSuccessful) {
+                        return@flatMap context.loginService.subscribe(token.token ?: "", deviceToken, true)
+                    } else {
+                        throw RuntimeException("Error subscribe push")
+                    }
+                }.subscribe({ responseSubscribe ->
+                    if (responseSubscribe.isSuccessful) {
+                        preferenceTool.deviceMessageToken = deviceToken
+                        createAccount(response, request, token)
+                    }
+                }) {
+                    Log.e(TAG, "subscribePush: ${it.message}")
+                    createAccount(response, request, token)
+                }
+        }) {
+            Log.e(TAG, "subscribePush: ${it.message}")
+            createAccount(response, request, token)
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    protected fun unsubscribePush(account: CloudAccount, token: String? = null,   result: ((error: Throwable?) -> Unit)? = null) {
+        if (token == null || token.isEmpty()) {
+            result?.invoke(null)
+            return
+        }
+        GoogleUtils.getDeviceToken({ deviceToken ->
+            context.loginService.subscribe(token, deviceToken, false)
+                .subscribe({
+                    if (it.isSuccessful) {
+                        result?.invoke(null)
+                    } else {
+                        result?.invoke(RuntimeException("Error unsubscribe"))
+                    }
+                }) {
+                    result?.invoke(RuntimeException("Error unsubscribe"))
+                }
+        }) {
+            result?.invoke(RuntimeException("Error unsubscribe"))
+        }
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
@@ -115,8 +163,9 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         AccountUtils.setToken(context, account, token.token)
 
         val accountDao = App.getApp().appComponent.accountsDao
-        CoroutineScope(Dispatchers.IO).launch {
+        presenterScope.launch {
             accountDao.getAccountOnline()?.let {
+                unsubscribePush(it)
                 accountDao.updateAccount(it.copyWithToken(isOnline = false))
             }
             val newAccount = CloudAccount(
@@ -190,7 +239,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
             return
         }
         this.account = account
-        goggleJob = CoroutineScope(Dispatchers.IO).launch {
+        goggleJob = presenterScope.launch((Dispatchers.IO)) {
             val scope = context.getString(R.string.google_scope)
             try {
                 if (account != null) {

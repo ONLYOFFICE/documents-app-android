@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.editors.manager.mvp.models.filter.FilterType;
+
 public class Explorer implements Cloneable, Serializable {
 
     @SerializedName("files")
@@ -41,6 +43,8 @@ public class Explorer implements Cloneable, Serializable {
     private int total = 0;
 
     private String destFolderId = "";
+
+    private FilterType filterType = FilterType.None;
 
     public List<CloudFile> getFiles() {
         return files;
@@ -153,4 +157,11 @@ public class Explorer implements Cloneable, Serializable {
         return this;
     }
 
+    public void setFilterType(FilterType filteredType) {
+        this.filterType = filteredType;
+    }
+
+    public FilterType getFilterType() {
+        return this.filterType;
+    }
 }

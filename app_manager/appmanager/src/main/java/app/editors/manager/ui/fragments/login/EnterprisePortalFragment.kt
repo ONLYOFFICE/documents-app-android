@@ -162,7 +162,7 @@ class EnterprisePortalFragment : BaseAppFragment(),
             }
         }
         viewBinding?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
-            viewBinding?.loginEnterpriseNextButton?.isEnabled = isChecked
+            viewBinding?.loginEnterpriseNextButton?.isEnabled = isChecked && viewBinding?.loginEnterprisePortalEdit?.text?.isNotEmpty() == true
         }
     }
 
@@ -196,6 +196,7 @@ class EnterprisePortalFragment : BaseAppFragment(),
     private inner class FieldsWatcher : BaseWatcher() {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             viewBinding?.loginEnterprisePortalLayout?.isErrorEnabled = false
+            viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty() && viewBinding?.termsCheckbox?.isChecked == true
         }
     }
 }

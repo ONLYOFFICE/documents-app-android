@@ -26,7 +26,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     enum class Buttons {
         NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD, 
-        RENAME, DELETE, SHARE_DELETE, FAVORITE_ADD, FAVORITE_DELETE, RESTORE
+        RENAME, DELETE, SHARE_DELETE, FAVORITE_ADD, FAVORITE_DELETE, RESTORE, OPEN_LOCATION
     }
 
     interface OnClickListener {
@@ -172,6 +172,8 @@ class ContextBottomDialog : BaseBottomDialog() {
             /** Only for share section, instead of delete */
             binding.listExplorerContextShareDelete.isVisible = state.isDeleteShare
 
+            binding.listExplorerContextOpenLocation.isVisible = state.isCanOpenLocation
+
             if (state.isPersonalAccount) {
                 binding.listExplorerContextShare.isVisible = !state.isFolder
                 binding.viewLineSeparatorShare.root.isVisible = !state.isFolder
@@ -222,7 +224,8 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun setLocalState() {
         viewBinding?.let {
-            setUploadToPortal(!state.isFolder && !(state.isGoogleDrive || state.isDropBox || state.isOneDrive))
+            setUploadToPortal(!state.isFolder && !(state.isGoogleDrive || state.isDropBox
+                    || state.isOneDrive || state.isVisitor))
             it.listExplorerContextMove.isVisible = true
             it.listExplorerContextCopy.isVisible = true
             it.listExplorerContextDelete.isVisible = true
@@ -278,6 +281,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextAddToFavorite.setOnClickListener(Buttons.FAVORITE_ADD)
             it.listExplorerContextDeleteFromFavorite.setOnClickListener(Buttons.FAVORITE_DELETE)
             it.listExplorerContextRestore.setOnClickListener(Buttons.RESTORE)
+            it.listExplorerContextOpenLocation.setOnClickListener(Buttons.OPEN_LOCATION)
         }
     }
 
@@ -321,7 +325,9 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isOneDrive: Boolean = false,
         var isDropBox: Boolean = false,
         var isPersonalAccount: Boolean = false,
-        var isGoogleDrive: Boolean = false
+        var isGoogleDrive: Boolean = false,
+        var isVisitor: Boolean = false,
+        var isCanOpenLocation: Boolean = false,
     ) : Serializable
 }
 

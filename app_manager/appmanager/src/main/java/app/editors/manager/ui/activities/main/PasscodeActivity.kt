@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import app.editors.manager.app.App
 import app.editors.manager.compose.ui.theme.AppManagerTheme
 import app.editors.manager.managers.tools.PreferenceTool
@@ -20,9 +19,10 @@ class PasscodeActivity : BaseAppActivity() {
         const val ENTER_PASSCODE_KEY = "ENTER_PASSCODE_KEY"
 
 
-        fun show(context: Context, isEnterPasscode: Boolean = false) {
+        fun show(context: Context, isEnterPasscode: Boolean = false, bundle: Bundle? = null) {
             context.startActivity(Intent(context, PasscodeActivity::class.java).apply {
                 putExtra(ENTER_PASSCODE_KEY, isEnterPasscode)
+                bundle?.let { putExtras(it) }
             })
         }
     }
@@ -32,7 +32,6 @@ class PasscodeActivity : BaseAppActivity() {
 
     var isEnterPasscode = false
 
-    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,7 +41,7 @@ class PasscodeActivity : BaseAppActivity() {
 
         setContent {
             AppManagerTheme() {
-                PasscodeActivity(preferencesTool) {
+                PasscodeActivity(preferencesTool, intent.extras) {
                     onBackPressed()
                 }
             }

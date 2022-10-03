@@ -10,6 +10,7 @@ plugins {
     id("kotlinx-serialization")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp") version Kotlin.kspVersion
 }
 
 // Onlyoffice
@@ -60,17 +61,10 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 385
-        versionName = "5.4.1"
+        versionCode = 403
+        versionName = "5.5.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
-        manifestPlaceholders["permissionId"] = appIdBeta
-
-        buildConfigField("boolean", "IS_BETA", "false")
-        buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
-        buildConfigField("String", "BETA_ID", "\"" + appIdBeta + "\"")
-        buildConfigField("String", "APP_NAME", "\"" + appName + "\"")
-
 
         ndk {
             abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))  //comment to armv7
@@ -78,6 +72,87 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val keystoreProperties = getKeystore("Onlyoffice-keystore.properties")
+
+        manifestPlaceholders["permissionId"] = appIdBeta
+        manifestPlaceholders["facebookId"] = keystoreProperties["FACEBOOK_APP_ID"] as String? ?: ""
+
+        flavorDimensions += "version"
+        productFlavors {
+            register("manager") {
+                dimension = "version"
+                buildConfigField("boolean", "isManager", "true")
+            }
+            register("managerWithoutEditors") {
+                dimension = "version"
+                buildConfigField("boolean", "isManager", "false")
+            }
+        }
+
+        buildConfigField("boolean", "IS_BETA", "false")
+        buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
+        buildConfigField("String", "BETA_ID", "\"" + appIdBeta + "\"")
+        buildConfigField("String", "APP_NAME", "\"" + appName + "\"")
+        buildConfigField("String", "COMMUNITY_ID","\"" + keystoreProperties["COMMUNITY_ID"] + "\"" )
+
+        //Box
+        buildConfigField("String", "BOX_INFO_CLIENT_ID","\"" + keystoreProperties["BOX_INFO_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "BOX_INFO_REDIRECT_URL","\"" + keystoreProperties["BOX_INFO_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "BOX_COM_CLIENT_ID","\"" + keystoreProperties["BOX_COM_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "BOX_COM_REDIRECT_URL","\"" + keystoreProperties["BOX_COM_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "BOX_AUTH_URL","\"" + keystoreProperties["BOX_AUTH_URL"] + "\"" )
+        buildConfigField("String", "BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["BOX_VALUE_RESPONSE_TYPE"] + "\"" )
+
+        //DropBox
+        val dropboxKey = keystoreProperties["DROP_BOX_COM_CLIENT_ID"] as String?
+        buildConfigField("String", "DROP_BOX_COM_CLIENT_ID","\"" + dropboxKey + "\"" )
+        buildConfigField("String", "DROP_BOX_INFO_CLIENT_ID","\"" + keystoreProperties["DROP_BOX_INFO_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "DROP_BOX_INFO_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_INFO_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "DROP_BOX_COM_CLIENT_SECRET","\"" + keystoreProperties["DROP_BOX_COM_CLIENT_SECRET"] + "\"" )
+        buildConfigField("String", "DROP_BOX_COM_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_COM_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "DROP_BOX_AUTH_URL","\"" + keystoreProperties["DROP_BOX_AUTH_URL"] + "\"" )
+        buildConfigField("String", "DROP_BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["DROP_BOX_VALUE_RESPONSE_TYPE"] + "\"" )
+        manifestPlaceholders["dropboxKey"] = dropboxKey ?: ""
+
+        //OneDrive
+        buildConfigField("String", "ONE_DRIVE_INFO_CLIENT_ID","\"" + keystoreProperties["ONE_DRIVE_INFO_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_INFO_REDIRECT_URL","\"" + keystoreProperties["ONE_DRIVE_INFO_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_COM_CLIENT_ID","\"" + keystoreProperties["ONE_DRIVE_COM_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_COM_CLIENT_SECRET","\"" + keystoreProperties["ONE_DRIVE_COM_CLIENT_SECRET"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_COM_REDIRECT_URL","\"" + keystoreProperties["ONE_DRIVE_COM_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_AUTH_URL","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_VALUE_SCOPE","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
+
+        //Google
+        buildConfigField("String", "GOOGLE_INFO_CLIENT_ID","\"" + keystoreProperties["GOOGLE_INFO_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "GOOGLE_INFO_REDIRECT_URL","\"" + keystoreProperties["GOOGLE_INFO_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "GOOGLE_COM_CLIENT_ID","\"" + keystoreProperties["GOOGLE_COM_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "GOOGLE_COM_REDIRECT_URL","\"" + keystoreProperties["GOOGLE_COM_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "GOOGLE_AUTH_URL","\"" + keystoreProperties["GOOGLE_AUTH_URL"] + "\"" )
+        buildConfigField("String", "GOOGLE_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["GOOGLE_VALUE_RESPONSE_TYPE"] + "\"" )
+        buildConfigField("String", "GOOGLE_VALUE_ACCESS_TYPE","\"" + keystoreProperties["GOOGLE_VALUE_ACCESS_TYPE"] + "\"" )
+        buildConfigField("String", "GOOGLE_VALUE_APPROVAL_PROMPT","\"" + keystoreProperties["GOOGLE_VALUE_APPROVAL_PROMPT"] + "\"" )
+        buildConfigField("String", "GOOGLE_VALUE_SCOPE","\"" + keystoreProperties["GOOGLE_VALUE_SCOPE"] + "\"" )
+        buildConfigField("String", "GOOGLE_WEB_ID","\"" + keystoreProperties["GOOGLE_WEB_ID"] + "\"" )
+
+        //Twitter
+        buildConfigField("String", "TWITTER_CONSUMER_SECRET","\"" + keystoreProperties["TWITTER_CONSUMER_SECRET"] + "\"" )
+        buildConfigField("String", "TWITTER_CONSUMER_KEY","\"" + keystoreProperties["TWITTER_CONSUMER_KEY"] + "\"" )
+
+        //Captcha
+        buildConfigField("String", "CAPTCHA_PUBLIC_KEY_INFO","\"" + keystoreProperties["CAPTCHA_PUBLIC_KEY_INFO"] + "\"" )
+        buildConfigField("String", "CAPTCHA_PUBLIC_KEY_COM","\"" + keystoreProperties["CAPTCHA_PUBLIC_KEY_COM"] + "\"" )
+
+        //Facebook
+        buildConfigField("String", "FACEBOOK_APP_ID_INFO","\"" + keystoreProperties["FACEBOOK_APP_ID_INFO"] + "\"" )
+        buildConfigField("String", "FACEBOOK_APP_ID","\"" + keystoreProperties["FACEBOOK_APP_ID"] + "\"" )
+
+        //Tasks
+        manifestPlaceholders["tasks"] = keystoreProperties["CUSTOM_TASKS"] as String? ?: ""
+
+        buildConfigField("String", "PUSH_SCHEME","\"" + "oodocuments" + "\"" )
     }
 
     splits {
@@ -109,6 +184,7 @@ android {
 
         debug {
             isMinifyEnabled = false
+            extra["enableCrashlytics"] = false
         }
 
         applicationVariants.all {
@@ -116,7 +192,7 @@ android {
             variant.outputs
                 .map { it as BaseVariantOutputImpl }
                 .forEach { output ->
-                    val timeMark = SimpleDateFormat("MMMMM.dd_HH-mm").format(Date())
+                    val timeMark = SimpleDateFormat("MMMMM.dd_HH-mm", Locale.ENGLISH).format(Date())
                     val buildAbi = output.filters.find { it.filterType == "ABI" }?.identifier
                     val buildType = if (buildType.isDebuggable) "debug" else "release"
                     val buildCode = "_build-${output.versionCode}"
@@ -138,8 +214,8 @@ android {
 
 
     lint {
-        isCheckReleaseBuilds = false
-        isAbortOnError = false
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 
     buildFeatures {
@@ -148,12 +224,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     bundle {
@@ -172,6 +248,7 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+        jniLibs.useLegacyPackaging = true
         arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DJVUFILE")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DOCTRENDERER")}.so")
@@ -191,7 +268,7 @@ android {
         }
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Compose.version
+        kotlinCompilerExtensionVersion = Compose.versionCompiler
     }
 }
 
@@ -199,15 +276,15 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":core"))
     implementation(project(":libtoolkit"))
-    implementation(project(":libx2t"))
-    implementation(project(":libeditors"))
-    implementation(project(":libslides"))
-    implementation(project(":libdocs"))
-    implementation(project(":libcells"))
-    implementation(project(":libgeditors"))
-    implementation(project(":libgslides"))
-    implementation(project(":libgdocs"))
-    implementation(project(":libgcells"))
+    "managerImplementation"(project(":libx2t"))
+    "managerImplementation"(project(":libeditors"))
+    "managerImplementation"(project(":libslides"))
+    "managerImplementation"(project(":libdocs"))
+    "managerImplementation"(project(":libcells"))
+    "managerImplementation"(project(":libgeditors"))
+    "managerImplementation"(project(":libgslides"))
+    "managerImplementation"(project(":libgdocs"))
+    "managerImplementation"(project(":libgcells"))
 
     // Google libs
     implementation(Firebase.firebaseCore)
@@ -244,6 +321,7 @@ dependencies {
     // Moxy
     implementation(Moxy.moxyAndroid)
     implementation(Moxy.moxyMaterial)
+    implementation(Moxy.moxyKtx)
     kapt(Moxy.moxyCompiler)
 
     // Kotlin
@@ -259,7 +337,7 @@ dependencies {
     // Room
     implementation(Room.roomRuntime)
     implementation(Room.roomKtx)
-    kapt(Room.roomCompiler)
+    ksp(Room.roomCompiler)
 
     // Other
     implementation(Libs.phoneNumber)
@@ -268,13 +346,14 @@ dependencies {
     implementation(Libs.glide)
     implementation(Libs.photoView)
     implementation(Libs.androidWork)
+    implementation(Libs.dropboxSdk)
 
     //TODO add to base module
     implementation(Lifecycle.viewModel)
     implementation(Lifecycle.liveData)
     implementation(Lifecycle.runtime)
 
-    implementation("androidx.fragment:fragment-ktx:1.4.0")
+    implementation("androidx.fragment:fragment-ktx:1.4.1")
 
     //Compose
     implementation(Compose.ui)

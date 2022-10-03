@@ -12,5 +12,6 @@ public interface DocsCloudView extends DocsBaseView {
     void onFileWebView(CloudFile file);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showMoveCopyDialog(ArrayList<String> names, String action, String title);
-
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onStateUpdateFilterMenu();
 }

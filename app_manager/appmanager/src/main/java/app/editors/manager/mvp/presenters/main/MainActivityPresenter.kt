@@ -7,6 +7,7 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainActivityView
@@ -14,7 +15,6 @@ import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,12 +24,13 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 
 sealed class MainActivityState {
     object RecentState : MainActivityState()
     object OnDeviceState : MainActivityState()
+    object SettingsState : MainActivityState()
     class CloudState(val account: CloudAccount? = null) : MainActivityState()
-    class AccountsState(val isAccounts: Boolean = false) : MainActivityState()
 }
 
 @InjectViewState
@@ -60,6 +61,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         preferenceTool.setUserSession()
+        preferenceTool.filter = Filter()
         if (isAppColdStart) {
             isAppColdStart = false
         }
@@ -70,17 +72,21 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         disposable.dispose()
     }
 
-    fun init(isPortal: Boolean = false) {
-        CoroutineScope(Dispatchers.Default).launch {
+    fun init(isPortal: Boolean = false, isShortcut: Boolean = false) {
+        presenterScope.launch {
             accountDao.getAccountOnline()?.let {
                 cloudAccount = it
                 setNetworkSetting(it)
+                if (isShortcut) {
+                    viewState.onRender(MainActivityState.OnDeviceState)
+                    return@launch
+                }
                 withContext(Dispatchers.Main) {
                     checkToken(it)
                 }
             } ?: run {
                 withContext(Dispatchers.Main) {
-                    if (isPortal) {
+                    if (isPortal && !isShortcut) {
                         viewState.onRender(MainActivityState.CloudState())
                     } else {
                         viewState.onRender(MainActivityState.OnDeviceState)
@@ -132,7 +138,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     }
 
     fun setAccount() {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             accountDao.getAccountOnline()?.let {
                 cloudAccount = it
             }
@@ -206,32 +212,13 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     fun navigationItemClick(itemId: Int) {
         when (itemId) {
             R.id.menu_item_recent -> viewState.onRender(MainActivityState.RecentState)
+            R.id.menu_item_on_device -> viewState.onRender(MainActivityState.OnDeviceState)
+            R.id.menu_item_settings -> viewState.onRender(MainActivityState.SettingsState)
             R.id.menu_item_cloud -> {
-                CoroutineScope(Dispatchers.Default).launch {
-                    accountDao.getAccountOnline()?.let {
-                        cloudAccount = it
-                    } ?: run {
-                        cloudAccount = null
-                    }
+                presenterScope.launch {
+                    cloudAccount = accountDao.getAccountOnline()
                     withContext(Dispatchers.Main) {
                         viewState.onRender(MainActivityState.CloudState(cloudAccount))
-                    }
-                }
-            }
-            R.id.menu_item_on_device -> viewState.onRender(
-                MainActivityState.OnDeviceState
-            )
-            R.id.menu_item_setting -> {
-                CoroutineScope(Dispatchers.Default).launch {
-                    if (accountDao.getAccounts().isNotEmpty()) {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(MainActivityState.AccountsState(true))
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            viewState.onRender(MainActivityState.AccountsState(false))
-                        }
-
                     }
                 }
             }
@@ -239,7 +226,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     }
 
     fun clear() {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             accountDao.getAccountOnline()?.let {
                 accountDao.updateAccount(
                     it.copyWithToken(
@@ -255,8 +242,12 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     }
 
     fun checkFileData(fileData: Uri) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             accountDao.getAccountOnline()?.let { account ->
+                if (fileData.queryParameterNames.contains("push")) {
+                    viewState.openFile(account, fileData.getQueryParameter("data") ?: "")
+                    return@launch
+                }
                 val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query))
                 if (data.portal?.equals(
                         account.portal,

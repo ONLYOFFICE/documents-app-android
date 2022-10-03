@@ -242,9 +242,10 @@ class AddPresenter : BasePresenter<AddView>() {
 
     val shared: Unit
         get() {
-            when (type) {
-                AddFragment.Type.USERS -> getUsers()
-                AddFragment.Type.GROUPS -> getGroups()
+            if (type == AddFragment.Type.USERS) {
+                getUsers()
+            } else {
+                getGroups()
             }
         }
 
@@ -275,6 +276,9 @@ class AddPresenter : BasePresenter<AddView>() {
         when (type) {
             AddFragment.Type.USERS -> viewState.onGetUsers(userListItems)
             AddFragment.Type.GROUPS -> viewState.onGetGroups(groupListItems)
+            else -> {
+                // Stub
+            }
         }
     }
 

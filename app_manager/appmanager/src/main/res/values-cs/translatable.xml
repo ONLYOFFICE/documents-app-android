@@ -79,7 +79,6 @@
 
     <!-- Accounts -->
     <string name="login_accounts_select_title">Vybrat účet</string>
-    <string name="login_accounts_select_add">Přidat cloudový účet</string>
 
     <!-- Portal pager -->
     <string name="login_pager_enterprise">PORTÁL</string>
@@ -102,8 +101,6 @@
     </string>
     <string name="login_not_authorization_info">V %2$s se nepodařilo přihlásit se do %1$s</string>
     <string name="login_not_authorization_button">ZKUSIT ZNOVU</string>
-    <string name="errors_first_name">Jméno je neplatné. Nesmí obsahovat číslice.</string>
-    <string name="errors_last_name">Příjmení je neplatné. Nesmí obsahovat číslice.</string>
 
     <!-- Portal personal -->
     <string name="login_personal_edit_email_hint">E-mail</string>
@@ -245,7 +242,7 @@
     <string name="navigation_drawer_menu_trash">Koš</string>
     <string name="navigation_drawer_menu_help">Nápověda</string>
     <string name="navigation_drawer_menu_logout">Odhlásit se</string>
-    <string name="navigation_drawer_menu_add_account">Přidat účet</string>
+    <string name="login_accounts_select_add">Přidat účet</string>
     <string name="settings_item_title">Nastavení</string>
     <string name="settings_item_change_account">Změnit účet</string>
     <string name="settings_clear_cache">Vymazat mezipaměť</string>
@@ -269,11 +266,9 @@
     <string name="toolbar_menu_main_deselect">Zrušit výběr</string>
     <string name="toolbar_menu_sort_by">Řadit podle</string>
     <string name="toolbar_menu_sort_order">Pořadí řazení</string>
-    <string name="toolbar_menu_sort_date_modified">Poslední změna</string>
     <string name="toolbar_menu_sort_title">Název</string>
     <string name="toolbar_menu_sort_type">Typ</string>
     <string name="toolbar_menu_sort_size">Velikost</string>
-    <string name="toolbar_menu_sort_owner">Vlastník</string>
     <string name="toolbar_menu_sort_asc">Vzestupně</string>
     <string name="toolbar_menu_sort_desc">Sestupně</string>
     <string name="toolbar_menu_main_download">Stáhnout</string>
@@ -525,12 +520,11 @@
     <string name="cloud_only_office_description">Ukládejte dokumenty v cloudu a spolupracujte na nich</string>
     <string name="cloud_accounts_title">Účty</string>
     <string name="error_long_file_name">Název souboru je příliš dlouhý</string>
-    <string name="dialog_remove_account_title">Odebrat účet</string>
     <string name="dialog_remove_account_description">Uživatel s %1$s z portálu %2$s bude odhlášen a odebrán ze seznamu účtů. \n\nProsím, mějte na paměti: pro přihlášení je třeba zadat adresu portálu, emailovou adresu a heslo. Všechny vaše soubory budou v bezpečí.</string>
     <string name="dialog_logout_account_title">Jste si jisti, že se chcete odhlásit?</string>
     <string name="dialog_logout_account_description">Po odhlášení nemusíte zadávat adresu portálu ani emailovou adresu, pouze heslo. Buďte bez obav, všechny soubory budou v bezpečí v cloudu.</string>
     <string name="profile_username_title">Uživatelské jméno</string>
-    <string name="profile_type_account">Typ</string>
+    <string name="filter_title_type">Typ</string>
     <string name="profile_portal_address">Adresa portálu</string>
     <string name="profile_type_admin">Admin</string>
     <string name="profile_type_visitor">Host</string>
@@ -585,8 +579,6 @@
     <string name="auth_edit_hint">Kód</string>
     <string name="app_settings_security">Zabezpečení</string>
     <string name="app_settings_passcode">Zámek přístupového kódu</string>
-    <string name="app_settings_disable">Zakázat</string>
-    <string name="app_settings_enable">Povolit</string>
     <string name="app_Settings_passcode_enable">Povolit přístupový kód</string>
     <string name="app_settings_passcode_change">Změnit přístupový kód</string>
     <string name="app_settings_passcode_fingerprint">Pro odemknutí použít otisk prstu</string>
@@ -619,4 +611,36 @@
     <string name="app_settings_follow_the_system">Jako v systému</string>
     <string name="app_settings_light_theme">Světlý motiv</string>
     <string name="app_settings_dark_theme">Tmavý motiv</string>
+    <string name="errors_import_local_file_desc">Povolení zamítnuto</string>
+    <string name="errors_import_local_file">Přístup odepřen. Udělte oprávnění ke čtení a zápisu</string>
+    <string name="errors_first_name">Jméno není platné</string>
+    <string name="errors_last_name">Příjmení není platné</string>
+    <string name="navigation_drawer_menu_sign_in">Přihlásit se</string>
+    <string name="toolbar_menu_search_view_hint">Zadejte svůj dotaz</string>
+    <string name="toolbar_menu_sort_date_modified">Datum</string>
+    <string name="toolbar_menu_main_filter">Filtr</string>
+    <string name="list_context_open_location">Otevřít umístění</string>
+    <string name="placeholder_loading_users">Načítání uživatelů…</string>
+    <string name="placeholder_loading_groups">Načítání skupin…</string>
+    <string name="krdive_password_helper_text">Pokud jste aktivovali dvojí ověřování, vygenerujte si prosím aplikaci CDM ze správce Infomaniak.</string>
+    <string name="kdrive_info_title">Abyste mohli tuto službu používat, musíte mít placenou verzi přehrávače.</string>
+    <string name="storage_email_connection">Připojení k e-mailu</string>
+    <string name="dialog_remove_account_title">Odstranění ze zařízení</string>
+    <string name="app_settings_disabled">Zakázáno</string>
+    <string name="app_settings_enabled">Povoleno</string>
+    <string name="filter_toolbar_title">Filtry</string>
+    <string name="filter_toolbar_users_title">Výběr uživatele</string>
+    <string name="filter_toolbar_groups_title">Vyberte skupinu</string>
+    <string name="filter_title_author">Autor</string>
+    <string name="filter_title_search">Hledání</string>
+    <string name="filter_type_documents">Dokumenty</string>
+    <string name="filter_type_presentations">Prezentace</string>
+    <string name="filter_type_spreadsheets">Tabulky</string>
+    <string name="filter_type_images">Obrázky</string>
+    <string name="filter_type_media">Média</string>
+    <string name="filter_type_archives">Archivy</string>
+    <string name="filter_type_all">Všechny soubory</string>
+    <string name="filter_exclude_subfolders">Vyloučit podsložky</string>
+    <string name="filter_show_results">Zobrazit výsledky %1$s</string>
+    <string name="filter_button_reset">OBNOVIT</string>
 </resources>

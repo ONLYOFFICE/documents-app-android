@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentAppSettingsLayoutBinding
 import app.editors.manager.ui.activities.main.AboutActivity
+import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.dialogs.AppThemeDialog
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -38,16 +40,24 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
 
     private val viewModel by viewModels<AppSettingsViewModel>()
     private var viewBinding: FragmentAppSettingsLayoutBinding? = null
+    private var activity: IMainActivity? = null
 
     private val getWritePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
         if (result) {
             viewModel.clearCache()
         }
     }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        requireContext().appComponent.inject(viewModel)
+        try {
+            activity = context as IMainActivity
+            requireContext().appComponent.inject(viewModel)
+        } catch (e: ClassCastException) {
+            throw RuntimeException(
+                DocsOnDeviceFragment::class.java.simpleName + " - must implement - " +
+                        IMainActivity::class.java.simpleName
+            )
+        }
     }
 
     override fun onDestroyView() {
@@ -63,6 +73,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
+        initToolbar()
         initSettingItems()
         viewModel.getData()
     }
@@ -73,7 +84,6 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
     }
 
     private fun init() {
-        setActionBarTitle(getString(R.string.settings_item_title))
         viewModel.cacheLiveData.observe(viewLifecycleOwner) { size: Long? ->
             viewBinding?.cacheSizeTextView?.text = StringUtils.getFormattedSize(requireContext(), size ?: -1)
         }
@@ -84,11 +94,20 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
             viewBinding?.wifiSwitch?.isChecked = isChecked
         }
         viewModel.passcodeState.observe(viewLifecycleOwner) { isPasscodeEnabled ->
-            //TODO make correct translate
-            viewBinding?.passcodeSubTextView?.text = if(!isPasscodeEnabled) getString(R.string.app_settings_enable) else getString(R.string.app_settings_disable)
+            viewBinding?.passcodeImageView?.setImageDrawable(AppCompatResources.getDrawable(requireContext(), if (isPasscodeEnabled) R.drawable.ic_passcode_enabled else R.drawable.ic_passcode_disabled))
+            viewBinding?.passcodeSubTextView?.text = if(isPasscodeEnabled) getString(R.string.app_settings_enabled) else getString(R.string.app_settings_disabled)
         }
         viewModel.message.observe(viewLifecycleOwner) { message ->
             showSnackBar(message)
+        }
+    }
+
+    private fun initToolbar() {
+        setActionBarTitle(getString(R.string.settings_item_title))
+        activity?.apply {
+            setAppBarStates(false)
+            showNavigationButton(false)
+            showActionButton(false)
         }
     }
 
@@ -165,7 +184,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
                 viewModel.setAnalytic(viewBinding?.analyticSwitch?.isChecked ?: false)
             }
             R.id.passcodeLayout -> {
-                PasscodeActivity.show(requireContext())
+                PasscodeActivity.show(requireContext(), bundle = null)
             }
             R.id.settingsAppTheme -> {
                 AppThemeDialog().show(parentFragmentManager, null)

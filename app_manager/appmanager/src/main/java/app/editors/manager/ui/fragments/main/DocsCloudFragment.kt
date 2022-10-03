@@ -2,28 +2,36 @@ package app.editors.manager.ui.fragments.main
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.fragment.app.clearFragmentResultListener
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsCloudView
+import app.editors.manager.ui.activities.main.FilterActivity
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
-import app.editors.manager.ui.dialogs.ActionBottomDialog
-import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.dialogs.MoveCopyDialog
+import app.editors.manager.ui.dialogs.*
+import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
+import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.dialogs.MoveCopyDialog.Companion.newInstance
+import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -65,7 +73,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    mCameraUri?.let { uri ->
+                    cameraUri?.let { uri ->
                         cloudPresenter.upload(uri, null)
                     }
                 }
@@ -76,6 +84,9 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     data?.data?.let {
                         cloudPresenter.upload(it, null)
                     }
+                }
+                FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED -> {
+                    onRefresh()
                 }
             }
         }
@@ -98,16 +109,16 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     .setVisible(cloudPresenter.isContextItemEditable).also {
                         setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
                     }
-                moveItem = menu.findItem(R.id.toolbar_selection_move)
-                    .setVisible(cloudPresenter.isContextItemEditable)
-                restoreItem = menu.findItem(R.id.toolbar_selection_restore)
-                    .setVisible(cloudPresenter.isTrashMode)
-                copyItem = menu.findItem(R.id.toolbar_selection_copy)
-                downloadItem = menu.findItem(R.id.toolbar_selection_download)
-                    .setVisible(!cloudPresenter.isTrashMode)
                 setAccountEnable(false)
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.toolbar_item_filter -> showFilter()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onUploadFileProgress(progress: Int, id: String) {
@@ -171,7 +182,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             )
             ContextBottomDialog.Buttons.EXTERNAL -> {
                 setContextDialogExternalLinkEnable(false)
-                cloudPresenter.externalLink
+                cloudPresenter.saveExternalLinkToClipboard()
             }
             ContextBottomDialog.Buttons.SHARE_DELETE -> showQuestionDialog(
                 getString(R.string.dialogs_question_share_remove),
@@ -182,6 +193,7 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             )
             ContextBottomDialog.Buttons.FAVORITE_ADD -> cloudPresenter.addToFavorite()
             ContextBottomDialog.Buttons.FAVORITE_DELETE -> cloudPresenter.deleteFromFavorite()
+            ContextBottomDialog.Buttons.OPEN_LOCATION -> cloudPresenter.openLocation()
             else -> { }
         }
     }
@@ -194,6 +206,14 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             MoveCopyDialog.TAG_SKIP -> operationType = ApiContract.Operation.SKIP
         }
         cloudPresenter.transfer(operationType, action != MoveCopyDialog.ACTION_COPY)
+    }
+
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(mutableListOf<ActionBarPopupItem>().apply {
+            if (!cloudPresenter.isContextItemEditable) add(SelectActionBarPopup.Move)
+            if (!cloudPresenter.isTrashMode) add(SelectActionBarPopup.Restore)
+            if (cloudPresenter.isTrashMode) add(SelectActionBarPopup.Download)
+        })
     }
 
     override fun onFileWebView(file: CloudFile) {
@@ -214,11 +234,44 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onResume() {
         super.onResume()
         cloudPresenter.setSectionType(section)
+        onStateUpdateFilterMenu()
+    }
+
+    override fun onStateMenuEnabled(isEnabled: Boolean) {
+        super.onStateMenuEnabled(isEnabled)
+        setMenuFilterEnabled(isEnabled)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         cloudPresenter.setSectionType(section)
+    }
+
+    override fun onDocsGet(list: List<Entity>?) {
+        super.onDocsGet(list)
+        setMenuFilterEnabled(true)
+    }
+
+    override fun onDocsRefresh(list: List<Entity>?) {
+        super.onDocsRefresh(list)
+        setMenuFilterEnabled(true)
+    }
+
+    override fun onDocsFilter(list: List<Entity>?) {
+        super.onDocsFilter(list)
+        setMenuFilterEnabled(true)
+    }
+
+    private fun setMenuFilterEnabled(isEnabled: Boolean) {
+        filterItem?.isVisible = true
+        filterItem?.isEnabled = isEnabled
+        onStateUpdateFilterMenu()
+    }
+
+    override fun onStateUpdateFilterMenu() {
+        filterItem?.icon = if (getFilters()) {
+            AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_enable)
+        } else AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_disable)
     }
 
     override val isActivePage: Boolean
@@ -235,6 +288,27 @@ abstract class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     private fun disableMenu() {
         menu?.let {
             deleteItem?.isEnabled = false
+        }
+    }
+
+    private fun getFilters(): Boolean {
+        val filter = presenter.preferenceTool.filter
+        return filter.type != FilterType.None || filter.author.id.isNotEmpty() || filter.excludeSubfolder
+    }
+
+    private fun showFilter() {
+        if (isTablet) {
+            FilterDialogFragment.newInstance(presenter.folderId)
+                .show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
+            requireActivity().supportFragmentManager
+                .setFragmentResultListener(REQUEST_KEY_REFRESH, this) { _, bundle ->
+                    if (bundle.getBoolean(BUNDLE_KEY_REFRESH, true)) {
+                        presenter.refresh()
+                        clearFragmentResultListener(REQUEST_KEY_REFRESH)
+                    }
+                }
+        } else {
+            FilterActivity.show(this, presenter.folderId)
         }
     }
 

@@ -7,6 +7,7 @@ import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.Capabilities
 import app.documents.core.network.models.login.response.ResponseCapabilities
 import app.documents.core.network.models.login.response.ResponseSettings
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
@@ -26,7 +27,9 @@ class EnterprisePortalViewModel: BaseLoginViewModel() {
         val TAG: String = EnterprisePortalViewModel::class.java.simpleName
         private val BANNED_ADDRESSES: Set<String> = object : TreeSet<String>() {
             init {
-                add(".r7-")
+                if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
+                    add(".r7-")
+                }
             }
         }
         private const val TAG_SSH = "/#ssloff"

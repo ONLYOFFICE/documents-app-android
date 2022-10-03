@@ -7,6 +7,8 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.BadParcelableException
+import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
@@ -217,7 +219,7 @@ object ActivitiesUtils {
     fun minimizeApp(context: Context) {
         val startMain = Intent(Intent.ACTION_MAIN)
         startMain.addCategory(Intent.CATEGORY_HOME)
-        startMain.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startMain.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(startMain)
     }
 
@@ -306,4 +308,12 @@ class ImagePicker(
         getContent.launch(IMAGE_TYPE)
     }
 
+}
+
+fun Bundle.contains(key: String): Boolean {
+    return try {
+        this.containsKey(key)
+    } catch (error: BadParcelableException) {
+        false
+    }
 }

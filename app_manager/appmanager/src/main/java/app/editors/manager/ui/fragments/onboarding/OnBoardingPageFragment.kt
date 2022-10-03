@@ -1,5 +1,8 @@
 package app.editors.manager.ui.fragments.onboarding
 
+import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -9,6 +12,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import app.editors.manager.databinding.FragmentOnBoardingPageBinding
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 
 class OnBoardingPageFragment : BaseAppFragment() {
@@ -48,9 +52,16 @@ class OnBoardingPageFragment : BaseAppFragment() {
     private fun init() {
         getArgs()
         viewBinding?.let {
-            it.onBoardingPageHeader.setText(headerResId)
-            it.onBoardingPageInfo.setText(infoResId)
-            it.onBoardingPageImage.setImageDrawable(AppCompatResources.getDrawable(requireContext(), imageResId))
+            try {
+                it.onBoardingPageHeader.setText(headerResId)
+                it.onBoardingPageInfo.setText(infoResId)
+                it.onBoardingPageImage.setImageDrawable(AppCompatResources.getDrawable(requireContext(), imageResId))
+            } catch (error: Resources.NotFoundException) {
+                it.onBoardingPageHeader.text = "Not found"
+                it.onBoardingPageInfo.text = "Not found"
+                it.onBoardingPageImage.setImageDrawable(ColorDrawable(Color.GRAY))
+                FirebaseUtils.addCrash(error)
+            }
         }
     }
 

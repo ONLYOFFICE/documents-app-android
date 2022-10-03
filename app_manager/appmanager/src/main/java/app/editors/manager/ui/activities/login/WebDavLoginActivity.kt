@@ -6,15 +6,18 @@ import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
-import app.editors.manager.managers.utils.Constants
+import app.editors.manager.app.App
 import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
+import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
 import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
 import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.login.WebDavSignInFragment
+import javax.inject.Inject
 
 class WebDavLoginActivity : BaseAppActivity() {
 
@@ -37,10 +40,14 @@ class WebDavLoginActivity : BaseAppActivity() {
         }
     }
 
+    @Inject
+    lateinit var dropboxLoginHelper: DropboxLoginHelper
+
     private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        App.getApp().appComponent.inject(this)
         setContentView(R.layout.activity_web_dav_login)
 
         toolbar = findViewById(R.id.app_bar_toolbar)
@@ -93,8 +100,8 @@ class WebDavLoginActivity : BaseAppActivity() {
     private fun showOneDriveSignInFragment() {
         val storage = Storage(
             OneDriveUtils.ONEDRIVE_STORAGE,
-            Constants.OneDrive.COM_CLIENT_ID,
-            Constants.OneDrive.COM_REDIRECT_URL
+            BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
+            BuildConfig.ONE_DRIVE_COM_REDIRECT_URL
         )
 
         showFragment(
@@ -104,23 +111,17 @@ class WebDavLoginActivity : BaseAppActivity() {
     }
 
     private fun showDropboxSignInFragment() {
-        val storage = Storage(
-            ApiContract.Storage.DROPBOX,
-            Constants.DropBox.COM_CLIENT_ID,
-            Constants.DropBox.COM_REDIRECT_URL
-        )
-
-        showFragment(
-            DropboxSignInFragment.newInstance(storage),
-            DropboxSignInFragment.TAG
-        )
+        dropboxLoginHelper.startSignInActivity(this) {
+            MainActivity.show(this)
+            finish()
+        }
     }
 
     private fun showGoogleDriveSignInFragment() {
         val storage = Storage(
             ApiContract.Storage.GOOGLEDRIVE,
-            Constants.Google.COM_CLIENT_ID,
-            Constants.Google.COM_REDIRECT_URL
+            BuildConfig.GOOGLE_COM_CLIENT_ID,
+            BuildConfig.GOOGLE_COM_REDIRECT_URL
         )
 
         showFragment(

@@ -3,10 +3,12 @@ package app.editors.manager.managers.utils
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
 import lib.toolkit.base.managers.utils.CryptUtils
 import java.security.*
 import javax.crypto.Cipher
+import javax.crypto.IllegalBlockSizeException
 
 object KeyStoreUtils {
 
@@ -19,8 +21,8 @@ object KeyStoreUtils {
             val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
             ks.load(null)
 
-        val privateKey = ks.getKey(Constants.Modules.COMMUNITY_ID, null) as PrivateKey?
-        val publicKey: PublicKey? = ks.getCertificate(Constants.Modules.COMMUNITY_ID)?.publicKey
+            val privateKey = ks.getKey(BuildConfig.COMMUNITY_ID, null) as PrivateKey?
+            val publicKey: PublicKey? = ks.getCertificate(BuildConfig.COMMUNITY_ID)?.publicKey
 
             privateKey?.let {
                 publicKey?.let {
@@ -28,7 +30,7 @@ object KeyStoreUtils {
                 }
             }
 
-            val spec = KeyGenParameterSpec.Builder(Constants.Modules.COMMUNITY_ID, KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT)
+            val spec = KeyGenParameterSpec.Builder(BuildConfig.COMMUNITY_ID, KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT)
                 .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
                 .build()
@@ -46,19 +48,23 @@ object KeyStoreUtils {
             val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
             ks.load(null)
 
-            val publicKey = ks.getCertificate(Constants.Modules.COMMUNITY_ID).publicKey ?: return ""
+            val publicKey = ks.getCertificate(BuildConfig.COMMUNITY_ID).publicKey ?: return ""
 
             val cipher = Cipher.getInstance(RSA_ECB_PKCS1_PADDING)
 
             cipher.init(Cipher.ENCRYPT_MODE, publicKey)
-            val encryptedData = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
+
+            val encryptedData: ByteArray?
+            try {
+                encryptedData = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
+            } catch (error: IllegalBlockSizeException) {
+                return CryptUtils.encryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
+            }
 
             return Base64.encodeToString(encryptedData, Base64.DEFAULT)
         } else {
-            return CryptUtils.encryptAES128(data, Constants.Modules.COMMUNITY_ID) ?: ""
+            return CryptUtils.encryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
         }
-
-
     }
 
     fun decryptData(data: String): String {
@@ -66,17 +72,23 @@ object KeyStoreUtils {
            val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
            ks.load(null)
 
-           val privateKey = ks.getKey(Constants.Modules.COMMUNITY_ID, null) as PrivateKey
+           val privateKey = ks.getKey(BuildConfig.COMMUNITY_ID, null) as PrivateKey
 
            val encrypted = Base64.decode(data, Base64.DEFAULT)
 
            val cipher = Cipher.getInstance(RSA_ECB_PKCS1_PADDING)
 
            cipher.init(Cipher.DECRYPT_MODE, privateKey)
-           val result = cipher.doFinal(encrypted)
+
+           val result: ByteArray?
+           try {
+               result = cipher.doFinal(encrypted)
+           } catch (error: IllegalBlockSizeException) {
+               return CryptUtils.decryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
+           }
            return result.toString(Charsets.UTF_8)
        } else {
-           return CryptUtils.decryptAES128(data, Constants.Modules.COMMUNITY_ID) ?: ""
+           return CryptUtils.decryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
        }
     }
 

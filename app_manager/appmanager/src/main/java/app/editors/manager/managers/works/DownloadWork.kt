@@ -237,8 +237,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
 
     private fun onError(responseBody: ResponseBody?) {
         val errorMessage: String
-        var responseMessage: String? = null
-        responseMessage = try {
+        val responseMessage: String? = try {
             responseBody?.string()
         } catch (e: Exception) {
             sendBroadcastUnknownError(id, url, fileName, to)

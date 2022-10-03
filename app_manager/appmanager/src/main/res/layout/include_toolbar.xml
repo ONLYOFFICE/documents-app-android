@@ -15,13 +15,13 @@
         android:background="?attr/selectableItemBackground"
         android:visibility="gone">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/toolbarArrowIcon"
             style="@style/CommonImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_down"
-            android:tint="@color/colorPrimary"
+            app:srcCompat="@drawable/ic_arrow_down"
+            app:tint="@color/colorPrimary"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -29,7 +29,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/toolbarIcon"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"

@@ -3,6 +3,7 @@ plugins {
     id("kotlinx-serialization")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp") version Kotlin.kspVersion
 }
 
 android {
@@ -36,12 +37,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_1_8)
-        targetCompatibility(JavaVersion.VERSION_1_8)
+        sourceCompatibility(JavaVersion.VERSION_11)
+        targetCompatibility(JavaVersion.VERSION_11)
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }
 
@@ -76,7 +77,7 @@ dependencies {
     // Room
     implementation(Room.roomRuntime)
     implementation(Room.roomKtx)
-    kapt(Room.roomCompiler)
+    ksp(Room.roomCompiler)
 
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")

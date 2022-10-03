@@ -81,7 +81,6 @@
 
     <!-- Accounts -->
     <string name="login_accounts_select_title"> ເລືອກບັນຊີ</string>
-    <string name="login_accounts_select_add">ເພີ່ມບັນຊີຄລາວ</string>
 
     <!-- Portal pager -->
     <string name="login_pager_enterprise">ປ່ະຕູ</string>
@@ -103,8 +102,6 @@
     </string>
     <string name="login_not_authorization_info">ບໍ່ສາມາດລົງຊື່ເຂົ້າໃຊ້ %1$s ທີ່ %2$s</string>
     <string name="login_not_authorization_button"> ລອງອີກຄັ້ງ </string>
-    <string name="errors_first_name">ຊື່ໃຫ້ຖືກຕ້ອງ. ຕ້ອງບໍ່ມີຕົວເລກ.</string>
-    <string name="errors_last_name">ນາມສະກຸນບໍ່ຖືກຕ້ອງ. ມັນຕ້ອງບໍ່ມີຕົວເລກ..</string>
 
     <!-- Portal personal -->
     <string name="login_personal_edit_email_hint">ອີເມວ</string>
@@ -248,7 +245,7 @@
     <string name="navigation_drawer_menu_trash">ກະຕ່າຂີ້ເຫຍື້ອ</string>
     <string name="navigation_drawer_menu_help">ຊ່ວຍເຫຼືອ </string>
     <string name="navigation_drawer_menu_logout">ລະບົບ</string>
-    <string name="navigation_drawer_menu_add_account">ເພີ່ມບັນຊີ</string>
+    <string name="login_accounts_select_add">ເພີ່ມບັນຊີ</string>
     <string name="settings_item_title">ການຕັ້ງຄ່າ</string>
     <string name="settings_item_change_account">ປ່ຽນບັນຊີ </string>
     <string name="settings_clear_cache">ເຊັດຖານຄວາມຈຳ </string>
@@ -272,11 +269,9 @@
     <string name="toolbar_menu_main_deselect">ຍົກເລີກການເລືອກ </string>
     <string name="toolbar_menu_sort_by">ຮຽງຕາມ</string>
     <string name="toolbar_menu_sort_order">ຈັດລຽງລຳດັບ </string>
-    <string name="toolbar_menu_sort_date_modified">ດັດແກ້ຫຼ້າສຸດ</string>
     <string name="toolbar_menu_sort_title">ຫົວຂໍ້</string>
     <string name="toolbar_menu_sort_type">ພິມ </string>
     <string name="toolbar_menu_sort_size">ຂະ ໜາດ</string>
-    <string name="toolbar_menu_sort_owner">ເຈົ້າຂອງ </string>
     <string name="toolbar_menu_sort_asc">ຈາກໜ້ອຍໄປຫາຫຼາຍ</string>
     <string name="toolbar_menu_sort_desc">ຈາກຫຼາຍໄປຫາໜ້ອຍ</string>
     <string name="toolbar_menu_main_download">ດາວໂຫລດ </string>
@@ -531,7 +526,6 @@
     <string name="cloud_only_office_description">ເກັບຮັກສາເອກະສານໄວ້ໃນເມຄແລະຮ່ວມມືກັບພວກມັນ</string>
     <string name="cloud_accounts_title">ບັນຊີ</string>
     <string name="error_long_file_name">ຊື່ແຟ້ມຍາວເກີນໄປ </string>
-    <string name="dialog_remove_account_title">ເອົາບັນຊີອອກ</string>
     <string name="dialog_remove_account_description">
         ຜູ້ໃຊ້ທີ່ມີ %1$s ຈາກປະຕູ %2$s ຈະຖືກອອກຈາກລະບົບແລະລຶບອອກຈາກບັນຊີບັນຊີ. \ n \ n ກະລຸນາສັງເກດ: ເພື່ອເຂົ້າສູ່ລະບົບ, ທ່ານຕ້ອງການໃສ່ທີ່ຢູ່ປະຕູ, ອີເມວແລະລະຫັດຜ່ານ. ໄຟລ໌ທັງໝົດຂອງທ່ານຈະປອດໄພ.
     </string>
@@ -540,7 +534,7 @@
         ຫຼັງຈາກທ່ານອອກຈາກລະບົບ, ທ່ານບໍ່ຈຳເປັນຕ້ອງໃສ່ທີ່ຢູ່ຫຼືອີເມວຂອງທ່ານ, ພຽງແຕ່ລະຫັດຜ່ານ. ຢ່າກັງວົນ, ເອກະສານທັງໝົດຈະປອດໄພໃນຄລາວ
     </string>
     <string name="profile_username_title">ຊື່ຜູ້ໃຊ້</string>
-    <string name="profile_type_account">ພິມ</string>
+    <string name="filter_title_type">ພິມ</string>
     <string name="profile_portal_address">ທີ່ຢູ່Portal </string>
     <string name="profile_type_admin">ບໍລິຫານ</string>
     <string name="profile_type_visitor">ແຂກ</string>
@@ -596,8 +590,6 @@
     <string name="auth_edit_hint">ລະຫັດ</string>
     <string name="app_settings_security">ຄວາມປອດໄພ</string>
     <string name="app_settings_passcode">ລັອກລະຫັດ</string>
-    <string name="app_settings_disable">ປິດໃຊ້ງານ</string>
-    <string name="app_settings_enable">ເປີດ</string>
     <string name="app_Settings_passcode_enable">ເປີດໃຊ້ລະຫັດຜ່ານ</string>
     <string name="app_settings_passcode_change">ປ່ຽນລະຫັດຜ່ານ</string>
     <string name="app_settings_passcode_fingerprint">ໃຊ້ລາຍນິ້ວມືເພື່ອປົດລັອກ</string>
@@ -630,4 +622,36 @@
     <string name="app_settings_follow_the_system">ຄືກັນກັບລະບົບ</string>
     <string name="app_settings_light_theme">ຮູບແບບສີສັນແຈ້ງ</string>
     <string name="app_settings_dark_theme">ຮູບແບບສີສັນມືດ</string>
+    <string name="errors_import_local_file_desc">ປະຕິເສດການອະນຸຍາດ</string>
+    <string name="errors_import_local_file">ປະ​ຕິ​ເສດ​ການ​ເຂົ້າ​ເຖິງ. ການໃຫ້ສິດອ່ານ ແລະຂຽນ</string>
+    <string name="errors_first_name">ຊື່ບໍ່ຖືກຕ້ອງ</string>
+    <string name="errors_last_name">ນາມສະກຸນບໍ່ຖືກຕ້ອງ</string>
+    <string name="navigation_drawer_menu_sign_in">ເຂົ້າສູ່ລະບົບ</string>
+    <string name="toolbar_menu_search_view_hint">ໃສ່ຄໍາຖາມຂອງທ່ານ</string>
+    <string name="toolbar_menu_sort_date_modified">ວັນທີ</string>
+    <string name="toolbar_menu_main_filter">ຄັດກອງ</string>
+    <string name="list_context_open_location">ເປີດສະຖານທີ່</string>
+    <string name="placeholder_loading_users">ກຳລັງໂຫລດຜູ້ໃຊ້…</string>
+    <string name="placeholder_loading_groups">ກຳລັງໂຫຼດກຸ່ມ…</string>
+    <string name="krdive_password_helper_text">ຖ້າທ່ານໄດ້ເປີດໃຊ້ການກວດສອບສອງຊັ້ນ, ກະລຸນາສ້າງ ແອັບພລິເຄຊັນ CDM ຈາກ ລະບົບຈັດການ Infomaniak.</string>
+    <string name="kdrive_info_title">ທ່ານຕ້ອງມີເຄື່ອງຫຼິ້ນລຸ້ນທີ່ເສຍເງິນເພື່ອໃຊ້ບໍລິການນີ້.</string>
+    <string name="storage_email_connection">ການເຊື່ອມຕໍ່ອີເມລ໌</string>
+    <string name="dialog_remove_account_title">ລຶບອອກຈາກອຸປະກອນ</string>
+    <string name="app_settings_disabled">ປິດການໃຊ້</string>
+    <string name="app_settings_enabled">ເປີດໃຊ້ແລ້ວ</string>
+    <string name="filter_toolbar_title">ຄັດກອງ</string>
+    <string name="filter_toolbar_users_title">ເລືອກຜູ້ໃຊ້</string>
+    <string name="filter_toolbar_groups_title">ເລືອກກຸ່ມ</string>
+    <string name="filter_title_author">ຜູ້ຂຽນ</string>
+    <string name="filter_title_search">ຄົ້ນຫາ</string>
+    <string name="filter_type_documents">ເອກະສານ</string>
+    <string name="filter_type_presentations">ການນໍາສະເຫນີ</string>
+    <string name="filter_type_spreadsheets">ສະເປຣດຊີດ</string>
+    <string name="filter_type_images">ຮູບພາບ</string>
+    <string name="filter_type_media">ຊື່ມວນຊົນ</string>
+    <string name="filter_type_archives">ຮວບຮວມ</string>
+    <string name="filter_type_all">ໄຟລ໌ທັງໝົດ</string>
+    <string name="filter_exclude_subfolders">ບໍ່ລວມໂຟເດີຍ່ອຍ</string>
+    <string name="filter_show_results">ສະແດງຜົນການຄົ້ນຫາ %1$s</string>
+    <string name="filter_button_reset">ປັບໃໝ່</string>
 </resources>

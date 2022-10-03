@@ -19,9 +19,9 @@ annotation class DropboxLoginScope
 
 @Module
 class DropboxLoginModule {
+
     @Provides
     fun provideDropboxLogin(dropboxLoginService: DropboxLoginService): IDropboxLoginServiceProvider = DropboxLoginServiceProvider(dropboxLoginService)
-
 
     @Provides
     fun provideDropboxLoginService(okHttpClient: OkHttpClient): DropboxLoginService = Retrofit.Builder()

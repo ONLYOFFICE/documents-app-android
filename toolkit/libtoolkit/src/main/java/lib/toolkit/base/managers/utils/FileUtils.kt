@@ -13,7 +13,6 @@ import android.net.Uri
 import android.os.Environment
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
-import androidx.documentfile.provider.DocumentFile
 import okhttp3.ResponseBody
 import java.io.*
 import java.net.URL
@@ -340,7 +339,7 @@ object FileUtils {
     @JvmStatic
     fun createFile(dir: File, name: String): File? {
         return try {
-            File(dir, name).apply {
+            File(dir, name.replace("/", "_")).apply {
                 createNewFile()
             }
         } catch (e: IOException) {
@@ -476,7 +475,7 @@ object FileUtils {
 
     @JvmStatic
     fun bitmapToBytes(bitmap: Bitmap): ByteArray {
-        return ByteArrayOutputStream()?.use {
+        return ByteArrayOutputStream().use {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
             it.toByteArray()
         }

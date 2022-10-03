@@ -30,7 +30,7 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, menuInflater)
-        if (isVisible) {
+        if (isResumed) {
             emptyTrashItem = menu.findItem(R.id.toolbar_item_empty_trash)
             emptyTrashItem?.isVisible = isEmptyTrashVisible
             showMenu()
@@ -89,8 +89,6 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
     private fun showMenu() {
         if (cloudPresenter.isSelectionMode) {
             deleteItem?.isVisible = true
-            restoreItem?.isVisible = true
-            copyItem?.isVisible = false
         } else {
             setActionBarTitle("")
             emptyTrashItem?.let { item ->
@@ -131,8 +129,6 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         }
         super.onDeleteBatch(list)
     }
-
-    override fun onUpdateItemFavorites() { }
 
     override fun onResume() {
         super.onResume()

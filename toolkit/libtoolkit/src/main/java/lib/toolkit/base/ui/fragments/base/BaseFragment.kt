@@ -45,9 +45,22 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
 
     protected var toolbarTitle: String? = null
 
-    @JvmField
-    protected var mCameraUri: Uri? = null
+    protected var cameraUri: Uri? = null
 
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            baseActivity = context as BaseActivity
+            baseActivity.addDialogListener(this)
+            addOnDispatchTouchEvent()
+        } catch (e: ClassCastException) {
+            throw RuntimeException(
+                BaseFragment::class.java.simpleName + " - must implement - " +
+                        BaseActivity::class.java.simpleName
+            )
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,7 +70,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         toolbarTitle?.let { outState.putString(TAG_TITLE, it) }
-        mCameraUri?.let { outState.putParcelable(TAG_CAMERA, it) }
+        cameraUri?.let { outState.putParcelable(TAG_CAMERA, it) }
     }
 
     override fun onBackPressed(): Boolean {
@@ -74,7 +87,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
 
     override fun dispatchTouchEvent(ev: MotionEvent) {
         if (snackBar != null) {
-            if (snackBar!!.isShown) {
+            if (snackBar?.isShown == true) {
                 UiUtils.hideSnackBarOnOutsideTouch(snackBar, ev)
             }
             snackBar = null
@@ -82,9 +95,6 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected open fun init(view: View, savedInstanceState: Bundle?) {
-        if (lifecycle.currentState == Lifecycle.State.CREATED) {
-            baseActivity.addDialogListener(this)
-        }
         toast = UiUtils.getToast(requireActivity())
         restoreStates(savedInstanceState)
     }
@@ -96,7 +106,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
             }
 
             if (it.containsKey(TAG_CAMERA)) {
-                mCameraUri = savedInstanceState.getParcelable(TAG_CAMERA)
+                cameraUri = savedInstanceState.getParcelable(TAG_CAMERA)
             }
         }
     }
@@ -114,8 +124,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         hideDialog()
     }
 
-    protected fun hideDialog() {
-        baseActivity.hideDialog()
+    protected fun hideDialog(forceHide: Boolean = false) {
+        baseActivity.hideDialog(forceHide)
     }
 
     protected fun getEditDialogDialog(
@@ -229,7 +239,18 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         cancelButton: String?
     ) {
         baseActivity.addDialogListener(this)
-        baseActivity.showEditDialog(title, null, value, hint, endHint, acceptButton, cancelButton, false, null, tag)
+        baseActivity.showEditDialog(
+            title = title,
+            bottomTitle = null,
+            value = value,
+            editHint = hint,
+            acceptTitle = acceptButton,
+            cancelTitle = cancelButton,
+            isPassword = false,
+            error = null,
+            tag = tag,
+            suffix = endHint
+        )
     }
 
     protected fun showEditDialogRename(
@@ -238,10 +259,22 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         hint: String?,
         tag: String,
         acceptButton: String?,
-        cancelButton: String?
+        cancelButton: String?,
+        suffix: String?
     ) {
         baseActivity.addDialogListener(this)
-        baseActivity.showEditDialog(title, null, value, hint, null, acceptButton, cancelButton, false, null, tag)
+        baseActivity.showEditDialog(
+            title = title,
+            bottomTitle = null,
+            value = value,
+            editHint = hint,
+            acceptTitle = acceptButton,
+            cancelTitle = cancelButton,
+            isPassword = false,
+            error = null,
+            tag = tag,
+            suffix = suffix
+        )
     }
 
 
@@ -262,17 +295,19 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         Fix SnackBar memory leak
         https://stackoverflow.com/questions/55697904/is-there-a-reason-for-why-accessibilitymanager-sinstance-would-cause-a-memory-leak?
      */
-    protected fun showSnackBar(@StringRes resource: Int): Snackbar {
+    protected fun showSnackBar(@StringRes resource: Int) {
         return showSnackBar(resources.getString(resource))
     }
 
-    protected fun showSnackBar(string: String): Snackbar {
+    protected fun showSnackBar(string: String) {
+        if (view == null) {
+            return
+        }
         val snackbar: Snackbar = UiUtils.getSnackBar(requireView())
         snackbar.setText(string)
         snackbar.setAction(null, null)
         snackbar.show()
         snackBar = snackbar
-        return snackbar
     }
 
     protected fun showSnackBarWithAction(
@@ -343,19 +378,6 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
 
     protected val isLandscape: Boolean
         get() = UiUtils.isLandscape(requireContext())
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            baseActivity = context as BaseActivity
-            addOnDispatchTouchEvent()
-        } catch (e: ClassCastException) {
-            throw RuntimeException(
-                BaseFragment::class.java.simpleName + " - must implement - " +
-                        BaseActivity::class.java.simpleName
-            )
-        }
-    }
 
     /*
     * Keyboard
@@ -437,7 +459,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     * */
     @SuppressLint("MissingPermission")
     protected fun showCameraActivity(name: String) {
-        mCameraUri = ActivitiesUtils.showCamera(this, BaseActivity.REQUEST_ACTIVITY_CAMERA, name)
+        cameraUri = ActivitiesUtils.showCamera(this, BaseActivity.REQUEST_ACTIVITY_CAMERA, name)
     }
 
     @SuppressLint("MissingPermission")

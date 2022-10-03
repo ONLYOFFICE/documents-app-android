@@ -1,9 +1,8 @@
 package app.editors.manager.ui.compose.fragments.main
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -18,6 +17,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.editors.manager.managers.utils.BiometricsUtils
+import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.compose.base.Spacer
 import app.editors.manager.viewModels.main.PasscodeLockState
 import app.editors.manager.viewModels.main.SetPasscodeViewModel
@@ -34,7 +35,6 @@ sealed class KeyboardLastRow {
 private const val MAX_PASSCODE_LENGTH = 4
 private const val KEYBOARD_COLUMN_VALUE = 3
 
-@ExperimentalFoundationApi
 @Composable
 fun PasscodeOperation(
     viewModel: SetPasscodeViewModel,
@@ -43,9 +43,9 @@ fun PasscodeOperation(
     isEnterCodeFragment: Boolean = false,
     isConfirmCode: Boolean = true,
     onEnterCode: (Int) -> Unit,
-    onState: ((PasscodeLockState) -> Unit)? = null
+    onState: ((PasscodeLockState) -> Unit)? = null,
 ) {
-    val keyboard = (1..9).map { it.toString() }
+    val keyboard = (1..9)
 
     val lastRow: List<KeyboardLastRow> = listOf(
         KeyboardLastRow.FingerprintImage,
@@ -88,7 +88,14 @@ fun PasscodeOperation(
 
         Spacer(size = dimensionResource(id = R.dimen.default_margin_xxlarge))
 
-        LazyVerticalGrid(cells = GridCells.Fixed(MAX_PASSCODE_LENGTH)) {
+        val margins = if (UiUtils.isTablet(LocalContext.current)) 128.dp else 32.dp
+
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             items(MAX_PASSCODE_LENGTH) {
                 if (!isError) {
                     if (it <= codeCount) {
@@ -116,41 +123,58 @@ fun PasscodeOperation(
 
         Spacer(size = dimensionResource(id = R.dimen.passcode_keyboard_margin))
 
-        LazyVerticalGrid(cells = GridCells.Fixed(KEYBOARD_COLUMN_VALUE)) {
-            items(keyboard.size) {
-                Button(
-                    onClick = {
-                        onEnterCode.invoke(it + 1)
-                    },
-                    colors = ButtonDefaults.textButtonColors(
-                        backgroundColor = Color.Transparent
-                    ),
-                    enabled = !isError,
-                    elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-                    modifier = Modifier
-                        .padding(bottom = dimensionResource(id = R.dimen.default_margin_xlarge))
-                        .width(68.dp)
-                        .height(58.dp)
-                ) {
-                    Text(
-                        text = keyboard[it],
-                        fontSize = 20.sp,
-                        color = MaterialTheme.colors.onBackground
-                    )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            items(keyboard.chunked(KEYBOARD_COLUMN_VALUE)) { rowItem ->
+                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                    for (number in rowItem) {
+                        Button(
+                            onClick = {
+                                onEnterCode.invoke(number + 1)
+                            },
+                            colors = ButtonDefaults.textButtonColors(
+                                backgroundColor = Color.Transparent
+                            ),
+                            enabled = !isError,
+                            elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
+                            modifier = Modifier
+                                .padding(bottom = dimensionResource(id = R.dimen.default_margin_xlarge))
+                                .width(68.dp)
+                                .height(58.dp)
+                        ) {
+                            Text(
+                                text = "$number",
+                                fontSize = 20.sp,
+                                color = MaterialTheme.colors.onBackground
+                            )
+                        }
+                    }
+
                 }
             }
         }
 
-        LazyVerticalGrid(cells = GridCells.Fixed(KEYBOARD_COLUMN_VALUE)) {
+
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp), horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             items(lastRow) { item ->
                 when (item) {
                     KeyboardLastRow.FingerprintImage -> {
-                        if (fingerprintState == true && isEnterCodeFragment) {
+                        if (fingerprintState == true && isEnterCodeFragment && BiometricsUtils.isFingerprintsExist(LocalContext.current as PasscodeActivity)) {
                             IconButton(onClick = { viewModel.openBiometricDialog() }, enabled = !isError) {
                                 Icon(
                                     painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
                                     contentDescription = "fingerprint_icon",
-                                    tint = MaterialTheme.colors.primary
+                                    tint = MaterialTheme.colors.primary,
+                                    modifier = Modifier
+                                        .width(68.dp)
+                                        .height(58.dp)
                                 )
                             }
                         }
@@ -165,7 +189,11 @@ fun PasscodeOperation(
                             Icon(
                                 painter = painterResource(id = app.editors.manager.R.drawable.ic_backspace),
                                 contentDescription = "backspace_icon",
-                                tint = MaterialTheme.colors.onBackground
+                                tint = MaterialTheme.colors.onBackground,
+                                modifier = Modifier
+                                    .width(68.dp)
+                                    .height(58.dp)
+
                             )
                         }
                     }
@@ -180,7 +208,10 @@ fun PasscodeOperation(
                             ),
                             elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
                             modifier = Modifier
-                                .padding(bottom = dimensionResource(id = R.dimen.default_margin_xlarge))
+                                .padding(
+                                    bottom = dimensionResource(id = R.dimen.default_margin_xlarge),
+                                    start = if (fingerprintState == false || !isEnterCodeFragment) 68.dp else 0.dp
+                                )
                                 .width(68.dp)
                                 .height(58.dp)
                         ) {

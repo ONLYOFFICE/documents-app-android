@@ -67,6 +67,7 @@
 
     <style name="DialogCommonTheme" parent="NoActionBarTheme">
         <item name="android:windowIsTranslucent">true</item>
+        <item name="elevationOverlayEnabled">false</item>
     </style>
 
     <style name="MediaTheme" parent="NoActionBarTheme">
@@ -84,6 +85,37 @@
 
     <style name="SearchViewEditHint" parent="SearchViewEdit">
         <item name="defaultQueryHint">@string/toolbar_menu_search_hint</item>
+    </style>
+
+    <style name="SearchViewTextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <!-- ======================================================================================= -->
+    <!-- Filter views -->
+
+    <style name="FilterChip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/color_filter_chip_text_selector</item>
+        <item name="chipMinTouchTargetSize">0dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="chipBackgroundColor">@color/color_filter_chip_selector</item>
+        <item name="chipStrokeWidth">0.5dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="chipStrokeColor">@color/color_filter_chip_border_selector</item>
+    </style>
+
+    <style name="FilterChip.Closable">
+        <item name="closeIconEnabled">true</item>
+        <item name="closeIconTint">@color/colorWhite</item>
+        <item name="closeIconVisible">false</item>
+        <item name="android:textColor">@color/color_filter_chip_text_author_selector</item>
+    </style>
+
+    <style name="FilterTitleTextAppearance" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
     </style>
 
     <!-- ======================================================================================= -->
@@ -423,6 +455,7 @@
 
     <style name="MainToolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
         <item name="colorOnPrimary">@color/colorPrimary</item>
+        <item name="elevationOverlayEnabled">false</item>
     </style>
 
     <style name="AccentButton" parent="Widget.MaterialComponents.Button">
@@ -447,5 +480,16 @@
         <item name="android:ellipsize">end</item>
         <item name="android:padding">0dp</item>
     </style>
+
+    <style name="DialogTextInputLayout">
+        <item name="boxBackgroundColor">@color/colorSurface</item>
+    </style>
+
+    <style name="MainPopupAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_in</item>
+        <item name="android:windowExitAnimation">@anim/popup_out</item>
+    </style>
+    
+    
 
 </resources>

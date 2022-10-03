@@ -8,9 +8,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.text.TextUtils
 import android.util.Log
 import androidx.core.content.ContextCompat.getExternalFilesDirs
+import lib.toolkit.base.BuildConfig
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import java.io.File
@@ -50,9 +50,9 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         private const val ASSETS_TEMPLATES = "templates"
 
-        private const val MIME_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        private const val MIME_TYPE_PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        private const val MIME_TYPE_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        const val MIME_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        const val MIME_TYPE_PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        const val MIME_TYPE_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
         private const val URI_KEY = "external"
 
@@ -76,28 +76,32 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         fun getDir(context: Context): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-                "${context.filesDir.path}/Onlyoffice"
+                "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
             } else {
-                "${Environment.getExternalStorageDirectory().absolutePath}/OnlyOffice"
+                "${Environment.getExternalStorageDirectory().absolutePath}/${BuildConfig.ROOT_FOLDER}"
             }
         }
 
     }
 
-    private val mContentResolver: ContentResolver = context.contentResolver
-    private val mUri: Uri = MediaStore.Files.getContentUri(URI_KEY)
-    private lateinit var mRootDir: File
+    private val contentResolver: ContentResolver = context.contentResolver
+    private val uri: Uri = MediaStore.Files.getContentUri(URI_KEY)
+    private lateinit var rootDir: File
 
     fun createRootDir(): File {
         val rootDir = File(getDir(context))
+        if (rootDir.exists()) {
+            this.rootDir = rootDir
+            return rootDir
+        }
         if (!rootDir.exists() && rootDir.mkdirs()) {
             addSamples(rootDir)
         }
-        mRootDir = rootDir
+        this.rootDir = rootDir
         return rootDir
     }
 
-    fun getRootDir(): File = mRootDir
+    fun getRootDir(): File = rootDir
 
     private fun addSamples(rootDir: File) {
         val samplesName = context.assets.list("samples")
@@ -172,7 +176,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
     }
 
     fun getFiles(): List<File> {
-        mRootDir.listFiles()?.let { list ->
+        rootDir.listFiles()?.let { list ->
             return list.asList().sortedBy { it.name }
         }
         return emptyList()
@@ -225,7 +229,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     private fun getAllFiles(): List<File> {
         val files = ArrayList<File>()
-        mContentResolver.query(mUri,
+        contentResolver.query(uri,
             arrayOf(MediaStore.Files.FileColumns.DATA),
             MediaStore.Files.FileColumns.MIME_TYPE + " =? OR " + MediaStore.Files.FileColumns.MIME_TYPE + " =? OR " + MediaStore.Files.FileColumns.MIME_TYPE + " =?",
             arrayOf(
@@ -247,9 +251,10 @@ class LocalContentTools @Inject constructor(val context: Context) {
         return getAllFiles().sortedBy { it.lastModified() }
     }
 
+    @SuppressLint("Range")
     fun getIdByPath(path: String): Int {
         var id = 0
-        mContentResolver.query(mUri, arrayOf(MediaStore.Files.FileColumns._ID),
+        contentResolver.query(uri, arrayOf(MediaStore.Files.FileColumns._ID),
             MediaStore.Files.FileColumns.DATA + " =? ",
             arrayOf(path), null)?.use {
             while (it.moveToNext()) {
@@ -288,7 +293,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     fun deleteFile(file: File): Boolean {
         var isDelete = false
-        mContentResolver.delete(mUri, MediaStore.Files.FileColumns.DATA + " =? ", arrayOf(file.absolutePath))
+        contentResolver.delete(uri, MediaStore.Files.FileColumns.DATA + " =? ", arrayOf(file.absolutePath))
         if (file.exists()) {
             isDelete = if (file.isDirectory) {
                 file.deleteRecursively()
