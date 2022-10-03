@@ -61,7 +61,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 398
+        versionCode = 403
         versionName = "5.5.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -151,6 +151,8 @@ android {
 
         //Tasks
         manifestPlaceholders["tasks"] = keystoreProperties["CUSTOM_TASKS"] as String? ?: ""
+
+        buildConfigField("String", "PUSH_SCHEME","\"" + "oodocuments" + "\"" )
     }
 
     splits {

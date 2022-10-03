@@ -487,5 +487,37 @@
     <string name="app_settings_follow_the_system">Как в системе</string>
     <string name="app_settings_light_theme">Светлая тема</string>
     <string name="app_settings_dark_theme">Темная тема</string>
+    <string name="errors_import_local_file_desc">В доступе отказано</string>
+    <string name="errors_import_local_file">Доступ запрещен. Предоставьте права на чтение и запись</string>
+    <string name="errors_first_name">Некорректное имя</string>
+    <string name="errors_last_name">Некорректная фамилия</string>
+    <string name="navigation_drawer_menu_sign_in">Вход</string>
+    <string name="toolbar_menu_search_view_hint">Введите запрос</string>
+    <string name="toolbar_menu_sort_date_modified">Дата</string>
+    <string name="toolbar_menu_main_filter">Фильтр</string>
+    <string name="list_context_open_location">Открыть папку</string>
+    <string name="placeholder_loading_users">Загрузка пользователей…</string>
+    <string name="placeholder_loading_groups">Загрузка групп…</string>
+    <string name="krdive_password_helper_text">Если вы активировали двухфакторную аутентификацию, пожалуйста, установите приложение CDM из учетной записи Infomaniak (Менеджер).</string>
+    <string name="kdrive_info_title">Чтобы воспользоваться этим сервисом, необходимо приобрести платную версию плеера.</string>
+    <string name="storage_email_connection">Подключение по Email</string>
+    <string name="dialog_remove_account_title">Удалить с устройства</string>
+    <string name="app_settings_disabled">Отключено</string>
+    <string name="app_settings_enabled">Включено</string>
+    <string name="filter_toolbar_title">Фильтры</string>
+    <string name="filter_toolbar_users_title">Выбрать пользователя</string>
+    <string name="filter_toolbar_groups_title">Выбрать группу</string>
+    <string name="filter_title_author">Автор</string>
+    <string name="filter_title_search">Поиск</string>
+    <string name="filter_type_documents">Документы</string>
+    <string name="filter_type_presentations">Презентации</string>
+    <string name="filter_type_spreadsheets">Таблицы</string>
+    <string name="filter_type_images">Изображения</string>
+    <string name="filter_type_media">Медиа</string>
+    <string name="filter_type_archives">Архивы</string>
+    <string name="filter_type_all">Все файлы</string>
+    <string name="filter_exclude_subfolders">Без подпапок</string>
+    <string name="filter_show_results">Показать %1$s результатов</string>
+    <string name="filter_button_reset">СБРОС</string>
 
 </resources>
