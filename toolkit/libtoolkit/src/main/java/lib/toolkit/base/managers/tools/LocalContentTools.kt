@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.ContextCompat.getExternalFilesDirs
+import lib.toolkit.base.BuildConfig
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import java.io.File
@@ -75,9 +76,9 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         fun getDir(context: Context): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-                "${context.filesDir.path}/Onlyoffice"
+                "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
             } else {
-                "${Environment.getExternalStorageDirectory().absolutePath}/OnlyOffice"
+                "${Environment.getExternalStorageDirectory().absolutePath}/${BuildConfig.ROOT_FOLDER}"
             }
         }
 
@@ -376,20 +377,6 @@ class LocalContentTools @Inject constructor(val context: Context) {
         } else {
             false
         }
-    }
-
-    fun getFontsDir(): String {
-        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-            "${context.filesDir.path}/Fonts"
-        } else {
-            "${Environment.getExternalStorageDirectory().absolutePath}/Fonts"
-        }
-        val folder = File(path)
-        if (!folder.exists()) {
-            folder.mkdir()
-        }
-        return path
-
     }
 
 }

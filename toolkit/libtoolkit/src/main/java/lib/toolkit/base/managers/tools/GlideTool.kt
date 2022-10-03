@@ -37,6 +37,10 @@ class GlideTool @Inject constructor(private val context: Context) {
         load(into, url, getOptions(Scale.NONE, isSkipCache, null, null, size), Bitmap::class.java, listener)
     }
 
+    fun load(url: String): ByteArray? {
+        return Glide.with(context).`as`(ByteArray::class.java).load(url).submit().get()
+    }
+
     fun loadCrop(into: ImageView, url: Any, isSkipCache: Boolean, @DrawableRes placeholder: Int, @DrawableRes error: Int) {
         load(into, url, getOptions(Scale.CIRCLE, isSkipCache, placeholder, error, null), Bitmap::class.java, null)
     }

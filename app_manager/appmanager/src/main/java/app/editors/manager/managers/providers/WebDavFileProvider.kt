@@ -22,6 +22,7 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import lib.toolkit.base.BuildConfig
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getName
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getSize
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
@@ -49,7 +50,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     companion object {
         private const val TOTAL_PROGRESS = 100
         private const val PATH_TEMPLATES = "templates/"
-        private val PATH_DOWNLOAD = Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice"
+        private val PATH_DOWNLOAD = Environment.getExternalStorageDirectory().absolutePath + "/${BuildConfig.ROOT_FOLDER}"
     }
 
     private var batchItems: List<Item>? = null

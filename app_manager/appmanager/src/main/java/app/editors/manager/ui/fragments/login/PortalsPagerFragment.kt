@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -55,15 +56,18 @@ class PortalsPagerFragment : BaseAppFragment() {
     }
 
     private val fragments: List<ViewPagerAdapter.Container> by lazy {
-        arrayListOf(
-            ViewPagerAdapter.Container(
-                EnterprisePortalFragment.newInstance(),
-                getString(R.string.login_pager_enterprise)
-            ), ViewPagerAdapter.Container(
+        val list = arrayListOf<ViewPagerAdapter.Container>()
+        list.add(ViewPagerAdapter.Container(
+            EnterprisePortalFragment.newInstance(),
+            getString(R.string.login_pager_enterprise)
+        ))
+        if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
+            list.add(ViewPagerAdapter.Container(
                 PersonalPortalFragment.newInstance(),
                 getString(R.string.login_pager_personal)
-            )
-        )
+            ))
+        }
+        return@lazy list
     }
 
 }

@@ -272,7 +272,8 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
             }
         }
         viewBinding?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
-            viewBinding?.loginPersonalSigninButton?.isEnabled = isChecked
+            viewBinding?.loginPersonalSigninButton?.isEnabled =
+                isChecked && viewBinding?.loginPersonalPortalEmailEdit?.text?.isNotEmpty() == true && viewBinding?.loginPersonalPortalPasswordEdit?.text?.isNotEmpty() == true
         }
         viewBinding?.socialNetworkLayout?.loginSocialGoogleButton?.isVisible = GoogleUtils.isGooglePlayServicesAvailable(requireContext())
     }
@@ -309,7 +310,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
             viewBinding?.loginPersonalPortalEmailLayout?.isErrorEnabled = false
             val email = viewBinding?.loginPersonalPortalEmailEdit?.text.toString()
             val password = viewBinding?.loginPersonalPortalPasswordEdit?.text.toString()
-            viewBinding?.loginPersonalSigninButton?.isEnabled = "" != email && "" != password
+            viewBinding?.loginPersonalSigninButton?.isEnabled = "" != email && "" != password && viewBinding?.termsCheckbox?.isChecked == true
         }
     }
 }
