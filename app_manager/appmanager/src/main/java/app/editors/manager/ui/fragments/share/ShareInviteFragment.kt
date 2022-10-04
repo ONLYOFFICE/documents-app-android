@@ -2,17 +2,16 @@ package app.editors.manager.ui.fragments.share
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import app.documents.core.network.models.share.request.RequestInviteLink
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -21,10 +20,12 @@ import app.editors.manager.databinding.ShareInviteFragmentLayoutBinding
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.ui.activities.main.ShareActivity
 import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import lib.toolkit.base.ui.fragments.base.BaseFragment
 
 
@@ -41,6 +42,8 @@ class ShareInviteFragment : BaseFragment() {
     }
 
     private var shareActivity: ShareActivity? = null
+
+    private val currentTags: ArrayList<String> by lazy { arrayListOf() }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -67,7 +70,51 @@ class ShareInviteFragment : BaseFragment() {
         setActionBarTitle(getString(R.string.share_invite_user))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
-        loadTagsUi(arrayListOf())
+        loadTagsUi()
+        initListeners()
+        lifecycleScope.launch {
+            viewModel.state.collect { state ->
+                updateUi(state)
+            }
+        }
+    }
+
+    private fun updateUi(state: InviteUserState) {
+        when (state) {
+            is InviteUserState.Loading -> {
+                viewBinding?.progressBar?.isVisible = true
+                viewBinding?.sharePanelLayout?.sharePanelAddButton?.isEnabled = false
+            }
+            is InviteUserState.Success -> {
+                viewBinding?.progressBar?.isVisible = false
+                viewBinding?.sharePanelLayout?.sharePanelAddButton?.isEnabled = true
+            }
+            is InviteUserState.Error -> {
+                showSnackBar(state.message)
+            }
+            else -> {}
+        }
+    }
+
+    private fun initListeners() {
+        viewBinding?.sharePanelLayout?.sharePanelAddButton?.setOnClickListener {
+            if (getEmails().isEmpty()) {
+//                viewBinding?.emailCompleteTextView?.error = getString(R.string.share_invite_error_empty)
+                return@setOnClickListener
+            }
+
+            viewModel.inviteUsers(getEmails())
+
+        }
+        viewBinding?.sharePanelLayout?.inviteResetButton?.setOnClickListener {
+            removeTags()
+        }
+    }
+
+    private fun removeTags() {
+        viewBinding?.chipGroup?.removeAllViews()
+        currentTags.clear()
+        updateCounter()
     }
 
     private fun getEmails(): List<String> {
@@ -81,16 +128,8 @@ class ShareInviteFragment : BaseFragment() {
         return emails
     }
 
-    private fun loadTagsUi(currentTags: MutableList<String>) {
-        val chipGroup = checkNotNull(viewBinding?.chipGroup)
+    private fun loadTagsUi() {
         val autoCompleteTextView = checkNotNull(viewBinding?.emailCompleteTextView)
-
-        fun addTag(name: String) {
-            if (name.isNotEmpty() && !currentTags.contains(name)) {
-                addChipToGroup(name, chipGroup, currentTags)
-                currentTags.add(name)
-            }
-        }
 
         // done keyboard button is pressed
         autoCompleteTextView.setOnEditorActionListener { textView, actionId, _ ->
@@ -119,22 +158,37 @@ class ShareInviteFragment : BaseFragment() {
 
         // initialize
         for (tag in currentTags) {
-            addChipToGroup(tag, chipGroup, currentTags)
+            addChipToGroup(tag, currentTags)
         }
     }
 
-    private fun addChipToGroup(name: String, chipGroup: ChipGroup, items: MutableList<String>) {
+    private fun addTag(name: String) {
+        if (name.isNotEmpty() && !currentTags.contains(name)) {
+            addChipToGroup(name, currentTags)
+            currentTags.add(name)
+        }
+    }
+
+    private fun addChipToGroup(name: String, items: MutableList<String>) {
         val chip = Chip(context).apply {
             text = name
             isCheckable = false
             isCloseIconVisible = true
         }
-        chipGroup.addView(chip)
+        viewBinding?.chipGroup?.addView(chip)
 
         chip.setOnCloseIconClickListener {
-            chipGroup.removeView(chip)
+            viewBinding?.chipGroup?.removeView(chip)
             items.remove(name)
+            currentTags.remove(name)
+            updateCounter()
         }
+        updateCounter()
+    }
+
+    private fun updateCounter() {
+        val count = viewBinding?.chipGroup?.childCount ?: 0
+        viewBinding?.sharePanelLayout?.sharePanelCountSelectedText?.text = "$count"
     }
 
     companion object {
@@ -161,11 +215,21 @@ class InviteUserViewModelFactory(private val item: Item) : ViewModelProvider.Fac
     }
 }
 
-class InviteUserViewModel(private val item: Item): ViewModel() {
+sealed class InviteUserState {
+    object None : InviteUserState()
+    object Loading : InviteUserState()
+    object Success : InviteUserState()
+    data class Error(val message: String) : InviteUserState()
+}
+
+class InviteUserViewModel(private val item: Item) : ViewModel() {
 
     private val shareApi = App.getApp().getShareApi()
 
     private var disposable: Disposable? = null
+
+    private val _state: MutableStateFlow<InviteUserState> = MutableStateFlow(InviteUserState.None)
+    val state: StateFlow<InviteUserState> = _state
 
     override fun onCleared() {
         super.onCleared()
@@ -173,14 +237,21 @@ class InviteUserViewModel(private val item: Item): ViewModel() {
     }
 
     fun inviteUsers(emails: List<String>) {
+        _state.value = InviteUserState.Loading
         disposable = shareApi.sendInviteLink(item.id, RequestInviteLink(emails, 1, 1))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Log.d("InviteUserViewModel", "inviteUsers: $it")
+                _state.value = InviteUserState.Success
             }, {
-                Log.d("InviteUserViewModel", "inviteUsers: $it")
+                _state.value = InviteUserState.Error(it.message ?: "Error")
             })
     }
 
 }
+
+//public enum EmployeeType {
+//    All = 0,
+//    User = 1,
+//    Visitor = 2
+//}

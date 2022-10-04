@@ -88,11 +88,11 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         viewBinding = FragmentShareSettingsListBinding.inflate(inflater, container, false)
         headerBinding = viewBinding?.shareSettingsHeader
         popupBinding = headerBinding?.shareSettingsAccessButtonLayout
-        return viewBinding?.root!!
+        return viewBinding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -420,7 +420,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                     ?: StringUtils.getFormExtension(ext)
             }
             popup.showDropAt(
-                headerBinding?.shareSettingsAccessButtonLayout?.root!!,
+                checkNotNull(headerBinding?.shareSettingsAccessButtonLayout?.root),
                 requireActivity()
             )
         }
