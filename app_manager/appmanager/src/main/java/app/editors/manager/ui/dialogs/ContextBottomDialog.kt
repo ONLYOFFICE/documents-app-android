@@ -249,11 +249,18 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun setRoomState() {
         viewBinding?.let { binding ->
-            binding.listExplorerContextArchive.isVisible = true
-            binding.listExplorerContextRename.isVisible = true
-            binding.listExplorerContextPin.isVisible = true
-            binding.listExplorerContextAddUser.isVisible = true
-            binding.viewLineSeparatorDelete.root.isVisible = true
+            if (!state.isTrash) {
+                binding.listExplorerContextArchive.isVisible = true
+                binding.listExplorerContextRename.isVisible = true
+                binding.listExplorerContextPin.isVisible = true
+                binding.listExplorerContextAddUser.isVisible = true
+                binding.listExplorerContextDelete.isVisible = true
+                binding.viewLineSeparatorDelete.root.isVisible = true
+                if (state.isPin) binding.listExplorerContextPinText.setText(R.string.list_context_unpin)
+            } else {
+                binding.listExplorerContextRestoreText.setText(R.string.context_room_unarchive)
+                setTrashState()
+            }
         }
     }
 
@@ -358,6 +365,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextShareDelete.setOnClickListener(Buttons.SHARE_DELETE)
             it.listExplorerContextFavorite.setOnClickListener(Buttons.FAVORITE)
             it.listExplorerContextRestore.setOnClickListener(Buttons.RESTORE)
+            it.listExplorerContextArchive.setOnClickListener(Buttons.ARCHIVE)
             it.listExplorerContextPin.setOnClickListener(Buttons.PIN)
         }
     }

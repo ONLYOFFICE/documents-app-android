@@ -9,8 +9,23 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorSurface"
+        android:background="@drawable/drawable_bottom_sheet_fragment"
         android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:padding="@dimen/default_margin_medium">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:tint="@color/colorOnSurface"
+                android:src="@drawable/ic_bottom_divider" />
+
+        </FrameLayout>
 
         <RelativeLayout
             android:id="@+id/list_explorer_context_folder_name"
@@ -270,6 +285,24 @@
                     android:layout_marginBottom="@dimen/line_separator_group_bottom"
                     android:visibility="gone" />
 
+
+                <LinearLayout
+                    android:id="@+id/list_explorer_context_archive"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/list_explorer_context_archive_image"
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_room_archive"
+                        tools:ignore="ContentDescription" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/list_explorer_context_text"
+                        style="@style/ContextListMediumText"
+                        android:text="@string/context_room_archive" />
+                </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/list_explorer_context_restore"
                     style="@style/ContextListLayout"
@@ -301,23 +334,6 @@
                         android:id="@+id/list_explorer_context_delete_text"
                         style="@style/ContextListMediumText"
                         android:text="@string/list_context_delete" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/list_explorer_context_archive"
-                    style="@style/ContextListLayout"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:id="@+id/list_explorer_context_archive_image"
-                        style="@style/ContextListImage"
-                        app:srcCompat="@drawable/ic_room_archive"
-                        tools:ignore="ContentDescription" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/list_explorer_context_text"
-                        style="@style/ContextListMediumText"
-                        android:text="@string/context_room_archive" />
                 </LinearLayout>
 
                 <LinearLayout

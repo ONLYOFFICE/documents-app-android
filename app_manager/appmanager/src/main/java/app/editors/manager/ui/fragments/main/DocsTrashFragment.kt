@@ -11,7 +11,6 @@ import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.views.popup.TrashPopup
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
@@ -44,19 +43,14 @@ class DocsTrashFragment: DocsCloudFragment() {
     }
 
     override fun onItemClick(view: View, position: Int) {
-        TrashPopup(requireContext(), R.layout.popup_trash_menu).apply {
-            setContextListener { _, trashPopup ->
-                trashPopup.hide()
-            }
-            setMoveTitle(getString(R.string.device_trash_files_restore))
-        }.showDropAt(view, requireActivity())
+        onItemContextClick(view, position)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (isResumed) {
             emptyTrashItem = menu.findItem(R.id.toolbar_item_empty_trash)
-            emptyTrashItem?.isVisible = isEmptyTrashVisible
+            emptyTrashItem?.isVisible = isEmptyTrashVisible && section != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
             showMenu()
         }
     }
@@ -84,7 +78,7 @@ class DocsTrashFragment: DocsCloudFragment() {
     override fun setMenuMainEnabled(isEnabled: Boolean) {
         super.setMenuMainEnabled(isEnabled)
         isEmptyTrashVisible = isEnabled
-        emptyTrashItem?.isVisible = isEmptyTrashVisible
+        emptyTrashItem?.isVisible = isEmptyTrashVisible && section != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
         searchItem?.isVisible = isEnabled
     }
 
@@ -118,7 +112,13 @@ class DocsTrashFragment: DocsCloudFragment() {
                 getString(R.string.dialogs_common_cancel_button),
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
-            ContextBottomDialog.Buttons.RESTORE -> cloudPresenter.moveContext()
+            ContextBottomDialog.Buttons.RESTORE -> {
+                if (section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM) {
+                    cloudPresenter.archiveRoom(false)
+                } else {
+                    cloudPresenter.moveContext()
+                }
+            }
             else -> {
             }
         }

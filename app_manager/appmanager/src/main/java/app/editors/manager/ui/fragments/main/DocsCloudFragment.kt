@@ -30,6 +30,7 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.popup.SelectActionBarPopup
+import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -326,6 +327,18 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onStateEmptyBackStack() {
         swipeRefreshLayout?.isRefreshing = true
         cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
+    }
+
+    override fun onArchiveRoom(isArchived: Boolean) {
+        if (isArchived) {
+            onSnackBar(getString(R.string.context_room_archive_message))
+        } else {
+            onSnackBar(getString(R.string.context_room_unarchive_message))
+        }
+        explorerAdapter?.removeItem(presenter.itemClicked)
+        if (explorerAdapter?.itemList?.none { it !is Header } == true) {
+            onPlaceholder(PlaceholderViews.Type.EMPTY)
+        }
     }
 
     private fun getFilters(): Boolean {

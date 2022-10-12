@@ -9,7 +9,6 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
-import app.editors.manager.managers.utils.ManagerUiUtils.setFolderIcon
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
@@ -126,15 +125,7 @@ object ManagerUiUtils {
             this.alpha = 1.0f
             return
         }
-        if (folder.isRoom) {
-            when (folder.roomType) {
-                ApiContract.RoomType.FILLING_FORM_ROOM -> resId = R.drawable.ic_room_fill_forms
-                ApiContract.RoomType.CUSTOM_ROOM -> resId = R.drawable.ic_room_custom
-                ApiContract.RoomType.READ_ONLY_ROOM -> resId = R.drawable.ic_room_view_only
-                ApiContract.RoomType.REVIEW_ROOM -> resId = R.drawable.ic_room_review
-                ApiContract.RoomType.EDITING_ROOM -> resId = R.drawable.ic_room_collaboration
-            }
-        }
+        if (folder.isRoom) resId = getRoomIcon(folder)
         this.setImageResource(resId)
     }
 
@@ -161,16 +152,19 @@ object ManagerUiUtils {
 
             return resId
         }
-        if (folder.isRoom) {
-            when (folder.roomType) {
-                ApiContract.RoomType.FILLING_FORM_ROOM -> resId = R.drawable.ic_room_fill_forms
-                ApiContract.RoomType.CUSTOM_ROOM -> resId = R.drawable.ic_room_custom
-                ApiContract.RoomType.READ_ONLY_ROOM -> resId = R.drawable.ic_room_view_only
-                ApiContract.RoomType.REVIEW_ROOM -> resId = R.drawable.ic_room_review
-                ApiContract.RoomType.EDITING_ROOM -> resId = R.drawable.ic_room_collaboration
-            }
-        }
+        if (folder.isRoom) resId = getRoomIcon(folder)
         return resId
+    }
+
+    fun getRoomIcon(folder: CloudFolder): Int {
+        return when (folder.roomType) {
+            ApiContract.RoomType.FILLING_FORM_ROOM -> R.drawable.ic_room_fill_forms
+            ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_room_custom
+            ApiContract.RoomType.READ_ONLY_ROOM -> R.drawable.ic_room_view_only
+            ApiContract.RoomType.REVIEW_ROOM -> R.drawable.ic_room_review
+            ApiContract.RoomType.EDITING_ROOM -> R.drawable.ic_room_collaboration
+            else -> throw IllegalArgumentException("No this type of room")
+        }
     }
 
     fun setAccessIcon(imageView: ImageView, accessCode: Int) {

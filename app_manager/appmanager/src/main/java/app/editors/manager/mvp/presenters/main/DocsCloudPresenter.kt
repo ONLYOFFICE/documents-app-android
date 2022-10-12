@@ -19,6 +19,7 @@ import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListene
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
@@ -47,7 +48,7 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
-import java.util.*
+import java.util.Date
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
@@ -256,28 +257,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isOneDrive = false
         state.isGoogleDrive = false
         state.isDropBox = false
-        state.isTrash = currentSectionType == ApiContract.SectionType.CLOUD_TRASH
+        state.isTrash = isTrashSection
         state.isFavorite = isClickedItemFavorite
         state.isPersonalAccount = account.isPersonal()
-        if (!isClickedItemFile) {
-            if ((itemClicked as CloudFolder).providerKey.isEmpty()) {
-                state.iconResId = R.drawable.ic_type_folder
-            } else {
-                state.iconResId = StorageUtils.getStorageIcon((itemClicked as CloudFolder).providerKey)
-            }
-        } else {
-            state.iconResId = getIconContext(
-                StringUtils.getExtensionFromPath(
-                    itemClickedTitle
-                )
-            )
-        }
         state.isPdf = isPdf
-        if (state.isShared && state.isFolder) {
-            state.iconResId = R.drawable.ic_type_folder_shared
-        }
         state.isRoom = item is CloudFolder && item.isRoom
         state.isPin = item is CloudFolder && item.pinned
+        state.iconResId = when (val item = itemClicked) {
+            is CloudFolder -> when {
+                item.providerKey.isNotEmpty() -> StorageUtils.getStorageIcon(item.providerKey)
+                item.isRoom -> ManagerUiUtils.getRoomIcon(itemClicked as CloudFolder)
+                else -> if (item.shared) R.drawable.ic_type_folder_shared else R.drawable.ic_type_folder
+            }
+            else -> getIconContext(StringUtils.getExtensionFromPath(itemClickedTitle))
+        }
         viewState.onItemContext(state)
     }
 
@@ -682,6 +675,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val isBunchSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_BUNCH
 
+    private val isTrashSection: Boolean
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_TRASH ||
+                currentSectionType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
+
     private val isRoom: Boolean
         get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM
 
@@ -720,29 +717,35 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onDownloadActivity(uri)
     }
 
-    fun archiveRoom() {
+    fun archiveRoom(isArchive: Boolean = true) {
         roomProvider?.let {
             disposable.add(
-                it.archiveRoom(itemClicked?.id ?: "").subscribe({
-                    viewState.onSnackBar("Done")
-//                    viewState.onDeleteBatch(listOf(itemClicked))
-                }) { throwable: Throwable ->
-                    fetchError(throwable)
-                }
+                it.archiveRoom(itemClicked?.id ?: "", isArchive = isArchive)
+                    .doOnSubscribe { viewState.onSwipeEnable(true) }
+                    .subscribe({ response ->
+                        if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
+                            viewState.onArchiveRoom(isArchive)
+                            viewState.onSwipeEnable(false)
+                        }
+                    }, ::fetchError)
             )
         }
     }
 
     fun pinRoom() {
         roomProvider?.let {
-            disposable.add(
-                it.pinRoom(itemClicked?.id ?: "", !(itemClicked as CloudFolder).pinned).subscribe({
-                    viewState.onSnackBar("Done")
-//                    viewState.onDeleteBatch(listOf(itemClicked))
-                }) { throwable: Throwable ->
-                    fetchError(throwable)
+            itemClicked?.let { folder ->
+                if (folder is CloudFolder) {
+                    disposable.add(
+                        it.pinRoom(folder.id , !folder.pinned)
+                            .doOnSubscribe { viewState.onSwipeEnable(true) }
+                            .subscribe({ response ->
+                            if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
+                                refresh()
+                            }
+                        }, ::fetchError)
+                    )}
                 }
-            )
         }
     }
 

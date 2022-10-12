@@ -14,4 +14,6 @@ public interface DocsCloudView extends DocsBaseView {
     void showMoveCopyDialog(ArrayList<String> names, String action, String title);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onStateUpdateFilterMenu();
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onArchiveRoom(boolean isArchived);
 }

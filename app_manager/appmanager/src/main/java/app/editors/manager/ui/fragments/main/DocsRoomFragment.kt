@@ -77,6 +77,7 @@ class DocsRoomFragment : DocsCloudFragment() {
         }
     }
 
+
     companion object {
 
         fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
