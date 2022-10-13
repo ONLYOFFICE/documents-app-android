@@ -1,11 +1,15 @@
 package app.editors.manager.ui.fragments.main
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.forEach
 import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
 
@@ -39,11 +43,24 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
-
+        return super.showSelectedActionBarMenu(
+            excluded = listOf(
+                SelectActionBarPopup.Move,
+                SelectActionBarPopup.Copy,
+                SelectActionBarPopup.Download
+            )
+        )
     }
 
     override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(excluded = MainActionBarPopup.sortPopupItems)
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.toolbar_selection_archive -> cloudPresenter.archiveSelectedRooms()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun setMenuFilterEnabled(isEnabled: Boolean) {
@@ -59,8 +76,9 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onStateMenuSelection() {
         menuInflater?.inflate(R.menu.docs_select_room, menu)
-        menu?.findItem(R.id.toolbar_selection_archive)?.setVisible(true)?.also {
-            UiUtils.setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
+        menu?.forEach { menuItem ->
+            menuItem.isVisible = true
+            UiUtils.setMenuItemTint(requireContext(), menuItem, lib.toolkit.base.R.color.colorPrimary)
         }
         setAccountEnable(false)
     }

@@ -28,8 +28,14 @@ class MainActionBarPopup(
     object Author : ActionBarPopupItem(R.string.filter_title_author)
 
     companion object {
+        private val selectPopupItems: List<ActionBarPopupItem> = listOf(Select, SelectAll)
+        val sortPopupItems: List<ActionBarPopupItem> = listOf(Date, Title, Type, Size, Author)
+
         private val items: MutableList<ActionBarPopupItem> =
-            mutableListOf(Select, SelectAll, Date, Title, Type, Size, Author)
+            mutableListOf<ActionBarPopupItem>().apply {
+                addAll(selectPopupItems)
+                addAll(sortPopupItems)
+            }
 
         fun getSortPopupItem(sortBy: String?): ActionBarPopupItem {
             return when (sortBy) {
@@ -41,13 +47,14 @@ class MainActionBarPopup(
                 else -> throw NoSuchElementException("There is no such sort type")
             }
         }
+
     }
 
     private var viewBinding: PopupActionBarBinding? = null
 
     init {
         viewBinding = PopupActionBarBinding.inflate(inflater).apply {
-            divider.isVisible = excluded.containsAll(listOf(Select, SelectAll)) != true
+            divider.isVisible = !excluded.containsAll(selectPopupItems) && !excluded.containsAll(sortPopupItems)
             popupMenu.children
                 .filterIsInstance(LinearLayout::class.java)
                 .forEachIndexed { index, view ->

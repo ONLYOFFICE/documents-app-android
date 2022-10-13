@@ -222,10 +222,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(mutableListOf<ActionBarPopupItem>().apply {
-            if (!cloudPresenter.isContextItemEditable) add(SelectActionBarPopup.Move)
-            if (!cloudPresenter.isTrashMode) add(SelectActionBarPopup.Restore)
-            if (cloudPresenter.isTrashMode) add(SelectActionBarPopup.Download)
+        super.showSelectedActionBarMenu(excluded = excluded.toMutableList().apply {
+            if (!cloudPresenter.isTrashMode) {
+                add(SelectActionBarPopup.Restore)
+                if (!cloudPresenter.isContextItemEditable) add(SelectActionBarPopup.Move)
+            }
         })
     }
 
@@ -336,6 +337,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             onSnackBar(getString(R.string.context_room_unarchive_message))
         }
         explorerAdapter?.removeItem(presenter.itemClicked)
+        if (explorerAdapter?.itemList?.none { it !is Header } == true) {
+            onPlaceholder(PlaceholderViews.Type.EMPTY)
+        }
+    }
+
+    override fun onArchiveSelectedRooms(rooms: List<Entity>) {
+        onSnackBar(getString(R.string.context_rooms_archive_message))
+        rooms.forEach { explorerAdapter?.removeItem(it) }
         if (explorerAdapter?.itemList?.none { it !is Header } == true) {
             onPlaceholder(PlaceholderViews.Type.EMPTY)
         }

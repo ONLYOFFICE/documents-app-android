@@ -11,14 +11,19 @@ import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 
 class DocsTrashFragment: DocsCloudFragment() {
 
 
     private var emptyTrashItem: MenuItem? = null
     private var isEmptyTrashVisible = false
+    
+    private val isArchive: Boolean get() = section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         showMenu()
@@ -32,7 +37,7 @@ class DocsTrashFragment: DocsCloudFragment() {
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
         when (tag) {
             DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> {
-                if (isResumed && section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM) {
+                if (isResumed && isArchive) {
                     cloudPresenter.deleteRoom()
                 } else if (isResumed && section == ApiContract.SectionType.CLOUD_TRASH) {
                     super.onAcceptClick(dialogs, value, tag)
@@ -43,7 +48,11 @@ class DocsTrashFragment: DocsCloudFragment() {
     }
 
     override fun onItemClick(view: View, position: Int) {
-        onItemContextClick(view, position)
+        if (presenter.isSelectionMode) {
+            super.onItemClick(view, position)
+        } else {
+            onItemContextClick(view, position)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -113,7 +122,7 @@ class DocsTrashFragment: DocsCloudFragment() {
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
             ContextBottomDialog.Buttons.RESTORE -> {
-                if (section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM) {
+                if (isArchive) {
                     cloudPresenter.archiveRoom(false)
                 } else {
                     cloudPresenter.moveContext()
@@ -140,6 +149,20 @@ class DocsTrashFragment: DocsCloudFragment() {
     override fun onPause() {
         super.onPause()
         cloudPresenter.isTrashMode = false
+    }
+
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(excluded = mutableListOf(
+            SelectActionBarPopup.Move,
+            SelectActionBarPopup.Copy,
+            SelectActionBarPopup.Download
+        ).apply {
+            if (isArchive) add(SelectActionBarPopup.Restore)
+        })
+    }
+
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showMainActionBarMenu(if (isArchive) MainActionBarPopup.sortPopupItems else excluded)
     }
 
     companion object {

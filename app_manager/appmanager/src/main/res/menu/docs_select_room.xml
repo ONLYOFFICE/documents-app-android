@@ -19,6 +19,13 @@
         tools:ignore="MenuTitle" />
 
     <item
+        android:id="@+id/toolbar_selection_delete"
+        android:icon="@drawable/ic_toolbar_delete"
+        android:orderInCategory="10"
+        app:showAsAction="ifRoom"
+        tools:ignore="MenuTitle" />
+
+    <item
         android:id="@+id/toolbar_item_main"
         android:icon="@drawable/ic_toolbar_menu"
         android:orderInCategory="20"

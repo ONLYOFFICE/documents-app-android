@@ -660,6 +660,7 @@
 
     <string name="context_room_archive">Archive</string>
     <string name="context_room_archive_message">Room moved to archive</string>
+    <string name="context_rooms_archive_message">Rooms moved to archive</string>
     <string name="context_room_unarchive">Move from archive</string>
     <string name="context_room_unarchive_message">Room removed from archive</string>
     <string name="list_context_pin_to_top">Pin to top</string>

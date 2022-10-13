@@ -48,7 +48,7 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
-import java.util.Date
+import java.util.*
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
@@ -728,6 +728,21 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             viewState.onSwipeEnable(false)
                         }
                     }, ::fetchError)
+            )
+        }
+    }
+
+    fun archiveSelectedRooms() {
+        roomProvider?.let { provider ->
+            disposable.add(
+                Observable
+                    .zip(modelExplorerStack.selectedFoldersIds.map(provider::archiveRoom)) {}
+                    .doOnSubscribe { viewState.onSwipeEnable(true) }
+                    .subscribe {
+                        viewState.onArchiveSelectedRooms(modelExplorerStack.selectedFolders)
+                        viewState.onSwipeEnable(false)
+                        deselectAll()
+                    }
             )
         }
     }
