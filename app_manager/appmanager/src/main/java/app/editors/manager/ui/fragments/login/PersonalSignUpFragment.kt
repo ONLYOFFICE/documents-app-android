@@ -152,6 +152,10 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
             actionKeyPress(actionId)
         }
 
+        viewBinding?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
+            viewBinding?.loginPersonalSignupButton?.isEnabled = isChecked && viewBinding?.loginPersonalPortalEmailEdit?.text?.isNotEmpty() == true
+        }
+
         viewBinding?.loginPersonalPortalEmailEdit?.addTextChangedListener(fieldsWatcher)
     }
 
@@ -168,12 +172,9 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
 
     private inner class FieldsWatcher : BaseWatcher() {
         override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
-            viewBinding?.loginPersonalPortalEmailLayout?.apply {
-                setErrorTextAppearance(lib.toolkit.base.R.style.TextInputErrorGrey)
-                error = getString(R.string.login_personal_signup_edit_info)
-            }
+            setMessage(R.string.login_personal_signup_edit_info, false)
             val email = viewBinding?.loginPersonalPortalEmailEdit?.text.toString()
-            viewBinding?.loginPersonalSignupButton?.isEnabled = "" != email
+            viewBinding?.loginPersonalSignupButton?.isEnabled = "" != email && viewBinding?.termsCheckbox?.isChecked == true
         }
     }
 }
