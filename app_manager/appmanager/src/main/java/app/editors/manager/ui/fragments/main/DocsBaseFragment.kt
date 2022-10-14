@@ -377,7 +377,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             )
             ActionBottomDialog.Buttons.FOLDER -> showEditDialogCreate(
                 getString(R.string.dialogs_edit_create_folder),
-                "",
+                getString(R.string.dialogs_edit_create_folder),
                 getString(R.string.dialogs_edit_hint),
                 null,
                 DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER,
