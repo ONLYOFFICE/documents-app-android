@@ -81,14 +81,12 @@
             android:name=".ui.activities.login.PortalsActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
-            android:taskAffinity="${tasks}"
             android:launchMode="standard"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".ui.activities.login.SignInActivity"
-            android:launchMode="singleInstance"
-            android:taskAffinity="${tasks}"
+            android:launchMode="singleTask"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateUnchanged">
             <meta-data
@@ -98,10 +96,9 @@
         <activity
             android:name=".ui.activities.main.MainActivity"
             android:exported="true"
-            android:taskAffinity="${tasks}"
             android:filterTouchesWhenObscured="true"
             android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
             android:supportsPictureInPicture="true"
             android:theme="@style/NoActionBarTheme"
@@ -148,7 +145,6 @@
             android:name=".ui.activities.main.ShareActivity"
             android:configChanges="screenSize"
             android:excludeFromRecents="true"
-            android:taskAffinity="${tasks}"
             android:launchMode="singleInstance"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden">
@@ -160,7 +156,6 @@
             android:name=".ui.activities.main.StorageActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
-            android:taskAffinity="${tasks}"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden">
             <meta-data
@@ -170,8 +165,7 @@
         <activity
             android:name=".ui.activities.main.OperationActivity"
             android:excludeFromRecents="true"
-            android:launchMode="singleInstance"
-            android:taskAffinity="${tasks}"
+            android:launchMode="singleTask"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
@@ -184,8 +178,7 @@
             android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation|locale|layoutDirection"
             android:filterTouchesWhenObscured="true"
             android:hardwareAccelerated="true"
-            android:launchMode="singleInstance"
-            android:taskAffinity="${tasks}"
+            android:launchMode="singleTask"
             android:process=":WebViewerActivity"
             android:supportsPictureInPicture="true"
             android:theme="@style/WebViewerActivityStyle"
@@ -200,16 +193,14 @@
             android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation|locale|layoutDirection"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:taskAffinity="${tasks}"
             android:theme="@style/NoActionBarTheme" />
         <activity
             android:name=".ui.activities.main.MediaActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:process=":MediaActivity"
             android:theme="@style/MediaTheme"
-            android:taskAffinity="${tasks}"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -218,9 +209,8 @@
         <activity
             android:name=".ui.activities.main.AboutActivity"
             android:excludeFromRecents="true"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:theme="@style/NoActionBarTheme"
-            android:taskAffinity="${tasks}"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -230,9 +220,8 @@
         <activity
             android:name=".ui.activities.main.PasscodeActivity"
             android:excludeFromRecents="true"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:taskAffinity="${tasks}"
             android:windowSoftInputMode="adjustPan|stateHidden"
             tools:ignore="LockedOrientationActivity">
             <meta-data
@@ -243,7 +232,6 @@
             android:name=".ui.activities.main.OnBoardingActivity"
             android:exported="true"
             android:theme="@style/AppTheme.Launcher"
-            android:taskAffinity="${tasks}"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -258,7 +246,6 @@
             android:name=".ui.activities.login.AuthAppActivity"
             android:launchMode="singleTop"
             android:theme="@style/NoActionBarTheme"
-            android:taskAffinity="${tasks}"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -268,35 +255,29 @@
             android:name=".ui.activities.login.WebDavLoginActivity"
             android:launchMode="singleTop"
             android:theme="@style/NoActionBarTheme"
-            android:taskAffinity="${tasks}"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".ui.activities.main.CloudsActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/NoActionBarTheme"
-            android:taskAffinity="${tasks}"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".ui.activities.main.AccountsActivity"
             android:theme="@style/NoActionBarTheme"
-            android:taskAffinity="${tasks}"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".ui.activities.main.SettingsActivity"
             android:theme="@style/NoActionBarTheme"
-            android:taskAffinity="${tasks}"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".ui.activities.main.FilterActivity"
             android:theme="@style/NoActionBarTheme"
-            android:taskAffinity="${tasks}"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"
             android:exported="true"
-            android:taskAffinity="${tasks}"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTask">
             <intent-filter>
                 <!-- Using a Manifest Placeholder to hide our app key -->
                 <data android:scheme="db-${dropboxKey}" />
