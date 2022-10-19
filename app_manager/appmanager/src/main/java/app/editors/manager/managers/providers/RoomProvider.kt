@@ -5,20 +5,12 @@ import app.documents.core.network.models.room.RequestArchive
 import app.documents.core.network.models.room.RequestCreateRoom
 import app.documents.core.network.models.room.RequestDeleteRoom
 import app.documents.core.network.models.room.RequestRenameRoom
-import app.documents.core.room.RoomApi
+import app.editors.manager.app.RoomApi
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class RoomProvider(
-    private val roomApi: RoomApi
-) {
-
-//    fun getAllRooms(): Observable<Base<>> {
-//        return roomApi.getAllRooms()
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//    }
+class RoomProvider(private val roomApi: RoomApi) {
 
     fun archiveRoom(id: String, isArchive: Boolean = true): Observable<Base> {
         return if (isArchive) {

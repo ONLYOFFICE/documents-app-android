@@ -30,6 +30,7 @@ import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.filter.FilterType
+import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
@@ -52,7 +53,6 @@ import moxy.MvpPresenter
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
-import java.lang.Runnable
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -177,11 +177,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, if (ApiContract.SectionType.isRoom(currentSectionType)) {
-                        mapOf()
-                    } else {
-                        mapOf<String, String>().putFilters()
-                    })
+                    provider.getFiles(id, mapOf<String, String>().putFilters())
                         .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
                 )
@@ -194,15 +190,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         modelExplorerStack.currentId?.let { id ->
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id,
-                        if (ApiContract.SectionType.isRoom(currentSectionType)) {
-                            mapOf(ApiContract.Parameters.ARG_FILTER_VALUE to filteringValue)
-                        } else {
-                            getArgs(
-                                filteringValue
-                            ).putFilters()
-                        }
-                    )
+                    provider.getFiles(id, getArgs(filteringValue).putFilters())
                         .doOnNext { it.filterType = preferenceTool.filter.type }
                         .subscribe({ explorer ->
                             modelExplorerStack.refreshStack(explorer)
@@ -798,8 +786,15 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
                 if (filter.type != FilterType.None || isFilteringMode)
                     put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
-                if (App.getApp().accountOnline?.isPersonal() == false)
-                    put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)
+                if (App.getApp().accountOnline?.isPersonal() == false) {
+                    if (ApiContract.SectionType.isRoom(currentSectionType)) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filter.author.id)
+                    } else {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)
+                    }
+                }
+                if (filter.roomType != RoomFilterType.None)
+                    put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
             })
     }
 

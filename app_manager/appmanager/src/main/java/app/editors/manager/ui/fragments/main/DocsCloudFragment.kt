@@ -266,18 +266,18 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onDocsGet(list: List<Entity>?) {
         super.onDocsGet(list)
-        setMenuFilterEnabled(!ApiContract.SectionType.isRoom(section))
+        setMenuFilterEnabled(true)
     }
 
 
     override fun onDocsRefresh(list: List<Entity>?) {
         super.onDocsRefresh(list)
-        setMenuFilterEnabled(!ApiContract.SectionType.isRoom(section))
+        setMenuFilterEnabled(true)
     }
 
     override fun onDocsFilter(list: List<Entity>?) {
         super.onDocsFilter(list)
-        setMenuFilterEnabled(!ApiContract.SectionType.isRoom(section))
+        setMenuFilterEnabled(true)
     }
 
     protected open fun setMenuFilterEnabled(isEnabled: Boolean) {
@@ -350,14 +350,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    private fun getFilters(): Boolean {
+    protected open fun getFilters(): Boolean {
         val filter = presenter.preferenceTool.filter
         return filter.type != FilterType.None || filter.author.id.isNotEmpty() || filter.excludeSubfolder
     }
 
     private fun showFilter() {
         if (isTablet) {
-            FilterDialogFragment.newInstance(presenter.folderId)
+            FilterDialogFragment.newInstance(presenter.folderId, section)
                 .show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
             requireActivity().supportFragmentManager
                 .setFragmentResultListener(REQUEST_KEY_REFRESH, this) { _, bundle ->
@@ -367,7 +367,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
         } else {
-            filterActivity.launch(FilterActivity.getIntent(this, presenter.folderId))
+            filterActivity.launch(FilterActivity.getIntent(this, presenter.folderId, section))
         }
     }
 

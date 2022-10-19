@@ -4,15 +4,13 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.filter.*
-import app.editors.manager.mvp.presenters.base.BasePresenter
-import app.editors.manager.mvp.views.filter.FilterView
-import io.reactivex.disposables.CompositeDisposable
+import app.editors.manager.mvp.models.filter.FilterAuthor
+import app.editors.manager.mvp.models.filter.FilterType
+import app.editors.manager.mvp.models.filter.isNotEmpty
 
-class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>() {
+class CloudFilterPresenter(private val folderId: String?) : BaseFilterPresenter() {
 
     private var fileProvider: CloudFileProvider? = null
-    private var disposable: CompositeDisposable? = CompositeDisposable()
 
     var filterType: FilterType = FilterType.None
     var filterAuthor: FilterAuthor = FilterAuthor()
@@ -34,32 +32,31 @@ class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>
             }
         }
 
-    val hasFilter: Boolean
+    override val hasFilter: Boolean
         get() = filterAuthor.id.isNotEmpty() || excludeSubfolder || filterType != FilterType.None
 
     init {
         App.getApp().appComponent.inject(this)
         fileProvider = CloudFileProvider()
-        getFilter()
+        loadFilter()
     }
 
-    override fun onDestroy() {
-        disposable?.dispose()
-        super.onDestroy()
-    }
-
-    private fun getFilter() {
+    override fun loadFilter() {
         val filter = preferenceTool.filter
         filterType = filter.type
         excludeSubfolder = filter.excludeSubfolder
         filterAuthor = filter.author
     }
 
-    private fun saveFilter() {
-        preferenceTool.filter = Filter(filterType, filterAuthor, excludeSubfolder)
+    override fun saveFilter() {
+        preferenceTool.filter = preferenceTool.filter.copy(
+            type = filterType,
+            author = filterAuthor,
+            excludeSubfolder = excludeSubfolder
+        )
     }
 
-    fun update(initialCall: Boolean = false) {
+    override fun update(initialCall: Boolean) {
         saveFilter()
         viewState.updateViewState(isChanged = !initialCall)
         disposable?.clear()
@@ -77,7 +74,7 @@ class FilterPresenter(private val folderId: String?) : BasePresenter<FilterView>
         }
     }
 
-    fun reset() {
+    override fun reset() {
         filterType = FilterType.None
         filterAuthor = FilterAuthor()
         excludeSubfolder = false

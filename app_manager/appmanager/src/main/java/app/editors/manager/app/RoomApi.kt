@@ -1,13 +1,21 @@
-package app.documents.core.room
+package app.editors.manager.app
 
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.Base
 import app.documents.core.network.models.room.*
+import app.editors.manager.mvp.models.response.ResponseExplorer
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.http.*
 
 interface RoomApi {
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/")
+    fun getAllRooms(@QueryMap options: Map<String, String>?): Observable<Response<ResponseExplorer>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

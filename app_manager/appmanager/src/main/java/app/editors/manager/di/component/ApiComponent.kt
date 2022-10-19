@@ -1,7 +1,7 @@
 package app.editors.manager.di.component
 
-import app.documents.core.room.RoomApi
 import app.editors.manager.app.Api
+import app.editors.manager.app.RoomApi
 import app.editors.manager.di.module.ApiModule
 import app.editors.manager.di.module.ApiScope
 import dagger.Component

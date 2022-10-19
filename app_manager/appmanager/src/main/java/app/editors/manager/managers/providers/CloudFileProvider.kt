@@ -3,6 +3,7 @@ package app.editors.manager.managers.providers
 import android.net.Uri
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.roomApi
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.request.*
@@ -19,8 +20,10 @@ class CloudFileProvider : BaseFileProvider {
     var api: Api = App.getApp().getApi().api
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        return id?.let {
-            api.getItemById(it, filter)
+        return when (id) {
+            "7" -> getRooms(filter)
+            null -> Observable.create { Explorer() }
+            else -> api.getItemById(id, filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { responseExplorerResponse: Response<ResponseExplorer> ->
@@ -30,7 +33,7 @@ class CloudFileProvider : BaseFileProvider {
                         throw HttpException(responseExplorerResponse)
                     }
                 }
-        } ?: Observable.create { Explorer() }
+        }
     }
 
     override fun search(query: String?): Observable<String>? {
@@ -225,6 +228,19 @@ class CloudFileProvider : BaseFileProvider {
                     return@map responseOperation.body()!!.response
                 } else {
                     throw HttpException(responseOperation)
+                }
+            }
+    }
+
+    private fun getRooms(filters: Map<String, String>?): Observable<Explorer> {
+        return App.getApp().roomApi.getAllRooms(filters)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { responseExplorerResponse: Response<ResponseExplorer> ->
+                if (responseExplorerResponse.isSuccessful && responseExplorerResponse.body() != null) {
+                    return@map responseExplorerResponse.body()?.response
+                } else {
+                    throw HttpException(responseExplorerResponse)
                 }
             }
     }

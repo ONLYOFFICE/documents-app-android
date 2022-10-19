@@ -165,6 +165,10 @@ class DocsTrashFragment: DocsCloudFragment() {
         super.showMainActionBarMenu(if (isArchive) MainActionBarPopup.sortPopupItems else excluded)
     }
 
+    override fun setMenuFilterEnabled(isEnabled: Boolean) {
+        filterItem?.isVisible = !isArchive
+    }
+
     companion object {
 
         fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {

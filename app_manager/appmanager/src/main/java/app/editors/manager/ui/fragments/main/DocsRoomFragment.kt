@@ -2,10 +2,9 @@ package app.editors.manager.ui.fragments.main
 
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.forEach
 import app.editors.manager.R
-import app.editors.manager.mvp.models.filter.Filter
+import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.MainActionBarPopup
@@ -63,17 +62,6 @@ class DocsRoomFragment : DocsCloudFragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun setMenuFilterEnabled(isEnabled: Boolean) {
-        filterItem?.isVisible = false
-        filterItem?.isEnabled = false
-        presenter.preferenceTool.filter = Filter()
-        onStateUpdateFilterMenu()
-    }
-
-    override fun onStateUpdateFilterMenu() {
-        filterItem?.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_toolbar_filter_disable)
-    }
-
     override fun onStateMenuSelection() {
         menuInflater?.inflate(R.menu.docs_select_room, menu)
         menu?.forEach { menuItem ->
@@ -95,6 +83,10 @@ class DocsRoomFragment : DocsCloudFragment() {
         }
     }
 
+    override fun getFilters(): Boolean {
+        val filter = presenter.preferenceTool.filter
+        return filter.roomType != RoomFilterType.None || filter.author.id.isNotEmpty()
+    }
 
     companion object {
 
