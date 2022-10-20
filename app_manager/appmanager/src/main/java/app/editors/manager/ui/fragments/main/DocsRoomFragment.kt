@@ -15,7 +15,7 @@ import lib.toolkit.base.ui.popup.ActionBarPopupItem
 class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
-        if (cloudPresenter.isCurrentRoom) {
+        if (cloudPresenter.isCurrentRoom && cloudPresenter.isRoot) {
             AddRoomBottomDialog().apply {
                 onClickListener = object : AddRoomBottomDialog.OnClickListener {
                     override fun onActionButtonClick(roomType: Int) {
