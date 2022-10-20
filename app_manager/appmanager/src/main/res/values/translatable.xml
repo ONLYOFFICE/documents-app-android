@@ -689,5 +689,12 @@
 
     <string name="dialog_create_room">Create room</string>
     <string name="dialog_create_room_value">New room</string>
+    <string name="invite_by_email">Invite users by email</string>
+    <string name="share_access_room_admin">Room admin</string>
+    <string name="share_access_room_editor">Editor</string>
+    <string name="share_access_room_form_filler">Form filler</string>
+    <string name="share_access_room_reviewer">Reviewer</string>
+    <string name="share_access_room_commentator">Commentator</string>
+    <string name="share_access_room_viewer">Viewer</string>
 
 </resources>
