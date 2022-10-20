@@ -54,22 +54,20 @@ class SettingsPresenter(
     private var isRemove = false
     private var isShare = false
     private var isPopupShow = false
-    private var sharedService: ShareService
     private val commonList: ArrayList<ViewType> = arrayListOf()
+    private val sharedService: ShareService
 
     private var disposable: Disposable? = null
 
     init {
         App.getApp().appComponent.inject(this)
-        sharedService = getApi()
+        sharedService = context.getShareApi()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         disposable?.dispose()
     }
-
-    private fun getApi(): ShareService = context.getShareApi()
 
     /*
      * Requests
@@ -91,7 +89,7 @@ class SettingsPresenter(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 getShareList(it.response)
-                if (it.response.isNotEmpty()){
+                if (it.response.isNotEmpty()) {
                     externalLink = it.response[0].sharedTo.shareLink
                 }
             }, { error ->
@@ -114,17 +112,29 @@ class SettingsPresenter(
     }
 
     private fun setShareFolder(
-        id: String, isNotify: Boolean,
-        message: String?, vararg shareList: Share?
+        id: String,
+        isNotify: Boolean,
+        message: String?,
+        vararg shareList: Share?
     ) {
         val requestShare = getRequestShare(isNotify, message, *shareList)
-        disposable = sharedService.setFolderAccess(id, requestShare)
-            .subscribeOn(Schedulers.io())
-            .map { it.response }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                getShareList(it)
-            }, { fetchError(it) })
+        if ((item as CloudFolder).isRoom) {
+            disposable = sharedService.shareRoom(id, requestShare)
+                .subscribeOn(Schedulers.io())
+                .map { it.response }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    getShareList(it)
+                }, { fetchError(it) })
+        } else {
+            disposable = sharedService.setFolderAccess(id, requestShare)
+                .subscribeOn(Schedulers.io())
+                .map { it.response }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    getShareList(it)
+                }, { fetchError(it) })
+        }
     }
 
     private fun isShared(accessCode: Int): Boolean {
@@ -155,6 +165,7 @@ class SettingsPresenter(
                 getShareFile(item.id)
             }
         }
+
     val internalLink: Unit
         get() {
             if (item is CloudFolder) {
@@ -185,10 +196,10 @@ class SettingsPresenter(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                        item.access = code.toString()
-                        item.shared = isShared(code)
-                        viewState.onExternalAccess(code, true)
-                    }, { error -> fetchError(error) }
+                    item.access = code.toString()
+                    item.shared = isShared(code)
+                    viewState.onExternalAccess(code, true)
+                }, { error -> fetchError(error) }
                 )
         }
     }
@@ -196,7 +207,16 @@ class SettingsPresenter(
     fun setItemAccess(accessCode: Int) {
         if (accessCode == ApiContract.ShareCode.NONE) {
             shareItem?.let {
-                viewState.onRemove(ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor), sharePosition)
+                viewState.onRemove(
+                    ShareUi(
+                        access = it.access,
+                        sharedTo = it.sharedTo,
+                        isLocked = it.isLocked,
+                        isOwner = it.isOwner,
+                        isGuest = it.sharedTo.isVisitor,
+                        isRoom = item is CloudFolder && item.isRoom
+                    ), sharePosition
+                )
             }
 
             isRemove = true
@@ -282,9 +302,9 @@ class SettingsPresenter(
     private fun getShareList(shareList: List<Share>) {
         isAccessDenied = false
         val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() }
-            .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
+            .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor, item is CloudFolder && item.isRoom) }
         val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }
-            .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
+            .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor, false) }
             .sortedWith(groupComparator())
 
         shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {

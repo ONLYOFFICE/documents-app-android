@@ -168,15 +168,27 @@ class AddPresenter(
 
     private fun shareFolderTo(id: String) {
         requestShare?.let { request ->
-            disposable = shareApi.setFolderAccess(id, request)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    shareStack.resetChecked()
-                    viewState.onSuccessAdd()
-                }) { error ->
-                    fetchError(error)
-                }
+            if ((item as CloudFolder).isRoom) {
+                disposable = shareApi.shareRoom(id, request)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        shareStack.resetChecked()
+                        viewState.onSuccessAdd()
+                    }) { error ->
+                        fetchError(error)
+                    }
+            } else {
+                disposable = shareApi.setFolderAccess(id, request)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        shareStack.resetChecked()
+                        viewState.onSuccessAdd()
+                    }) { error ->
+                        fetchError(error)
+                    }
+            }
         }
     }
 

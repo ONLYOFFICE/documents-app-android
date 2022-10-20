@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.InvalidationTracker
 import app.documents.core.account.CloudAccount
 import app.documents.core.login.ILoginServiceProvider
-import app.documents.core.room.RoomApi
 import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
@@ -50,11 +49,6 @@ class App : Application() {
         @JvmStatic
         fun getLocale(): String {
             return Locale.getDefault().language
-        }
-
-        @JvmStatic
-        fun isDesktopMode(): Boolean {
-            return isDesktop
         }
 
     }

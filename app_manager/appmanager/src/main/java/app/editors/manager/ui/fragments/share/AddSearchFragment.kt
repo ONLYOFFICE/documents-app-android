@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.share
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -23,7 +24,6 @@ import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.custom.SharePanelViews
-import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
@@ -34,17 +34,20 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
 
     @InjectPresenter
     lateinit var addPresenter: AddPresenter
+
     @ProvidePresenter
     fun providePresenter(): AddPresenter {
         return AddPresenter(arguments?.getSerializable(TAG_ITEM) as Item, AddFragment.Type.NONE)
     }
-    
+
     private var shareActivity: ShareActivity? = null
     private var shareAdapter: ShareAdapter? = null
     private var sharePanelViews: SharePanelViews? = null
     private var toolbarMenu: Menu? = null
     private var searchItem: MenuItem? = null
     private var searchView: SearchView? = null
+    private val inputItem: Item
+        get() = arguments?.getSerializable(TAG_ITEM) as Item
     private var viewBinding: FragmentShareAddListSearchBinding? = null
 
     override fun onAttach(context: Context) {
@@ -166,6 +169,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         addPresenter.accessCode = accessCode
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onPanelResetClick() {
         resetChecked()
         shareAdapter?.notifyDataSetChanged()
@@ -249,11 +253,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
 
     private fun initViews() {
         viewBinding?.let { binding ->
-            sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, shareActivity!!).apply {
-                val ext = StringUtils.getExtensionFromPath(checkNotNull(addPresenter.item.title))
-
-                setExtension(StringUtils.getExtension(ext)
-                    .takeIf { it != StringUtils.Extension.FORM } ?: StringUtils.getFormExtension(ext))
+            sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, inputItem).apply {
                 setOnEventListener(this@AddSearchFragment)
                 setAccessIcon(addPresenter.accessCode)
             }
@@ -280,8 +280,13 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     private fun setPlaceholder(isEmpty: Boolean) {
-        placeholderViews?.setTemplatePlaceholder(if (isEmpty)
-            PlaceholderViews.Type.NONE else PlaceholderViews.Type.COMMON)
+        placeholderViews?.setTemplatePlaceholder(
+            if (isEmpty) {
+                PlaceholderViews.Type.NONE
+            } else {
+                PlaceholderViews.Type.COMMON
+            }
+        )
     }
 
     private fun resetChecked() {

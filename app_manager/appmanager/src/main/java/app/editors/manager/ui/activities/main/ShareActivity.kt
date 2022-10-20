@@ -10,7 +10,6 @@ import app.editors.manager.databinding.ActivityShareBinding
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.share.SettingsFragment
-import app.editors.manager.ui.fragments.share.ShareInviteFragment
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 
 class ShareActivity : BaseAppActivity() {
