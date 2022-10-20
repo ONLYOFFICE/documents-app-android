@@ -357,8 +357,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private fun showFilter() {
         if (isTablet) {
-            FilterDialogFragment.newInstance(presenter.folderId, section)
+            FilterDialogFragment.newInstance(presenter.folderId, section, presenter.isRoot)
                 .show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
+            
             requireActivity().supportFragmentManager
                 .setFragmentResultListener(REQUEST_KEY_REFRESH, this) { _, bundle ->
                     if (bundle.getBoolean(BUNDLE_KEY_REFRESH, true)) {
@@ -367,7 +368,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
         } else {
-            filterActivity.launch(FilterActivity.getIntent(this, presenter.folderId, section))
+            filterActivity.launch(FilterActivity.getIntent(this, presenter.folderId, section, presenter.isRoot))
         }
     }
 

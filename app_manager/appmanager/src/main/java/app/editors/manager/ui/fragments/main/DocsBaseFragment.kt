@@ -1088,6 +1088,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (!presenter.isSelectionMode) {
             MainActionBarPopup(
                 context = requireContext(),
+                section = presenter.getSectionType(),
                 clickListener = mainActionBarClickListener,
                 sortBy = presenter.preferenceTool.sortBy.orEmpty(),
                 isAsc = isAsc,
@@ -1127,6 +1128,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, isRepeatedTap)
             MainActionBarPopup.Author ->
                 presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, isRepeatedTap)
+            MainActionBarPopup.RoomTags ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TAGS, isRepeatedTap)
+            MainActionBarPopup.RoomType ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_ROOM_TYPE, isRepeatedTap)
         }
     }
 

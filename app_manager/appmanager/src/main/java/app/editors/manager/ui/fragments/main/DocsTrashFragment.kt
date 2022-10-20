@@ -162,7 +162,11 @@ class DocsTrashFragment: DocsCloudFragment() {
     }
 
     override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showMainActionBarMenu(if (isArchive) MainActionBarPopup.sortPopupItems else excluded)
+        val sortItems = MainActionBarPopup.sortPopupItems.toMutableList().apply {
+            add(MainActionBarPopup.RoomType)
+            add(MainActionBarPopup.RoomTags)
+        }
+        super.showMainActionBarMenu(if (isArchive) sortItems else excluded)
     }
 
     override fun setMenuFilterEnabled(isEnabled: Boolean) {

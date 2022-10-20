@@ -183,6 +183,8 @@ object ApiContract {
         const val VAL_SORT_BY_OWNER = "Author"
         const val VAL_SORT_BY_NAME = "name"
         const val VAL_SORT_BY_DISPLAY_NAME = "displayName"
+        const val VAL_SORT_BY_ROOM_TYPE = "roomType"
+        const val VAL_SORT_BY_TAGS = "Tags"
     }
 
     object SectionType {

@@ -7,7 +7,6 @@ import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.popup.MainActionBarPopup
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
@@ -49,10 +48,6 @@ class DocsRoomFragment : DocsCloudFragment() {
                 SelectActionBarPopup.Download
             )
         )
-    }
-
-    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showMainActionBarMenu(excluded = MainActionBarPopup.sortPopupItems)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

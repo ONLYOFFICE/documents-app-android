@@ -25,11 +25,13 @@ class FilterActivity : BaseAppActivity(), IFilterActivity {
         const val REQUEST_ACTIVITY_FILTERS_CHANGED = 1004
         private const val KEY_ID = "key_id"
         private const val KEY_SECTION = "key_section"
+        private const val KEY_IS_ROOT = "key_is_root"
 
-        fun getIntent(fragment: Fragment, folderId: String?, section: Int): Intent {
+        fun getIntent(fragment: Fragment, folderId: String?, section: Int, isRoot: Boolean): Intent {
             return Intent(fragment.requireContext(), FilterActivity::class.java).apply {
                 putExtra(KEY_ID, folderId)
                 putExtra(KEY_SECTION, section)
+                putExtra(KEY_IS_ROOT, isRoot)
             }
         }
     }
@@ -92,8 +94,9 @@ class FilterActivity : BaseAppActivity(), IFilterActivity {
 
     private fun getFragmentInstance(folderId: String): Fragment {
         val section = intent?.extras?.getInt(KEY_SECTION) ?: -1
+        val isRoot = intent?.extras?.getBoolean(KEY_IS_ROOT) == true
         return when {
-            ApiContract.SectionType.isRoom(section) -> RoomFilterFragment.newInstance(folderId)
+            ApiContract.SectionType.isRoom(section) && isRoot-> RoomFilterFragment.newInstance(folderId)
             else -> CloudFilterFragment.newInstance(folderId)
         }
     }

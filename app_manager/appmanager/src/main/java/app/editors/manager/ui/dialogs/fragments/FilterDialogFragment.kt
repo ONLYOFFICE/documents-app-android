@@ -17,12 +17,14 @@ class FilterDialogFragment : BaseDialogFragment() {
         const val BUNDLE_KEY_REFRESH = "bundle_key_refresh"
         private const val KEY_FOLDER_ID = "key_folder_id"
         private const val KEY_SECTION = "key_section"
+        private const val KEY_IS_ROOT = "key_is_root"
 
-        fun newInstance(folderId: String?, section: Int): FilterDialogFragment {
+        fun newInstance(folderId: String?, section: Int, isRoot: Boolean): FilterDialogFragment {
             return FilterDialogFragment().apply {
                 arguments = Bundle(2).apply {
                     putString(KEY_FOLDER_ID, folderId)
                     putInt(KEY_SECTION, section)
+                    putBoolean(KEY_IS_ROOT, isRoot)
                 }
             }
         }
@@ -43,8 +45,9 @@ class FilterDialogFragment : BaseDialogFragment() {
     private fun getInstance(): Fragment {
         val folderId = arguments?.getString(KEY_FOLDER_ID)
         val section = arguments?.getInt(KEY_SECTION) ?: -1
+        val isRoot = arguments?.getBoolean(KEY_IS_ROOT) == true
         return when {
-            ApiContract.SectionType.isRoom(section) -> RoomFilterFragment.newInstance(folderId)
+            ApiContract.SectionType.isRoom(section) && isRoot -> RoomFilterFragment.newInstance(folderId)
             else -> CloudFilterFragment.newInstance(folderId)
         }
     }

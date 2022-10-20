@@ -288,6 +288,7 @@
     <string name="toolbar_menu_sort_date_modified">Date</string>
     <string name="toolbar_menu_sort_title">Title</string>
     <string name="toolbar_menu_sort_type">Type</string>
+    <string name="toolbar_menu_sort_tags">Tags</string>
     <string name="toolbar_menu_sort_size">Size</string>
     <string name="toolbar_menu_sort_asc">Ascending</string>
     <string name="toolbar_menu_sort_desc">Descending</string>
