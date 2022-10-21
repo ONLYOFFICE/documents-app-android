@@ -700,5 +700,6 @@
     <string name="share_invite_error_empty">Please enter emails</string>
     <string name="invite_link_send_success">Invite link was sent</string>
     <string name="share_choose_access_title">Choose access</string>
+    <string name="share_invite_title">Invite</string>
 
 </resources>

@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.transition.TransitionManager
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.share.SharedTo
 import app.documents.core.network.models.share.request.Invitation
@@ -91,7 +92,10 @@ class ChooseAccessFragment : BaseAppFragment() {
         setPanel()
         setRecyclerView()
         viewBinding?.sharePanelLayout?.sharePanelAddButton?.setOnClickListener {
-            viewModel.inviteUsers(adapter.getItemList() as List<ShareUi>)
+            viewModel.inviteUsers(
+                emails = adapter.getItemList() as List<ShareUi>,
+                message = viewBinding?.sharePanelLayout?.sharePanelMessageEdit?.text?.toString() ?: ""
+            )
         }
         lifecycleScope.launch {
             viewModel.state.collect { state ->
@@ -125,9 +129,16 @@ class ChooseAccessFragment : BaseAppFragment() {
 
     private fun setPanel() {
         viewBinding?.let { binding ->
-            binding.sharePanelLayout.inviteResetButton.isVisible = false
+            binding.sharePanelLayout.sharePanelResetButton.isVisible = false
             binding.sharePanelLayout.sharePanelCountSelectedText.isVisible = false
             binding.sharePanelLayout.buttonPopupLayout.buttonPopupLayout.isVisible = false
+
+            binding.sharePanelLayout.sharePanelAddButton.setText(R.string.share_invite_title)
+            binding.sharePanelLayout.sharePanelMessageButton.setOnClickListener {
+                TransitionManager.beginDelayedTransition(binding.sharePanelLayout.root)
+                val isVisible = binding.sharePanelLayout.sharePanelMessageEditLayout.isVisible
+                binding.sharePanelLayout.sharePanelMessageEditLayout.isVisible = !isVisible
+            }
         }
     }
 
@@ -197,11 +208,18 @@ class InviteUserViewModel(private val item: Item) : ViewModel() {
         disposable?.dispose()
     }
 
-    fun inviteUsers(emails: List<ShareUi>) {
+    fun inviteUsers(emails: List<ShareUi>, message: String) {
         _state.value = InviteUserState.Loading
-        disposable = shareApi.shareRoom(item.id, RequestRoomShare(emails.map { email ->
-            Invitation(email = email.sharedTo.email, access = email.access)
-        }, false))
+        disposable = shareApi.shareRoom(
+            id = item.id,
+            body = RequestRoomShare(
+                invitations = emails.map { email ->
+                    Invitation(email = email.sharedTo.email, access = email.access)
+                },
+                notify = false,
+                message = message
+            )
+        )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
