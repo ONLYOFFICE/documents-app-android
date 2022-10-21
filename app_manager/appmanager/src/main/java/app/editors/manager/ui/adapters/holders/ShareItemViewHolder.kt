@@ -41,7 +41,8 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
         if (item is ShareUi) {
             if (item.sharedTo.userName.isNotEmpty()) {
                 itemInfo.visibility = View.VISIBLE
-                itemName.text = item.sharedTo.displayNameHtml
+                itemName.text = item.sharedTo.displayNameHtml.takeIf { it.isNotEmpty() }
+                    ?: item.sharedTo.email
 
                 // Set info if not empty
                 val info = item.sharedTo.department.trim { it <= ' ' }
@@ -53,7 +54,8 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
                 }
             } else {
                 itemInfo.visibility = View.GONE
-                itemName.text = item.sharedTo.name
+                itemName.text = item.sharedTo.name.takeIf { it.isNotEmpty() }
+                    ?: item.sharedTo.email
                 shareImage.setImageResource(R.drawable.drawable_list_share_image_item_group_placeholder)
             }
 

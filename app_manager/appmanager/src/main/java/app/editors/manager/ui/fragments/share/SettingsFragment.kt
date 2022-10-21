@@ -421,7 +421,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     private val listContextListener = object : SharePopup.PopupContextListener {
         override fun onContextClick(v: View, sharePopup: SharePopup) {
-            sharePopup.hide()
+             sharePopup.hide()
             when (v.id) {
                 R.id.fullAccessItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ_WRITE)
                 R.id.reviewItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.REVIEW)

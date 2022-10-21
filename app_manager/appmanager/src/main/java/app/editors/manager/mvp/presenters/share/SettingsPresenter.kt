@@ -3,10 +3,7 @@ package app.editors.manager.mvp.presenters.share
 import android.content.Intent
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.share.Share
-import app.documents.core.network.models.share.request.RequestExternal
-import app.documents.core.network.models.share.request.RequestExternalAccess
-import app.documents.core.network.models.share.request.RequestShare
-import app.documents.core.network.models.share.request.RequestShareItem
+import app.documents.core.network.models.share.request.*
 import app.documents.core.share.ShareService
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -118,23 +115,13 @@ class SettingsPresenter(
         vararg shareList: Share?
     ) {
         val requestShare = getRequestShare(isNotify, message, *shareList)
-        if ((item as CloudFolder).isRoom) {
-            disposable = sharedService.shareRoom(id, requestShare)
-                .subscribeOn(Schedulers.io())
-                .map { it.response }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    getShareList(it)
-                }, { fetchError(it) })
-        } else {
-            disposable = sharedService.setFolderAccess(id, requestShare)
-                .subscribeOn(Schedulers.io())
-                .map { it.response }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    getShareList(it)
-                }, { fetchError(it) })
-        }
+        disposable = sharedService.setFolderAccess(id, requestShare)
+            .subscribeOn(Schedulers.io())
+            .map { it.response }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                getShareList(it)
+            }, { fetchError(it) })
     }
 
     private fun isShared(accessCode: Int): Boolean {

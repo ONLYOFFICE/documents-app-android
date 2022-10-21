@@ -128,30 +128,10 @@ interface ShareService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links/send")
-    fun sendInviteLink(
-        @Path(value = "id") id: String,
-        @Body body: RequestInviteLink
-    ): Single<ResponseInvite>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share")
     fun shareRoom(
         @Path(value = "id") id: String,
-        @Body body: RequestShare
-    ): Single<ResponseShare>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share")
-    fun shareRoomByLink(
-        @Path(value = "id") id: String,
-        @Body body: RequestRoomShareLink
+        @Body body: RequestRoomShare
     ): Single<ResponseShare>
 
 }
