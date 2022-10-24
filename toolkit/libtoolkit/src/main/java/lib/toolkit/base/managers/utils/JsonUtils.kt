@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.FileNotFoundException
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -75,7 +76,12 @@ object JsonUtils {
     fun getFormulasJson(context: Context, lang: String = Locale.ENGLISH.language): JSONObject? {
         return try {
             JSONObject(jsonFromAssets(context, FORMULAS_PATH + lang + JSON_EXTENSION))
-        } catch (exception: JSONException) {
+        }
+        catch (exception: FileNotFoundException) {
+            JSONObject(jsonFromAssets(context, FORMULAS_PATH + Locale.ENGLISH.language + JSON_EXTENSION))
+
+        }
+        catch (exception: JSONException) {
             return null
         }
     }
