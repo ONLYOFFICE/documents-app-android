@@ -5,6 +5,7 @@ import android.view.MenuItem
 import androidx.core.view.forEach
 import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.SelectActionBarPopup
@@ -73,6 +74,12 @@ class DocsRoomFragment : DocsCloudFragment() {
             }
             ContextBottomDialog.Buttons.PIN -> {
                 cloudPresenter.pinRoom()
+            }
+            ContextBottomDialog.Buttons.INFO -> {
+                ShareActivity.show(this, cloudPresenter.itemClicked, true)
+            }
+            ContextBottomDialog.Buttons.SHARE -> {
+                ShareActivity.show(this, cloudPresenter.itemClicked, false)
             }
             else -> super.onContextButtonClick(buttons)
         }

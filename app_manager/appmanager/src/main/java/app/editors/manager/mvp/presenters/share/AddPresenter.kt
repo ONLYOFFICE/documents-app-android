@@ -64,9 +64,14 @@ class AddPresenter(
         disposable = shareApi.getUsers()
             .subscribeOn(Schedulers.io())
             .map { response ->
-                response.response.filter { it.id != account.id && it.id != item.createdBy?.id }.map {
-                    UserUi(it.id, it.department, it.displayName, it.avatarMedium)
-                }
+                response.response.filter { it.id != account.id && it.id != item.createdBy?.id }.map { user ->
+                    UserUi(
+                        id = user.id,
+                        department = user.department,
+                        displayName = user.displayName.takeIf { name -> name.isEmpty() } ?: user.email ?: "",
+                        avatarUrl = user.avatarMedium,
+                        status = user.activationStatus)
+                }.sortedBy { it.status }
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
@@ -99,8 +104,12 @@ class AddPresenter(
         isCommon = true
         disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups()) { users, groups ->
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
-            shareStack.addUsers(users.response.filter { it.id != account.id }.map {
-                UserUi(it.id, it.department, it.displayName, it.avatarMedium)
+            shareStack.addUsers(users.response.filter { it.id != account.id }.map { user ->
+                UserUi(
+                    id = user.id,
+                    department = user.department,
+                    displayName = user.displayName.takeIf { it.isEmpty() } ?: user.email ?: "",
+                    avatarUrl = user.avatarMedium, status = user.activationStatus)
             })
             return@zip true
         }.subscribeOn(Schedulers.io())
@@ -122,8 +131,13 @@ class AddPresenter(
         ) { users, groups ->
             shareStack.clearModel()
             shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
-            shareStack.addUsers(users.response.filter { it.id != account.id }.map {
-                UserUi(it.id, it.department, it.displayName, it.avatarMedium)
+            shareStack.addUsers(users.response.filter { it.id != account.id }.map { user ->
+                UserUi(
+                    id = user.id,
+                    department = user.department,
+                    displayName = user.displayName.takeIf { it.isEmpty() } ?: user.email ?: "",
+                    avatarUrl = user.avatarMedium,
+                    status = user.activationStatus)
             })
             return@zip true
         }.subscribeOn(Schedulers.io())
@@ -168,27 +182,15 @@ class AddPresenter(
 
     private fun shareFolderTo(id: String) {
         requestShare?.let { request ->
-//            if ((item as CloudFolder).isRoom) {
-//                disposable = shareApi.shareRoom(id, request)
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe({
-//                        shareStack.resetChecked()
-//                        viewState.onSuccessAdd()
-//                    }) { error ->
-//                        fetchError(error)
-//                    }
-//            } else {
-                disposable = shareApi.setFolderAccess(id, request)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        shareStack.resetChecked()
-                        viewState.onSuccessAdd()
-                    }) { error ->
-                        fetchError(error)
-                    }
-//            }
+            disposable = shareApi.setFolderAccess(id, request)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    shareStack.resetChecked()
+                    viewState.onSuccessAdd()
+                }) { error ->
+                    fetchError(error)
+                }
         }
     }
 
@@ -337,7 +339,9 @@ class AddPresenter(
         return when (type) {
             AddFragment.Type.USERS -> shareStack.userSet.any { it.isSelected }
             AddFragment.Type.GROUPS -> shareStack.groupSet.any { it.isSelected }
-            else -> { false }
+            else -> {
+                false
+            }
         }
     }
 

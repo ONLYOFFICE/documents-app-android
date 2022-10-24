@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import app.editors.manager.databinding.ActivityShareBinding
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.fragments.share.AddPagerFragment
 import app.editors.manager.ui.fragments.share.SettingsFragment
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 
@@ -18,13 +19,15 @@ class ShareActivity : BaseAppActivity() {
         val TAG: String = ShareActivity::class.java.simpleName
 
         const val TAG_SHARE_ITEM = "TAG_SHARE_ITEM"
+        const val TAG_INFO = "TAG_INFO"
         const val TAG_RESULT = "TAG_RESULT"
         private const val PIXEL_C = "Pixel C"
 
         @JvmStatic
-        fun show(fragment: Fragment, item: Item?) {
+        fun show(fragment: Fragment, item: Item?, isInfo: Boolean = true) {
             fragment.startActivityForResult(Intent(fragment.context, ShareActivity::class.java).apply {
                 putExtra(TAG_SHARE_ITEM, item)
+                putExtra(TAG_INFO, isInfo)
             }, REQUEST_ACTIVITY_SHARE)
         }
     }
@@ -75,7 +78,12 @@ class ShareActivity : BaseAppActivity() {
         valueAnimator = HeightValueAnimator(viewBinding?.appBarToolbar)
         setSupportActionBar(viewBinding?.appBarToolbar)
         if (savedInstanceState == null) {
-            showFragment(SettingsFragment.newInstance(intent.getSerializableExtra(TAG_SHARE_ITEM) as Item), null)
+            val isInfo = intent.getBooleanExtra(TAG_INFO, true)
+            if (isInfo) {
+                showFragment(SettingsFragment.newInstance(intent.getSerializableExtra(TAG_SHARE_ITEM) as Item), null)
+            } else {
+                showFragment(AddPagerFragment.newInstance(intent.getSerializableExtra(TAG_SHARE_ITEM) as Item), null)
+            }
         }
     }
 

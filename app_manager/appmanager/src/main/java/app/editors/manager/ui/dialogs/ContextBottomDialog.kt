@@ -26,7 +26,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     enum class Buttons {
         NONE, FOLDER, EDIT, SHARE, EXTERNAL, MOVE, COPY, DOWNLOAD,
-        RENAME, DELETE, SHARE_DELETE, FAVORITE, RESTORE, OPEN_LOCATION, ARCHIVE, PIN
+        RENAME, DELETE, SHARE_DELETE, FAVORITE, RESTORE, OPEN_LOCATION, ARCHIVE, PIN, INFO
     }
 
     interface OnClickListener {
@@ -255,6 +255,7 @@ class ContextBottomDialog : BaseBottomDialog() {
                 binding.listExplorerContextPin.isVisible = true
                 binding.listExplorerContextAddUser.isVisible = true
                 binding.listExplorerContextDelete.isVisible = true
+                binding.listExplorerContextInfo.isVisible = true
                 binding.viewLineSeparatorDelete.root.isVisible = true
                 if (state.isPin) binding.listExplorerContextPinText.setText(R.string.list_context_unpin)
             } else {
@@ -363,6 +364,7 @@ class ContextBottomDialog : BaseBottomDialog() {
             it.listExplorerContextRename.setOnClickListener(Buttons.RENAME)
             it.listExplorerContextDelete.setOnClickListener(Buttons.DELETE)
             it.listExplorerContextShareDelete.setOnClickListener(Buttons.SHARE_DELETE)
+            it.listExplorerContextInfo.setOnClickListener(Buttons.INFO)
             it.listExplorerContextFavorite.setOnClickListener(Buttons.FAVORITE)
             it.listExplorerContextRestore.setOnClickListener(Buttons.RESTORE)
             it.listExplorerContextArchive.setOnClickListener(Buttons.ARCHIVE)

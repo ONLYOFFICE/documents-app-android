@@ -260,6 +260,22 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/list_explorer_context_info"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <ImageView
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_drawer_menu_about"
+                        tools:ignore="ContentDescription" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/list_explorer_context_info_text"
+                        style="@style/ContextListMediumText"
+                        android:text="@string/list_context_info" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/list_explorer_context_add_user"
                     style="@style/ContextListLayout"
                     android:visibility="gone">
