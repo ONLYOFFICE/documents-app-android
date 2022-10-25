@@ -5,7 +5,6 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.BuildConfig
-import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
@@ -106,7 +105,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     private fun getPortalModules(): Observable<List<Explorer>?> {
-       return api.getRootFolder(
+        return api.getRootFolder(
             mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
             mapOf(
                 ApiContract.Modules.FLAG_SUBFOLDERS to false,
@@ -114,34 +113,42 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 ApiContract.Modules.FLAG_ADDFOLDERS to false
             )
         )
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .map { cloudTree ->
-            val folderTypes = cloudTree.response.map { explorer -> explorer?.current?.rootFolderType }
-            preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
-            preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
-            return@map cloudTree.response
-        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { cloudTree ->
+                val folderTypes = cloudTree.response.map { explorer -> explorer?.current?.rootFolderType }
+                preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
+                preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
+                return@map cloudTree.response
+            }
     }
 
     private fun checkFileData(account: CloudAccount, fileData: Uri?) {
-        fileData?.let { data ->
-            if (data.scheme?.equals(BuildConfig.PUSH_SCHEME) == true && data.host.equals("openfile")) {
-                if (fileData.queryParameterNames.contains("push")) {
-                    viewState.setFileData(fileData.getQueryParameter("data") ?: "")
-                    return
-                }
-                val dataModel = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(data.query))
-                if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(
-                        account.login,
-                        ignoreCase = true
-                    ) == true
-                ) {
-                    viewState.setFileData(Json.encodeToString(dataModel))
-                } else {
-                    viewState.onOpenProjectFileError(R.string.error_open_project_file)
-                }
+        if ((fileData?.scheme?.equals(BuildConfig.PUSH_SCHEME) == true && fileData.host.equals("openfile")) || preferenceTool.fileData.isNotEmpty()) {
+            if (fileData?.queryParameterNames?.contains("push") == true) {
+                viewState.setFileData(fileData.getQueryParameter("data") ?: "")
+                return
+            }
+            val dataModel: OpenDataModel = if (preferenceTool.fileData.isNotEmpty()) {
+                Json.decodeFromString(preferenceTool.fileData)
+            } else {
+                Json.decodeFromString(CryptUtils.decodeUri(fileData?.query))
+            }
+            preferenceTool.fileData = ""
+            if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(
+                    account.login,
+                    ignoreCase = true
+                ) == true
+            ) {
+                viewState.setFileData(Json.encodeToString(dataModel))
+            } else {
+                preferenceTool.fileData = Json.encodeToString(dataModel)
+                viewState.onSwitchAccount(dataModel)
             }
         }
+    }
+
+    fun onRemoveFileData() {
+        preferenceTool.fileData = ""
     }
 }

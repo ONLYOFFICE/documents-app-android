@@ -15,9 +15,11 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerState
 import app.editors.manager.mvp.views.main.MainPagerView
+import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
@@ -25,6 +27,7 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.factory.TabFragmentFactory
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import lib.toolkit.base.managers.utils.UiUtils
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -374,8 +377,19 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }, 1000)
     }
 
-    override fun onOpenProjectFileError(@StringRes res: Int) {
-        showSnackBarWithAction(res, R.string.switch_account_open_project_file, this)
+    override fun onSwitchAccount(data: OpenDataModel) {
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = "Switch account",
+            description = "Enter to ${data.portal}?",
+            acceptListener = {
+                SignInActivity.showPortalSignIn(requireContext(), data.portal, data.email, arrayOf())
+            },
+            cancelListener = {
+                presenter.onRemoveFileData()
+            },
+            acceptTitle = "Switch"
+        )
     }
 
     fun isRoot(): Boolean {

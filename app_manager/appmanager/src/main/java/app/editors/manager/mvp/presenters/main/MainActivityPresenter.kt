@@ -248,7 +248,13 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                     viewState.openFile(account, fileData.getQueryParameter("data") ?: "")
                     return@launch
                 }
-                val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(fileData.query))
+                val data: OpenDataModel = if (preferenceTool.fileData.isNotEmpty()) {
+                    Json.decodeFromString(preferenceTool.fileData)
+
+                } else {
+                    Json.decodeFromString(CryptUtils.decodeUri(fileData.query))
+                }
+                preferenceTool.fileData = ""
                 if (data.portal?.equals(
                         account.portal,
                         ignoreCase = true
@@ -259,13 +265,18 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                         viewState.openFile(account, Json.encodeToString(data))
                     }
                 } else {
+                    preferenceTool.fileData = Json.encodeToString(data)
                     withContext(Dispatchers.Main) {
-                        viewState.onOpenProjectFileError(context.getString(R.string.error_open_project_file))
+                        viewState.onSwitchAccount(data)
                     }
                 }
 
             }
         }
+    }
+
+    fun onRemoveFileData() {
+        preferenceTool.fileData = ""
     }
 
     fun onRateOff() {
