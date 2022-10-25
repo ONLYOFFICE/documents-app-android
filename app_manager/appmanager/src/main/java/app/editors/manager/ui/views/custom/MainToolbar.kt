@@ -57,9 +57,11 @@ class MainToolbar @JvmOverloads constructor(
             } else if (cloudAccount.isOneDrive) {
                 setOneDriveAvatar()
             } else if(cloudAccount.isDropbox) {
-                if(it.avatarUrl?.isEmpty() == true) {
+                if(it.avatarUrl == null || it.avatarUrl?.isEmpty() == true) {
                     setDropboxAvatar()
-                } else loadAvatar(it)
+                } else {
+                    loadAvatar(it)
+                }
             } else {
                 loadAvatar(it)
             }

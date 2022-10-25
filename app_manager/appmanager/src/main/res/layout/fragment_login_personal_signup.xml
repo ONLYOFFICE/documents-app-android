@@ -42,7 +42,7 @@
             android:text="@string/login_personal_signup_button"
             app:layout_constraintEnd_toEndOf="@+id/login_personal_portal_email_layout"
             app:layout_constraintStart_toStartOf="@+id/login_personal_portal_email_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_personal_portal_email_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/terms_checkbox" />
 
         <include
             layout="@layout/include_social_networks_layout"
@@ -56,23 +56,30 @@
             app:layout_constraintTop_toBottomOf="@+id/login_personal_signup_button"
             app:layout_constraintVertical_chainStyle="spread_inside" />
 
+        <CheckBox
+            android:id="@+id/terms_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin_xlarge"
+            android:buttonTint="@color/colorPrimary"
+            app:layout_constraintStart_toStartOf="@+id/login_personal_portal_email_layout"
+            app:layout_constraintTop_toBottomOf="@+id/login_personal_portal_email_layout" />
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/termsTextView"
             style="@style/ItemSmallGreyText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="24dp"
             android:gravity="center"
             android:lines="6"
             android:linksClickable="true"
             android:maxLines="6"
             android:minLines="1"
             android:singleLine="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/terms_checkbox"
+            app:layout_constraintEnd_toEndOf="@+id/login_personal_portal_email_layout"
+            app:layout_constraintStart_toEndOf="@+id/terms_checkbox"
+            app:layout_constraintTop_toTopOf="@+id/terms_checkbox"
             tools:text="By proceeding, you agree to the Privacy Policy and the Terms of Service." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
