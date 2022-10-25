@@ -53,7 +53,6 @@ import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
-import lib.toolkit.base.managers.utils.StringUtils.getNameWithoutExtension
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.adapters.BaseAdapter
@@ -1046,11 +1045,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun showEditors(uri: Uri?, type: EditorsType) {
+    protected fun showEditors(uri: Uri?, type: EditorsType, isNew: Boolean = false) {
         try {
             val intent = Intent().apply {
                 data = uri
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
+                putExtra(EditorsContract.KEY_NEW_FILE, isNew)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
