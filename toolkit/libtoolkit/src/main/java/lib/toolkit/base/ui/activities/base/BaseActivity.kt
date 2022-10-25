@@ -54,6 +54,9 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         const val PERMISSION_WRITE_STORAGE = 101
         const val PERMISSION_READ_STORAGE = 102
         const val PERMISSION_READ_WRITE_STORAGE = 103
+
+        const val EXTRA_IS_RENAMED = "EXTRA_IS_RENAMED"
+        const val TAG_RENAME_DIALOG = "TAG_RENAME_DIALOG"
     }
 
     val isTablet: Boolean
