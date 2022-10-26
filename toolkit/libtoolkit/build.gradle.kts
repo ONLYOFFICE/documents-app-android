@@ -91,6 +91,10 @@ dependencies {
     implementation(Rx.androidRx)
     implementation(Rx.rxRelay)
 
+    implementation(Lifecycle.viewModel)
+    implementation(Lifecycle.liveData)
+    implementation(Lifecycle.runtime)
+
     implementation("com.squareup.okhttp3:okhttp:3.14.9")
     implementation("com.github.bumptech.glide:okhttp3-integration:4.0.0"){
         exclude("glide-parent")
