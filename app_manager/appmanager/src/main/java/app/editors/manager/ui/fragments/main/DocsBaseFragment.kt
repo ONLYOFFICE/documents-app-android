@@ -127,7 +127,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (isActivePage && resultCode == Activity.RESULT_CANCELED && requestCode == BaseActivity.REQUEST_ACTIVITY_OPERATION) {
+        if (isActivePage && resultCode == Activity.RESULT_CANCELED &&
+            requestCode == BaseActivity.REQUEST_ACTIVITY_OPERATION ||
+            data?.getBooleanExtra(BaseActivity.EXTRA_IS_REFRESH, false) == true
+        ) {
             onRefresh()
         } else if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
