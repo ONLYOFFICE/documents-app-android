@@ -19,6 +19,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
@@ -215,14 +216,10 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     fun hideDialog(forceHide: Boolean = false) {
-        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && !forceHide) {
-            commonDialog?.view?.post {
-                if (commonDialog?.isAdded == true) {
-                    commonDialog?.dismiss()
-                }
+        lifecycleScope.launchWhenResumed {
+            if (commonDialog?.isAdded == true) {
+                commonDialog?.dismiss()
             }
-        } else {
-            commonDialog?.dismiss()
         }
     }
 

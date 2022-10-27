@@ -61,7 +61,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 406
+        versionCode = 407
         versionName = "5.5.1"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
