@@ -434,7 +434,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             disposable.add(shareApi.getShareFile(item.id)
                 .subscribeOn(Schedulers.io())
                 .map { response: ResponseShare ->
-                    response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink
+                    response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
                 }.observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ externalLink ->
                     if (!externalLink.isNullOrEmpty()) {

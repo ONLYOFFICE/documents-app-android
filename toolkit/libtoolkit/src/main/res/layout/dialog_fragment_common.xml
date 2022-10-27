@@ -22,7 +22,6 @@
             android:layout_marginLeft="@dimen/screen_margin_large"
             android:layout_marginTop="@dimen/screen_margin_large"
             android:layout_marginRight="@dimen/screen_margin_large"
-            android:fontFamily="sans-serif-medium"
             android:gravity="start|center_vertical"
             android:inputType="textMultiLine|textNoSuggestions"
             android:lines="10"
