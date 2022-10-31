@@ -6,6 +6,7 @@ import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemReq
 import app.editors.manager.storages.googledrive.mvp.models.request.RenameRequest
 import app.editors.manager.storages.googledrive.mvp.models.request.ShareRequest
 import app.editors.manager.storages.googledrive.mvp.models.resonse.GoogleDriveExplorerResponse
+import app.editors.manager.storages.googledrive.mvp.models.resonse.UserResponse
 import io.reactivex.Single
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -97,4 +98,15 @@ interface GoogleDriveService {
     )
     @GET("drive/v3/files/{fileId}/export")
     fun export(@Path(value = "fileId") fileId: String, @QueryMap map: Map<String, String>): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("drive/v3/about/")
+    fun getUserInfo(
+        @Header(ApiContract.HEADER_AUTHORIZATION) token: String,
+        @QueryMap map: Map<String, String> = mapOf("fields" to "user")
+    ): Single<Response<UserResponse>>
+
 }

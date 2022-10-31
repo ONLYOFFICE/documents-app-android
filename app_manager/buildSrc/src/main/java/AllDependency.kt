@@ -1,5 +1,5 @@
 object Dagger {
-    private const val version = "2.42"
+    private const val version = "2.44"
 
     const val dagger = "com.google.dagger:dagger:$version"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$version"
@@ -22,14 +22,14 @@ object Koin {
 }
 
 object AndroidX {
-    private const val androidxVersion = "1.4.2"
+    private const val androidxVersion = "1.5.1"
     private const val recyclerViewVersion = "1.2.1"
     private const val recyclerViewSelectionVersion = "1.1.0"
-    private const val kotlinKtxVersion = "1.8.0"
+    private const val kotlinKtxVersion = "1.9.0"
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
-    const val composeActivity = "androidx.activity:activity-compose:1.4.0"
+    const val composeActivity = "androidx.activity:activity-compose:1.6.0"
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     const val recyclerViewSelection = "androidx.recyclerview:recyclerview-selection:$recyclerViewSelectionVersion"
     const val cardView = "androidx.cardview:cardview:1.0.0"
@@ -63,10 +63,10 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "20.2.0"
+    private const val playServicesAuthVersion = "20.3.0"
     private const val playCoreVersion = "1.10.3"
     private const val materialVersion = "1.6.1"
-    private const val gsonVersion = "2.8.6"
+    private const val gsonVersion = "2.9.1"
     private const val safetynetVersion = "18.0.1"
 
 
@@ -79,10 +79,10 @@ object Google {
 }
 
 object Firebase {
-    private const val firebaseCoreVersion = "21.0.0"
-    private const val firebaseConfigVersion = "21.1.0"
-    private const val firebaseMessagingVersion = "23.0.5"
-    private const val firebaseCrashlyticsVersion = "18.2.11"
+    private const val firebaseCoreVersion = "21.1.1"
+    private const val firebaseConfigVersion = "21.1.2"
+    private const val firebaseMessagingVersion = "23.0.8"
+    private const val firebaseCrashlyticsVersion = "18.2.13"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"
@@ -91,7 +91,7 @@ object Firebase {
 }
 
 object Room {
-    private const val roomVersion = "2.4.2"
+    private const val roomVersion = "2.4.3"
 
     const val roomRuntime = "androidx.room:room-runtime:$roomVersion"
     const val roomKtx = "androidx.room:room-ktx:$roomVersion"
@@ -106,7 +106,7 @@ object Rx {
 }
 
 object Lifecycle {
-    private const val version = "2.4.1"
+    private const val version = "2.5.1"
 
     const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
     const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
@@ -137,7 +137,7 @@ object Libs {
     const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
     const val facebookLogin = "com.facebook.android:facebook-login:13.2.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
-    const val glide = "com.github.bumptech.glide:glide:4.13.2"
+    const val glide = "com.github.bumptech.glide:glide:4.14.2"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
     const val androidWork = "androidx.work:work-runtime:2.7.1"
     const val documentFile = "androidx.documentfile:documentfile:1.0.1"

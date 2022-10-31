@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.viewModels
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginEnterprisePortalBinding
@@ -194,9 +195,14 @@ class EnterprisePortalFragment : BaseAppFragment(),
     }
 
     private inner class FieldsWatcher : BaseWatcher() {
+        @Suppress("KotlinConstantConditions")
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             viewBinding?.loginEnterprisePortalLayout?.isErrorEnabled = false
-            viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty() && viewBinding?.termsCheckbox?.isChecked == true
+            if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
+                viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty() && viewBinding?.termsCheckbox?.isChecked == true
+            } else {
+                viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty()
+            }
         }
     }
 }

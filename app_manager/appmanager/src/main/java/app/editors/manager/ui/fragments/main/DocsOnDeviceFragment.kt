@@ -307,8 +307,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         )
     }
 
-    override fun onShowDocs(uri: Uri) {
-        showEditors(uri, EditorsType.DOCS)
+    override fun onShowDocs(uri: Uri, isNew: Boolean) {
+        showEditors(uri, EditorsType.DOCS, isNew)
     }
 
     override fun onShowCells(uri: Uri) {

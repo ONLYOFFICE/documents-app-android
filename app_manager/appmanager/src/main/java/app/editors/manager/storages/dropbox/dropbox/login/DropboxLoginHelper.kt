@@ -80,7 +80,7 @@ class DropboxLoginHelper @Inject constructor(
             isSslState = networkSettings.getSslState(),
             isSslCiphers = networkSettings.getCipher(),
             name = user.name?.displayName,
-            avatarUrl = user.profilePhotoUrl,
+            avatarUrl = user.profilePhotoUrl ?: "",
             refreshToken = refreshToken
         )
 

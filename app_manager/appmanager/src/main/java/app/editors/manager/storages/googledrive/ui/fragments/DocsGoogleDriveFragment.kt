@@ -10,7 +10,6 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.view.DocsGoogleDriveView
@@ -19,7 +18,6 @@ import app.editors.manager.storages.googledrive.managers.works.UploadWork
 import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.MainActionBarPopup
-import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
@@ -124,7 +122,9 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
         }
     }
 
-    override fun onRefreshToken() {
+    override fun onRefreshToken() { }
+
+    override fun onSignIn() {
         val storage = Storage(
             ApiContract.Storage.GOOGLEDRIVE,
             BuildConfig.GOOGLE_COM_CLIENT_ID,

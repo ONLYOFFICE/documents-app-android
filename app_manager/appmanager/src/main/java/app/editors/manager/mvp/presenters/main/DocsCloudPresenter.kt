@@ -429,19 +429,18 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
             val shareApi = App.getApp().getShareService()
-            disposable.add(
-                shareApi.getShareFile(item.id)
-                    .subscribeOn(Schedulers.io())
-                    .map { response: ResponseShare ->
-                        response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink
-                    }.observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ externalLink ->
-                        if (!externalLink.isNullOrEmpty()) {
-                            setDataToClipboard(externalLink)
-                        } else {
-                            viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
-                        }
-                    }, this::fetchError)
+            disposable.add(shareApi.getShareFile(item.id)
+                .subscribeOn(Schedulers.io())
+                .map { response: ResponseShare ->
+                    response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
+                }.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ externalLink ->
+                    if (!externalLink.isNullOrEmpty()) {
+                        setDataToClipboard(externalLink)
+                    } else {
+                        viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
+                    }
+                }, this::fetchError)
             )
         }
     }

@@ -24,4 +24,6 @@ interface IGoogleDriveServiceProvider {
     fun update(fileId: String, map: Map<String, String> = mapOf("uploadType" to "resumable")): Single<Response<ResponseBody>>
     fun share(fileId: String, request: ShareRequest): Single<Response<ResponseBody>>
     fun export(fileId: String, mimeType: String): Single<Response<ResponseBody>>
+    fun getUserInfo(token: String): Single<GoogleDriveResponse>
+
 }
