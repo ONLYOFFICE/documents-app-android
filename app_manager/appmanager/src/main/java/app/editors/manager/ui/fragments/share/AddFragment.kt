@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.share
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import app.editors.manager.R
@@ -28,12 +29,20 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     @InjectPresenter
     lateinit var addPresenter: AddPresenter
 
+    @Suppress("DEPRECATION")
     @ProvidePresenter
     fun providePresenter(): AddPresenter {
-        return AddPresenter(
-            arguments?.getSerializable(TAG_ITEM) as Item,
-            arguments?.getSerializable(TAG_TYPE) as Type
-        )
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            AddPresenter(
+                arguments?.getSerializable(TAG_ITEM, Item::class.java) as Item,
+                arguments?.getSerializable(TAG_TYPE, Type::class.java) as Type
+            )
+        } else {
+            AddPresenter(
+                arguments?.getSerializable(TAG_ITEM) as Item,
+                arguments?.getSerializable(TAG_TYPE) as Type
+            )
+        }
     }
 
     private var shareAdapter: ShareAdapter? = null
@@ -103,7 +112,11 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
     override fun onSuccessAdd() {
         ModelShareStack.getInstance().isRefresh = true
-        showParentRootFragment()
+        if (parentFragmentManager.fragments.size > 1) {
+            showParentRootFragment()
+        } else {
+            requireActivity().finish()
+        }
     }
 
     override fun onSearchValue(value: String?) {
