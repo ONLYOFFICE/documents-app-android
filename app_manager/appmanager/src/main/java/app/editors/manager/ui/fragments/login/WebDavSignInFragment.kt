@@ -1,12 +1,15 @@
 package app.editors.manager.ui.fragments.login
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
 import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter
 import app.editors.manager.mvp.views.login.WebDavSignInView
@@ -47,7 +50,11 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            wevDavProvider = it.getSerializable(KEY_PROVIDER) as WebDavApi.Providers
+            wevDavProvider = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.getSerializable(KEY_PROVIDER, WebDavApi.Providers::class.java) as WebDavApi.Providers
+            } else {
+                it.getSerializable(KEY_PROVIDER) as WebDavApi.Providers
+            }
         }
     }
 
