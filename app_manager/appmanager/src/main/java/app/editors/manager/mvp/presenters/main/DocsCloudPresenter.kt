@@ -780,8 +780,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         roomProvider?.let {
             disposable.add(
                 it.createRoom(title, roomType).subscribe({
-                    viewState.onSnackBar("Done")
-//                    refresh()
+                    viewState.onDialogClose()
+                    viewState.onSnackBar(context.getString(R.string.room_create_success))
+                    refresh()
                 }) { throwable: Throwable ->
                     fetchError(throwable)
                 }
@@ -797,7 +798,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             roomProvider?.let { provider ->
                 disposable.add(
                     provider.deleteRoom(items = ids).subscribe({
-                        Log.d(TAG, "deleteRoom: ")
+                        viewState.onDialogClose()
+                        viewState.onSnackBar(context.getString(R.string.room_delete_success))
+                        refresh()
                     }) { fetchError(it)}
                 )
             }
@@ -805,7 +808,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             roomProvider?.let { provider ->
                 disposable.add(
                     provider.deleteRoom(itemClicked?.id ?: "").subscribe({
-                        Log.d(TAG, "deleteRoom: ")
+                        viewState.onDialogClose()
+                        viewState.onSnackBar(context.getString(R.string.room_delete_success))
                     }) { fetchError(it)}
                 )
             }

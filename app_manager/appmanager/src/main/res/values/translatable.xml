@@ -701,5 +701,7 @@
     <string name="invite_link_send_success">Invite link was sent</string>
     <string name="share_choose_access_title">Choose access</string>
     <string name="share_invite_title">Invite</string>
+    <string name="room_create_success">Room created</string>
+    <string name="room_delete_success">Room deleted</string>
 
 </resources>
