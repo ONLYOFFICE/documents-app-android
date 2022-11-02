@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import app.documents.core.network.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.PopupShareMenuBinding
@@ -81,7 +82,7 @@ class SharePopup(
         if (item is CloudFolder) {
             when {
                 item.isRoom -> {
-                    setRoomState()
+                    setRoomState(item)
                 }
                 else -> {
                     setFolderState()
@@ -177,7 +178,7 @@ class SharePopup(
         }
     }
 
-    private fun setRoomState() {
+    private fun setRoomState(cloudFolder: CloudFolder) {
         viewBinding?.let { binding ->
             binding.fullAccessItem.popupItemLayout.isVisible = true
             binding.fullAccessItem.itemIcon.setImageResource(R.drawable.ic_drawer_menu_my_docs)
@@ -207,6 +208,18 @@ class SharePopup(
 
             if (isFullAccess) {
                 setDeleteItem()
+            }
+
+            when (cloudFolder.roomType) {
+                ApiContract.RoomType.FILLING_FORM_ROOM -> {
+                    binding.fullAccessItem.popupItemLayout.isVisible = false
+                    binding.commentItem.popupItemLayout.isVisible = false
+                    binding.reviewItem.popupItemLayout.isVisible = false
+                }
+                ApiContract.RoomType.REVIEW_ROOM -> {
+                    binding.fullAccessItem.popupItemLayout.isVisible = false
+                    binding.fillFormItem.popupItemLayout.isVisible = false
+                }
             }
         }
     }
