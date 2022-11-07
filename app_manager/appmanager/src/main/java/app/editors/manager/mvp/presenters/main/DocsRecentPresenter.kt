@@ -25,7 +25,10 @@ import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProv
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getName
 import lib.toolkit.base.managers.utils.FileUtils.asyncDeletePath
@@ -258,13 +261,14 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     override fun upload(uri: Uri?, uris: ClipData?) {
-        account?.let {
-            if (it.isWebDav) {
-                val provider = WebDavFileProvider(
-                    context.webDavApi(),
-                    WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
-                )
-                item?.let { item ->
+        item?.let { item ->
+            if (item.isWebDav) {
+                account?.let { account ->
+                    val provider = WebDavFileProvider(
+                        context.webDavApi(),
+                        WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                    )
+
                     val file = CloudFile().apply {
                         id = item.idFile
                         title = item.path
