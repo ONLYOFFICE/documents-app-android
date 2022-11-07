@@ -98,11 +98,13 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/color_filter_chip_text_selector</item>
-        <item name="chipMinTouchTargetSize">0dp</item>
         <item name="android:textSize">14sp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:checkable">true</item>
+        <item name="chipMinTouchTargetSize">0dp</item>
         <item name="chipBackgroundColor">@color/color_filter_chip_selector</item>
         <item name="chipStrokeWidth">0.5dp</item>
-        <item name="android:padding">10dp</item>
         <item name="chipStrokeColor">@color/color_filter_chip_border_selector</item>
     </style>
 

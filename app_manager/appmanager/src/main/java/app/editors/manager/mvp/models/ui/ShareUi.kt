@@ -11,6 +11,7 @@ data class ShareUi(
     val isLocked: Boolean,
     val isOwner: Boolean,
     val isGuest: Boolean,
+    val isRoom: Boolean,
     var avatar: Drawable? = null
 ) : ViewType {
 

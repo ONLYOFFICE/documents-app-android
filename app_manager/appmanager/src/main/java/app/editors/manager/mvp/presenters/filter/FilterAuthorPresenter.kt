@@ -66,26 +66,28 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
         authorStack.addAll(items)
     }
 
-    private fun List<Author.User>.moveOwnerToFirstPosition(): List<Author.User> {
+    private fun List<Author.User>.moveOwnerToFirstPosition(withSelf: Boolean): List<Author.User> {
         return apply {
             find { it.id == accountId }?.let { user ->
                 (this as MutableList).apply {
                     remove(user)
-                    add(
-                        index = 0,
-                        element = Author.User(
-                            id = user.id,
-                            name = context.getString(R.string.item_owner_self),
-                            department = user.department,
-                            avatarUrl = user.avatarUrl
+                    if (withSelf) {
+                        add(
+                            index = 0,
+                            element = Author.User(
+                                id = user.id,
+                                name = context.getString(R.string.item_owner_self),
+                                department = user.department,
+                                avatarUrl = user.avatarUrl
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
     }
 
-    fun getUsers() {
+    fun getUsers(withSelf: Boolean = true) {
         disposable = api.getUsers()
             .subscribeOn(Schedulers.io())
             .doOnSubscribe { viewState.onLoadingUsers() }
@@ -93,7 +95,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
             .map { response ->
                 response.response
                     .map { Author.User(it.id, it.displayName, it.department, it.avatarMedium) }
-                    .moveOwnerToFirstPosition()
+                    .moveOwnerToFirstPosition(withSelf)
                     .also(this::setStackItems)
             }
             .observeOn(AndroidSchedulers.mainThread())

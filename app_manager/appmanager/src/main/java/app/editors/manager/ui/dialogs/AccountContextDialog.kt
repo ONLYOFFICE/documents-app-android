@@ -6,10 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import app.documents.core.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.databinding.AccountContextLayoutBinding
-import app.editors.manager.managers.utils.isVisible
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.UiUtils.setImageTint

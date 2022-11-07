@@ -153,11 +153,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         var fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
         if (fragment is MainPagerFragment) {
             val fragments = fragment.getChildFragmentManager().fragments
-            for (fr in fragments) {
-                if (fr is DocsMyFragment) {
-                    fr.getArgs(intent)
-                }
-            }
+//            for (fr in fragments) {
+//                if (fr is DocsMyFragment) {
+//                    fr.getArgs(intent)
+//                }
+//            }
         }
 
         fragment = supportFragmentManager.findFragmentByTag(DocsWebDavFragment.TAG)

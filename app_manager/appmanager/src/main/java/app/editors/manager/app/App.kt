@@ -15,13 +15,13 @@ import app.documents.core.share.ShareService
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
+import app.editors.manager.managers.utils.KeyStoreUtils
 import app.editors.manager.storages.dropbox.di.component.DaggerDropboxComponent
 import app.editors.manager.storages.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.storages.dropbox.dropbox.login.IDropboxLoginServiceProvider
 import app.editors.manager.storages.googledrive.di.component.DaggerGoogleDriveComponent
 import app.editors.manager.storages.googledrive.googledrive.api.IGoogleDriveServiceProvider
 import app.editors.manager.storages.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
-import app.editors.manager.managers.utils.KeyStoreUtils
 import app.editors.manager.storages.onedrive.di.component.DaggerOneDriveComponent
 import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
 import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
@@ -49,11 +49,6 @@ class App : Application() {
         @JvmStatic
         fun getLocale(): String {
             return Locale.getDefault().language
-        }
-
-        @JvmStatic
-        fun isDesktopMode(): Boolean {
-            return isDesktop
         }
 
     }
@@ -163,11 +158,10 @@ class App : Application() {
         }
     }
 
-    fun getApi(): Api {
+    fun getApi(): ApiComponent {
         return DaggerApiComponent.builder()
             .appComponent(appComponent)
             .build()
-            .api
     }
 
     fun getShareService(): ShareService {
@@ -240,10 +234,16 @@ val Context.googleDriveLoginService: IGoogleDriveLoginServiceProvider
 
 fun Context.api(): Api {
     return when (this) {
-        is App -> this.getApi()
+        is App -> this.getApi().api
         else -> this.applicationContext.api()
     }
 }
+
+val Context.roomApi: RoomApi
+    get() = when (this) {
+        is App -> this.getApi().roomApi
+        else -> this.applicationContext.roomApi
+    }
 
 fun Context.webDavApi(): WebDavApi {
     return when (this) {

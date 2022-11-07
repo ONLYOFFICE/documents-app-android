@@ -354,7 +354,7 @@ dependencies {
     implementation(Lifecycle.liveData)
     implementation(Lifecycle.runtime)
 
-    implementation("androidx.fragment:fragment-ktx:1.4.1")
+    implementation("androidx.fragment:fragment-ktx:1.5.2")
 
     //Compose
     implementation(Compose.ui)

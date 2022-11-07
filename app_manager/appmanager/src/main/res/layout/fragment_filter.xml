@@ -6,121 +6,10 @@
     android:fillViewport="true">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/default_margin_large"
-            android:layout_marginVertical="@dimen/default_margin_medium"
-            android:text="@string/filter_title_type"
-            android:textAppearance="@style/FilterTitleTextAppearance" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/types"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingHorizontal="@dimen/default_margin_large"
-            android:paddingVertical="@dimen/default_margin_medium"
-            app:chipSpacingHorizontal="@dimen/default_margin_large"
-            app:chipSpacingVertical="@dimen/default_margin_large"
-            app:singleSelection="true">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/folders"
-                style="@style/FilterChip"
-                android:text="@string/list_headers_folder" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/documents"
-                style="@style/FilterChip"
-                android:text="@string/filter_type_documents" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/presentations"
-                style="@style/FilterChip"
-                android:text="@string/filter_type_presentations" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/spreadsheets"
-                style="@style/FilterChip"
-                android:text="@string/filter_type_spreadsheets" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/images"
-                style="@style/FilterChip"
-                android:text="@string/filter_type_images" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/media"
-                style="@style/FilterChip"
-                android:text="@string/filter_type_media" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/archives"
-                style="@style/FilterChip"
-                android:text="@string/filter_type_archives" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/all"
-                style="@style/FilterChip"
-                android:text="@string/filter_type_all" />
-
-        </com.google.android.material.chip.ChipGroup>
-
-        <TextView
-            android:id="@+id/authorTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/default_margin_large"
-            android:layout_marginVertical="@dimen/default_margin_medium"
-            android:text="@string/filter_title_author"
-            android:textAppearance="@style/FilterTitleTextAppearance" />
-
-        <LinearLayout
-            android:id="@+id/authorLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingHorizontal="@dimen/default_margin_large"
-            android:paddingVertical="@dimen/default_margin_medium">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/users"
-                style="@style/FilterChip.Closable"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/default_margin_large"
-                android:text="@string/share_add_common_header_users" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/groups"
-                style="@style/FilterChip.Closable"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/share_add_common_header_groups" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/searchTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/default_margin_large"
-            android:layout_marginVertical="@dimen/default_margin_medium"
-            android:text="@string/filter_title_search"
-            android:textAppearance="@style/FilterTitleTextAppearance" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/subfolder"
-            style="@style/FilterChip"
-            android:layout_marginHorizontal="@dimen/default_margin_large"
-            android:layout_marginVertical="@dimen/default_margin_medium"
-            android:checkable="true"
-            android:text="@string/filter_exclude_subfolders" />
 
         <Space
             android:layout_width="match_parent"
@@ -135,6 +24,7 @@
             android:layout_marginVertical="@dimen/default_margin_xxlarge"
             android:animateLayoutChanges="true"
             android:clickable="true"
+            android:focusable="true"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
             app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="@dimen/default_corner_radius_small"

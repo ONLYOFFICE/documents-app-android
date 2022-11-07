@@ -36,7 +36,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
 
     private val headers: Headers by lazy {
         Headers.Builder()
-            .addUnsafeNonAscii(ApiContract.HEADER_CONTENT_TYPE, "application/octet-stream")
+            .addUnsafeNonAscii(ApiContract.HEADER_CONTENT_OPERATION_TYPE, "application/octet-stream")
             .build()
     }
 

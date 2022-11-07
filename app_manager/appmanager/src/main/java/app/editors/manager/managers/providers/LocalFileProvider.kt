@@ -153,10 +153,6 @@ class LocalFileProvider(private val localContentTools: LocalContentTools) : Base
 
     override fun terminate(): Observable<List<Operation>>? = null
 
-    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
-
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
-
     override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
 
     fun import(context: Context, folderId: String, uri: Uri?): Observable<Int> {
