@@ -986,6 +986,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onUpdateFavoriteItem() {
+        fragmentListBinding?.listSwipeRefresh?.isRefreshing = false
         explorerAdapter?.updateItem(presenter.itemClicked)
     }
 

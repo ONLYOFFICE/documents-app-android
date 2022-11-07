@@ -755,7 +755,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             .doOnSubscribe { viewState.onSwipeEnable(true) }
                             .subscribe({ response ->
                             if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
-                                refresh()
+                                folder.pinned = !folder.pinned
+                                viewState.onUpdateFavoriteItem()
                             }
                         }, ::fetchError)
                     )}
