@@ -2,6 +2,7 @@ package app.editors.manager.managers.providers
 
 import android.content.Context
 import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App.Companion.getLocale
 import app.editors.manager.managers.providers.ProviderError.Companion.throwErrorCreate
@@ -16,7 +17,7 @@ import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
 import io.reactivex.Observable
 import lib.toolkit.base.managers.tools.LocalContentTools
-import lib.toolkit.base.managers.utils.PathUtils
+import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import java.io.File
 import java.io.IOException
@@ -161,10 +162,8 @@ class LocalFileProvider(private val localContentTools: LocalContentTools) : Base
     fun import(context: Context, folderId: String, uri: Uri?): Observable<Int> {
         val folder = File(folderId)
         return Observable.just(uri).map { file ->
-            val path = PathUtils.getPath(context, file)
-            val moveFile = File(checkNotNull(Uri.parse(path).path))
-            localContentTools.moveFiles(moveFile, folder, true)
-            1
+            val docFile = DocumentFile.fromSingleUri(context, file)
+            return@map if (FileUtils.copyFile(context, file, "${folder.path}/${docFile?.name}")) 1 else 0
         }
     }
 
