@@ -82,6 +82,15 @@ class LocalContentTools @Inject constructor(val context: Context) {
             }
         }
 
+        fun toOOXML(ext: String): String {
+            return when (ext) {
+                ODT_EXTENSION -> DOCX_EXTENSION
+                ODS_EXTENSION -> XLSX_EXTENSION
+                ODP_EXTENSION -> PPTX_EXTENSION
+                else -> throw IllegalArgumentException(".$ext can not be converted to OOXML extension")
+            }
+        }
+
     }
 
     private val contentResolver: ContentResolver = context.contentResolver
@@ -377,20 +386,6 @@ class LocalContentTools @Inject constructor(val context: Context) {
         } else {
             false
         }
-    }
-
-    fun getFontsDir(): String {
-        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-            "${context.filesDir.path}/Fonts"
-        } else {
-            "${Environment.getExternalStorageDirectory().absolutePath}/Fonts"
-        }
-        val folder = File(path)
-        if (!folder.exists()) {
-            folder.mkdir()
-        }
-        return path
-
     }
 
 }

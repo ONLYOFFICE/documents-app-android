@@ -33,8 +33,8 @@ class GoogleDriveSignInFragment: BaseStorageSignInFragment(){
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             if (url.startsWith(redirectUrl.toString())) {
-                val parametersMap = StringUtils.getParametersFromUrl(url.split("#")[1])
-                parametersMap[TAG_ACCESS_TOKEN]?.let { presenter.getUserInfo(it) }
+                val parametersMap = StringUtils.getParametersFromUrl(url.split("?")[1])
+                parametersMap[TAG_CODE]?.let { presenter.getUserInfo(it) }
             }
         }
 
@@ -62,7 +62,7 @@ class GoogleDriveSignInFragment: BaseStorageSignInFragment(){
 
     override fun loadWebView(url: String?) {
         viewBinding?.webStorageSwipe?.isRefreshing = true
-        url?.let { viewBinding?.webStorageWebview?.loadUrl(it.replace("code", "token")) }
+        url?.let { viewBinding?.webStorageWebview?.loadUrl(it) }
     }
 
     override fun getWebViewCallback() = WebViewCallbacks()

@@ -120,4 +120,12 @@ class GoogleDriveServiceProvider(
             return error
         }
     }
+
+    override fun getUserInfo(token: String): Single<GoogleDriveResponse> {
+        return googleDriveServiceProvider.getUserInfo(token)
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
 }

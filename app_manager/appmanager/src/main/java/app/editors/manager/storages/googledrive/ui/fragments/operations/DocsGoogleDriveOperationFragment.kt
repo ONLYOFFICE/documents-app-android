@@ -30,6 +30,10 @@ class DocsGoogleDriveOperationFragment: BaseStorageOperationsFragment(), DocsGoo
         // Stub
     }
 
+    override fun onSignIn() {
+        // Stub
+    }
+
     override fun onRefreshToken() {
         val storage = Storage(
             ApiContract.Storage.GOOGLEDRIVE,

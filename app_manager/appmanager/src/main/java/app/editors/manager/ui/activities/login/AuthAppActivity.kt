@@ -64,7 +64,7 @@ class AuthAppActivity : BaseAppActivity() {
             it.setHomeAsUpIndicator(ResourcesProvider(this)
                 .getDrawable(R.drawable.ic_toolbar_close)?.apply {
                     setTint(getColor(lib.toolkit.base.R.color.colorPrimary))
-                });
+                })
         }
     }
 }

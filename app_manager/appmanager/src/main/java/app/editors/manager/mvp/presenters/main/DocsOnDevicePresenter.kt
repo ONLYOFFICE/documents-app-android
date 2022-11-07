@@ -74,7 +74,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     .subscribe({ file: CloudFile ->
                         addFile(file)
                         addRecent(file)
-                        openFile(file)
+                        openFile(file, true)
                     }) { viewState.onError(context.getString(R.string.errors_create_local_file)) })
             }
         }
@@ -331,16 +331,16 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     }
 
-    private fun openFile(file: CloudFile) {
+    private fun openFile(file: CloudFile, isNew: Boolean = false) {
         val path = file.id
         val uri = Uri.fromFile(File(path))
         val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
-        openFile(uri, ext)
+        openFile(uri, ext, isNew)
     }
 
-    private fun openFile(uri: Uri, ext: String) {
+    private fun openFile(uri: Uri, ext: String, isNew: Boolean = false) {
         when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> viewState.onShowDocs(uri)
+            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> viewState.onShowDocs(uri, isNew)
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
@@ -396,14 +396,14 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun deleteFile() {
-        if (itemClicked != null) {
+        itemClicked?.let { item ->
             val items: MutableList<Item> = ArrayList()
-            items.add(itemClicked!!)
+            items.add(item)
             fileProvider?.let { provider ->
                 disposable.add(provider.delete(items, null)
                     .subscribe({ }, { }) {
-                        modelExplorerStack.removeItemById(itemClicked?.id)
-                        viewState.onRemoveItem(itemClicked)
+                        modelExplorerStack.removeItemById(item.id)
+                        viewState.onRemoveItem(item)
                         viewState.onSnackBar(context.getString(R.string.operation_complete_message))
                     })
             }
@@ -414,8 +414,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     fun createPhoto() {
         val photo = FileUtils.createFile(File(stack?.current?.id ?: ""), TimeUtils.fileTimeStamp, "png")
         if (photo != null) {
-            photoUri = ContentResolverUtils.getFileUri(context, photo)
-            viewState.onShowCamera(photoUri)
+            photoUri = ContentResolverUtils.getFileUri(context, photo).also { uri ->
+                viewState.onShowCamera(uri)
+            }
         }
     }
 
