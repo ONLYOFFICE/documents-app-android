@@ -26,5 +26,5 @@ interface MainActivityView : BaseViewExt {
     fun onRender(state: MainActivityState)
     fun openFile(account: CloudAccount, fileData: String)
     fun onCodeActivity()
-    fun onSwitchAccount(data: OpenDataModel)
+    fun onSwitchAccount(data: OpenDataModel, isToken: Boolean = false)
 }

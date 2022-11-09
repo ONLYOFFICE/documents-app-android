@@ -243,17 +243,18 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     fun checkFileData(fileData: Uri) {
         presenterScope.launch {
+            val data: OpenDataModel = if (preferenceTool.fileData.isNotEmpty()) {
+                Json.decodeFromString(preferenceTool.fileData)
+            } else {
+                Json.decodeFromString(CryptUtils.decodeUri(fileData.query))
+            }
+
             accountDao.getAccountOnline()?.let { account ->
                 if (fileData.queryParameterNames.contains("push")) {
                     viewState.openFile(account, fileData.getQueryParameter("data") ?: "")
                     return@launch
                 }
-                val data: OpenDataModel = if (preferenceTool.fileData.isNotEmpty()) {
-                    Json.decodeFromString(preferenceTool.fileData)
 
-                } else {
-                    Json.decodeFromString(CryptUtils.decodeUri(fileData.query))
-                }
                 preferenceTool.fileData = ""
                 if (data.portal?.equals(
                         account.portal,
@@ -265,14 +266,24 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                         viewState.openFile(account, Json.encodeToString(data))
                     }
                 } else {
+                    val isToken = checkAccountLogin(data)
                     preferenceTool.fileData = Json.encodeToString(data)
                     withContext(Dispatchers.Main) {
-                        viewState.onSwitchAccount(data)
+                        viewState.onSwitchAccount(data, isToken)
                     }
                 }
 
+            } ?: run {
+                withContext(Dispatchers.Main) {
+                    viewState.onSwitchAccount(data, false)
+                }
             }
         }
+    }
+
+    private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
+        val account = accountDao.getAccountByLogin(data.email?.lowercase() ?: "")
+        return account?.token != null && account.token.isNotEmpty()
     }
 
     fun onRemoveFileData() {

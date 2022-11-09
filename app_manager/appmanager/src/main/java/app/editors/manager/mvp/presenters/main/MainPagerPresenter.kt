@@ -16,11 +16,15 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.CryptUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 import java.util.*
 import javax.inject.Inject
 
@@ -73,13 +77,25 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                     // My section
                     Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_USER }), 0)
                     // Trash section
-                    Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }), this.lastIndex)
+                    Collections.swap(
+                        this,
+                        this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }),
+                        this.lastIndex
+                    )
                     //Rooms sections
-                    if (this.contains(this.find { it.current?.rootFolderType ==  ApiContract.SectionType.CLOUD_VIRTUAL_ROOM})) {
-                        Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }), 1)
+                    if (this.contains(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM })) {
+                        Collections.swap(
+                            this,
+                            this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }),
+                            1
+                        )
                     }
-                    if (this.contains(this.find { it.current?.rootFolderType ==  ApiContract.SectionType.CLOUD_ARCHIVE_ROOM})) {
-                        Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }), this.lastIndex - 1)
+                    if (this.contains(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM })) {
+                        Collections.swap(
+                            this,
+                            this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }),
+                            this.lastIndex - 1
+                        )
                     }
                 }
             }
@@ -104,10 +120,20 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             ) {
                 viewState.setFileData(Json.encodeToString(dataModel))
             } else {
-                preferenceTool.fileData = Json.encodeToString(dataModel)
-                viewState.onSwitchAccount(dataModel)
+                presenterScope.launch {
+                    val isToken = checkAccountLogin(dataModel)
+                    preferenceTool.fileData = Json.encodeToString(dataModel)
+                    withContext(Dispatchers.Main) {
+                        viewState.onSwitchAccount(dataModel, isToken)
+                    }
+                }
             }
         }
+    }
+
+    private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
+        val account = accountDao.getAccountByLogin(data.email?.lowercase() ?: "")
+        return account?.token != null && account.token.isNotEmpty()
     }
 
     fun onRemoveFileData() {

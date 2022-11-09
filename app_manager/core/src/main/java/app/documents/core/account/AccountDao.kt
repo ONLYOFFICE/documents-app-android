@@ -18,6 +18,9 @@ interface AccountDao {
     @Query("SELECT * FROM CloudAccount WHERE id = :id")
     suspend fun getAccount(id: String) : CloudAccount?
 
+    @Query("SELECT * FROM CloudAccount WHERE login = :login")
+    suspend fun getAccountByLogin(login: String) : CloudAccount?
+
     @Query("SELECT * FROM CloudAccount WHERE id = :id")
     fun getCursorAccount(id: String) : Cursor?
 
