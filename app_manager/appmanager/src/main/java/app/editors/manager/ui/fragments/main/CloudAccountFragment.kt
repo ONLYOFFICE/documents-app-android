@@ -31,8 +31,8 @@ import app.editors.manager.ui.adapters.AccountDetailsLookup
 import app.editors.manager.ui.adapters.AccountKeyProvider
 import app.editors.manager.ui.adapters.CloudAccountAdapter
 import app.editors.manager.ui.dialogs.AccountContextDialog
-import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
+import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -54,8 +54,12 @@ class CloudAccountFragment : BaseAppFragment(),
         const val RESULT_SIGN_IN = "result_sign_in"
         const val RESULT_LOG_OUT = "result_log_out"
 
-        fun newInstance(): CloudAccountFragment {
-            return CloudAccountFragment()
+        fun newInstance(isSwitch: Boolean = false): CloudAccountFragment {
+            return CloudAccountFragment().apply {
+                arguments = Bundle(1).apply {
+                    putBoolean(CloudAccountPresenter.KEY_SWITCH, isSwitch)
+                }
+            }
         }
     }
 
@@ -242,7 +246,7 @@ class CloudAccountFragment : BaseAppFragment(),
             .build()
         selectedTracker?.addObserver(selectionObserver)
 
-        presenter.getAccounts(savedInstanceState)
+        presenter.getAccounts(savedInstanceState, arguments?.getBoolean(CloudAccountPresenter.KEY_SWITCH) ?: false)
     }
 
     private fun setTabletToolbar() {

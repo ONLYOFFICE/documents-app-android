@@ -10,11 +10,13 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import app.documents.core.network.ApiContract
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.views.main.MainPagerView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
@@ -23,6 +25,7 @@ import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import lib.toolkit.base.managers.utils.UiUtils
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -120,7 +123,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         var data = requireActivity().intent.data
         if (bundle != null && bundle.containsKey("data")) {
             val model = bundle.getString("data")
-            data = Uri.parse("oodocuments://openfile?data=${model}&push=true")
+            data = Uri.parse("${BuildConfig.PUSH_SCHEME}://openfile?data=${model}&push=true")
         }
         presenter.getState(data)
     }
@@ -243,8 +246,19 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }, 1000)
     }
 
-    override fun onOpenProjectFileError(@StringRes res: Int) {
-        showSnackBarWithAction(res, R.string.switch_account_open_project_file, this)
+    override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = getString(R.string.switch_account_title),
+            description = getString(R.string.switch_account_description, data.portal),
+            acceptListener = {
+                activity?.showAccountsActivity(isToken)
+            },
+            cancelListener = {
+                presenter.onRemoveFileData()
+            },
+            acceptTitle = getString(R.string.switch_account_open_project_file)
+        )
     }
 
     fun isRoot(): Boolean {

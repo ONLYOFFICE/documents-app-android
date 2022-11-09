@@ -16,6 +16,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
+import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
@@ -23,6 +24,7 @@ import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment
 import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
 import app.editors.manager.ui.fragments.main.*
 import app.editors.manager.viewModels.main.RecentViewModel
@@ -36,6 +38,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.PermissionUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -58,7 +61,7 @@ interface IMainActivity {
     fun getNavigationBottom(): BottomNavigationView
     fun onSwitchAccount()
     fun showOnCloudFragment(account: CloudAccount? = null)
-    fun showAccountsActivity()
+    fun showAccountsActivity(isSwitch: Boolean = false)
     fun onLogOut()
 }
 
@@ -78,7 +81,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 isCode?.let { putExtra(KEY_CODE, isCode) }
-                bundle?.let { putExtras(bundle)  }
+                bundle?.let { putExtras(bundle) }
             })
         }
     }
@@ -126,14 +129,14 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             }
             if (action == DownloadReceiver.DOWNLOAD_ACTION_CANCELED) {
                 intent.extras?.let { extras ->
-                    WorkManager.getInstance()
+                    WorkManager.getInstance(this)
                         .cancelWorkById(UUID.fromString(extras.getString(DownloadReceiver.EXTRAS_KEY_ID)))
                 }
                 return
             }
             if (action == UploadReceiver.UPLOAD_ACTION_CANCELED) {
                 intent.extras?.let { extras ->
-                    WorkManager.getInstance()
+                    WorkManager.getInstance(this)
                         .cancelWorkById(UUID.fromString(extras.getString(UploadReceiver.EXTRAS_KEY_ID)))
                 }
                 return
@@ -190,6 +193,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 }
                 REQUEST_ACTIVITY_PORTAL -> {
                     presenter.init(true)
+                }
+                REQUEST_ACTIVITY_ACCOUNTS -> {
+                    presenter.onRemoveFileData()
                 }
             }
             if (data != null && data.extras != null) {
@@ -332,7 +338,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun openFile(account: CloudAccount, fileData: String) {
+        viewBinding.bottomNavigation.setOnItemSelectedListener(null)
+        viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
         showCloudFragment(account = account, fileData = fileData)
+        viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
     }
 
     override fun onCodeActivity() {
@@ -386,12 +395,27 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    override fun onOpenProjectFileError(error: String) {
-        showSnackBar(error, getString(R.string.switch_account_open_project_file), this)
+    override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {
+        UiUtils.showQuestionDialog(
+            context = this,
+            title = getString(R.string.switch_account_title),
+            description = getString(R.string.switch_account_description, data.portal),
+            acceptListener = {
+                if (isToken) {
+                    showAccountsActivity(true)
+                } else {
+                    SignInActivity.showPortalSignIn(this, data.portal, data.email, arrayOf())
+                }
+            },
+            cancelListener = {
+                presenter.onRemoveFileData()
+            },
+            acceptTitle = getString(R.string.switch_account_open_project_file)
+        )
     }
 
     override fun onClick(view: View?) {
-        onSwitchAccount()
+        showAccountsActivity()
     }
 
     override fun onUnauthorized(message: String?) {
@@ -642,11 +666,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         showNavigationButton(false)
     }
 
-    override fun showAccountsActivity() {
+    override fun showAccountsActivity(isSwitch: Boolean) {
         if (!isTablet) {
-            AccountsActivity.show(this)
+            AccountsActivity.show(this, isSwitch)
         } else {
-            CloudAccountDialogFragment.newInstance()
+            CloudAccountDialogFragment.newInstance(isSwitch)
                 .show(supportFragmentManager, CloudAccountDialogFragment.TAG)
         }
     }

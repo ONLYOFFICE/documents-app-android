@@ -5,7 +5,6 @@ import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.settings.NetworkSettings
 import app.editors.manager.BuildConfig
-import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
@@ -17,11 +16,15 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.CryptUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 import java.util.*
 import javax.inject.Inject
 
@@ -74,36 +77,66 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                     // My section
                     Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_USER }), 0)
                     // Trash section
-                    Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }), this.lastIndex)
+                    Collections.swap(
+                        this,
+                        this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }),
+                        this.lastIndex
+                    )
                     //Rooms sections
-                    if (this.contains(this.find { it.current?.rootFolderType ==  ApiContract.SectionType.CLOUD_VIRTUAL_ROOM})) {
-                        Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }), 1)
+                    if (this.contains(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM })) {
+                        Collections.swap(
+                            this,
+                            this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }),
+                            1
+                        )
                     }
-                    if (this.contains(this.find { it.current?.rootFolderType ==  ApiContract.SectionType.CLOUD_ARCHIVE_ROOM})) {
-                        Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }), this.lastIndex - 1)
+                    if (this.contains(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM })) {
+                        Collections.swap(
+                            this,
+                            this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }),
+                            this.lastIndex - 1
+                        )
                     }
                 }
             }
     }
 
     private fun checkFileData(account: CloudAccount, fileData: Uri?) {
-        fileData?.let { data ->
-            if (data.scheme?.equals(BuildConfig.PUSH_SCHEME) == true && data.host.equals("openfile")) {
-                if (fileData.queryParameterNames.contains("push")) {
-                    viewState.setFileData(fileData.getQueryParameter("data") ?: "")
-                    return
-                }
-                val dataModel = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(data.query))
-                if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(
-                        account.login,
-                        ignoreCase = true
-                    ) == true
-                ) {
-                    viewState.setFileData(Json.encodeToString(dataModel))
-                } else {
-                    viewState.onOpenProjectFileError(R.string.error_open_project_file)
+        if ((fileData?.scheme?.equals(BuildConfig.PUSH_SCHEME) == true && fileData.host.equals("openfile")) || preferenceTool.fileData.isNotEmpty()) {
+            if (fileData?.queryParameterNames?.contains("push") == true) {
+                viewState.setFileData(fileData.getQueryParameter("data") ?: "")
+                return
+            }
+            val dataModel: OpenDataModel = if (preferenceTool.fileData.isNotEmpty()) {
+                Json.decodeFromString(preferenceTool.fileData)
+            } else {
+                Json.decodeFromString(CryptUtils.decodeUri(fileData?.query))
+            }
+            preferenceTool.fileData = ""
+            if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(
+                    account.login,
+                    ignoreCase = true
+                ) == true
+            ) {
+                viewState.setFileData(Json.encodeToString(dataModel))
+            } else {
+                presenterScope.launch {
+                    val isToken = checkAccountLogin(dataModel)
+                    preferenceTool.fileData = Json.encodeToString(dataModel)
+                    withContext(Dispatchers.Main) {
+                        viewState.onSwitchAccount(dataModel, isToken)
+                    }
                 }
             }
         }
+    }
+
+    private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
+        val account = accountDao.getAccountByLogin(data.email?.lowercase() ?: "")
+        return account?.token != null && account.token.isNotEmpty()
+    }
+
+    fun onRemoveFileData() {
+        preferenceTool.fileData = ""
     }
 }
