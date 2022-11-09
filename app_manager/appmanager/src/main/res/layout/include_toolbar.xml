@@ -20,13 +20,13 @@
             style="@style/CommonImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_arrow_down"
-            app:tint="@color/colorPrimary"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/linearLayoutCompat3"
             app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_arrow_down"
+            app:tint="@color/colorPrimary"
             tools:ignore="ContentDescription" />
 
         <androidx.appcompat.widget.AppCompatImageView
