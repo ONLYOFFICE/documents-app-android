@@ -32,16 +32,19 @@ import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.popup.SharePopup
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.StringUtils.getExtension
-import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 
 class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     @InjectPresenter
     lateinit var settingsPresenter: SettingsPresenter
+
+    @ProvidePresenter
+    fun provideSettingsPresenter(): SettingsPresenter {
+        return SettingsPresenter(arguments?.getSerializable(TAG_ITEM) as Item)
+    }
 
     private var sharePopup: SharePopup? = null
     private var shareActivity: ShareActivity? = null
@@ -51,6 +54,8 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     private var viewBinding: FragmentShareSettingsListBinding? = null
     private var headerBinding: IncludeShareSettingsHeaderBinding? = null
     private var popupBinding: IncludeButtonPopupBinding? = null
+    private val item: Item
+        get() = arguments?.getSerializable(TAG_ITEM) as Item
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -83,11 +88,11 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         viewBinding = FragmentShareSettingsListBinding.inflate(inflater, container, false)
         headerBinding = viewBinding?.shareSettingsHeader
         popupBinding = headerBinding?.shareSettingsAccessButtonLayout
-        return viewBinding?.root!!
+        return viewBinding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -242,21 +247,17 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     private fun setPopup(view: View?, isVisitor: Boolean) {
         view?.post {
-            sharePopup = SharePopup(requireContext(), R.layout.popup_share_menu)
-            sharePopup?.let { popup ->
-                popup.setContextListener(listContextListener)
-                if (!isVisitor) {
-                    if (settingsPresenter.item is CloudFolder) {
-                        popup.setIsFolder()
-                    } else {
-                        val ext = getExtensionFromPath(checkNotNull(settingsPresenter.item?.title))
-                        popup.extension = getExtension(ext).takeIf { it != StringUtils.Extension.FORM }
-                            ?: StringUtils.getFormExtension(ext)
-                    }
-                } else {
-                    popup.setIsVisitor()
+            sharePopup = SharePopup(
+                context = requireContext(),
+                layoutId = R.layout.popup_share_menu
+            ).apply {
+                setContextListener(listContextListener)
+                if (isVisitor) {
+                    this.isVisitor = true
                 }
-                popup.showDropAt(view, requireActivity())
+                setFullAccess(true)
+                setItem(item)
+                showDropAt(view, requireActivity())
             }
         }
     }
@@ -268,17 +269,10 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             actionBar.setHomeButtonEnabled(true)
         }
         shareActivity?.expandAppBar()
-        getArgs()
         initViews()
         initClickListeners()
         restoreViews(savedInstanceState)
         ModelShareStack.getInstance().clearModel()
-    }
-
-    private fun getArgs() {
-        val bundle = arguments
-        val item = bundle?.getSerializable(TAG_ITEM) as Item
-        settingsPresenter.item = item
     }
 
     private fun initViews() {
@@ -347,7 +341,11 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 onButtonState(true)
             }
             ApiContract.ShareCode.READ_WRITE -> {
-                iconRes = R.drawable.ic_access_full
+                iconRes = if (item is CloudFolder && (item as CloudFolder).isRoom) {
+                    R.drawable.ic_drawer_menu_my_docs
+                } else {
+                    R.drawable.ic_access_full
+                }
                 messageRes = R.string.share_access_success
                 onButtonState(true)
             }
@@ -386,9 +384,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         viewBinding?.shareMainListOfItems.let { recyclerView: RecyclerView? ->
             recyclerView?.post {
                 if (sharePosition != 0) {
-                    setPopup(
-                        recyclerView.layoutManager?.findViewByPosition(sharePosition)
-                            ?.findViewById(R.id.button_popup_arrow), isVisitor)
+                    setPopup(recyclerView.layoutManager?.findViewByPosition(sharePosition)?.findViewById(R.id.button_popup_arrow), isVisitor)
                 } else {
                     showAccessPopup()
                 }
@@ -404,20 +400,16 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     }
 
     private fun showAccessPopup() {
-        sharePopup = SharePopup(requireContext(), R.layout.popup_share_menu)
-        sharePopup?.let { popup ->
-            popup.setContextListener(externalContextListener)
-            popup.setExternalLink()
-            popup.setFullAccess(false)
-            if (settingsPresenter.item is CloudFolder) {
-                popup.setIsFolder()
-            } else {
-                val ext = getExtensionFromPath(checkNotNull(settingsPresenter.item?.title))
-                popup.extension = getExtension(ext).takeIf { it != StringUtils.Extension.FORM }
-                    ?: StringUtils.getFormExtension(ext)
-            }
-            popup.showDropAt(
-                headerBinding?.shareSettingsAccessButtonLayout?.root!!,
+        sharePopup = SharePopup(
+            context = requireContext(),
+            layoutId = R.layout.popup_share_menu
+        ).apply {
+            setContextListener(externalContextListener)
+            setExternalLink()
+            setFullAccess(false)
+            setItem(item)
+            showDropAt(
+                checkNotNull(headerBinding?.shareSettingsAccessButtonLayout?.root),
                 requireActivity()
             )
         }
@@ -429,15 +421,15 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     private val listContextListener = object : SharePopup.PopupContextListener {
         override fun onContextClick(v: View, sharePopup: SharePopup) {
-            sharePopup.hide()
+             sharePopup.hide()
             when (v.id) {
-                R.id.popup_share_access_full -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ_WRITE)
-                R.id.popup_share_access_review -> settingsPresenter.setItemAccess(ApiContract.ShareCode.REVIEW)
-                R.id.popup_share_access_read -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ)
-                R.id.popup_share_access_deny -> settingsPresenter.setItemAccess(ApiContract.ShareCode.RESTRICT)
-                R.id.popup_share_access_remove -> settingsPresenter.setItemAccess(ApiContract.ShareCode.NONE)
-                R.id.popup_share_access_comment -> settingsPresenter.setItemAccess(ApiContract.ShareCode.COMMENT)
-                R.id.popup_share_access_fill_forms -> settingsPresenter.setItemAccess(ApiContract.ShareCode.FILL_FORMS)
+                R.id.fullAccessItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ_WRITE)
+                R.id.reviewItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.REVIEW)
+                R.id.viewItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ)
+                R.id.denyItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.RESTRICT)
+                R.id.deleteItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.NONE)
+                R.id.commentItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.COMMENT)
+                R.id.fillFormItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.FILL_FORMS)
             }
         }
     }
@@ -446,12 +438,12 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         override fun onContextClick(v: View, sharePopup: SharePopup) {
             sharePopup.hide()
             when (v.id) {
-                R.id.popup_share_access_full -> settingsPresenter.getExternalLink(ApiContract.ShareType.READ_WRITE)
-                R.id.popup_share_access_review -> settingsPresenter.getExternalLink(ApiContract.ShareType.REVIEW)
-                R.id.popup_share_access_read -> settingsPresenter.getExternalLink(ApiContract.ShareType.READ)
-                R.id.popup_share_access_deny -> settingsPresenter.getExternalLink(ApiContract.ShareType.NONE)
-                R.id.popup_share_access_comment -> settingsPresenter.getExternalLink(ApiContract.ShareType.COMMENT)
-                R.id.popup_share_access_fill_forms -> settingsPresenter.getExternalLink(ApiContract.ShareType.FILL_FORMS)
+                R.id.fullAccessItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.READ_WRITE)
+                R.id.reviewItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.REVIEW)
+                R.id.viewItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.READ)
+                R.id.denyItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.NONE)
+                R.id.commentItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.COMMENT)
+                R.id.fillFormItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.FILL_FORMS)
             }
         }
     }

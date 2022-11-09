@@ -78,7 +78,7 @@
     <dimen name="line_separator_height">1dp</dimen>
     <dimen name="line_separator_group_top">7dp</dimen>
     <dimen name="line_separator_group_bottom">8dp</dimen>
-    <dimen name="line_separator_left_margin">72dp</dimen>
+    <dimen name="line_separator_left_margin">56dp</dimen>
 
     <!-- Default common values-->
     <dimen name="default_elevation_height">4dp</dimen>

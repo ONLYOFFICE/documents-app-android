@@ -5,7 +5,8 @@ import com.google.gson.Gson
 data class Filter(
     var type: FilterType = FilterType.None,
     var author: FilterAuthor = FilterAuthor(),
-    var excludeSubfolder: Boolean = false
+    var excludeSubfolder: Boolean = false,
+    var roomType: RoomFilterType = RoomFilterType.None,
 ) {
 
     companion object {

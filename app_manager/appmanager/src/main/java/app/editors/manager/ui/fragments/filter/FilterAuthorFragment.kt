@@ -29,16 +29,18 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
     companion object {
         private const val KEY_AUTHOR_ID = "key_author_id"
         private const val KEY_IS_GROUPS = "key_is_groups"
+        private const val KEY_IS_ROOM = "key_is_room"
         const val REQUEST_KEY_AUTHOR = "request_key_author"
         const val BUNDLE_KEY_AUTHOR = "bundle_key_author"
 
         val TAG = FilterAuthorFragment::class.simpleName
 
-        fun newInstance(authorId: String, isGroups: Boolean): FilterAuthorFragment {
+        fun newInstance(authorId: String, isGroups: Boolean = false, isRoom: Boolean = false): FilterAuthorFragment {
             return FilterAuthorFragment().apply {
                 arguments = Bundle(2).apply {
                     putString(KEY_AUTHOR_ID, authorId)
                     putBoolean(KEY_IS_GROUPS, isGroups)
+                    putBoolean(KEY_IS_ROOM, isRoom)
                 }
             }
         }
@@ -224,7 +226,7 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
             if (isGroups) {
                 presenter.getGroups()
             } else {
-                presenter.getUsers()
+                presenter.getUsers(arguments?.getBoolean(KEY_IS_ROOM) != true)
             }
         }
     }

@@ -161,8 +161,8 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
         when (view.id) {
             R.id.clearCacheLayout -> {
                 showQuestionDialog(
+                   "",
                     requireContext().getString(R.string.dialog_clear_cache),
-                    null,
                     getString(R.string.dialogs_common_ok_button),
                     getString(R.string.dialogs_common_cancel_button),
                     TAG_DIALOG_TRASH

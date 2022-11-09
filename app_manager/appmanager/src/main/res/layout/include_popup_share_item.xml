@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/popupItemLayout"
+    style="@style/PopupLayout">
+
+    <ImageView
+        android:id="@+id/itemIcon"
+        style="@style/ContextListImage"
+        tools:ignore="ContentDescription"
+        tools:srcCompat="@drawable/ic_access_full" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/itemText"
+        style="@style/PopupText"
+        tools:text="@string/share_popup_access_full" />
+</LinearLayout>

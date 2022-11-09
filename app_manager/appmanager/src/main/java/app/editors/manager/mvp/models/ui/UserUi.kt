@@ -11,7 +11,8 @@ data class UserUi(
     val department: String,
     val displayName: String,
     val avatarUrl: String,
-    var avatar: Drawable? = null
+    var avatar: Drawable? = null,
+    val status: Int
 ): ItemProperties(), ShareViewType, Comparable<UserUi>{
 
     @Transient

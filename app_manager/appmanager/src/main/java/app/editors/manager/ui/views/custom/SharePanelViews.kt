@@ -1,18 +1,21 @@
 package app.editors.manager.ui.views.custom
 
-import android.app.Activity
 import android.text.Editable
 import android.view.View
+import androidx.core.view.isVisible
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludeSharePanelBinding
-import app.editors.manager.managers.utils.isVisible
+import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.ui.views.popup.SharePopup
-import lib.toolkit.base.managers.utils.StringUtils
 
-class SharePanelViews(private val view: View, private val activity: Activity) :
+class SharePanelViews(
+    private val view: View,
+    private val item: Item
+) :
     HeightValueAnimator.OnAnimationListener {
 
     interface OnEventListener {
@@ -28,7 +31,6 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
     private var sharePopup: SharePopup? = null
     private val popupAccessListener: PopupAccessListener
     private var viewBinding: IncludeSharePanelBinding? = null
-    private var extension: StringUtils.Extension = StringUtils.Extension.UNKNOWN
 
     init {
         viewBinding = IncludeSharePanelBinding.bind(view)
@@ -42,12 +44,15 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
     private fun initListeners() {
         viewBinding?.let { binding ->
             binding.buttonPopupLayout.buttonPopupLayout.setOnClickListener {
-                sharePopup = SharePopup(view.context, R.layout.popup_share_menu).apply {
-                    setContextListener(popupAccessListener)
-                    setExternalLink()
-                    extension = this@SharePanelViews.extension
-                    showOverlap(view, binding.root.height)
-                }
+                sharePopup = SharePopup(
+                        context = view.context,
+                        layoutId = R.layout.popup_share_menu,
+                    ).apply {
+                        setItem(item)
+                        setContextListener(popupAccessListener)
+                        setExternalLink()
+                        showOverlap(view, binding.root.height)
+                    }
             }
             binding.sharePanelResetButton.setOnClickListener { onReset() }
             binding.sharePanelMessageButton.setOnClickListener { onMessage() }
@@ -85,9 +90,15 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
     fun setAccessIcon(accessCode: Int) {
         viewBinding?.buttonPopupLayout?.let {
             when (accessCode) {
-                ApiContract.ShareCode.NONE -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_deny)
+                ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_deny)
                 ApiContract.ShareCode.READ -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_read)
-                ApiContract.ShareCode.READ_WRITE -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_full)
+                ApiContract.ShareCode.READ_WRITE -> {
+                    if (item is CloudFolder && item.isRoom) {
+                        it.buttonPopupImage.setImageResource(R.drawable.ic_drawer_menu_my_docs)
+                    } else {
+                        it.buttonPopupImage.setImageResource(R.drawable.ic_access_full)
+                    }
+                }
                 ApiContract.ShareCode.REVIEW -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_review)
                 ApiContract.ShareCode.COMMENT -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_comment)
                 ApiContract.ShareCode.FILL_FORMS -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_fill_form)
@@ -130,10 +141,6 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
         return isMessageShowed
     }
 
-    fun setExtension(extension: StringUtils.Extension) {
-        this.extension = extension
-    }
-
     val message: String?
         get() {
             viewBinding?.let {
@@ -147,9 +154,9 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
             return null
         }
 
-    override fun onStart(isShow: Boolean) { }
+    override fun onStart(isShow: Boolean) {}
 
-    override fun onEnd(isShow: Boolean) { }
+    override fun onEnd(isShow: Boolean) {}
 
     /*
      * Popup callbacks
@@ -158,12 +165,12 @@ class SharePanelViews(private val view: View, private val activity: Activity) :
         override fun onContextClick(v: View, sharePopup: SharePopup) {
             sharePopup.hide()
             when (v.id) {
-                R.id.popup_share_access_full -> onPopupAccess(ApiContract.ShareCode.READ_WRITE)
-                R.id.popup_share_access_review -> onPopupAccess(ApiContract.ShareCode.REVIEW)
-                R.id.popup_share_access_read -> onPopupAccess(ApiContract.ShareCode.READ)
-                R.id.popup_share_access_deny -> onPopupAccess(ApiContract.ShareCode.NONE)
-                R.id.popup_share_access_comment -> onPopupAccess(ApiContract.ShareCode.COMMENT)
-                R.id.popup_share_access_fill_forms -> onPopupAccess(ApiContract.ShareCode.FILL_FORMS)
+                R.id.fullAccessItem -> onPopupAccess(ApiContract.ShareCode.READ_WRITE)
+                R.id.reviewItem -> onPopupAccess(ApiContract.ShareCode.REVIEW)
+                R.id.viewItem -> onPopupAccess(ApiContract.ShareCode.READ)
+                R.id.denyItem -> onPopupAccess(ApiContract.ShareCode.NONE)
+                R.id.commentItem -> onPopupAccess(ApiContract.ShareCode.COMMENT)
+                R.id.fillFormItem -> onPopupAccess(ApiContract.ShareCode.FILL_FORMS)
             }
         }
     }

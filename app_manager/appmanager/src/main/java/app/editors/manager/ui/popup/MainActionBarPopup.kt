@@ -13,6 +13,7 @@ import lib.toolkit.base.ui.popup.ActionBarPopupItem
 
 class MainActionBarPopup(
     context: Context,
+    section: Int,
     clickListener: (ActionBarPopupItem) -> Unit,
     private val sortBy: String = "",
     private val isAsc: Boolean = false,
@@ -26,10 +27,24 @@ class MainActionBarPopup(
     object Type : ActionBarPopupItem(R.string.toolbar_menu_sort_type)
     object Size : ActionBarPopupItem(R.string.toolbar_menu_sort_size)
     object Author : ActionBarPopupItem(R.string.filter_title_author)
+    object RoomTags : ActionBarPopupItem(R.string.toolbar_menu_sort_tags)
+    object RoomType : ActionBarPopupItem(R.string.toolbar_menu_sort_type)
 
     companion object {
-        private val items: MutableList<ActionBarPopupItem> =
-            mutableListOf(Select, SelectAll, Date, Title, Type, Size, Author)
+        private val selectPopupItems: List<ActionBarPopupItem> = listOf(Select, SelectAll)
+        private val roomSortPopupItems: List<ActionBarPopupItem> = listOf(Date, Title, RoomType, RoomTags, Author)
+        val sortPopupItems: List<ActionBarPopupItem> = listOf(Date, Title, Type, Size, Author)
+
+        fun getItems(section: Int): MutableList<ActionBarPopupItem> =
+            mutableListOf<ActionBarPopupItem>().apply {
+                if (ApiContract.SectionType.isRoom(section)) {
+                    addAll(selectPopupItems)
+                    addAll(roomSortPopupItems)
+                } else {
+                    addAll(selectPopupItems)
+                    addAll(sortPopupItems)
+                }
+            }
 
         fun getSortPopupItem(sortBy: String?): ActionBarPopupItem {
             return when (sortBy) {
@@ -38,16 +53,20 @@ class MainActionBarPopup(
                 ApiContract.Parameters.VAL_SORT_BY_SIZE -> Size
                 ApiContract.Parameters.VAL_SORT_BY_TITLE -> Title
                 ApiContract.Parameters.VAL_SORT_BY_OWNER -> Author
+                ApiContract.Parameters.VAL_SORT_BY_ROOM_TYPE -> RoomType
+                ApiContract.Parameters.VAL_SORT_BY_TAGS -> RoomTags
                 else -> throw NoSuchElementException("There is no such sort type")
             }
         }
+
     }
 
     private var viewBinding: PopupActionBarBinding? = null
 
     init {
+        val items = getItems(section)
         viewBinding = PopupActionBarBinding.inflate(inflater).apply {
-            divider.isVisible = excluded.containsAll(listOf(Select, SelectAll)) != true
+            divider.isVisible = !excluded.containsAll(selectPopupItems) && !excluded.containsAll(sortPopupItems)
             popupMenu.children
                 .filterIsInstance(LinearLayout::class.java)
                 .forEachIndexed { index, view ->

@@ -14,10 +14,24 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorSurface"
+            android:background="@drawable/drawable_bottom_sheet_fragment"
             android:orientation="vertical"
-            android:paddingTop="@dimen/popup_margins_top_bottom"
             android:paddingBottom="@dimen/popup_margins_top_bottom">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:padding="@dimen/default_margin_medium">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:tint="@color/colorOnSurface"
+                    android:src="@drawable/ic_bottom_divider" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/list_explorer_action_docs"

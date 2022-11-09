@@ -5,10 +5,9 @@ import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import android.view.View
+import androidx.core.view.isVisible
 import app.editors.manager.BuildConfig
-import app.editors.manager.R
 import app.editors.manager.databinding.IncludeSocialNetworksLayoutBinding
-import app.editors.manager.managers.utils.isVisible
 import com.facebook.*
 import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginManager

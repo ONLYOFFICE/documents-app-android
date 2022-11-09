@@ -3,6 +3,7 @@ package app.editors.manager.managers.providers
 import android.net.Uri
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
+import app.editors.manager.app.roomApi
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.request.*
@@ -13,34 +14,26 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
-import java.util.*
 
 class CloudFileProvider : BaseFileProvider {
 
-    enum class Section(var path: String) {
-        My("@my"),
-        Common("@common"),
-        Shared("@share"),
-        Projects("@projects"),
-        Trash("@trash"),
-        Favorites("@favorites")
-    }
-
-    var api: Api = App.getApp().getApi()
+    var api: Api = App.getApp().getApi().api
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        return id?.let {
-            api.getItemById(it, filter)
+        return when (id) {
+            "7" -> getRooms(filter)
+            null -> Observable.create { Explorer() }
+            else -> api.getItemById(id, filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { responseExplorerResponse: Response<ResponseExplorer> ->
                     if (responseExplorerResponse.isSuccessful && responseExplorerResponse.body() != null) {
-                        return@map responseExplorerResponse.body()!!.response
+                        return@map responseExplorerResponse.body()?.response
                     } else {
                         throw HttpException(responseExplorerResponse)
                     }
                 }
-        }!!
+        }
     }
 
     override fun search(query: String?): Observable<String>? {
@@ -239,6 +232,19 @@ class CloudFileProvider : BaseFileProvider {
             }
     }
 
+    private fun getRooms(filters: Map<String, String>?): Observable<Explorer> {
+        return App.getApp().roomApi.getAllRooms(filters)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { responseExplorerResponse: Response<ResponseExplorer> ->
+                if (responseExplorerResponse.isSuccessful && responseExplorerResponse.body() != null) {
+                    return@map responseExplorerResponse.body()?.response
+                } else {
+                    throw HttpException(responseExplorerResponse)
+                }
+            }
+    }
+
     override fun fileInfo(item: Item?): Observable<CloudFile> {
         return api.getFileInfo(item?.id)
             .subscribeOn(Schedulers.io())
@@ -285,18 +291,18 @@ class CloudFileProvider : BaseFileProvider {
             }
     }
 
-    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base> {
-        return api.addToFavorites(requestFavorites)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { baseResponse: Response<Base> -> baseResponse.body() }
-    }
-
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base> {
-        return api.deleteFromFavorites(requestFavorites)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { baseResponse: Response<Base> -> baseResponse.body() }
+    fun addToFavorites(requestFavorites: RequestFavorites, isAdd: Boolean): Observable<Base> {
+        return if (isAdd) {
+            api.addToFavorites(requestFavorites)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { baseResponse: Response<Base> -> baseResponse.body() }
+        } else {
+            api.deleteFromFavorites(requestFavorites)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { baseResponse: Response<Base> -> baseResponse.body() }
+        }
     }
 
     fun clearTrash(): Observable<List<Operation>> {

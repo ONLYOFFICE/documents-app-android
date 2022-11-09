@@ -100,7 +100,7 @@ object ManagerUiUtils {
         alpha = 1.0f
     }
 
-    fun setFolderIcon(view: ImageView, folder: CloudFolder, isRoot: Boolean) {
+    fun ImageView.setFolderIcon(folder: CloudFolder, isRoot: Boolean) {
         @DrawableRes var resId = R.drawable.ic_type_folder
         if (folder.shared && folder.providerKey.isEmpty()) {
             resId = R.drawable.ic_type_folder_shared
@@ -117,18 +117,57 @@ object ManagerUiUtils {
                 ApiContract.Storage.YANDEX -> resId = R.drawable.ic_storage_yandex
                 ApiContract.Storage.WEBDAV -> {
                     resId = R.drawable.ic_storage_webdav
-                    view.setImageResource(resId)
+                    this.setImageResource(resId)
                     return
                 }
             }
-            view.setImageResource(resId)
-            view.alpha = 1.0f
+            this.setImageResource(resId)
+            this.alpha = 1.0f
             return
         }
-        view.setImageResource(resId)
+        if (folder.isRoom) resId = getRoomIcon(folder)
+        this.setImageResource(resId)
     }
 
-    fun setAccessIcon(imageView: ImageView, accessCode: Int) {
+    fun getFolderIcon(folder: CloudFolder): Int {
+        @DrawableRes var resId = R.drawable.ic_type_folder
+        if (folder.shared && folder.providerKey.isEmpty()) {
+            resId = R.drawable.ic_type_folder_shared
+        } else if ( folder.providerItem && folder.providerKey.isNotEmpty()) {
+            when (folder.providerKey) {
+                ApiContract.Storage.BOXNET -> resId = R.drawable.ic_storage_box
+                ApiContract.Storage.NEXTCLOUD -> resId = R.drawable.ic_storage_nextcloud
+                ApiContract.Storage.DROPBOX -> resId = R.drawable.ic_storage_dropbox
+                ApiContract.Storage.SHAREPOINT -> resId = R.drawable.ic_storage_sharepoint
+                ApiContract.Storage.GOOGLEDRIVE -> resId = R.drawable.ic_storage_google
+                ApiContract.Storage.KDRIVE -> resId = R.drawable.ic_storage_kdrive
+                ApiContract.Storage.ONEDRIVE, ApiContract.Storage.SKYDRIVE -> resId =
+                    R.drawable.ic_storage_onedrive
+                ApiContract.Storage.YANDEX -> resId = R.drawable.ic_storage_yandex
+                ApiContract.Storage.WEBDAV -> {
+                    resId = R.drawable.ic_storage_webdav
+                    return resId
+                }
+            }
+
+            return resId
+        }
+        if (folder.isRoom) resId = getRoomIcon(folder)
+        return resId
+    }
+
+    fun getRoomIcon(folder: CloudFolder): Int {
+        return when (folder.roomType) {
+            ApiContract.RoomType.FILLING_FORM_ROOM -> R.drawable.ic_room_fill_forms
+            ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_room_custom
+            ApiContract.RoomType.READ_ONLY_ROOM -> R.drawable.ic_room_view_only
+            ApiContract.RoomType.REVIEW_ROOM -> R.drawable.ic_room_review
+            ApiContract.RoomType.EDITING_ROOM -> R.drawable.ic_room_collaboration
+            else -> throw IllegalArgumentException("No this type of room")
+        }
+    }
+
+    fun setAccessIcon(imageView: ImageView, accessCode: Int, isRoom: Boolean = false) {
         when (accessCode) {
             ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> {
                 imageView.setImageResource(R.drawable.ic_access_deny)
@@ -136,7 +175,13 @@ object ManagerUiUtils {
             }
             ApiContract.ShareCode.REVIEW -> imageView.setImageResource(R.drawable.ic_access_review)
             ApiContract.ShareCode.READ -> imageView.setImageResource(R.drawable.ic_access_read)
-            ApiContract.ShareCode.READ_WRITE -> imageView.setImageResource(R.drawable.ic_access_full)
+            ApiContract.ShareCode.READ_WRITE -> {
+                if (isRoom) {
+                    imageView.setImageResource(R.drawable.ic_drawer_menu_my_docs)
+                } else {
+                    imageView.setImageResource(R.drawable.ic_access_full)
+                }
+            }
             ApiContract.ShareCode.COMMENT -> imageView.setImageResource(R.drawable.ic_access_comment)
             ApiContract.ShareCode.FILL_FORMS -> imageView.setImageResource(R.drawable.ic_access_fill_form)
         }
@@ -151,9 +196,3 @@ object ManagerUiUtils {
         this.layoutParams = layoutParams
     }
 }
-
-var View.isVisible: Boolean
-    get() = this.visibility == View.VISIBLE
-    set(isVisible) {
-        this.visibility = if (isVisible) View.VISIBLE else View.GONE
-    }

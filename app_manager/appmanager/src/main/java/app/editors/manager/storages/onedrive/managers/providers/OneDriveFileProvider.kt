@@ -464,10 +464,6 @@ class OneDriveFileProvider : BaseFileProvider {
 
     override fun terminate(): Observable<List<Operation>>? = null
 
-    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
-
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
-
     @SuppressLint("MissingPermission")
     private fun checkDirectory(item: Item?): File? {
         val file = item as CloudFile

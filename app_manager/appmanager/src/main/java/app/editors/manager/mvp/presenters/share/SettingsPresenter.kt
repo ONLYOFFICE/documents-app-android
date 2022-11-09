@@ -3,10 +3,7 @@ package app.editors.manager.mvp.presenters.share
 import android.content.Intent
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.share.Share
-import app.documents.core.network.models.share.request.RequestExternal
-import app.documents.core.network.models.share.request.RequestExternalAccess
-import app.documents.core.network.models.share.request.RequestShare
-import app.documents.core.network.models.share.request.RequestShareItem
+import app.documents.core.network.models.share.request.*
 import app.documents.core.share.ShareService
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -30,7 +27,9 @@ import moxy.InjectViewState
 import retrofit2.HttpException
 
 @InjectViewState
-class SettingsPresenter : BasePresenter<SettingsView>() {
+class SettingsPresenter(
+    val item: Item
+) : BasePresenter<SettingsView>() {
 
     companion object {
         val TAG: String = SettingsPresenter::class.java.simpleName
@@ -40,7 +39,6 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     /*
      * Getters/Setters
      * */
-    var item: Item? = null
     var externalLink: String? = null
     val isPersonalAccount: Boolean
         get() = App.getApp().appComponent.accountOnline?.isPersonal() ?: false
@@ -53,22 +51,20 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     private var isRemove = false
     private var isShare = false
     private var isPopupShow = false
-    private var sharedService: ShareService
     private val commonList: ArrayList<ViewType> = arrayListOf()
+    private val sharedService: ShareService
 
     private var disposable: Disposable? = null
 
     init {
         App.getApp().appComponent.inject(this)
-        sharedService = getApi()
+        sharedService = context.getShareApi()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         disposable?.dispose()
     }
-
-    private fun getApi(): ShareService = context.getShareApi()
 
     /*
      * Requests
@@ -90,7 +86,9 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 getShareList(it.response)
-                externalLink = it.response[0].sharedTo.shareLink
+                if (it.response.isNotEmpty()) {
+                    externalLink = it.response[0].sharedTo.shareLink
+                }
             }, { error ->
                 fetchError(error)
             })
@@ -111,8 +109,10 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     }
 
     private fun setShareFolder(
-        id: String, isNotify: Boolean,
-        message: String?, vararg shareList: Share?
+        id: String,
+        isNotify: Boolean,
+        message: String?,
+        vararg shareList: Share?
     ) {
         val requestShare = getRequestShare(isNotify, message, *shareList)
         disposable = sharedService.setFolderAccess(id, requestShare)
@@ -147,18 +147,19 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     val shared: Unit
         get() {
             if (item is CloudFolder) {
-                getShareFolder((item as CloudFolder).id)
+                getShareFolder(item.id)
             } else if (item is CloudFile) {
-                getShareFile((item as CloudFile).id)
+                getShareFile(item.id)
             }
         }
+
     val internalLink: Unit
         get() {
             if (item is CloudFolder) {
-                val internalLink = networkSettings.getBaseUrl() + TAG_FOLDER_PATH + (item as CloudFolder).id
+                val internalLink = networkSettings.getBaseUrl() + TAG_FOLDER_PATH + item.id
                 viewState.onInternalLink(internalLink)
             } else if (item is CloudFile) {
-                viewState.onInternalLink((item as CloudFile).webUrl)
+                viewState.onInternalLink(item.webUrl)
             }
         }
 
@@ -166,54 +167,61 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
         val code = ApiContract.ShareType.getCode(share)
         if (!isPersonalAccount) {
             disposable = sharedService
-                .getExternalLink(item?.id ?: "", RequestExternal(share = share ?: ""))
+                .getExternalLink(item.id ?: "", RequestExternal(share = share ?: ""))
                 .subscribeOn(Schedulers.io())
                 .map { it.body()?.response }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     externalLink = it
-                    item?.access = code.toString()
-                    item?.shared = isShared(code)
+                    item.access = code.toString()
+                    item.shared = isShared(code)
                     viewState.onExternalAccess(code, true)
                 }
         } else {
             disposable = sharedService
-                .setExternalLinkAccess(item?.id ?: "", RequestExternalAccess(code))
+                .setExternalLinkAccess(item.id ?: "", RequestExternalAccess(code))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                        item?.access = code.toString()
-                        item?.shared = isShared(code)
-                        viewState.onExternalAccess(code, true)
-                    }, { error -> fetchError(error) }
+                    item.access = code.toString()
+                    item.shared = isShared(code)
+                    viewState.onExternalAccess(code, true)
+                }, { error -> fetchError(error) }
                 )
         }
     }
 
     fun setItemAccess(accessCode: Int) {
-        if (item != null) {
-            if (accessCode == ApiContract.ShareCode.NONE) {
-                shareItem?.let {
-                    viewState.onRemove(ShareUi(it.access, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor), sharePosition)
-                }
-
-                isRemove = true
+        if (accessCode == ApiContract.ShareCode.NONE) {
+            shareItem?.let {
+                viewState.onRemove(
+                    ShareUi(
+                        access = it.access,
+                        sharedTo = it.sharedTo,
+                        isLocked = it.isLocked,
+                        isOwner = it.isOwner,
+                        isGuest = it.sharedTo.isVisitor,
+                        isRoom = item is CloudFolder && item.isRoom
+                    ), sharePosition
+                )
             }
-            if (item is CloudFolder) {
-                shareItem?.let {
-                    setShareFolder(
-                        (item as CloudFolder).id,
-                        false,
-                        null,
-                        Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner)
-                    )
-                }
-            } else {
-                shareItem?.let {
-                    setShareFile(item?.id ?: "", false, null, Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner))
-                }
 
+            isRemove = true
+        }
+        if (item is CloudFolder) {
+            shareItem?.let {
+                setShareFolder(
+                    item.id,
+                    false,
+                    null,
+                    Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner)
+                )
             }
+        } else {
+            shareItem?.let {
+                setShareFile(item.id ?: "", false, null, Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner))
+            }
+
         }
     }
 
@@ -221,7 +229,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
      * Update states
      * */
     fun updateSharedListState() {
-        viewState.onGetShare(commonList, item!!.intAccess)
+        viewState.onGetShare(commonList, item.intAccess)
         loadAvatars(commonList)
         if (isPopupShow) {
             isPopupShow = false
@@ -230,7 +238,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     }
 
     fun updateSharedExternalState(isMessage: Boolean) {
-        viewState.onExternalAccess(item!!.intAccess, isMessage)
+        viewState.onExternalAccess(item.intAccess, isMessage)
     }
 
     fun updateActionButtonState() {
@@ -262,7 +270,7 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     }
 
     fun addShareItems() {
-        viewState.onAddShare(item!!)
+        viewState.onAddShare(item)
     }
 
     fun sendLink(externalLink: String?) {
@@ -281,14 +289,14 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
     private fun getShareList(shareList: List<Share>) {
         isAccessDenied = false
         val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() }
-            .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
+            .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor, item is CloudFolder && item.isRoom) }
         val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }
-            .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor) }
+            .map { ShareUi(it.intAccess, it.sharedTo, it.isLocked, it.isOwner, it.sharedTo.isVisitor, false) }
             .sortedWith(groupComparator())
 
         shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {
-            item?.access = it.access
-            item?.shared = isShared(it.intAccess)
+            item.access = it.access
+            item.shared = isShared(it.intAccess)
             externalLink = it.sharedTo.shareLink
         }
 
@@ -315,10 +323,10 @@ class SettingsPresenter : BasePresenter<SettingsView>() {
 
         viewState.onActionButtonState(true)
         if (isShare && commonList.isNotEmpty()) {
-            viewState.onGetShareItem(commonList[sharePosition], sharePosition, item?.intAccess ?: -1)
+            viewState.onGetShareItem(commonList[sharePosition], sharePosition, item.intAccess)
             isShare = false
         } else {
-            viewState.onGetShare(commonList, item?.intAccess ?: -1)
+            viewState.onGetShare(commonList, item.intAccess)
         }
 
         if (commonList.isEmpty()) {

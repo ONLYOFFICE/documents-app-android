@@ -1,11 +1,11 @@
 package app.editors.manager.ui.adapters.holders
 
 import android.view.View
+import androidx.core.view.isVisible
 import app.documents.core.account.Recent
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.ui.RecentUI
 import app.editors.manager.mvp.models.ui.toRecent
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath

@@ -30,7 +30,8 @@ object ApiContract {
      * */
     const val HEADER_AUTHORIZATION = "Authorization"
     const val HEADER_HOST = "Host"
-    const val HEADER_CONTENT_TYPE = "Content-OperationType"
+    const val HEADER_CONTENT_OPERATION_TYPE = "Content-OperationType"
+    const val HEADER_CONTENT_TYPE = "Content-Type"
     const val HEADER_ACCEPT = "Accept"
     const val HEADER_AGENT = "User-Agent"
     const val HEADER_CACHE = "Cache-Control"
@@ -97,6 +98,7 @@ object ApiContract {
         const val REVIEW = "Review"
         const val COMMENT = "Comment"
         const val FILL_FORMS = "FillForms"
+        const val CUSTOM_FILLER = "CustomFilter"
 
         fun getCode(type: String?): Int {
             return when (type) {
@@ -108,6 +110,7 @@ object ApiContract {
                 REVIEW -> ShareCode.REVIEW
                 COMMENT -> ShareCode.COMMENT
                 FILL_FORMS -> ShareCode.FILL_FORMS
+                CUSTOM_FILLER -> ShareCode.CUSTOM_FILLER
                 else -> ShareCode.NONE
             }
         }
@@ -123,6 +126,7 @@ object ApiContract {
         const val REVIEW = 5
         const val COMMENT = 6
         const val FILL_FORMS = 7
+        const val CUSTOM_FILLER = 8
 
         fun getType(code: Int): String {
             return when (code) {
@@ -132,6 +136,7 @@ object ApiContract {
                 RESTRICT -> ShareType.RESTRICT
                 VARIES -> ShareType.VARIES
                 REVIEW -> ShareType.REVIEW
+                CUSTOM_FILLER -> ShareType.CUSTOM_FILLER
                 else -> ShareType.NONE
             }
         }
@@ -147,6 +152,8 @@ object ApiContract {
         const val ARG_FILTER_OP = "filterOp"
         const val ARG_FILTER_VALUE = "filterValue"
         const val ARG_FILTER_BY_TYPE = "filterType"
+        const val ARG_FILTER_BY_TYPE_ROOM = "type"
+        const val ARG_FILTER_BY_SUBJECT_ID = "subjectId"
         const val ARG_FILTER_BY_AUTHOR = "userIdOrGroupId"
         const val ARG_FILTER_SUBFOLDERS = "withSubfolders"
         const val ARG_UPDATED_SINCE = "updatedSince"
@@ -176,6 +183,8 @@ object ApiContract {
         const val VAL_SORT_BY_OWNER = "Author"
         const val VAL_SORT_BY_NAME = "name"
         const val VAL_SORT_BY_DISPLAY_NAME = "displayName"
+        const val VAL_SORT_BY_ROOM_TYPE = "roomType"
+        const val VAL_SORT_BY_TAGS = "Tags"
     }
 
     object SectionType {
@@ -189,6 +198,37 @@ object ApiContract {
         const val DEVICE_DOCUMENTS = 9
         const val CLOUD_FAVORITES = 10
         const val CLOUD_RECENT = 11
+        const val CLOUD_PRIVATE_ROOM = 13
+        const val CLOUD_VIRTUAL_ROOM = 14
+        const val CLOUD_FILLING_FORMS_ROOM = 15
+        const val CLOUD_EDITING_ROOM = 16
+        const val CLOUD_REVIEW_ROOM = 17
+        const val CLOUD_READ_ONLY_ROOM = 18
+        const val CLOUD_CUSTOM_ROOM = 19
+        const val CLOUD_ARCHIVE_ROOM = 20
+
+        const val WEB_DAV = 100
+
+        fun isRoom(type: Int): Boolean {
+            return type >= 14
+        }
+    }
+
+    object RoomType {
+        const val FILLING_FORM_ROOM = 1
+        const val EDITING_ROOM = 2
+        const val REVIEW_ROOM = 3
+        const val READ_ONLY_ROOM = 4
+        const val CUSTOM_ROOM = 5
+    }
+
+    object SectionPath {
+        const val MY = "@my"
+        const val COMMON = "@common"
+        const val SHARED = "@share"
+        const val PROJECTS = "@projects"
+        const val TRASH = "@trash"
+        const val FAVORITES = "@favorites"
     }
 
     object Operation {
