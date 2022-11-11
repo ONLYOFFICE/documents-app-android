@@ -82,6 +82,15 @@ class LocalContentTools @Inject constructor(val context: Context) {
             }
         }
 
+        fun toOOXML(ext: String): String {
+            return when (ext) {
+                ODT_EXTENSION -> DOCX_EXTENSION
+                ODS_EXTENSION -> XLSX_EXTENSION
+                ODP_EXTENSION -> PPTX_EXTENSION
+                else -> throw IllegalArgumentException(".$ext can not be converted to OOXML extension")
+            }
+        }
+
     }
 
     private val contentResolver: ContentResolver = context.contentResolver

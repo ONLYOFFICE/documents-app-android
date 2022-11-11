@@ -458,10 +458,6 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
 
     override fun terminate(): Observable<List<Operation>>?  = null
 
-    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? = null
-
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>?  = null
-
     @Throws(UnsupportedEncodingException::class)
     private fun getExplorer(responseBeans: List<WebDavModel.ResponseBean>, filter: Map<String, String>?): Explorer {
         val explorer = Explorer()

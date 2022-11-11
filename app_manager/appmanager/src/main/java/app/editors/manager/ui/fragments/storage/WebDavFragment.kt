@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.views.storage.ConnectView

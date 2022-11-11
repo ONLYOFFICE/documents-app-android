@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.Recent
@@ -10,12 +11,15 @@ import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.api
+import app.editors.manager.app.roomApi
 import app.editors.manager.managers.providers.CloudFileProvider
+import app.editors.manager.managers.providers.RoomProvider
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
@@ -55,12 +59,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val uploadReceiver: UploadReceiver = UploadReceiver()
 
     private var api: Api? = null
+    private var roomProvider: RoomProvider? = null
 
-    private var currentSectionType = ApiContract.SectionType.UNKNOWN
 
     init {
         App.getApp().appComponent.inject(this)
         api = context.api()
+        roomProvider = RoomProvider(context.roomApi)
         fileProvider = CloudFileProvider()
     }
 
@@ -225,7 +230,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
                 else -> {
                     viewState.onActionBarTitle("")
-                    viewState.onStateActionButton(isContextEditable)
+                    viewState.onStateActionButton(isContextEditable && modelExplorerStack.last()?.current?.isCanEdit == true)
                 }
             }
             viewState.onStateAdapterRoot(true)
@@ -252,26 +257,19 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isOneDrive = false
         state.isGoogleDrive = false
         state.isDropBox = false
-        state.isTrash = isTrash
+        state.isTrash = isTrashSection
         state.isFavorite = isClickedItemFavorite
         state.isPersonalAccount = account.isPersonal()
-        state.isCanOpenLocation = isCanOpenLocation
-        if (!isClickedItemFile) {
-            if ((itemClicked as CloudFolder).providerKey.isEmpty()) {
-                state.iconResId = R.drawable.ic_type_folder
-            } else {
-                state.iconResId = StorageUtils.getStorageIcon((itemClicked as CloudFolder).providerKey)
-            }
-        } else {
-            state.iconResId = getIconContext(
-                StringUtils.getExtensionFromPath(
-                    itemClickedTitle
-                )
-            )
-        }
         state.isPdf = isPdf
-        if (state.isShared && state.isFolder) {
-            state.iconResId = R.drawable.ic_type_folder_shared
+        state.isRoom = item is CloudFolder && item.isRoom
+        state.isPin = item is CloudFolder && item.pinned
+        state.iconResId = when (val item = itemClicked) {
+            is CloudFolder -> when {
+                item.providerKey.isNotEmpty() -> StorageUtils.getStorageIcon(item.providerKey)
+                item.isRoom -> ManagerUiUtils.getRoomIcon(itemClicked as CloudFolder)
+                else -> if (item.shared) R.drawable.ic_type_folder_shared else R.drawable.ic_type_folder
+            }
+            else -> getIconContext(StringUtils.getExtensionFromPath(itemClickedTitle))
         }
         viewState.onItemContext(state)
     }
@@ -434,7 +432,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             disposable.add(shareApi.getShareFile(item.id)
                 .subscribeOn(Schedulers.io())
                 .map { response: ResponseShare ->
-                    response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink
+                    response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
                 }.observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ externalLink ->
                     if (!externalLink.isNullOrEmpty()) {
@@ -449,34 +447,26 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun addToFavorite() {
         val requestFavorites = RequestFavorites()
-        requestFavorites.fileIds = ArrayList(listOf(itemClicked!!.id))
-        fileProvider?.let { provider ->
-            disposable.add(provider.addToFavorites(requestFavorites)!!
-                .subscribe({
-                    (itemClicked as? CloudFile)?.fileStatus = ApiContract.FileStatus.FAVORITE.toString()
-                    viewState.onUpdateFavoriteItem()
-                    viewState.onSnackBar(context.getString(R.string.operation_add_to_favorites))
-                }) { throwable: Throwable -> fetchError(throwable) })
-        }
-    }
+        requestFavorites.fileIds = ArrayList(listOf(itemClicked?.id))
+        (fileProvider as CloudFileProvider).let { provider ->
+            val isAdd = itemClicked?.favorite?.not() == true
 
-    fun deleteFromFavorite() {
-        val requestFavorites = RequestFavorites()
-        requestFavorites.fileIds = ArrayList(listOf(itemClicked!!.id))
-        fileProvider?.let { provider ->
-            disposable.add(provider.deleteFromFavorites(requestFavorites)!!
+            disposable.add(provider.addToFavorites(requestFavorites, isAdd)
                 .subscribe({
-                    (itemClicked as? CloudFile)?.fileStatus = ApiContract.FileStatus.NONE.toString()
+                    (itemClicked as? CloudFile)?.fileStatus = if (isAdd) {
+                        ApiContract.FileStatus.FAVORITE.toString()
+                    } else {
+                        ApiContract.FileStatus.NONE.toString()
+                    }
                     viewState.onUpdateFavoriteItem()
-                    viewState.onSnackBar(context.getString(R.string.operation_remove_from_favorites))
+                    viewState.onSnackBar(
+                        if (isAdd) {
+                            context.getString(R.string.operation_add_to_favorites)
+                        } else {
+                            context.getString(R.string.operation_remove_from_favorites)
+                        }
+                    )
                 }) { throwable: Throwable -> fetchError(throwable) })
-        }
-    }
-
-    fun removeFromFavorites() {
-        if (itemClicked?.id != null) {
-            modelExplorerStack.removeItemById(itemClicked?.id)
-            viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
         }
     }
 
@@ -497,8 +487,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     if (itemClicked != null) {
                         modelExplorerStack.removeItemById(itemClicked?.id)
                     }
-                    setPlaceholderType(if (modelExplorerStack.isListEmpty)
-                        PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    setPlaceholderType(
+                        if (modelExplorerStack.isListEmpty)
+                            PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE
+                    )
                     viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
                     onBatchOperations()
                 }) { throwable: Throwable -> fetchError(throwable) })
@@ -528,8 +520,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     private fun setDataToClipboard(value: String) {
-        KeyboardUtils.setDataToClipboard(context,
-            value, context.getString(R.string.share_clipboard_external_link_label))
+        KeyboardUtils.setDataToClipboard(
+            context,
+            value, context.getString(R.string.share_clipboard_external_link_label)
+        )
         viewState.onDocsAccess(true, context.getString(R.string.share_clipboard_external_copied))
     }
 
@@ -649,7 +643,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
      * A&(B&(Cv(D&!E)))v((FvGvH)&D&!E)
      * */
     private val isContextEditable: Boolean
-        get() = isUserSection || isCommonSection && (isAdmin || isContextReadWrite && !isRoot) ||
+        get() = isUserSection || isCommonSection || isRoom && (isAdmin || isContextReadWrite && !isRoot) ||
                 (isShareSection || isProjectsSection || isBunchSection) && isContextReadWrite && !isRoot
 
     /*
@@ -680,6 +674,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val isBunchSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_BUNCH
 
+    private val isTrashSection: Boolean
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_TRASH ||
+                currentSectionType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
+
+    private val isRoom: Boolean
+        get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM
+
     private val isClickedItemShared: Boolean
         get() = itemClicked?.shared == true
 
@@ -708,14 +709,112 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val itemFolderId: String?
         get() = (itemClicked as? CloudFile)?.folderId ?: (itemClicked as? CloudFolder)?.parentId
 
-    private val isCanOpenLocation: Boolean
-        get() = isFilteringMode && !preferenceTool.filter.excludeSubfolder
+    val isCurrentRoom: Boolean
+        get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM && modelExplorerStack.last()?.current?.isCanEdit == true
 
     private fun showDownloadFolderActivity(uri: Uri) {
         viewState.onDownloadActivity(uri)
     }
 
-    fun setSectionType(sectionType: Int) {
-        currentSectionType = sectionType
+    fun archiveRoom(isArchive: Boolean = true) {
+        roomProvider?.let {
+            disposable.add(
+                it.archiveRoom(itemClicked?.id ?: "", isArchive = isArchive)
+                    .doOnSubscribe { viewState.onSwipeEnable(true) }
+                    .subscribe({ response ->
+                        if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
+                            viewState.onArchiveRoom(isArchive)
+                            viewState.onSwipeEnable(false)
+                        }
+                    }, ::fetchError)
+            )
+        }
+    }
+
+    fun archiveSelectedRooms() {
+        roomProvider?.let { provider ->
+            disposable.add(
+                Observable
+                    .zip(modelExplorerStack.selectedFoldersIds.map(provider::archiveRoom)) {}
+                    .doOnSubscribe { viewState.onSwipeEnable(true) }
+                    .subscribe {
+                        viewState.onArchiveSelectedRooms(modelExplorerStack.selectedFolders)
+                        viewState.onSwipeEnable(false)
+                        deselectAll()
+                    }
+            )
+        }
+    }
+
+    fun pinRoom() {
+        roomProvider?.let {
+            itemClicked?.let { folder ->
+                if (folder is CloudFolder) {
+                    disposable.add(
+                        it.pinRoom(folder.id , !folder.pinned)
+                            .doOnSubscribe { viewState.onSwipeEnable(true) }
+                            .subscribe({ response ->
+                            if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
+                                folder.pinned = !folder.pinned
+                                viewState.onUpdateFavoriteItem()
+                            }
+                        }, ::fetchError)
+                    )}
+                }
+        }
+    }
+
+    fun renameRoom(newTitle: String) {
+        roomProvider?.let {
+            disposable.add(
+                it.renameRoom(itemClicked?.id ?: "", newTitle).subscribe({
+                    viewState.onSnackBar("Done")
+//                    refresh()
+                }) { throwable: Throwable ->
+                    fetchError(throwable)
+                }
+            )
+        }
+    }
+
+    fun createRoom(title: String, roomType: Int) {
+        roomProvider?.let {
+            disposable.add(
+                it.createRoom(title, roomType).subscribe({
+                    viewState.onDialogClose()
+                    viewState.onSnackBar(context.getString(R.string.room_create_success))
+                    refresh()
+                }) { throwable: Throwable ->
+                    fetchError(throwable)
+                }
+            )
+        }
+    }
+
+    fun deleteRoom() {
+        if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
+            val ids = modelExplorerStack.selectedFolders.map {
+                it.id
+            }
+            roomProvider?.let { provider ->
+                disposable.add(
+                    provider.deleteRoom(items = ids).subscribe({
+                        viewState.onDialogClose()
+                        viewState.onSnackBar(context.getString(R.string.room_delete_success))
+                        refresh()
+                    }) { fetchError(it)}
+                )
+            }
+        } else if (itemClicked != null) {
+            roomProvider?.let { provider ->
+                disposable.add(
+                    provider.deleteRoom(itemClicked?.id ?: "").subscribe({
+                        viewState.onDialogClose()
+                        viewState.onSnackBar(context.getString(R.string.room_delete_success))
+                    }) { fetchError(it)}
+                )
+            }
+
+        }
     }
 }

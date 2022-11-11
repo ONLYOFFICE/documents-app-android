@@ -10,21 +10,22 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import app.documents.core.network.ApiContract
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
-import app.editors.manager.mvp.presenters.main.MainPagerState
 import app.editors.manager.mvp.views.main.MainPagerView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.fragments.factory.TabFragmentFactory
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import lib.toolkit.base.managers.utils.UiUtils
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -54,6 +55,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     @InjectPresenter
     lateinit var presenter: MainPagerPresenter
+
     @ProvidePresenter
     fun providePresenter() = MainPagerPresenter(arguments?.getString(KEY_ACCOUNT))
 
@@ -119,9 +121,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private fun checkBundle() {
         val bundle = requireActivity().intent.extras
         var data = requireActivity().intent.data
-        if (bundle != null && bundle.containsKey("data")){
+        if (bundle != null && bundle.containsKey("data")) {
             val model = bundle.getString("data")
-            data = Uri.parse("oodocuments://openfile?data=${model}&push=true")
+            data = Uri.parse("${BuildConfig.PUSH_SCHEME}://openfile?data=${model}&push=true")
         }
         presenter.getState(data)
     }
@@ -175,64 +177,36 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         (activeFragment as? DocsBaseFragment)?.showActionDialog()
     }
 
-    override fun onRender(state: MainPagerState) {
-        when (state) {
-            is MainPagerState.VisitorState -> {
-                getVisitorFragments(state.account)
-            }
-            is MainPagerState.PersonalState -> {
-                getPersonalFragments(state.account, state.version)
-            }
-            is MainPagerState.CloudState -> {
-                getCloudFragments(state.account, state.version)
-            }
-        }
-    }
-
     override fun onRender(stringAccount: String, sections: List<Explorer>?) {
         val fragments = arrayListOf<ViewPagerAdapter.Container>()
-        val correctOrderTabs = setCorrectOrder(sections).filterNotNull()
-        correctOrderTabs.let {
-            for(section in correctOrderTabs) {
-                if(section.current?.rootFolderType != ApiContract.SectionType.CLOUD_RECENT) {
-                    fragments.add(
-                        ViewPagerAdapter.Container(
-                            section.current?.rootFolderType?.let { folderType ->
-                                TabFragmentFactory.getSectionFragment(
-                                    folderType,
-                                    stringAccount,
-                                    arguments?.getString(KEY_FILE_DATA)
-                                )
-                            },
-                            context?.let {
+        sections?.let {
+            for (section in sections) {
+                when (section.current.rootFolderType) {
+                    ApiContract.SectionType.CLOUD_PRIVATE_ROOM, ApiContract.SectionType.CLOUD_RECENT -> continue
+                    else -> {
+                        fragments.add(
+                            ViewPagerAdapter.Container(
                                 section.current?.rootFolderType?.let { folderType ->
-                                    TabFragmentFactory(it).getTabTitle(
-                                        folderType
-                                    )
-                                }
-                            }
+                                    when (folderType) {
+                                        ApiContract.SectionType.CLOUD_TRASH, ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
+                                            DocsTrashFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
+                                        }
+                                        ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
+                                            DocsRoomFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
+                                        }
+                                        else -> {
+                                            DocsCloudFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
+                                        }
+                                    }
+                                },
+                                getTabTitle(section.current?.rootFolderType ?: -1)
+                            )
                         )
-                    )
+                    }
                 }
             }
             setAdapter(fragments)
         }
-    }
-
-    private fun setCorrectOrder(tabs: List<Explorer>?): List<Explorer?> {
-        val tabOrder = arrayListOf<Explorer?>(null, null, null, null, null, null)
-        tabs?.forEach { tab ->
-            when (tab.current?.rootFolderType) {
-                ApiContract.SectionType.CLOUD_USER -> tabOrder[0] = tab
-                ApiContract.SectionType.CLOUD_SHARE -> tabOrder[1] = tab
-                ApiContract.SectionType.CLOUD_FAVORITES -> tabOrder[2] = tab
-                ApiContract.SectionType.CLOUD_COMMON -> tabOrder[3] = tab
-                ApiContract.SectionType.CLOUD_TRASH -> tabOrder[5] = tab
-                ApiContract.SectionType.CLOUD_PROJECTS -> tabOrder[4] = tab
-            }
-        }
-
-        return tabOrder
     }
 
     override fun onFinishRequest() {
@@ -249,108 +223,6 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         requireActivity().intent.data = null
     }
 
-    private fun getCloudFragments(stringAccount: String, serverVersion: Int) {
-        val fragments = arrayListOf<ViewPagerAdapter.Container>()
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsMyFragment.newInstance(stringAccount), getString(
-                    R.string
-                        .main_pager_docs_my
-                )
-            )
-        )
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsShareFragment.newInstance(stringAccount),
-                getString(R.string.main_pager_docs_share)
-            )
-        )
-        if (serverVersion >= 11) {
-            fragments.add(
-                ViewPagerAdapter.Container(
-                    DocsFavoritesFragment.newInstance(stringAccount),
-                    getString(R.string.main_pager_docs_favorites)
-                )
-            )
-        }
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsCommonFragment.newInstance(stringAccount),
-                getString(R.string.main_pager_docs_common)
-            )
-        )
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
-                getString(R.string.main_pager_docs_projects)
-            )
-        )
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsTrashFragment.newInstance(stringAccount),
-                getString(R.string.main_pager_docs_trash)
-            )
-        )
-        setAdapter(fragments)
-    }
-
-    private fun getVisitorFragments(stringAccount: String) {
-        val fragments = arrayListOf<ViewPagerAdapter.Container>()
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsShareFragment.newInstance(stringAccount),
-                getString(R.string.main_pager_docs_share)
-            )
-        )
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsCommonFragment.newInstance(stringAccount),
-                getString(R.string.main_pager_docs_common)
-            )
-        )
-        if (preferenceTool?.isProjectDisable?.not() == true) {
-            fragments.add(
-                ViewPagerAdapter.Container(
-                    DocsProjectsFragment.newInstance(stringAccount, arguments?.getString(KEY_FILE_DATA)),
-                    getString(R.string.main_pager_docs_projects)
-                )
-            )
-        }
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsTrashFragment.newInstance(stringAccount),
-                getString(R.string.main_pager_docs_trash)
-            )
-        )
-        setAdapter(fragments)
-    }
-
-    private fun getPersonalFragments(stringAccount: String, serverVersion: Int) {
-        val fragments = arrayListOf<ViewPagerAdapter.Container>()
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsMyFragment.newInstance(stringAccount), getString(
-                    R.string
-                        .main_pager_docs_my
-                )
-            )
-        )
-        if (serverVersion >= 11 && preferenceTool?.isFavoritesEnabled == true) {
-            fragments.add(
-                ViewPagerAdapter.Container(
-                    DocsFavoritesFragment.newInstance(stringAccount),
-                    getString(R.string.main_pager_docs_favorites)
-                )
-            )
-        }
-        fragments.add(
-            ViewPagerAdapter.Container(
-                DocsTrashFragment.newInstance(stringAccount),
-                getString(R.string.main_pager_docs_trash)
-            )
-        )
-        setAdapter(fragments)
-    }
 
     private fun setAdapter(fragments: List<ViewPagerAdapter.Container>) {
         adapter = AdapterForPages(childFragmentManager, fragments)
@@ -374,8 +246,19 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }, 1000)
     }
 
-    override fun onOpenProjectFileError(@StringRes res: Int) {
-        showSnackBarWithAction(res, R.string.switch_account_open_project_file, this)
+    override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = getString(R.string.switch_account_title),
+            description = getString(R.string.switch_account_description, data.portal),
+            acceptListener = {
+                activity?.showAccountsActivity(isToken)
+            },
+            cancelListener = {
+                presenter.onRemoveFileData()
+            },
+            acceptTitle = getString(R.string.switch_account_open_project_file)
+        )
     }
 
     fun isRoot(): Boolean {
@@ -392,6 +275,23 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private val activeFragment: Fragment?
         get() = adapter?.getActiveFragment(viewBinding?.mainViewPager)
 
+    override fun onClick(view: View?) {
+        activity?.onSwitchAccount()
+    }
+
+    private fun getTabTitle(tab: Int): String =
+        when (tab) {
+            ApiContract.SectionType.CLOUD_COMMON -> requireContext().getString(R.string.main_pager_docs_common)
+            ApiContract.SectionType.CLOUD_USER -> requireContext().getString(R.string.main_pager_docs_my)
+            ApiContract.SectionType.CLOUD_FAVORITES -> requireContext().getString(R.string.main_pager_docs_favorites)
+            ApiContract.SectionType.CLOUD_SHARE -> requireContext().getString(R.string.main_pager_docs_share)
+            ApiContract.SectionType.CLOUD_TRASH -> requireContext().getString(R.string.main_pager_docs_trash)
+            ApiContract.SectionType.CLOUD_PROJECTS -> requireContext().getString(R.string.main_pager_docs_projects)
+            ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> requireContext().getString(R.string.main_pager_docs_virtual_room)
+            ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> requireContext().getString(R.string.main_pager_docs_archive_room)
+            else -> ""
+        }
+
     /*
      * Adapter and page change listener
      * */
@@ -406,9 +306,5 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             this@MainPagerFragment.selectedPage = mSelectedPage
             (getActiveFragment(viewBinding?.mainViewPager) as DocsCloudFragment).onScrollPage()
         }
-    }
-
-    override fun onClick(view: View?) {
-        activity?.onSwitchAccount()
     }
 }

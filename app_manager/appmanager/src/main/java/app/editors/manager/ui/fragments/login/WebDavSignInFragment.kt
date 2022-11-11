@@ -1,15 +1,16 @@
 package app.editors.manager.ui.fragments.login
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter
 import app.editors.manager.mvp.views.login.WebDavSignInView
 import app.editors.manager.ui.activities.login.NextCloudLoginActivity
@@ -49,7 +50,11 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            wevDavProvider = it.getSerializable(KEY_PROVIDER) as WebDavApi.Providers
+            wevDavProvider = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.getSerializable(KEY_PROVIDER, WebDavApi.Providers::class.java) as WebDavApi.Providers
+            } else {
+                it.getSerializable(KEY_PROVIDER) as WebDavApi.Providers
+            }
         }
     }
 
@@ -124,14 +129,13 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
     private fun initKDriveState() {
         viewBinding?.storageWebDavUrlEdit?.setText("https://connect.drive.infomaniak.com")
         viewBinding?.storageWebDavUrlLayout?.visibility = View.GONE
-        // TODO for KDrive
-//        viewBinding?.storageWebDavLoginLayout?.hint = getString(R.string.login_enterprise_email_hint)
-//        viewBinding?.storageWebDavPasswordLayout?.helperText = getString(R.string.krdive_password_helper_text)
-//        viewBinding?.storageWebDavSaveButton?.text = getString(R.string.storage_email_connection)
-//        viewBinding?.storageInfoTitle?.apply {
-//            isVisible = true
-//            text = getString(R.string.kdrive_info_title)
-//        }
+        viewBinding?.storageWebDavLoginLayout?.hint = getString(R.string.login_enterprise_email_hint)
+        viewBinding?.storageWebDavPasswordLayout?.helperText = getString(R.string.krdive_password_helper_text)
+        viewBinding?.storageWebDavSaveButton?.text = getString(R.string.storage_email_connection)
+        viewBinding?.storageInfoTitle?.apply {
+            isVisible = true
+            text = getString(R.string.kdrive_info_title)
+        }
     }
 
     @SuppressLint("SetTextI18n")

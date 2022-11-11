@@ -361,10 +361,9 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         viewBinding?.loginEnterpriseSignonButton?.isEnabled = false
 
         if (providers.isNotEmpty()) {
-            showGoogleLogin(providers.contains("google"))
+            showGoogleLogin(providers.contains("google") && GoogleUtils.isGooglePlayServicesAvailable(requireContext()))
             showFacebookLogin(providers.contains("facebook"))
         }
-        viewBinding?.socialNetworkLayout?.loginSocialGoogleButton?.isVisible = GoogleUtils.isGooglePlayServicesAvailable(requireContext())
     }
 
     private val intent: Unit

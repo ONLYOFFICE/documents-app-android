@@ -18,7 +18,7 @@
     <dimen name="screen_on_boarding_image_width">450dp</dimen>
     <dimen name="screen_on_boarding_image_height">700dp</dimen>
     <dimen name="screen_on_boarding_image_horizontal_margin">64dp</dimen>
-    <dimen name="line_separator_left_margin">80dp</dimen>
+    <dimen name="line_separator_left_margin">64dp</dimen>
 
     <item name="screen_on_boarding_layout_height" format="integer" type="dimen">-2</item>
 

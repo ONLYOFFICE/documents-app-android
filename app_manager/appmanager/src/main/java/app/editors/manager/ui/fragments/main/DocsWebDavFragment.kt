@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -47,6 +48,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        presenter.setSectionType(ApiContract.SectionType.WEB_DAV)
         init()
     }
 
@@ -98,7 +100,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     }
 
     override fun onStateEmptyBackStack() {
-        super.onStateEmptyBackStack()
         loadFiles()
         swipeRefreshLayout?.isRefreshing = true
     }

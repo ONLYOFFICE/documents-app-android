@@ -3,9 +3,11 @@ package app.editors.manager.ui.fragments.share
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareAddPagerBinding
+import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.ui.activities.main.ShareActivity
@@ -13,7 +15,6 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.custom.SharePanelViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
-import lib.toolkit.base.managers.utils.StringUtils
 
 class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
 
@@ -22,7 +23,10 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
     private var sharePanelViews: SharePanelViews? = null
     private var heightValueAnimator: HeightValueAnimator? = null
     private var viewPagerAdapter: ViewPagerAdapter? = null
-    private var inputItem: Item? = null
+    private val inputItem: Item
+        get() = arguments?.getSerializable(TAG_ITEM) as Item
+    private val isRoom: Boolean
+        get() = inputItem is CloudFolder && (inputItem as CloudFolder).isRoom
     private var viewBinding: FragmentShareAddPagerBinding? = null
     var selectionMenu: Menu? = null
 
@@ -55,6 +59,7 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getArgs()
         init()
     }
 
@@ -87,10 +92,15 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val fragment = viewPagerAdapter?.getActiveFragment(viewBinding?.shareAddViewPager) as? AddFragment
         when (item.itemId) {
-            R.id.menu_share_select_all -> fragment?.setSelectedAll(true)
-            R.id.menu_share_deselect -> fragment?.setSelectedAll(false)
-            R.id.menu_share_add_search -> showFragment(AddSearchFragment
-                    .newInstance(inputItem), AddSearchFragment.TAG, false)
+            R.id.menu_share_select_all -> {
+                fragment?.setSelectedAll(true)
+            }
+            R.id.menu_share_deselect -> {
+                fragment?.setSelectedAll(false)
+            }
+            R.id.menu_share_add_search -> {
+                showFragment(AddSearchFragment.newInstance(inputItem), AddSearchFragment.TAG, false)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -128,8 +138,7 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
         shareActivity?.let {
             heightValueAnimator = HeightValueAnimator(it.getTabLayout(), ANIMATION_DURATION)
         }
-        showTabLayout(true)
-        getArgs()
+        showTabLayout(!isRoom)
         initViews()
     }
 
@@ -143,23 +152,24 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
     }
 
     private fun getArgs() {
-        inputItem = arguments?.getSerializable(TAG_ITEM) as Item
         modelShareStack = ModelShareStack.getInstance()
     }
 
     private fun initViews() {
         viewPagerAdapter = ViewPagerAdapter(childFragmentManager, fragments)
         viewBinding?.let { binding ->
-            binding.shareAddViewPager.addOnPageChangeListener(viewPagerAdapter!!)
+            binding.shareAddViewPager.addOnPageChangeListener(checkNotNull(viewPagerAdapter))
             binding.shareAddViewPager.adapter = viewPagerAdapter
             shareActivity?.getTabLayout()?.setupWithViewPager(binding.shareAddViewPager, true)
-            sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, requireActivity()).apply {
-                val ext = StringUtils.getExtensionFromPath(checkNotNull(inputItem?.title))
-
-                setExtension(StringUtils.getExtension(ext)
-                    .takeIf { it != StringUtils.Extension.FORM } ?: StringUtils.getFormExtension(ext))
+            sharePanelViews = SharePanelViews(binding.sharePanelLayout.root, inputItem).apply {
                 setOnEventListener(this@AddPagerFragment)
                 setAccessIcon(modelShareStack?.accessCode!!)
+            }
+        }
+        if (isRoom) {
+            viewBinding?.inviteByEmail?.isVisible = true
+            viewBinding?.inviteByEmail?.setOnClickListener {
+                showFragment(ShareInviteFragment.newInstance(inputItem), ShareInviteFragment.TAG, false)
             }
         }
         setChecked()
@@ -194,15 +204,27 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
 
     private val fragments: List<ViewPagerAdapter.Container>
         get() {
-            return listOf(
-                ViewPagerAdapter.Container(
-                    AddFragment.newInstance(inputItem, AddFragment.Type.USERS),
-                    getString(R.string.share_tab_users)),
+            if (inputItem is CloudFolder && (inputItem as CloudFolder).isRoom) {
+                return listOf(
+                    ViewPagerAdapter.Container(
+                        AddFragment.newInstance(inputItem, AddFragment.Type.USERS),
+                        getString(R.string.share_tab_users)
+                    )
+                )
+            } else {
+                return listOf(
+                    ViewPagerAdapter.Container(
+                        AddFragment.newInstance(inputItem, AddFragment.Type.USERS),
+                        getString(R.string.share_tab_users)
+                    ),
 
-                ViewPagerAdapter.Container(
-                    AddFragment.newInstance(inputItem, AddFragment.Type.GROUPS),
-                    getString(R.string.share_tab_groups))
-            )
+                    ViewPagerAdapter.Container(
+                        AddFragment.newInstance(inputItem, AddFragment.Type.GROUPS),
+                        getString(R.string.share_tab_groups)
+                    )
+                )
+            }
+
         }
 
     fun setChecked() {
@@ -217,7 +239,7 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
     }
 
     companion object {
-        val TAG = AddPagerFragment::class.java.simpleName
+        val TAG: String = AddPagerFragment::class.java.simpleName
         const val TAG_ITEM = "TAG_ITEM"
         const val ANIMATION_DURATION = 200
 

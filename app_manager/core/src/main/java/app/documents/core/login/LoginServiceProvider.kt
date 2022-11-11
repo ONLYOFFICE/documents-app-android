@@ -37,6 +37,7 @@ class LoginServiceProvider(
     override fun capabilities(): Observable<LoginResponse> {
         return loginService.capabilities().map { fetchResponse(it) }
             .mergeWith(loginService.getSettings().map { fetchResponse(it) })
+            .mergeWith(loginService.getAllSettings().map { fetchResponse(it) })
             .toObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

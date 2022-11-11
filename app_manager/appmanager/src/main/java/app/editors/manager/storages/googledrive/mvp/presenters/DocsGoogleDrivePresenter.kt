@@ -1,12 +1,16 @@
 package app.editors.manager.storages.googledrive.mvp.presenters
 
+import android.accounts.Account
 import android.content.ClipData
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.googleDriveLoginService
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.GoogleDriveFolder
@@ -98,7 +102,6 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
                     withContext(Dispatchers.Main) {
                         getItemsById("root")
                     }
-
                 }
             }
         } ?: run {
@@ -270,6 +273,27 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     }
 
     override fun refreshToken() {
-        viewState.onRefreshToken()
+        val account = Account(
+            App.getApp().appComponent.accountOnline?.getAccountName(),
+            context.getString(lib.toolkit.base.R.string.account_type)
+        )
+        val accData = AccountUtils.getAccountData(context, account)
+        val map = mapOf(
+            StorageUtils.ARG_CLIENT_ID to BuildConfig.GOOGLE_COM_CLIENT_ID,
+            StorageUtils.ARG_CLIENT_SECRET to BuildConfig.GOOGLE_COM_CLIENT_SECRET,
+            StorageUtils.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_REFRESH,
+            StorageUtils.ARG_REFRESH_TOKEN to accData.refreshToken.orEmpty(),
+        )
+
+        disposable.add(
+            App.getApp().googleDriveLoginService.getToken(map).subscribe({ tokenResponse ->
+                AccountUtils.setAccountData(context, account, accData.copy(accessToken = (tokenResponse.accessToken)))
+                AccountUtils.setToken(context, account, tokenResponse.accessToken)
+                (fileProvider as GoogleDriveFileProvider).refreshInstance()
+                getProvider()
+            }, {
+                viewState.onSignIn()
+            })
+        )
     }
 }

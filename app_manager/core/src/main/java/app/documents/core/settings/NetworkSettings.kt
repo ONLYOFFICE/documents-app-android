@@ -17,6 +17,7 @@ class NetworkSettings(context: Context) {
         private const val KEY_SSO_LABEL = "KEY_SSO_LABEL"
         private const val KEY_LDAP = "KEY_LDAP"
         private const val KEY_VERSION = "KEY_VERSION"
+        private const val KEY_DOC_SPACE = "DOC_SPACE"
 
         private const val TAG_SUFFIX_INFO = "info"
     }
@@ -49,6 +50,12 @@ class NetworkSettings(context: Context) {
         preferences.edit().putString(KEY_VERSION, value).apply()
     }
     get() = preferences.getString(KEY_VERSION, "") ?: ""
+
+    var isDocSpace: Boolean
+        set(value) {
+            preferences.edit().putBoolean(KEY_DOC_SPACE, value).apply()
+        }
+        get() = preferences.getBoolean(KEY_DOC_SPACE, false)
 
     fun setBaseUrl(string: String) {
         val builder = StringBuilder(string)

@@ -7,17 +7,23 @@ import android.view.MenuItem
 import android.view.View
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
-import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
+import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.SelectActionBarPopup
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.ui.dialogs.common.CommonDialog
+import lib.toolkit.base.ui.popup.ActionBarPopupItem
 
-class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
+class DocsTrashFragment: DocsCloudFragment() {
+
 
     private var emptyTrashItem: MenuItem? = null
     private var isEmptyTrashVisible = false
+    
+    private val isArchive: Boolean get() = section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         showMenu()
@@ -28,44 +34,49 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         initViews()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, menuInflater)
+    override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
+        when (tag) {
+            DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> {
+                if (isResumed && isArchive) {
+                    cloudPresenter.deleteRoom()
+                } else if (isResumed && section == ApiContract.SectionType.CLOUD_TRASH) {
+                    super.onAcceptClick(dialogs, value, tag)
+                }
+            }
+            else -> super.onAcceptClick(dialogs, value, tag)
+        }
+    }
+
+    override fun onItemClick(view: View, position: Int) {
+        if (presenter.isSelectionMode) {
+            super.onItemClick(view, position)
+        } else {
+            onItemContextClick(view, position)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
         if (isResumed) {
             emptyTrashItem = menu.findItem(R.id.toolbar_item_empty_trash)
-            emptyTrashItem?.isVisible = isEmptyTrashVisible
+            emptyTrashItem?.isVisible = isEmptyTrashVisible && section != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
             showMenu()
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.toolbar_item_empty_trash) {
-            showQuestionDialog(
-                getString(R.string.trash_dialog_empty_title),
-                null,
-                getString(R.string.dialogs_question_accept_yes),
-                getString(R.string.dialogs_question_accept_no),
-                DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
-            )
+        when (item.itemId) {
+            R.id.toolbar_item_empty_trash -> {
+                showQuestionDialog(
+                    getString(R.string.trash_dialog_empty_title),
+                    null,
+                    getString(R.string.dialogs_question_accept_yes),
+                    getString(R.string.dialogs_question_accept_no),
+                    DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
+                )
+            }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onSwipeRefresh(): Boolean {
-        if (!super.onSwipeRefresh()) {
-            cloudPresenter.getItemsById(ID)
-            return true
-        }
-        return false
-    }
-
-    override fun onScrollPage() {
-        super.onScrollPage()
-        cloudPresenter.getItemsById(ID)
-        initViews()
-    }
-
-    override fun onClick(v: View) {
-        cloudPresenter.moveContext()
     }
 
     override fun onItemContextClick(view: View, position: Int) {
@@ -73,16 +84,10 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         cloudPresenter.onContextClick(item, position, true)
     }
 
-    override fun onStateEmptyBackStack() {
-        super.onStateEmptyBackStack()
-        swipeRefreshLayout?.isRefreshing = true
-        cloudPresenter.getItemsById(ID)
-    }
-
     override fun setMenuMainEnabled(isEnabled: Boolean) {
         super.setMenuMainEnabled(isEnabled)
         isEmptyTrashVisible = isEnabled
-        emptyTrashItem?.isVisible = isEmptyTrashVisible
+        emptyTrashItem?.isVisible = isEmptyTrashVisible && section != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
         searchItem?.isVisible = isEnabled
     }
 
@@ -92,7 +97,7 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         } else {
             setActionBarTitle("")
             emptyTrashItem?.let { item ->
-                setMenuItemTint(requireContext(), item, lib.toolkit.base.R.color.colorPrimary)
+                UiUtils.setMenuItemTint(requireContext(), item, lib.toolkit.base.R.color.colorPrimary)
             }
         }
     }
@@ -116,7 +121,13 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
                 getString(R.string.dialogs_common_cancel_button),
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
-            ContextBottomDialog.Buttons.RESTORE -> cloudPresenter.moveContext()
+            ContextBottomDialog.Buttons.RESTORE -> {
+                if (isArchive) {
+                    cloudPresenter.archiveRoom(false)
+                } else {
+                    cloudPresenter.moveContext()
+                }
+            }
             else -> {
             }
         }
@@ -140,16 +151,36 @@ class DocsTrashFragment : DocsCloudFragment(), View.OnClickListener {
         cloudPresenter.isTrashMode = false
     }
 
-    override val section: Int
-        get() = ApiContract.SectionType.CLOUD_TRASH
+    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        super.showSelectedActionBarMenu(excluded = mutableListOf(
+            SelectActionBarPopup.Move,
+            SelectActionBarPopup.Copy,
+            SelectActionBarPopup.Download
+        ).apply {
+            if (isArchive) add(SelectActionBarPopup.Restore)
+        })
+    }
+
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        val sortItems = MainActionBarPopup.sortPopupItems.toMutableList().apply {
+            add(MainActionBarPopup.RoomType)
+            add(MainActionBarPopup.RoomTags)
+        }
+        super.showMainActionBarMenu(if (isArchive) sortItems else excluded)
+    }
+
+    override fun setMenuFilterEnabled(isEnabled: Boolean) {
+        filterItem?.isVisible = !isArchive
+    }
 
     companion object {
-        val ID = CloudFileProvider.Section.Trash.path
 
-        fun newInstance(account: String?): DocsTrashFragment {
+        fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
             return DocsTrashFragment().apply {
-                arguments = Bundle(1).apply {
-                    putString(KEY_ACCOUNT, account)
+                arguments = Bundle(3).apply {
+                    putString(KEY_ACCOUNT, stringAccount)
+                    putString(KEY_PATH, rootPath)
+                    putInt(KEY_SECTION, section)
                 }
             }
         }

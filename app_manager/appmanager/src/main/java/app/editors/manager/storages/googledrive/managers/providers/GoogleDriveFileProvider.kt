@@ -8,12 +8,11 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
+import app.editors.manager.app.getGoogleDriveServiceProvider
 import app.editors.manager.managers.providers.BaseFileProvider
-import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestExternal
-import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
@@ -81,7 +80,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
         }
     }
 
-    private val api = App.getApp().getGoogleDriveComponent()
+    private var api = App.getApp().getGoogleDriveComponent()
 
     private val workManager = WorkManager.getInstance(App.getApp().applicationContext)
 
@@ -479,11 +478,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
         TODO("Not yet implemented")
     }
 
-    override fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>? {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>? {
-        TODO("Not yet implemented")
+    fun refreshInstance() {
+        api = App.getApp().getGoogleDriveServiceProvider()
     }
 }

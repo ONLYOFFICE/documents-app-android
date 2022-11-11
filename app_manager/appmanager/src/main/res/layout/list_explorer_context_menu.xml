@@ -9,8 +9,23 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorSurface"
+        android:background="@drawable/drawable_bottom_sheet_fragment"
         android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:padding="@dimen/default_margin_medium">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:tint="@color/colorOnSurface"
+                android:src="@drawable/ic_bottom_divider" />
+
+        </FrameLayout>
 
         <RelativeLayout
             android:id="@+id/list_explorer_context_folder_name"
@@ -22,6 +37,7 @@
             <ImageView
                 android:id="@+id/list_explorer_context_header_image"
                 style="@style/ContextListHeaderImage"
+                android:alpha="1"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 app:srcCompat="@drawable/ic_list_context_folder_name"
@@ -139,33 +155,20 @@
                     android:visibility="gone" />
 
                 <LinearLayout
-                    android:id="@+id/list_explorer_context_add_to_favorite"
+                    android:id="@+id/list_explorer_context_favorite"
                     style="@style/ContextListLayout"
                     android:visibility="gone">
 
                     <ImageView
+                        android:id="@+id/favoriteImage"
                         style="@style/ContextListImage"
                         app:srcCompat="@drawable/ic_favorites_outline"
                         tools:ignore="ContentDescription" />
 
                     <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/favoriteText"
                         style="@style/ContextListMediumText"
                         android:text="@string/list_context_add_to_favorite" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/list_explorer_context_delete_from_favorite"
-                    style="@style/ContextListLayout"
-                    android:visibility="gone">
-
-                    <ImageView
-                        style="@style/ContextListImage.Favorite"
-                        app:srcCompat="@drawable/ic_favorites_fill"
-                        tools:ignore="ContentDescription" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        style="@style/ContextListMediumText"
-                        android:text="@string/list_context_delete_from_favorite" />
                 </LinearLayout>
 
                 <include
@@ -226,22 +229,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/list_explorer_context_open_location"
-                    style="@style/ContextListLayout"
-                    android:visibility="gone">
-
-                    <ImageView
-                        style="@style/ContextListImage"
-                        app:srcCompat="@drawable/ic_toolbar_open"
-                        tools:ignore="ContentDescription" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        style="@style/ContextListMediumText"
-                        android:text="@string/list_context_open_location" />
-
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/list_explorer_context_rename"
                     style="@style/ContextListLayout"
                     android:visibility="gone">
@@ -256,6 +243,54 @@
                         android:text="@string/list_context_rename" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/list_explorer_context_pin"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <ImageView
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_pin_to_top"
+                        tools:ignore="ContentDescription" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/list_explorer_context_pin_text"
+                        style="@style/ContextListMediumText"
+                        android:text="@string/list_context_pin_to_top" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/list_explorer_context_info"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <ImageView
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_drawer_menu_about"
+                        tools:ignore="ContentDescription" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/list_explorer_context_info_text"
+                        style="@style/ContextListMediumText"
+                        android:text="@string/list_context_info" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/list_explorer_context_add_user"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <ImageView
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_add_users"
+                        tools:ignore="ContentDescription" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/list_explorer_context_add_user_text"
+                        style="@style/ContextListMediumText"
+                        android:text="@string/list_context_add_users" />
+                </LinearLayout>
+
                 <include
                     android:id="@+id/view_line_separator_delete"
                     layout="@layout/view_line_separator"
@@ -265,6 +300,24 @@
                     android:layout_marginTop="@dimen/line_separator_group_top"
                     android:layout_marginBottom="@dimen/line_separator_group_bottom"
                     android:visibility="gone" />
+
+
+                <LinearLayout
+                    android:id="@+id/list_explorer_context_archive"
+                    style="@style/ContextListLayout"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/list_explorer_context_archive_image"
+                        style="@style/ContextListImage"
+                        app:srcCompat="@drawable/ic_room_archive"
+                        tools:ignore="ContentDescription" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/list_explorer_context_text"
+                        style="@style/ContextListMediumText"
+                        android:text="@string/context_room_archive" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/list_explorer_context_restore"
@@ -288,6 +341,7 @@
                     android:visibility="gone">
 
                     <ImageView
+                        android:id="@+id/list_explorer_context_delete_image"
                         style="@style/ContextListImage"
                         app:srcCompat="@drawable/ic_list_context_delete"
                         tools:ignore="ContentDescription" />

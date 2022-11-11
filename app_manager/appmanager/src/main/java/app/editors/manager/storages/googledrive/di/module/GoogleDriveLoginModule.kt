@@ -19,11 +19,10 @@ class GoogleDriveLoginModule {
     @Provides
     fun provideGoogleDriveLogin(googleDriveLoginService: GoogleDriveLoginService): IGoogleDriveLoginServiceProvider = GoogleDriveLoginServiceProvider(googleDriveLoginService)
 
-
     @Provides
     fun provideGoogleDriveLoginService(okHttpClient: OkHttpClient): GoogleDriveLoginService = Retrofit.Builder()
         .client(okHttpClient)
-        .baseUrl("https://www.googleapis.com/")
+        .baseUrl("https://oauth2.googleapis.com/")
         .addConverterFactory(Json {
             isLenient = true
             ignoreUnknownKeys = true

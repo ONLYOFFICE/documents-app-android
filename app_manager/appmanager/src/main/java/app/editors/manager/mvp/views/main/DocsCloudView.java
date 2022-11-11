@@ -1,7 +1,9 @@
 package app.editors.manager.mvp.views.main;;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.mvp.models.explorer.CloudFile;
 import moxy.viewstate.strategy.OneExecutionStateStrategy;
 import moxy.viewstate.strategy.StateStrategyType;
@@ -14,4 +16,8 @@ public interface DocsCloudView extends DocsBaseView {
     void showMoveCopyDialog(ArrayList<String> names, String action, String title);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onStateUpdateFilterMenu();
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onArchiveRoom(boolean isArchived);
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onArchiveSelectedRooms(List<Entity> rooms);
 }

@@ -31,6 +31,4 @@ interface BaseFileProvider {
     fun upload(folderId: String, uris: List<Uri?>): Observable<Int>?
     fun share(id: String, requestExternal: RequestExternal): Observable<ResponseExternal>?
     fun terminate(): Observable<List<Operation>>?
-    fun addToFavorites(requestFavorites: RequestFavorites): Observable<Base>?
-    fun deleteFromFavorites(requestFavorites: RequestFavorites): Observable<Base>?
 }

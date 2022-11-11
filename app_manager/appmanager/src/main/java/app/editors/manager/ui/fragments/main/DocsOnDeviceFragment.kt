@@ -125,6 +125,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        presenter.setSectionType(ApiContract.SectionType.DEVICE_DOCUMENTS)
         checkStorage(TAG_STORAGE_ACCESS)
         init()
     }
@@ -171,7 +172,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun onStateEmptyBackStack() {
-        super.onStateEmptyBackStack()
         swipeRefreshLayout?.isRefreshing = true
         presenter.getItemsById(LocalContentTools.getDir(requireContext()))
     }
@@ -307,8 +307,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         )
     }
 
-    override fun onShowDocs(uri: Uri) {
-        showEditors(uri, EditorsType.DOCS)
+    override fun onShowDocs(uri: Uri, isNew: Boolean) {
+        showEditors(uri, EditorsType.DOCS, isNew)
     }
 
     override fun onShowCells(uri: Uri) {

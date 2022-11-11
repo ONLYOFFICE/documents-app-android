@@ -40,7 +40,6 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:clickable="false"
-            android:fontFamily="sans-serif-medium"
             app:layout_constraintEnd_toStartOf="@+id/headerImageArrow"
             app:layout_constraintStart_toEndOf="@+id/headerUserAvatar"
             app:layout_constraintTop_toTopOf="@+id/headerUserAvatar"

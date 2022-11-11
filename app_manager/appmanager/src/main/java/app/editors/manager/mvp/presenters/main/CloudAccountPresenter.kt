@@ -19,21 +19,23 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.loginService
 import app.editors.manager.app.webDavApi
+import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.login.BaseLoginPresenter
 import app.editors.manager.mvp.views.main.CloudAccountView
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 import okhttp3.Credentials
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -65,6 +67,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     companion object {
         val TAG: String = CloudAccountPresenter::class.java.simpleName
+
+        val KEY_SWITCH = "switch"
     }
 
     @Inject
@@ -83,8 +87,21 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         disposable?.dispose()
     }
 
-    fun getAccounts(saveState: Bundle? = null) {
-        CoroutineScope(Dispatchers.Default).launch {
+    fun getAccounts(saveState: Bundle? = null, isSwitch: Boolean = false) {
+        presenterScope.launch {
+            if (isSwitch) {
+                switchAccount(saveState)
+            } else {
+                getTokens(accountDao.getAccounts(), saveState)
+            }
+        }
+    }
+
+    private suspend fun switchAccount(saveState: Bundle? = null) {
+        val data = Json.decodeFromString<OpenDataModel>(preferenceTool.fileData)
+        accountDao.getAccountByLogin(data.email?.lowercase() ?: "")?.let { cloudAccount ->
+            checkLogin(cloudAccount)
+        } ?: run {
             getTokens(accountDao.getAccounts(), saveState)
         }
     }
@@ -107,7 +124,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     fun logOut() {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             contextAccount?.let { account ->
                 if (account.isWebDav) {
                     AccountUtils.setPassword(context, account.getAccountName(), null)
@@ -147,7 +164,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     fun deleteSelected(selection: List<String>?) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             selection?.forEach { id ->
                 accountDao.getAccount(id)?.let { account ->
                     if (account.isOnline) {
@@ -166,7 +183,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     private fun deleteAccount(account: CloudAccount) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             AccountUtils.removeAccount(context, account.getAccountName())
             accountDao.deleteAccount(account)
             accountDao.getAccounts().let {
@@ -319,7 +336,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         context.accountOnline?.let { onlineAccount ->
             setSettings(onlineAccount)
             unsubscribePush(onlineAccount, AccountUtils.getToken(context, onlineAccount.getAccountName())) {
-                CoroutineScope(Dispatchers.Default).launch {
+               presenterScope.launch {
                     setSettings(account)
                     accountDao.updateAccount(onlineAccount.copyWithToken(isOnline = false))
                     accountDao.updateAccount(account.copyWithToken(isOnline = true))
@@ -329,7 +346,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 }
             }
         } ?: run {
-            CoroutineScope(Dispatchers.Default).launch {
+            presenterScope.launch {
                 setSettings(account)
                 accountDao.updateAccount(account.copyWithToken(isOnline = true))
                 withContext(Dispatchers.Main) {

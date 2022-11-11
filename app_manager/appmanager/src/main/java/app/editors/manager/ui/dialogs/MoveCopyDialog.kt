@@ -89,8 +89,7 @@ class MoveCopyDialog : BaseDialog() {
 
     companion object {
 
-        @JvmField
-        val TAG = MoveCopyDialog::class.java.simpleName
+        val TAG: String = MoveCopyDialog::class.java.simpleName
         const val TAG_OVERWRITE = "TAG_OVERWRITE"
         const val TAG_DUPLICATE = "TAG_DUPLICATE"
         const val TAG_SKIP = "TAG_SKIP"

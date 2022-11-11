@@ -97,7 +97,6 @@ abstract class BaseStorageOperationsFragment: DocsBaseFragment(), OperationActiv
     }
 
     override fun onStateEmptyBackStack() {
-        super.onStateEmptyBackStack()
         setActionBarTitle(getString(R.string.operation_title))
         swipeRefreshLayout?.isRefreshing = true
         presenter.getProvider()

@@ -127,7 +127,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (isActivePage && resultCode == Activity.RESULT_CANCELED && requestCode == BaseActivity.REQUEST_ACTIVITY_OPERATION) {
+        if (isActivePage && resultCode == Activity.RESULT_CANCELED &&
+            requestCode == BaseActivity.REQUEST_ACTIVITY_OPERATION ||
+            data?.getBooleanExtra(BaseActivity.EXTRA_IS_REFRESH, false) == true
+        ) {
             onRefresh()
         } else if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
@@ -380,7 +383,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             )
             ActionBottomDialog.Buttons.FOLDER -> showEditDialogCreate(
                 getString(R.string.dialogs_edit_create_folder),
-                "",
+                getString(R.string.dialogs_edit_create_folder),
                 getString(R.string.dialogs_edit_hint),
                 null,
                 DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER,
@@ -619,10 +622,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (isActivePage) {
             setVisibilityActionButton(isVisible)
         }
-    }
-
-    override fun onStateEmptyBackStack() {
-        // Stub
     }
 
     /*
@@ -938,6 +937,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     private fun showContextDialog(state: ContextBottomDialog.State) {
+//        contextBottomDialog =  ContextBottomDialog.newInstance(checkNotNull(presenter.itemClicked), presenter.getSectionType())
         contextBottomDialog?.let { dialog ->
             dialog.state = state
             dialog.onClickListener = this
@@ -990,6 +990,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onUpdateFavoriteItem() {
+        fragmentListBinding?.listSwipeRefresh?.isRefreshing = false
         explorerAdapter?.updateItem(presenter.itemClicked)
     }
 
@@ -1049,11 +1050,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun showEditors(uri: Uri?, type: EditorsType) {
+    protected fun showEditors(uri: Uri?, type: EditorsType, isNew: Boolean = false) {
         try {
             val intent = Intent().apply {
                 data = uri
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
+                putExtra(EditorsContract.KEY_NEW_FILE, isNew)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
@@ -1095,6 +1097,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (!presenter.isSelectionMode) {
             MainActionBarPopup(
                 context = requireContext(),
+                section = presenter.getSectionType(),
                 clickListener = mainActionBarClickListener,
                 sortBy = presenter.preferenceTool.sortBy.orEmpty(),
                 isAsc = isAsc,
@@ -1134,6 +1137,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, isRepeatedTap)
             MainActionBarPopup.Author ->
                 presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, isRepeatedTap)
+            MainActionBarPopup.RoomTags ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TAGS, isRepeatedTap)
+            MainActionBarPopup.RoomType ->
+                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_ROOM_TYPE, isRepeatedTap)
         }
     }
 

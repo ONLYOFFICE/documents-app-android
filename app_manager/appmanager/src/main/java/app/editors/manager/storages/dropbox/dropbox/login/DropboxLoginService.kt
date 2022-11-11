@@ -16,19 +16,19 @@ interface DropboxLoginService {
     }
 
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
     )
     @POST("oauth2/token")
     fun getRefreshToken(@Header("Authorization") auth: String, @QueryMap map: Map<String, String>): Single<Response<TokenResponse>>
 
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
     )
     @POST("oauth2/token")
     fun updateRefreshToken(@Header("Authorization") auth: String, @QueryMap map: Map<String, String>): Single<Response<RefreshTokenResponse>>
 
     @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
     )
     @POST("${API_VERSION}users/get_account")
     fun getUserInfo(@Header(ApiContract.HEADER_AUTHORIZATION) token: String, @Body map: AccountRequest): Single<Response<UserResponse>>

@@ -1,10 +1,10 @@
 package app.editors.manager.ui.adapters.holders
 
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import app.editors.manager.databinding.ListCountriesCodesItemBinding
 import app.editors.manager.managers.tools.CountriesCodesTool.Codes
-import app.editors.manager.managers.utils.isVisible
 import lib.toolkit.base.ui.adapters.BaseAdapter
 
 class CountriesCodeViewHolder(view: View, mOnItemClickListener: BaseAdapter.OnItemClickListener?) :

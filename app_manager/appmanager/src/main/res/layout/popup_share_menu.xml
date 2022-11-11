@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -15,75 +14,30 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/popup_share_access_full"
-            style="@style/PopupLayout">
+        <include
+            android:id="@+id/fullAccessItem"
+            layout="@layout/include_popup_share_item"
+            android:visibility="gone" />
 
-            <ImageView
-                style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_full"
-                tools:ignore="ContentDescription" />
+        <include
+            android:id="@+id/viewItem"
+            layout="@layout/include_popup_share_item"
+            android:visibility="gone" />
 
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/PopupText"
-                android:text="@string/share_popup_access_full" />
-        </LinearLayout>
+        <include
+            android:id="@+id/fillFormItem"
+            layout="@layout/include_popup_share_item"
+            android:visibility="gone" />
 
-        <LinearLayout
-            android:id="@+id/popup_share_access_fill_forms"
-            style="@style/PopupLayout">
+        <include
+            android:id="@+id/reviewItem"
+            layout="@layout/include_popup_share_item"
+            android:visibility="gone" />
 
-            <ImageView
-                style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_fill_form"
-                tools:ignore="ContentDescription" />
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/PopupText"
-                android:text="@string/share_popup_access_fill_forms" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/popup_share_access_comment"
-            style="@style/PopupLayout">
-
-            <ImageView
-                style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_comment"
-                tools:ignore="ContentDescription" />
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/PopupText"
-                android:text="@string/share_popup_access_comment" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/popup_share_access_review"
-            style="@style/PopupLayout">
-
-            <ImageView
-                style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_review"
-                tools:ignore="ContentDescription" />
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/PopupText"
-                android:text="@string/share_popup_access_review" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/popup_share_access_read"
-            style="@style/PopupLayout">
-
-            <ImageView
-                style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_read"
-                tools:ignore="ContentDescription" />
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/PopupText"
-                android:text="@string/share_popup_access_read_only" />
-        </LinearLayout>
+        <include
+            android:id="@+id/commentItem"
+            layout="@layout/include_popup_share_item"
+            android:visibility="gone" />
 
         <include
             android:id="@+id/popup_share_access_separator_deny"
@@ -91,21 +45,13 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/line_separator_height"
             android:layout_marginTop="@dimen/line_separator_group_top"
-            android:layout_marginBottom="@dimen/line_separator_group_bottom" />
+            android:layout_marginBottom="@dimen/line_separator_group_bottom"
+            android:visibility="gone" />
 
-        <LinearLayout
-            android:id="@+id/popup_share_access_deny"
-            style="@style/PopupLayout">
-
-            <ImageView
-                style="@style/ContextListImage"
-                app:srcCompat="@drawable/ic_access_deny"
-                tools:ignore="ContentDescription" />
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/PopupText"
-                android:text="@string/share_popup_access_deny_access" />
-        </LinearLayout>
+        <include
+            android:id="@+id/denyItem"
+            layout="@layout/include_popup_share_item"
+            android:visibility="gone" />
 
         <include
             android:id="@+id/popup_share_access_separator_remove"
@@ -116,22 +62,10 @@
             android:layout_marginBottom="@dimen/line_separator_group_bottom"
             android:visibility="gone" />
 
-        <LinearLayout
-            android:id="@+id/popup_share_access_remove"
-            style="@style/PopupLayout"
-            android:visibility="visible">
-
-            <ImageView
-                style="@style/ContextListImage"
-                android:tint="@color/colorError"
-                app:srcCompat="@drawable/ic_trash"
-                tools:ignore="ContentDescription" />
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/PopupText"
-                android:textColor="@color/colorError"
-                android:text="@string/share_popup_access_deny_remove" />
-        </LinearLayout>
+        <include
+            android:id="@+id/deleteItem"
+            layout="@layout/include_popup_share_item"
+            android:visibility="gone" />
 
     </LinearLayout>
 

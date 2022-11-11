@@ -87,6 +87,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        presenter.setSectionType(ApiContract.SectionType.CLOUD_RECENT)
         init()
     }
 
@@ -123,6 +124,10 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             activity?.setAppBarStates(false)
             activity?.showNavigationButton(false)
         }
+    }
+
+    override fun onStateEmptyBackStack() {
+        // stub
     }
 
     private fun init() {
@@ -201,7 +206,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onContextShow(state: ContextBottomDialog.State) {
         parentFragmentManager.let {
-            contextBottomDialog?.state = state
+//            contextBottomDialog?.state = state
             contextBottomDialog?.onClickListener = this
             contextBottomDialog?.show(it, ContextBottomDialog.TAG)
         }

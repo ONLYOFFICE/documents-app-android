@@ -4,11 +4,11 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareSettingsItemBinding
 import app.editors.manager.managers.utils.GlideUtils.setAvatar
 import app.editors.manager.managers.utils.ManagerUiUtils
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.ui.adapters.ShareAdapter
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
@@ -41,7 +41,8 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
         if (item is ShareUi) {
             if (item.sharedTo.userName.isNotEmpty()) {
                 itemInfo.visibility = View.VISIBLE
-                itemName.text = item.sharedTo.displayNameHtml
+                itemName.text = item.sharedTo.displayNameHtml.takeIf { it.isNotEmpty() }
+                    ?: item.sharedTo.email
 
                 // Set info if not empty
                 val info = item.sharedTo.department.trim { it <= ' ' }
@@ -53,7 +54,8 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
                 }
             } else {
                 itemInfo.visibility = View.GONE
-                itemName.text = item.sharedTo.name
+                itemName.text = item.sharedTo.name.takeIf { it.isNotEmpty() }
+                    ?: item.sharedTo.email
                 shareImage.setImageResource(R.drawable.drawable_list_share_image_item_group_placeholder)
             }
 
@@ -61,7 +63,7 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
             contextLayoutButton.isVisible = !item.isOwner
             itemBinding.listShareSettingsOwner.isVisible = item.isOwner
             if (!item.isOwner) {
-                ManagerUiUtils.setAccessIcon(contextButton, item.access)
+                ManagerUiUtils.setAccessIcon(contextButton, item.access, item.isRoom)
             }
         }
     }

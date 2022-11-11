@@ -133,7 +133,7 @@ fun PasscodeOperation(
                     for (number in rowItem) {
                         Button(
                             onClick = {
-                                onEnterCode.invoke(number + 1)
+                                onEnterCode.invoke(number)
                             },
                             colors = ButtonDefaults.textButtonColors(
                                 backgroundColor = Color.Transparent

@@ -61,8 +61,8 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 403
-        versionName = "5.5.0"
+        versionCode = 407
+        versionName = "5.5.1"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
@@ -129,6 +129,7 @@ android {
         buildConfigField("String", "GOOGLE_INFO_CLIENT_ID","\"" + keystoreProperties["GOOGLE_INFO_CLIENT_ID"] + "\"" )
         buildConfigField("String", "GOOGLE_INFO_REDIRECT_URL","\"" + keystoreProperties["GOOGLE_INFO_REDIRECT_URL"] + "\"" )
         buildConfigField("String", "GOOGLE_COM_CLIENT_ID","\"" + keystoreProperties["GOOGLE_COM_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "GOOGLE_COM_CLIENT_SECRET","\"" + keystoreProperties["GOOGLE_COM_CLIENT_SECRET"] + "\"" )
         buildConfigField("String", "GOOGLE_COM_REDIRECT_URL","\"" + keystoreProperties["GOOGLE_COM_REDIRECT_URL"] + "\"" )
         buildConfigField("String", "GOOGLE_AUTH_URL","\"" + keystoreProperties["GOOGLE_AUTH_URL"] + "\"" )
         buildConfigField("String", "GOOGLE_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["GOOGLE_VALUE_RESPONSE_TYPE"] + "\"" )
@@ -353,7 +354,7 @@ dependencies {
     implementation(Lifecycle.liveData)
     implementation(Lifecycle.runtime)
 
-    implementation("androidx.fragment:fragment-ktx:1.4.1")
+    implementation("androidx.fragment:fragment-ktx:1.5.2")
 
     //Compose
     implementation(Compose.ui)

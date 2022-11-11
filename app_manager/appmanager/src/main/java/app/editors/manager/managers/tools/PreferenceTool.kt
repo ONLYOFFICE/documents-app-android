@@ -180,6 +180,12 @@ class PreferenceTool @Inject constructor(val context: Context) {
         sharedPreferences.edit().putBoolean(KEY_WIFI_STATE, wifiState).apply()
     }
 
+    var fileData: String
+        get() = sharedPreferences.getString("KEY_FILE_DATA", "") ?: ""
+        set(value) {
+            sharedPreferences.edit().putString("KEY_FILE_DATA", value).apply()
+        }
+
     val uploadWifiState: Boolean
         get() = sharedPreferences.getBoolean(KEY_WIFI_STATE, false)
     var isAnalyticEnable: Boolean

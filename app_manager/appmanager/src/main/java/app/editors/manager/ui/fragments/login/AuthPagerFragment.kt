@@ -6,12 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentOnBoardingPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.ui.activities.login.AuthAppActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.pager.ViewPagerAdapter

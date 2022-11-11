@@ -38,7 +38,7 @@ object KeyStoreUtils {
             val kpGen = KeyPairGenerator.getInstance(KEY_ALGORITHM_RSA, ANDROID_KEY_STORE)
             kpGen.initialize(spec)
             kpGen.generateKeyPair()
-        } catch (error: KeyStoreException) {
+        } catch (error: RuntimeException) {
             App.getApp().isKeyStore = false
         }
     }

@@ -112,9 +112,9 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             StorageUtils.ARG_CLIENT_ID to BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
             StorageUtils.ARG_SCOPE to StorageUtils.OneDrive.VALUE_SCOPE,
             StorageUtils.ARG_REDIRECT_URI to BuildConfig.ONE_DRIVE_COM_REDIRECT_URL,
-            StorageUtils.OneDrive.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_REFRESH,
-            StorageUtils.OneDrive.ARG_CLIENT_SECRET to BuildConfig.ONE_DRIVE_COM_CLIENT_SECRET,
-            StorageUtils.OneDrive.ARG_REFRESH_TOKEN to accData.refreshToken
+            StorageUtils.ARG_GRANT_TYPE to StorageUtils.OneDrive.VALUE_GRANT_TYPE_REFRESH,
+            StorageUtils.ARG_CLIENT_SECRET to BuildConfig.ONE_DRIVE_COM_CLIENT_SECRET,
+            StorageUtils.ARG_REFRESH_TOKEN to accData.refreshToken
         )
         disposable.add(App.getApp().oneDriveLoginService.getToken(map as Map<String, String>)
             .subscribe {oneDriveResponse ->

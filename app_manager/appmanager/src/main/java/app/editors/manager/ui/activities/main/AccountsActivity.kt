@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import app.editors.manager.R
+import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.main.CloudAccountFragment
 import com.google.android.material.appbar.MaterialToolbar
@@ -16,9 +17,11 @@ class AccountsActivity : BaseAppActivity() {
 
         const val RESULT_NO_LOGGED_IN_ACCOUNTS = 1021
 
-        fun show(activity: Activity) {
+        fun show(activity: Activity, isSwitch: Boolean = false) {
             activity.startActivityForResult(
-                Intent(activity, AccountsActivity::class.java),
+                Intent(activity, AccountsActivity::class.java).apply {
+                    putExtra(CloudAccountPresenter.KEY_SWITCH, isSwitch)
+                },
                 REQUEST_ACTIVITY_ACCOUNTS
             )
         }
@@ -57,7 +60,7 @@ class AccountsActivity : BaseAppActivity() {
     private fun showFragment() {
         FragmentUtils.showFragment(
             supportFragmentManager,
-            CloudAccountFragment.newInstance(),
+            CloudAccountFragment.newInstance(intent.extras?.getBoolean(CloudAccountPresenter.KEY_SWITCH) ?: false),
             R.id.frame_container
         )
     }
