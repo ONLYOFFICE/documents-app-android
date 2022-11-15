@@ -70,7 +70,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
 
             networkSettings.setDefault()
             networkSettings.setScheme(webUrl.protocol + "://")
-            networkSettings.setBaseUrl(webUrl.protocol + "://" + webUrl.host)
+            networkSettings.setBaseUrl(webUrl.protocol + "://" + webUrl.host + if (webUrl.port == -1) "" else ":" + webUrl.port)
 
             viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title))
             disposable = context.webDavApi()
