@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-import app.documents.core.network.ApiContract;
+import app.documents.core.network.common.contracts.ApiContract;
 import app.editors.manager.mvp.models.base.Base;
 import app.editors.manager.mvp.models.base.Entity;
 import app.editors.manager.ui.adapters.holders.factory.TypeFactory;

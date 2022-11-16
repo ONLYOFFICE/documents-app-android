@@ -1,6 +1,6 @@
 package app.editors.manager.storages.onedrive.onedrive.login
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.storages.onedrive.mvp.models.response.AuthResponse
 import app.editors.manager.storages.onedrive.mvp.models.user.User
 import app.editors.manager.storages.onedrive.onedrive.api.OneDriveService

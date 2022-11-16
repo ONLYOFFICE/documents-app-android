@@ -1,8 +1,8 @@
 package app.editors.manager.app
 
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.Base
-import app.documents.core.network.models.room.*
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.models.Base
+import app.documents.core.network.room.models.*
 import app.editors.manager.mvp.models.response.ResponseExplorer
 import io.reactivex.Observable
 import retrofit2.Response

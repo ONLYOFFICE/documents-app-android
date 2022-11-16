@@ -1,6 +1,6 @@
 package app.editors.manager.storages.googledrive.googledrive.login
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import io.reactivex.Single
 import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded

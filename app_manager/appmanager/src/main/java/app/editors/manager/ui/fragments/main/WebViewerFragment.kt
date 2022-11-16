@@ -28,9 +28,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import app.documents.core.account.AccountDao
-import app.documents.core.network.ApiContract
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils

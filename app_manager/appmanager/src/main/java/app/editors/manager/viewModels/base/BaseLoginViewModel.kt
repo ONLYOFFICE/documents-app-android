@@ -3,8 +3,8 @@ package app.editors.manager.viewModels.base
 import android.accounts.Account
 import android.os.Build
 import android.webkit.URLUtil
-import app.documents.core.network.ApiContract
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.storage.preference.NetworkSettings
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.Job
 import lib.toolkit.base.managers.utils.StringUtils

@@ -1,6 +1,6 @@
 package app.editors.manager.storages.dropbox.dropbox.api
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils
 import app.editors.manager.storages.dropbox.mvp.models.explorer.DropboxItem
 import app.editors.manager.storages.dropbox.mvp.models.operations.MoveCopyBatchCheck

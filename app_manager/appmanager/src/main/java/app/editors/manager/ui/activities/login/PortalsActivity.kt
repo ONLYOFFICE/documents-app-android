@@ -8,7 +8,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityPortalsBinding

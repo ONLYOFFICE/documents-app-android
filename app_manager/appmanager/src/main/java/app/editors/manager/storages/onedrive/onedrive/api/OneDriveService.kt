@@ -1,6 +1,6 @@
 package app.editors.manager.storages.onedrive.onedrive.api
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemCloudTree
 import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemValue
 import app.editors.manager.storages.onedrive.mvp.models.request.*

@@ -1,9 +1,7 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.account.CloudAccount
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.models.login.request.RequestSignIn
-import app.documents.core.network.models.login.response.ResponseSignIn
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.login.LoginResponse
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.loginService
@@ -36,12 +34,12 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
     }
 
     fun signInPortal(smsCode: String?, request: String) {
-        val requestSignIn = Json.decodeFromString<RequestSignIn>(request)
+        val requestSignIn = Json.decodeFromString<app.documents.core.network.login.models.request.RequestSignIn>(request)
         disposable = App.getApp().appComponent.loginService.signIn(requestSignIn, smsCode)
             .subscribe({ response ->
                 when (response) {
                     is LoginResponse.Success -> {
-                        signInSuccess(requestSignIn, (response.response as ResponseSignIn).response)
+                        signInSuccess(requestSignIn, (response.response as app.documents.core.network.login.models.response.ResponseSignIn).response)
                     }
                     is LoginResponse.Error -> {
                         fetchError(response.error)
@@ -53,9 +51,9 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
     }
 
     fun resendSms(request: String) {
-        val requestNumber = Json.decodeFromString<RequestSignIn>(request)
+        val requestNumber = Json.decodeFromString<app.documents.core.network.login.models.request.RequestSignIn>(request)
         disposable = context.loginService.sendSms(
-            RequestSignIn(
+            app.documents.core.network.login.models.request.RequestSignIn(
                 userName = requestNumber.userName,
                 password = requestNumber.password,
                 accessToken = requestNumber.accessToken,

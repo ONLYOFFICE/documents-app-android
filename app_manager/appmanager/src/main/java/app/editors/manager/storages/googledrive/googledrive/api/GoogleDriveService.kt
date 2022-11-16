@@ -1,6 +1,6 @@
 package app.editors.manager.storages.googledrive.googledrive.api
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveFile
 import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemRequest
 import app.editors.manager.storages.googledrive.mvp.models.request.RenameRequest

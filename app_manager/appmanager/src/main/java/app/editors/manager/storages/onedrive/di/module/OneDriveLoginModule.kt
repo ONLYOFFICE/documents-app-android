@@ -1,7 +1,7 @@
 package app.editors.manager.storages.onedrive.di.module
 
 
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
 import app.editors.manager.storages.onedrive.onedrive.login.OneDriveLoginService
 import app.editors.manager.storages.onedrive.onedrive.login.OneDriveLoginServiceProvider

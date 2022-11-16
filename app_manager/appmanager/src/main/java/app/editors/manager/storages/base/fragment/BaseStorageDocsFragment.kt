@@ -6,7 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import app.documents.core.account.CloudAccount
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Current

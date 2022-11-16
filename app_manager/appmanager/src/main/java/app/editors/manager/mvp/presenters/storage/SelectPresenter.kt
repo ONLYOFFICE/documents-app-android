@@ -1,8 +1,8 @@
 package app.editors.manager.mvp.presenters.storage
 
 import android.content.Context
-import app.documents.core.account.AccountDao
-import app.documents.core.network.ApiContract
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App

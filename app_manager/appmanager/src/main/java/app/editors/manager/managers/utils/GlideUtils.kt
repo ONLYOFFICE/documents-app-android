@@ -3,9 +3,9 @@ package app.editors.manager.managers.utils
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline

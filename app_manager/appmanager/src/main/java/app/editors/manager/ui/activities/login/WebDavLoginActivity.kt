@@ -4,8 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App

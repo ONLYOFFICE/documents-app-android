@@ -1,9 +1,7 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.request.RequestRegister
-import app.documents.core.network.models.login.response.ResponseRegisterPersonalPortal
+import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.PersonalRegisterView
@@ -48,11 +46,16 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
 
         email?.let {
             disposable = App.getApp().appComponent.loginService
-                .registerPersonal(RequestRegister(email = email, language = Locale.getDefault().language))
+                .registerPersonal(
+                    app.documents.core.network.login.models.request.RequestRegister(
+                        email = email,
+                        language = Locale.getDefault().language
+                    )
+                )
                 .subscribe({ loginResponse ->
                     when (loginResponse) {
                         is LoginResponse.Success -> {
-                            checkResponse(loginResponse.response as ResponseRegisterPersonalPortal)
+                            checkResponse(loginResponse.response as app.documents.core.network.login.models.response.ResponseRegisterPersonalPortal)
                         }
                         is LoginResponse.Error -> {
                             fetchError(loginResponse.error)
@@ -64,7 +67,7 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
         }
     }
 
-    private fun checkResponse(response: ResponseRegisterPersonalPortal) {
+    private fun checkResponse(response: app.documents.core.network.login.models.response.ResponseRegisterPersonalPortal) {
         if (!response.response.isNullOrEmpty() && response.status != EMAIL_CODE) {
             viewState.onError(context.getString(R.string.errors_email_already_registered))
         } else if (!response.response.isNullOrEmpty()) {

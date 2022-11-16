@@ -13,9 +13,9 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
-import app.documents.core.account.AccountDao
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.CacheTool

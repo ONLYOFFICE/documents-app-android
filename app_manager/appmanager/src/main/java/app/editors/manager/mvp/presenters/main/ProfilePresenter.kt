@@ -4,12 +4,11 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.RecentDao
-import app.documents.core.account.copyWithToken
-import app.documents.core.login.ILoginServiceProvider
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.models.login.response.ResponseUser
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.recent.RecentDao
+import app.documents.core.storage.account.copyWithToken
+import app.documents.core.network.login.ILoginServiceProvider
+import app.documents.core.network.login.LoginResponse
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.loginService
@@ -101,7 +100,7 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
 
             when (val response = token?.let { loginService?.getUserInfo(it)?.blockingGet() }) {
                 is LoginResponse.Success -> {
-                    val user = (response.response as ResponseUser).response
+                    val user = (response.response as app.documents.core.network.login.models.response.ResponseUser).response
                     withContext(Dispatchers.Main) {
                         AccountUtils.getAccount(context, account.getAccountName())?.let { systemAccount ->
                             if (systemAccount.name != "${user.email}@${account.portal}") {

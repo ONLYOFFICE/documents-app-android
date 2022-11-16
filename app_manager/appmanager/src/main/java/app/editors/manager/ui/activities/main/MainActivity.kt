@@ -9,8 +9,8 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
-import app.documents.core.account.CloudAccount
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding

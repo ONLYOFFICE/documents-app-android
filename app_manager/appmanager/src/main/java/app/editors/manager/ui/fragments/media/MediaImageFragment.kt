@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresPermission
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import app.documents.core.account.AccountDao
+import app.documents.core.storage.account.AccountDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentMediaImageBinding

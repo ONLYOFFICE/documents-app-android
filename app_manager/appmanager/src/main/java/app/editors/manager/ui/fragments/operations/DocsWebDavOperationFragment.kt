@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.Explorer

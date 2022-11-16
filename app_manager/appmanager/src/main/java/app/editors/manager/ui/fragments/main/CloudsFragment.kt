@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App

@@ -3,7 +3,7 @@ package app.editors.manager.mvp.models.models
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.mvp.models.explorer.Item
 import java.util.*
 

@@ -5,8 +5,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
-import app.documents.core.account.Recent
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.recent.Recent
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline

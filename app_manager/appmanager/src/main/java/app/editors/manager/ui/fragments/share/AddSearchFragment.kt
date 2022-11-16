@@ -37,7 +37,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
 
     @ProvidePresenter
     fun providePresenter(): AddPresenter {
-        return AddPresenter(arguments?.getSerializable(TAG_ITEM) as Item, AddFragment.Type.NONE)
+        return AddPresenter(inputItem, AddFragment.Type.NONE)
     }
 
     private var shareActivity: ShareActivity? = null
@@ -248,7 +248,6 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         resetChecked()
         restoreViews(savedInstanceState)
         initViews()
-        addPresenter.startSearch()
     }
 
     private fun initViews() {

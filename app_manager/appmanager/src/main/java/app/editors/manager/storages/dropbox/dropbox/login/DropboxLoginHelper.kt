@@ -4,9 +4,9 @@ import android.accounts.Account
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
-import app.documents.core.account.AccountDao
-import app.documents.core.account.CloudAccount
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.storages.dropbox.dropbox.api.DropboxService
 import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils

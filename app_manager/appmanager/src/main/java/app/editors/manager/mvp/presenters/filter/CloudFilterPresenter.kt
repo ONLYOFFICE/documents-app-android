@@ -1,6 +1,6 @@
 package app.editors.manager.mvp.presenters.filter
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.managers.providers.CloudFileProvider
 import app.editors.manager.mvp.models.explorer.Explorer

@@ -1,13 +1,13 @@
 package app.editors.manager.di.component
 
 import android.content.Context
-import app.documents.core.account.AccountDao
-import app.documents.core.account.AccountsDataBase
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.RecentDao
-import app.documents.core.login.ILoginServiceProvider
-import app.documents.core.settings.NetworkSettings
-import app.documents.core.settings.WebDavInterceptor
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.storage.account.AccountsDataBase
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.recent.RecentDao
+import app.documents.core.network.login.ILoginServiceProvider
+import app.documents.core.storage.preference.NetworkSettings
+import app.documents.core.network.common.interceptors.WebDavInterceptor
 import app.editors.manager.di.module.AppModule
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool

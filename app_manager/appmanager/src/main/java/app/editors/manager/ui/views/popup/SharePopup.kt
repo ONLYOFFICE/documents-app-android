@@ -5,7 +5,7 @@ import android.view.Gravity
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.PopupShareMenuBinding

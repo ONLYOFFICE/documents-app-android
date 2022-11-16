@@ -1,6 +1,6 @@
 package app.editors.manager.storages.googledrive.managers.utils
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import lib.toolkit.base.managers.utils.StringUtils
 
 object GoogleDriveUtils {

@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.WorkerParameters
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.getDropboxServiceProvider
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxResponse

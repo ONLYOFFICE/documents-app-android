@@ -1,6 +1,6 @@
 package app.editors.manager.storages.dropbox.dropbox.login
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.storages.dropbox.mvp.models.request.AccountRequest
 import app.editors.manager.storages.dropbox.mvp.models.response.RefreshTokenResponse
 import app.editors.manager.storages.dropbox.mvp.models.response.TokenResponse

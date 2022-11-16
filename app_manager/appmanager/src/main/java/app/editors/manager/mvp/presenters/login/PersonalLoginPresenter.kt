@@ -1,9 +1,7 @@
 package app.editors.manager.mvp.presenters.login
 
 import android.accounts.Account
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.response.ResponseSettings
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
 import io.reactivex.disposables.Disposable
 import moxy.InjectViewState

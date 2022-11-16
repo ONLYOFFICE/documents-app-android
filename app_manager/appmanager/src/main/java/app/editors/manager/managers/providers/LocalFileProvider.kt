@@ -3,16 +3,14 @@ package app.editors.manager.managers.providers
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App.Companion.getLocale
 import app.editors.manager.managers.providers.ProviderError.Companion.throwErrorCreate
 import app.editors.manager.managers.providers.ProviderError.Companion.throwExistException
 import app.editors.manager.managers.providers.ProviderError.Companion.throwUnsupportedException
-import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestExternal
-import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
 import io.reactivex.Observable

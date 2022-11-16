@@ -2,7 +2,7 @@ package app.editors.manager.ui.adapters.holders
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.ThirdpartyItemLayoutBinding
 import app.editors.manager.mvp.models.user.Thirdparty

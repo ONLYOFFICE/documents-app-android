@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
 import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter

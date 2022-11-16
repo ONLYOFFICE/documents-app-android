@@ -1,12 +1,11 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.Recent
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.share.response.ResponseShare
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.recent.Recent
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.request
 import app.editors.manager.R
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
@@ -48,6 +47,7 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 import java.util.*
 
 @InjectViewState
@@ -428,20 +428,22 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
-            val shareApi = App.getApp().getShareService()
-            disposable.add(shareApi.getShareFile(item.id)
-                .subscribeOn(Schedulers.io())
-                .map { response: ResponseShare ->
-                    response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
-                }.observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ externalLink ->
-                    if (!externalLink.isNullOrEmpty()) {
-                        setDataToClipboard(externalLink)
-                    } else {
-                        viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
-                    }
-                }, this::fetchError)
-            )
+            presenterScope.launch {
+                val shareRepository = App.getApp().getShareRepository()
+                request(
+                    func = { shareRepository.getShareFile(item.id) },
+                    map = { response ->
+                        response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
+                    },
+                    onSuccess = { externalLink ->
+                        if (externalLink.isNotEmpty()) {
+                            setDataToClipboard(externalLink)
+                        } else {
+                            viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
+                        }
+                    }, onError = ::fetchError
+                )
+            }
         }
     }
 

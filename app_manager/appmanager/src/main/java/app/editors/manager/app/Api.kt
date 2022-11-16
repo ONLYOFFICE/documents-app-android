@@ -1,8 +1,6 @@
 package app.editors.manager.app
 
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.RequestDeviceToken
-import app.documents.core.network.models.login.RequestPushSubscribe
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.request.*
 import app.editors.manager.mvp.models.response.*
@@ -13,7 +11,6 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
-import app.documents.core.network.models.login.response.ResponseUser
 
 interface Api {
 
@@ -49,7 +46,7 @@ interface Api {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    fun userInfo(): Observable<ResponseUser>
+    fun userInfo(): Observable<app.documents.core.network.login.models.response.ResponseUser>
 
     /*
      * Get folder/files by id
@@ -219,7 +216,7 @@ interface Api {
     fun updateUser(
         @Path(value = "user_id") userId: String,
         @Body body: RequestUser
-    ): Call<ResponseUser>
+    ): Call<app.documents.core.network.login.models.response.ResponseUser>
 
     /*
      * Get portal
@@ -353,7 +350,7 @@ interface Api {
     )
     @POST("api/" + ApiContract.API_VERSION + "/settings/push/docregisterdevice")
     fun registerDevice(
-        @Body body: RequestDeviceToken,
+        @Body body: app.documents.core.network.login.models.RequestDeviceToken,
     ): Single<Response<ResponseBody>>
 
     @Headers(
@@ -362,7 +359,7 @@ interface Api {
     )
     @PUT("api/" + ApiContract.API_VERSION + "/settings/push/docsubscribe")
     fun subscribe(
-        @Body body: RequestPushSubscribe
+        @Body body: app.documents.core.network.login.models.RequestPushSubscribe
     ): Single<Response<ResponseBody>>
 
 }

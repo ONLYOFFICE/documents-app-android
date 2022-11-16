@@ -4,16 +4,12 @@ import android.accounts.Account
 import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.LifecycleOwner
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.copyWithToken
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.Capabilities
-import app.documents.core.network.models.login.response.ResponseCapabilities
-import app.documents.core.network.models.login.response.ResponseSettings
-import app.documents.core.network.models.login.response.ResponseUser
-import app.documents.core.settings.NetworkSettings
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.account.copyWithToken
+import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.storage.preference.NetworkSettings
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -260,13 +256,13 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         setSettings(account)
                         disposable = context.loginService.capabilities().subscribe({ response ->
                             if (response is LoginResponse.Success) {
-                                if (response.response is ResponseCapabilities) {
-                                    val capability = (response.response as ResponseCapabilities).response
+                                if (response.response is app.documents.core.network.login.models.response.ResponseCapabilities) {
+                                    val capability = (response.response as app.documents.core.network.login.models.response.ResponseCapabilities).response
                                     setSettings(capability)
                                     viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
                                 } else {
                                     networkSettings.serverVersion =
-                                        (response.response as ResponseSettings).response.communityServer ?: ""
+                                        (response.response as app.documents.core.network.login.models.response.ResponseSettings).response.communityServer ?: ""
                                 }
                             } else {
                                 fetchError((response as LoginResponse.Error).error)
@@ -299,7 +295,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             .getUserInfo(token)
             .map {
                 when (it) {
-                    is LoginResponse.Success -> return@map it.response as ResponseUser
+                    is LoginResponse.Success -> return@map it.response as app.documents.core.network.login.models.response.ResponseUser
                     is LoginResponse.Error -> throw throw it.error
                 }
             }
@@ -364,7 +360,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         networkSettings.setCipher(account.isSslCiphers)
     }
 
-    private fun setSettings(capabilities: Capabilities) {
+    private fun setSettings(capabilities: app.documents.core.network.login.models.Capabilities) {
         networkSettings.ldap = capabilities.ldapEnabled
         networkSettings.ssoUrl = capabilities.ssoUrl
         networkSettings.ssoLabel = capabilities.ssoLabel

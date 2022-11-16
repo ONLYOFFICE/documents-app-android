@@ -8,9 +8,9 @@ import android.view.*
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding

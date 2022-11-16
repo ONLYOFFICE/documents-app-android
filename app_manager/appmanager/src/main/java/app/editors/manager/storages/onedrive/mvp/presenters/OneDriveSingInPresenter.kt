@@ -1,6 +1,6 @@
 package app.editors.manager.storages.onedrive.mvp.presenters
 
-import app.documents.core.account.CloudAccount
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
 import app.editors.manager.app.oneDriveLoginService

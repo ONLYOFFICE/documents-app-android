@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import androidx.transition.TransitionManager
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareSettingsListBinding
 import app.editors.manager.databinding.IncludeButtonPopupBinding
@@ -43,7 +43,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     @ProvidePresenter
     fun provideSettingsPresenter(): SettingsPresenter {
-        return SettingsPresenter(arguments?.getSerializable(TAG_ITEM) as Item)
+        return SettingsPresenter(item)
     }
 
     private var sharePopup: SharePopup? = null
@@ -54,6 +54,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     private var viewBinding: FragmentShareSettingsListBinding? = null
     private var headerBinding: IncludeShareSettingsHeaderBinding? = null
     private var popupBinding: IncludeButtonPopupBinding? = null
+
     private val item: Item
         get() = arguments?.getSerializable(TAG_ITEM) as Item
 
@@ -128,7 +129,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_share_settings) settingsPresenter.internalLink
+        if (item.itemId == R.id.menu_share_settings) settingsPresenter.getInternalLink()
         return super.onOptionsItemSelected(item)
     }
 
@@ -318,7 +319,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     private fun getSharedItems() {
         viewBinding?.shareSettingsListSwipeRefresh?.isRefreshing = true
-        settingsPresenter.shared
+        settingsPresenter.getShared()
     }
 
     private fun setExternalViewState(accessCode: Int, isMessage: Boolean) {

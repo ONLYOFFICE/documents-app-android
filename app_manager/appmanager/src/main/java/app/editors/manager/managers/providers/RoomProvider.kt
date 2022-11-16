@@ -1,10 +1,10 @@
 package app.editors.manager.managers.providers
 
-import app.documents.core.network.models.Base
-import app.documents.core.network.models.room.RequestArchive
-import app.documents.core.network.models.room.RequestCreateRoom
-import app.documents.core.network.models.room.RequestDeleteRoom
-import app.documents.core.network.models.room.RequestRenameRoom
+import app.documents.core.network.common.models.Base
+import app.documents.core.network.room.models.RequestArchive
+import app.documents.core.network.room.models.RequestCreateRoom
+import app.documents.core.network.room.models.RequestDeleteRoom
+import app.documents.core.network.room.models.RequestRenameRoom
 import app.editors.manager.app.RoomApi
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

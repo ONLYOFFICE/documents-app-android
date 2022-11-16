@@ -3,7 +3,7 @@ package app.editors.manager.ui.adapters
 import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.base.Entity

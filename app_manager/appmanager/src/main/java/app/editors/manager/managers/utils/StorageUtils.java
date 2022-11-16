@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
-import app.documents.core.network.ApiContract;
+import app.documents.core.network.common.contracts.ApiContract;
 import app.editors.manager.R;
 import lib.toolkit.base.managers.utils.StringUtils;
 

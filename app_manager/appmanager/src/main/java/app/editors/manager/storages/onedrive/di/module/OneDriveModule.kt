@@ -1,7 +1,7 @@
 package app.editors.manager.di.module
 
 import android.content.Context
-import app.documents.core.account.CloudAccount
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.storages.onedrive.onedrive.api.OneDriveService
 import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
 import app.editors.manager.managers.retrofit.BaseInterceptor

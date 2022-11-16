@@ -1,10 +1,8 @@
 package app.editors.manager.viewModels.login
 
 import androidx.lifecycle.*
-import app.documents.core.login.ILoginServiceProvider
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.models.login.request.RequestNumber
-import app.documents.core.network.models.login.request.RequestSignIn
+import app.documents.core.network.login.ILoginServiceProvider
+import app.documents.core.network.login.LoginResponse
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.viewModels.base.BaseViewModel
@@ -52,15 +50,15 @@ class EnterprisePhoneViewModel(private val loginService: ILoginServiceProvider) 
     }
 
     fun setPhone(newPhone: String?, request: String) {
-        val requestNumber = Json.decodeFromString<RequestSignIn>(request)
-        disposable = newPhone?.let { (requestNumber as RequestNumber).copy(mobilePhone = it) }?.let {
+        val requestNumber = Json.decodeFromString<app.documents.core.network.login.models.request.RequestSignIn>(request)
+        disposable = newPhone?.let { (requestNumber as app.documents.core.network.login.models.request.RequestNumber).copy(mobilePhone = it) }?.let {
             loginService.changeNumber(it)
                 .subscribe({ response ->
                     if (response is LoginResponse.Success) {
                         preferenceTool.phoneNoise = newPhone
                         _stateLiveData.value = EnterprisePhoneState.Success(
                             Json.encodeToString(
-                                (requestNumber as RequestNumber).copy(mobilePhone = newPhone)
+                                (requestNumber as app.documents.core.network.login.models.request.RequestNumber).copy(mobilePhone = newPhone)
                             )
                         )
                     } else {

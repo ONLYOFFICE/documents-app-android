@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-import app.documents.core.network.ApiContract;
+import app.documents.core.network.common.contracts.ApiContract;
 
 public class Current implements Cloneable, Serializable {
 

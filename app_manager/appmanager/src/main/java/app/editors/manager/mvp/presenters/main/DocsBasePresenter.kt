@@ -10,10 +10,10 @@ import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import app.documents.core.account.AccountDao
-import app.documents.core.account.RecentDao
-import app.documents.core.network.ApiContract
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.storage.recent.RecentDao
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline

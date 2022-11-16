@@ -6,7 +6,7 @@ import android.os.Environment
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.storages.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxResponse
@@ -17,13 +17,10 @@ import app.editors.manager.storages.dropbox.mvp.models.operations.MoveCopyBatchC
 import app.editors.manager.storages.dropbox.mvp.models.operations.MoveCopyPaths
 import app.editors.manager.storages.dropbox.mvp.models.request.*
 import app.editors.manager.storages.dropbox.mvp.models.response.*
-import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.managers.providers.BaseFileProvider
-import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestExternal
-import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment

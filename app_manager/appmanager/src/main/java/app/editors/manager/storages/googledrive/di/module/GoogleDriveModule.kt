@@ -1,7 +1,7 @@
 package app.editors.manager.storages.googledrive.di.module
 
 import android.content.Context
-import app.documents.core.account.CloudAccount
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.storages.googledrive.googledrive.api.GoogleDriveService
 import app.editors.manager.storages.googledrive.googledrive.api.GoogleDriveServiceProvider
 import app.editors.manager.storages.googledrive.googledrive.api.IGoogleDriveServiceProvider

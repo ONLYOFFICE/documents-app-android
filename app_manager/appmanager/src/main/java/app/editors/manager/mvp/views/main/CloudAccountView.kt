@@ -1,6 +1,6 @@
 package app.editors.manager.mvp.views.main
 
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.mvp.presenters.main.CloudAccountState
 import app.editors.manager.mvp.views.base.BaseViewExt
 import moxy.viewstate.strategy.OneExecutionStateStrategy

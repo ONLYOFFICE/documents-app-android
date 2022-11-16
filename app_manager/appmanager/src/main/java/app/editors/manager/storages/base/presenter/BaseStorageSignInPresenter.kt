@@ -1,7 +1,7 @@
 package app.editors.manager.storages.base.presenter
 
 import android.accounts.Account
-import app.documents.core.account.CloudAccount
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.app.App
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseView

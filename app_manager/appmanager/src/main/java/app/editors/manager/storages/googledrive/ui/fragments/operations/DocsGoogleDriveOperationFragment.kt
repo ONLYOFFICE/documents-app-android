@@ -1,7 +1,7 @@
 package app.editors.manager.storages.googledrive.ui.fragments.operations
 
 import android.net.Uri
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
 import app.editors.manager.mvp.models.account.Storage

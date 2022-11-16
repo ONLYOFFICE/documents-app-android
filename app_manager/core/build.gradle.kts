@@ -64,6 +64,9 @@ dependencies {
     implementation(Dagger.dagger)
     kapt(Dagger.daggerCompiler)
 
+    // Koin
+    implementation(Koin.koinAndroid)
+
     // Retrofit
     implementation(Retrofit.retrofit)
     implementation(Retrofit.retrofitRx)

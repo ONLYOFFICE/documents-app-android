@@ -12,8 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.MediaController
-import app.documents.core.account.AccountDao
-import app.documents.core.network.ApiContract
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentMediaVideoBinding

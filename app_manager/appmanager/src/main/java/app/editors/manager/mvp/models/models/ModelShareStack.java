@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import app.documents.core.network.ApiContract;
+import app.documents.core.network.common.contracts.ApiContract;
 import app.editors.manager.mvp.models.ui.GroupUi;
 import app.editors.manager.mvp.models.ui.UserUi;
 

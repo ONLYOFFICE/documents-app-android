@@ -1,9 +1,9 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.app.Api
 import app.editors.manager.app.App

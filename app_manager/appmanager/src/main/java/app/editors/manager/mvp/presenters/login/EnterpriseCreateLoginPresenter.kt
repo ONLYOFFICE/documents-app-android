@@ -1,10 +1,8 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.account.CloudAccount
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.request.RequestRegister
-import app.documents.core.network.models.login.request.RequestSignIn
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
@@ -43,7 +41,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         disposable?.dispose()
     }
 
-    override fun onTwoFactorAuth(phoneNoise: String?, request: RequestSignIn) {
+    override fun onTwoFactorAuth(phoneNoise: String?, request: app.documents.core.network.login.models.request.RequestSignIn) {
         super.onTwoFactorAuth(phoneNoise, request)
         viewState.onTwoFactorAuth(phoneNoise, Json.encodeToString(request))
     }
@@ -75,7 +73,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         val loginService = App.getApp().appComponent.loginService
 
         // Validate portal
-        val requestRegister = RequestRegister(
+        val requestRegister = app.documents.core.network.login.models.request.RequestRegister(
             portalName = partsPortal[PORTAL_PART_NAME],
             email = email,
             firstName = first,
@@ -89,7 +87,12 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
                     is LoginResponse.Success -> {
                         networkSettings.setBaseUrl(portal)
                         FirebaseUtils.addAnalyticsCreatePortal(networkSettings.getPortal(), email);
-                        signIn(RequestSignIn(userName = email, password = password))
+                        signIn(
+                            app.documents.core.network.login.models.request.RequestSignIn(
+                                userName = email,
+                                password = password
+                            )
+                        )
                     }
                     is LoginResponse.Error -> {
                         fetchError(loginResponse.error)

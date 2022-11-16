@@ -5,7 +5,7 @@ import android.content.ClipData
 import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App

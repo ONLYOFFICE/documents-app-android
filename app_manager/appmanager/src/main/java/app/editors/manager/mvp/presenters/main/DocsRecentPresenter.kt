@@ -5,10 +5,10 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.Recent
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.recent.Recent
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.api

@@ -9,10 +9,11 @@ import android.os.Process
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.InvalidationTracker
-import app.documents.core.account.CloudAccount
-import app.documents.core.login.ILoginServiceProvider
-import app.documents.core.share.ShareService
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.login.ILoginServiceProvider
+import app.documents.core.network.share.ShareService
+import app.documents.core.repositories.ShareRepository
+import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.*
 import app.editors.manager.managers.utils.KeyStoreUtils
@@ -164,10 +165,10 @@ class App : Application() {
             .build()
     }
 
-    fun getShareService(): ShareService {
-        return DaggerShareComponent.builder().appComponent(appComponent)
+    fun getShareRepository(): ShareRepository {
+        return DaggerCoreComponent.builder().appComponent(appComponent)
             .build()
-            .shareService
+            .shareRepository
     }
 
     fun getWebDavApi(): WebDavApi {
@@ -252,10 +253,10 @@ fun Context.webDavApi(): WebDavApi {
     }
 }
 
-fun Context.getShareApi(): ShareService {
+fun Context.getShareRepository(): ShareRepository {
     return when (this) {
-        is App -> this.getShareService()
-        else -> this.applicationContext.getShareApi()
+        is App -> this.getShareRepository()
+        else -> this.applicationContext.getShareRepository()
     }
 }
 

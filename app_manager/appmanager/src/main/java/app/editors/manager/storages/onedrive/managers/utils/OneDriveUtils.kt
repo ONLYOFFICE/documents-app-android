@@ -1,6 +1,6 @@
 package app.editors.manager.storages.onedrive.managers.utils
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 
 object OneDriveUtils {
 
