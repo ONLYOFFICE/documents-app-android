@@ -911,12 +911,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    fun showFolderChooser(requestCode: Int) {
-        val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-        i.addCategory(Intent.CATEGORY_DEFAULT)
-        startActivityForResult(i, requestCode)
-    }
-
     /*
      * BottomSheetFragmentDialogs context/action
      * */

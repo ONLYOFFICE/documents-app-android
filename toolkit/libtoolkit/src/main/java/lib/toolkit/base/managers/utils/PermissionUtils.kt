@@ -3,6 +3,9 @@ package lib.toolkit.base.managers.utils
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -103,7 +106,7 @@ object PermissionUtils {
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     }
-    
+
     @JvmStatic
     fun requestReadPermission(fragment: Fragment, requestCode: Int): Boolean {
         return requestPermission(
@@ -113,32 +116,6 @@ object PermissionUtils {
         )
     }
 
-    @JvmStatic
-    fun requestSmsPermission(activity: AppCompatActivity, requestCode: Int): Boolean {
-        return requestPermission(
-            activity,
-            requestCode,
-            Manifest.permission.RECEIVE_SMS
-        )
-    }
-
-    @JvmStatic
-    fun requestSmsPermission(fragment: Fragment, requestCode: Int): Boolean {
-        return requestPermission(
-            fragment,
-            requestCode,
-            Manifest.permission.RECEIVE_SMS
-        )
-    }
-
-    @JvmStatic
-    fun requestCameraPermission(activity: AppCompatActivity, requestCode: Int): Boolean {
-        return requestPermission(
-            activity,
-            requestCode,
-            Manifest.permission.CAMERA
-        )
-    }
 
     @JvmStatic
     fun requestCameraPermission(fragment: Fragment, requestCode: Int): Boolean {
@@ -147,6 +124,23 @@ object PermissionUtils {
             requestCode,
             Manifest.permission.CAMERA
         )
+    }
+
+}
+
+class RequestPermissions(
+    activityResultRegistry: ActivityResultRegistry,
+    private val callback: (permissions: Map<String, Boolean>) -> Unit,
+    private val permissions: Array<String>
+) {
+
+    private val requestPermissions: ActivityResultLauncher<Array<String>> =
+        activityResultRegistry.register("Permissions", ActivityResultContracts.RequestMultiplePermissions()) {
+            callback(it)
+        }
+
+    fun request() {
+        requestPermissions.launch(permissions)
     }
 
 }

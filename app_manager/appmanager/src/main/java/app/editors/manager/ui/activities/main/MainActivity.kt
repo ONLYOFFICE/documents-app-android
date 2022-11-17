@@ -2,7 +2,6 @@ package app.editors.manager.ui.activities.main
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -35,7 +34,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
-import lib.toolkit.base.managers.utils.PermissionUtils
 import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -95,19 +93,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         } else {
             presenter.navigationItemClick(item.itemId)
             true
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_READ_STORAGE) {
-            if (grantResults.size > 1) {
-                if (grantResults[0] == PackageManager.PERMISSION_DENIED && grantResults[1] == PackageManager.PERMISSION_DENIED) {
-                    viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
-                } else {
-                    showOnDeviceFragment()
-                }
-            }
         }
     }
 
@@ -315,7 +300,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 showRecentFragment()
             }
             is MainActivityState.OnDeviceState -> {
-                checkPermission()
+                showOnDeviceFragment()
             }
             is MainActivityState.CloudState -> {
                 state.account?.let {
@@ -492,12 +477,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             R.id.frame_container
         )
         viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_settings
-    }
-
-    private fun checkPermission() {
-        if (PermissionUtils.requestReadWritePermission(this, PERMISSION_READ_STORAGE)) {
-            showOnDeviceFragment()
-        }
     }
 
     private fun showOnDeviceFragment() {
