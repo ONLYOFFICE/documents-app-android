@@ -49,7 +49,7 @@ class DownloadWork(context: Context, workerParameters: WorkerParameters): BaseSt
             }, object: FileUtils.Finish {
                 override fun onFinish() {
                     notificationUtils.removeNotification(id.hashCode())
-                    notificationUtils.showCompleteNotification(id.hashCode(), file!!.name, to)
+                    notificationUtils.showCompleteNotification(id.hashCode(), file?.name, to)
                     sendBroadcastDownloadComplete(
                         id,
                         "",
