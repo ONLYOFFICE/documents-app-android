@@ -11,6 +11,7 @@ import android.os.BadParcelableException
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContract
@@ -55,7 +56,7 @@ object ActivitiesUtils {
     @JvmStatic
     private fun getIntentMultipleFilePicker(): Intent {
         return getIntentSingleFilePicker()
-                .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
     }
 
     @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -96,36 +97,6 @@ object ActivitiesUtils {
         showSingleFilePicker(
             activity,
             activity.getString(titleId),
-            requestCode
-        )
-    }
-
-    @JvmStatic
-    fun showImagesPicker(fragment: Fragment, title: String?, requestCode: Int) {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            type = IMAGE_TYPE
-        }
-
-        fragment.startActivityForResult(Intent.createChooser(intent, title), requestCode)
-    }
-
-    @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    @JvmStatic
-    fun showImagesPicker(fragment: Fragment, titleId: Int, requestCode: Int) {
-        showImagesPicker(
-            fragment,
-            fragment.getString(titleId),
-            requestCode
-        )
-    }
-
-    @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    @JvmStatic
-    fun showImagesPicker(fragment: Fragment, requestCode: Int) {
-        showImagesPicker(
-            fragment,
-            null,
             requestCode
         )
     }
@@ -306,6 +277,55 @@ class ImagePicker(
 
     fun pickImage() {
         getContent.launch(IMAGE_TYPE)
+    }
+
+}
+
+class FolderChooser(
+    activityResultRegistry: ActivityResultRegistry,
+    private val callback: (uri: Uri?) -> Unit,
+    private val uri: Uri? = null
+) {
+    private val choseFolder: ActivityResultLauncher<Uri?> =
+        activityResultRegistry.register("Camera", ActivityResultContracts.OpenDocumentTree()) {
+            callback.invoke(it)
+        }
+
+    fun show() {
+        choseFolder.launch(uri)
+    }
+}
+
+class CameraPicker(
+    activityResultRegistry: ActivityResultRegistry,
+    private val callback: (isSuccess: Boolean) -> Unit,
+    private val imageUri: Uri
+) {
+
+    private val takePicture: ActivityResultLauncher<Uri> =
+        activityResultRegistry.register("Camera", ActivityResultContracts.TakePicture()) {
+            callback.invoke(it)
+        }
+
+    fun show() {
+        takePicture.launch(imageUri)
+    }
+
+}
+
+class LaunchActivityForResult(
+    activityResultRegistry: ActivityResultRegistry,
+    private val callback: (result: ActivityResult) -> Unit,
+    private val intent: Intent
+) {
+
+    private val launchActivity: ActivityResultLauncher<Intent> =
+        activityResultRegistry.register("ActivityForResult", ActivityResultContracts.StartActivityForResult()) { result ->
+            callback.invoke(result)
+        }
+
+    fun show() {
+        launchActivity.launch(intent)
     }
 
 }

@@ -134,7 +134,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                         object : Finish {
                             override fun onFinish() {
                                 notificationUtils.removeNotification(id.hashCode())
-                                notificationUtils.showCompleteNotification(id.hashCode(), fileName, file?.uri)
+                                notificationUtils.showCompleteNotification(id.hashCode(), fileName, checkNotNull(file?.uri))
                                 sendBroadcastDownloadComplete(
                                     id,
                                     url,

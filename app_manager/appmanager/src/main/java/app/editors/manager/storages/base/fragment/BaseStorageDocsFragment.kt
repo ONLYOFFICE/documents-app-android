@@ -1,8 +1,6 @@
 package app.editors.manager.storages.base.fragment
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -23,10 +21,7 @@ import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.popup.MainActionBarPopup
 import app.editors.manager.ui.popup.SelectActionBarPopup
-import lib.toolkit.base.managers.utils.PathUtils
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils
-import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import java.io.File
 
@@ -38,8 +33,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         const val KEY_UPDATE = "KEY_UPDATE"
         const val KEY_CREATE = "KEY_CREATE"
         const val KEY_MODIFIED = "EXTRA_IS_MODIFIED"
-
-        const val REQUEST_MULTIPLE_FILES_DOWNLOAD = 11000023
     }
 
     var account: CloudAccount? = null
@@ -180,17 +173,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK) {
-            when(requestCode) {
-                REQUEST_MULTIPLE_FILES_DOWNLOAD -> {
-                    data?.data?.let { presenter.download(it) }
-                }
-            }
-        }
-    }
-
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
         searchCloseButton?.setOnClickListener {
@@ -203,8 +185,9 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     }
 
     override fun onChooseDownloadFolder() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-        startActivityForResult(intent, REQUEST_MULTIPLE_FILES_DOWNLOAD)
+        FolderChooser(requireActivity().activityResultRegistry, { data ->
+            data?.let { presenter.download(it) }
+        }).show()
     }
 
     override fun onError(message: String?) {

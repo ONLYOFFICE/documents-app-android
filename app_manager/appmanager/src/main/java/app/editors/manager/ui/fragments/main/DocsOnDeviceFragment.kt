@@ -1,19 +1,19 @@
 package app.editors.manager.ui.fragments.main
 
+import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -34,9 +34,7 @@ import app.editors.manager.ui.popup.MainActionBarPopup
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.tools.LocalContentTools
-import lib.toolkit.base.managers.utils.ActivitiesUtils
-import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
@@ -62,6 +60,14 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         data?.let { presenter.openFromChooser(it) }
     }
 
+    private val readStorage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_CANCELED) {
+            preferenceTool?.isShowStorageAccess = false
+            presenter.recreateStack()
+            presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+        }
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
@@ -75,58 +81,10 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    presenter.refresh()
-                }
-                BaseActivity.REQUEST_SELECT_FOLDER -> {
-                    if (operation != null && data != null && data.data != null) {
-                        if (operation == Operation.MOVE) {
-                            presenter.moveFile(data.data, false)
-                        } else if (operation == Operation.COPY) {
-                            presenter.moveFile(data.data, true)
-                        }
-                    }
-                }
-            }
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-            when (requestCode) {
-                BaseActivity.REQUEST_ACTIVITY_CAMERA -> presenter.deletePhoto()
-                REQUEST_STORAGE_ACCESS -> {
-                    preferenceTool?.isShowStorageAccess = false
-                    presenter.recreateStack()
-                    presenter.getItemsById(LocalContentTools.getDir(requireContext()))
-                }
-                REQUEST_STORAGE_IMPORT -> {
-                    preferenceTool?.isShowStorageAccess = false
-                    importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
-                }
-            }
-        }
-    }
-
-    var uri: Uri? = null
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == PERMISSION_CAMERA) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                makePhoto()
-            }
-        } else if (requestCode == PERMISSION_READ_STORAGE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                preferenceTool?.isShowStorageAccess = true
-                checkStorage(TAG_STORAGE_IMPORT)
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.setSectionType(ApiContract.SectionType.DEVICE_DOCUMENTS)
-        checkStorage(TAG_STORAGE_ACCESS)
+        checkStorage()
         init()
     }
 
@@ -181,23 +139,20 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         activity?.showNavigationButton(isFilter)
     }
 
-    override fun onListEnd() {
-        // Stub to local
-    }
-
     override fun onActionBarTitle(title: String) {
         setActionBarTitle(title)
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
-        super.onActionButtonClick(buttons)
-        if (buttons == ActionBottomDialog.Buttons.PHOTO) {
-            if (checkCameraPermission()) {
-                makePhoto()
+        when (buttons) {
+            ActionBottomDialog.Buttons.PHOTO -> {
+                presenter.createPhoto()
             }
-        } else if(buttons == ActionBottomDialog.Buttons.IMPORT) {
-            if(checkReadPermission()) {
+            ActionBottomDialog.Buttons.IMPORT -> {
                 importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
+            }
+            else -> {
+                super.onActionButtonClick(buttons)
             }
         }
     }
@@ -207,8 +162,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         tag?.let {
             string = string?.trim { it <= ' ' }
             when (tag) {
-                TAG_STORAGE_IMPORT -> requestManage(REQUEST_STORAGE_IMPORT)
-                TAG_STORAGE_ACCESS -> requestManage(REQUEST_STORAGE_ACCESS)
+                TAG_STORAGE_ACCESS -> requestManage()
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> presenter.deleteItems()
                 DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME -> string?.let {
                     presenter.rename(it)
@@ -237,8 +191,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         super.onCancelClick(dialogs, tag)
         if (tag == TAG_STORAGE_ACCESS) {
             preferenceTool?.isShowStorageAccess = false
-            presenter.recreateStack()
-            presenter.getItemsById(LocalContentTools.getDir(requireContext()))
         }
     }
 
@@ -246,13 +198,13 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         when (buttons) {
             ContextBottomDialog.Buttons.DOWNLOAD -> presenter.upload()
             ContextBottomDialog.Buttons.DELETE -> presenter.showDeleteDialog()
-            ContextBottomDialog.Buttons.COPY -> {
-                operation = Operation.COPY
-                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
-            }
-            ContextBottomDialog.Buttons.MOVE -> {
-                operation = Operation.MOVE
-                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
+            ContextBottomDialog.Buttons.COPY, ContextBottomDialog.Buttons.MOVE -> {
+                operation = if (buttons == ContextBottomDialog.Buttons.COPY) {
+                    Operation.COPY
+                } else {
+                    Operation.MOVE
+                }
+                showFolderChooser()
             }
             ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
                 getString(R.string.dialogs_edit_rename_title),
@@ -295,16 +247,20 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
-    override fun onShowFolderChooser() {
-        showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
-    }
-
     override fun onShowCamera(photoUri: Uri) {
-        this.startActivityForResult(
-            Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-                putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-            }, BaseActivity.REQUEST_ACTIVITY_CAMERA
-        )
+        RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
+            if (permissions[Manifest.permission.CAMERA] == true) {
+                CameraPicker(requireActivity().activityResultRegistry, { isCreate ->
+                    if (isCreate) {
+                        presenter.refresh()
+                    } else {
+                        presenter.deletePhoto()
+                    }
+                }, photoUri).show()
+            } else {
+                presenter.deletePhoto()
+            }
+        }, arrayOf(Manifest.permission.CAMERA)).request()
     }
 
     override fun onShowDocs(uri: Uri, isNew: Boolean) {
@@ -355,10 +311,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
-    private fun makePhoto() {
-        presenter.createPhoto()
-    }
-
     private fun showSingleFragmentFilePicker() {
         try {
             openFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
@@ -368,59 +320,70 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun onError(message: String?) {
-        if(message?.contains(getString(R.string.errors_import_local_file_desc)) == true) {
+        if (message?.contains(getString(R.string.errors_import_local_file_desc)) == true) {
             showSnackBar(R.string.errors_import_local_file)
         } else {
             super.onError(message)
         }
     }
 
-    private fun checkStorage(tag: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-            !Environment.isExternalStorageManager() &&
-            preferenceTool?.isShowStorageAccess == true
-        ) {
+    private fun checkStorage() {
+        when {
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> {
+                requestReadWritePermission()
+            }
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                requestAccessStorage()
+            }
+        }
+    }
 
-            //TODO удалить когда будет доступно разрешение
-//            preferenceTool?.isShowStorageAccess = false
-//            presenter.recreateStack()
-//            presenter.getItemsById(LocalContentTools.getDir(requireContext()))
-
-            //TODO раскоментировать когда будет доступно разрешение
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun requestAccessStorage() {
+        if (!Environment.isExternalStorageManager() && preferenceTool?.isShowStorageAccess == true) {
             showQuestionDialog(
                 getString(R.string.app_manage_files_title),
                 getString(R.string.app_manage_files_description),
                 getString(R.string.dialogs_common_ok_button),
                 getString(R.string.dialogs_common_cancel_button),
-                tag
-            );
+                TAG_STORAGE_ACCESS
+            )
         }
     }
 
-    private fun requestManage(tag: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                    Uri.parse("package:" + requireContext().packageName)
-                )
-                startActivityForResult(intent, tag)
-            } catch (e: ActivityNotFoundException) {
-                showSnackBar("Not found")
+    private fun requestReadWritePermission() {
+        RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
+            if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true && permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
+                presenter.recreateStack()
+                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+            } else {
+                openItem?.isVisible = false
+                activity?.showActionButton(false)
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
             }
+        }, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)).request()
+    }
+
+    private fun requestManage() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                readStorage.launch(
+                    Intent(
+                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                        Uri.parse("package:" + requireContext().packageName)
+                    )
+                )
+            }
+        } catch (e: ActivityNotFoundException) {
+            openItem?.isVisible = false
+            activity?.showActionButton(false)
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
         }
     }
 
     private fun setPlaceholder(isEmpty: Boolean) {
         onPlaceholder(if (isEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
     }
-
-    override val isActivePage: Boolean
-        get() = isAdded
-
-    override val isWebDav: Boolean
-        get() = false
 
     override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
         super.showMainActionBarMenu(listOf(MainActionBarPopup.Author))
@@ -442,15 +405,27 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         onScrollToPosition(0)
     }
 
+    private fun showFolderChooser() {
+        FolderChooser(requireActivity().activityResultRegistry, { data ->
+            if (operation != null && data != null) {
+                if (operation == Operation.MOVE) {
+                    presenter.moveFile(data, false)
+                } else if (operation == Operation.COPY) {
+                    presenter.moveFile(data, true)
+                }
+            }
+        }).show()
+    }
+
     override val selectActionBarClickListener: (ActionBarPopupItem) -> Unit = {
         when (it) {
-            SelectActionBarPopup.Copy -> {
-                operation = Operation.COPY
-                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
-            }
-            SelectActionBarPopup.Move -> {
-                operation = Operation.MOVE
-                showFolderChooser(BaseActivity.REQUEST_SELECT_FOLDER)
+            SelectActionBarPopup.Copy, SelectActionBarPopup.Move -> {
+                operation = if (it == SelectActionBarPopup.Copy) {
+                    Operation.COPY
+                } else {
+                    Operation.MOVE
+                }
+                showFolderChooser()
             }
             else -> {
                 super.selectActionBarClickListener(it)
@@ -458,13 +433,16 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
+    override val isActivePage: Boolean
+        get() = isAdded
+
+    override val isWebDav: Boolean
+        get() = false
+
     companion object {
         val TAG: String = DocsOnDeviceFragment::class.java.simpleName
 
         private const val TAG_STORAGE_ACCESS = "TAG_STORAGE_ACCESS"
-        private const val TAG_STORAGE_IMPORT = "TAG_STORAGE_IMPORT"
-
-        private const val REQUEST_STORAGE_IMPORT = 10007
 
         private const val KEY_SHORTCUT = "create_type"
 

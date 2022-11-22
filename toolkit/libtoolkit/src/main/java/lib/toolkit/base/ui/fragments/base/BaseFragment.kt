@@ -427,12 +427,6 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     /*
     * Check permissions
     * */
-    protected fun checkSmsPermission(): Boolean {
-        return PermissionUtils.requestSmsPermission(
-            this,
-            PERMISSION_SMS
-        )
-    }
 
     protected fun checkWritePermission(): Boolean {
         return PermissionUtils.requestWritePermission(
@@ -469,12 +463,6 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
 
     protected fun showFileShareActivity(uri: Uri) {
         ActivitiesUtils.showFileShare(requireContext(), null, uri)
-    }
-
-    protected fun showImagesPickerActivity() {
-        if (checkReadPermission()) {
-            ActivitiesUtils.showImagesPicker(this, BaseActivity.REQUEST_ACTIVITY_IMAGE_PICKER)
-        }
     }
 
     protected fun showUrlInBrowser(url: String) {
