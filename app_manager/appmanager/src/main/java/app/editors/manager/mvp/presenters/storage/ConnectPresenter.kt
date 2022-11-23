@@ -24,7 +24,7 @@ class ConnectPresenter : BasePresenter<ConnectView>() {
 
     private var disposable: Disposable? = null
 
-    private val api: Api = context.api()
+    private val api: ManagerService = context.api
 
     override fun onDestroy() {
         super.onDestroy()

@@ -3,19 +3,18 @@ package app.editors.manager.mvp.presenters.main
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.net.Uri
-import app.documents.core.storage.recent.Recent
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.providers.WebDavFileProvider
+import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.webDavApi
-import app.editors.manager.managers.providers.WebDavFileProvider
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.mvp.models.request.RequestCreate
+import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.mvp.views.main.DocsWebDavView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -59,13 +58,8 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 getItemsById(it.webDavPath)
             }
         } ?: run {
-            context.accountOnline?.let { cloudAccount ->
-                fileProvider = WebDavFileProvider(
-                    context.webDavApi(),
-                    WebDavApi.Providers.valueOf(cloudAccount.webDavProvider ?: "")
-                )
-                getItemsById(cloudAccount.webDavPath)
-            }
+            fileProvider = context.webDavFileProvider
+            getItemsById(context.accountOnline?.webDavPath)
         }
     }
 

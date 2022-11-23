@@ -309,7 +309,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun webDavLogin(account: CloudAccount, password: String) {
         setSettings(account)
-        disposable = context.webDavApi()
+        disposable = context.webDavApi
             .capabilities(Credentials.basic(account.login ?: "", password), account.webDavPath)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

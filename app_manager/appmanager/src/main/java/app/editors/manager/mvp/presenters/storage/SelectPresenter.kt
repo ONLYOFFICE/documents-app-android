@@ -40,7 +40,7 @@ class SelectPresenter : MvpPresenter<SelectView>() {
     private var disposable: Disposable? = null
     private var storageList: List<Storage>? = null
 
-    private val api: Api = context.api()
+    private val api: ManagerService = context.api
 
     override fun onDestroy() {
         super.onDestroy()

@@ -28,8 +28,6 @@ import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.managers.works.UploadWork
-import app.editors.manager.mvp.models.base.Entity
-import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.list.Header
@@ -459,7 +457,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun transfer(conflict: Int, isMove: Boolean) {
         operationStack?.let { operationStack ->
-            val destination = CloudFolder().apply { id = destFolderId }
+            val destination = CloudFolder().apply { id = destFolderId.orEmpty() }
 
             val items = mutableListOf<Item>().apply {
                 addAll(operationStack.selectedFiles)
@@ -476,7 +474,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                             if (!operationStack.currentId.equals(destFolderId, ignoreCase = true)) {
                                 operationStack.setSelectionAll(false)
                                 operationStack.explorer?.also {
-                                    it.destFolderId = destFolderId
+                                    it.destFolderId = destFolderId.orEmpty()
                                     operationsState.insert(modelExplorerStack.rootFolderType, it.takeIf {
                                         modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_USER
                                     } ?: setAccess(it))
@@ -696,8 +694,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 folderId = id
                 name = ContentResolverUtils.getName(context, uri)
                 size = setSize(uri)
-                setUri(uri)
-                setId(uri.path)
+                this.uri = uri
+                this.id = uri.path
             })
         }
 
@@ -865,11 +863,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             itemClicked?.let { item ->
                 when (item) {
                     is CloudFolder -> {
-                        it.folders = listOf(item.clone().also { folder -> folder.isSelected = true })
+                        it.folders = mutableListOf(item.clone().also { folder -> folder.isSelected = true })
                         it.files.clear()
                     }
                     is CloudFile -> {
-                        it.files = listOf(item.clone().also { file -> file.isSelected = true })
+                        it.files = mutableListOf(item.clone().also { file -> file.isSelected = true })
                         it.folders.clear()
                     }
                 }
@@ -1168,10 +1166,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     fun getListMedia(clickedId: String?): Explorer {
         return modelExplorerStack.last()?.let { explorer ->
             Explorer().apply {
-                folders = listOf()
+                folders = mutableListOf()
                 files = explorer.files
                     .filter { StringUtils.isImage(it.fileExst) || StringUtils.isVideoSupport(it.fileExst) }
                     .onEach { it.isClicked = it.id.equals(clickedId, ignoreCase = true) }
+                    .toMutableList()
             }
         } ?: Explorer()
     }
@@ -1311,7 +1310,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         while (fileList.hasNext()) {
             val file = fileList.next()
             val currentFolder = CloudFolder()
-            currentFolder.id = modelExplorerStack.currentId
+            currentFolder.id = modelExplorerStack.currentId.orEmpty()
             if (file.fileType.isEmpty() && file.fileExst.isEmpty()) {
                 fileList.remove()
                 fileProvider?.let { provider ->

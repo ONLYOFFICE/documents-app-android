@@ -9,7 +9,6 @@ import app.documents.core.network.share.models.request.RequestExternal
 import app.documents.core.network.share.models.request.RequestExternalAccess
 import app.documents.core.network.share.models.request.RequestShare
 import app.documents.core.network.share.models.request.RequestShareItem
-import app.documents.core.repositories.ShareRepository
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.GlideUtils
@@ -56,7 +55,7 @@ class SettingsPresenter(
     private var isShare = false
     private var isPopupShow = false
     private val commonList: ArrayList<ViewType> = arrayListOf()
-    private val shareRepository: ShareRepository
+    private val shareApi: ShareService
 
     init {
         App.getApp().appComponent.inject(this)
@@ -68,7 +67,7 @@ class SettingsPresenter(
      * */
     private suspend fun getShareFolder(id: String) {
         request(
-            func = { shareRepository.getShareFolder(id) },
+            func = { shareApi.getShareFolder(id) },
             map = { it.response },
             onSuccess = ::getShareList,
             onError = ::fetchError
@@ -77,7 +76,7 @@ class SettingsPresenter(
 
     private suspend fun getShareFile(id: String) {
         request(
-            func = { shareRepository.getShareFile(id) },
+            func = { shareApi.getShareFile(id) },
             onSuccess = { response ->
                 getShareList(response.response)
                 if (response.response.isNotEmpty()) {
@@ -94,7 +93,7 @@ class SettingsPresenter(
         vararg shareList: Share?
     ) {
         request(
-            func = { shareRepository.setFileAccess(id, getRequestShare(isNotify, message, *shareList)) },
+            func = { shareApi.setFileAccess(id, getRequestShare(isNotify, message, *shareList)) },
             map = { it.response },
             onSuccess = ::getShareList,
             onError = ::fetchError
@@ -108,7 +107,7 @@ class SettingsPresenter(
         vararg shareList: Share?
     ) {
         request(
-            func = { shareRepository.setFolderAccess(id, getRequestShare(isNotify, message, *shareList)) },
+            func = { shareApi.setFolderAccess(id, getRequestShare(isNotify, message, *shareList)) },
             map = { it.response },
             onSuccess = ::getShareList, onError = ::fetchError
         )
@@ -160,7 +159,7 @@ class SettingsPresenter(
                 request(
                     func = {
                         val request = RequestExternal(share = share ?: "")
-                        shareRepository.getExternalLink(item.id ?: "", request)
+                        shareApi.getExternalLink(item.id, request)
                     }, onSuccess = { response ->
                         externalLink = response.response
                         item.access = code.toString()
@@ -172,7 +171,7 @@ class SettingsPresenter(
                 request(
                     func = {
                         val request = RequestExternalAccess(code)
-                        shareRepository.setExternalLinkAccess(item.id ?: "", request)
+                        shareApi.setExternalLinkAccess(item.id, request)
                     }, onSuccess = {
                         item.access = code.toString()
                         item.shared = isShared(code)

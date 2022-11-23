@@ -10,8 +10,6 @@ import app.editors.manager.mvp.models.filter.isNotEmpty
 
 class CloudFilterPresenter(private val folderId: String?) : BaseFilterPresenter() {
 
-    private var fileProvider: CloudFileProvider? = null
-
     var filterType: FilterType = FilterType.None
     var filterAuthor: FilterAuthor = FilterAuthor()
     var resultCount = -1
@@ -37,7 +35,6 @@ class CloudFilterPresenter(private val folderId: String?) : BaseFilterPresenter(
 
     init {
         App.getApp().appComponent.inject(this)
-        fileProvider = CloudFileProvider()
         loadFilter()
     }
 
@@ -60,18 +57,16 @@ class CloudFilterPresenter(private val folderId: String?) : BaseFilterPresenter(
         saveFilter()
         viewState.updateViewState(isChanged = !initialCall)
         disposable?.clear()
-        fileProvider?.let { provider ->
-            disposable?.add(
-                provider.getFiles(folderId, filters)
-                    .doOnSubscribe { viewState.onFilterProgress() }
-                    .subscribe(
-                        { explorer: Explorer ->
-                            resultCount = explorer.count
-                            viewState.onFilterResult(resultCount)
-                        }, { error: Throwable -> viewState.onError(error.localizedMessage) }
-                    )
-            )
-        }
+        disposable?.add(
+            context.cloudFileProvider.getFiles(folderId, filters)
+                .doOnSubscribe { viewState.onFilterProgress() }
+                .subscribe(
+                    { explorer: Explorer ->
+                        resultCount = explorer.count
+                        viewState.onFilterResult(resultCount)
+                    }, { error: Throwable -> viewState.onError(error.localizedMessage) }
+                )
+        )
     }
 
     override fun reset() {

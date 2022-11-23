@@ -7,17 +7,15 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.storage.recent.Recent
-import app.documents.core.network.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.webDavApi
-import app.editors.manager.managers.providers.LocalFileProvider
-import app.editors.manager.managers.providers.ProviderError
-import app.editors.manager.managers.providers.WebDavFileProvider
+import app.documents.core.providers.LocalFileProvider
+import app.documents.core.providers.ProviderError
+import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.managers.works.UploadWork
-import app.editors.manager.mvp.models.explorer.*
-import app.editors.manager.mvp.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -52,10 +50,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
                 if (it.isWebDav) {
-                    webDavFileProvider = WebDavFileProvider(
-                        context.webDavApi(),
-                        WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
-                    )
+                    webDavFileProvider = context.webDavFileProvider
                 }
             }
         }
@@ -467,7 +462,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                 title = file.name
                 filesCount = "1"
             }
-            files = listOf(explorerFile)
+            files = mutableListOf(explorerFile)
             addRecent(explorerFile)
         }
 

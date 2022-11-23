@@ -40,7 +40,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
 
     private var disposable: Disposable? = null
 
-    private val api: Api = context.api()
+    private val api: ManagerService = context.api
 
     override fun onDestroy() {
         super.onDestroy()

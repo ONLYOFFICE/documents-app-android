@@ -80,7 +80,7 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
 
     private fun getThirdparty(account: CloudAccount) {
         try {
-            disposable.add(context.api()
+            disposable.add(context.api
                 .thirdPartyList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

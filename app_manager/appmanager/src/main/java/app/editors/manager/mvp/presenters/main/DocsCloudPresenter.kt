@@ -62,9 +62,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     init {
         App.getApp().appComponent.inject(this)
-        api = context.api()
-        roomProvider = RoomProvider(context.roomApi)
-        fileProvider = CloudFileProvider()
+        api = context.api
+        roomProvider = context.roomProvider
+        fileProvider = context.cloudFileProvider
     }
 
     override fun onFirstViewAttach() {
@@ -261,10 +261,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isPdf = isPdf
         state.isRoom = item is CloudFolder && item.isRoom
         state.isPin = item is CloudFolder && item.pinned
-        state.iconResId = when (val item = itemClicked) {
+        state.iconResId = when (val clickedItem = itemClicked) {
             is CloudFolder -> when {
-                item.providerKey.isNotEmpty() -> StorageUtils.getStorageIcon(item.providerKey)
-                item.isRoom -> ManagerUiUtils.getRoomIcon(itemClicked as CloudFolder)
+                clickedItem.providerKey.isNotEmpty() -> StorageUtils.getStorageIcon(clickedItem.providerKey)
+                clickedItem.isRoom -> ManagerUiUtils.getRoomIcon(itemClicked as CloudFolder)
                 else -> if (item.shared) R.drawable.ic_type_folder_shared else R.drawable.ic_type_folder
             }
             else -> getIconContext(StringUtils.getExtensionFromPath(itemClickedTitle))
@@ -429,7 +429,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             presenterScope.launch {
                 val shareApi = context.shareApi
                 request(
-                    func = { shareRepository.getShareFile(item.id) },
+                    func = { shareApi.getShareFile(item.id) },
                     map = { response ->
                         response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
                     },
@@ -531,30 +531,30 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val filesIds = operationStack?.selectedFilesIds
         val foldersIds = operationStack?.selectedFoldersIds
 
-        disposable.add((fileProvider as CloudFileProvider).api.checkFiles(
-            destFolderId ?: "",
-            foldersIds,
-            filesIds
-        )
-            .map { it.response }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                when {
-                    it.isNotEmpty() -> {
-                        showMoveCopyDialog(it, action, modelExplorerStack.currentTitle)
+        api?.let { api ->
+            disposable.add(api.checkFiles(
+                destFolderId ?: "",
+                foldersIds,
+                filesIds
+            )
+                .map { it.response }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    when {
+                        it.isNotEmpty() -> {
+                            showMoveCopyDialog(it, action, modelExplorerStack.currentTitle)
+                        }
+                        action == MoveCopyDialog.ACTION_COPY -> {
+                            transfer(ApiContract.Operation.DUPLICATE, false)
+                        }
+                        action == MoveCopyDialog.ACTION_MOVE -> {
+                            transfer(ApiContract.Operation.DUPLICATE, true)
+                        }
                     }
-                    action == MoveCopyDialog.ACTION_COPY -> {
-                        transfer(ApiContract.Operation.DUPLICATE, false)
-                    }
-                    action == MoveCopyDialog.ACTION_MOVE -> {
-                        transfer(ApiContract.Operation.DUPLICATE, true)
-                    }
-                }
-            }, {
-                fetchError(it)
-            })
-        )
+                }, ::fetchError)
+            )
+        }
     }
 
     private fun showMoveCopyDialog(files: List<CloudFile>, action: String, titleFolder: String?) {

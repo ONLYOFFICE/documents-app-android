@@ -9,8 +9,6 @@ import app.editors.manager.app.cloudFileProvider
 
 class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
 
-    private var fileProvider: CloudFileProvider? = null
-
     var filterType: RoomFilterType = RoomFilterType.None
         set(value) {
             field = value
@@ -34,7 +32,6 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
 
     init {
         App.getApp().appComponent.inject(this)
-        fileProvider = CloudFileProvider()
         loadFilter()
     }
 
@@ -52,17 +49,15 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
         saveFilter()
         viewState.updateViewState(isChanged = !initialCall)
         disposable?.clear()
-        fileProvider?.let { provider ->
-            disposable?.add(
-                provider.getFiles(folderId, filters)
-                    .doOnSubscribe { viewState.onFilterProgress() }
-                    .subscribe(
-                        { explorer: Explorer ->
-                            viewState.onFilterResult(explorer.count)
-                        }, { error: Throwable -> viewState.onError(error.localizedMessage) }
-                    )
-            )
-        }
+        disposable?.add(
+            context.cloudFileProvider.getFiles(folderId, filters)
+                .doOnSubscribe { viewState.onFilterProgress() }
+                .subscribe(
+                    { explorer: Explorer ->
+                        viewState.onFilterResult(explorer.count)
+                    }, { error: Throwable -> viewState.onError(error.localizedMessage) }
+                )
+        )
     }
 
     override fun reset() {
