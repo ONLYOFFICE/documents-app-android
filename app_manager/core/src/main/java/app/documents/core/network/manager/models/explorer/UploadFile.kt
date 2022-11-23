@@ -3,9 +3,10 @@ package app.documents.core.network.manager.models.explorer
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import app.documents.core.network.manager.models.base.Entity
 import java.util.*
 
-class UploadFile() : Parcelable {
+class UploadFile() : Entity, Parcelable {
     var id: String? = null
     var folderId: String? = null
     var name: String? = null
