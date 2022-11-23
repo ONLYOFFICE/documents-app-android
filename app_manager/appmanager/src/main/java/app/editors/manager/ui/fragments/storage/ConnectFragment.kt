@@ -12,7 +12,7 @@ import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageConnectBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.views.storage.ConnectView
 import app.editors.manager.ui.activities.main.MainActivity

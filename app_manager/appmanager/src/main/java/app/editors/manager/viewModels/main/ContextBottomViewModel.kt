@@ -11,9 +11,9 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.StorageUtils
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking

@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -23,7 +23,7 @@ object GlideUtils {
         return GlideUrl(
             url, LazyHeaders.Builder()
                 .addHeader(
-                    WebDavApi.HEADER_AUTHORIZATION,
+                    WebDavService.HEADER_AUTHORIZATION,
                     Credentials.basic(account.login!!, password)
                 )
                 .build()

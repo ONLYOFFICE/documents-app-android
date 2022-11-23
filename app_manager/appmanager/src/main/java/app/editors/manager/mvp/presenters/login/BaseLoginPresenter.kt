@@ -10,6 +10,7 @@ import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.account.copyWithToken
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.user.User
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.loginService
@@ -205,7 +206,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         FirebaseUtils.addAnalyticsLogin(account.portal ?: "", account.provider)
     }
 
-    protected open fun onGetUser(user: app.editors.manager.mvp.models.user.User) {
+    protected open fun onGetUser(user: User) {
     }
 
     override fun onDestroy() {

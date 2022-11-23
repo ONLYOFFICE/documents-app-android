@@ -1,9 +1,9 @@
 package app.editors.manager.mvp.presenters.storage
 
-import app.editors.manager.app.Api
+import app.documents.core.network.manager.ManagerService
 import app.editors.manager.app.App
 import app.editors.manager.app.api
-import app.editors.manager.mvp.models.request.RequestStorage
+import app.documents.core.network.manager.models.request.RequestStorage
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.storage.ConnectView
 import io.reactivex.android.schedulers.AndroidSchedulers

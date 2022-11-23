@@ -2,7 +2,7 @@ package app.editors.manager.mvp.models.ui
 
 import android.graphics.drawable.Drawable
 import app.editors.manager.R
-import app.editors.manager.mvp.models.base.ItemProperties
+import app.documents.core.network.manager.models.base.ItemProperties
 import kotlinx.serialization.Transient
 import lib.toolkit.base.managers.utils.StringUtils
 

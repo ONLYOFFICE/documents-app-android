@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.mvp.models.base.Entity
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.UploadFile
+import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.UploadFile
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.ui.adapters.base.BaseAdapter

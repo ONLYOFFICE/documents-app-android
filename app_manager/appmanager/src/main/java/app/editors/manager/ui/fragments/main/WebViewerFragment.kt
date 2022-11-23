@@ -34,7 +34,7 @@ import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.webview.KeyboardWebView

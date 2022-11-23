@@ -14,7 +14,7 @@ import app.editors.manager.app.api
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.GoogleUtils
-import app.editors.manager.mvp.models.user.Thirdparty
+import app.documents.core.network.manager.models.user.Thirdparty
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.ProfileView
 import io.reactivex.android.schedulers.AndroidSchedulers

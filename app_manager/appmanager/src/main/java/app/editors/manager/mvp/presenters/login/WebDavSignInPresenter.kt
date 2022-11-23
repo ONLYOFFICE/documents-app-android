@@ -4,7 +4,7 @@ import android.accounts.Account
 import android.net.Uri
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.webDavApi
@@ -47,7 +47,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         disposable?.dispose()
     }
 
-    fun checkPortal(provider: WebDavApi.Providers, url: String, login: String, password: String) {
+    fun checkPortal(provider: WebDavService.Providers, url: String, login: String, password: String) {
         val builder = StringBuilder()
         if (url.contains(ApiContract.SCHEME_HTTPS) || url.contains(ApiContract.SCHEME_HTTP)) {
             builder.append(url)
@@ -58,12 +58,12 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         try {
             var webUrl = URL(builder.toString())
             if (webUrl.path.isEmpty()) {
-                if (provider == WebDavApi.Providers.OwnCloud || provider == WebDavApi.Providers.WebDav) {
+                if (provider == WebDavService.Providers.OwnCloud || provider == WebDavService.Providers.WebDav) {
                     builder.append(getPortalPath(webUrl.toString(), provider, login))
                 } else {
                     builder.append(provider.path)
                 }
-            } else if (provider == WebDavApi.Providers.OwnCloud) {
+            } else if (provider == WebDavService.Providers.OwnCloud) {
                 builder.append(getPortalPath(webUrl.protocol + "://" + webUrl.host, provider, login))
             }
             webUrl = URL(builder.toString())
@@ -95,7 +95,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
 
     private fun checkResponse(
         response: Response<ResponseBody>,
-        provider: WebDavApi.Providers,
+        provider: WebDavService.Providers,
         webUrl: URL,
         login: String,
         password: String
@@ -113,7 +113,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         }
     }
 
-    fun checkNextCloud(provider: WebDavApi.Providers, url: String) {
+    fun checkNextCloud(provider: WebDavService.Providers, url: String) {
         val builder = StringBuilder()
         if (url.contains(ApiContract.SCHEME_HTTPS) || url.contains(ApiContract.SCHEME_HTTP)) {
             builder.append(url)
@@ -165,7 +165,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         }
     }
 
-    private fun createUser(provider: WebDavApi.Providers, webUrl: URL, login: String, password: String) {
+    private fun createUser(provider: WebDavService.Providers, webUrl: URL, login: String, password: String) {
         val cloudAccount = CloudAccount(
             id = "$login@${webUrl.host}",
             isWebDav = true,
@@ -212,7 +212,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         }
     }
 
-    private fun getPortalPath(url: String, provider: WebDavApi.Providers, login: String): String {
+    private fun getPortalPath(url: String, provider: WebDavService.Providers, login: String): String {
         val uri = Uri.parse(url)
         var path = uri.path
         val base = uri.authority
@@ -224,7 +224,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             if (path[path.length - 1] == '/') {
                 path = path.substring(0, path.lastIndexOf('/'))
             }
-            if (provider != WebDavApi.Providers.WebDav) {
+            if (provider != WebDavService.Providers.WebDav) {
                 builder.append(path)
                     .append(provider.path)
                     .append(login)
@@ -235,7 +235,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
                     .toString()
             }
         } else {
-            if (provider == WebDavApi.Providers.WebDav) {
+            if (provider == WebDavService.Providers.WebDav) {
                 provider.path
             } else {
                 provider.path + login
@@ -243,16 +243,16 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         }
     }
 
-    private fun correctUrl(url: String, provider: WebDavApi.Providers): String {
+    private fun correctUrl(url: String, provider: WebDavService.Providers): String {
         var copyUrl = url
         val correctUrl = StringBuilder()
         copyUrl = copyUrl.replace("\\s+".toRegex(), "")
         val uri = Uri.parse(copyUrl)
         val path = uri.path
         when (provider) {
-            WebDavApi.Providers.NextCloud, WebDavApi.Providers.OwnCloud -> {
+            WebDavService.Providers.NextCloud, WebDavService.Providers.OwnCloud -> {
             }
-            WebDavApi.Providers.Yandex, WebDavApi.Providers.WebDav -> {
+            WebDavService.Providers.Yandex, WebDavService.Providers.WebDav -> {
             }
             else -> {
                 // Stub
@@ -268,7 +268,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         if (correctUrl[correctUrl.length - 1] != '/') {
             correctUrl.append("/")
         }
-        if (provider != WebDavApi.Providers.Yandex) {
+        if (provider != WebDavService.Providers.Yandex) {
             try {
                 val checkUrl = URL(correctUrl.toString())
             } catch (e: MalformedURLException) {

@@ -20,7 +20,7 @@ import app.documents.core.network.share.models.request.RequestRoomShare
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ChooseAccessFragmentLayoutBinding
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.ui.adapters.ShareAdapter
 import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory

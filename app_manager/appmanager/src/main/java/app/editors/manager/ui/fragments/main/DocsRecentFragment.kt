@@ -10,8 +10,8 @@ import android.view.View
 import app.documents.core.storage.recent.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.main.RecentState

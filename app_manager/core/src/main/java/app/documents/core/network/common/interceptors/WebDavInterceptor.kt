@@ -1,6 +1,6 @@
 package app.documents.core.network.common.interceptors
 
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -14,11 +14,11 @@ class WebDavInterceptor(val login: String?, val password: String?) : Interceptor
         if (login == null && password == null) {
             return chain.proceed(chain.request())
         } else {
-            val auth = chain.request().header(WebDavApi.HEADER_AUTHORIZATION)
+            val auth = chain.request().header(WebDavService.HEADER_AUTHORIZATION)
             val request: Request = if (auth == null) {
                 chain.request().newBuilder()
                     .addHeader(
-                        WebDavApi.HEADER_AUTHORIZATION,
+                        WebDavService.HEADER_AUTHORIZATION,
                         Credentials.basic(login ?: "", password ?: "")
                     )
                     .build()

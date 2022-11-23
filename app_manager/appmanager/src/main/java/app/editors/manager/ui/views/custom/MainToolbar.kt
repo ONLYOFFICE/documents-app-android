@@ -10,7 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
 import com.bumptech.glide.Glide
@@ -113,26 +113,26 @@ class MainToolbar @JvmOverloads constructor(
     }
 
     private fun setWebDavAvatar(provider: String) {
-        when (WebDavApi.Providers.valueOf(provider)) {
-            WebDavApi.Providers.Yandex -> toolbarIcon.setImageDrawable(
+        when (WebDavService.Providers.valueOf(provider)) {
+            WebDavService.Providers.Yandex -> toolbarIcon.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
                     R.drawable.ic_storage_yandex
                 )
             )
-            WebDavApi.Providers.NextCloud -> toolbarIcon.setImageDrawable(
+            WebDavService.Providers.NextCloud -> toolbarIcon.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
                     R.drawable.ic_storage_nextcloud
                 )
             )
-            WebDavApi.Providers.OwnCloud -> toolbarIcon.setImageDrawable(
+            WebDavService.Providers.OwnCloud -> toolbarIcon.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
                     R.drawable.ic_storage_owncloud
                 )
             )
-            WebDavApi.Providers.KDrive -> toolbarIcon.setImageDrawable(
+            WebDavService.Providers.KDrive -> toolbarIcon.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
                     R.drawable.ic_storage_kdrive

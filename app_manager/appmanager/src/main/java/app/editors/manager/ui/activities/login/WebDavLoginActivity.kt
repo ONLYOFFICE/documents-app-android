@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -31,7 +31,7 @@ class WebDavLoginActivity : BaseAppActivity() {
         const val GOOGLEDRIVE_FRAGMENT_VALUE = 3
 
         @JvmStatic
-        fun show(activity: Activity, provider: WebDavApi.Providers? = null, account: String?, fragment: Int = 0) {
+        fun show(activity: Activity, provider: WebDavService.Providers? = null, account: String?, fragment: Int = 0) {
             activity.startActivityForResult(Intent(activity, WebDavLoginActivity::class.java).apply {
                 putExtra(KEY_PROVIDER, provider)
                 putExtra(KEY_ACCOUNT, account)
@@ -69,7 +69,7 @@ class WebDavLoginActivity : BaseAppActivity() {
             intent.let { data ->
                 it.title = getString(
                     R.string.login_web_dav_title,
-                    (data.getSerializableExtra(KEY_PROVIDER) as WebDavApi.Providers?)?.name
+                    (data.getSerializableExtra(KEY_PROVIDER) as WebDavService.Providers?)?.name
                 )
             }
 
@@ -92,7 +92,7 @@ class WebDavLoginActivity : BaseAppActivity() {
 
     private fun showSignInFragment() {
         showFragment(
-            WebDavSignInFragment.newInstance(intent.getSerializableExtra(KEY_PROVIDER) as WebDavApi.Providers),
+            WebDavSignInFragment.newInstance(intent.getSerializableExtra(KEY_PROVIDER) as WebDavService.Providers),
             null
         )
     }

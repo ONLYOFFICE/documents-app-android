@@ -11,7 +11,7 @@ import android.view.ViewPropertyAnimator
 import androidx.fragment.app.Fragment
 import app.editors.manager.R
 import app.editors.manager.databinding.ActivityMediaBinding
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.media.MediaPagerFragment
 import lib.toolkit.base.managers.utils.UiUtils

@@ -1,7 +1,7 @@
 package app.editors.manager.mvp.views.main
 
 import androidx.annotation.StringRes
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.views.base.BaseView
 import moxy.viewstate.strategy.OneExecutionStateStrategy

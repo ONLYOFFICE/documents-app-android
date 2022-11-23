@@ -10,7 +10,7 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
@@ -364,7 +364,7 @@ class CloudAccountFragment : BaseAppFragment(),
         presenter.checkContextLogin()
     }
 
-    override fun onWebDavLogin(account: String, provider: WebDavApi.Providers) {
+    override fun onWebDavLogin(account: String, provider: WebDavService.Providers) {
         hideDialog()
         WebDavLoginActivity.show(requireActivity(), provider, account)
     }

@@ -202,7 +202,6 @@ val Context.accountOnline: CloudAccount?
         else -> this.applicationContext.appComponent.accountOnline
     }
 
-
 val Context.appComponent: AppComponent
     get() = when (this) {
         is App -> this.appComponent

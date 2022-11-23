@@ -11,28 +11,12 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.http.NetworkClient
-import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
-import okhttp3.Protocol
 import retrofit2.Retrofit
-import java.util.concurrent.TimeUnit
-import javax.inject.Named
-import javax.inject.Scope
-
-@Scope
-@Retention(AnnotationRetention.RUNTIME)
-annotation class ShareScope
 
 @Module
 object ShareModule {
-
-    private val json = Json {
-        isLenient = true
-        ignoreUnknownKeys = true
-    }
 
     @Provides
     @OptIn(ExperimentalSerializationApi::class)

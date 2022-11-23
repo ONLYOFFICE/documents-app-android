@@ -10,7 +10,7 @@ import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.utils.NotificationUtils
-import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFile
 import lib.toolkit.base.managers.utils.FileUtils
 
 open class BaseStorageUploadWork(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {

@@ -72,6 +72,7 @@ dependencies {
     implementation(Retrofit.retrofitRx)
     implementation(Retrofit.retrofitKotlinSerialization)
     implementation(Retrofit.retrofitXml)
+    implementation(Retrofit.retrofitGson)
 
     // Rx
     implementation(Rx.androidRx)

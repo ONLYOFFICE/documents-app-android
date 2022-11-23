@@ -12,14 +12,14 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
-import app.editors.manager.app.Api
+import app.documents.core.network.manager.ManagerService
 import app.editors.manager.app.App
 import app.editors.manager.di.component.DaggerApiComponent
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.NotificationUtils
-import app.editors.manager.mvp.models.explorer.Operation
-import app.editors.manager.mvp.models.request.RequestDownload
+import app.documents.core.network.manager.models.explorer.Operation
+import app.documents.core.network.manager.models.request.RequestDownload
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -92,7 +92,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
     private var downloadRequest: RequestDownload? = null
     private var token: String
 
-    private val api: Api = runBlocking(Dispatchers.Default) {
+    private val api: ManagerService = runBlocking(Dispatchers.Default) {
         App.getApp().appComponent.accountsDao.getAccountOnline()?.let { account ->
             AccountUtils.getToken(
                 applicationContext,

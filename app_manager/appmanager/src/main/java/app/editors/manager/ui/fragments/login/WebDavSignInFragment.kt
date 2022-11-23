@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
 import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter
@@ -30,7 +30,7 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
         private const val KEY_LOGIN = "KEY_LOGIN"
         private const val KEY_PASSWORD = "KEY_PASSWORD"
 
-        fun newInstance(provider: WebDavApi.Providers?): WebDavSignInFragment {
+        fun newInstance(provider: WebDavService.Providers?): WebDavSignInFragment {
             return WebDavSignInFragment().apply {
                 arguments = Bundle().apply {
                     putSerializable(KEY_PROVIDER, provider)
@@ -40,7 +40,7 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
     }
 
     private val textWatcher: TextWatcher by lazy { FieldsWatcher() }
-    private lateinit var wevDavProvider: WebDavApi.Providers
+    private lateinit var wevDavProvider: WebDavService.Providers
 
     @InjectPresenter
     lateinit var presenter: WebDavSignInPresenter
@@ -51,9 +51,9 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
         super.onCreate(savedInstanceState)
         arguments?.let {
             wevDavProvider = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getSerializable(KEY_PROVIDER, WebDavApi.Providers::class.java) as WebDavApi.Providers
+                it.getSerializable(KEY_PROVIDER, WebDavService.Providers::class.java) as WebDavService.Providers
             } else {
-                it.getSerializable(KEY_PROVIDER) as WebDavApi.Providers
+                it.getSerializable(KEY_PROVIDER) as WebDavService.Providers
             }
         }
     }
@@ -100,14 +100,14 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
         viewBinding?.storageWebDavSaveButton?.isEnabled = false
 
         when (wevDavProvider) {
-            WebDavApi.Providers.Yandex -> {
+            WebDavService.Providers.Yandex -> {
                 initYandexState()
             }
-            WebDavApi.Providers.NextCloud -> {
+            WebDavService.Providers.NextCloud -> {
                 initNextCloudState()
             }
 
-            WebDavApi.Providers.KDrive -> {
+            WebDavService.Providers.KDrive -> {
                 initKDriveState()
             }
             else -> {
@@ -163,7 +163,7 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
 
     private fun connect(url: String, login: String, password: String) {
         hideKeyboard()
-        if (wevDavProvider === WebDavApi.Providers.NextCloud) {
+        if (wevDavProvider === WebDavService.Providers.NextCloud) {
             presenter.checkNextCloud(wevDavProvider, url)
         } else {
             presenter.checkPortal(wevDavProvider, url, login, password)
@@ -216,7 +216,7 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
             val login = viewBinding?.storageWebDavLoginEdit?.text?.toString()
             val password = viewBinding?.storageWebDavPasswordEdit?.text?.toString()
 
-            if (wevDavProvider === WebDavApi.Providers.NextCloud) {
+            if (wevDavProvider === WebDavService.Providers.NextCloud) {
                 viewBinding?.storageWebDavSaveButton?.isEnabled = !url.isNullOrEmpty()
             } else {
                 viewBinding?.storageWebDavSaveButton?.isEnabled =

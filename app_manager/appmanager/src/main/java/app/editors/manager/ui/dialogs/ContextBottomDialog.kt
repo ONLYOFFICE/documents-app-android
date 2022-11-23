@@ -14,7 +14,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Item
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils

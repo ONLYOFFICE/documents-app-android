@@ -5,10 +5,10 @@ import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
-import app.editors.manager.app.Api
+import app.documents.core.network.manager.ManagerService
 import app.editors.manager.app.App
 import app.editors.manager.app.api
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainPagerView

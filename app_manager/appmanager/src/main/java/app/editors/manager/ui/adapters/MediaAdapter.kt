@@ -20,7 +20,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException

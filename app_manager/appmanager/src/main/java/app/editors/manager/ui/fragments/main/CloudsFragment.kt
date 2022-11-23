@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -82,21 +82,21 @@ class CloudsFragment : BaseAppFragment() {
             R.drawable.ic_storage_nextcloud,
             R.string.storage_select_next_cloud
         ) {
-            WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.NextCloud, null)
+            WebDavLoginActivity.show(requireActivity(), WebDavService.Providers.NextCloud, null)
         }
 
         viewBinding?.cloudsItemOwnCloud?.bind(
             R.drawable.ic_storage_owncloud,
             R.string.storage_select_own_cloud
         ) {
-            WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.OwnCloud, null)
+            WebDavLoginActivity.show(requireActivity(), WebDavService.Providers.OwnCloud, null)
         }
 
         viewBinding?.cloudsItemKDrive?.bind(
             R.drawable.ic_storage_kdrive,
             R.string.storage_select_kdrive
         ) {
-            WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.KDrive, null)
+            WebDavLoginActivity.show(requireActivity(), WebDavService.Providers.KDrive, null)
         }
 
         viewBinding?.cloudsItemOneDrive?.bind(
@@ -146,7 +146,7 @@ class CloudsFragment : BaseAppFragment() {
             R.drawable.ic_storage_webdav,
             R.string.storage_select_web_dav
         ) {
-            WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.WebDav, null)
+            WebDavLoginActivity.show(requireActivity(), WebDavService.Providers.WebDav, null)
         }
     }
 

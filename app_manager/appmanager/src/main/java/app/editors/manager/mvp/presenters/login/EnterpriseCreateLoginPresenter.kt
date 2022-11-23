@@ -6,7 +6,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.mvp.models.user.User
+import app.documents.core.network.manager.models.user.User
 import app.editors.manager.mvp.views.login.EnterpriseCreateSignInView
 import io.reactivex.disposables.Disposable
 import kotlinx.serialization.encodeToString

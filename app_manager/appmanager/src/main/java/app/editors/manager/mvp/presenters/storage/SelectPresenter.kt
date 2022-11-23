@@ -4,7 +4,7 @@ import android.content.Context
 import app.documents.core.storage.account.AccountDao
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
-import app.editors.manager.app.Api
+import app.documents.core.network.manager.ManagerService
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.managers.utils.StorageUtils

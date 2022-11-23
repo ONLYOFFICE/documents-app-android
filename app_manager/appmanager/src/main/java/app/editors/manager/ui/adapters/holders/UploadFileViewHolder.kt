@@ -5,7 +5,7 @@ import androidx.work.WorkManager
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerUploadFilesBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
-import app.editors.manager.mvp.models.explorer.UploadFile
+import app.documents.core.network.manager.models.explorer.UploadFile
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.StringUtils
 import java.util.*

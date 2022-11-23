@@ -11,9 +11,9 @@ import app.editors.manager.app.api
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.retrofit.ProgressRequestBody
 import app.editors.manager.managers.utils.NotificationUtils
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.UploadFile
-import app.editors.manager.mvp.models.response.ResponseFile
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.UploadFile
+import app.documents.core.network.manager.models.response.ResponseFile
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils

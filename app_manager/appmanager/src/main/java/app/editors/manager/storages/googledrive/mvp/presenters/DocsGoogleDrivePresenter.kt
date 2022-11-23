@@ -11,10 +11,10 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.googleDriveLoginService
 import app.editors.manager.managers.utils.StorageUtils
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.explorer.GoogleDriveFolder
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.GoogleDriveFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.DocsGoogleDriveView
 import app.editors.manager.storages.base.work.BaseStorageDownloadWork

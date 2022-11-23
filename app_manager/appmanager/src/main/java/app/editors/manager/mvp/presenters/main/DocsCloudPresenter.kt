@@ -7,12 +7,9 @@ import app.documents.core.storage.recent.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.request
 import app.editors.manager.R
-import app.editors.manager.app.Api
-import app.editors.manager.app.App
-import app.editors.manager.app.api
-import app.editors.manager.app.roomApi
-import app.editors.manager.managers.providers.CloudFileProvider
-import app.editors.manager.managers.providers.RoomProvider
+import app.documents.core.network.manager.ManagerService
+import app.documents.core.providers.CloudFileProvider
+import app.documents.core.providers.RoomProvider
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
 import app.editors.manager.managers.receivers.UploadReceiver
@@ -21,15 +18,16 @@ import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.managers.works.UploadWork
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.models.OpenDataModel
-import app.editors.manager.mvp.models.request.RequestCreate
-import app.editors.manager.mvp.models.request.RequestDeleteShare
-import app.editors.manager.mvp.models.request.RequestFavorites
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDeleteShare
+import app.documents.core.network.manager.models.request.RequestFavorites
+import app.editors.manager.app.*
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
@@ -58,7 +56,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val downloadReceiver: DownloadReceiver = DownloadReceiver()
     private val uploadReceiver: UploadReceiver = UploadReceiver()
 
-    private var api: Api? = null
+    private var api: ManagerService? = null
     private var roomProvider: RoomProvider? = null
 
 

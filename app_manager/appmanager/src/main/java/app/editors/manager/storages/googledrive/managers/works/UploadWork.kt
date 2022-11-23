@@ -9,7 +9,7 @@ import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.getGoogleDriveServiceProvider
 import app.editors.manager.storages.googledrive.mvp.models.request.CreateItemRequest
-import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.storages.googledrive.managers.receiver.GoogleDriveUploadReceiver

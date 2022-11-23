@@ -13,15 +13,16 @@ import androidx.work.WorkManager
 import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.recent.RecentDao
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.exceptions.NoConnectivityException
-import app.editors.manager.managers.providers.BaseFileProvider
-import app.editors.manager.managers.providers.ProviderError
-import app.editors.manager.managers.providers.ProviderError.Companion.throwInterruptException
-import app.editors.manager.managers.providers.WebDavFileProvider
+import app.documents.core.providers.BaseFileProvider
+import app.documents.core.providers.ProviderError
+import app.documents.core.providers.ProviderError.Companion.throwInterruptException
+import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
@@ -34,8 +35,8 @@ import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
-import app.editors.manager.mvp.models.request.RequestCreate
-import app.editors.manager.mvp.models.request.RequestDownload
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDownload
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
@@ -622,7 +623,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         val foldersIds = folders?.map { it.id } ?: listOf()
 
         if (filesIds.size > 1 || foldersIds.isNotEmpty()) {
-            startDownloadWork(downloadTo, null, null, RequestDownload().also {
+            startDownloadWork(downloadTo, null, null, RequestDownload()
+                .also {
                 it.filesIds = filesIds
                 it.foldersIds = foldersIds
             })
@@ -1145,7 +1147,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 }
             } else {
                 if (itemClicked is CloudFolder) {
-                    openFolder(itemClicked.getId(), position)
+                    openFolder(itemClicked.id, position)
                 } else if (itemClicked is CloudFile) {
                     getFileInfo()
                 }

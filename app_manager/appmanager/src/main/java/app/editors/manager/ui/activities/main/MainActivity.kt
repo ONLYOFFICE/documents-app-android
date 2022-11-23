@@ -10,7 +10,7 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
 import app.documents.core.storage.account.CloudAccount
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
@@ -654,7 +654,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         } ?: run {
             FragmentUtils.showFragment(
                 supportFragmentManager,
-                DocsWebDavFragment.newInstance(WebDavApi.Providers.valueOf(account.webDavProvider ?: "")),
+                DocsWebDavFragment.newInstance(WebDavService.Providers.valueOf(account.webDavProvider ?: "")),
                 R.id.frame_container
             )
         }

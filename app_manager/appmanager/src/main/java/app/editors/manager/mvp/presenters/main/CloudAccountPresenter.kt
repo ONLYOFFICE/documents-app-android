@@ -9,7 +9,7 @@ import app.documents.core.storage.account.copyWithToken
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.storage.preference.NetworkSettings
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -208,13 +208,13 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         } else {
                             viewState.onWebDavLogin(
                                 Json.encodeToString(account),
-                                WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                                WebDavService.Providers.valueOf(account.webDavProvider ?: "")
                             )
                         }
                     } ?: run {
                         viewState.onWebDavLogin(
                             Json.encodeToString(account),
-                            WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                            WebDavService.Providers.valueOf(account.webDavProvider ?: "")
                         )
                     }
                 }
@@ -320,7 +320,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     restoreSettings()
                     viewState.onWebDavLogin(
                         Json.encodeToString(account),
-                        WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                        WebDavService.Providers.valueOf(account.webDavProvider ?: "")
                     )
                 }
             }, {

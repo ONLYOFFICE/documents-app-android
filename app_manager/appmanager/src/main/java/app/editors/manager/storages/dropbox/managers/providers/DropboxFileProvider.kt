@@ -7,6 +7,7 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.*
 import app.editors.manager.app.App
 import app.editors.manager.storages.dropbox.dropbox.api.IDropboxServiceProvider
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxResponse
@@ -17,12 +18,12 @@ import app.editors.manager.storages.dropbox.mvp.models.operations.MoveCopyBatchC
 import app.editors.manager.storages.dropbox.mvp.models.operations.MoveCopyPaths
 import app.editors.manager.storages.dropbox.mvp.models.request.*
 import app.editors.manager.storages.dropbox.mvp.models.response.*
-import app.editors.manager.managers.providers.BaseFileProvider
+import app.documents.core.providers.BaseFileProvider
 import app.editors.manager.mvp.models.explorer.*
-import app.editors.manager.mvp.models.request.RequestCreate
-import app.editors.manager.mvp.models.request.RequestExternal
-import app.editors.manager.mvp.models.response.ResponseExternal
-import app.editors.manager.mvp.models.response.ResponseOperation
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestExternal
+import app.documents.core.network.manager.models.response.ResponseExternal
+import app.documents.core.network.manager.models.response.ResponseOperation
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import io.reactivex.Emitter
@@ -413,7 +414,8 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     override fun getStatusOperation(): ResponseOperation {
-        val responseOperation = ResponseOperation()
+        val responseOperation =
+            ResponseOperation()
         responseOperation.response = ArrayList()
         return responseOperation
     }
@@ -509,7 +511,7 @@ class DropboxFileProvider : BaseFileProvider {
         return if (local.exists()) {
             local
         } else {
-            FileUtils.createCacheFile(App.getApp(), item.getTitle())
+            FileUtils.createCacheFile(App.getApp(), item.title)
         }
     }
 

@@ -8,7 +8,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.getOneDriveServiceProvider
 import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import app.editors.manager.managers.works.UploadWork
-import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils

@@ -10,10 +10,10 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.mvp.models.request.RequestCreate
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.request.RequestCreate
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.ui.views.custom.PlaceholderViews

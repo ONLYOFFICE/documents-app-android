@@ -1,6 +1,6 @@
 package app.editors.manager.storages.googledrive.mvp.views
 
-import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.mvp.views.main.DocsBaseView
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType

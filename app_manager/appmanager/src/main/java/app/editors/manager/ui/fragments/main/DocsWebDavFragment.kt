@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
@@ -25,7 +25,7 @@ import moxy.presenter.InjectPresenter
 
 open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButtonFragment {
 
-    protected var provider: WebDavApi.Providers? = null
+    protected var provider: WebDavService.Providers? = null
 
     @InjectPresenter
     lateinit var webDavPresenter: DocsWebDavPresenter
@@ -42,7 +42,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            provider = it.getSerializable(KEY_PROVIDER) as WebDavApi.Providers
+            provider = it.getSerializable(KEY_PROVIDER) as WebDavService.Providers
         }
     }
 
@@ -174,7 +174,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 
         const val KEY_PROVIDER = "KEY_PROVIDER"
 
-        fun newInstance(provider: WebDavApi.Providers): DocsWebDavFragment {
+        fun newInstance(provider: WebDavService.Providers): DocsWebDavFragment {
             return DocsWebDavFragment().apply {
                 arguments = Bundle(1).apply {
                     putSerializable(KEY_PROVIDER, provider)

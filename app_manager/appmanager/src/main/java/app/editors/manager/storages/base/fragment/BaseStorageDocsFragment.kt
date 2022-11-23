@@ -8,9 +8,9 @@ import android.os.Bundle
 import android.view.View
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.Current
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.Current
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
