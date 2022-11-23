@@ -1,9 +1,9 @@
 package app.documents.core.network.manager
 
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.mvp.models.base.Base
-import app.editors.manager.mvp.models.request.*
-import app.editors.manager.mvp.models.response.*
+import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.models.request.*
+import app.documents.core.network.manager.models.response.*
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.MultipartBody
@@ -206,7 +206,7 @@ interface ManagerService {
         path = "api/" + ApiContract.API_VERSION + "/files/share",
         hasBody = true
     )
-    fun deleteShare(@Body body: RequestDeleteShare): Call<Base>
+    fun deleteShare(@Body body: RequestDeleteShare): Call<BaseResponse>
 
     @Headers(
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -321,7 +321,7 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/files/favorites")
-    fun addToFavorites(@Body body: RequestFavorites): Observable<Response<Base>>
+    fun addToFavorites(@Body body: RequestFavorites): Observable<Response<BaseResponse>>
 
     @Headers(
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -332,7 +332,7 @@ interface ManagerService {
         path = "api/" + ApiContract.API_VERSION + "/files/favorites",
         hasBody = true
     )
-    fun deleteFromFavorites(@Body body: RequestFavorites): Observable<Response<Base>>
+    fun deleteFromFavorites(@Body body: RequestFavorites): Observable<Response<BaseResponse>>
 
     @Headers(
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,

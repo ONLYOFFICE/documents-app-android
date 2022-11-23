@@ -12,7 +12,6 @@ import app.documents.core.network.share.models.request.RequestShareItem
 import app.documents.core.repositories.ShareRepository
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.getShareRepository
 import app.editors.manager.managers.utils.GlideUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -61,7 +60,7 @@ class SettingsPresenter(
 
     init {
         App.getApp().appComponent.inject(this)
-        shareRepository = context.getShareRepository()
+        shareApi = context.shareApi
     }
 
     /*

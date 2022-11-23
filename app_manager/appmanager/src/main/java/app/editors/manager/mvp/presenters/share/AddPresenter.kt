@@ -10,7 +10,7 @@ import app.documents.core.repositories.ShareRepository
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
-import app.editors.manager.app.getShareRepository
+import app.editors.manager.app.getShareService
 import app.editors.manager.managers.utils.GlideUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -49,7 +49,7 @@ class AddPresenter(
     private val account: CloudAccount =
         context.appComponent.accountOnline ?: throw RuntimeException("Account can't be null")
 
-    private val shareRepository: ShareRepository = context.getShareRepository()
+    private val shareRepository: ShareRepository = context.getShareService()
 
     override fun onDestroy() {
         super.onDestroy()

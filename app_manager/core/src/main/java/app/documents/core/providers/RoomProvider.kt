@@ -1,6 +1,6 @@
 package app.documents.core.providers
 
-import app.documents.core.network.common.models.Base
+import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestDeleteRoom
@@ -9,17 +9,18 @@ import app.documents.core.network.room.RoomService
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
-class RoomProvider(private val roomApi: RoomApi) {
+class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
-    fun archiveRoom(id: String, isArchive: Boolean = true): Observable<Base> {
+    fun archiveRoom(id: String, isArchive: Boolean = true): Observable<BaseResponse> {
         return if (isArchive) {
-            roomApi.archive(id, RequestArchive())
+            roomService.archive(id, RequestArchive())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.body() }
         } else {
-            roomApi.unarchive(id, RequestArchive())
+            roomService.unarchive(id, RequestArchive())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.body() }
@@ -27,14 +28,14 @@ class RoomProvider(private val roomApi: RoomApi) {
 
     }
 
-    fun pinRoom(id: String, isPin: Boolean = true): Observable<Base> {
+    fun pinRoom(id: String, isPin: Boolean = true): Observable<BaseResponse> {
         return if (isPin) {
-            roomApi.pinRoom(id)
+            roomService.pinRoom(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.body() }
         } else {
-            roomApi.unpinRoom(id)
+            roomService.unpinRoom(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.body() }
@@ -42,15 +43,15 @@ class RoomProvider(private val roomApi: RoomApi) {
 
     }
 
-    fun renameRoom(id: String, newTitle: String): Observable<Base> {
-        return roomApi.renameRoom(id, RequestRenameRoom(newTitle))
+    fun renameRoom(id: String, newTitle: String): Observable<BaseResponse> {
+        return roomService.renameRoom(id, RequestRenameRoom(newTitle))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { it.body() }
     }
 
-    fun createRoom(title: String, type: Int): Observable<Base> {
-        return roomApi.createRoom(
+    fun createRoom(title: String, type: Int): Observable<BaseResponse> {
+        return roomService.createRoom(
             RequestCreateRoom(
                 title = title,
                 roomType = type
@@ -62,17 +63,17 @@ class RoomProvider(private val roomApi: RoomApi) {
 
     }
 
-    fun deleteRoom(id: String = "", items: List<String>? = null): Observable<Base> {
+    fun deleteRoom(id: String = "", items: List<String>? = null): Observable<BaseResponse> {
         return if (items != null && id.isEmpty()) {
             Observable.fromIterable(items)
                 .subscribeOn(Schedulers.io())
-                .flatMap { itemId -> roomApi.deleteRoom(itemId, RequestDeleteRoom()) }
+                .flatMap { itemId -> roomService.deleteRoom(itemId, RequestDeleteRoom()) }
                 .map { it.body() }
                 .buffer(items.size)
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { responses -> responses[0] }
         } else if (id.isNotEmpty()) {
-            roomApi.deleteRoom(id, RequestDeleteRoom())
+            roomService.deleteRoom(id, RequestDeleteRoom())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.body() }

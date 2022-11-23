@@ -9,13 +9,21 @@ import android.os.Process
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.InvalidationTracker
-import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.login.ILoginServiceProvider
+import app.documents.core.network.manager.ManagerService
+import app.documents.core.network.room.RoomService
 import app.documents.core.network.share.ShareService
-import app.documents.core.repositories.ShareRepository
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
+import app.documents.core.providers.CloudFileProvider
+import app.documents.core.providers.LocalFileProvider
+import app.documents.core.providers.RoomProvider
+import app.documents.core.providers.WebDavFileProvider
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.BuildConfig
-import app.editors.manager.di.component.*
+import app.editors.manager.di.component.AppComponent
+import app.editors.manager.di.component.CoreComponent
+import app.editors.manager.di.component.DaggerAppComponent
+import app.editors.manager.di.component.DaggerCoreComponent
 import app.editors.manager.managers.utils.KeyStoreUtils
 import app.editors.manager.storages.dropbox.di.component.DaggerDropboxComponent
 import app.editors.manager.storages.dropbox.dropbox.api.IDropboxServiceProvider
@@ -159,24 +167,6 @@ class App : Application() {
         }
     }
 
-    fun getApi(): ApiComponent {
-        return DaggerApiComponent.builder()
-            .appComponent(appComponent)
-            .build()
-    }
-
-    fun getShareRepository(): ShareRepository {
-        return DaggerCoreComponent.builder().appComponent(appComponent)
-            .build()
-            .shareRepository
-    }
-
-    fun getWebDavApi(): WebDavApi {
-        return DaggerWebDavComponent.builder().appComponent(appComponent)
-            .build()
-            .webDavApi
-    }
-
     fun getOneDriveComponent(): IOneDriveServiceProvider {
         return DaggerOneDriveComponent.builder().appComponent(appComponent)
             .build()
@@ -194,6 +184,7 @@ class App : Application() {
             .build()
             .googleDriveServiceProvider
     }
+
 }
 
 val Context.accountOnline: CloudAccount?
@@ -232,32 +223,53 @@ val Context.googleDriveLoginService: IGoogleDriveLoginServiceProvider
         else -> applicationContext.appComponent.googleDriveLoginService
     }
 
-fun Context.api(): Api {
-    return when (this) {
-        is App -> this.getApi().api
-        else -> this.applicationContext.api()
-    }
-}
-
-val Context.roomApi: RoomApi
+val Context.api: ManagerService
     get() = when (this) {
-        is App -> this.getApi().roomApi
-        else -> this.applicationContext.roomApi
+        is App -> coreComponent.managerService
+        else -> applicationContext.api
     }
 
-fun Context.webDavApi(): WebDavApi {
-    return when (this) {
-        is App -> this.getWebDavApi()
-        else -> this.applicationContext.webDavApi()
+val Context.roomApi: RoomService
+    get() = when (this) {
+        is App -> coreComponent.roomService
+        else -> applicationContext.roomApi
     }
-}
 
-fun Context.getShareRepository(): ShareRepository {
-    return when (this) {
-        is App -> this.getShareRepository()
-        else -> this.applicationContext.getShareRepository()
+val Context.webDavApi: WebDavService
+    get() = when (this) {
+        is App -> coreComponent.webDavService
+        else -> applicationContext.webDavApi
     }
-}
+
+val Context.shareApi: ShareService
+    get() = when (this) {
+        is App -> coreComponent.shareService
+        else -> applicationContext.shareApi
+    }
+
+val Context.cloudFileProvider: CloudFileProvider
+    get() = when (this) {
+        is App -> coreComponent.cloudFileProvider
+        else -> applicationContext.cloudFileProvider
+    }
+
+val Context.localFileProvider: LocalFileProvider
+    get() = when (this) {
+        is App -> coreComponent.localFileProvider
+        else -> applicationContext.localFileProvider
+    }
+
+val Context.webDavFileProvider: WebDavFileProvider
+    get() = when (this) {
+        is App -> coreComponent.webDavFileProvider
+        else -> applicationContext.webDavFileProvider
+    }
+
+val Context.roomProvider: RoomProvider
+    get() = when (this) {
+        is App -> coreComponent.roomProvider
+        else -> applicationContext.roomProvider
+    }
 
 fun Context.getOneDriveServiceProvider(): IOneDriveServiceProvider {
     return when (this) {

@@ -427,7 +427,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
             presenterScope.launch {
-                val shareRepository = App.getApp().getShareRepository()
+                val shareApi = context.shareApi
                 request(
                     func = { shareRepository.getShareFile(item.id) },
                     map = { response ->

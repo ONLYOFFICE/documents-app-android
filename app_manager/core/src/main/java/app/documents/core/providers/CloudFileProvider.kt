@@ -1,13 +1,12 @@
 package app.documents.core.providers
 
 import android.net.Uri
-import app.editors.manager.app.Api
-import app.editors.manager.app.App
-import app.editors.manager.app.roomApi
-import app.editors.manager.mvp.models.base.Base
-import app.editors.manager.mvp.models.explorer.*
-import app.editors.manager.mvp.models.request.*
-import app.editors.manager.mvp.models.response.*
+import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.ManagerService
+import app.documents.core.network.manager.models.explorer.*
+import app.documents.core.network.manager.models.request.*
+import app.documents.core.network.manager.models.response.*
+import app.documents.core.network.room.RoomService
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -16,15 +15,16 @@ import retrofit2.HttpException
 import retrofit2.Response
 import javax.inject.Inject
 
-class CloudFileProvider : BaseFileProvider {
-
-    var api: Api = App.getApp().getApi().api
+class CloudFileProvider @Inject constructor(
+    private val managerService: ManagerService,
+    private val roomService: RoomService
+) : BaseFileProvider {
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return when (id) {
             "7" -> getRooms(filter)
             null -> Observable.create { Explorer() }
-            else -> api.getItemById(id, filter)
+            else -> managerService.getItemById(id, filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { responseExplorerResponse: Response<ResponseExplorer> ->
@@ -39,7 +39,7 @@ class CloudFileProvider : BaseFileProvider {
 
     override fun search(query: String?): Observable<String>? {
         return query?.let {
-            api.search(it)
+            managerService.search(it)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { responseSearchResponse ->
@@ -53,7 +53,7 @@ class CloudFileProvider : BaseFileProvider {
     }
 
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
-        return api.createDocs(folderId, body)
+        return managerService.createDocs(folderId, body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseCreateFile: Response<ResponseCreateFile> ->
@@ -66,7 +66,7 @@ class CloudFileProvider : BaseFileProvider {
     }
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
-        return api.createFolder(folderId, body)
+        return managerService.createFolder(folderId, body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseCreateFolder: Response<ResponseCreateFolder> ->
@@ -90,7 +90,7 @@ class CloudFileProvider : BaseFileProvider {
         val requestRenameFile = RequestRenameFile()
         requestRenameFile.lastVersion = version
         requestRenameFile.title = newName
-        return api.renameFile(id, requestRenameFile)
+        return managerService.renameFile(id, requestRenameFile)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseFile: Response<ResponseFile> ->
@@ -107,7 +107,7 @@ class CloudFileProvider : BaseFileProvider {
     private fun folderRename(id: String, newName: String): Observable<Item> {
         val requestTitle = RequestTitle()
         requestTitle.title = newName
-        return api.renameFolder(id, requestTitle)
+        return managerService.renameFolder(id, requestTitle)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseFolder: Response<ResponseFolder> ->
@@ -140,7 +140,7 @@ class CloudFileProvider : BaseFileProvider {
         request.fileIds = filesId
         request.folderIds = foldersId
         return Observable.fromCallable {
-            api.deleteBatch(
+            managerService.deleteBatch(
                 request
             ).execute()
         }
@@ -156,7 +156,7 @@ class CloudFileProvider : BaseFileProvider {
     }
 
     private fun removeStorage(id: String) {
-        api.deleteStorage(id.substring(id.indexOf('-') + 1))
+        managerService.deleteStorage(id.substring(id.indexOf('-') + 1))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseBody: Response<ResponseBody> ->
@@ -209,7 +209,7 @@ class CloudFileProvider : BaseFileProvider {
     }
 
     private fun moveItems(body: RequestBatchOperation): Observable<List<Operation>> {
-        return api.move(body)
+        return managerService.move(body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseOperation: Response<ResponseOperation> ->
@@ -222,7 +222,7 @@ class CloudFileProvider : BaseFileProvider {
     }
 
     private fun copyFiles(body: RequestBatchOperation): Observable<List<Operation>> {
-        return api.copy(body)
+        return managerService.copy(body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseOperation: Response<ResponseOperation> ->
@@ -235,7 +235,7 @@ class CloudFileProvider : BaseFileProvider {
     }
 
     private fun getRooms(filters: Map<String, String>?): Observable<Explorer> {
-        return App.getApp().roomApi.getAllRooms(filters)
+        return roomService.getAllRooms(filters)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseExplorerResponse: Response<ResponseExplorer> ->
@@ -248,7 +248,7 @@ class CloudFileProvider : BaseFileProvider {
     }
 
     override fun fileInfo(item: Item?): Observable<CloudFile> {
-        return api.getFileInfo(item?.id)
+        return managerService.getFileInfo(item?.id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseFile: Response<ResponseFile> ->
@@ -261,12 +261,12 @@ class CloudFileProvider : BaseFileProvider {
     }
 
     override fun getStatusOperation(): ResponseOperation {
-        return api.status()
+        return managerService.status()
             .blockingGet()
     }
 
     override fun share(id: String, requestExternal: RequestExternal): Observable<ResponseExternal> {
-        return api.getExternalLink(id, requestExternal)
+        return managerService.getExternalLink(id, requestExternal)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseExternal: Response<ResponseExternal> ->
@@ -280,7 +280,7 @@ class CloudFileProvider : BaseFileProvider {
 
     override fun terminate(): Observable<List<Operation>> {
         return Observable.fromCallable {
-            api.terminate().execute()
+            managerService.terminate().execute()
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -293,22 +293,22 @@ class CloudFileProvider : BaseFileProvider {
             }
     }
 
-    fun addToFavorites(requestFavorites: RequestFavorites, isAdd: Boolean): Observable<Base> {
+    fun addToFavorites(requestFavorites: RequestFavorites, isAdd: Boolean): Observable<BaseResponse> {
         return if (isAdd) {
-            api.addToFavorites(requestFavorites)
+            managerService.addToFavorites(requestFavorites)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map { baseResponse: Response<Base> -> baseResponse.body() }
+                .map { baseResponse: Response<BaseResponse> -> baseResponse.body() }
         } else {
-            api.deleteFromFavorites(requestFavorites)
+            managerService.deleteFromFavorites(requestFavorites)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map { baseResponse: Response<Base> -> baseResponse.body() }
+                .map { baseResponse: Response<BaseResponse> -> baseResponse.body() }
         }
     }
 
     fun clearTrash(): Observable<List<Operation>> {
-        return api.emptyTrash()
+        return managerService.emptyTrash()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { operationResponse: Response<ResponseOperation> ->

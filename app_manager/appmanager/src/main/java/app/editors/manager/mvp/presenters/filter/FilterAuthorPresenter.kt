@@ -6,7 +6,7 @@ import app.documents.core.repositories.ShareRepository
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.getShareRepository
+import app.editors.manager.app.getShareService
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.filter.Author
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -27,7 +27,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
     var isSearchingMode: Boolean = false
 
     private val shareRepository: ShareRepository
-        get() = App.getApp().appComponent.context.getShareRepository()
+        get() = App.getApp().appComponent.context.getShareService()
 
     private val accountId: String?
         get() = App.getApp().appComponent.context.accountOnline?.id

@@ -1,26 +1,38 @@
 package app.documents.core.network.common.models
 
-import kotlinx.serialization.Serializable
-import java.util.*
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+import java.lang.Error
+import java.util.Comparator
 
-@Serializable
-open class Base (val count: Int? = 0,
-                 val status: String = "",
-                 val statusCode: String = ""){
+open class BaseResponse {
 
-    /*
-    * Comparators
-    * */
+    @SerializedName(KEY_COUNT)
+    @Expose
+    var count = 0
+
+    @SerializedName(KEY_STATUS)
+    @Expose
+    var status = ""
+
+    @SerializedName(KEY_STATUS_CODE)
+    @Expose
+    var statusCode = ""
+
+    @SerializedName(KEY_ERROR)
+    @Expose
+    var error = Error()
+
     abstract class AbstractSort<Type>(isSortAsc: Boolean) : Comparator<Type> {
         protected var mSortOrder = SORT_ORDER_ASC
+
+        init {
+            mSortOrder = if (isSortAsc) SORT_ORDER_ASC else SORT_ORDER_DESC
+        }
 
         companion object {
             const val SORT_ORDER_ASC = 1
             const val SORT_ORDER_DESC = -1
-        }
-
-        init {
-            mSortOrder = if (isSortAsc) SORT_ORDER_ASC else SORT_ORDER_DESC
         }
     }
 

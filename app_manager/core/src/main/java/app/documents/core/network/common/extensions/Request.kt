@@ -1,7 +1,7 @@
 package app.documents.core.network.common
 
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.models.Base
+import app.documents.core.network.common.models.BaseResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType
@@ -9,7 +9,7 @@ import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
 
-suspend fun <R : Base> request(
+suspend fun <R : BaseResponse> request(
     func: suspend () -> R,
     onSuccess: (R) -> Unit,
     onError: (Throwable) -> Unit
@@ -25,7 +25,7 @@ suspend fun <R : Base> request(
     }
 }
 
-suspend fun <R : Base, T> request(
+suspend fun <R : BaseResponse, T> request(
     func: suspend () -> R,
     map: ((R) -> T),
     onSuccess: (T) -> Unit,
@@ -42,7 +42,7 @@ suspend fun <R : Base, T> request(
     }
 }
 
-suspend fun <R1: Base, R2: Base> requestZip(
+suspend fun <R1: BaseResponse, R2: BaseResponse> requestZip(
     func1: suspend () -> R1,
     func2: suspend () -> R2,
     onSuccess: (R1, R2) -> Unit,
@@ -85,7 +85,7 @@ suspend fun <T, R> requestIterable(
     }
 }
 
-private val Base.httpExtension: HttpException
+private val BaseResponse.httpExtension: HttpException
     get() = HttpException(
             Response.error<ResponseBody>(
                 this.statusCode.toInt(),

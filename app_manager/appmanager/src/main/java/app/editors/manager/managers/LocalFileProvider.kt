@@ -1,4 +1,4 @@
-package app.documents.core.providers
+package app.editors.manager.managers
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -22,10 +22,9 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
-import javax.inject.Inject
 import kotlin.io.path.name
 
-class LocalFileProvider @Inject constructor(private val localContentTools: LocalContentTools) : BaseFileProvider {
+class LocalFileProvider(private val localContentTools: LocalContentTools) : BaseFileProvider {
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(localContentTools.createRootDir())
@@ -232,7 +231,7 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
                 .forEach { item ->
                     files.add(item.toFile())
                     tempExplorer = getExplorer(files, File(id))
-                    resultExplorer.add(tempExplorer!!)
+                    resultExplorer.add(tempExplorer)
                 }
         }
 

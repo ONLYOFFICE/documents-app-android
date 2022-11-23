@@ -1,4 +1,4 @@
-package app.editors.manager.managers.retrofit
+package app.documents.core.network.login.models.request
 
 import android.content.ContentResolver
 import android.content.Context

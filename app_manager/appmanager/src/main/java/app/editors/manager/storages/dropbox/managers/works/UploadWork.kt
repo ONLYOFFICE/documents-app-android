@@ -9,8 +9,8 @@ import app.editors.manager.app.App
 import app.editors.manager.app.getDropboxServiceProvider
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxResponse
 import app.editors.manager.storages.dropbox.mvp.models.explorer.DropboxItem
-import app.editors.manager.managers.retrofit.ProgressRequestBody
-import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.login.models.request.ProgressRequestBody
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils

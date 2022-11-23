@@ -5,12 +5,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import app.editors.manager.mvp.models.base.Base;
-import app.editors.manager.mvp.models.user.Thirdparty;
+import app.documents.core.network.common.models.BaseResponse;
+import app.documents.core.network.manager.models.user.Thirdparty;
 
-public class ResponseThirdparty extends Base {
+public class ResponseThirdparty extends BaseResponse {
 
-    @SerializedName(KEY_RESPONSE)
+    @SerializedName(BaseResponse.KEY_RESPONSE)
     @Expose
     private List<Thirdparty> response;
 

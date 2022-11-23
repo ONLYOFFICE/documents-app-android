@@ -5,12 +5,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import app.editors.manager.mvp.models.base.Base;
-import app.editors.manager.mvp.models.explorer.CloudFile;
+import app.documents.core.network.common.models.BaseResponse;
+import app.documents.core.network.manager.models.explorer.CloudFile;
 
-public class ResponseFiles extends Base {
+public class ResponseFiles extends BaseResponse {
 
-    @SerializedName(KEY_RESPONSE)
+    @SerializedName(BaseResponse.KEY_RESPONSE)
     @Expose
     private List<CloudFile> response;
 

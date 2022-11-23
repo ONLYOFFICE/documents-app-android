@@ -1,19 +1,18 @@
 package app.documents.core.providers
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavApi
+import app.documents.core.network.login.models.request.ProgressRequestBody
+import app.documents.core.network.manager.models.explorer.*
+import app.documents.core.network.webdav.WebDavService
 import app.documents.core.network.webdav.WebDavModel
-import app.editors.manager.app.App.Companion.getApp
-import app.editors.manager.app.App.Companion.getLocale
-import app.editors.manager.managers.retrofit.ProgressRequestBody
-import app.editors.manager.mvp.models.explorer.*
-import app.editors.manager.mvp.models.request.RequestCreate
-import app.editors.manager.mvp.models.request.RequestExternal
-import app.editors.manager.mvp.models.response.ResponseExternal
-import app.editors.manager.mvp.models.response.ResponseOperation
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestExternal
+import app.documents.core.network.manager.models.response.ResponseExternal
+import app.documents.core.network.manager.models.response.ResponseOperation
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -42,8 +41,13 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.util.*
+import javax.inject.Inject
 
-class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDavApi.Providers) : BaseFileProvider {
+class WebDavFileProvider @Inject constructor(
+    private val webDavService: WebDavService,
+    private val context: Context
+) :
+    BaseFileProvider {
 
     companion object {
         private const val TOTAL_PROGRESS = 100
@@ -55,7 +59,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     val uploadsFile: MutableList<CloudFile> = Collections.synchronizedList(ArrayList())
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        return Observable.fromCallable { id?.let { api.propfind(it).execute() } }
+        return Observable.fromCallable { id?.let { webDavService.propfind(it).execute() } }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { modelResponse: Response<WebDavModel?> ->
@@ -70,10 +74,10 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
         val title = body.title
         val path = PATH_TEMPLATES + getTemplates(
-            getApp(), getLocale(),
+            context, Locale.getDefault().language,
             getExtensionFromPath(body.title.lowercase())
         )
-        val temp = createTempAssetsFile(getApp(), path, getNameWithoutExtension(title), getExtensionFromPath(title))
+        val temp = createTempAssetsFile(context, path, getNameWithoutExtension(title), getExtensionFromPath(title))
         return Observable.fromCallable {
             val file = CloudFile()
             file.webUrl = Uri.fromFile(temp).toString()
@@ -91,7 +95,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
-        return Observable.fromCallable { api.createFolder(folderId + body.title).execute() }
+        return Observable.fromCallable { webDavService.createFolder(folderId + body.title).execute() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseBody: Response<ResponseBody> ->
@@ -124,7 +128,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
 
     private fun renameFolder(correctPath: String, newName: String, folder: CloudFolder): Observable<Item> {
         return Observable.fromCallable {
-            api.move(
+            webDavService.move(
                 getEncodedString(correctPath)!!, folder.id, "F"
             ).execute()
         }
@@ -143,7 +147,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     private fun renameFile(correctPath: String, newName: String, file: CloudFile): Observable<Item> {
-        return Observable.fromCallable { api.move(correctPath, file.id, "F").execute() }
+        return Observable.fromCallable { webDavService.move(correctPath, file.id, "F").execute() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseBody: Response<ResponseBody> ->
@@ -160,7 +164,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
 
     override fun delete(items: List<Item>, from: CloudFolder?): Observable<List<Operation>> {
         batchItems = items
-        return Observable.fromIterable(items).map { item: Item -> api.delete(item.id).execute() }
+        return Observable.fromIterable(items).map { item: Item -> webDavService.delete(item.id).execute() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseBody: Response<ResponseBody> ->
@@ -198,7 +202,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
         return Observable.fromIterable(items)
             .flatMap { item: Item ->
                 Observable.fromCallable {
-                    api.copy(
+                    webDavService.copy(
                         getEncodedString(to!!.id) +
                                 getEncodedString(item.title), item.id, headerOverwrite
                     )
@@ -225,7 +229,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
         return Observable.fromIterable(items)
             .flatMap { item: Item ->
                 Observable.fromCallable {
-                    api
+                    webDavService
                         .move(
                             getEncodedString(to!!.id) +
                                     getEncodedString(item.title), item.id, headerOverwrite
@@ -305,7 +309,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile>, item: Item, outputFile: File) {
-        val response = api.download(item.id).execute()
+        val response = webDavService.download(item.id).execute()
         if (response.body() != null) {
             try {
                 response.body()!!.byteStream().use { inputStream ->
@@ -344,7 +348,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
         return if (local.exists()) {
             local
         } else {
-            createCacheFile(getApp(), item.getTitle())
+            createCacheFile(context, item.title)
         }
     }
 
@@ -372,7 +376,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     @SuppressLint("MissingPermission")
     private fun startDownload(item: Item): Observable<Int> {
         return Observable.create { emitter: ObservableEmitter<Int> ->
-            val response = api.download(item.id).execute()
+            val response = webDavService.download(item.id).execute()
             val outputFile = File(PATH_DOWNLOAD, item.title)
             if (response.body() != null) {
                 try {
@@ -411,7 +415,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     }
 
     private fun addUploadsFile(id: String, uri: Uri): Uri {
-        val fileName = getName(getApp(), uri)
+        val fileName = getName(context, uri)
         val uploadFile = CloudFile()
         uploadFile.id = id + fileName
         uploadFile.folderId = id
@@ -419,15 +423,15 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
         uploadFile.title = fileName
         uploadFile.updated = Date()
         uploadFile.webUrl = uri.toString()
-        uploadFile.pureContentLength = getSize(getApp(), uri)
+        uploadFile.pureContentLength = getSize(context, uri)
         uploadsFile.add(uploadFile)
         return uri
     }
 
     private fun startUpload(id: String, uri: Uri): ObservableSource<Int> {
         return Observable.create { emitter: ObservableEmitter<Int> ->
-            val fileName = getName(getApp(), uri)
-            val requestBody = ProgressRequestBody(getApp(), uri)
+            val fileName = getName(context, uri)
+            val requestBody = ProgressRequestBody(context, uri)
             requestBody.setOnUploadCallbacks { total: Long, progress: Long ->
                 emitter.onNext(
                     getPercentOfLoading(
@@ -436,7 +440,7 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
                     )
                 )
             }
-            val response = api.upload(requestBody, id + fileName).execute()
+            val response = webDavService.upload(requestBody, id + fileName).execute()
             if (response.isSuccessful) {
                 emitter.onNext(100)
                 emitter.onComplete()
@@ -541,14 +545,6 @@ class WebDavFileProvider(private val api: WebDavApi, private val provider: WebDa
     private fun filePath(id: String, newName: String): String {
         return id.substring(0, id.lastIndexOf('/') + 1) +
                 newName
-    }
-
-    private fun getTransferId(item: Item): String {
-        return if (provider === WebDavApi.Providers.NextCloud || provider === WebDavApi.Providers.OwnCloud) {
-            item.title
-        } else {
-            (item as? CloudFolder)?.id?.substring(0, item.getId().lastIndexOf('/')) ?: item.id
-        }
     }
 
     private fun sortExplorer(explorer: Explorer, filter: Map<String, String>?): Explorer {

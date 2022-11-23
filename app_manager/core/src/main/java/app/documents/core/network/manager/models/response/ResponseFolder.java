@@ -4,12 +4,12 @@ package app.documents.core.network.manager.models.response;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import app.editors.manager.mvp.models.base.Base;
-import app.editors.manager.mvp.models.explorer.CloudFolder;
+import app.documents.core.network.common.models.BaseResponse;
+import app.documents.core.network.manager.models.explorer.CloudFolder;
 
-public class ResponseFolder extends Base {
+public class ResponseFolder extends BaseResponse {
 
-    @SerializedName(KEY_RESPONSE)
+    @SerializedName(BaseResponse.KEY_RESPONSE)
     @Expose
     private CloudFolder response;
 

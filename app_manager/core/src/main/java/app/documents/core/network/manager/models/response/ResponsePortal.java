@@ -4,12 +4,12 @@ package app.documents.core.network.manager.models.response;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import app.editors.manager.mvp.models.base.Base;
-import app.editors.manager.mvp.models.user.Portal;
+import app.documents.core.network.common.models.BaseResponse;
+import app.documents.core.network.manager.models.user.Portal;
 
-public class ResponsePortal extends Base {
+public class ResponsePortal extends BaseResponse {
 
-    @SerializedName(KEY_RESPONSE)
+    @SerializedName(BaseResponse.KEY_RESPONSE)
     @Expose
     private Portal response;
 

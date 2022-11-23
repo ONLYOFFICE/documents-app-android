@@ -9,7 +9,7 @@ import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.managers.retrofit.ProgressRequestBody
+import app.documents.core.network.login.models.request.ProgressRequestBody
 import app.editors.manager.managers.utils.NotificationUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.UploadFile
