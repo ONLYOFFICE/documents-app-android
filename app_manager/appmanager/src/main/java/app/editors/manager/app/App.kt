@@ -76,6 +76,12 @@ class App : Application() {
             "App component can't be null"
         }
 
+    val coreComponent: CoreComponent by lazy  {
+        DaggerCoreComponent.builder()
+            .appComponent(appComponent)
+            .build()
+    }
+
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
         sApp = this
@@ -199,28 +205,34 @@ val Context.appComponent: AppComponent
         else -> this.applicationContext.appComponent
     }
 
+val Context.coreComponent: CoreComponent
+    get() = when (this) {
+        is App -> this.coreComponent
+        else -> this.applicationContext.coreComponent
+    }
+
 val Context.loginService: ILoginServiceProvider
     get() = when (this) {
-        is App -> this.appComponent.loginService
-        else -> this.applicationContext.appComponent.loginService
+        is App -> this.coreComponent.loginService
+        else -> this.applicationContext.loginService
     }
 
 val Context.oneDriveLoginService: IOneDriveLoginServiceProvider
     get() = when (this) {
-        is App -> this.appComponent.oneDriveLoginService
-        else -> applicationContext.appComponent.oneDriveLoginService
+        is App -> this.coreComponent.oneDriveLoginService
+        else -> applicationContext.coreComponent.oneDriveLoginService
     }
 
 val Context.dropboxLoginService: IDropboxLoginServiceProvider
     get() = when (this) {
-        is App -> this.appComponent.dropboxLoginService
-        else -> applicationContext.appComponent.dropboxLoginService
+        is App -> this.coreComponent.dropboxLoginService
+        else -> applicationContext.coreComponent.dropboxLoginService
     }
 
 val Context.googleDriveLoginService: IGoogleDriveLoginServiceProvider
     get() = when(this) {
-        is App -> this.appComponent.googleDriveLoginService
-        else -> applicationContext.appComponent.googleDriveLoginService
+        is App -> this.coreComponent.googleDriveLoginService
+        else -> applicationContext.coreComponent.googleDriveLoginService
     }
 
 val Context.api: ManagerService

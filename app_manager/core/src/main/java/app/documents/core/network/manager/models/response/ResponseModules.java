@@ -5,10 +5,10 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import app.editors.manager.mvp.models.base.Base;
-import app.editors.manager.mvp.models.user.Module;
+import app.documents.core.network.common.models.BaseResponse;
+import app.documents.core.network.manager.models.user.Module;
 
-public class ResponseModules extends Base {
+public class ResponseModules extends BaseResponse {
 
     @SerializedName(BaseResponse.KEY_RESPONSE)
     @Expose

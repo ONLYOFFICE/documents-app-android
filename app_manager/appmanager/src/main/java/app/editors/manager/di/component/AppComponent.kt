@@ -87,10 +87,6 @@ interface AppComponent {
     val networkSettings: NetworkSettings
     val accountsDataBase: AccountsDataBase
     val accountsDao: AccountDao
-    val loginService: ILoginServiceProvider
-    val oneDriveLoginService: IOneDriveLoginServiceProvider
-    val dropboxLoginService: IDropboxLoginServiceProvider
-    val googleDriveLoginService: IGoogleDriveLoginServiceProvider
     val accountOnline: CloudAccount?
     val recentDao: RecentDao?
 

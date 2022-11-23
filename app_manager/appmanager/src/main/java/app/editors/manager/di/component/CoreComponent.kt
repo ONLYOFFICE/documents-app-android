@@ -21,8 +21,12 @@ import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServic
 import app.editors.manager.storages.onedrive.onedrive.login.OneDriveLoginService
 import dagger.Component
 
-@Component(modules = [ShareModule::class], dependencies = [AppComponent::class])
-@ApiScope
+@CoreScope
+@Component(
+    modules = [
+        CoreModule::class, DropboxLoginModule::class, GoogleDriveLoginModule::class, OneDriveLoginModule::class
+    ],
+    dependencies = [AppComponent::class])
 interface CoreComponent {
 
     @Component.Builder

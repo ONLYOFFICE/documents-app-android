@@ -2,11 +2,11 @@ package app.editors.manager.mvp.presenters.filter
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
-import app.editors.manager.managers.providers.CloudFileProvider
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.filter.FilterAuthor
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.isNotEmpty
+import app.editors.manager.app.cloudFileProvider
 
 class CloudFilterPresenter(private val folderId: String?) : BaseFilterPresenter() {
 
