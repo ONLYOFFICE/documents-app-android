@@ -10,7 +10,7 @@ import java.util.ArrayList
 class User : ItemProperties(), Serializable, Comparable<User> {
     @SerializedName("id")
     @Expose
-    var id: String? = ""
+    var id: String = ""
 
     @SerializedName("userName")
     @Expose

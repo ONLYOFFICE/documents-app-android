@@ -5,7 +5,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.recent.Recent
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.request
+import app.documents.core.network.common.extensions.request
 import app.editors.manager.R
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.providers.CloudFileProvider

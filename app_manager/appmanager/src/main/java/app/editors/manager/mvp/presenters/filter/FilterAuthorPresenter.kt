@@ -1,7 +1,7 @@
 package app.editors.manager.mvp.presenters.filter
 
-import app.documents.core.network.common.request
-import app.documents.core.network.common.requestIterable
+import app.documents.core.network.common.extensions.request
+import app.documents.core.network.common.extensions.requestIterable
 import app.documents.core.network.share.ShareService
 import app.editors.manager.R
 import app.editors.manager.app.App

@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.transition.TransitionManager
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.request
+import app.documents.core.network.common.extensions.request
 import app.documents.core.network.share.models.SharedTo
 import app.documents.core.network.share.models.request.Invitation
 import app.documents.core.network.share.models.request.RequestRoomShare

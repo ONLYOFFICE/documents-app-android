@@ -1,8 +1,8 @@
 package app.editors.manager.mvp.presenters.share
 
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.request
-import app.documents.core.network.common.requestZip
+import app.documents.core.network.common.extensions.request
+import app.documents.core.network.common.extensions.requestZip
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item

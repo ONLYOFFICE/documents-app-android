@@ -1,4 +1,4 @@
-package app.documents.core.network.common
+package app.documents.core.network.common.extensions
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
@@ -17,7 +17,7 @@ suspend fun <R : BaseResponse> request(
     try {
         val response: R = func.invoke()
         withContext(Dispatchers.Main) {
-            if (response.statusCode.toInt() != ApiContract.HttpCodes.SUCCESS) throw response.httpExtension
+            response.checkStatusCode()
             onSuccess.invoke(response)
         }
     } catch (e: Throwable) {
@@ -34,7 +34,7 @@ suspend fun <R : BaseResponse, T> request(
     try {
         val response: R = func.invoke()
         withContext(Dispatchers.Main) {
-            if (response.statusCode.toInt() != ApiContract.HttpCodes.SUCCESS) throw response.httpExtension
+            response.checkStatusCode()
             map.invoke(response)?.let(onSuccess)
         }
     } catch (e: Throwable) {
@@ -52,8 +52,8 @@ suspend fun <R1: BaseResponse, R2: BaseResponse> requestZip(
         val response1: R1 = func1.invoke()
         val response2: R2 = func2.invoke()
         withContext(Dispatchers.Main) {
-            if (response1.statusCode.toInt() != ApiContract.HttpCodes.SUCCESS) throw response1.httpExtension
-            if (response2.statusCode.toInt() != ApiContract.HttpCodes.SUCCESS) throw response2.httpExtension
+            response1.checkStatusCode()
+            response2.checkStatusCode()
             onSuccess.invoke(response1, response2)
         }
     } catch (e: Throwable) {
@@ -92,3 +92,10 @@ private val BaseResponse.httpExtension: HttpException
                 ResponseBody.create(MediaType.parse(ApiContract.VALUE_CONTENT_TYPE), status)
             )
         )
+
+private fun BaseResponse.checkStatusCode() {
+    if (statusCode.isNotEmpty()) {
+        val code = statusCode.toInt()
+        if (code >= ApiContract.HttpCodes.CLIENT_ERROR) throw httpExtension
+    }
+}

@@ -2,8 +2,8 @@ package app.editors.manager.mvp.presenters.share
 
 import android.content.Intent
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.request
-import app.documents.core.network.common.requestIterable
+import app.documents.core.network.common.extensions.request
+import app.documents.core.network.common.extensions.requestIterable
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.RequestExternal
 import app.documents.core.network.share.models.request.RequestExternalAccess
