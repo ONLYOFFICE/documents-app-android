@@ -4,5 +4,4 @@ import app.documents.core.network.common.models.BaseResponse
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ResponsePassword (val response: String): BaseResponse() {
-}
+data class ResponsePassword (val response: String): BaseResponse()

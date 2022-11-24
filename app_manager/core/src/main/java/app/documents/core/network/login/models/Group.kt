@@ -7,7 +7,7 @@ class Group(
     val id: String = "",
     val name: String = "",
     val manager: String? = ""
-): Comparable<app.documents.core.network.login.models.Group> {
+): Comparable<Group> {
 
-    override fun compareTo(other: app.documents.core.network.login.models.Group): Int = id.compareTo(other.id)
+    override fun compareTo(other: Group): Int = id.compareTo(other.id)
 }
