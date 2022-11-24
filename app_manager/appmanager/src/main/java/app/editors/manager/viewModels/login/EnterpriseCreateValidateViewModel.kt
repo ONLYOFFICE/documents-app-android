@@ -90,7 +90,7 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
         networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + domain)
 
         _stateLiveData.value = CreatePortalState.Progress
-        disposable = App.getApp().appComponent.loginService.validatePortal(
+        disposable = App.getApp().coreComponent.loginService.validatePortal(
             app.documents.core.network.login.models.request.RequestValidatePortal(
                 portalName
             )

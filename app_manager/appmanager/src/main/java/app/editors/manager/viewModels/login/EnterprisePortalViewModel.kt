@@ -88,7 +88,7 @@ class EnterprisePortalViewModel: BaseLoginViewModel() {
     }
 
     private fun portalCapabilities() {
-        val service = App.getApp().appComponent.loginService
+        val service = App.getApp().coreComponent.loginService
         disposable = service.capabilities()
             .subscribe({ response ->
                 if (response is LoginResponse.Success) {

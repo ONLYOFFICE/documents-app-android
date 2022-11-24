@@ -1,20 +1,20 @@
 package app.editors.manager.mvp.presenters.share
 
-import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.request
 import app.documents.core.network.common.requestZip
-import app.documents.core.network.share.models.request.RequestShare
-import app.documents.core.network.share.models.request.RequestShareItem
-import app.documents.core.repositories.ShareRepository
-import app.editors.manager.R
-import app.editors.manager.app.App
-import app.editors.manager.app.appComponent
-import app.editors.manager.app.getShareService
-import app.editors.manager.managers.utils.GlideUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.share.ShareService
+import app.documents.core.network.share.models.request.RequestShare
+import app.documents.core.network.share.models.request.RequestShareItem
+import app.documents.core.storage.account.CloudAccount
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.app.appComponent
+import app.editors.manager.app.shareApi
+import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
@@ -49,7 +49,7 @@ class AddPresenter(
     private val account: CloudAccount =
         context.appComponent.accountOnline ?: throw RuntimeException("Account can't be null")
 
-    private val shareRepository: ShareRepository = context.getShareService()
+    private val shareApi: ShareService = context.shareApi
 
     override fun onDestroy() {
         super.onDestroy()
@@ -59,9 +59,9 @@ class AddPresenter(
     private suspend fun getUsers() {
         isCommon = false
         request(
-            func = shareRepository::getUsers,
+            func = shareApi::getUsers,
             map = { response ->
-                response.response.filter { it.id != account.id && it.id != item.createdBy?.id }.map { user ->
+                response.response.filter { it.id != account.id && it.id != item.createdBy.id }.map { user ->
                     UserUi(
                         id = user.id,
                         department = user.department,
@@ -80,7 +80,7 @@ class AddPresenter(
     private suspend fun getGroups() {
         isCommon = false
         request(
-            func = shareRepository::getGroups,
+            func = shareApi::getGroups,
             map = { response -> response.response.map { GroupUi(it.id, it.name, it.manager ?: "null") } },
             onSuccess = { response ->
                 shareStack.addGroups(response.toMutableList().also {
@@ -96,8 +96,8 @@ class AddPresenter(
         isCommon = true
         presenterScope.launch {
             requestZip(
-                func1 = shareRepository::getUsers,
-                func2 = shareRepository::getGroups,
+                func1 = shareApi::getUsers,
+                func2 = shareApi::getGroups,
                 onSuccess = { users, groups ->
                     shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
                     shareStack.addUsers(users.response.filter { it.id != account.id }.map { user ->
@@ -118,8 +118,8 @@ class AddPresenter(
         isCommon = true
         presenterScope.launch {
             requestZip(
-                func1 = { shareRepository.getUsers(getOptions(searchValue)) },
-                func2 = { shareRepository.getGroups(getOptions(searchValue, true)) },
+                func1 = { shareApi.getUsers(getOptions(searchValue)) },
+                func2 = { shareApi.getGroups(getOptions(searchValue, true)) },
                 onSuccess = { users, groups ->
                     shareStack.clearModel()
                     shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
@@ -153,7 +153,7 @@ class AddPresenter(
     private suspend fun shareFileTo(id: String) {
         requestShare?.let { request ->
             request(
-                func = { shareRepository.setFileAccess(id, request) },
+                func = { shareApi.setFileAccess(id, request) },
                 onSuccess = {
                     shareStack.resetChecked()
                     viewState.onSuccessAdd()
@@ -165,7 +165,7 @@ class AddPresenter(
     private suspend fun shareFolderTo(id: String) {
         requestShare?.let { request ->
             request(
-                func = { shareRepository.setFolderAccess(id, request) },
+                func = { shareApi.setFolderAccess(id, request) },
                 onSuccess = {
                     shareStack.resetChecked()
                     viewState.onSuccessAdd()

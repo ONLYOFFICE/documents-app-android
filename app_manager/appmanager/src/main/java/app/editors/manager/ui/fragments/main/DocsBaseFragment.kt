@@ -35,6 +35,7 @@ import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
 import app.editors.manager.ui.adapters.holders.factory.TypeFactory
+import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer.Companion.factory
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
@@ -90,7 +91,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     private var lastClickTime: Long = 0
     private var selectItem: MenuItem? = null
-    private val typeFactory: TypeFactory = factory
 
     protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
     protected abstract val isWebDav: Boolean?
@@ -306,11 +306,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             StringUtils.Extension.VIDEO_SUPPORT -> {
                 presenter.addRecent(file)
                 val videoFile = file.clone().apply {
-                    webUrl = uri.path
+                    webUrl = uri?.path.orEmpty()
                     id = ""
                 }
                 val explorer = Explorer().apply {
-                    files = listOf(videoFile)
+                    files = mutableListOf(videoFile)
                 }
                 show(this, explorer, true)
             }
@@ -862,7 +862,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * */
     private fun init() {
         setDialogs()
-        explorerAdapter = ExplorerAdapter(typeFactory).apply {
+        explorerAdapter = ExplorerAdapter(TypeFactoryExplorer.factory).apply {
             setOnItemContextListener(this@DocsBaseFragment)
             setOnItemClickListener(this@DocsBaseFragment)
             setOnItemLongClickListener(this@DocsBaseFragment)

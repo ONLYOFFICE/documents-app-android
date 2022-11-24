@@ -8,7 +8,9 @@ import android.content.Context
 import android.os.Bundle
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.login.LoginResponse
-import app.editors.manager.app.App
+import app.documents.core.network.login.models.request.RequestSignIn
+import app.documents.core.network.login.models.response.ResponseSignIn
+import app.editors.manager.app.loginService
 import app.editors.manager.ui.activities.login.PortalsActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -81,15 +83,14 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
                     response?.onError(1, "need provider token")
                     return@async Bundle.EMPTY
                 } else {
-                    val signInResponse = App.getApp().appComponent.loginService
-                        .signIn(
-                            app.documents.core.network.login.models.request.RequestSignIn(
-                                userName = cloudAccount.login ?: "",
-                                password = password ?: "",
-                            )
-                        ).blockingGet()
+                    val signInResponse = context.loginService.signIn(
+                        RequestSignIn(
+                            userName = cloudAccount.login ?: "",
+                            password = password ?: "",
+                        )
+                    ).blockingGet()
                     if (signInResponse is LoginResponse.Success) {
-                        val token = (signInResponse.response as app.documents.core.network.login.models.response.ResponseSignIn).response.token
+                        val token = (signInResponse.response as ResponseSignIn).response.token
                         AccountUtils.setToken(context, cloudAccount.getAccountName(), token)
                         return@async Bundle().apply {
                             putString(

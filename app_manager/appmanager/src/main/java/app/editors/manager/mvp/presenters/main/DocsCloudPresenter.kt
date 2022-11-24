@@ -366,7 +366,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun getBackStack(): Boolean {
         val backStackResult = super.getBackStack()
-        if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type) {
+        if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type.filterVal) {
             refresh()
         }
         return backStackResult

@@ -150,7 +150,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
                 title = file.name
                 filesCount = "1"
             }
-            files = listOf(explorerFile)
+            files = mutableListOf(explorerFile)
         }
 
     override fun onStateMenuSelection() {

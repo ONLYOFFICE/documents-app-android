@@ -310,7 +310,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         current.title = clickedFile.name
         current.filesCount = "1"
         explorer.current = current
-        explorer.files = listOf(explorerFile)
+        explorer.files = mutableListOf(explorerFile)
         return explorer
     }
 
@@ -327,7 +327,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         current.title = recent.name
         current.filesCount = "1"
         explorer.current = current
-        explorer.files = listOf(explorerFile)
+        explorer.files = mutableListOf(explorerFile)
         return explorer
     }
 

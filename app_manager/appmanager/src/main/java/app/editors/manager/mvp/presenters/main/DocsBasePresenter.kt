@@ -10,19 +10,22 @@ import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import app.documents.core.storage.account.AccountDao
-import app.documents.core.storage.recent.RecentDao
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.*
-import app.documents.core.storage.preference.NetworkSettings
-import app.editors.manager.R
-import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
-import app.editors.manager.managers.exceptions.NoConnectivityException
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.BaseFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
 import app.documents.core.providers.WebDavFileProvider
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.storage.preference.NetworkSettings
+import app.documents.core.storage.recent.RecentDao
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
@@ -33,8 +36,6 @@ import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
-import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestDownload
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
@@ -177,7 +178,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.getFiles(id, mapOf<String, String>().putFilters())
-                        .doOnNext { it.filterType = preferenceTool.filter.type }
+                        .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
                         .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
                 )
             }
@@ -190,7 +191,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.getFiles(id, getArgs(filteringValue).putFilters())
-                        .doOnNext { it.filterType = preferenceTool.filter.type }
+                        .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
                         .subscribe({ explorer ->
                             modelExplorerStack.refreshStack(explorer)
                             updateViewsState()
@@ -233,7 +234,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 fileProvider?.let { provider ->
                     provider.getFiles(id, getArgs(value).putFilters())
                         .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
-                        .doOnNext { it.filterType = preferenceTool.filter.type }
+                        .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
                         .subscribe({ explorer ->
                             modelExplorerStack.setFilter(explorer)
                             setPlaceholderType(
@@ -835,7 +836,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     fun moveContext() {
-        modelExplorerStack.last()?.clone()?.let { explorer ->
+        modelExplorerStack.last()?.copy()?.let { explorer ->
             viewState.onBatchMove(getBatchExplorer(explorer))
         }
     }
@@ -851,7 +852,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     fun copyContext() {
-        modelExplorerStack.last()?.clone()?.let { explorer ->
+        modelExplorerStack.last()?.copy()?.let { explorer ->
             viewState.onBatchCopy(getBatchExplorer(explorer))
         }
     }

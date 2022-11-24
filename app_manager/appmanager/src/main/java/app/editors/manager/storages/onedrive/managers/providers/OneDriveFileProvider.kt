@@ -12,7 +12,6 @@ import app.editors.manager.app.App
 import app.editors.manager.app.App.Companion.getApp
 import app.documents.core.providers.BaseFileProvider
 import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
-import app.editors.manager.mvp.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
@@ -149,10 +148,7 @@ class OneDriveFileProvider : BaseFileProvider {
             current.id = context[6].split("'")[1].replace("%21", "!")
             current.filesCount = 0.toString()
             current.foldersCount = 0.toString()
-
             explorer.current = current
-            explorer.files = emptyList()
-            explorer.folders = emptyList()
         }
         return explorer
     }
@@ -247,16 +243,11 @@ class OneDriveFileProvider : BaseFileProvider {
         } else {
             newName
         }
-        val request = RenameRequest(correctName)
         return Observable.fromCallable {
-            item.id?.let { id ->
-                request.let { request ->
-                    api.renameItem(
-                        id,
-                        request
-                    ).blockingGet()
-                }
-            }
+            api.renameItem(
+                item.id,
+                RenameRequest(correctName)
+            ).blockingGet()
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -426,7 +417,7 @@ class OneDriveFileProvider : BaseFileProvider {
                             outputStream.write(buffer, 0, count)
                         }
                         outputStream.flush()
-                        emitter.onNext(setFile(item, outputFile)!!)
+                        emitter.onNext(setFile(item, outputFile))
                         emitter.onComplete()
                     }
                 }

@@ -3,6 +3,7 @@ package app.editors.manager.mvp.presenters.login
 import android.accounts.Account
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
 import io.reactivex.disposables.Disposable
 import moxy.InjectViewState
 
@@ -27,7 +28,7 @@ class PersonalLoginPresenter : EnterpriseLoginPresenter() {
     private fun initPersonal(): Boolean {
         networkSettings.setDefault()
         networkSettings.setBaseUrl(ApiContract.PERSONAL_HOST)
-        disposable = App.getApp().appComponent.loginService
+        disposable = context.loginService
             .serverVersion()
             .subscribe { loginResponse ->
                     networkSettings.serverVersion = loginResponse.response as String

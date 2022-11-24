@@ -1,6 +1,7 @@
 package app.documents.core.network.webdav
 
 
+import app.documents.core.network.webdav.models.WebDavModel
 import io.reactivex.Observable
 import okhttp3.RequestBody
 import okhttp3.ResponseBody

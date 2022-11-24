@@ -43,7 +43,7 @@ open class CloudFolder : Item() {
     @Expose
     var tags = arrayOfNulls<String>(0)
 
-    var etag = ""
+    var etag: String? = ""
 
     fun setFolder(folder: CloudFolder) {
         setItem(folder)

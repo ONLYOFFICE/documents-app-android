@@ -11,7 +11,6 @@ import app.documents.core.network.manager.models.explorer.*
 import app.editors.manager.app.App
 import app.editors.manager.app.getGoogleDriveServiceProvider
 import app.documents.core.providers.BaseFileProvider
-import app.editors.manager.mvp.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
@@ -165,10 +164,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
             current.id = id
             current.filesCount = 0.toString()
             current.foldersCount = 0.toString()
-
             explorer.current = current
-            explorer.files = emptyList()
-            explorer.folders = emptyList()
         }
         return explorer
     }

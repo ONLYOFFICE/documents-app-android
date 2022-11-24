@@ -194,7 +194,7 @@ sealed class InviteUserState {
 
 class InviteUserViewModel(private val item: Item) : ViewModel() {
 
-    private val shareRepository = App.getApp().getShareService()
+    private val shareApi = App.getApp().coreComponent.shareService
 
     private val _state: MutableStateFlow<InviteUserState> = MutableStateFlow(InviteUserState.None)
     val state: StateFlow<InviteUserState> = _state
@@ -204,8 +204,8 @@ class InviteUserViewModel(private val item: Item) : ViewModel() {
         viewModelScope.launch {
             request(
                 func = {
-                    shareRepository.shareRoom(
-                        roomId = item.id,
+                    shareApi.shareRoom(
+                        id = item.id,
                         body = RequestRoomShare(
                             invitations = emails.map { email ->
                                 Invitation(email = email.sharedTo.email, access = email.access)

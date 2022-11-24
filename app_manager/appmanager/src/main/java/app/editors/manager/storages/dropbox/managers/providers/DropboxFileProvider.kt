@@ -19,7 +19,6 @@ import app.editors.manager.storages.dropbox.mvp.models.operations.MoveCopyPaths
 import app.editors.manager.storages.dropbox.mvp.models.request.*
 import app.editors.manager.storages.dropbox.mvp.models.response.*
 import app.documents.core.providers.BaseFileProvider
-import app.editors.manager.mvp.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
@@ -173,8 +172,6 @@ class DropboxFileProvider : BaseFileProvider {
             current.foldersCount = 0.toString()
 
             explorer.current = current
-            explorer.files = emptyList()
-            explorer.folders = emptyList()
         }
 
         return Observable.just(explorer)
@@ -204,7 +201,7 @@ class DropboxFileProvider : BaseFileProvider {
         file.updated = Date()
         file.id = folderId.trim() + title
         file.title = title
-        file.fileExst = title?.split(".")?.get(1)
+        file.fileExst = title?.split(".")?.get(1).orEmpty()
         return Observable.just(file)
     }
 
@@ -226,8 +223,8 @@ class DropboxFileProvider : BaseFileProvider {
                 when (response) {
                     is DropboxResponse.Success -> {
                         val folder = CloudFolder()
-                        folder.id = (response.response as MetadataResponse).metadata?.path_display
-                        folder.title = response.response.metadata?.name
+                        folder.id = (response.response as MetadataResponse).metadata?.path_display.orEmpty()
+                        folder.title = response.response.metadata?.name.orEmpty()
                         folder.updated = Date()
                         return@map folder
                     }

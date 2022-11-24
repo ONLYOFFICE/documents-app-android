@@ -7,6 +7,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.documents.core.network.manager.models.user.User
+import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.EnterpriseCreateSignInView
 import io.reactivex.disposables.Disposable
 import kotlinx.serialization.encodeToString
@@ -70,7 +71,6 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         viewState.onShowProgress()
         val domain = partsPortal[PORTAL_PART_HOST] + "." + partsPortal[PORTAL_PART_DOMAIN]
         networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + "." + domain)
-        val loginService = App.getApp().appComponent.loginService
 
         // Validate portal
         val requestRegister = app.documents.core.network.login.models.request.RequestRegister(
@@ -81,7 +81,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
             password = password,
             recaptchaResponse = recaptcha
         )
-        disposable = loginService.registerPortal(requestRegister)
+        disposable = context.loginService.registerPortal(requestRegister)
             .subscribe({ loginResponse ->
                 when (loginResponse) {
                     is LoginResponse.Success -> {

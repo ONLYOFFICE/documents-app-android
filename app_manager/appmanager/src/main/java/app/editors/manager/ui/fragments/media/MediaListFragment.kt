@@ -97,7 +97,7 @@ class MediaListFragment : ListFragment(), BaseAdapter.OnItemClickListener {
             columnsCount = resources.getInteger(lib.toolkit.base.R.integer.screen_media_grid_columns)
             mediaAdapter = MediaAdapter(getCellSize(columnsCount), lifecycleScope).apply {
                 setOnItemClickListener(this@MediaListFragment)
-                setItems(mediaExplorer?.files!!)
+                setItems(mediaExplorer?.files.orEmpty())
             }
             gridLayoutManager = GridLayoutManager(requireContext(), columnsCount)
             it.listSwipeRefresh.isEnabled = false

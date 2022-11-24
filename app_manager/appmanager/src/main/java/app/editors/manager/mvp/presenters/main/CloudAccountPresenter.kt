@@ -8,6 +8,7 @@ import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.account.copyWithToken
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.response.ResponseCapabilities
 import app.documents.core.storage.preference.NetworkSettings
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
@@ -256,8 +257,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         setSettings(account)
                         disposable = context.loginService.capabilities().subscribe({ response ->
                             if (response is LoginResponse.Success) {
-                                if (response.response is app.documents.core.network.login.models.response.ResponseCapabilities) {
-                                    val capability = (response.response as app.documents.core.network.login.models.response.ResponseCapabilities).response
+                                if (response.response is ResponseCapabilities) {
+                                    val capability = (response.response as ResponseCapabilities).response
                                     setSettings(capability)
                                     viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
                                 } else {

@@ -1,5 +1,5 @@
 
-package app.documents.core.network.webdav;
+package app.documents.core.network.webdav.models;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;

@@ -2,11 +2,11 @@ package app.editors.manager.mvp.presenters.filter
 
 import app.documents.core.network.common.request
 import app.documents.core.network.common.requestIterable
-import app.documents.core.repositories.ShareRepository
+import app.documents.core.network.share.ShareService
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.getShareService
+import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.filter.Author
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -18,7 +18,6 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
 
     companion object {
         private const val DEBOUNCE_DURATION = 300L
-        private const val TIMEOUT_TIME = 5000L
     }
 
     private val authorStack: MutableList<Author> = mutableListOf()
@@ -26,11 +25,11 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
     var searchingValue: String = ""
     var isSearchingMode: Boolean = false
 
-    private val shareRepository: ShareRepository
-        get() = App.getApp().appComponent.context.getShareService()
+    private val shareApi: ShareService
+        get() = context.shareApi
 
     private val accountId: String?
-        get() = App.getApp().appComponent.context.accountOnline?.id
+        get() = context.accountOnline?.id
 
     private val avatarMapper: (Author.User) -> Author.User = { user ->
         user.also {
@@ -81,7 +80,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
 
     fun getUsers(withSelf: Boolean = true) {
         presenterScope.launch {
-            request(func = shareRepository::getUsers,
+            request(func = shareApi::getUsers,
                 map = { response ->
                     response.response
                         .map { Author.User(it.id, it.displayName, it.department, it.avatarMedium) }
@@ -99,7 +98,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
     fun getGroups() {
         presenterScope.launch {
             request(
-                func = shareRepository::getGroups,
+                func = shareApi::getGroups,
                 map = { response ->
                     response.response.map { Author.Group(it.id, it.name) }
                         .also(this@FilterAuthorPresenter::setStackItems)

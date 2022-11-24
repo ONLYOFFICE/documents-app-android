@@ -4,6 +4,7 @@ import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.PersonalRegisterView
 import io.reactivex.disposables.Disposable
 import lib.toolkit.base.BuildConfig
@@ -45,7 +46,7 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
 
 
         email?.let {
-            disposable = App.getApp().appComponent.loginService
+            disposable = context.loginService
                 .registerPersonal(
                     app.documents.core.network.login.models.request.RequestRegister(
                         email = email,

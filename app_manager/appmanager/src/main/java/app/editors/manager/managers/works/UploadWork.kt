@@ -70,11 +70,9 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
     }
     private var call: Call<ResponseFile>? = null
 
-    private val api = applicationContext.api()
-
     override fun doWork(): Result {
         getArgs()
-
+        val api = applicationContext.api
         val responseFile: ResponseFile
         path = from?.path
         title = ContentResolverUtils.getName(applicationContext, from ?: Uri.EMPTY)

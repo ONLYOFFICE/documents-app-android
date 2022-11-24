@@ -8,7 +8,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.models.request.ProgressRequestBody
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.webdav.WebDavService
-import app.documents.core.network.webdav.WebDavModel
+import app.documents.core.network.webdav.models.WebDavModel
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
@@ -46,8 +46,7 @@ import javax.inject.Inject
 class WebDavFileProvider @Inject constructor(
     private val webDavService: WebDavService,
     private val context: Context
-) :
-    BaseFileProvider {
+) : BaseFileProvider {
 
     companion object {
         private const val TOTAL_PROGRESS = 100

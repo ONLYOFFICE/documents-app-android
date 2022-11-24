@@ -186,20 +186,18 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                     else -> {
                         fragments.add(
                             ViewPagerAdapter.Container(
-                                section.current?.rootFolderType?.let { folderType ->
-                                    when (folderType) {
-                                        ApiContract.SectionType.CLOUD_TRASH, ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
-                                            DocsTrashFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
-                                        }
-                                        ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
-                                            DocsRoomFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
-                                        }
-                                        else -> {
-                                            DocsCloudFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
-                                        }
+                                when (val folderType = section.current.rootFolderType) {
+                                    ApiContract.SectionType.CLOUD_TRASH, ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
+                                        DocsTrashFragment.newInstance(stringAccount, folderType, section.current.id)
+                                    }
+                                    ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
+                                        DocsRoomFragment.newInstance(stringAccount, folderType, section.current.id)
+                                    }
+                                    else -> {
+                                        DocsCloudFragment.newInstance(stringAccount, folderType, section.current.id)
                                     }
                                 },
-                                getTabTitle(section.current?.rootFolderType ?: -1)
+                                getTabTitle(section.current.rootFolderType)
                             )
                         )
                     }
