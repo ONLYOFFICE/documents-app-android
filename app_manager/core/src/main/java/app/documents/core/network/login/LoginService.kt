@@ -1,6 +1,10 @@
 package app.documents.core.network.login
 
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.models.RequestDeviceToken
+import app.documents.core.network.login.models.RequestPushSubscribe
+import app.documents.core.network.login.models.request.*
+import app.documents.core.network.login.models.response.*
 import io.reactivex.Single
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -15,28 +19,28 @@ interface LoginService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/authentication" + ApiContract.RESPONSE_FORMAT)
-    fun signIn(@Body body: app.documents.core.network.login.models.request.RequestSignIn): Single<Response<app.documents.core.network.login.models.response.ResponseSignIn>>
+    fun signIn(@Body body: RequestSignIn): Single<Response<ResponseSignIn>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/capabilities" + ApiContract.RESPONSE_FORMAT)
-    fun capabilities(): Single<Response<app.documents.core.network.login.models.response.ResponseCapabilities>>
+    fun capabilities(): Single<Response<ResponseCapabilities>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/settings/version/build" + ApiContract.RESPONSE_FORMAT)
-    fun getSettings(): Single<Response<app.documents.core.network.login.models.response.ResponseSettings>>
+    fun getSettings(): Single<Response<ResponseSettings>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/settings" + ApiContract.RESPONSE_FORMAT)
-    fun getAllSettings(): Single<Response<app.documents.core.network.login.models.response.ResponseAllSettings>>
+    fun getAllSettings(): Single<Response<ResponseAllSettings>>
 
     /*
      * Auth with SMS code
@@ -47,9 +51,9 @@ interface LoginService {
     )
     @POST("api/" + ApiContract.API_VERSION + "/authentication/{sms_code}" + ApiContract.RESPONSE_FORMAT)
     fun smsSignIn(
-        @Body body: app.documents.core.network.login.models.request.RequestSignIn,
+        @Body body: RequestSignIn,
         @Path(value = "sms_code") smsCode: String
-    ): Single<Response<app.documents.core.network.login.models.response.ResponseSignIn>>
+    ): Single<Response<ResponseSignIn>>
 
     /*
      * Resend SMS code
@@ -59,7 +63,7 @@ interface LoginService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/authentication/sendsms" + ApiContract.RESPONSE_FORMAT)
-    fun sendSms(@Body body: app.documents.core.network.login.models.request.RequestSignIn): Single<Response<app.documents.core.network.login.models.response.ResponseSignIn>>
+    fun sendSms(@Body body: RequestSignIn): Single<Response<ResponseSignIn>>
 
     /*
      * Change number
@@ -69,14 +73,14 @@ interface LoginService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/authentication/setphone" + ApiContract.RESPONSE_FORMAT)
-    fun changeNumber(@Body body: app.documents.core.network.login.models.request.RequestNumber): Single<Response<app.documents.core.network.login.models.response.ResponseSignIn>>
+    fun changeNumber(@Body body: RequestNumber): Single<Response<ResponseSignIn>>
 
     /*
      * Validate portal
      * */
     @Headers(ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE)
     @POST("/api/portal/validateportalname")
-    fun validatePortal(@Body body: app.documents.core.network.login.models.request.RequestValidatePortal): Single<Response<app.documents.core.network.login.models.response.ResponseValidatePortal>>
+    fun validatePortal(@Body body: RequestValidatePortal): Single<Response<ResponseValidatePortal>>
 
     /*
      * Register portal
@@ -94,21 +98,21 @@ interface LoginService {
         @Field("lastName") lastName: String = "",
         @Field("portalName") portalName: String = "",
         @Field("password") password: String = ""
-    ): Single<Response<app.documents.core.network.login.models.response.ResponseRegisterPortal>>
+    ): Single<Response<ResponseRegisterPortal>>
 
     /*
      * Register personal portal
      * */
     @Headers(ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE)
     @POST("api/" + ApiContract.API_VERSION + "/authentication/register" + ApiContract.RESPONSE_FORMAT)
-    fun registerPersonalPortal(@Body body: app.documents.core.network.login.models.request.RequestRegister): Single<Response<app.documents.core.network.login.models.response.ResponseRegisterPersonalPortal>>
+    fun registerPersonalPortal(@Body body: RequestRegister): Single<Response<ResponseRegisterPersonalPortal>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/people/@self" + ApiContract.RESPONSE_FORMAT)
-    fun getUserInfo(@Header(ApiContract.HEADER_AUTHORIZATION) token: String): Single<Response<app.documents.core.network.login.models.response.ResponseUser>>
+    fun getUserInfo(@Header(ApiContract.HEADER_AUTHORIZATION) token: String): Single<Response<ResponseUser>>
 
     /*
      * Password recovery
@@ -119,7 +123,7 @@ interface LoginService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/people/password" + ApiContract.RESPONSE_FORMAT)
-    fun forgotPassword(@Body body: app.documents.core.network.login.models.request.RequestPassword?): Single<Response<app.documents.core.network.login.models.response.ResponsePassword>>
+    fun forgotPassword(@Body body: RequestPassword?): Single<Response<ResponsePassword>>
 
     @Headers(
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -128,7 +132,7 @@ interface LoginService {
     @POST("api/" + ApiContract.API_VERSION + "/settings/push/docregisterdevice" + ApiContract.RESPONSE_FORMAT)
     fun registerDevice(
         @Header(ApiContract.HEADER_AUTHORIZATION) token: String,
-        @Body body: app.documents.core.network.login.models.RequestDeviceToken,
+        @Body body: RequestDeviceToken,
     ): Single<Response<ResponseBody>>
 
     @Headers(
@@ -138,7 +142,7 @@ interface LoginService {
     @PUT("api/" + ApiContract.API_VERSION + "/settings/push/docsubscribe" + ApiContract.RESPONSE_FORMAT)
     fun subscribe(
         @Header(ApiContract.HEADER_AUTHORIZATION) token: String,
-        @Body body: app.documents.core.network.login.models.RequestPushSubscribe
+        @Body body: RequestPushSubscribe
     ): Single<Response<ResponseBody>>
 
 }

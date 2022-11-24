@@ -8,6 +8,7 @@ import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.account.copyWithToken
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.models.response.ResponseUser
 import app.documents.core.network.manager.models.response.ResponseCapabilities
 import app.documents.core.storage.preference.NetworkSettings
 import app.documents.core.network.webdav.WebDavService
@@ -296,7 +297,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             .getUserInfo(token)
             .map {
                 when (it) {
-                    is LoginResponse.Success -> return@map it.response as app.documents.core.network.login.models.response.ResponseUser
+                    is LoginResponse.Success -> return@map it.response as ResponseUser
                     is LoginResponse.Error -> throw throw it.error
                 }
             }

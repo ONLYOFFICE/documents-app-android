@@ -1,5 +1,9 @@
 package app.documents.core.network.login
 
+import app.documents.core.network.login.models.RequestDeviceToken
+import app.documents.core.network.login.models.RequestPushSubscribe
+import app.documents.core.network.login.models.request.*
+import app.documents.core.network.login.models.response.ResponseSettings
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -20,7 +24,7 @@ class LoginServiceProvider(
             .map { loginResponse ->
                 if (loginResponse is LoginResponse.Success) {
                     return@map LoginResponse.Success(
-                        (loginResponse.response as app.documents.core.network.login.models.response.ResponseSettings).response.communityServer ?: ""
+                        (loginResponse.response as ResponseSettings).response.communityServer ?: ""
                     )
                 } else {
                     return@map LoginResponse.Success("")
@@ -39,13 +43,13 @@ class LoginServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun validatePortal(request: app.documents.core.network.login.models.request.RequestValidatePortal): Single<LoginResponse> {
+    override fun validatePortal(request: RequestValidatePortal): Single<LoginResponse> {
         return loginService.validatePortal(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun signIn(request: app.documents.core.network.login.models.request.RequestSignIn, smsCode: String?): Single<LoginResponse> {
+    override fun signIn(request: RequestSignIn, smsCode: String?): Single<LoginResponse> {
         smsCode?.let { sms ->
             return loginService.smsSignIn(request, sms).map { fetchResponse(it) }
                 .subscribeOn(Schedulers.io())
@@ -57,7 +61,7 @@ class LoginServiceProvider(
         }
     }
 
-    override fun registerPortal(request: app.documents.core.network.login.models.request.RequestRegister): Single<LoginResponse> {
+    override fun registerPortal(request: RequestRegister): Single<LoginResponse> {
         return loginService.registerPortal(
             recaptchaResponse = request.recaptchaResponse,
             portalName = request.portalName,
@@ -70,19 +74,19 @@ class LoginServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun registerPersonal(request: app.documents.core.network.login.models.request.RequestRegister): Single<LoginResponse> {
+    override fun registerPersonal(request: RequestRegister): Single<LoginResponse> {
         return loginService.registerPersonalPortal(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun sendSms(request: app.documents.core.network.login.models.request.RequestSignIn): Single<LoginResponse> {
+    override fun sendSms(request: RequestSignIn): Single<LoginResponse> {
         return loginService.sendSms(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun changeNumber(request: app.documents.core.network.login.models.request.RequestNumber): Single<LoginResponse> {
+    override fun changeNumber(request: RequestNumber): Single<LoginResponse> {
         return loginService.changeNumber(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -94,7 +98,7 @@ class LoginServiceProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun passwordRecovery(request: app.documents.core.network.login.models.request.RequestPassword): Single<LoginResponse> {
+    override fun passwordRecovery(request: RequestPassword): Single<LoginResponse> {
         return loginService.forgotPassword(request).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -102,7 +106,7 @@ class LoginServiceProvider(
 
     override fun setFirebaseToken(token: String, deviceToken: String): Single<Response<ResponseBody>> {
         return loginService.registerDevice(token,
-            app.documents.core.network.login.models.RequestDeviceToken(deviceToken)
+            RequestDeviceToken(deviceToken)
         )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -110,7 +114,7 @@ class LoginServiceProvider(
 
     override fun subscribe(token: String, deviceToken: String, isSubscribe: Boolean): Single<Response<ResponseBody>> {
         return loginService.subscribe(token,
-            app.documents.core.network.login.models.RequestPushSubscribe(deviceToken, isSubscribe)
+            RequestPushSubscribe(deviceToken, isSubscribe)
         )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
