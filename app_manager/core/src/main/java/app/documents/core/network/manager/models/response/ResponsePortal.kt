@@ -1,24 +1,12 @@
+package app.documents.core.network.manager.models.response
 
-package app.documents.core.network.manager.models.response;
+import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.models.user.Portal
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
-import app.documents.core.network.common.models.BaseResponse;
-import app.documents.core.network.manager.models.user.Portal;
-
-public class ResponsePortal extends BaseResponse {
-
-    @SerializedName(BaseResponse.KEY_RESPONSE)
+data class ResponsePortal(
+    @SerializedName(KEY_RESPONSE)
     @Expose
-    private Portal response;
-
-    public Portal getResponse() {
-        return response;
-    }
-
-    public void setResponse(Portal response) {
-        this.response = response;
-    }
-
-}
+    var response: Portal? = null
+) : BaseResponse()

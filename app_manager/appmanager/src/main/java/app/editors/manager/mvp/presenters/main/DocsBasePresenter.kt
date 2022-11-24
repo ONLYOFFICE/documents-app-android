@@ -273,7 +273,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         modelExplorerStack.currentId?.let { id ->
             val requestCreate = RequestCreate().apply {
-                setTitle(title?.takeIf { title.isNotEmpty() } ?: context.getString(R.string.dialogs_edit_create_docs))
+                this.title = title?.takeIf { title.isNotEmpty() } ?: context.getString(R.string.dialogs_edit_create_docs)
             }
 
             fileProvider?.let { provider ->

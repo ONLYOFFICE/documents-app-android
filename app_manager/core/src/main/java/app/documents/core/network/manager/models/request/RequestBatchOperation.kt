@@ -1,32 +1,14 @@
-package app.documents.core.network.manager.models.request;
+package app.documents.core.network.manager.models.request
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-public class RequestBatchOperation extends RequestBatchBase {
-
+data class RequestBatchOperation(
     @SerializedName("destFolderId")
     @Expose
-    private String destFolderId;
+    var destFolderId: String? = null,
 
     @SerializedName("conflictResolveType")
     @Expose
-    private int conflictResolveType;
-
-    public String getDestFolderId() {
-        return destFolderId;
-    }
-
-    public void setDestFolderId(String destFolderId) {
-        this.destFolderId = destFolderId;
-    }
-
-    public int getConflictResolveType() {
-        return conflictResolveType;
-    }
-
-    public void setConflictResolveType(int conflictResolveType) {
-        this.conflictResolveType = conflictResolveType;
-    }
-
-}
+    var conflictResolveType: Int = 0
+) : RequestBatchBase()

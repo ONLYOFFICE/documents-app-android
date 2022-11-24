@@ -1,63 +1,36 @@
-package app.documents.core.network.manager.models.request;
+package app.documents.core.network.manager.models.request
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-public class RequestUser {
+class RequestUser(
+    @SerializedName("firstName")
+    @Expose
+    var firstName: String? = null,
 
-    public enum Sex{
+    @SerializedName("lastName")
+    @Expose
+    var lastName: String? = null,
+
+    @SerializedName("sex")
+    @Expose
+    var sex: String? = null,
+
+    @SerializedName("files")
+    @Expose
+    var avatar: String? = null
+) {
+    enum class Sex {
         MALE, FEMALE
     }
 
-    public static String getSex(RequestUser.Sex sex){
-        switch (sex){
-            case MALE: return "male";
-            case FEMALE: return "female";
+    companion object {
+        fun getSex(sex: Sex?): String? {
+            return when (sex) {
+                Sex.MALE -> return "male"
+                Sex.FEMALE -> return "female"
+                else -> null
+            }
         }
-        return null;
-    }
-    @SerializedName("firstName")
-    @Expose
-    private String firstName;
-    @SerializedName("lastName")
-    @Expose
-    private String lastName;
-    @SerializedName("sex")
-    @Expose
-    private String sex;
-    @SerializedName("files")
-    @Expose
-    private String avatar;
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getSex() {
-        return sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
     }
 }

@@ -1,35 +1,14 @@
-package app.documents.core.network.manager.models.request;
+package app.documents.core.network.manager.models.request
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class RequestDeleteShare {
-
+class RequestDeleteShare(
     @SerializedName("folderIds")
     @Expose
-    private List<String> folderIds = new ArrayList<>();
+    var folderIds: List<String> = ArrayList(),
 
     @SerializedName("fileIds")
     @Expose
-    private List<String> fileIds = new ArrayList<>();
-
-    public List<String> getFolderIds() {
-        return folderIds;
-    }
-
-    public void setFolderIds(List<String> folderIds) {
-        this.folderIds = folderIds;
-    }
-
-    public List<String> getFileIds() {
-        return fileIds;
-    }
-
-    public void setFileIds(List<String> fileIds) {
-        this.fileIds = fileIds;
-    }
-
-}
+    var fileIds: List<String> = ArrayList()
+)

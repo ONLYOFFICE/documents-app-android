@@ -1,31 +1,14 @@
-package app.documents.core.network.manager.models.request;
+package app.documents.core.network.manager.models.request
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-public class RequestRenameFile {
-
+class RequestRenameFile(
     @SerializedName("title")
     @Expose
-    private String title;
+    var title: String? = null,
+
     @SerializedName("lastVersion")
     @Expose
-    private int lastVersion;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public int getLastVersion() {
-        return lastVersion;
-    }
-
-    public void setLastVersion(int lastVersion) {
-        this.lastVersion = lastVersion;
-    }
-
-}
+    var lastVersion: Int = 0
+)

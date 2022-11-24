@@ -70,30 +70,30 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { cloudTree ->
-                val folderTypes = cloudTree.response.map { explorer -> explorer?.current?.rootFolderType }
+                val folderTypes = cloudTree.response.map { explorer -> explorer.current.rootFolderType }
                 preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
                 preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
                 return@map cloudTree.response.apply {
                     // My section
-                    Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_USER }), 0)
+                    Collections.swap(this, this.indexOf(this.find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_USER }), 0)
                     // Trash section
                     Collections.swap(
                         this,
-                        this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }),
+                        this.indexOf(this.find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }),
                         this.lastIndex
                     )
                     //Rooms sections
-                    if (this.contains(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM })) {
+                    if (this.contains(this.find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM })) {
                         Collections.swap(
                             this,
-                            this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }),
+                            this.indexOf(this.find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }),
                             1
                         )
                     }
-                    if (this.contains(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM })) {
+                    if (this.contains(this.find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM })) {
                         Collections.swap(
                             this,
-                            this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }),
+                            this.indexOf(this.find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }),
                             this.lastIndex - 1
                         )
                     }

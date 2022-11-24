@@ -1,22 +1,11 @@
-package app.documents.core.network.manager.models.response;
+package app.documents.core.network.manager.models.response
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import app.documents.core.network.common.models.BaseResponse
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-import app.documents.core.network.common.models.BaseResponse;
-
-public class ResponseCount extends BaseResponse {
-
-    @SerializedName(BaseResponse.KEY_RESPONSE)
+data class ResponseCount(
+    @SerializedName(KEY_RESPONSE)
     @Expose
-    private int response;
-
-    public int getResponse() {
-        return response;
-    }
-
-    public void setResponse(int response) {
-        this.response = response;
-    }
-
-}
+    var response: Int = 0
+) : BaseResponse()

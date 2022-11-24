@@ -447,7 +447,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun addToFavorite() {
         val requestFavorites = RequestFavorites()
-        requestFavorites.fileIds = ArrayList(listOf(itemClicked?.id))
+        requestFavorites.fileIds = listOf(itemClicked?.id!!)
         (fileProvider as CloudFileProvider).let { provider ->
             val isAdd = itemClicked?.favorite?.not() == true
 

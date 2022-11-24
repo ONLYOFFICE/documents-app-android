@@ -1,20 +1,10 @@
-package app.documents.core.network.manager.models.request;
+package app.documents.core.network.manager.models.request
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-public class RequestCreate {
-
+data class RequestCreate(
     @SerializedName("title")
     @Expose
-    private String title;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-}
+    var title: String = ""
+)

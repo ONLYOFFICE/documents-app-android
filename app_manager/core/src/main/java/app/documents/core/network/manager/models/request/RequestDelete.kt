@@ -1,19 +1,10 @@
-package app.documents.core.network.manager.models.request;
+package app.documents.core.network.manager.models.request
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-public class RequestDelete {
-
+class RequestDelete(
     @SerializedName("deleteAfter")
     @Expose
-    private boolean deleteAfter;
-
-    public boolean getDeleteAfter() {
-        return deleteAfter;
-    }
-
-    public void setDeleteAfter(boolean deleteAfter) {
-        this.deleteAfter = deleteAfter;
-    }
-}
+    var deleteAfter: Boolean = false
+)
