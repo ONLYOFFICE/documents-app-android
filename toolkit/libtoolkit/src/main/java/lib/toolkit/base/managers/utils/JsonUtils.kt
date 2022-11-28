@@ -89,7 +89,11 @@ object JsonUtils {
     fun getFormulasDescJson(context: Context, lang: String = Locale.ENGLISH.language): JSONObject? {
         return try {
             JSONObject(jsonFromAssets(context, FORMULAS_PATH + lang + DESC_SUFFIX + JSON_EXTENSION))
-        } catch (exception: JSONException) {
+        }
+        catch (exception: FileNotFoundException) {
+            JSONObject(jsonFromAssets(context, FORMULAS_PATH + Locale.ENGLISH.language + DESC_SUFFIX + JSON_EXTENSION))
+        }
+        catch (exception: JSONException) {
             return null
         }
     }
