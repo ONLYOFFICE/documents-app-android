@@ -13,6 +13,11 @@ import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.share.ShareService
+import app.documents.core.network.storages.dropbox.api.DropboxProvider
+import app.documents.core.network.storages.dropbox.login.DropboxLoginProvider
+import app.documents.core.network.storages.googledrive.api.GoogleDriveProvider
+import app.documents.core.network.storages.googledrive.login.GoogleDriveLoginProvider
+import app.documents.core.network.storages.onedrive.api.OneDriveProvider
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
@@ -20,20 +25,9 @@ import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.BuildConfig
-import app.editors.manager.di.component.AppComponent
-import app.editors.manager.di.component.CoreComponent
-import app.editors.manager.di.component.DaggerAppComponent
-import app.editors.manager.di.component.DaggerCoreComponent
 import app.editors.manager.managers.utils.KeyStoreUtils
-import app.editors.manager.storages.dropbox.di.component.DaggerDropboxComponent
-import app.editors.manager.storages.dropbox.dropbox.api.IDropboxServiceProvider
-import app.editors.manager.storages.dropbox.dropbox.login.IDropboxLoginServiceProvider
-import app.editors.manager.storages.googledrive.di.component.DaggerGoogleDriveComponent
-import app.editors.manager.storages.googledrive.googledrive.api.IGoogleDriveServiceProvider
-import app.editors.manager.storages.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
-import app.editors.manager.storages.onedrive.di.component.DaggerOneDriveComponent
-import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
-import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
+import app.documents.core.network.storages.onedrive.login.OneDriveLoginProvider
+import app.editors.manager.di.component.*
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
@@ -78,6 +72,24 @@ class App : Application() {
 
     val coreComponent: CoreComponent by lazy  {
         DaggerCoreComponent.builder()
+            .appComponent(appComponent)
+            .build()
+    }
+
+    val dropboxComponent: DropboxComponent by lazy {
+        DaggerDropboxComponent.builder()
+            .appComponent(appComponent)
+            .build()
+    }
+
+    val oneDriveComponent: OneDriveComponent by lazy {
+        DaggerOneDriveComponent.builder()
+            .appComponent(appComponent)
+            .build()
+    }
+
+    val googleDriveComponent: GoogleDriveComponent by lazy {
+        DaggerGoogleDriveComponent.builder()
             .appComponent(appComponent)
             .build()
     }
@@ -173,24 +185,6 @@ class App : Application() {
         }
     }
 
-    fun getOneDriveComponent(): IOneDriveServiceProvider {
-        return DaggerOneDriveComponent.builder().appComponent(appComponent)
-            .build()
-            .oneDriveServiceProvider
-    }
-
-    fun getDropboxComponent(): IDropboxServiceProvider {
-        return DaggerDropboxComponent.builder().appComponent(appComponent)
-            .build()
-            .dropboxServiceProvider
-    }
-
-    fun getGoogleDriveComponent(): IGoogleDriveServiceProvider {
-        return DaggerGoogleDriveComponent.builder().appComponent(appComponent)
-            .build()
-            .googleDriveServiceProvider
-    }
-
 }
 
 val Context.accountOnline: CloudAccount?
@@ -217,22 +211,40 @@ val Context.loginService: ILoginServiceProvider
         else -> this.applicationContext.loginService
     }
 
-val Context.oneDriveLoginService: IOneDriveLoginServiceProvider
+val Context.oneDriveLoginProvider: OneDriveLoginProvider
     get() = when (this) {
-        is App -> this.coreComponent.oneDriveLoginService
-        else -> applicationContext.coreComponent.oneDriveLoginService
+        is App -> oneDriveComponent.oneDriveLoginProvider
+        else -> applicationContext.oneDriveLoginProvider
     }
 
-val Context.dropboxLoginService: IDropboxLoginServiceProvider
+val Context.oneDriveProvider: OneDriveProvider
     get() = when (this) {
-        is App -> this.coreComponent.dropboxLoginService
-        else -> applicationContext.coreComponent.dropboxLoginService
+        is App -> oneDriveComponent.oneDriveProvider
+        else -> applicationContext.oneDriveProvider
     }
 
-val Context.googleDriveLoginService: IGoogleDriveLoginServiceProvider
-    get() = when(this) {
-        is App -> this.coreComponent.googleDriveLoginService
-        else -> applicationContext.coreComponent.googleDriveLoginService
+val Context.dropboxLoginProvider: DropboxLoginProvider
+    get() = when (this) {
+        is App -> dropboxComponent.dropboxLoginProvider
+        else -> applicationContext.dropboxLoginProvider
+    }
+
+val Context.dropboxProvider: DropboxProvider
+    get() = when (this) {
+        is App -> dropboxComponent.dropboxProvider
+        else -> applicationContext.dropboxProvider
+    }
+
+val Context.googleDriveLoginProvider: GoogleDriveLoginProvider
+    get() = when (this) {
+        is App -> googleDriveComponent.googleDriveLoginProvider
+        else -> applicationContext.googleDriveLoginProvider
+    }
+
+val Context.googleDriveProvider: GoogleDriveProvider
+    get() = when (this) {
+        is App -> googleDriveComponent.googleDriveProvider
+        else -> applicationContext.googleDriveProvider
     }
 
 val Context.api: ManagerService
@@ -282,23 +294,3 @@ val Context.roomProvider: RoomProvider
         is App -> coreComponent.roomProvider
         else -> applicationContext.roomProvider
     }
-
-fun Context.getOneDriveServiceProvider(): IOneDriveServiceProvider {
-    return when (this) {
-        is App -> this.getOneDriveComponent()
-        else -> this.applicationContext.getOneDriveServiceProvider()
-    }
-}
-
-fun Context.getDropboxServiceProvider(): IDropboxServiceProvider {
-    return when(this) {
-        is App -> this.getDropboxComponent()
-        else -> this.applicationContext.getDropboxServiceProvider()
-    }
-}
-fun Context.getGoogleDriveServiceProvider(): IGoogleDriveServiceProvider {
-    return when(this) {
-        is App -> this.getGoogleDriveComponent()
-        else -> this.applicationContext.getGoogleDriveServiceProvider()
-    }
-}

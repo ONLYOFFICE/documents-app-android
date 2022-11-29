@@ -17,9 +17,9 @@ import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.mvp.views.main.DocsRecentView
-import app.editors.manager.storages.dropbox.managers.providers.DropboxFileProvider
-import app.editors.manager.storages.googledrive.managers.providers.GoogleDriveFileProvider
-import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProvider
+import app.editors.manager.managers.providers.DropboxFileProvider
+import app.editors.manager.managers.providers.GoogleDriveFileProvider
+import app.editors.manager.managers.providers.OneDriveFileProvider
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

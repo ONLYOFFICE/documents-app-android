@@ -13,9 +13,9 @@ import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityOperationBinding
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
-import app.editors.manager.storages.dropbox.ui.fragments.operations.DocsDropboxOperationFragment
-import app.editors.manager.storages.googledrive.ui.fragments.operations.DocsGoogleDriveOperationFragment
-import app.editors.manager.storages.onedrive.ui.fragments.operations.DocsOneDriveOperationFragment
+import app.editors.manager.ui.fragments.operations.DocsDropboxOperationFragment
+import app.editors.manager.ui.fragments.operations.DocsGoogleDriveOperationFragment
+import app.editors.manager.ui.fragments.operations.DocsOneDriveOperationFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment

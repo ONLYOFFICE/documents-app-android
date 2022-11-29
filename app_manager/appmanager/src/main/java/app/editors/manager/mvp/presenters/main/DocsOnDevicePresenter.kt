@@ -15,6 +15,7 @@ import app.documents.core.providers.ProviderError
 import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.managers.works.UploadWork
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.editors.manager.app.localFileProvider
 import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
@@ -24,7 +25,6 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
 import java.io.File
@@ -39,7 +39,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     init {
         App.getApp().appComponent.inject(this)
-        fileProvider = LocalFileProvider(LocalContentTools(context))
+        fileProvider = context.localFileProvider
         checkWebDav()
     }
 

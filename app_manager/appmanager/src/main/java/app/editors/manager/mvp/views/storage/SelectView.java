@@ -2,7 +2,7 @@ package app.editors.manager.mvp.views.storage;
 
 import java.util.List;
 
-import app.editors.manager.mvp.models.account.Storage;
+import app.documents.core.network.common.models.Storage;
 import app.editors.manager.mvp.views.base.BaseView;
 import moxy.viewstate.strategy.OneExecutionStateStrategy;
 import moxy.viewstate.strategy.StateStrategyType;

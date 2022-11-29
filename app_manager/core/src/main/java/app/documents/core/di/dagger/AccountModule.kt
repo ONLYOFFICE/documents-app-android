@@ -8,6 +8,7 @@ import app.documents.core.storage.account.CloudAccount
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
+import lib.toolkit.base.managers.utils.AccountUtils
 import javax.inject.Singleton
 
 @Module
@@ -33,6 +34,15 @@ object AccountModule {
     @Provides
     fun provideAccount(accountDao: AccountDao): CloudAccount? = runBlocking {
         return@runBlocking accountDao.getAccountOnline()
+    }
+
+    @Provides
+    @Token
+    fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
+        account?.let { cloudAccount ->
+            return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
+                ?: ""
+        } ?: ""
     }
 
 }

@@ -1,6 +1,7 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
+import app.documents.core.di.dagger.storages.OneDriveScope
 import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.preference.NetworkSettings
@@ -17,17 +18,17 @@ import okhttp3.Protocol
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
+import javax.inject.Qualifier
 import javax.inject.Scope
 
 @Scope
 @Retention(AnnotationRetention.RUNTIME)
 annotation class CoreScope
 
-@Module(
-    includes = [
-        LoginModule::class, ManagerModule::class, ShareModule::class, WebDavModule::class
-    ]
-)
+@Qualifier
+annotation class Token
+
+@Module(includes = [LoginModule::class, ManagerModule::class, ShareModule::class, WebDavModule::class])
 object CoreModule {
 
     val json = Json {
@@ -36,7 +37,7 @@ object CoreModule {
     }
 
     @Provides
-    fun provideOkHttpClient(@Named("token") token: String, settings: NetworkSettings, context: Context): OkHttpClient {
+    fun provideOkHttpClient(@Token token: String, settings: NetworkSettings, context: Context): OkHttpClient {
         val builder = NetworkClient.getOkHttpBuilder(settings.getSslState(), settings.getCipher())
         builder.protocols(listOf(Protocol.HTTP_1_1))
             .readTimeout(NetworkClient.ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
@@ -59,12 +60,12 @@ object CoreModule {
     }
 
     @Provides
-    @Named("token")
+    @Token
     fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
         account?.let { cloudAccount ->
             return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
-                ?: ""
-        } ?: ""
+                ?: throw RuntimeException("Token null")
+        } ?: throw RuntimeException("Account null")
     }
 
 }

@@ -29,14 +29,12 @@ import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
-import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
-import app.editors.manager.ui.adapters.holders.factory.TypeFactory
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
-import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer.Companion.factory
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog

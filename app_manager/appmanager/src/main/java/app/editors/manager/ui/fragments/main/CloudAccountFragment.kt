@@ -14,13 +14,14 @@ import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
-import app.editors.manager.mvp.models.account.Storage
+import app.documents.core.network.common.models.Storage
+import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.presenters.main.CloudAccountState
 import app.editors.manager.mvp.views.main.CloudAccountView
-import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
-import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
-import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
+import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
+import app.documents.core.network.common.utils.OneDriveUtils
+import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
@@ -376,12 +377,7 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onGoogleDriveLogin() {
         hideDialog()
-        val storage = Storage(
-            ApiContract.Storage.GOOGLEDRIVE,
-            BuildConfig.GOOGLE_COM_CLIENT_ID,
-            BuildConfig.GOOGLE_COM_REDIRECT_URL
-        )
-        showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
+        showFragment(GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage), GoogleDriveSignInFragment.TAG, false)
     }
 
     override fun onDropboxLogin() {
@@ -394,12 +390,7 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onOneDriveLogin() {
         hideDialog()
-        val storage = Storage(
-            OneDriveUtils.ONEDRIVE_STORAGE,
-            BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
-            BuildConfig.ONE_DRIVE_COM_REDIRECT_URL
-        )
-        showFragment(OneDriveSignInFragment.newInstance(storage), OneDriveSignInFragment.TAG, false)
+        showFragment(OneDriveSignInFragment.newInstance(OneDriveUtils.storage), OneDriveSignInFragment.TAG, false)
     }
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {

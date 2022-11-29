@@ -3,7 +3,6 @@ package app.documents.core.di.dagger
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
-import app.documents.core.providers.CloudFileProvider
 import app.documents.core.storage.preference.NetworkSettings
 import dagger.Module
 import dagger.Provides

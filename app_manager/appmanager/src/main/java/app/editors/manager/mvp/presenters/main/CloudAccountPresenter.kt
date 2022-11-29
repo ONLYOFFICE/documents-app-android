@@ -20,7 +20,7 @@ import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.login.BaseLoginPresenter
 import app.editors.manager.mvp.views.main.CloudAccountView
-import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
+import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers

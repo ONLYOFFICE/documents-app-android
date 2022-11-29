@@ -3,12 +3,13 @@ package app.editors.manager.mvp.presenters.storage
 import android.content.Context
 import app.documents.core.storage.account.AccountDao
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.StorageContract
 import app.editors.manager.R
 import app.documents.core.network.manager.ManagerService
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.managers.utils.StorageUtils
-import app.editors.manager.mvp.models.account.Storage
+import app.documents.core.network.common.models.Storage
 import app.editors.manager.mvp.views.storage.SelectView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -110,11 +111,11 @@ class SelectPresenter : MvpPresenter<SelectView>() {
             var title = "WebDav service"
             when (key) {
                 ApiContract.Storage.YANDEX -> {
-                    url = StorageUtils.WevDav.URL_YANDEX
+                    url = StorageContract.WevDav.URL_YANDEX
                     title = context.getString(R.string.storage_select_yandex)
                 }
                 ApiContract.Storage.KDRIVE -> {
-                    url = StorageUtils.WevDav.URL_KDRIVE
+                    url = StorageContract.WevDav.URL_KDRIVE
                     title = context.getString(R.string.storage_select_kdrive)
                 }
                 ApiContract.Storage.SHAREPOINT -> {

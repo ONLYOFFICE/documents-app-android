@@ -1,5 +1,6 @@
 package app.editors.manager.di.component
 
+import android.content.Context
 import app.documents.core.di.dagger.CoreModule
 import app.documents.core.di.dagger.CoreScope
 import app.documents.core.network.login.ILoginServiceProvider
@@ -11,22 +12,10 @@ import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
-import app.editors.manager.storages.dropbox.di.module.DropboxLoginModule
-import app.editors.manager.storages.dropbox.di.module.DropboxModule
-import app.editors.manager.storages.dropbox.dropbox.login.IDropboxLoginServiceProvider
-import app.editors.manager.storages.googledrive.di.module.GoogleDriveLoginModule
-import app.editors.manager.storages.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
-import app.editors.manager.storages.onedrive.di.module.OneDriveLoginModule
-import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
-import app.editors.manager.storages.onedrive.onedrive.login.OneDriveLoginService
 import dagger.Component
 
 @CoreScope
-@Component(
-    modules = [
-        CoreModule::class, DropboxLoginModule::class, GoogleDriveLoginModule::class, OneDriveLoginModule::class
-    ],
-    dependencies = [AppComponent::class])
+@Component(modules = [CoreModule::class], dependencies = [AppComponent::class])
 interface CoreComponent {
 
     @Component.Builder
@@ -47,9 +36,6 @@ interface CoreComponent {
     val localFileProvider: LocalFileProvider
     val roomProvider: RoomProvider
     val webDavFileProvider: WebDavFileProvider
-
     val loginService: ILoginServiceProvider
-    val oneDriveLoginService: IOneDriveLoginServiceProvider
-    val dropboxLoginService: IDropboxLoginServiceProvider
-    val googleDriveLoginService: IGoogleDriveLoginServiceProvider
+
 }

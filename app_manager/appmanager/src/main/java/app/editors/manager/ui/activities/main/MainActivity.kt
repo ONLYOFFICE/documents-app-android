@@ -20,9 +20,9 @@ import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
-import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
-import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment
-import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
+import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
+import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
