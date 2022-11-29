@@ -54,7 +54,9 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 viewState.onRender(account, sections)
                 checkFileData(Json.decodeFromString(account), fileData)
             }
-        }) { throwable: Throwable -> fetchError(throwable) }
+        }) { throwable: Throwable ->
+            fetchError(throwable)
+        }
     }
 
 

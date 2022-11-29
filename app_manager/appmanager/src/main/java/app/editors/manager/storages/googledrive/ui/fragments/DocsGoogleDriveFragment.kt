@@ -45,9 +45,6 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
                         presenter.upload(uri, null, KEY_UPLOAD)
                     }
                 }
-                BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
-                    onRefresh()
-                }
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
                     if(data.getBooleanExtra(KEY_MODIFIED, false)) {
                         presenter.upload(
@@ -72,8 +69,6 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
 
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         when (buttons) {
-            ContextBottomDialog.Buttons.MOVE -> presenter.moveContext()
-            ContextBottomDialog.Buttons.COPY -> presenter.copy()
             ContextBottomDialog.Buttons.DOWNLOAD -> onFileDownloadPermission()
             ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
                 getString(R.string.dialogs_edit_rename_title),

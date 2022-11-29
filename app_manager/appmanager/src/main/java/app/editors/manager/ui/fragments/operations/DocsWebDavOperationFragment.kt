@@ -12,6 +12,8 @@ import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.OperationActivity.OnActionClickListener
 import app.editors.manager.ui.fragments.main.DocsWebDavFragment
+import lib.toolkit.base.managers.utils.getSerializable
+import lib.toolkit.base.managers.utils.getSerializableExt
 
 class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener {
 
@@ -20,7 +22,7 @@ class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        provider = requireArguments().getSerializable(KEY_PROVIDER) as WebDavApi.Providers?
+        provider = requireArguments().getSerializableExt(KEY_PROVIDER, WebDavApi.Providers::class.java)
         setHasOptionsMenu(false)
     }
 
@@ -102,14 +104,10 @@ class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener 
         val bundle = arguments
         if (bundle != null) {
             val intent = requireActivity().intent
-            operationType = intent.getSerializableExtra(OperationActivity.TAG_OPERATION_TYPE) as OperationType?
+            operationType = intent.getSerializable(OperationActivity.TAG_OPERATION_TYPE, OperationType::class.java)
             if (savedInstanceState == null) {
-                val explorer = intent.getSerializableExtra(OperationActivity.TAG_OPERATION_EXPLORER) as Explorer?
-                if (explorer != null) {
-                    webDavPresenter.setOperationExplorer(explorer)
-                } else {
-                    requireActivity().finish()
-                }
+                val explorer = intent.getSerializable(OperationActivity.TAG_OPERATION_EXPLORER, Explorer::class.java)
+                webDavPresenter.setOperationExplorer(explorer)
             }
         }
     }

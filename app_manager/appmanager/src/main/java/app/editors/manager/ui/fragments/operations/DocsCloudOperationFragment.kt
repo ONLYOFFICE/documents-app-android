@@ -12,6 +12,7 @@ import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.OperationActivity.OnActionClickListener
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
+import lib.toolkit.base.managers.utils.getSerializable
 
 class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
@@ -102,13 +103,12 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
         arguments?.let {
             sectionType = it.getInt(TAG_OPERATION_SECTION_TYPE)
             operationType = requireActivity().intent
-                .getSerializableExtra(OperationActivity.TAG_OPERATION_TYPE) as
-                    OperationsState.OperationType
+                .getSerializable(OperationActivity.TAG_OPERATION_TYPE, OperationsState.OperationType::class.java)
             savedInstanceState ?: run {
                 requireActivity().intent
-                    .getSerializableExtra(OperationActivity.TAG_OPERATION_EXPLORER)?.let { explorer ->
-                        cloudPresenter.setOperationExplorer(explorer as Explorer)
-                    } ?: run { requireActivity().finish() }
+                    .getSerializable(OperationActivity.TAG_OPERATION_EXPLORER, Explorer::class.java).let { explorer ->
+                        cloudPresenter.setOperationExplorer(explorer)
+                    }
             }
         }
     }

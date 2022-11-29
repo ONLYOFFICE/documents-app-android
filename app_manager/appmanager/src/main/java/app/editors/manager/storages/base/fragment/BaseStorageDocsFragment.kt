@@ -15,7 +15,6 @@ import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
@@ -122,7 +121,9 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         when(StringUtils.getExtension(file.fileExst)) {
             StringUtils.Extension.IMAGE -> {
                 val state = OpenState.Media(getMediaFile(uri), false)
-                MediaActivity.show(this, state.explorer, state.isWebDav)
+                showMediaActivity(state.explorer, state.isWebDav) {
+                    // Stub
+                }
             }
             else -> super.onOpenLocalFile(file)
         }
@@ -162,17 +163,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
     }
 
-    override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
-        when (buttons) {
-            ActionBottomDialog.Buttons.PHOTO -> if (checkCameraPermission()) {
-                showCameraActivity(TimeUtils.fileTimeStamp)
-            }
-            else -> {
-                super.onActionButtonClick(buttons)
-            }
-        }
-    }
-
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
         searchCloseButton?.setOnClickListener {
@@ -181,7 +171,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     }
 
     override fun onFileWebView(file: CloudFile) {
-        showViewerActivity(file)
+        activity?.showWebViewer(file)
     }
 
     override fun onChooseDownloadFolder() {

@@ -15,6 +15,7 @@ import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.GoogleDriveFolder
 import app.editors.manager.mvp.models.explorer.Item
+import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.DocsGoogleDriveView
 import app.editors.manager.storages.base.work.BaseStorageDownloadWork
@@ -209,8 +210,10 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
         return false
     }
 
-    override fun copySelected() {
-        copy()
+    override fun moveCopySelected(operationsState: OperationsState.OperationType) {
+        if (operationsState == OperationsState.OperationType.COPY) {
+            copy()
+        }
     }
 
     fun upload(uri: Uri?, uris: ClipData?, tag: String) {

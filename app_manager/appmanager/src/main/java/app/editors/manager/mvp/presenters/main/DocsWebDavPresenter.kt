@@ -230,7 +230,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         }
     }
 
-    override fun upload(uri: Uri?, uris: ClipData?) {
+    override fun upload(uri: Uri?, uris: List<Uri>?) {
         if (preferenceTool.uploadWifiState && !isWifiEnable(context)) {
             viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
             return
@@ -241,9 +241,9 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             if (uri != null) {
                 uploadUris.add(uri)
             }
-            if (uris != null && uris.itemCount > 0) {
-                for (i in 0 until uris.itemCount) {
-                    uploadUris.add(uris.getItemAt(i).uri)
+            if (uris != null && uris.isNotEmpty()) {
+                for (i in uris.indices) {
+                    uploadUris.add(uris[i])
                 }
             }
             uploadWebDav(id, uploadUris)

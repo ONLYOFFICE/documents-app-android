@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.account.CloudAccount
 import app.documents.core.account.Recent
@@ -31,6 +30,7 @@ import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestDeleteShare
 import app.editors.manager.mvp.models.request.RequestFavorites
+import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
@@ -110,7 +110,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onSnackBarWithAction(
                 context.getString(R.string.trash_snackbar_move_text),
                 context.getString(R.string.trash_snackbar_move_button)
-            ) { moveContext() }
+            ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
         }
     }
 
@@ -230,7 +230,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
                 else -> {
                     viewState.onActionBarTitle("")
-                    viewState.onStateActionButton(isContextEditable && modelExplorerStack.last()?.current?.isCanEdit == true)
+                    //TODO For docspace
+//                    viewState.onStateActionButton(isContextEditable && (modelExplorerStack.last()?.current?.isCanEdit == true))
+                    viewState.onStateActionButton(isContextEditable)
                 }
             }
             viewState.onStateAdapterRoot(true)
@@ -429,18 +431,19 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
             val shareApi = App.getApp().getShareService()
-            disposable.add(shareApi.getShareFile(item.id)
-                .subscribeOn(Schedulers.io())
-                .map { response: ResponseShare ->
-                    response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
-                }.observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ externalLink ->
-                    if (!externalLink.isNullOrEmpty()) {
-                        setDataToClipboard(externalLink)
-                    } else {
-                        viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
-                    }
-                }, this::fetchError)
+            disposable.add(
+                shareApi.getShareFile(item.id)
+                    .subscribeOn(Schedulers.io())
+                    .map { response: ResponseShare ->
+                        response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
+                    }.observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ externalLink ->
+                        if (!externalLink.isNullOrEmpty()) {
+                            setDataToClipboard(externalLink)
+                        } else {
+                            viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
+                        }
+                    }, this::fetchError)
             )
         }
     }
@@ -751,16 +754,17 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             itemClicked?.let { folder ->
                 if (folder is CloudFolder) {
                     disposable.add(
-                        it.pinRoom(folder.id , !folder.pinned)
+                        it.pinRoom(folder.id, !folder.pinned)
                             .doOnSubscribe { viewState.onSwipeEnable(true) }
                             .subscribe({ response ->
-                            if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
-                                folder.pinned = !folder.pinned
-                                viewState.onUpdateFavoriteItem()
-                            }
-                        }, ::fetchError)
-                    )}
+                                if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
+                                    folder.pinned = !folder.pinned
+                                    viewState.onUpdateFavoriteItem()
+                                }
+                            }, ::fetchError)
+                    )
                 }
+            }
         }
     }
 
@@ -802,7 +806,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         viewState.onDialogClose()
                         viewState.onSnackBar(context.getString(R.string.room_delete_success))
                         refresh()
-                    }) { fetchError(it)}
+                    }) { fetchError(it) }
                 )
             }
         } else if (itemClicked != null) {
@@ -811,7 +815,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     provider.deleteRoom(itemClicked?.id ?: "").subscribe({
                         viewState.onDialogClose()
                         viewState.onSnackBar(context.getString(R.string.room_delete_success))
-                    }) { fetchError(it)}
+                    }) { fetchError(it) }
                 )
             }
 

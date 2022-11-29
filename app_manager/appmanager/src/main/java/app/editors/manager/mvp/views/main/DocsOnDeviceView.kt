@@ -11,7 +11,6 @@ interface DocsOnDeviceView : DocsBaseView {
     fun onActionDialog()
     fun onRemoveItem(item: Item)
     fun onRemoveItems(items: List<Item>)
-    fun onShowCamera(photoUri: Uri)
     fun onShowPortals()
     fun onOpenMedia(state: OpenState.Media)
 

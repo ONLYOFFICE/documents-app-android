@@ -100,7 +100,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            BaseActivity.REQUEST_ACTIVITY_WEB_VIEWER -> presenter.getRecentFiles()
             REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION, REQUEST_PDF ->
                 if (resultCode == Activity.RESULT_CANCELED) {
                     presenter.deleteTempFile()
@@ -180,9 +179,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun openFile(response: CloudFile) {
         val ext = response.fileExst
         if (StringUtils.isVideoSupport(ext) || StringUtils.isImage(ext)) {
-            MediaActivity.show(this, getExplorer(response), false)
+            showMediaActivity(getExplorer(response), false) {
+                // Stub
+            }
         } else if (StringUtils.isDocument(ext)) {
-            WebViewerActivity.show(requireActivity(), response)
+            activity?.showWebViewer(response)
         } else {
             onError(getString(R.string.error_unsupported_format))
         }
@@ -263,7 +264,9 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                 showEditors(state.uri, EditorsType.PDF)
             }
             is OpenState.Media -> {
-                MediaActivity.show(this, state.explorer, state.isWebDav)
+                showMediaActivity(state.explorer, state.isWebDav) {
+                    // Stub
+                }
             }
         }
     }
