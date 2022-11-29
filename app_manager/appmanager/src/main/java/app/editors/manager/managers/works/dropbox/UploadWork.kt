@@ -5,21 +5,21 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.WorkerParameters
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.app.App
-import app.documents.core.network.storages.dropbox.login.DropboxResponse
+import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.login.models.request.ProgressRequestBody
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
-import app.editors.manager.managers.works.BaseStorageUploadWork
-import app.documents.core.network.common.utils.DropboxUtils
+import app.documents.core.network.storages.dropbox.login.DropboxResponse
+import app.documents.core.network.storages.dropbox.models.explorer.DropboxItem
+import app.editors.manager.app.App
 import app.editors.manager.app.dropboxProvider
+import app.editors.manager.managers.works.BaseStorageUploadWork
+import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.Headers
 import okhttp3.MultipartBody
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorageUploadWork(context, workerParams) {
@@ -55,7 +55,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
                 }
             }\",\"autorename\":true,\"mute\":true,\"strict_conflict\":false}"
 
-            when(val response = api.upload(request, createMultipartBody(from)).blockingGet()) {
+            when (val response = api.upload(request, createMultipartBody(from)).blockingGet()) {
                 is DropboxResponse.Success -> {
                     notificationUtils.removeNotification(id.hashCode())
                     if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
@@ -63,7 +63,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
                         sendBroadcastUploadComplete(
                             path,
                             title!!,
-                            getCloudFile((response.response as app.documents.core.network.storages.dropbox.models.explorer.DropboxItem)),
+                            getCloudFile((response.response as DropboxItem)),
                             path
                         )
                     } else {
@@ -71,7 +71,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
                     }
                 }
                 is DropboxResponse.Error -> {
-                    if(tag == BaseStorageDocsFragment.KEY_UPLOAD) {
+                    if (tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                         notificationUtils.showUploadErrorNotification(id.hashCode(), title)
                     } else {
                         from?.let { DocumentFile.fromSingleUri(applicationContext, it)?.delete() }
@@ -101,16 +101,13 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorage
         return Result.success()
     }
 
-    private fun getCloudFile(item: app.documents.core.network.storages.dropbox.models.explorer.DropboxItem): CloudFile = CloudFile().apply {
+    private fun getCloudFile(item: DropboxItem): CloudFile = CloudFile().apply {
             id = item.path_display
             title = item.name
             versionGroup = item.rev
             pureContentLength = item.size.toLong()
             fileExst = StringUtils.getExtensionFromPath(item.name.lowercase(Locale.getDefault()))
-            updated = SimpleDateFormat(
-                "yyyy-MM-dd'T'HH:mm:ss",
-                Locale.getDefault()
-            ).parse(item.client_modified)
+            updated = StringUtils.getDate("yyyy-MM-dd'T'HH:mm:ss", item.client_modified)
         }
 
     private fun createMultipartBody(uri: Uri?): MultipartBody.Part {

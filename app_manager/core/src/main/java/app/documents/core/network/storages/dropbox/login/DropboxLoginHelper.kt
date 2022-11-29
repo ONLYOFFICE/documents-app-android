@@ -66,7 +66,6 @@ class DropboxLoginHelper @Inject constructor(
     }
 
     private suspend fun createUser(user: FullAccount, accessToken: String, refreshToken: String) {
-        networkSettings.setBaseUrl(DropboxService.DROPBOX_BASE_URL)
         val cloudAccount = CloudAccount(
             id = user.accountId,
             isWebDav = false,

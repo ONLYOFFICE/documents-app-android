@@ -5,23 +5,23 @@ import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.R
-import app.editors.manager.app.App
+import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
-import app.editors.manager.mvp.views.base.BaseStorageDocsView
-import app.editors.manager.managers.works.BaseStorageDownloadWork
-import app.editors.manager.managers.works.BaseStorageUploadWork
-import app.documents.core.network.storages.dropbox.api.DropboxService
 import app.documents.core.network.storages.dropbox.login.DropboxResponse
-import app.editors.manager.managers.providers.DropboxFileProvider
-import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.storages.dropbox.models.request.TokenRefreshRequest
 import app.documents.core.network.storages.dropbox.models.request.TokenRequest
+import app.documents.core.network.storages.dropbox.models.response.RefreshTokenResponse
+import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.app.dropboxLoginProvider
+import app.editors.manager.managers.providers.DropboxFileProvider
+import app.editors.manager.managers.works.BaseStorageDownloadWork
+import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.dropbox.DownloadWork
 import app.editors.manager.managers.works.dropbox.UploadWork
+import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -33,7 +33,6 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
-import okhttp3.Credentials
 
 
 class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
@@ -47,7 +46,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             itemClicked?.let { item ->
                 (fileProvider as DropboxFileProvider).share(item.id)?.let { externalLinkResponse ->
                     disposable.add(externalLinkResponse
-                        .subscribe( { response ->
+                        .subscribe({ response ->
                             item.shared = !item.shared
                             response.link.let { link ->
                                 KeyboardUtils.setDataToClipboard(
@@ -60,7 +59,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                                 true,
                                 context.getString(R.string.share_clipboard_external_copied)
                             )
-                        }) {throwable: Throwable -> fetchError(throwable)}
+                        }) { throwable: Throwable -> fetchError(throwable) }
                     )
                 }
             }
@@ -71,7 +70,6 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             CoroutineScope(Dispatchers.Default).launch {
                 App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                     withContext(Dispatchers.Main) {
-                        setBaseUrl(DropboxService.DROPBOX_BASE_URL)
                         getItemsById(DropboxUtils.DROPBOX_ROOT)
                     }
 
@@ -83,7 +81,6 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                     AccountUtils.getAccount(context, cloudAccount.getAccountName())?.let {
                         fileProvider = DropboxFileProvider()
                         withContext(Dispatchers.Main) {
-                            setBaseUrl(DropboxService.DROPBOX_BASE_URL)
                             getItemsById(DropboxUtils.DROPBOX_ROOT)
                         }
                     }
@@ -92,11 +89,6 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                 }
             }
         }
-    }
-
-    override fun download(downloadTo: Uri) {
-        setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
-        super.download(downloadTo)
     }
 
     override fun startDownload(downloadTo: Uri, item: Item?) {
@@ -116,17 +108,6 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         workManager.enqueue(request)
     }
 
-    override fun filter(value: String, isSubmitted: Boolean): Boolean {
-        setBaseUrl(DropboxService.DROPBOX_BASE_URL)
-        return super.filter(value, isSubmitted)
-    }
-
-    override fun refresh(): Boolean {
-        setBaseUrl(DropboxService.DROPBOX_BASE_URL)
-        return super.refresh()
-    }
-
-
     override fun getNextList() {
         val id = modelExplorerStack.currentId
         val args = getArgs(filteringValue)
@@ -143,7 +124,6 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
 
     fun upload(uri: Uri?, uris: ClipData?, tag: String) {
-        setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
         val uploadUris = mutableListOf<Uri>()
         var index = 0
 
@@ -200,7 +180,6 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun getFileInfo() {
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
         fileProvider?.let { provider ->
             downloadDisposable = provider.fileInfo(itemClicked)
                 .subscribeOn(Schedulers.io())
@@ -248,21 +227,6 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         viewState.onItemContext(state)
     }
 
-    override fun createDocs(title: String) {
-        setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
-        super.createDocs(title)
-    }
-
-    override fun delete(): Boolean {
-        setBaseUrl(DropboxService.DROPBOX_BASE_URL)
-        return super.delete()
-    }
-
-    private fun setBaseUrl(baseUrl: String) {
-        networkSettings.setBaseUrl(baseUrl)
-        (fileProvider as DropboxFileProvider).refreshInstance()
-    }
-
     override fun refreshToken() {
        CoroutineScope(Dispatchers.Default).launch {
            accountDao.getAccountOnline()?.let { account ->
@@ -274,9 +238,8 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                    )
                ).subscribe({ responseRefresh ->
                    if (responseRefresh is DropboxResponse.Success) {
-                       val response = responseRefresh.response as app.documents.core.network.storages.dropbox.models.response.RefreshTokenResponse
+                       val response = responseRefresh.response as RefreshTokenResponse
                        AccountUtils.setToken(context, account.getAccountName(), response.accessToken)
-                       setBaseUrl(DropboxService.DROPBOX_BASE_URL)
                        getItemsById(DropboxUtils.DROPBOX_ROOT)
                    } else {
                        viewState.onRefreshToken()
@@ -288,5 +251,13 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                viewState.onRefreshToken()
            }
        }
+    }
+
+    override fun fetchError(throwable: Throwable) {
+        when (throwable.message) {
+            DropboxUtils.DROPBOX_ERROR_EMAIL_NOT_VERIFIED ->
+                viewState.onError(context.getString(R.string.storage_dropbox_email_not_verified_error))
+            else -> super.fetchError(throwable)
+        }
     }
 }

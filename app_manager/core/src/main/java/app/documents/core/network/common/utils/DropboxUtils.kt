@@ -1,10 +1,13 @@
 package app.documents.core.network.common.utils
 
-import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.models.Storage
+import app.documents.core.network.storages.dropbox.login.DropboxResponse
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.SerializableString
 import com.fasterxml.jackson.core.io.CharacterEscapes
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
+import retrofit2.HttpException
+import retrofit2.Response
 import java.io.ByteArrayOutputStream
 
 object DropboxUtils {
@@ -18,10 +21,10 @@ object DropboxUtils {
     const val DROPBOX_ACCESS_TOKEN_NAME = "access_token"
     const val DROPBOX_ACCOUNT_ID_NAME = "account_id"
 
-    val storage = Storage(
-        ApiContract.Storage.DROPBOX,
+    const val DROPBOX_BASE_URL = "https://api.dropboxapi.com/"
+    const val DROPBOX_BASE_URL_CONTENT = "https://content.dropboxapi.com/"
 
-    )
+    const val DROPBOX_ERROR_EMAIL_NOT_VERIFIED = "email_not_verified"
 
     @JvmStatic
     fun encodeUnicodeSymbolsDropbox(title: String): String {
@@ -50,4 +53,23 @@ object DropboxUtils {
         return stream.toString().split(":")[1].split("\"")[1]
     }
 
+    fun getErrorMessage(response: Response<*>): DropboxResponse.Error {
+        val message = response.errorBody()?.string()
+        return if (!message.isNullOrEmpty()) {
+            val errorResponse = Gson().fromJson(message, DropboxError::class.java)
+            DropboxResponse.Error(Throwable(errorResponse.error.message))
+        } else {
+            DropboxResponse.Error(HttpException(response))
+        }
+    }
+
+    private data class DropboxError(
+        @SerializedName("error")
+        val error: ErrorField
+    ) {
+        data class ErrorField(
+            @SerializedName(".tag")
+            val message: String
+        )
+    }
 }

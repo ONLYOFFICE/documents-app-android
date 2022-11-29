@@ -16,8 +16,6 @@ interface DropboxService {
 
     companion object {
         const val API_VERSION = "2/"
-        const val DROPBOX_BASE_URL = "https://api.dropboxapi.com/"
-        const val DROPBOX_BASE_URL_CONTENT = "https://content.dropboxapi.com/"
     }
 
     @Headers(
@@ -31,18 +29,6 @@ interface DropboxService {
     )
     @POST("${API_VERSION}files/list_folder/continue")
     fun getNextFileList(@Body request: ExplorerContinueRequest): Single<Response<ExplorerResponse>>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
-    )
-    @POST("${API_VERSION}files/download")
-    fun download(@Header(DropboxUtils.DROPBOX_API_ARG_HEADER) request: String): Single<Response<ResponseBody>>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
-    )
-    @POST("${API_VERSION}files/download_zip")
-    fun downloadFolder(@Header(DropboxUtils.DROPBOX_API_ARG_HEADER) request: String): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE
@@ -109,12 +95,4 @@ interface DropboxService {
     )
     @POST("${API_VERSION}files/search/continue_v2")
     fun searchNextList(@Body request: ExplorerContinueRequest): Single<Response<SearchResponse>>
-
-    @Multipart
-    @Headers("Content-Type:application/octet-stream")
-    @POST("${API_VERSION}files/upload")
-    fun upload(
-        @Header(DropboxUtils.DROPBOX_API_ARG_HEADER) request: String,
-        @Part part: MultipartBody.Part
-    ): Single<Response<DropboxItem>>
 }

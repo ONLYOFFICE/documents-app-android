@@ -1,5 +1,6 @@
 package app.documents.core.network.storages.dropbox.api
 
+import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.storages.dropbox.login.DropboxResponse
 import app.documents.core.network.storages.dropbox.models.operations.MoveCopyBatchCheck
 import app.documents.core.network.storages.dropbox.models.request.*
@@ -14,6 +15,7 @@ import retrofit2.Response
 
 class DropboxProvider(
     private val dropBoxService: DropboxService,
+    private val dropBoxContentService: DropboxContentService,
     private val dropboxErrorHandler: BehaviorRelay<DropboxResponse.Error>? = null
 ) {
 
@@ -32,14 +34,14 @@ class DropboxProvider(
     }
 
     fun download(request: String): Single<Response<ResponseBody>> {
-        return dropBoxService.download(request)
+        return dropBoxContentService.download(request)
             //.map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun downloadFolder(request: String): Single<Response<ResponseBody>> {
-        return dropBoxService.downloadFolder(request)
+        return dropBoxContentService.downloadFolder(request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -119,7 +121,7 @@ class DropboxProvider(
     }
 
     fun upload(request: String, part: MultipartBody.Part): Single<DropboxResponse> {
-        return dropBoxService.upload(request, part)
+        return dropBoxContentService.upload(request, part)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -129,9 +131,10 @@ class DropboxProvider(
         return if (response.isSuccessful && response.body() != null) {
             DropboxResponse.Success(response.body()!!)
         } else {
-            val error = DropboxResponse.Error(HttpException(response))
+            val error = DropboxUtils.getErrorMessage(response)
             dropboxErrorHandler?.accept(error)
             return error
         }
     }
+
 }
