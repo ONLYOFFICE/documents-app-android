@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.annotation.SuppressLint
-import android.content.ClipData
 import android.net.Uri
 import app.documents.core.account.Recent
 import app.documents.core.network.ApiContract
@@ -305,7 +304,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     @SuppressLint("MissingPermission")
     fun deleteTempFile() {
         if (tempFile != null && checkReadWritePermission(context)) {
-            val uri = Uri.parse(tempFile!!.webUrl)
+            val uri = Uri.parse(tempFile?.webUrl)
             if (uri.path != null) {
                 asyncDeletePath(uri.path ?: "")
             }

@@ -135,7 +135,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ response ->
-                    if (response.isSuccessful && response.code() == 200) {
+                    if (response.isSuccessful && response.code() == 200 || response.code() == 401) {
                         viewState.onNextCloudLogin(correctUrl.toString())
                     } else {
                         if (correctUrl.toString().startsWith(ApiContract.SCHEME_HTTPS)) {
@@ -242,56 +242,4 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             }
         }
     }
-
-    private fun correctUrl(url: String, provider: WebDavApi.Providers): String {
-        var copyUrl = url
-        val correctUrl = StringBuilder()
-        copyUrl = copyUrl.replace("\\s+".toRegex(), "")
-        val uri = Uri.parse(copyUrl)
-        val path = uri.path
-        when (provider) {
-            WebDavApi.Providers.NextCloud, WebDavApi.Providers.OwnCloud -> {
-            }
-            WebDavApi.Providers.Yandex, WebDavApi.Providers.WebDav -> {
-            }
-            else -> {
-                // Stub
-            }
-        }
-        if (copyUrl.startsWith(ApiContract.SCHEME_HTTP)) {
-            correctUrl.append(ApiContract.SCHEME_HTTPS).append(copyUrl.replace(ApiContract.SCHEME_HTTP.toRegex(), ""))
-        } else if (copyUrl.startsWith(ApiContract.SCHEME_HTTPS)) {
-            correctUrl.append(copyUrl)
-        } else {
-            correctUrl.append(ApiContract.SCHEME_HTTPS).append(copyUrl)
-        }
-        if (correctUrl[correctUrl.length - 1] != '/') {
-            correctUrl.append("/")
-        }
-        if (provider != WebDavApi.Providers.Yandex) {
-            try {
-                val checkUrl = URL(correctUrl.toString())
-            } catch (e: MalformedURLException) {
-                viewState.onUrlError(context.getString(R.string.errors_path_url))
-                return ""
-            }
-        }
-        return correctUrl.toString()
-    }
-
-    private fun correctPortal(portal: String): String {
-        var copyPortal = portal
-        if (copyPortal.contains(ApiContract.SCHEME_HTTP)) {
-            copyPortal = copyPortal.replace(ApiContract.SCHEME_HTTP.toRegex(), "")
-        } else if (copyPortal.contains(ApiContract.SCHEME_HTTPS)) {
-            copyPortal = copyPortal.replace(ApiContract.SCHEME_HTTPS.toRegex(), "")
-        }
-        return if (copyPortal.contains("/")) {
-            correctPortal(copyPortal.substring(0, copyPortal.indexOf("/")))
-        } else {
-            copyPortal
-        }
-    }
-
-
 }

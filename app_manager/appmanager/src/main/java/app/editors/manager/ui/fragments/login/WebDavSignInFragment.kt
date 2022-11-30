@@ -1,7 +1,6 @@
 package app.editors.manager.ui.fragments.login
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -17,6 +16,7 @@ import app.editors.manager.ui.activities.login.NextCloudLoginActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
 
@@ -50,11 +50,7 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            wevDavProvider = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getSerializable(KEY_PROVIDER, WebDavApi.Providers::class.java) as WebDavApi.Providers
-            } else {
-                it.getSerializable(KEY_PROVIDER) as WebDavApi.Providers
-            }
+            wevDavProvider = it.getSerializableExt(KEY_PROVIDER, WebDavApi.Providers::class.java)
         }
     }
 
