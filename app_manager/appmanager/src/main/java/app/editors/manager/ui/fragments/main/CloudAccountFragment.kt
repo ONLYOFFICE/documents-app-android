@@ -8,20 +8,16 @@ import android.view.*
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavService
-import app.editors.manager.BuildConfig
-import app.editors.manager.R
-import app.editors.manager.databinding.CloudsAccountsLayoutBinding
-import app.documents.core.network.common.models.Storage
 import app.documents.core.network.common.utils.GoogleDriveUtils
+import app.documents.core.network.common.utils.OneDriveUtils
+import app.documents.core.network.webdav.WebDavService
+import app.documents.core.storage.account.CloudAccount
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.databinding.CloudsAccountsLayoutBinding
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.presenters.main.CloudAccountState
 import app.editors.manager.mvp.views.main.CloudAccountView
-import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
-import app.documents.core.network.common.utils.OneDriveUtils
-import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
@@ -34,6 +30,8 @@ import app.editors.manager.ui.adapters.CloudAccountAdapter
 import app.editors.manager.ui.dialogs.AccountContextDialog
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
+import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -383,6 +381,7 @@ class CloudAccountFragment : BaseAppFragment(),
     override fun onDropboxLogin() {
         hideDialog(forceHide = true)
         presenter.dropboxLogin(this) {
+            App.getApp().refreshDropboxInstance()
             MainActivity.show(requireContext())
             requireActivity().finish()
         }

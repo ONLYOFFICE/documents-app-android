@@ -112,6 +112,7 @@ class CloudsFragment : BaseAppFragment() {
             R.string.storage_select_drop_box
         ) {
             dropboxLoginHelper.startSignInActivity(this) {
+                App.getApp().refreshDropboxInstance()
                 MainActivity.show(requireContext())
                 requireActivity().finish()
             }

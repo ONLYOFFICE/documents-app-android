@@ -70,14 +70,14 @@ class App : Application() {
             "App component can't be null"
         }
 
+    private var _dropboxComponent: DropboxComponent? = null
+    val dropboxComponent: DropboxComponent
+        get() = checkNotNull(_dropboxComponent) {
+            "App component can't be null"
+        }
+
     val coreComponent: CoreComponent by lazy  {
         DaggerCoreComponent.builder()
-            .appComponent(appComponent)
-            .build()
-    }
-
-    val dropboxComponent: DropboxComponent by lazy {
-        DaggerDropboxComponent.builder()
             .appComponent(appComponent)
             .build()
     }
@@ -106,6 +106,13 @@ class App : Application() {
         if (isDesktop != currentDesktopMode) {
             isDesktop = currentDesktopMode
         }
+    }
+
+    fun refreshDropboxInstance() {
+        _dropboxComponent = DaggerDropboxComponent
+            .builder()
+            .appComponent(appComponent)
+            .build()
     }
 
     fun checkDeXEnabled(): Boolean {
@@ -176,6 +183,7 @@ class App : Application() {
         _appComponent = DaggerAppComponent.builder()
             .context(context = this)
             .build()
+        refreshDropboxInstance()
     }
 
     private fun initCrashlytics() {

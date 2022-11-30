@@ -25,6 +25,8 @@ object DropboxUtils {
     const val DROPBOX_BASE_URL_CONTENT = "https://content.dropboxapi.com/"
 
     const val DROPBOX_ERROR_EMAIL_NOT_VERIFIED = "email_not_verified"
+    const val DROPBOX_EXPIRED_ACCESS_TOKEN = "expired_access_token"
+    const val DROPBOX_INVALID_ACCESS_TOKEN = "invalid_access_token"
 
     @JvmStatic
     fun encodeUnicodeSymbolsDropbox(title: String): String {

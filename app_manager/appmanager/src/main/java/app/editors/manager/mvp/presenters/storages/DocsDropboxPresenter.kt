@@ -15,6 +15,7 @@ import app.documents.core.network.storages.dropbox.models.request.TokenRequest
 import app.documents.core.network.storages.dropbox.models.response.RefreshTokenResponse
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.dropboxLoginProvider
 import app.editors.manager.managers.providers.DropboxFileProvider
 import app.editors.manager.managers.works.BaseStorageDownloadWork
@@ -228,35 +229,34 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun refreshToken() {
-       CoroutineScope(Dispatchers.Default).launch {
-           accountDao.getAccountOnline()?.let { account ->
-               val request = TokenRefreshRequest(refresh_token = account.refreshToken)
-               context.dropboxLoginProvider.updateRefreshToken(
-                   mapOf(
-                       TokenRefreshRequest::refresh_token.name to request.refresh_token,
-                       TokenRequest::grant_type.name to request.grant_type,
-                   )
-               ).subscribe({ responseRefresh ->
-                   if (responseRefresh is DropboxResponse.Success) {
-                       val response = responseRefresh.response as RefreshTokenResponse
-                       AccountUtils.setToken(context, account.getAccountName(), response.accessToken)
-                       getItemsById(DropboxUtils.DROPBOX_ROOT)
-                   } else {
-                       viewState.onRefreshToken()
-                   }
-               }) {
-                   viewState.onRefreshToken()
-               }
-           } ?: run {
-               viewState.onRefreshToken()
-           }
-       }
+        context.accountOnline?.getAccountName()?.let { accountName ->
+            AccountUtils.getAccount(context, accountName)?.let { account ->
+                val refreshToken = AccountUtils.getAccountData(context, account).refreshToken.orEmpty()
+                val request = TokenRefreshRequest(refresh_token = refreshToken)
+                context.dropboxLoginProvider.updateRefreshToken(
+                    mapOf(
+                        TokenRefreshRequest::refresh_token.name to request.refresh_token,
+                        TokenRequest::grant_type.name to request.grant_type,
+                    )
+                ).subscribe({ responseRefresh ->
+                    if (responseRefresh is DropboxResponse.Success) {
+                        val response = responseRefresh.response as RefreshTokenResponse
+                        AccountUtils.setToken(context, accountName, response.accessToken)
+                        App.getApp().refreshDropboxInstance()
+                        getItemsById(DropboxUtils.DROPBOX_ROOT)
+                    } else viewState.onRefreshToken()
+                }) { viewState.onRefreshToken() }
+            }
+        }
     }
 
     override fun fetchError(throwable: Throwable) {
         when (throwable.message) {
-            DropboxUtils.DROPBOX_ERROR_EMAIL_NOT_VERIFIED ->
+            DropboxUtils.DROPBOX_ERROR_EMAIL_NOT_VERIFIED -> {
                 viewState.onError(context.getString(R.string.storage_dropbox_email_not_verified_error))
+            }
+            DropboxUtils.DROPBOX_EXPIRED_ACCESS_TOKEN -> refreshToken()
+            DropboxUtils.DROPBOX_INVALID_ACCESS_TOKEN -> viewState.onRefreshToken()
             else -> super.fetchError(throwable)
         }
     }

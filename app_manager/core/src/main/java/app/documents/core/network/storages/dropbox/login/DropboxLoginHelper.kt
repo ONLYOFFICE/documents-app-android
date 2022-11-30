@@ -92,6 +92,7 @@ class DropboxLoginHelper @Inject constructor(
             accessToken = accessToken,
             webDav = cloudAccount.webDavPath,
             email = user.email,
+            refreshToken = refreshToken
         )
 
         saveAccount(cloudAccount = cloudAccount, accountData = accountData, accessToken = accessToken)

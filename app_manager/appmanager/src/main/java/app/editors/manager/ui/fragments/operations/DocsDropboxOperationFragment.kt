@@ -28,6 +28,7 @@ class DocsDropboxOperationFragment : BaseStorageOperationsFragment() {
 
     override fun onRefreshToken() {
         dropboxLoginHelper.startSignInActivity(this) {
+            App.getApp().refreshDropboxInstance()
             MainActivity.show(requireContext())
             requireActivity().finish()
         }

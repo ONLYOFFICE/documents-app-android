@@ -107,6 +107,7 @@ class WebDavLoginActivity : BaseAppActivity() {
 
     private fun showDropboxSignInFragment() {
         dropboxLoginHelper.startSignInActivity(this) {
+            App.getApp().refreshDropboxInstance()
             MainActivity.show(this)
             finish()
         }
