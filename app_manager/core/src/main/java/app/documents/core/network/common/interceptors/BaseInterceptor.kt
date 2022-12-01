@@ -23,15 +23,11 @@ class BaseInterceptor(private val token: String?, private val context: Context) 
             KEY_AUTH + token
         }
         return chain.proceed(
-            chain.request().newBuilder().addHeader(
-                ApiContract.HEADER_AUTHORIZATION,
-                token ?: ""
-            )
-//                .addHeader(
-//                    ApiContract.HEADER_AGENT,
-//                    "Android ${BuildConfig.APP_NAME} Documents (id = ${BuildConfig.APPLICATION_ID}, SDK = ${Build.VERSION.SDK_INT}, build = ${BuildConfig.VERSION_CODE}, appName = ${BuildConfig.VERSION_NAME}"
-//                )
-                    // TODO add build config
+            chain.request()
+                .newBuilder().apply {
+                    if (chain.request().headers()[ApiContract.HEADER_AUTHORIZATION] == null)
+                        addHeader(ApiContract.HEADER_AUTHORIZATION, token.orEmpty())
+                }
                 .build()
         )
     }

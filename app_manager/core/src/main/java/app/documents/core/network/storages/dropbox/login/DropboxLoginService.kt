@@ -22,7 +22,6 @@ interface DropboxLoginService {
         @QueryMap map: Map<String, String>
     ): Single<Response<TokenResponse>>
 
-    @Headers(ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,)
     @POST("oauth2/token")
     fun updateRefreshToken(
         @Header("Authorization") auth: String,
