@@ -100,7 +100,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { googleDriveResponse ->
-                when(googleDriveResponse) {
+                when (googleDriveResponse) {
                     is GoogleDriveResponse.Success -> {
                         val response = googleDriveResponse.response as GoogleDriveExplorerResponse
                         return@map getExplorer(response.files, response.nexPageToken, id!!)
@@ -177,14 +177,12 @@ class GoogleDriveFileProvider: BaseFileProvider {
                             ext
                         )
                     }
-                val temp = title.let { StringUtils.getNameWithoutExtension(it) }.let { name ->
-                    FileUtils.createTempAssetsFile(
-                        App.getApp(),
-                        path,
-                        name,
-                        StringUtils.getExtensionFromPath(title)
-                    )
-                }
+                val temp = FileUtils.createTempAssetsFile(
+                    App.getApp(),
+                    path,
+                    StringUtils.getNameWithoutExtension(title),
+                    StringUtils.getExtensionFromPath(title)
+                )
                 upload(folderId, mutableListOf(Uri.fromFile(temp)))?.subscribe()
                 val file = CloudFile()
                 file.webUrl = Uri.fromFile(temp).toString()
@@ -475,6 +473,6 @@ class GoogleDriveFileProvider: BaseFileProvider {
     }
 
     fun refreshInstance() {
-        api = App.getApp().googleDriveProvider
+        App.getApp().refreshGoogleDriveInstance()
     }
 }

@@ -73,7 +73,13 @@ class App : Application() {
     private var _dropboxComponent: DropboxComponent? = null
     val dropboxComponent: DropboxComponent
         get() = checkNotNull(_dropboxComponent) {
-            "App component can't be null"
+            "Dropbox component can't be null"
+        }
+
+    private var _googleDriveComponent: GoogleDriveComponent? = null
+    val googleDriveComponent: GoogleDriveComponent
+        get() = checkNotNull(_googleDriveComponent) {
+            "GoogleDrive component can't be null"
         }
 
     val coreComponent: CoreComponent by lazy  {
@@ -84,12 +90,6 @@ class App : Application() {
 
     val oneDriveComponent: OneDriveComponent by lazy {
         DaggerOneDriveComponent.builder()
-            .appComponent(appComponent)
-            .build()
-    }
-
-    val googleDriveComponent: GoogleDriveComponent by lazy {
-        DaggerGoogleDriveComponent.builder()
             .appComponent(appComponent)
             .build()
     }
@@ -110,6 +110,13 @@ class App : Application() {
 
     fun refreshDropboxInstance() {
         _dropboxComponent = DaggerDropboxComponent
+            .builder()
+            .appComponent(appComponent)
+            .build()
+    }
+
+    fun refreshGoogleDriveInstance() {
+        _googleDriveComponent = DaggerGoogleDriveComponent
             .builder()
             .appComponent(appComponent)
             .build()
@@ -184,6 +191,7 @@ class App : Application() {
             .context(context = this)
             .build()
         refreshDropboxInstance()
+        refreshGoogleDriveInstance()
     }
 
     private fun initCrashlytics() {
