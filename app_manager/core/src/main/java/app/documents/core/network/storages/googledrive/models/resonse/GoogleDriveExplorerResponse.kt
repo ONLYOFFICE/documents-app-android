@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GoogleDriveExplorerResponse(
-    val nexPageToken: String = "",
+    val nextPageToken: String = "",
     val files: List<GoogleDriveFile> = emptyList()
 )

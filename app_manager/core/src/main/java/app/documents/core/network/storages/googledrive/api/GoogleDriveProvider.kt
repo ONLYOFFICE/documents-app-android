@@ -18,12 +18,12 @@ sealed class GoogleDriveResponse {
 }
 
 class GoogleDriveProvider(
-    private val googleDriveServiceProvider: GoogleDriveService,
+    private val googleDriveService: GoogleDriveService,
     private val googleDriveErrorHandle: BehaviorRelay<GoogleDriveResponse.Error>? = null
 ) {
 
-    fun getFiles(map: Map<String, String>): Single<GoogleDriveResponse> {
-        return googleDriveServiceProvider.getFiles(map)
+    fun getFiles(map: Map<String, String>, intMap: Map<String, Int>): Single<GoogleDriveResponse> {
+        return googleDriveService.getFiles(map, intMap)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -33,7 +33,7 @@ class GoogleDriveProvider(
         fileId: String,
         map: Map<String, String>
     ): Single<GoogleDriveResponse> {
-        return googleDriveServiceProvider.getFileInfo(fileId, map)
+        return googleDriveService.getFileInfo(fileId, map)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -43,53 +43,53 @@ class GoogleDriveProvider(
         fileId: String,
         map: Map<String, String> = mapOf()
     ): Single<Response<ResponseBody>> {
-        return googleDriveServiceProvider.download(fileId, map)
+        return googleDriveService.download(fileId, map)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun delete(fileId: String): Single<Response<ResponseBody>> {
-        return googleDriveServiceProvider.deleteItem(fileId)
+        return googleDriveService.deleteItem(fileId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun rename(fileId: String, request: RenameRequest): Single<GoogleDriveResponse> {
-        return googleDriveServiceProvider.rename(fileId, request)
+        return googleDriveService.rename(fileId, request)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun move(fileId: String, map: Map<String, String?>): Single<GoogleDriveResponse> {
-        return googleDriveServiceProvider.move(fileId, map)
+        return googleDriveService.move(fileId, map)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun copy(fileId: String): Single<GoogleDriveResponse> {
-        return googleDriveServiceProvider.copy(fileId)
+        return googleDriveService.copy(fileId)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun create(request: CreateItemRequest): Single<GoogleDriveResponse> {
-        return googleDriveServiceProvider.createItem(request)
+        return googleDriveService.createItem(request)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun createFile(request: CreateItemRequest): Single<Response<GoogleDriveFile>> {
-        return googleDriveServiceProvider.createItem(request)
+        return googleDriveService.createItem(request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun upload(request: CreateItemRequest, map: Map<String, String> = mapOf()): Single<Response<ResponseBody>> {
-        return googleDriveServiceProvider.upload(request, map)
+        return googleDriveService.upload(request, map)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -98,19 +98,19 @@ class GoogleDriveProvider(
         fileId: String,
         map: Map<String, String> = mapOf()
     ): Single<Response<ResponseBody>> {
-        return googleDriveServiceProvider.update(fileId, map)
+        return googleDriveService.update(fileId, map)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun share(fileId: String, request: ShareRequest): Single<Response<ResponseBody>> {
-        return googleDriveServiceProvider.share(fileId, request)
+        return googleDriveService.share(fileId, request)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun export(fileId: String, mimeType: String): Single<Response<ResponseBody>> {
-        return googleDriveServiceProvider.export(fileId, mapOf("mimeType" to mimeType))
+        return googleDriveService.export(fileId, mapOf("mimeType" to mimeType))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -126,7 +126,7 @@ class GoogleDriveProvider(
     }
 
     fun getUserInfo(token: String): Single<GoogleDriveResponse> {
-        return googleDriveServiceProvider.getUserInfo(token)
+        return googleDriveService.getUserInfo(token)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

@@ -7,10 +7,15 @@ import lib.toolkit.base.managers.utils.StringUtils
 
 object GoogleDriveUtils {
     const val GOOGLE_DRIVE_NEXT_PAGE_TOKEN = "pageToken"
+    const val GOOGLE_DRIVE_PAGE_SIZE = "pageSize"
+    const val GOOGLE_DRIVE_FOLDER = "folder"
     const val GOOGLE_DRIVE_FIELDS = "fields"
-    const val GOOGLE_DRIVE_FIELDS_VALUES = "nextPageToken, files/id, files/name, files/mimeType, files/description, files/parents, files/webViewLink, files/webContentLink, files/modifiedTime, files/createdTime, files/capabilities/canDelete, files/size"
     const val GOOGLE_DRIVE_SORT = "orderBy"
     const val GOOGLE_DRIVE_QUERY = "q"
+    const val GOOGLE_DRIVE_FIELDS_VALUES = "files/id, files/name, files/mimeType, files/description, files/parents, " +
+            "files/webViewLink, files/webContentLink, files/modifiedTime, files/createdTime, " +
+            "files/capabilities/canDelete, files/size, nextPageToken"
+
     private const val VAL_SORT_ASC = ""
     private const val VAL_SORT_DESC = " desc"
     private const val VAL_SORT_NAME = "name"
@@ -24,6 +29,8 @@ object GoogleDriveUtils {
     private const val SLIDES_MIMETYPE = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     private const val CELLS_MIMETYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
+    const val DEFAULT_PAGE_SIZE = 25
+
     val storage: Storage get() = Storage(
         ApiContract.Storage.GOOGLEDRIVE,
         BuildConfig.GOOGLE_COM_CLIENT_ID,
@@ -33,7 +40,7 @@ object GoogleDriveUtils {
     val webId: String get() = BuildConfig.GOOGLE_WEB_ID
 
     fun getSortBy(filter: Map<String, String>?): String {
-        return when(filter?.get(ApiContract.Parameters.ARG_SORT_BY)) {
+        return "$GOOGLE_DRIVE_FOLDER, " + when(filter?.get(ApiContract.Parameters.ARG_SORT_BY)) {
             ApiContract.Parameters.VAL_SORT_BY_TITLE -> VAL_SORT_NAME + getSortOrder(filter)
             ApiContract.Parameters.VAL_SORT_BY_UPDATED -> VAL_SORT_UPDATED + getSortOrder(filter)
             else -> VAL_SORT_NAME + getSortOrder(filter)

@@ -8,6 +8,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.editors.manager.R
 import app.documents.core.network.common.utils.GoogleDriveUtils
+import app.documents.core.network.manager.models.base.Entity
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import app.editors.manager.mvp.views.base.DocsGoogleDriveView
@@ -66,6 +67,10 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
                 }
             }
         }
+    }
+
+    override fun onDocsNext(list: List<Entity>?) {
+        explorerAdapter?.addItems(list)
     }
 
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {

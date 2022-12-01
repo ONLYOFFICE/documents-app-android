@@ -172,7 +172,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         fileProvider = null
     }
 
-    fun getItemsById(id: String?) {
+    open fun getItemsById(id: String?) {
         id?.let {
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             fileProvider?.let { provider ->

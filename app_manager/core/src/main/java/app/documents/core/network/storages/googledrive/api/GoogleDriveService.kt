@@ -19,7 +19,10 @@ interface GoogleDriveService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("drive/v3/files")
-    fun getFiles(@QueryMap map: Map<String,String>): Single<Response<GoogleDriveExplorerResponse>>
+    fun getFiles(
+        @QueryMap stringMap: Map<String, String> = mutableMapOf(),
+        @QueryMap integerMap: Map<String, Int> = mutableMapOf()
+    ): Single<Response<GoogleDriveExplorerResponse>>
 
 
     @Headers(

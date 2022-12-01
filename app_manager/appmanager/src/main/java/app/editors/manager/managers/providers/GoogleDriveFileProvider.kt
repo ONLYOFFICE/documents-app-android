@@ -94,16 +94,20 @@ class GoogleDriveFileProvider: BaseFileProvider {
         val map = mapOf(
             GoogleDriveUtils.GOOGLE_DRIVE_QUERY to queryString,
             GoogleDriveUtils.GOOGLE_DRIVE_FIELDS to GoogleDriveUtils.GOOGLE_DRIVE_FIELDS_VALUES,
-            GoogleDriveUtils.GOOGLE_DRIVE_SORT to GoogleDriveUtils.getSortBy(filter)
+            GoogleDriveUtils.GOOGLE_DRIVE_SORT to GoogleDriveUtils.getSortBy(filter),
+            GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN to filter?.get(GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN).orEmpty()
         )
-        return Observable.fromCallable { api.getFiles(map).blockingGet() }
+        val intMap = mapOf(
+            GoogleDriveUtils.GOOGLE_DRIVE_PAGE_SIZE to GoogleDriveUtils.DEFAULT_PAGE_SIZE
+        )
+        return Observable.fromCallable { api.getFiles(map, intMap).blockingGet() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { googleDriveResponse ->
                 when (googleDriveResponse) {
                     is GoogleDriveResponse.Success -> {
                         val response = googleDriveResponse.response as GoogleDriveExplorerResponse
-                        return@map getExplorer(response.files, response.nexPageToken, id!!)
+                        return@map getExplorer(response.files, response.nextPageToken, id!!)
                     }
                     is GoogleDriveResponse.Error -> {
                         throw googleDriveResponse.error
