@@ -34,6 +34,7 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.R
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
+import lib.toolkit.base.managers.utils.getSerializable
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
@@ -63,7 +64,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_STORAGE -> {
-                    val folder = data?.getSerializableExtra(StorageActivity.TAG_RESULT) as CloudFolder?
+                    val folder = data?.getSerializable(StorageActivity.TAG_RESULT, CloudFolder::class.java)
                     cloudPresenter.addFolderAndOpen(folder, linearLayoutManager?.findFirstVisibleItemPosition() ?: -1)
                 }
                 BaseActivity.REQUEST_ACTIVITY_SHARE -> {
@@ -74,14 +75,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
                     cameraUri?.let { uri ->
                         cloudPresenter.upload(uri, null)
-                    }
-                }
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> {
-                    data?.clipData?.let {
-//                        cloudPresenter.upload(null, it)
-                    }
-                    data?.data?.let {
-                        cloudPresenter.upload(it, null)
                     }
                 }
                 FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED -> {
