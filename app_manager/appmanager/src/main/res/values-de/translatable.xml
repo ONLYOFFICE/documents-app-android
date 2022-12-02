@@ -227,7 +227,6 @@
     <string name="list_action_upload">Datei hochladen</string>
     <string name="list_action_storage">Speicher von Drittanbietern verbinden</string>
     <!-- Dialog info --> <!-- Pager -->
-    <string name="main_pager_docs_my">Meine</string>
     <string name="main_pager_docs_common">Gemeinsame</string>
     <string name="main_pager_docs_share">Für mich freigegeben</string>
     <string name="main_pager_docs_projects">Projekte</string>

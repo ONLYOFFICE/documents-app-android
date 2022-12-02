@@ -210,7 +210,6 @@
     <string name="login_sms_send_again_after">ENVIAR NOVAMENTE APÓS</string>
     <string name="login_web_dav_title">Conectar a %1$s</string>
     <string name="main_pager_docs_common">Comum</string>
-    <string name="main_pager_docs_my">Meu</string>
     <string name="main_pager_docs_projects">Projetos</string>
     <string name="main_pager_docs_share">Compartilhado comigo</string>
     <string name="main_pager_docs_trash">Lixo</string>

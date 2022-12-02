@@ -304,7 +304,6 @@
     <!-- Dialog info -->
 
     <!-- Pager -->
-    <string name="main_pager_docs_my">Moje</string>
     <string name="main_pager_docs_common">Společné</string>
     <string name="main_pager_docs_share">Sdílené se mnou</string>
     <string name="main_pager_docs_projects">Projekty</string>

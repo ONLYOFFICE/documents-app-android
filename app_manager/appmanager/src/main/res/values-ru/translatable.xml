@@ -229,7 +229,6 @@
     <string name="login_password_recovery_success_hint">Если пользователь с почтой %1$s существует, то на этот email была отправлена инструкция по смене пароля.</string>
     <string name="login_password_recovery_toolbar_title">Восстановление пароля</string>
     <string name="main_pager_docs_common">Общие</string>
-    <string name="main_pager_docs_my">Мои</string>
     <string name="main_pager_docs_projects">Проекты</string>
     <string name="main_pager_docs_share">Доступные мне</string>
     <string name="main_pager_docs_trash">Корзина</string>

@@ -210,7 +210,6 @@
     <string name="login_sms_send_again_after">INVIA DI NUOVO IN SEGUITO</string>
     <string name="login_web_dav_title">Connettersi a %1$s</string>
     <string name="main_pager_docs_common">Comune</string>
-    <string name="main_pager_docs_my">I miei</string>
     <string name="main_pager_docs_projects">Progetti</string>
     <string name="main_pager_docs_share">Condivisi con me</string>
     <string name="main_pager_docs_trash">cestino</string>

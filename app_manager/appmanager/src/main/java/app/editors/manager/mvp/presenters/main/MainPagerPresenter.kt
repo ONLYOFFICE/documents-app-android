@@ -51,7 +51,11 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         disposable = getPortalModules().subscribe({ sections ->
             viewState.onFinishRequest()
             accountJson?.let { account ->
-                viewState.onRender(account, sections)
+                viewState.onRender(account, if (networkSetting.isDocSpace) {
+                    sections?.filter { it.current.rootFolderType != ApiContract.SectionType.CLOUD_FAVORITES }
+                } else {
+                    sections
+                })
                 checkFileData(Json.decodeFromString(account), fileData)
             }
         }) { throwable: Throwable ->

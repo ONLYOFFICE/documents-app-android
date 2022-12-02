@@ -212,7 +212,6 @@
     <string name="login_sms_send_again_after">RENVOYER APRÈS</string>
     <string name="login_web_dav_title">Connecter %1$s</string>
     <string name="main_pager_docs_common">Commun</string>
-    <string name="main_pager_docs_my">Mes</string>
     <string name="main_pager_docs_projects">Projets</string>
     <string name="main_pager_docs_share">Partagés avec moi</string>
     <string name="main_pager_docs_trash">Corbeille</string>

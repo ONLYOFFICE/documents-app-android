@@ -307,7 +307,6 @@
     <!-- Dialog info -->
 
     <!-- Pager -->
-    <string name="main_pager_docs_my">ຂອງຂ້ອຍ</string>
     <string name="main_pager_docs_common">ທົ່ວໄປ</string>
     <string name="main_pager_docs_share">ແບ່ງປັນກັບຂ້ອຍ</string>
     <string name="main_pager_docs_projects">ໂຄງການ</string>

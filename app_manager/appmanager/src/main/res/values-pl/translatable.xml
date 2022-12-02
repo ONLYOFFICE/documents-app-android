@@ -210,7 +210,6 @@
     <string name="login_sms_send_again_after">WYŚLIJ PONOWNIE PO</string>
     <string name="login_web_dav_title">Połącz z %1$s</string>
     <string name="main_pager_docs_common">Wspólne</string>
-    <string name="main_pager_docs_my">Moje</string>
     <string name="main_pager_docs_projects">Projekty</string>
     <string name="main_pager_docs_share">Udostępnione mi</string>
     <string name="main_pager_docs_trash">Kosz</string>

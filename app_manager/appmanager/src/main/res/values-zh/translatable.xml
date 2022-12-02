@@ -265,7 +265,6 @@
     <string name="list_action_storage">连接第三方存储</string>
     <!-- Dialog info -->
     <!-- Pager -->
-    <string name="main_pager_docs_my">我的</string>
     <string name="main_pager_docs_common">常见</string>
     <string name="main_pager_docs_share">与我分享</string>
     <string name="main_pager_docs_projects">项目</string>
