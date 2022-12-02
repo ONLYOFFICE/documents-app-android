@@ -11,16 +11,9 @@ import retrofit2.HttpException
 import retrofit2.Response
 
 class OneDriveLoginProvider(
-    private val oneDriveService: OneDriveLoginService,
+    private val oneDriveLoginService: OneDriveLoginService,
     private val oneDriveErrorHandler: BehaviorRelay<OneDriveResponse.Error>? = null
 ) {
-
-    fun getUserInfo(token: String): Single<OneDriveResponse> {
-        return oneDriveService.getUserInfo(token)
-            .map { fetchResponse(it) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
 
     fun refreshToken(refreshToken: String): Single<OneDriveResponse> {
         val params = mapOf(
@@ -31,7 +24,7 @@ class OneDriveLoginProvider(
             StorageContract.ARG_CLIENT_SECRET to BuildConfig.ONE_DRIVE_COM_CLIENT_SECRET,
             StorageContract.ARG_REFRESH_TOKEN to refreshToken
         )
-        return oneDriveService.getToken(params)
+        return oneDriveLoginService.getToken(params)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -46,7 +39,7 @@ class OneDriveLoginProvider(
             StorageContract.ARG_CLIENT_SECRET to BuildConfig.ONE_DRIVE_COM_CLIENT_SECRET,
             StorageContract.ARG_CODE to code
         )
-        return oneDriveService.getToken(params)
+        return oneDriveLoginService.getToken(params)
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

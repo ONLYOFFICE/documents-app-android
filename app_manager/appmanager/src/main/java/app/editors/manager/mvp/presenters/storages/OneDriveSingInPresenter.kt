@@ -6,9 +6,9 @@ import app.editors.manager.app.oneDriveLoginProvider
 import app.editors.manager.mvp.views.base.BaseStorageSignInView
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.storages.onedrive.api.OneDriveResponse
-import app.documents.core.network.storages.onedrive.api.OneDriveService
 import app.documents.core.network.storages.onedrive.models.response.AuthResponse
 import app.documents.core.network.storages.onedrive.models.user.User
+import app.editors.manager.app.oneDriveProvider
 import lib.toolkit.base.managers.utils.AccountData
 import moxy.InjectViewState
 
@@ -22,7 +22,6 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
     fun getToken(code: String) {
         var accessToken = ""
         var refreshToken = ""
-        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_AUTH_URL)
         disposable = context.oneDriveLoginProvider.getToken(code)
             .map { oneDriveResponse ->
                 viewState.onStartLogin()
@@ -31,29 +30,28 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
                         val response = oneDriveResponse.response as AuthResponse
                         accessToken = response.access_token
                         refreshToken = response.refresh_token
-                        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_BASE_URL)
                         return@map response
                     }
                     is OneDriveResponse.Error -> {
                         throw oneDriveResponse.error
                     }
                 }
-            }.flatMap { response -> context.oneDriveLoginProvider.getUserInfo((response).access_token) }
-            .subscribe { oneDriveResponse ->
-                when(oneDriveResponse) {
+            }.flatMap { response -> context.oneDriveProvider.getUserInfo(response.access_token) }
+            .subscribe ({ oneDriveResponse ->
+                when (oneDriveResponse) {
                     is OneDriveResponse.Success -> {
                         createUser((oneDriveResponse.response as User), accessToken, refreshToken)
+                        App.getApp().refreshOneDriveInstance()
                     }
                     is OneDriveResponse.Error -> {
-                        viewState.onError(oneDriveResponse.error.message)
+                        throw oneDriveResponse.error
                     }
                 }
-            }
+            }, ::fetchError)
     }
 
 
     private fun createUser(user: User, accessToken: String, refreshToken: String) {
-        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_BASE_URL)
         val cloudAccount = CloudAccount(
             id = user.userPrincipalName,
             isWebDav = false,

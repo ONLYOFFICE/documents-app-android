@@ -11,13 +11,6 @@ import retrofit2.http.*
 interface OneDriveLoginService {
 
     @Headers(
-        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @GET("${OneDriveService.API_VERSION}me/")
-    fun getUserInfo(@Header(ApiContract.HEADER_AUTHORIZATION) token: String): Single<Response<User>>
-
-    @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + "application/x-www-form-urlencoded",
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )

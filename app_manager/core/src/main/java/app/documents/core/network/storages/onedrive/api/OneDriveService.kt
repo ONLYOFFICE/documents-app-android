@@ -6,6 +6,7 @@ import app.documents.core.network.storages.onedrive.models.explorer.DriveItemVal
 import app.documents.core.network.storages.onedrive.models.request.*
 import app.documents.core.network.storages.onedrive.models.response.ExternalLinkResponse
 import app.documents.core.network.storages.onedrive.models.response.UploadResponse
+import app.documents.core.network.storages.onedrive.models.user.User
 import io.reactivex.Single
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -14,10 +15,15 @@ import retrofit2.http.*
 interface OneDriveService {
 
     companion object {
-        const val API_VERSION = "beta"
-        const val ONEDRIVE_BASE_URL = "https://graph.microsoft.com/"
-        const val ONEDRIVE_AUTH_URL = "https://login.microsoftonline.com/"
+        private const val API_VERSION = "beta"
     }
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("${API_VERSION}/me/")
+    fun getUserInfo(@Header(ApiContract.HEADER_AUTHORIZATION) token: String): Single<Response<User>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + "application/x-www-form-urlencoded",

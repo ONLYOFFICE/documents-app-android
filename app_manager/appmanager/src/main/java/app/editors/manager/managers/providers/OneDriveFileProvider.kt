@@ -58,7 +58,7 @@ class OneDriveFileProvider : BaseFileProvider {
 
 
     fun refreshInstance() {
-        api = App.getApp().oneDriveProvider
+        App.getApp().refreshOneDriveInstance()
     }
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {

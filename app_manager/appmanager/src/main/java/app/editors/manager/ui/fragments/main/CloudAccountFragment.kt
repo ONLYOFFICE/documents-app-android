@@ -374,7 +374,7 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onGoogleDriveLogin() {
-        hideDialog()
+        hideDialog(forceHide = true)
         showFragment(GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage), GoogleDriveSignInFragment.TAG, false)
     }
 
@@ -388,7 +388,7 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onOneDriveLogin() {
-        hideDialog()
+        hideDialog(forceHide = true)
         showFragment(OneDriveSignInFragment.newInstance(OneDriveUtils.storage), OneDriveSignInFragment.TAG, false)
     }
 

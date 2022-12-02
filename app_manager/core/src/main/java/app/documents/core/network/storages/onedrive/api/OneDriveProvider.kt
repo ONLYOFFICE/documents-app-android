@@ -19,6 +19,13 @@ class OneDriveProvider(
     private val oneDriveErrorHandler: BehaviorRelay<OneDriveResponse.Error>? = null
 ) {
 
+    fun getUserInfo(token: String): Single<OneDriveResponse> {
+        return oneDriveService.getUserInfo("Bearer $token")
+            .map { fetchResponse(it) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     fun authorization(parameters: Map<String, String>): Single<OneDriveResponse> {
         return oneDriveService.authorization(parameters)
             .map { fetchResponse(it) }

@@ -103,7 +103,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     override fun refreshToken() {
         val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
         val accData = AccountUtils.getAccountData(context, account)
-        networkSettings.setBaseUrl(OneDriveService.ONEDRIVE_AUTH_URL)
         disposable.add(context.oneDriveLoginProvider.refreshToken(accData.refreshToken.orEmpty())
             .subscribe { oneDriveResponse ->
                 when (oneDriveResponse) {
