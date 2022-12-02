@@ -3,6 +3,7 @@ package app.editors.manager.ui.fragments.media
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,10 +12,9 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
-import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentMediaPagerBinding
 import app.editors.manager.databinding.IncludeMediaHeaderPagerBinding
@@ -25,6 +25,7 @@ import app.editors.manager.ui.views.pager.PagingViewPager
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.isImageGif
+import lib.toolkit.base.managers.utils.getSerializableExt
 
 class MediaPagerFragment : BaseAppFragment() {
 
@@ -35,7 +36,7 @@ class MediaPagerFragment : BaseAppFragment() {
     private var toolbarView: View? = null
     private var mediaActivity: MediaActivity? = null
     private var toolbarViewHolder: ToolbarViewHolder? = null
-    private var pagerAdapter: PagerAdapter? = null
+    private var pagerAdapter: PagerAdapter2? = null
     private var selectedPosition = 0
     private var mediaExplorer: Explorer? = null
     private var isWebDav = false
@@ -96,7 +97,7 @@ class MediaPagerFragment : BaseAppFragment() {
 
     private fun getArgs() {
         arguments?.let { bundle ->
-            mediaExplorer = bundle.getSerializable(TAG_MEDIA) as Explorer?
+            mediaExplorer = bundle.getSerializableExt(TAG_MEDIA, Explorer::class.java)
             isWebDav = bundle.getBoolean(TAG_WEB_DAV)
         }
     }
@@ -107,11 +108,10 @@ class MediaPagerFragment : BaseAppFragment() {
         toolbarView = layoutInflater.inflate(R.layout.include_media_header_pager, null)
         toolbarViewHolder = ToolbarViewHolder(toolbarView)
         mediaActivity?.setToolbarView(toolbarView)
-        pagerAdapter = PagerAdapter(childFragmentManager)
-        pagerAdapter?.onPageSelected(clickedPosition)
+        pagerAdapter = PagerAdapter2(this, checkNotNull(mediaExplorer))
         viewBinding?.let {
             it.mediaPager.adapter = pagerAdapter
-            it.mediaPager.addOnPageChangeListener(pagerAdapter!!)
+            it.mediaPager.registerOnPageChangeCallback(PagerListener(checkNotNull(mediaExplorer)))
             it.mediaPager.currentItem = clickedPosition
         }
     }
@@ -152,8 +152,8 @@ class MediaPagerFragment : BaseAppFragment() {
         }
     }
 
-    val activeFragment: Fragment
-        get() = pagerAdapter?.instantiateItem(viewBinding?.mediaPager!!, selectedPosition) as Fragment
+    val activeFragment: Fragment?
+        get() = childFragmentManager.findFragmentByTag("f" + viewBinding?.mediaPager?.currentItem)
 
     fun isActiveFragment(fragment: Fragment): Boolean {
         return fragment == activeFragment
@@ -178,15 +178,12 @@ class MediaPagerFragment : BaseAppFragment() {
         }
     }
 
-    /*
-     * Pager adapter
-     * */
-    private inner class PagerAdapter(fragmentManager: FragmentManager) : FragmentStatePagerAdapter(
-        fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
-    ), OnPageChangeListener {
+    private inner class PagerAdapter2(fragment: Fragment, val explorer: Explorer): FragmentStateAdapter(fragment) {
 
-        override fun getItem(position: Int): Fragment {
-            mediaExplorer?.files?.let { files ->
+        override fun getItemCount(): Int = explorer.files.let { if (it?.isNotEmpty() == true) it.size else 0 }
+
+        override fun createFragment(position: Int): Fragment {
+            explorer.files?.let { files ->
                 if (files.size > 0) {
                     val file = files[position]
                     return when (getExtension(file.fileExst)) {
@@ -205,8 +202,9 @@ class MediaPagerFragment : BaseAppFragment() {
             throw RuntimeException(TAG + "getItem() - can't return null")
         }
 
-        override fun getCount() =
-            mediaExplorer?.files.let { if (it?.isNotEmpty() == true) it.size else 0 }
+    }
+
+    private inner class PagerListener(private val explorer: Explorer) : ViewPager2.OnPageChangeCallback() {
 
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
             Log.d(TAG, "Position: $position; Offset: $positionOffset; " +
@@ -226,7 +224,7 @@ class MediaPagerFragment : BaseAppFragment() {
 
         override fun onPageScrollStateChanged(state: Int) {
             if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-                notifyFragmentState(activeFragment)
+                activeFragment?.let { notifyFragmentState(it) }
             }
         }
 
@@ -255,20 +253,20 @@ class MediaPagerFragment : BaseAppFragment() {
         }
 
         private fun notifyFragmentsScroll(position: Int) {
-            notifyFragmentScroll(activeFragment, true)
+            activeFragment?.let { notifyFragmentScroll(it, true) }
 
             // Notify previous fragment
-            if (count > 0 && position - 1 >= 0) {
-                notifyFragmentScroll(instantiateItem(viewBinding?.mediaPager!!,
-                    position - 1) as Fragment, false)
+            if (explorer.count > 0 && position - 1 >= 0) {
+                notifyFragmentScroll(childFragmentManager.findFragmentByTag("f" + (viewBinding?.mediaPager?.currentItem?.minus(1)))!!, false)
             }
 
             // Notify next fragment
-            if (position + 1 < count) {
-                notifyFragmentScroll(instantiateItem(viewBinding?.mediaPager!!,
-                    position + 1) as Fragment, false)
+            if (position + 1 < explorer.count) {
+                notifyFragmentScroll(childFragmentManager.findFragmentByTag("f" + (viewBinding?.mediaPager?.currentItem?.plus(1)))!!, false)
+
             }
         }
+
     }
 
     /*
@@ -277,7 +275,11 @@ class MediaPagerFragment : BaseAppFragment() {
     private inner class ToolbarViewHolder(view: View?) {
         private var viewBinding = IncludeMediaHeaderPagerBinding.bind(checkNotNull(view)).apply {
             mediaPagerHeaderShare.setOnClickListener {
-                writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    shareFile()
+                } else {
+                    writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
             }
             mediaPagerHeaderViewMode.setOnClickListener {
                 showFragment(MediaListFragment.newInstance(mediaExplorer, isWebDav), null, false)
@@ -295,7 +297,7 @@ class MediaPagerFragment : BaseAppFragment() {
 
         fun newInstance(explorer: Explorer?, mIsWebDAv: Boolean): MediaPagerFragment =
             MediaPagerFragment().apply {
-                arguments = Bundle().apply {
+                arguments = Bundle(2).apply {
                     putSerializable(TAG_MEDIA, explorer)
                     putSerializable(TAG_WEB_DAV, mIsWebDAv)
                 }

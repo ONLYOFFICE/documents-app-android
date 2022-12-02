@@ -18,6 +18,10 @@ object EditorsContract {
 
 }
 
+enum class EditorsType {
+    DOCS, CELLS, PRESENTATION, PDF
+}
+
 class EditorsForResult(
     activityResultRegistry: ActivityResultRegistry,
     private val callback: (result: ActivityResult) -> Unit,

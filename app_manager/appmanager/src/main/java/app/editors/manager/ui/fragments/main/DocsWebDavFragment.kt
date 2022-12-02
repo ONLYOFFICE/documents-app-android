@@ -8,6 +8,7 @@ import android.view.View
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
@@ -137,6 +138,12 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 //        if (requireActivity() instanceof MainActivity) {
 //            ((MainActivity) requireActivity()).expandToolBar();
 //        }
+    }
+
+    override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
+        showMediaActivity(explorer, isWebDAv) {
+            webDavPresenter.deleteTempFile()
+        }
     }
 
     override fun setVisibilityActionButton(isShow: Boolean) {

@@ -68,10 +68,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     OnItemContextListener, BaseAdapter.OnItemLongClickListener, ContextBottomDialog.OnClickListener,
     ActionBottomDialog.OnClickListener, SearchView.OnQueryTextListener, DialogButtonOnClick, LifecycleObserver {
 
-    protected enum class EditorsType {
-        DOCS, CELLS, PRESENTATION, PDF
-    }
-
     /*
      * Toolbar menu
      * */
@@ -1098,6 +1094,31 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             e.printStackTrace()
             showToast("Not found")
         }
+    }
+
+    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, isNew: Boolean = false): Intent {
+        val intent = Intent().apply {
+            data = uri
+            putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
+            putExtra(EditorsContract.KEY_NEW_FILE, isNew)
+            action = Intent.ACTION_VIEW
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
+        when (type) {
+            EditorsType.DOCS -> {
+                intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
+            }
+            EditorsType.CELLS -> {
+                intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
+            }
+            EditorsType.PRESENTATION -> {
+                intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
+            }
+            EditorsType.PDF -> {
+                intent.setClassName(requireContext(), EditorsContract.PDF)
+            }
+        }
+        return intent
     }
 
     private fun removeCommonDialog() {

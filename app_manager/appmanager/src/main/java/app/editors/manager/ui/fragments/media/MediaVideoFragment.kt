@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.getSerializableExt
 import java.io.File
 import javax.inject.Inject
 
@@ -204,7 +205,7 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
     }
 
     private fun getArgs() {
-        videoFile = arguments?.getSerializable(TAG_VIDEO) as CloudFile
+        videoFile = checkNotNull(arguments?.getSerializableExt(TAG_VIDEO, CloudFile::class.java))
         videoUri = if (videoFile.id == "") {
             Uri.fromFile(File(videoFile.webUrl))
         } else {

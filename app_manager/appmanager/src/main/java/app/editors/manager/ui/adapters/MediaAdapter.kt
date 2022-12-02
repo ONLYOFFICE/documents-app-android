@@ -208,7 +208,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
         }
 
         private suspend fun loadCloud(file: CloudFile?, token: String) {
-            val url = GlideUtils.getCorrectLoad(file?.webUrl ?: "", token)
+            val url = GlideUtils.getCorrectLoad(file?.viewUrl ?: "", token)
             withContext(Dispatchers.Main) {
                 glideTool.load(imageView, url, false, Point(cellSize, cellSize), requestListener)
             }

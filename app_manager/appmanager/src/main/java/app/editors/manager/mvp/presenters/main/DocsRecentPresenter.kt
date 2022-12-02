@@ -2,7 +2,6 @@ package app.editors.manager.mvp.presenters.main
 
 import android.accounts.Account
 import android.annotation.SuppressLint
-import android.content.ClipData
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import app.documents.core.account.CloudAccount
@@ -31,6 +30,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getName
+import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FileUtils.asyncDeletePath
 import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
@@ -45,12 +45,12 @@ sealed class RecentState {
     class RenderList(val recents: List<Recent>) : RecentState()
 }
 
-sealed class OpenState {
-    class Docs(val uri: Uri) : OpenState()
-    class Cells(val uri: Uri) : OpenState()
-    class Slide(val uri: Uri) : OpenState()
-    class Pdf(val uri: Uri) : OpenState()
-    class Media(val explorer: Explorer, val isWebDav: Boolean) : OpenState()
+sealed class OpenState(val uri: Uri?, val type: EditorsType?) {
+    class Docs(uri: Uri) : OpenState(uri, EditorsType.DOCS)
+    class Cells(uri: Uri) : OpenState(uri, EditorsType.CELLS)
+    class Slide(uri: Uri) : OpenState(uri, EditorsType.PRESENTATION)
+    class Pdf(uri: Uri) : OpenState(uri, EditorsType.PDF)
+    class Media(val explorer: Explorer, val isWebDav: Boolean) : OpenState(null, null)
 }
 
 @InjectViewState
@@ -205,19 +205,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    fun loadMore(itemCount: Int?) {
-//        mAccountsSqlData.getRecent()
-    }
-
-    fun setOrder(isAsc: Boolean) {
-        if (isAsc) {
-            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
-        } else {
-            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
-        }
-        update()
-    }
-
     fun reverseOrder() {
         if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
@@ -352,14 +339,14 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             }
         } else {
             presenterScope.launch {
-                if (checkCloudFile(recent, position)) {
+                if (checkCloudFile(recent)) {
                     addRecent(recent)
                 }
             }
         }
     }
 
-    private suspend fun checkCloudFile(recent: Recent, position: Int): Boolean {
+    private suspend fun checkCloudFile(recent: Recent): Boolean {
         recent.ownerId?.let { id ->
             accountDao.getAccount(id)?.let { recentAccount ->
                 if (!recentAccount.isOnline) {
@@ -368,7 +355,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     }
                     return false
                 } else if (recentAccount.isWebDav) {
-                    openWebDavFile(recent, position)
+                    openWebDavFile(recent)
                 } else if (recentAccount.isDropbox || recentAccount.isGoogleDrive || recentAccount.isOneDrive) {
                     openStorageFile(recent = recent, recentAccount)
                 } else {
@@ -423,7 +410,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private suspend fun openWebDavFile(recent: Recent, position: Int) {
+    private suspend fun openWebDavFile(recent: Recent) {
         accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
             WebDavFileProvider(
                 context.webDavApi(),
@@ -537,6 +524,17 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             sortedList = sortedList.reversed()
         }
         return sortedList
+    }
+
+    fun clearRecents() {
+        presenterScope.launch {
+            recentDao.getRecents().forEach { recent ->
+                recentDao.deleteRecent(recent)
+            }
+            withContext(Dispatchers.Main) {
+                viewState.onRender(RecentState.RenderList(emptyList()))
+            }
+        }
     }
 
 }
