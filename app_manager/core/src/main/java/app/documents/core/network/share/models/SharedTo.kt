@@ -1,6 +1,5 @@
 package app.documents.core.network.share.models
 
-
 import kotlinx.serialization.Serializable
 import lib.toolkit.base.managers.utils.StringUtils
 

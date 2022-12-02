@@ -1,142 +1,127 @@
 package app.documents.core.network.manager.models.user
 
-import lib.toolkit.base.managers.utils.StringUtils.getHtmlString
 import app.documents.core.network.manager.models.base.ItemProperties
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.io.Serializable
-import java.util.ArrayList
 
-class User : ItemProperties(), Serializable, Comparable<User> {
+data class User(
     @SerializedName("id")
     @Expose
-    var id: String = ""
+    var id: String = "",
 
     @SerializedName("userName")
     @Expose
-    var userName = ""
+    var userName: String = "",
 
     @SerializedName("isVisitor")
     @Expose
-    var isVisitor = false
+    var isVisitor: Boolean = false,
 
     @SerializedName("firstName")
     @Expose
-    var firstName = ""
+    var firstName: String = "",
 
     @SerializedName("lastName")
     @Expose
-    var lastName = ""
+    var lastName: String = "",
 
     @SerializedName("email")
     @Expose
-    var email = ""
+    var email: String = "",
 
     @SerializedName("birthday")
     @Expose
-    var birthday = ""
+    var birthday: String = "",
 
     @SerializedName("sex")
     @Expose
-    var sex = ""
+    var sex: String = "",
 
     @SerializedName("status")
     @Expose
-    var status = ""
+    var status: String = "",
 
     @SerializedName("activationStatus")
     @Expose
-    var activationStatus = ""
+    var activationStatus: String = "",
 
     @SerializedName("terminated")
     @Expose
-    var terminated = ""
+    var terminated: String = "",
 
     @SerializedName("department")
     @Expose
-    var department = ""
+    var department: String = "",
 
     @SerializedName("workFrom")
     @Expose
-    var workFrom = ""
+    var workFrom: String = "",
 
     @SerializedName("location")
     @Expose
-    var location = ""
+    var location: String = "",
 
     @SerializedName("notes")
     @Expose
-    var notes = ""
+    var notes: String = "",
 
     @SerializedName("displayName")
     @Expose
-    var displayName = ""
+    var displayName: String = "",
 
     @SerializedName("title")
     @Expose
-    var title = ""
+    var title: String = "",
 
     @SerializedName("contacts")
     @Expose
-    var contacts: List<Contact> = ArrayList()
+    var contacts: List<Contact> = ArrayList(),
 
     @SerializedName("groups")
     @Expose
-    var groups: List<Group> = ArrayList()
+    var groups: List<Group> = ArrayList(),
 
     @SerializedName("avatarMedium")
     @Expose
-    var avatarMedium = ""
+    var avatarMedium: String = "",
 
     @SerializedName("avatar")
     @Expose
-    var avatar = ""
+    var avatar: String = "",
 
     @SerializedName("isOnline")
     @Expose
-    var isOnline = false
+    var isOnline: Boolean = false,
 
     @SerializedName("isAdmin")
     @Expose
-    var isAdmin = false
+    var isAdmin: Boolean = false,
 
     @SerializedName("isLDAP")
     @Expose
-    var isLDAP = false
+    var isLDAP: Boolean = false,
 
     @SerializedName("listAdminModules")
     @Expose
-    var listAdminModules: List<String> = ArrayList()
+    var listAdminModules: List<String> = ArrayList(),
 
     @SerializedName("isOwner")
     @Expose
-    var isOwner = false
+    var isOwner: Boolean = false,
 
     @SerializedName("cultureName")
     @Expose
-    var cultureName = ""
+    var cultureName: String = "",
 
     @SerializedName("isSSO")
     @Expose
-    var isSSO = false
+    var isSSO: Boolean = false,
 
     @SerializedName("avatarSmall")
     @Expose
-    var avatarSmall = ""
+    var avatarSmall: String = "",
 
     @SerializedName("profileUrl")
     @Expose
-    var profileUrl = ""
-
-    val displayNameHtml: String
-        get() = getHtmlString(displayName)
-
-    override operator fun compareTo(other: User): Int {
-        var compare = displayName.compareTo(other.displayNameHtml)
-        if (compare != 0) {
-            return compare
-        }
-        compare = department.compareTo(other.department)
-        return if (compare == 0) id!!.compareTo(other.id!!) else compare
-    }
-}
+    var profileUrl: String = ""
+) : ItemProperties()

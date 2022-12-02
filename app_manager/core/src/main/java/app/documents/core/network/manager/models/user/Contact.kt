@@ -5,12 +5,12 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Contact {
+data class Contact(
     @SerializedName("type")
     @Expose
-    var type = ""
+    var type: String = "",
 
     @SerializedName("value")
     @Expose
-    var value = ""
-}
+    var value: String = ""
+)

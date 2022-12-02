@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-class Share(
+data class Share(
     val access: String = ApiContract.ShareType.NONE,
     val sharedTo: SharedTo = SharedTo(),
     val isLocked: Boolean = false,

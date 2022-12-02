@@ -1,40 +1,38 @@
 package app.documents.core.network.manager.models.request
 
-import app.documents.core.network.manager.models.request.RequestBatchBase
-import app.documents.core.network.manager.models.request.RequestUser.Sex
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class RequestStorage {
+data class RequestStorage(
     @SerializedName("url")
     @Expose
-    var url: String? = null
+    var url: String? = null,
 
     @SerializedName("login")
     @Expose
-    var login: String? = null
+    var login: String? = null,
 
     @SerializedName("password")
     @Expose
-    var password: String? = null
+    var password: String? = null,
 
     @SerializedName("token")
     @Expose
-    var token: String? = null
+    var token: String? = null,
 
     @SerializedName("isCorporate")
     @Expose
-    var corporate = false
+    var corporate: Boolean = false,
 
     @SerializedName("customerTitle")
     @Expose
-    var customerTitle: String? = null
+    var customerTitle: String? = null,
 
     @SerializedName("providerKey")
     @Expose
-    var providerKey: String? = null
+    var providerKey: String? = null,
 
     @SerializedName("providerId")
     @Expose
-    var providerId: String? = null
-}
+    var providerId: String? = null,
+)
