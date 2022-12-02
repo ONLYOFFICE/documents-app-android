@@ -54,11 +54,13 @@
             android:foreground="?attr/selectableItemBackground">
 
             <ImageView
+                android:id="@+id/sectionIcon"
                 style="@style/ContextListImage"
                 app:srcCompat="@drawable/ic_drawer_menu_common_docs"
                 tools:ignore="ContentDescription" />
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/sectionName"
                 style="@style/ContextListMediumText"
                 android:text="@string/navigation_drawer_menu_common" />
         </LinearLayout>

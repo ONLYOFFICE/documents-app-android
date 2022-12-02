@@ -229,6 +229,7 @@ object ApiContract {
         const val PROJECTS = "@projects"
         const val TRASH = "@trash"
         const val FAVORITES = "@favorites"
+        const val ROOMS ="rooms"
     }
 
     object Operation {

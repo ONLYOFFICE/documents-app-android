@@ -126,6 +126,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
             ApiContract.SectionType.CLOUD_SHARE -> cloudPresenter.getItemsById(ApiContract.SectionPath.SHARED)
             ApiContract.SectionType.CLOUD_COMMON -> cloudPresenter.getItemsById(ApiContract.SectionPath.COMMON)
             ApiContract.SectionType.CLOUD_PROJECTS -> cloudPresenter.getItemsById(ApiContract.SectionPath.PROJECTS)
+            ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> cloudPresenter.getItemsById(ApiContract.SectionPath.ROOMS)
         }
     }
 

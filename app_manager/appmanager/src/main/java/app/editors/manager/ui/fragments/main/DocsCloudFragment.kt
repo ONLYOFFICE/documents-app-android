@@ -1,9 +1,7 @@
 package app.editors.manager.ui.fragments.main
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -35,9 +33,6 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.B
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import lib.toolkit.base.managers.utils.CameraPicker
-import lib.toolkit.base.managers.utils.RequestPermissions
-import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
