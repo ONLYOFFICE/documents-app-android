@@ -39,7 +39,6 @@ class GoogleDriveSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInV
     }
 
     private fun createUser(user: User, accessToken: String, refreshToken: String) {
-        //networkSettings.setBaseUrl("https://www.googleapis.com/")
         val cloudAccount = CloudAccount(
             id = user.permissionId,
             isWebDav = false,

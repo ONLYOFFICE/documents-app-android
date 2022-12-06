@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.presenters.storages
 
-import android.accounts.Account
 import android.content.ClipData
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -10,13 +9,12 @@ import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.GoogleDriveFolder
 import app.documents.core.network.manager.models.explorer.Item
-import app.documents.core.network.storages.dropbox.models.request.TokenRefreshRequest
 import app.documents.core.network.storages.googledrive.models.request.ShareRequest
+import app.documents.core.providers.GoogleDriveFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.googleDriveLoginProvider
-import app.documents.core.providers.GoogleDriveFileProvider
 import app.editors.manager.app.accountOnline
+import app.editors.manager.app.googleDriveLoginProvider
 import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.receivers.GoogleDriveUploadReceiver
 import app.editors.manager.managers.works.BaseStorageDownloadWork
@@ -102,10 +100,10 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     }
 
     override fun getProvider() {
-        if (fileProvider == null) {
+        fileProvider?.let {
+            getItemsById("root")
+        } ?: run {
             fileProvider = googleDriveFileProvider
-            getProvider()
-        } else {
             getItemsById("root")
         }
     }
@@ -176,9 +174,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
                 viewState.onSnackBar(context.getString(R.string.storage_google_drive_copy_folder_error))
                 itemList.addAll(modelExplorerStack.selectedFiles)
             }
-            else -> {
-                itemClicked?.let { itemList.add(it) }
-            }
+            else -> itemClicked?.let { itemList.add(it) }
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         disposable.add(googleDriveFileProvider.copy(itemList, modelExplorerStack.currentId!!)
@@ -269,7 +265,6 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
                 context.googleDriveLoginProvider
                     .refreshToken(refreshToken)
                     .subscribe({ tokenResponse ->
-//                AccountUtils.setAccountData(context, account, accData.copy(accessToken = (tokenResponse.accessToken)))
                         AccountUtils.setToken(context, account, tokenResponse.accessToken)
                         App.getApp().refreshGoogleDriveInstance()
                         getItemsById("root")

@@ -32,7 +32,6 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 
-
 class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     private val dropboxFileProvider: DropboxFileProvider by lazy {

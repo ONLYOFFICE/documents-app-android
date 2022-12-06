@@ -23,7 +23,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Scope
 
-
 @Scope
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DropboxScope

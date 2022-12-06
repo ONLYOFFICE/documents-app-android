@@ -25,7 +25,7 @@ class GoogleDriveLoginModule {
     @Provides
     @GoogleDriveScope
     @OptIn(ExperimentalSerializationApi::class)
-    fun provideGoogleDriveLoginService(@GoogleHttpClient okHttpClient: OkHttpClient): GoogleDriveLoginService =
+    fun provideGoogleDriveLoginService(okHttpClient: OkHttpClient): GoogleDriveLoginService =
         Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(GoogleDriveUtils.GOOGLE_DRIVE_AUTH_URL)

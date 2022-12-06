@@ -23,10 +23,12 @@ import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.StringUtils
 import java.util.*
 
-abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePresenter<view>(), UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
+abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePresenter<V>(),
+    UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
+
+    abstract val externalLink: Unit
 
     var tempFile: CloudFile? = null
-
     val workManager = WorkManager.getInstance(App.getApp())
 
     private val uploadReceiver: UploadReceiver = UploadReceiver()
@@ -37,7 +39,10 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     }
 
     abstract fun startDownload(downloadTo: Uri, item: Item?)
+
     abstract fun refreshToken()
+
+    abstract fun getProvider()
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -52,9 +57,6 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
         LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
     }
-
-    abstract fun getProvider()
-    abstract val externalLink: Unit
 
     override fun createDownloadFile() {
         if (modelExplorerStack.countSelectedItems == 0) {
@@ -196,7 +198,7 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
     $title
     """.trimIndent(), context.getString(R.string.download_manager_open)
         ) { showDownloadFolderActivity(uri) }
-        if(isSelectionMode) {
+        if (isSelectionMode) {
             setSelection(false)
             updateViewsState()
         }
