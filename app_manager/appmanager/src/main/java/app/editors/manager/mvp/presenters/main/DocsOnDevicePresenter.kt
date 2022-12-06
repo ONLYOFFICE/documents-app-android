@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
+import moxy.presenterScope
 import java.io.File
 import java.util.*
 
@@ -88,7 +89,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             recentDao.addRecent(
                 Recent(
                     idFile = null,
@@ -105,7 +106,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     private fun addRecent(uri: Uri) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             DocumentFile.fromSingleUri(context, uri)?.let { file ->
                 recentDao.addRecent(
                     Recent(

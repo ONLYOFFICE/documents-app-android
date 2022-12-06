@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import java.io.Serializable
 
@@ -37,7 +38,7 @@ class ContextBottomDialog : BaseBottomDialog() {
     private var viewBinding: ListExplorerContextMenuBinding? = null
 
     private val viewModel by viewModels<ContextBottomViewModel> {
-        ContextBottomViewModelFactory(checkNotNull(arguments?.getSerializable(ARG_ITEM)) as Item, checkNotNull(arguments?.getInt(ARG_SECTION)))
+        ContextBottomViewModelFactory(checkNotNull(arguments?.getSerializableExt(ARG_ITEM, Item::class.java)), checkNotNull(arguments?.getInt(ARG_SECTION)))
     }
 
     var onClickListener: OnClickListener? = null
@@ -81,7 +82,7 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun restoreValues(savedInstanceState: Bundle?) {
         savedInstanceState?.let {
-            state = it.getSerializable(TAG_STATE) as State
+            state = it.getSerializableExt(TAG_STATE, State::class.java)
         }
     }
 
