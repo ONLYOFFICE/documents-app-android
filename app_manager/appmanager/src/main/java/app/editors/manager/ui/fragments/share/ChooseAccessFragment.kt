@@ -31,12 +31,13 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.adapters.holder.ViewType
 
 class ChooseAccessFragment : BaseAppFragment() {
 
     private val item: Item
-        get() = arguments?.getSerializable(TAG_ITEM) as Item
+        get() = arguments?.getSerializableExt(TAG_ITEM, Item::class.java) as Item
 
     private var viewBinding: ChooseAccessFragmentLayoutBinding? = null
 
@@ -71,7 +72,7 @@ class ChooseAccessFragment : BaseAppFragment() {
                 }
 
             })
-            setFullAccess(true)
+            setFullAccess(false)
             setItem(item)
             showDropAt(view, requireActivity())
         }
