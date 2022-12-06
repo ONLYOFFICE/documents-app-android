@@ -2,6 +2,7 @@ package app.editors.manager.ui.fragments.main
 
 import android.Manifest
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import app.editors.manager.ui.dialogs.AppThemeDialog
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import lib.toolkit.base.managers.utils.ActivitiesUtils.showEmail
+import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils.getDeviceInfoString
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
@@ -147,7 +149,11 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
         if (tag != null) {
             when (tag) {
                 TAG_DIALOG_TRASH -> {
-                    getWritePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        viewModel.clearCache()
+                    } else {
+                        getWritePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    }
                 }
                 TAG_DIALOG_RATE_FEEDBACK -> {
                     value?.let { showEmailClientTemplate(it) }
