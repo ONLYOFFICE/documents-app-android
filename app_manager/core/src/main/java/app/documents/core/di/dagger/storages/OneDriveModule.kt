@@ -34,7 +34,6 @@ class OneDriveModule {
     @OneDriveScope
     fun provideOneDrive(oneDriveService: OneDriveService): OneDriveProvider = OneDriveProvider(oneDriveService)
 
-
     @Provides
     @OneDriveScope
     @OptIn(ExperimentalSerializationApi::class)

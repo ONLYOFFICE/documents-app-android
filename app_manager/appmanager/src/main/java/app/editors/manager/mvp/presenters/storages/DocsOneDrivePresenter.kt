@@ -11,14 +11,13 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.storages.onedrive.api.OneDriveResponse
-import app.documents.core.network.storages.onedrive.api.OneDriveService
 import app.documents.core.network.storages.onedrive.models.request.ExternalLinkRequest
 import app.documents.core.network.storages.onedrive.models.response.AuthResponse
+import app.documents.core.providers.OneDriveFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
 import app.editors.manager.app.oneDriveLoginProvider
-import app.editors.manager.managers.providers.OneDriveFileProvider
+import app.editors.manager.managers.providers.OneDriveStorageHelper
 import app.editors.manager.managers.works.BaseStorageDownloadWork
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.onedrive.DownloadWork
@@ -27,15 +26,11 @@ import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
-import moxy.presenterScope
 import retrofit2.HttpException
 
 @InjectViewState
@@ -48,7 +43,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                     type = OneDriveUtils.VAL_SHARE_TYPE_READ_WRITE,
                     scope = OneDriveUtils.VAL_SHARE_SCOPE_ANON
                 )
-                (fileProvider as OneDriveFileProvider).share(it.id, request)?.let { externalLinkResponse ->
+                oneDriveFileProvider.share(it.id, request)?.let { externalLinkResponse ->
                     disposable.add(externalLinkResponse
                         .subscribe( {response ->
                             it.shared = !it.shared
@@ -63,11 +58,18 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                                 true,
                                 context.getString(R.string.share_clipboard_external_copied)
                             )
-                        }) {throwable: Throwable -> fetchError(throwable)}
+                        }) { throwable: Throwable -> fetchError(throwable) }
                     )
                 }
             }
         }
+
+    private val oneDriveFileProvider: OneDriveFileProvider by lazy {
+        OneDriveFileProvider(
+            context = context,
+            helper = OneDriveStorageHelper()
+        )
+    }
 
     init {
         App.getApp().appComponent.inject(this)
@@ -75,27 +77,10 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun getProvider() {
         fileProvider?.let {
-            presenterScope.launch {
-                context.accountOnline?.let {
-                    withContext(Dispatchers.Main) {
-                        getItemsById("")
-                    }
-
-                }
-            }
+            getItemsById("")
         } ?: run {
-            presenterScope.launch {
-                context.accountOnline?.let { cloudAccount ->
-                    AccountUtils.getAccount(context, cloudAccount.getAccountName())?.let {
-                        fileProvider = OneDriveFileProvider()
-                        withContext(Dispatchers.Main) {
-                            getItemsById("")
-                        }
-                    }
-                } ?: run {
-                    viewState.onUnauthorized("Not accounts")
-                }
-            }
+            fileProvider = oneDriveFileProvider
+            getItemsById("")
         }
     }
 
@@ -110,12 +95,10 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                         val response = oneDriveResponse.response as AuthResponse
                         AccountUtils.setAccountData(context, account, accData.copy(accessToken = response.access_token))
                         AccountUtils.setToken(context, account, response.access_token)
-                        (fileProvider as OneDriveFileProvider).refreshInstance()
-                        refresh()
+                        App.getApp().refreshOneDriveInstance()
+                        getItemsById("")
                     }
-                    is OneDriveResponse.Error -> {
-                       viewState.onError(oneDriveResponse.error.message)
-                    }
+                    is OneDriveResponse.Error -> viewState.onError(oneDriveResponse.error.message)
                 }
             })
     }
@@ -147,7 +130,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                         modelExplorerStack.last()?.let {
                             viewState.onDocsNext(getListWithHeaders(it, true))
                         }
-
                     }) { throwable: Throwable -> fetchError(throwable) })
                 }
             }
@@ -200,6 +182,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         }
 
     }
+
     override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
         onClickEvent(item, position)
         isContextClick = true

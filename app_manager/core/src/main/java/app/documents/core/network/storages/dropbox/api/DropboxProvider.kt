@@ -1,6 +1,7 @@
 package app.documents.core.network.storages.dropbox.api
 
 import app.documents.core.network.common.utils.DropboxUtils
+import app.documents.core.network.storages.IStorageProvider
 import app.documents.core.network.storages.dropbox.login.DropboxResponse
 import app.documents.core.network.storages.dropbox.models.operations.MoveCopyBatchCheck
 import app.documents.core.network.storages.dropbox.models.request.*
@@ -17,7 +18,7 @@ class DropboxProvider(
     private val dropBoxService: DropboxService,
     private val dropBoxContentService: DropboxContentService,
     private val dropboxErrorHandler: BehaviorRelay<DropboxResponse.Error>? = null
-) {
+) : IStorageProvider {
 
     fun getFiles(request: ExplorerRequest): Single<DropboxResponse> {
         return dropBoxService.getFiles(request)

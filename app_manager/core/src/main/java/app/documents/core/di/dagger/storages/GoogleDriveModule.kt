@@ -5,6 +5,7 @@ import app.documents.core.di.dagger.CoreModule.json
 import app.documents.core.di.dagger.Token
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.interceptors.BaseInterceptor
+import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.storages.googledrive.api.GoogleDriveProvider
 import app.documents.core.network.storages.googledrive.api.GoogleDriveService
 import app.documents.core.storage.account.CloudAccount
@@ -21,6 +22,7 @@ import okhttp3.Protocol
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Scope
 
 @Scope
@@ -41,7 +43,7 @@ class GoogleDriveModule {
     @OptIn(ExperimentalSerializationApi::class)
     fun provideGoogleDriveService(okHttpClient: OkHttpClient): GoogleDriveService = Retrofit.Builder()
         .client(okHttpClient)
-        .baseUrl("https://www.googleapis.com/")
+        .baseUrl(GoogleDriveUtils.GOOGLE_DRIVE_BASE_URL)
         .addConverterFactory(json.asConverterFactory(MediaType.get(ApiContract.VALUE_CONTENT_TYPE)))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()

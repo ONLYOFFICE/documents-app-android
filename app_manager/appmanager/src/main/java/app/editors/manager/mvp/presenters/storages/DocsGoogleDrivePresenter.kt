@@ -10,11 +10,14 @@ import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.GoogleDriveFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.storages.dropbox.models.request.TokenRefreshRequest
 import app.documents.core.network.storages.googledrive.models.request.ShareRequest
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.googleDriveLoginProvider
-import app.editors.manager.managers.providers.GoogleDriveFileProvider
+import app.documents.core.providers.GoogleDriveFileProvider
+import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.receivers.GoogleDriveUploadReceiver
 import app.editors.manager.managers.works.BaseStorageDownloadWork
 import app.editors.manager.managers.works.googledrive.DownloadWork
@@ -32,7 +35,12 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
 
     private var uploadGoogleDriveReceiver: GoogleDriveUploadReceiver = GoogleDriveUploadReceiver()
 
-    private val googleDriveFileProvider: GoogleDriveFileProvider by lazy { GoogleDriveFileProvider() }
+    private val googleDriveFileProvider: GoogleDriveFileProvider by lazy {
+        GoogleDriveFileProvider(
+            context = context,
+            helper = GoogleDriveStorageHelper()
+        )
+    }
 
     init {
         App.getApp().appComponent.inject(this)
@@ -44,8 +52,11 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
                 role = "reader",
                 type = "anyone"
             )
-            val externalLink =
-                if (itemClicked is CloudFile) (itemClicked as CloudFile).webUrl else if (itemClicked is GoogleDriveFolder) (itemClicked as GoogleDriveFolder).webUrl else ""
+            val externalLink = when (val item = itemClicked) {
+                is CloudFile -> item.webUrl
+                is GoogleDriveFolder -> item.webUrl
+                else -> ""
+            }
             disposable.add(
                 itemClicked?.id?.let { id ->
                     googleDriveFileProvider.share(id, request)
@@ -252,20 +263,18 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     }
 
     override fun refreshToken() {
-        val account = Account(
-            App.getApp().appComponent.accountOnline?.getAccountName(),
-            context.getString(lib.toolkit.base.R.string.account_type)
-        )
-        val accData = AccountUtils.getAccountData(context, account)
-        disposable.add(
-            context.googleDriveLoginProvider.refreshToken(accData.refreshToken.orEmpty()).subscribe({ tokenResponse ->
-                AccountUtils.setAccountData(context, account, accData.copy(accessToken = (tokenResponse.accessToken)))
-                AccountUtils.setToken(context, account, tokenResponse.accessToken)
-                googleDriveFileProvider.refreshInstance()
-                getProvider()
-            }, {
-                viewState.onSignIn()
-            })
-        )
+        context.accountOnline?.getAccountName()?.let { accountName ->
+            AccountUtils.getAccount(context, accountName)?.let { account ->
+                val refreshToken = AccountUtils.getAccountData(context, account).refreshToken.orEmpty()
+                context.googleDriveLoginProvider
+                    .refreshToken(refreshToken)
+                    .subscribe({ tokenResponse ->
+//                AccountUtils.setAccountData(context, account, accData.copy(accessToken = (tokenResponse.accessToken)))
+                        AccountUtils.setToken(context, account, tokenResponse.accessToken)
+                        App.getApp().refreshGoogleDriveInstance()
+                        getItemsById("root")
+                    }) { viewState.onSignIn() }
+            }
+        }
     }
 }

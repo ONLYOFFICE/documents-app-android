@@ -22,11 +22,11 @@ import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
+import app.documents.core.providers.OneDriveFileProvider
 import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.presenters.storages.GoogleDriveSignInPresenter
-import app.editors.manager.managers.providers.OneDriveFileProvider
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
 import app.editors.manager.mvp.presenters.storages.OneDriveSingInPresenter
 import app.editors.manager.ui.activities.login.PortalsActivity

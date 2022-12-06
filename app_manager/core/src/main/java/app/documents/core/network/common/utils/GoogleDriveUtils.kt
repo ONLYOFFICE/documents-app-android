@@ -20,9 +20,12 @@ object GoogleDriveUtils {
     private const val VAL_SORT_DESC = " desc"
     private const val VAL_SORT_NAME = "name"
     private const val VAL_SORT_UPDATED = "modifiedTime"
+
     const val MOVE_ADD_PARENTS = "addParents"
     const val MOVE_REMOVE_PARENTS = "removeParents"
 
+    const val GOOGLE_DRIVE_BASE_URL = "https://www.googleapis.com/"
+    const val GOOGLE_DRIVE_AUTH_URL = "https://oauth2.googleapis.com/"
 
     const val FOLDER_MIMETYPE = "application/vnd.google-apps.folder"
     private const val DOC_MIMETYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"

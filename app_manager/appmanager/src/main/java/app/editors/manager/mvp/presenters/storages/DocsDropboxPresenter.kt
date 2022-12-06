@@ -13,11 +13,12 @@ import app.documents.core.network.storages.dropbox.login.DropboxResponse
 import app.documents.core.network.storages.dropbox.models.request.TokenRefreshRequest
 import app.documents.core.network.storages.dropbox.models.request.TokenRequest
 import app.documents.core.network.storages.dropbox.models.response.RefreshTokenResponse
+import app.documents.core.providers.DropboxFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.dropboxLoginProvider
-import app.editors.manager.managers.providers.DropboxFileProvider
+import app.editors.manager.managers.providers.DropboxStorageHelper
 import app.editors.manager.managers.works.BaseStorageDownloadWork
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.dropbox.DownloadWork
@@ -26,10 +27,6 @@ import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -38,6 +35,13 @@ import lib.toolkit.base.managers.utils.TimeUtils
 
 class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
+    private val dropboxFileProvider: DropboxFileProvider by lazy {
+        DropboxFileProvider(
+            context = context,
+            helper = DropboxStorageHelper()
+        )
+    }
+
     init {
         App.getApp().appComponent.inject(this)
     }
@@ -45,7 +49,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     override val externalLink : Unit
         get() {
             itemClicked?.let { item ->
-                (fileProvider as DropboxFileProvider).share(item.id)?.let { externalLinkResponse ->
+                dropboxFileProvider.share(item.id)?.let { externalLinkResponse ->
                     disposable.add(externalLinkResponse
                         .subscribe({ response ->
                             item.shared = !item.shared
@@ -68,27 +72,10 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun getProvider() {
         fileProvider?.let {
-            CoroutineScope(Dispatchers.Default).launch {
-                App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
-                    withContext(Dispatchers.Main) {
-                        getItemsById(DropboxUtils.DROPBOX_ROOT)
-                    }
-
-                }
-            }
+            getItemsById(DropboxUtils.DROPBOX_ROOT)
         } ?: run {
-            CoroutineScope(Dispatchers.Default).launch {
-                App.getApp().appComponent.accountsDao.getAccountOnline()?.let { cloudAccount ->
-                    AccountUtils.getAccount(context, cloudAccount.getAccountName())?.let {
-                        fileProvider = DropboxFileProvider()
-                        withContext(Dispatchers.Main) {
-                            getItemsById(DropboxUtils.DROPBOX_ROOT)
-                        }
-                    }
-                } ?: run {
-                    throw Error("Not accounts")
-                }
-            }
+            fileProvider = dropboxFileProvider
+            getItemsById(DropboxUtils.DROPBOX_ROOT)
         }
     }
 

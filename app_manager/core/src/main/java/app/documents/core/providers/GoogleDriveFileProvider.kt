@@ -1,11 +1,9 @@
-package app.editors.manager.managers.providers
+package app.documents.core.providers
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.manager.models.explorer.*
@@ -13,6 +11,8 @@ import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
+import app.documents.core.network.storages.IStorageHelper
+import app.documents.core.network.storages.googledrive.api.GoogleDriveProvider
 import app.documents.core.network.storages.googledrive.api.GoogleDriveResponse
 import app.documents.core.network.storages.googledrive.models.GoogleDriveCloudFile
 import app.documents.core.network.storages.googledrive.models.GoogleDriveFile
@@ -20,12 +20,6 @@ import app.documents.core.network.storages.googledrive.models.request.CreateItem
 import app.documents.core.network.storages.googledrive.models.request.RenameRequest
 import app.documents.core.network.storages.googledrive.models.request.ShareRequest
 import app.documents.core.network.storages.googledrive.models.resonse.GoogleDriveExplorerResponse
-import app.documents.core.providers.BaseFileProvider
-import app.editors.manager.app.App
-import app.editors.manager.app.googleDriveProvider
-import app.editors.manager.managers.works.BaseStorageUploadWork
-import app.editors.manager.managers.works.googledrive.UploadWork
-import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -41,7 +35,10 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 
-class GoogleDriveFileProvider: BaseFileProvider {
+class GoogleDriveFileProvider(
+    private val context: Context,
+    private val helper: IStorageHelper<GoogleDriveProvider>
+) : BaseFileProvider {
 
     enum class GoogleMimeType(val value: String) {
         Docs("application/vnd.google-apps.document"),
@@ -80,14 +77,12 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
     }
 
-    private var api = App.getApp().googleDriveProvider
-
-    private val workManager = WorkManager.getInstance(App.getApp().applicationContext)
+    private val api: GoogleDriveProvider get() = helper.api
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         var queryString = "\"$id\" in parents and trashed = false"
 
-        if(filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) {
+        if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) != null && filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isNotEmpty() == true) {
             queryString = "name contains \'${filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!}\'"
         }
 
@@ -95,7 +90,8 @@ class GoogleDriveFileProvider: BaseFileProvider {
             GoogleDriveUtils.GOOGLE_DRIVE_QUERY to queryString,
             GoogleDriveUtils.GOOGLE_DRIVE_FIELDS to GoogleDriveUtils.GOOGLE_DRIVE_FIELDS_VALUES,
             GoogleDriveUtils.GOOGLE_DRIVE_SORT to GoogleDriveUtils.getSortBy(filter),
-            GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN to filter?.get(GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN).orEmpty()
+            GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN to filter?.get(GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN)
+                .orEmpty()
         )
         val intMap = mapOf(
             GoogleDriveUtils.GOOGLE_DRIVE_PAGE_SIZE to GoogleDriveUtils.DEFAULT_PAGE_SIZE
@@ -122,7 +118,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
         val files: MutableList<CloudFile> = mutableListOf()
         val folders: MutableList<CloudFolder> = mutableListOf()
 
-        if(items.isNotEmpty()) {
+        if (items.isNotEmpty()) {
             val parentFolder = CloudFolder().apply {
                 this.id = items[0].parents[0]
             }
@@ -136,13 +132,13 @@ class GoogleDriveFileProvider: BaseFileProvider {
                     folder.parentId = item.parents[0]
                     folder.updated = StringUtils.getDate("yyyy-MM-dd'T'HH:mm:ss", item.modifiedTime)
                     folders.add(folder)
-                } else  {
+                } else {
                     val file = GoogleDriveCloudFile()
                     file.id = item.id
                     file.title = checkItemExtension(item.name, item.mimeType)
                     file.mimeType = item.mimeType
                     file.folderId = item.parents[0]
-                    file.pureContentLength = if(item.size.isNotEmpty()) item.size.toLong() else 0
+                    file.pureContentLength = if (item.size.isNotEmpty()) item.size.toLong() else 0
                     file.webUrl = item.webViewLink
                     file.fileExst = StringUtils.getExtensionFromPath(file.title.lowercase())
                     file.created = StringUtils.getDate("yyyy-MM-dd'T'HH:mm:ss", item.createdTime)
@@ -173,21 +169,19 @@ class GoogleDriveFileProvider: BaseFileProvider {
 
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
         return Observable.just(1)
-            .map { _ ->
+            .map {
                 val title = body.title
-                val path = PATH_TEMPLATES + body.title.lowercase().let { templateTitle -> StringUtils.getExtensionFromPath(templateTitle) }.let { ext ->
-                        FileUtils.getTemplates(
-                            App.getApp(), App.getLocale(),
-                            ext
-                        )
-                    }
+                val path = FileUtils.getTemplates(
+                    context, Locale.getDefault().language,
+                    StringUtils.getExtensionFromPath(PATH_TEMPLATES + body.title.lowercase())
+                )
                 val temp = FileUtils.createTempAssetsFile(
-                    App.getApp(),
-                    path,
+                    context,
+                    path.orEmpty(),
                     StringUtils.getNameWithoutExtension(title),
                     StringUtils.getExtensionFromPath(title)
                 )
-                upload(folderId, mutableListOf(Uri.fromFile(temp)))?.subscribe()
+                upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
                 val file = CloudFile()
                 file.webUrl = Uri.fromFile(temp).toString()
                 file.pureContentLength = temp?.length() ?: 0
@@ -224,9 +218,6 @@ class GoogleDriveFileProvider: BaseFileProvider {
                     is GoogleDriveResponse.Error -> {
                         throw response.error
                     }
-                    else -> {
-                        return@map null
-                    }
                 }
             }
 
@@ -245,7 +236,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
-                when(response) {
+                when (response) {
                     is GoogleDriveResponse.Success -> {
                         item.updated = Date()
                         item.title = newName
@@ -264,7 +255,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { response ->
-                    if(response.isSuccessful && response.code() == 204) {
+                    if (response.isSuccessful && response.code() == 204) {
                         return@map response
                     } else {
                         throw HttpException(response)
@@ -299,7 +290,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { response ->
-                    when(response) {
+                    when (response) {
                         is GoogleDriveResponse.Success -> {
                             return@map response.response
                         }
@@ -342,10 +333,10 @@ class GoogleDriveFileProvider: BaseFileProvider {
             if (item != null && item is GoogleDriveCloudFile) {
                 checkDirectory(item)?.let { outputFile ->
                     if (outputFile.exists()) {
-                         if (googleMimeTypes.contains(item.mimeType)) {
-                             export(emitter, item, outputFile)
+                        if (googleMimeTypes.contains(item.mimeType)) {
+                            export(emitter, item, outputFile)
                         } else if (item.pureContentLength != outputFile.length()) {
-                             download(emitter, item, outputFile)
+                            download(emitter, item, outputFile)
                         } else {
                             emitter.onNext(setFile(item, outputFile))
                             emitter.onComplete()
@@ -411,7 +402,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
         return if (local.exists()) {
             local
         } else {
-            FileUtils.createCacheFile(App.getApp(), item.title)
+            FileUtils.createCacheFile(context, item.title)
         }
     }
 
@@ -438,22 +429,8 @@ class GoogleDriveFileProvider: BaseFileProvider {
         TODO("Not yet implemented")
     }
 
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? {
-        return Observable.fromIterable(uris)
-            .map { uri ->
-                val data = Data.Builder()
-                    .putString(BaseStorageUploadWork.TAG_FOLDER_ID, folderId)
-                    .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uri.toString())
-                    .putString(BaseStorageUploadWork.KEY_TAG, BaseStorageDocsFragment.KEY_CREATE)
-                    .build()
-
-                val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
-                    .setInputData(data)
-                    .build()
-
-                workManager.enqueue(request)
-                1
-            }
+    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
+        return helper.upload(folderId, uris)
     }
 
     override fun share(
@@ -476,7 +453,4 @@ class GoogleDriveFileProvider: BaseFileProvider {
         TODO("Not yet implemented")
     }
 
-    fun refreshInstance() {
-        App.getApp().refreshGoogleDriveInstance()
-    }
 }

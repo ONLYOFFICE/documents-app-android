@@ -10,16 +10,17 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.providers.DropboxFileProvider
+import app.documents.core.providers.GoogleDriveFileProvider
+import app.documents.core.providers.OneDriveFileProvider
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
-import app.editors.manager.app.App
-import app.editors.manager.app.api
-import app.editors.manager.app.webDavFileProvider
+import app.editors.manager.app.*
+import app.editors.manager.managers.providers.DropboxStorageHelper
+import app.editors.manager.managers.providers.GoogleDriveStorageHelper
+import app.editors.manager.managers.providers.OneDriveStorageHelper
 import app.editors.manager.mvp.views.main.DocsRecentView
-import app.editors.manager.managers.providers.DropboxFileProvider
-import app.editors.manager.managers.providers.GoogleDriveFileProvider
-import app.editors.manager.managers.providers.OneDriveFileProvider
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -376,9 +377,9 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     private fun openStorageFile(recent: Recent, recentAccount: CloudAccount) {
         when {
-            recentAccount.isOneDrive -> OneDriveFileProvider()
-            recentAccount.isGoogleDrive -> GoogleDriveFileProvider()
-            recentAccount.isDropbox -> DropboxFileProvider()
+            recentAccount.isOneDrive -> OneDriveFileProvider(context, OneDriveStorageHelper())
+            recentAccount.isGoogleDrive -> GoogleDriveFileProvider(context, GoogleDriveStorageHelper())
+            recentAccount.isDropbox -> DropboxFileProvider(context, DropboxStorageHelper())
             else -> null
         }?.let { provider ->
             showDialogWaiting(TAG_DIALOG_CANCEL_DOWNLOAD)

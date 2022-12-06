@@ -2,6 +2,7 @@ package app.documents.core.di.dagger.storages
 
 import app.documents.core.di.dagger.CoreModule.json
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.storages.googledrive.login.GoogleDriveLoginService
 import app.documents.core.network.storages.googledrive.login.GoogleDriveLoginProvider
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -24,11 +25,12 @@ class GoogleDriveLoginModule {
     @Provides
     @GoogleDriveScope
     @OptIn(ExperimentalSerializationApi::class)
-    fun provideGoogleDriveLoginService(okHttpClient: OkHttpClient): GoogleDriveLoginService = Retrofit.Builder()
-        .client(okHttpClient)
-        .baseUrl("https://oauth2.googleapis.com/")
-        .addConverterFactory(json.asConverterFactory(MediaType.get(ApiContract.VALUE_CONTENT_TYPE)))
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .build()
-        .create(GoogleDriveLoginService::class.java)
+    fun provideGoogleDriveLoginService(@GoogleHttpClient okHttpClient: OkHttpClient): GoogleDriveLoginService =
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(GoogleDriveUtils.GOOGLE_DRIVE_AUTH_URL)
+            .addConverterFactory(json.asConverterFactory(MediaType.get(ApiContract.VALUE_CONTENT_TYPE)))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
+            .create(GoogleDriveLoginService::class.java)
 }

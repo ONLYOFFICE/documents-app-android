@@ -1,5 +1,6 @@
 package app.documents.core.network.storages.googledrive.api
 
+import app.documents.core.network.storages.IStorageProvider
 import app.documents.core.network.storages.googledrive.models.GoogleDriveFile
 import app.documents.core.network.storages.googledrive.models.request.CreateItemRequest
 import app.documents.core.network.storages.googledrive.models.request.RenameRequest
@@ -20,7 +21,7 @@ sealed class GoogleDriveResponse {
 class GoogleDriveProvider(
     private val googleDriveService: GoogleDriveService,
     private val googleDriveErrorHandle: BehaviorRelay<GoogleDriveResponse.Error>? = null
-) {
+) : IStorageProvider {
 
     fun getFiles(map: Map<String, String>, intMap: Map<String, Int>): Single<GoogleDriveResponse> {
         return googleDriveService.getFiles(map, intMap)

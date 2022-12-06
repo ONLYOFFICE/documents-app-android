@@ -1,16 +1,12 @@
-package app.editors.manager.managers.providers
+package app.documents.core.providers
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.*
-import app.editors.manager.app.App
 import app.documents.core.network.storages.dropbox.login.DropboxResponse
-import app.documents.core.providers.BaseFileProvider
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
@@ -21,11 +17,8 @@ import app.documents.core.network.storages.dropbox.models.operations.MoveCopyPat
 import app.documents.core.network.storages.dropbox.models.request.*
 import app.documents.core.network.storages.dropbox.models.response.*
 import app.documents.core.network.common.utils.DropboxUtils
+import app.documents.core.network.storages.IStorageHelper
 import app.documents.core.network.storages.dropbox.api.DropboxProvider
-import app.editors.manager.app.dropboxProvider
-import app.editors.manager.managers.works.BaseStorageUploadWork
-import app.editors.manager.managers.works.dropbox.UploadWork
-import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -39,7 +32,10 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 
-class DropboxFileProvider : BaseFileProvider {
+class DropboxFileProvider(
+    private val context: Context,
+    private val helper: IStorageHelper<DropboxProvider>
+) : BaseFileProvider {
 
     companion object {
         private const val PATH_TEMPLATES = "templates/"
@@ -48,8 +44,7 @@ class DropboxFileProvider : BaseFileProvider {
         private const val TAG_COMPLETE_OPERATION = "complete"
     }
 
-    private var api: DropboxProvider = App.getApp().dropboxProvider
-    private val workManager = WorkManager.getInstance(App.getApp().applicationContext)
+    private val api: DropboxProvider get() = helper.api
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
@@ -157,10 +152,8 @@ class DropboxFileProvider : BaseFileProvider {
             val current = Current()
             current.filesCount = files.size.toString()
             current.foldersCount = files.size.toString()
-            current.title =
-                if (parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT_TITLE else parentFolder.title
-            current.id =
-                if (parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT else "${parentFolder.id}/"
+            current.title = if (parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT_TITLE else parentFolder.title
+            current.id = if (parentFolder.id.isEmpty()) DropboxUtils.DROPBOX_ROOT else "${parentFolder.id}/"
             current.parentId = cursor
             current.providerItem = hasMore
 
@@ -182,21 +175,16 @@ class DropboxFileProvider : BaseFileProvider {
 
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
         val title = body.title
-        val path = PATH_TEMPLATES + title.lowercase()
-            .let { StringUtils.getExtensionFromPath(it) }.let {
-                FileUtils.getTemplates(
-                    App.getApp(), App.getLocale(),
-                    it
-                )
-            }
-        val temp = title.let { StringUtils.getNameWithoutExtension(it) }.let {
-            FileUtils.createTempAssetsFile(
-                App.getApp(),
-                path,
-                it,
-                StringUtils.getExtensionFromPath(title)
-            )
-        }
+        val path = FileUtils.getTemplates(
+            context, Locale.getDefault().language,
+            StringUtils.getExtensionFromPath(PATH_TEMPLATES + title.lowercase())
+        )
+        val temp = FileUtils.createTempAssetsFile(
+            context,
+            path.orEmpty(),
+            StringUtils.getNameWithoutExtension(title),
+            StringUtils.getExtensionFromPath(title)
+        )
         upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
         val file = CloudFile()
         file.webUrl = Uri.fromFile(temp).toString()
@@ -231,7 +219,6 @@ class DropboxFileProvider : BaseFileProvider {
                         }
                     }
                     is DropboxResponse.Error -> throw response.error
-                    else -> null
                 }
             }
     }
@@ -432,21 +419,7 @@ class DropboxFileProvider : BaseFileProvider {
     }
 
     override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
-        return Observable.fromIterable(uris)
-            .flatMap {
-                val data = Data.Builder()
-                    .putString(BaseStorageUploadWork.TAG_FOLDER_ID, folderId)
-                    .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, it.toString())
-                    .putString(BaseStorageUploadWork.KEY_TAG, BaseStorageDocsFragment.KEY_CREATE)
-                    .build()
-
-                val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
-                    .setInputData(data)
-                    .build()
-
-                workManager.enqueue(request)
-                return@flatMap Observable.just(1)
-            }
+        return helper.upload(folderId, uris)
     }
 
     override fun share(
@@ -518,7 +491,7 @@ class DropboxFileProvider : BaseFileProvider {
         return if (local.exists()) {
             local
         } else {
-            FileUtils.createCacheFile(App.getApp(), item.title)
+            FileUtils.createCacheFile(context, item.title)
         }
     }
 
@@ -534,9 +507,4 @@ class DropboxFileProvider : BaseFileProvider {
             webUrl = Uri.fromFile(outputFile).toString()
         }
     }
-
-    fun refreshInstance() {
-        api = App.getApp().dropboxProvider
-    }
-
 }

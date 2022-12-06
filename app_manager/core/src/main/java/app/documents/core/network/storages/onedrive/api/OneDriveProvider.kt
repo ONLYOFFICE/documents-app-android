@@ -1,5 +1,6 @@
 package app.documents.core.network.storages.onedrive.api
 
+import app.documents.core.network.storages.IStorageProvider
 import app.documents.core.network.storages.onedrive.models.request.*
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
@@ -17,7 +18,7 @@ sealed class OneDriveResponse {
 class OneDriveProvider(
     private val oneDriveService: OneDriveService,
     private val oneDriveErrorHandler: BehaviorRelay<OneDriveResponse.Error>? = null
-) {
+) : IStorageProvider {
 
     fun getUserInfo(token: String): Single<OneDriveResponse> {
         return oneDriveService.getUserInfo("Bearer $token")

@@ -1,35 +1,28 @@
-package app.editors.manager.managers.providers
+package app.documents.core.providers
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
-import app.documents.core.network.storages.onedrive.models.request.RenameRequest
+import app.documents.core.network.storages.IStorageHelper
+import app.documents.core.network.storages.onedrive.api.OneDriveProvider
 import app.documents.core.network.storages.onedrive.api.OneDriveResponse
 import app.documents.core.network.storages.onedrive.models.explorer.DriveItemCloudTree
+import app.documents.core.network.storages.onedrive.models.explorer.DriveItemFolder
 import app.documents.core.network.storages.onedrive.models.explorer.DriveItemParentReference
 import app.documents.core.network.storages.onedrive.models.explorer.DriveItemValue
 import app.documents.core.network.storages.onedrive.models.request.CopyItemRequest
-import app.documents.core.providers.BaseFileProvider
-import app.documents.core.network.common.utils.OneDriveUtils
-import app.documents.core.network.storages.onedrive.api.OneDriveProvider
-import app.documents.core.network.storages.onedrive.models.explorer.DriveItemFolder
 import app.documents.core.network.storages.onedrive.models.request.CreateFolderRequest
 import app.documents.core.network.storages.onedrive.models.request.ExternalLinkRequest
+import app.documents.core.network.storages.onedrive.models.request.RenameRequest
 import app.documents.core.network.storages.onedrive.models.response.ExternalLinkResponse
-import app.editors.manager.app.App
-import app.editors.manager.app.oneDriveProvider
-import app.editors.manager.managers.works.BaseStorageUploadWork
-import app.editors.manager.managers.works.onedrive.UploadWork
-import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,21 +38,16 @@ import retrofit2.HttpException
 import java.io.*
 import java.util.*
 
-class OneDriveFileProvider : BaseFileProvider {
-
+class OneDriveFileProvider(
+    private val context: Context,
+    private val helper: IStorageHelper<OneDriveProvider>
+) : BaseFileProvider {
 
     companion object {
         private const val PATH_TEMPLATES = "templates/"
     }
 
-    private var api: OneDriveProvider = App.getApp().oneDriveProvider
-
-    private val workManager = WorkManager.getInstance(App.getApp().applicationContext)
-
-
-    fun refreshInstance() {
-        App.getApp().refreshOneDriveInstance()
-    }
+    private val api: OneDriveProvider get() = helper.api
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.fromCallable {
@@ -81,13 +69,8 @@ class OneDriveFileProvider : BaseFileProvider {
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
                 when (response) {
-                    is OneDriveResponse.Success -> {
-                        return@map getExplorer(response.response as DriveItemCloudTree)
-                    }
-                    is OneDriveResponse.Error -> {
-                        throw response.error
-                    }
-                    else -> return@map null
+                    is OneDriveResponse.Success -> getExplorer(response.response as DriveItemCloudTree)
+                    is OneDriveResponse.Error -> throw response.error
                 }
             }
     }
@@ -165,17 +148,17 @@ class OneDriveFileProvider : BaseFileProvider {
                     is OneDriveResponse.Success -> {
                         val item = response.response as DriveItemValue
                         val path = FileUtils.getTemplates(
-                            context = App.getApp(),
-                            locale = App.getLocale(),
+                            context = context,
+                            locale = Locale.getDefault().language,
                             extension = getExtensionFromPath(PATH_TEMPLATES + item.name.lowercase())
                         )
                         val temp = FileUtils.createTempAssetsFile(
-                                App.getApp(),
+                                context,
                                 path.orEmpty(),
                                 StringUtils.getNameWithoutExtension(item.name),
                                 getExtensionFromPath(item.name)
                             )
-                        upload(folderId, mutableListOf(Uri.fromFile(temp)))?.subscribe()
+                        upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
                         return@map CloudFile().apply {
                             webUrl = Uri.fromFile(temp).toString()
                             pureContentLength = temp?.length() ?: 0
@@ -185,12 +168,7 @@ class OneDriveFileProvider : BaseFileProvider {
                             fileExst = item.name.split(".")[1]
                         }
                     }
-                    is OneDriveResponse.Error -> {
-                        throw response.error
-                    }
-                    else -> {
-                        return@map null
-                    }
+                    is OneDriveResponse.Error -> throw response.error
                 }
             }
     }
@@ -208,20 +186,13 @@ class OneDriveFileProvider : BaseFileProvider {
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
                 when (response) {
-                    is OneDriveResponse.Success -> {
-                        CloudFolder().apply {
-                            val item = response.response as DriveItemValue
-                            id = item.id
-                            title = item.name
-                            updated = Date()
-                        }
+                    is OneDriveResponse.Success -> CloudFolder().apply {
+                        val item = response.response as DriveItemValue
+                        id = item.id
+                        title = item.name
+                        updated = Date()
                     }
-                    is OneDriveResponse.Error -> {
-                        throw response.error
-                    }
-                    else -> {
-                        return@map null
-                    }
+                    is OneDriveResponse.Error -> throw response.error
                 }
             }
     }
@@ -387,24 +358,6 @@ class OneDriveFileProvider : BaseFileProvider {
 
     override fun download(items: List<Item>): Observable<Int>? = null
 
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? {
-        return Observable.fromIterable(uris)
-            .flatMap {
-                val data = Data.Builder()
-                    .putString(BaseStorageUploadWork.TAG_FOLDER_ID, folderId)
-                    .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, it.toString())
-                    .putString(BaseStorageUploadWork.KEY_TAG, BaseStorageDocsFragment.KEY_UPDATE)
-                    .build()
-
-                val request = OneTimeWorkRequest.Builder(UploadWork::class.java)
-                    .setInputData(data)
-                    .build()
-
-                workManager.enqueue(request)
-                return@flatMap Observable.just(1)
-            }
-    }
-
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
         val result = api.download((item as CloudFile).id).blockingGet()
@@ -430,6 +383,10 @@ class OneDriveFileProvider : BaseFileProvider {
         }
     }
 
+    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
+        return helper.upload(folderId, uris)
+    }
+
     override fun share(
         id: String,
         requestExternal: RequestExternal
@@ -444,15 +401,8 @@ class OneDriveFileProvider : BaseFileProvider {
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
                 when (response) {
-                    is OneDriveResponse.Success -> {
-                        return@map (response.response as ExternalLinkResponse)
-                    }
-                    is OneDriveResponse.Error -> {
-                        throw response.error
-                    }
-                    else -> {
-                        return@map null
-                    }
+                    is OneDriveResponse.Success -> response.response as ExternalLinkResponse
+                    is OneDriveResponse.Error -> throw response.error
                 }
             }
     }
@@ -463,9 +413,9 @@ class OneDriveFileProvider : BaseFileProvider {
     private fun checkDirectory(item: Item?): File? {
         val file = item as CloudFile
         when (getExtension(file.fileExst)) {
-            StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH, StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
-                val parent =
-                    File(Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice")
+            StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH,
+            StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
+                val parent = File(Environment.getExternalStorageDirectory().absolutePath + "/OnlyOffice")
                 return createFile(parent, file.title)
             }
             else -> {
@@ -476,7 +426,7 @@ class OneDriveFileProvider : BaseFileProvider {
         return if (local.exists()) {
             local
         } else {
-            createCacheFile(App.getApp(), item.title)
+            createCacheFile(context, item.title)
         }
     }
 
