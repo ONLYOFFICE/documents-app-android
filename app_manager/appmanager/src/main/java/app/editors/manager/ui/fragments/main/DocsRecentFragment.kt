@@ -258,6 +258,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun onContextShow(state: ContextBottomDialog.State) {
         parentFragmentManager.let {
             contextBottomDialog?.onClickListener = this
+            contextBottomDialog?.state = state
             contextBottomDialog?.show(it, ContextBottomDialog.TAG)
         }
     }
