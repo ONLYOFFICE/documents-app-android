@@ -232,7 +232,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             viewBinding?.mainViewPager?.addOnPageChangeListener(it)
         }
         activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
-        adapter?.selectedPage = selectedPage
+        if (requireContext().appComponent.networkSettings.isDocSpace) {
+            viewBinding?.mainViewPager?.currentItem = 1
+        } else {
+            adapter?.selectedPage = selectedPage
+        }
     }
 
     override fun setFileData(fileData: String) {
