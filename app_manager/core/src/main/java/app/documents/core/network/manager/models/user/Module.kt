@@ -1,5 +1,6 @@
 package app.documents.core.network.manager.models.user
 
+import app.documents.core.network.login.models.User
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 

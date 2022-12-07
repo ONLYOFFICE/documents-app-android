@@ -1,5 +1,7 @@
 package app.editors.manager.mvp.presenters.login
 
+import app.documents.core.network.login.models.Token
+import app.documents.core.network.login.models.request.RequestSignIn
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.EnterpriseSSOView
@@ -15,8 +17,8 @@ class EnterpriseSSOPresenter : BaseLoginPresenter<EnterpriseSSOView>() {
     }
 
     fun signInWithSSO(token: String) {
-        val requestSignIn = app.documents.core.network.login.models.request.RequestSignIn(accessToken = token)
-        getUserInfo(requestSignIn, app.documents.core.network.login.models.Token(token = token))
+        val requestSignIn = RequestSignIn(accessToken = token)
+        getUserInfo(requestSignIn, Token(token = token))
     }
 
     override fun onAccountCreateSuccess(account: CloudAccount) {

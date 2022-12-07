@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.login
 
 import android.content.Intent
+import app.documents.core.network.login.models.request.RequestSignIn
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -31,12 +32,12 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
         disposable?.dispose()
     }
 
-    override fun onTwoFactorAuth(phoneNoise: String?, request: app.documents.core.network.login.models.request.RequestSignIn) {
+    override fun onTwoFactorAuth(phoneNoise: String?, request: RequestSignIn) {
         super.onTwoFactorAuth(phoneNoise, request)
         viewState.onTwoFactorAuth(phoneNoise, Json.encodeToString(request))
     }
 
-    override fun onTwoFactorAuthApp(secretKey: String?, request: app.documents.core.network.login.models.request.RequestSignIn) {
+    override fun onTwoFactorAuthApp(secretKey: String?, request: RequestSignIn) {
         viewState.onTwoFactorAuthTfa(secretKey, Json.encodeToString(request))
     }
 
@@ -56,7 +57,7 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
             return
         }
         viewState.onWaitingDialog(context.getString(R.string.dialogs_sign_in_portal_header_text), TAG_DIALOG_WAITING)
-        signIn(app.documents.core.network.login.models.request.RequestSignIn(userName = login, password = password))
+        signIn(RequestSignIn(userName = login, password = password))
     }
 
 }

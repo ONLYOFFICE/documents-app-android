@@ -14,7 +14,6 @@ import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import app.editors.manager.ui.adapters.holders.*
-import app.editors.manager.ui.adapters.holders.factory.TypeFactory
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
 import javax.inject.Inject

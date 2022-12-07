@@ -2,6 +2,7 @@ package app.editors.manager.mvp.presenters.login
 
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.models.request.RequestPassword
 import app.editors.manager.app.App
 import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.PasswordRecoveryView
@@ -37,11 +38,9 @@ class PasswordRecoveryPresenter : BaseLoginPresenter<PasswordRecoveryView>() {
 
     private fun sendEmailNotification(email: String, isPersonal: Boolean) {
         try {
-            val requestPassword =
-                app.documents.core.network.login.models.request.RequestPassword(
-                    if (isPersonal) ApiContract.PERSONAL_HOST else networkSettings.getPortal(),
-                    email
-                )
+            val requestPassword = RequestPassword(
+                if (isPersonal) ApiContract.PERSONAL_HOST else networkSettings.getPortal(), email
+            )
             mDisposable = context.loginService.passwordRecovery(requestPassword)
                 .map {
                     when (it) {

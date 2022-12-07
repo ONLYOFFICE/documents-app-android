@@ -3,10 +3,12 @@ package app.editors.manager.mvp.presenters.login
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.models.User
+import app.documents.core.network.login.models.request.RequestRegister
+import app.documents.core.network.login.models.request.RequestSignIn
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.documents.core.network.manager.models.user.User
 import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.EnterpriseCreateSignInView
 import io.reactivex.disposables.Disposable
@@ -42,7 +44,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         disposable?.dispose()
     }
 
-    override fun onTwoFactorAuth(phoneNoise: String?, request: app.documents.core.network.login.models.request.RequestSignIn) {
+    override fun onTwoFactorAuth(phoneNoise: String?, request: RequestSignIn) {
         super.onTwoFactorAuth(phoneNoise, request)
         viewState.onTwoFactorAuth(phoneNoise, Json.encodeToString(request))
     }
@@ -73,7 +75,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + "." + domain)
 
         // Validate portal
-        val requestRegister = app.documents.core.network.login.models.request.RequestRegister(
+        val requestRegister = RequestRegister(
             portalName = partsPortal[PORTAL_PART_NAME],
             email = email,
             firstName = first,
@@ -86,9 +88,9 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
                 when (loginResponse) {
                     is LoginResponse.Success -> {
                         networkSettings.setBaseUrl(portal)
-                        FirebaseUtils.addAnalyticsCreatePortal(networkSettings.getPortal(), email);
+                        FirebaseUtils.addAnalyticsCreatePortal(networkSettings.getPortal(), email)
                         signIn(
-                            app.documents.core.network.login.models.request.RequestSignIn(
+                            RequestSignIn(
                                 userName = email,
                                 password = password
                             )

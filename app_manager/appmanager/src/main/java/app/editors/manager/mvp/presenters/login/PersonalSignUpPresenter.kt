@@ -2,6 +2,8 @@ package app.editors.manager.mvp.presenters.login
 
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.models.request.RequestRegister
+import app.documents.core.network.login.models.response.ResponseRegisterPersonalPortal
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.loginService
@@ -48,7 +50,7 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
         email?.let {
             disposable = context.loginService
                 .registerPersonal(
-                    app.documents.core.network.login.models.request.RequestRegister(
+                    RequestRegister(
                         email = email,
                         language = Locale.getDefault().language
                     )
@@ -56,7 +58,7 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
                 .subscribe({ loginResponse ->
                     when (loginResponse) {
                         is LoginResponse.Success -> {
-                            checkResponse(loginResponse.response as app.documents.core.network.login.models.response.ResponseRegisterPersonalPortal)
+                            checkResponse(loginResponse.response as ResponseRegisterPersonalPortal)
                         }
                         is LoginResponse.Error -> {
                             fetchError(loginResponse.error)
@@ -68,7 +70,7 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
         }
     }
 
-    private fun checkResponse(response: app.documents.core.network.login.models.response.ResponseRegisterPersonalPortal) {
+    private fun checkResponse(response: ResponseRegisterPersonalPortal) {
         if (!response.response.isNullOrEmpty() && response.status != EMAIL_CODE) {
             viewState.onError(context.getString(R.string.errors_email_already_registered))
         } else if (!response.response.isNullOrEmpty()) {

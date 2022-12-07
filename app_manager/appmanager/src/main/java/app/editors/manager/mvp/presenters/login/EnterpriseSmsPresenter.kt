@@ -2,6 +2,7 @@ package app.editors.manager.mvp.presenters.login
 
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.login.models.request.RequestSignIn
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.loginService
@@ -34,7 +35,7 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
     }
 
     fun signInPortal(smsCode: String?, request: String) {
-        val requestSignIn = Json.decodeFromString<app.documents.core.network.login.models.request.RequestSignIn>(request)
+        val requestSignIn = Json.decodeFromString<RequestSignIn>(request)
         disposable = context.loginService.signIn(requestSignIn, smsCode)
             .subscribe({ response ->
                 when (response) {
@@ -51,9 +52,9 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
     }
 
     fun resendSms(request: String) {
-        val requestNumber = Json.decodeFromString<app.documents.core.network.login.models.request.RequestSignIn>(request)
+        val requestNumber = Json.decodeFromString<RequestSignIn>(request)
         disposable = context.loginService.sendSms(
-            app.documents.core.network.login.models.request.RequestSignIn(
+            RequestSignIn(
                 userName = requestNumber.userName,
                 password = requestNumber.password,
                 accessToken = requestNumber.accessToken,

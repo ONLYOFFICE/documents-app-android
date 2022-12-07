@@ -10,7 +10,11 @@ import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.account.copyWithToken
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.manager.models.user.User
+import app.documents.core.network.login.models.Token
+import app.documents.core.network.login.models.User
+import app.documents.core.network.login.models.request.RequestSignIn
+import app.documents.core.network.login.models.response.ResponseSignIn
+import app.documents.core.network.login.models.response.ResponseUser
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.loginService
@@ -46,21 +50,21 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     /*
      * Common sign in
      * */
-    protected fun signIn(requestSignIn: app.documents.core.network.login.models.request.RequestSignIn) {
+    protected fun signIn(requestSignIn: RequestSignIn) {
         disposable = context.loginService
             .signIn(requestSignIn)
             .subscribe({ loginResponse ->
                 when (loginResponse) {
                     is LoginResponse.Success -> signInSuccess(
                         requestSignIn,
-                        (loginResponse.response as app.documents.core.network.login.models.response.ResponseSignIn).response
+                        (loginResponse.response as ResponseSignIn).response
                     )
                     is LoginResponse.Error -> fetchError(loginResponse.error)
                 }
             }, { fetchError(it) })
     }
 
-    protected fun signInSuccess(requestSignIn: app.documents.core.network.login.models.request.RequestSignIn, token: app.documents.core.network.login.models.Token) {
+    protected fun signInSuccess(requestSignIn: RequestSignIn, token: Token) {
         when {
             !token.token.isNullOrEmpty() -> getUserInfo(requestSignIn, token)
             token.tfa == true -> onTwoFactorAuthApp(token.tfaKey, requestSignIn)
@@ -68,19 +72,19 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         }
     }
 
-    protected fun getUserInfo(request: app.documents.core.network.login.models.request.RequestSignIn, token: app.documents.core.network.login.models.Token) {
+    protected fun getUserInfo(request: RequestSignIn, token: Token) {
         disposable = context.loginService.getUserInfo(token.token ?: "")
             .subscribe({ response ->
                 when (response) {
                     is LoginResponse.Success -> {
-                        subscribePush((response.response as app.documents.core.network.login.models.response.ResponseUser).response, request, token)
+                        subscribePush((response.response as ResponseUser).response, request, token)
                     }
                     is LoginResponse.Error -> fetchError(response.error)
                 }
             }, { fetchError(it) })
     }
 
-    private fun subscribePush(response: app.documents.core.network.login.models.User, request: app.documents.core.network.login.models.request.RequestSignIn, token: app.documents.core.network.login.models.Token) {
+    private fun subscribePush(response: User, request: RequestSignIn, token: Token) {
         GoogleUtils.getDeviceToken({ deviceToken ->
             disposable = context.loginService.setFirebaseToken(token.token ?: "", deviceToken)
                 .flatMap { responseRegisterToken ->
@@ -127,7 +131,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    private fun createAccount(user: app.documents.core.network.login.models.User, request: app.documents.core.network.login.models.request.RequestSignIn, token: app.documents.core.network.login.models.Token) {
+    private fun createAccount(user: User, request: RequestSignIn, token: Token) {
         val portal = networkSettings.getPortal()
         val login = request.userName
         var password = request.password
@@ -190,11 +194,11 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         }
     }
 
-    protected open fun onTwoFactorAuth(phoneNoise: String?, request: app.documents.core.network.login.models.request.RequestSignIn) {
+    protected open fun onTwoFactorAuth(phoneNoise: String?, request: RequestSignIn) {
         preferenceTool.phoneNoise = phoneNoise
     }
 
-    protected open fun onTwoFactorAuthApp(secretKey: String?, request: app.documents.core.network.login.models.request.RequestSignIn) {
+    protected open fun onTwoFactorAuthApp(secretKey: String?, request: RequestSignIn) {
 
     }
 
@@ -219,7 +223,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
      * */
     fun signInWithTwitter(token: String) {
         signIn(
-            app.documents.core.network.login.models.request.RequestSignIn(
+            RequestSignIn(
                 provider = ApiContract.Social.TWITTER,
                 accessToken = token
             )
@@ -228,7 +232,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
 
     fun signInWithFacebook(token: String) {
         signIn(
-            app.documents.core.network.login.models.request.RequestSignIn(
+            RequestSignIn(
                 provider = ApiContract.Social.FACEBOOK,
                 accessToken = token
             )
@@ -252,7 +256,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                     val accessToken = GoogleAuthUtil.getToken(context, account, scope)
                     withContext(Dispatchers.Main) {
                         signIn(
-                            app.documents.core.network.login.models.request.RequestSignIn(
+                            RequestSignIn(
                                 userName = account.name ?: "",
                                 accessToken = accessToken,
                                 provider = ApiContract.Social.GOOGLE
