@@ -417,16 +417,8 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun deletePhoto() {
-        if (photoUri != null) {
-            context.contentResolver.delete(photoUri!!, null, null)
-        }
-    }
-
-    fun checkSelectedFiles() {
-        if (modelExplorerStack.countSelectedItems > 0) {
-            viewState.onShowFolderChooser()
-        } else {
-            viewState.onError(context.getString(R.string.operation_empty_lists_data))
+        photoUri?.let { uri ->
+            context.contentResolver.delete(uri, null, null)
         }
     }
 

@@ -28,7 +28,7 @@ open class BaseStorageDownloadWork(context: Context, workerParameters: WorkerPar
     protected val notificationUtils: NotificationUtils = NotificationUtils(applicationContext, TAG)
     protected var file: DocumentFile? = null
     protected var id: String? = null
-    protected var to: Uri? = null
+    protected var to: Uri = Uri.EMPTY
     private var timeMark = 0L
     protected var data: Data? = null
     override fun doWork() = Result.success()
@@ -74,19 +74,10 @@ open class BaseStorageDownloadWork(context: Context, workerParameters: WorkerPar
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 
-    fun sendBroadcastError(id: String?, url: String?, title: String?, error: String?) {
-        val intent = Intent(DownloadReceiver.DOWNLOAD_ACTION_ERROR)
-        intent.putExtra(DownloadReceiver.EXTRAS_KEY_ID, id)
-        intent.putExtra(DownloadReceiver.EXTRAS_KEY_URL, url)
-        intent.putExtra(DownloadReceiver.EXTRAS_KEY_TITLE, title)
-        intent.putExtra(DownloadReceiver.EXTRAS_KEY_ERROR, error)
-        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
-    }
-
     protected open fun getArgs() {
         data = inputData
         to = Uri.parse(data?.getString(FILE_URI_KEY))
-        file = DocumentFile.fromSingleUri(applicationContext, to!!)
+        file = DocumentFile.fromSingleUri(applicationContext, to)
         id = data?.getString(FILE_ID_KEY)
     }
 
