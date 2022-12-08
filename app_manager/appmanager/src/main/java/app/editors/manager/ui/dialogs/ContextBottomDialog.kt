@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
+import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.mvp.models.explorer.Item
 import com.google.android.material.snackbar.Snackbar
@@ -22,6 +23,7 @@ import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import java.io.Serializable
+import javax.inject.Inject
 
 class ContextBottomDialog : BaseBottomDialog() {
 
@@ -48,6 +50,9 @@ class ContextBottomDialog : BaseBottomDialog() {
             field = value
             setItemSharedState(state.isShared)
         }
+
+    @Inject
+    lateinit var preferenceTool: PreferenceTool
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,6 +92,7 @@ class ContextBottomDialog : BaseBottomDialog() {
     }
 
     private fun init(dialog: Dialog) {
+        App.getApp().appComponent.inject(this)
         viewBinding = ListExplorerContextMenuBinding.inflate(LayoutInflater.from(context))
         viewBinding?.let {
             dialog.setContentView(it.root)
@@ -222,6 +228,16 @@ class ContextBottomDialog : BaseBottomDialog() {
 
                 /** File can access by link */
                 binding.listExplorerContextExternalLink.isVisible = state.isCanShare
+
+                if (preferenceTool.isFavoritesEnabled) {
+                    viewBinding?.listExplorerContextFavorite?.isVisible = true
+                    if (state.isFavorite) {
+                        viewBinding?.favoriteImage?.setImageResource(R.drawable.ic_favorites_fill)
+                        viewBinding?.favoriteText?.setText(R.string.list_context_delete_from_favorite)
+                    } else {
+                        viewBinding?.favoriteText?.setText(R.string.list_context_add_to_favorite)
+                    }
+                }
             }
 
             /**Folders and files*/
@@ -238,7 +254,6 @@ class ContextBottomDialog : BaseBottomDialog() {
 
             /** Only for share section, instead of delete */
             binding.listExplorerContextShareDelete.isVisible = state.isDeleteShare
-
 
             if (state.isPersonalAccount) {
                 binding.listExplorerContextShare.isVisible = !state.isFolder

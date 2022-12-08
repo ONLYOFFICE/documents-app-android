@@ -38,6 +38,7 @@ import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
+import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.login.*
 import app.editors.manager.ui.fragments.main.CloudsFragment
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
@@ -185,4 +186,5 @@ interface AppComponent {
     fun inject(passcodeActivity: PasscodeActivity?)
     fun inject(baseFilterPresenter: BaseFilterPresenter)
     fun inject(filterAuthorPresenter: FilterAuthorPresenter)
+    fun inject(contextBottomDialog: ContextBottomDialog)
 }

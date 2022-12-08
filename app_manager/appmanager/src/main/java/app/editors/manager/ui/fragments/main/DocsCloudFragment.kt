@@ -337,6 +337,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun onUpdateFavoriteItem() {
+        if (section == ApiContract.SectionType.CLOUD_FAVORITES) explorerAdapter?.removeItem(presenter.itemClicked)
+        else super.onUpdateFavoriteItem()
+    }
+
     protected open fun getFilters(): Boolean {
         val filter = presenter.preferenceTool.filter
         return filter.type != FilterType.None || filter.author.id.isNotEmpty() || filter.excludeSubfolder
