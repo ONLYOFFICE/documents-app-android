@@ -262,6 +262,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                     ) == true &&
                     data.email?.equals(account.login, ignoreCase = true) == true
                 ) {
+                    preferenceTool.fileData = Json.encodeToString(data)
                     withContext(Dispatchers.Main) {
                         viewState.openFile(account, Json.encodeToString(data))
                     }
