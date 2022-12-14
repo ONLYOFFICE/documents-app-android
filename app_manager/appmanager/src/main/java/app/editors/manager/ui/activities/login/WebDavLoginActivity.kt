@@ -3,13 +3,17 @@ package app.editors.manager.ui.activities.login
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.widget.Toolbar
+import android.view.MenuItem
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
+import app.editors.manager.databinding.ActivityWebDavLoginBinding
+import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.models.account.Storage
+import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
 import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
@@ -17,9 +21,10 @@ import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.login.WebDavSignInFragment
+import app.editors.manager.ui.interfaces.WebDavInterface
 import javax.inject.Inject
 
-class WebDavLoginActivity : BaseAppActivity() {
+class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     companion object {
         private const val KEY_PROVIDER = "KEY_PROVIDER"
@@ -40,6 +45,8 @@ class WebDavLoginActivity : BaseAppActivity() {
         }
     }
 
+    private var viewBinding: ActivityWebDavLoginBinding? = null
+    override val isMySection: Boolean = false
     @Inject
     lateinit var dropboxLoginHelper: DropboxLoginHelper
 
@@ -48,11 +55,8 @@ class WebDavLoginActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         App.getApp().appComponent.inject(this)
-        setContentView(R.layout.activity_web_dav_login)
-
-        toolbar = findViewById(R.id.app_bar_toolbar)
-        setSupportActionBar(toolbar)
-
+        viewBinding = ActivityWebDavLoginBinding.inflate(layoutInflater)
+        setContentView(viewBinding?.root)
         init(savedInstanceState)
     }
 
@@ -62,23 +66,35 @@ class WebDavLoginActivity : BaseAppActivity() {
         finish()
     }
 
+    override fun showConnectButton(isShow: Boolean) {
+        viewBinding?.appBarToolbarConnectButton?.isVisible = isShow
+    }
+
+    override fun enableConnectButton(isEnable: Boolean) {
+        viewBinding?.appBarToolbarConnectButton?.isEnabled = isEnable
+    }
+
+    override fun setOnConnectButtonClickListener(onClick: () -> Unit) {
+        viewBinding?.appBarToolbarConnectButton?.setOnClickListener { onClick() }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun finishWithResult(folder: CloudFolder?) { }
+
     private fun init(savedInstanceState: Bundle?) {
-        toolbar.setNavigationOnClickListener { onBackPressed() }
+        setSupportActionBar(viewBinding?.appBarToolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
-            intent.let { data ->
-                it.title = getString(
-                    R.string.login_web_dav_title,
-                    (data.getSerializableExtra(KEY_PROVIDER) as WebDavApi.Providers?)?.name
-                )
-            }
-
+            it.title = (intent.getSerializableExtra(KEY_PROVIDER) as WebDavApi.Providers).name
         }
-        savedInstanceState?.let {
-            // Nothing
-        } ?: run {
-            showFragment()
-        }
+        if (savedInstanceState == null) showFragment()
     }
 
     private fun showFragment() {

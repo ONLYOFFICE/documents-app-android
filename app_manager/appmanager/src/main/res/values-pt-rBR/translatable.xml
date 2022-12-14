@@ -325,7 +325,6 @@
     <string name="storage_web_dav_settings_login">Login</string>
     <string name="storage_web_dav_settings_password">Senha</string>
     <string name="storage_web_dav_settings_title">Título da entrada para serviço</string>
-    <string name="storage_web_dav_settings_url">URL de conexão</string>
     <string name="storage_web_title">Conectar serviço</string>
     <string name="this_device">Este dispositivo</string>
     <string name="toolbar_menu_main_copy">Copiar</string>

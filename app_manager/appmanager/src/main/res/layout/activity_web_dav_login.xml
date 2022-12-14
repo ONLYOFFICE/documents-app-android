@@ -22,7 +22,19 @@
             android:theme="@style/MainToolbar"
             app:contentInsetLeft="0dp"
             app:contentInsetStart="0dp"
-            app:contentInsetStartWithNavigation="0dp" />
+            app:contentInsetStartWithNavigation="0dp" >
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/app_bar_toolbar_connect_button"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="@dimen/default_margin_medium"
+                android:visibility="gone"
+                android:text="@string/storage_connect_button" />
+
+        </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 

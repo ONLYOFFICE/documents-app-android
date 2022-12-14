@@ -398,7 +398,6 @@
     <string name="storage_web_title">ບໍລິການເຊື່ອມຕໍ່ </string>
     <string name="storage_connect_button">ເຊື່ອມຕໍ່</string>
 
-    <string name="storage_web_dav_settings_url">ເຊື່ອມຕໍ່ URL</string>
     <string name="storage_web_dav_settings_login">ເຂົ້າລະບົບ</string>
     <string name="storage_web_dav_settings_password">ລະຫັດຜ່ານ</string>
     <string name="storage_web_dav_settings_title">ຫົວຂໍ້ການປ້ອນຂໍ້ມູນສຳລັບການບໍລິການ</string>

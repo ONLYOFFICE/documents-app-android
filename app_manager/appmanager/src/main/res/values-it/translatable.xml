@@ -325,7 +325,6 @@
     <string name="storage_web_dav_settings_login">Login</string>
     <string name="storage_web_dav_settings_password">Password</string>
     <string name="storage_web_dav_settings_title">Immettere il titolo per il servizio</string>
-    <string name="storage_web_dav_settings_url">URL di connessione</string>
     <string name="storage_web_title">Collega servizio</string>
     <string name="this_device">Questo dispositivo</string>
     <string name="toolbar_menu_main_copy">Copia</string>

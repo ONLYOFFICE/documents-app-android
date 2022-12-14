@@ -1,26 +1,29 @@
 package app.editors.manager.ui.fragments.login
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
-import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
 import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter
 import app.editors.manager.mvp.views.login.WebDavSignInView
 import app.editors.manager.ui.activities.login.NextCloudLoginActivity
+import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.activities.main.MainActivity
+import app.editors.manager.ui.fragments.base.WebDavBaseFragment
+import app.editors.manager.ui.interfaces.WebDavInterface
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
 
-class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
+class WebDavSignInFragment : WebDavBaseFragment(), WebDavSignInView {
 
     companion object {
         val TAG: String = WebDavSignInFragment::class.java.simpleName
@@ -39,13 +42,20 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
         }
     }
 
-    private val textWatcher: TextWatcher by lazy { FieldsWatcher() }
-    private lateinit var wevDavProvider: WebDavApi.Providers
-
     @InjectPresenter
     lateinit var presenter: WebDavSignInPresenter
 
-    private var viewBinding: FragmentStorageWebDavBinding? = null
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        parentActivity = try {
+            context as WebDavInterface
+        } catch (e: ClassCastException) {
+            throw RuntimeException(
+                WebDavSignInFragment::class.java.simpleName + " - must implement - " +
+                        WebDavLoginActivity::class.java.simpleName
+            )
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,67 +72,53 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         viewBinding?.let { view ->
-            outState.putString(KEY_PORTAL, view.storageWebDavUrlEdit.text?.toString())
+            outState.putString(KEY_PORTAL, view.storageWebDavServerEdit.text?.toString())
             outState.putString(KEY_LOGIN, view.storageWebDavLoginEdit.text?.toString())
             outState.putString(KEY_PASSWORD, view.storageWebDavPasswordEdit.text?.toString())
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        viewBinding = FragmentStorageWebDavBinding.inflate(inflater, container, false)
-        return viewBinding?.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         restoreState(savedInstanceState)
-        initViews()
     }
 
     private fun restoreState(bundle: Bundle?) {
         bundle?.let { data ->
             viewBinding?.let { view ->
-                view.storageWebDavUrlEdit.setText(data.getString(KEY_PORTAL))
+                view.storageWebDavServerEdit.setText(data.getString(KEY_PORTAL))
                 view.storageWebDavLoginEdit.setText(data.getString(KEY_LOGIN))
-                view.storageWebDavPasswordEdit.setText(bundle.getString(KEY_PASSWORD))
+                view.storageWebDavPasswordEdit.setText(data.getString(KEY_PASSWORD))
             }
         }
     }
 
-    private fun initViews() {
-        addTextWatcher()
-        viewBinding?.storageWebDavTitleLayout?.visibility = View.GONE
-        viewBinding?.storageWebDavSaveButton?.isEnabled = false
-
-        when (wevDavProvider) {
-            WebDavApi.Providers.Yandex -> {
-                initYandexState()
-            }
-            WebDavApi.Providers.NextCloud -> {
-                initNextCloudState()
-            }
-
-            WebDavApi.Providers.KDrive -> {
-                initKDriveState()
-            }
+    override fun initViews(isNextCloud: Boolean) {
+        when (webDavProvider) {
+            WebDavApi.Providers.Yandex -> initYandexState()
+            WebDavApi.Providers.NextCloud -> initNextCloudState()
+            WebDavApi.Providers.KDrive -> initKDriveState()
             else -> {
-                // Nothing
+                viewBinding?.storageWebDavPasswordEdit?.setActionDoneListener(this::connect)
             }
         }
 
-        initListeners()
+        viewBinding?.storageWebDavTitleLayout?.isVisible = false
+        parentActivity?.setOnConnectButtonClickListener(this::connect)
+        super.initViews(webDavProvider === WebDavApi.Providers.NextCloud)
     }
 
     private fun initNextCloudState() {
-        viewBinding?.storageWebDavPasswordLayout?.visibility = View.GONE
-        viewBinding?.storageWebDavLoginLayout?.visibility = View.GONE
-        viewBinding?.storageWebDavLoginEdit?.removeTextChangedListener(textWatcher)
-        viewBinding?.storageWebDavPasswordEdit?.removeTextChangedListener(textWatcher)
+        viewBinding?.storageWebDavLoginLayout?.isVisible = false
+        viewBinding?.storageWebDavPasswordLayout?.isVisible = false
+        viewBinding?.storageWebDavServerEdit?.setActionDoneListener(this::connect)
     }
 
     @SuppressLint("SetTextI18n")
     private fun initKDriveState() {
+        viewBinding?.storageWebDavServerEdit?.setText("https://connect.drive.infomaniak.com")
+        viewBinding?.storageWebDavServerLayout?.isVisible = false
+        viewBinding?.storageWebDavPasswordEdit?.setActionDoneListener(this::connect)
         viewBinding?.storageWebDavUrlEdit?.setText("https://connect.drive.infomaniak.com")
         viewBinding?.storageWebDavUrlLayout?.visibility = View.GONE
         viewBinding?.storageWebDavLoginLayout?.hint = getString(R.string.login_enterprise_email_hint)
@@ -136,33 +132,24 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
 
     @SuppressLint("SetTextI18n")
     private fun initYandexState() {
-        viewBinding?.storageWebDavUrlEdit?.setText("webdav.yandex.ru/")
-        viewBinding?.storageWebDavUrlLayout?.visibility = View.GONE
+        viewBinding?.storageWebDavServerEdit?.setText("webdav.yandex.ru/")
+        viewBinding?.storageWebDavServerLayout?.isVisible = false
     }
 
-    private fun addTextWatcher() {
-        viewBinding?.let { view ->
-            view.storageWebDavUrlEdit.addTextChangedListener(textWatcher)
-            view.storageWebDavLoginEdit.addTextChangedListener(textWatcher)
-            view.storageWebDavPasswordEdit.addTextChangedListener(textWatcher)
-        }
-    }
-
-    private fun initListeners() {
-        viewBinding?.storageWebDavSaveButton?.setOnClickListener {
-            val url = viewBinding?.storageWebDavUrlEdit?.text?.toString()?.trim() ?: ""
-            val login = viewBinding?.storageWebDavLoginEdit?.text?.toString()?.trim() ?: ""
-            val password = viewBinding?.storageWebDavPasswordEdit?.text?.toString()?.trim() ?: ""
-            connect(url, login, password)
-        }
-    }
-
-    private fun connect(url: String, login: String, password: String) {
+    private fun connect() {
         hideKeyboard()
-        if (wevDavProvider === WebDavApi.Providers.NextCloud) {
-            presenter.checkNextCloud(wevDavProvider, url)
-        } else {
-            presenter.checkPortal(wevDavProvider, url, login, password)
+        viewBinding?.let { binding ->
+            val url = binding.storageWebDavServerEdit.text?.trim().toString()
+            val login = binding.storageWebDavLoginEdit.text?.trim().toString()
+            val password = binding.storageWebDavPasswordEdit.text?.trim().toString()
+
+            webDavProvider?.let { provider ->
+                if (provider === WebDavApi.Providers.NextCloud) {
+                    presenter.checkNextCloud(provider, url)
+                } else {
+                    presenter.checkPortal(provider, url, login, password)
+                }
+            }
         }
     }
 
@@ -188,12 +175,7 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
 
     override fun onUrlError(string: String) {
         onDialogClose()
-        viewBinding?.storageWebDavUrlLayout?.error = string
-    }
-
-    override fun onError(message: String?) {
-        onDialogClose()
-        message?.let { showSnackBar(it) }
+        onServerError()
     }
 
     override fun onDialogWaiting(string: String) {
@@ -203,23 +185,4 @@ class WebDavSignInFragment : BaseAppFragment(), WebDavSignInView {
     override fun onDialogClose() {
         hideDialog()
     }
-
-    private inner class FieldsWatcher : BaseWatcher() {
-        override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
-            viewBinding?.storageWebDavUrlLayout?.error = null
-
-            val url = viewBinding?.storageWebDavUrlEdit?.text?.toString()
-            val login = viewBinding?.storageWebDavLoginEdit?.text?.toString()
-            val password = viewBinding?.storageWebDavPasswordEdit?.text?.toString()
-
-            if (wevDavProvider === WebDavApi.Providers.NextCloud) {
-                viewBinding?.storageWebDavSaveButton?.isEnabled = !url.isNullOrEmpty()
-            } else {
-                viewBinding?.storageWebDavSaveButton?.isEnabled =
-                    !url.isNullOrEmpty() && !login.isNullOrEmpty() && !password.isNullOrEmpty()
-            }
-        }
-    }
-
-
 }

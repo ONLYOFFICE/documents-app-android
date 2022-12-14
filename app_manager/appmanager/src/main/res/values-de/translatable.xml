@@ -296,7 +296,6 @@
     <string name="storage_connect_empty_title">Titel des Eingabespeichers</string>
     <string name="storage_web_title">Service verbinden </string>
     <string name="storage_connect_button">VERBINDEN</string>
-    <string name="storage_web_dav_settings_url">Verbindungs-URL</string>
     <string name="storage_web_dav_settings_login">Einloggen</string>
     <string name="storage_web_dav_settings_password">Passwort</string>
     <string name="storage_web_dav_settings_title">Geben Sie den Titel für den Service ein</string>
