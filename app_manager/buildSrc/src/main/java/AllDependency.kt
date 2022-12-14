@@ -29,7 +29,7 @@ object AndroidX {
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
-    const val composeActivity = "androidx.activity:activity-compose:1.6.0"
+    const val composeActivity = "androidx.activity:activity-compose:1.6.1"
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     const val recyclerViewSelection = "androidx.recyclerview:recyclerview-selection:$recyclerViewSelectionVersion"
     const val cardView = "androidx.cardview:cardview:1.0.0"
@@ -63,9 +63,9 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "20.3.0"
+    private const val playServicesAuthVersion = "20.4.0"
     private const val playCoreVersion = "1.10.3"
-    private const val materialVersion = "1.6.1"
+    private const val materialVersion = "1.7.0"
     private const val gsonVersion = "2.9.1"
     private const val safetynetVersion = "18.0.1"
 
@@ -80,9 +80,9 @@ object Google {
 
 object Firebase {
     private const val firebaseCoreVersion = "21.1.1"
-    private const val firebaseConfigVersion = "21.1.2"
-    private const val firebaseMessagingVersion = "23.0.8"
-    private const val firebaseCrashlyticsVersion = "18.2.13"
+    private const val firebaseConfigVersion = "21.2.0"
+    private const val firebaseMessagingVersion = "23.1.1"
+    private const val firebaseCrashlyticsVersion = "18.3.2"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"
