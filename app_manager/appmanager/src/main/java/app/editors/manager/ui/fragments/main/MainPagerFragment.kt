@@ -233,7 +233,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }
         activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
         if (requireContext().appComponent.networkSettings.isDocSpace) {
-            viewBinding?.mainViewPager?.currentItem = 1
+            viewBinding?.mainViewPager?.currentItem = fragments.indexOf(fragments.find { it.mFragment is DocsRoomFragment })
         } else {
             adapter?.selectedPage = selectedPage
         }
