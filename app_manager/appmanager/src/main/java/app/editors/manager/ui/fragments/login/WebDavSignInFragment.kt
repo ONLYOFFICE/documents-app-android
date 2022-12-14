@@ -4,12 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import app.documents.core.webdav.WebDavApi
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.R
-import app.editors.manager.databinding.FragmentStorageWebDavBinding
 import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter
 import app.editors.manager.mvp.views.login.WebDavSignInView
 import app.editors.manager.ui.activities.login.NextCloudLoginActivity
@@ -17,8 +14,6 @@ import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.WebDavBaseFragment
 import app.editors.manager.ui.interfaces.WebDavInterface
-import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.views.edits.BaseWatcher
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
@@ -60,7 +55,7 @@ class WebDavSignInFragment : WebDavBaseFragment(), WebDavSignInView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            wevDavProvider = it.getSerializableExt(KEY_PROVIDER, WebDavApi.Providers::class.java)
+            webDavProvider = it.getSerializableExt(KEY_PROVIDER, WebDavApi.Providers::class.java)
         }
     }
 
@@ -119,11 +114,10 @@ class WebDavSignInFragment : WebDavBaseFragment(), WebDavSignInView {
         viewBinding?.storageWebDavServerEdit?.setText("https://connect.drive.infomaniak.com")
         viewBinding?.storageWebDavServerLayout?.isVisible = false
         viewBinding?.storageWebDavPasswordEdit?.setActionDoneListener(this::connect)
-        viewBinding?.storageWebDavUrlEdit?.setText("https://connect.drive.infomaniak.com")
+        viewBinding?.storageWebDavServerEdit?.setText("https://connect.drive.infomaniak.com")
         viewBinding?.storageWebDavUrlLayout?.visibility = View.GONE
         viewBinding?.storageWebDavLoginLayout?.hint = getString(R.string.login_enterprise_email_hint)
         viewBinding?.storageWebDavPasswordLayout?.helperText = getString(R.string.krdive_password_helper_text)
-        viewBinding?.storageWebDavSaveButton?.text = getString(R.string.storage_email_connection)
         viewBinding?.storageInfoTitle?.apply {
             isVisible = true
             text = getString(R.string.kdrive_info_title)

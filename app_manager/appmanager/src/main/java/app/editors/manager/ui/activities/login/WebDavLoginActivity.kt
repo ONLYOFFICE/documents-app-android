@@ -4,16 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.core.view.isVisible
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.BuildConfig
-import app.editors.manager.databinding.ActivityWebDavLoginBinding
-import app.editors.manager.managers.utils.isVisible
-import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.databinding.ActivityWebDavLoginBinding
 import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.storages.dropbox.ui.fragments.DropboxSignInFragment
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
 import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
 import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
@@ -22,6 +20,7 @@ import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.login.WebDavSignInFragment
 import app.editors.manager.ui.interfaces.WebDavInterface
+import lib.toolkit.base.managers.utils.getSerializable
 import javax.inject.Inject
 
 class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
@@ -49,8 +48,6 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
     override val isMySection: Boolean = false
     @Inject
     lateinit var dropboxLoginHelper: DropboxLoginHelper
-
-    private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +77,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -92,7 +89,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
         setSupportActionBar(viewBinding?.appBarToolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
-            it.title = (intent.getSerializableExtra(KEY_PROVIDER) as WebDavApi.Providers).name
+            it.title = intent.getSerializable(KEY_PROVIDER, WebDavApi.Providers::class.java).name
         }
         if (savedInstanceState == null) showFragment()
     }

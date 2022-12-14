@@ -6,10 +6,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
-import app.editors.manager.managers.utils.isVisible
 import app.editors.manager.mvp.views.base.BaseView
 import app.editors.manager.ui.interfaces.WebDavInterface
 import app.editors.manager.ui.views.edits.BaseWatcher

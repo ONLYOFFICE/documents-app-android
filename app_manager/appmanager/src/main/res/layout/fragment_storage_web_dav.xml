@@ -25,7 +25,7 @@
         android:layout_marginHorizontal="@dimen/default_margin_large"
         android:layout_marginTop="@dimen/default_margin_medium"
         android:hint="@string/storage_web_dav_settings_server"
-        app:errorIconDrawable="@null">
+        app:errorIconDrawable="@null"/>
 
 
             <com.google.android.material.textfield.TextInputLayout
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"
-                android:hint="@string/storage_web_dav_settings_url">
+                android:hint="@string/storage_web_dav_settings_hint">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/storage_web_dav_server_edit"
