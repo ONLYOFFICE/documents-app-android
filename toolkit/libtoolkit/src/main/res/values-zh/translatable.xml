@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chooser_email_client">选择电子邮件客户端…</string>
+    <string name="about_email_subject">适用于安卓反馈的ONLYOFFICE文档</string>
+    <string name="about_feedback">反馈和支持</string>
+</resources>

@@ -1,6 +1,5 @@
 <resources>
     <string name="about_app_version">Version %1$s, build %2$s, SDK %3$s</string>
-    <string name="about_email_subject">ONLYOFFICE Documents Android Commentaire</string>
     <string name="about_license">Accord de licence</string>
     <string name="about_policy">Politique de confidentialité</string>
     <string name="about_terms">Conditions d’utilisation</string>
@@ -26,7 +25,6 @@
     <string name="bottom_sheet_cloud_title">Clouds</string>
     <string name="bottom_sheet_portal_title">Portail</string>
     <string name="chooser_activity_not_found">Impossible de trouver l’application pour cette action</string>
-    <string name="chooser_email_client">Choisissez un client de messagerie…</string>
     <string name="chooser_web_browser">Choisissez le navigateur…</string>
     <string name="countries_codes_title">Sélectionner le pays</string>
     <string name="device_path_file_error">Ce fichier n’existe pas.</string>
@@ -417,7 +415,6 @@
     <string name="download_manager_exceed_size_25">Le fichier dépasse la taille maximale de 25MB</string>
     <string name="snackbar_undo">ANNULER</string>
     <string name="errors_server_auth_too_many_attempts">Trop de tentatives. Réessayez plus tard</string>
-    <string name="navigation_drawer_menu_feedback">Commentaires et assistance</string>
     <string name="share_snackbar_remove_user">L\'utilisateur est supprimé</string>
     <string name="share_group_admin">Admin</string>
     <string name="share_group_everyone">Tout le monde</string>

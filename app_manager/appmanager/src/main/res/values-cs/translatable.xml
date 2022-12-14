@@ -38,7 +38,6 @@
     <string name="about_policy">Zásady ochrany osobních údajů</string>
     <string name="about_license">Licenční smlouva</string>
     <string name="about_website">Webové stránky ONLYOFFICE</string>
-    <string name="about_email_subject">Zpětná vazba k aplikaci Dokumenty ONLYOFFICE pro Android</string>
 
     <!-- ======================================================================================= -->
     <!-- Common errors -->
@@ -215,7 +214,6 @@
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
     <string name="chooser_web_browser">Zvolte prohlížeč…</string>
-    <string name="chooser_email_client">Zvolte e-mailového klienta…</string>
 
     <!-- ======================================================================================= -->
     <!-- Main -->
@@ -559,7 +557,6 @@
     <string name="download_manager_exceed_size_25">Překračuje maximální velikost souboru (25MB)</string>
     <string name="snackbar_undo">UNDO</string>
     <string name="errors_server_auth_too_many_attempts">Příliš mnoho pokusů. Zkuste to později</string>
-    <string name="navigation_drawer_menu_feedback">Zpětná vazba a podpora</string>
     <string name="share_snackbar_remove_user">Uživatel je odstraněn</string>
     <string name="share_group_admin">Admin</string>
     <string name="share_group_everyone">Všichni</string>

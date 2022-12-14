@@ -39,7 +39,6 @@
     <string name="about_policy">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</string>
     <string name="about_license">ການອະນຸຍາດ</string>
     <string name="about_website">ເວັບໄຊທ໌ ONLYOFFICE ເທົ່ານັ້ນ</string>
-    <string name="about_email_subject">ເອກະສານ ONLYOFFICE  ສຳລັບຄຳຕິຊົມຈາກ</string>
 
     <!-- ======================================================================================= -->
     <!-- Common errors -->
@@ -218,7 +217,6 @@
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
     <string name="chooser_web_browser">ເລືອກ browser…</string>
-    <string name="chooser_email_client">ເລືອກລູກຄ້າທາງອີເມວ…</string>
 
     <!-- ======================================================================================= -->
     <!-- Main -->
@@ -570,7 +568,6 @@
     <string name="download_manager_exceed_size_25">ຂະໜາດຟາຍກາຍກຳນົດ (25MB)</string>
     <string name="snackbar_undo">ຍົກເລີກ</string>
     <string name="errors_server_auth_too_many_attempts">ຜິດຫຼາຍຄັ້ງເກີນໄປ. ລອງໃໝ່ໃນພາຍຫຼັງ</string>
-    <string name="navigation_drawer_menu_feedback">ຄໍາຕິຊົມແລະສະຫນັບສະຫນູນ</string>
     <string name="share_snackbar_remove_user">ຜູ້ໃຊ້ຖືກລຶບອອກ</string>
     <string name="share_group_admin">ຄຸ້ມຄອງ</string>
     <string name="share_group_everyone">ທຸກຄົນ</string>

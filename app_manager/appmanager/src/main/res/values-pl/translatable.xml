@@ -1,6 +1,5 @@
 <resources>
     <string name="about_app_version">Wersja %1$s, zbudowana %2$s, SDK %3$s</string>
-    <string name="about_email_subject">Android Opinie ONLYOFFICE Documents</string>
     <string name="about_license">Umowa Licencyjna</string>
     <string name="about_policy">Polityka Prywatności</string>
     <string name="about_terms">Warunki Użytkowania</string>
@@ -26,7 +25,6 @@
     <string name="bottom_sheet_cloud_title">Chmury</string>
     <string name="bottom_sheet_portal_title">Portal</string>
     <string name="chooser_activity_not_found">Nie znaleziono aplikacji dla danej akcji…</string>
-    <string name="chooser_email_client">Wybierz klienta poczty …</string>
     <string name="chooser_web_browser">Wybierz przeglądarkę…</string>
     <string name="countries_codes_title">Wybierz kraj</string>
     <string name="device_path_file_error">Dany plik nie istnieje</string>
@@ -417,7 +415,6 @@
     <string name="download_manager_exceed_size_25">Przekroczono maksymalny rozmiar pliku (25MB)</string>
     <string name="snackbar_undo">COFNIJ</string>
     <string name="errors_server_auth_too_many_attempts">Zbyt wiele prób. Spróbuj ponownie później</string>
-    <string name="navigation_drawer_menu_feedback">Opinie i wsparcie</string>
     <string name="share_snackbar_remove_user">Użytkownik został usunięty</string>
     <string name="share_group_admin">Admin</string>
     <string name="share_group_everyone">Wszyscy</string>
