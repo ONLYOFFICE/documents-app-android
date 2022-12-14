@@ -68,7 +68,7 @@ class AddPresenter(
                     UserUi(
                         id = user.id,
                         department = user.department,
-                        displayName = user.displayName.takeIf { name -> name.isEmpty() } ?: user.email ?: "",
+                        displayName = user.displayName.takeIf { name -> name.isNotEmpty() } ?: user.email ?: "",
                         avatarUrl = user.avatarMedium,
                         status = user.activationStatus)
                 }.sortedBy { it.status }
@@ -108,7 +108,7 @@ class AddPresenter(
                 UserUi(
                     id = user.id,
                     department = user.department,
-                    displayName = user.displayName.takeIf { it.isEmpty() } ?: user.email ?: "",
+                    displayName = user.displayName.takeIf { it.isNotEmpty() } ?: user.email ?: "",
                     avatarUrl = user.avatarMedium, status = user.activationStatus)
             })
             return@zip true
@@ -135,7 +135,7 @@ class AddPresenter(
                 UserUi(
                     id = user.id,
                     department = user.department,
-                    displayName = user.displayName.takeIf { it.isEmpty() } ?: user.email ?: "",
+                    displayName = user.displayName.takeIf { it.isNotEmpty() } ?: user.email ?: "",
                     avatarUrl = user.avatarMedium,
                     status = user.activationStatus)
             })
