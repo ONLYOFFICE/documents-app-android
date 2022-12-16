@@ -786,7 +786,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return plus(
             mutableMapOf<String, String>().apply {
                 put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
-                if (filter.type != FilterType.None || isFilteringMode)
+                if (filter.type != FilterType.None || isFilteringMode && filteringValue.isNotEmpty())
                     put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
                 if (App.getApp().accountOnline?.isPersonal() == false) {
                     if (ApiContract.SectionType.isRoom(currentSectionType)) {
