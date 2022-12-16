@@ -66,7 +66,11 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
     override fun onDocsGet(list: List<Entity>?) {
         super.onDocsGet(list)
-        operationActivity?.setEnabledActionButton(true)
+        if (sectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM && presenter.isRoot) {
+            operationActivity?.setEnabledActionButton(false)
+        } else {
+            operationActivity?.setEnabledActionButton(true)
+        }
     }
 
     override fun onDocsBatchOperation() {
