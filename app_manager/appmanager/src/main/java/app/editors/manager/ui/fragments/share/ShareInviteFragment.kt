@@ -61,6 +61,7 @@ class ShareInviteFragment : BaseAppFragment() {
 
     private fun initViews() {
         viewBinding?.sharePanelLayout?.sharePanelAddButton?.setText(R.string.on_boarding_next_button)
+        viewBinding?.sharePanelLayout?.sharePanelAddButton?.isEnabled = false
         viewBinding?.sharePanelLayout?.buttonPopupLayout?.root?.isVisible = false
         viewBinding?.sharePanelLayout?.buttonPopupLayout?.root?.setOnClickListener { popupLayout ->
             SharePopup(requireContext(), R.layout.popup_share_menu).apply {
@@ -163,6 +164,7 @@ class ShareInviteFragment : BaseAppFragment() {
     private fun updateCounter() {
         val count = viewBinding?.chipGroup?.childCount ?: 0
         viewBinding?.sharePanelLayout?.sharePanelCountSelectedText?.text = "$count"
+        viewBinding?.sharePanelLayout?.sharePanelAddButton?.isEnabled = count > 0
     }
 
     private val popupContextListener = object : SharePopup.PopupContextListener {
