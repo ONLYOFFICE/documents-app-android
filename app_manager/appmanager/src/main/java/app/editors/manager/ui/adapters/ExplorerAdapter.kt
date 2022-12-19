@@ -90,6 +90,14 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
         }
     }
 
+    private fun setFileFavoriteStatus(position: Int) {
+        val file = mList[position]
+        if (file is CloudFile && file.fileStatus.isNotEmpty()) {
+            val favoriteMask = file.fileStatus.toInt() and ApiContract.FileStatus.FAVORITE
+            file.favorite = favoriteMask != 0
+        }
+    }
+
     fun isLoading(isShow: Boolean) {
         isFooter = isShow
         notifyItemChanged(itemCount - 1)
@@ -117,14 +125,6 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
         }
     }
 
-    private fun setFileFavoriteStatus(position: Int) {
-        val file = mList[position]
-        if (file is CloudFile && file.fileStatus.isNotEmpty()) {
-            val favoriteMask = file.fileStatus.toInt() and ApiContract.FileStatus.FAVORITE
-            file.favorite = favoriteMask != 0
-        }
-    }
-
     fun checkHeaders() {
         if (mList != null) {
             for (i in mList.indices) {
@@ -144,6 +144,20 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
             }
             if (mList.size == 1 && mList[0] is Header) {
                 mList.clear()
+            }
+        }
+    }
+
+    override fun removeItem(item: Entity?) {
+        val index = itemList.indexOf(item)
+        if (index > 0) {
+            val next = itemList[index + 1]
+            val previous = itemList[index - 1]
+            if (previous is Header && next is Header) {
+                super.removeItem(previous)
+                super.removeItem(item)
+            } else {
+                super.removeItem(item)
             }
         }
     }
