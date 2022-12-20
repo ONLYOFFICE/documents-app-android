@@ -1154,7 +1154,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         ).show(requireActivity().window.decorView)
     }
 
-    private val isAsc: Boolean
+    val isAsc: Boolean
         get() = presenter.preferenceTool.sortOrder.equals(
             ApiContract.Parameters.VAL_SORT_ORDER_ASC,
             ignoreCase = true

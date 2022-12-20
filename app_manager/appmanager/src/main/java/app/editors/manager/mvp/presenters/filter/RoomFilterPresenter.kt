@@ -54,7 +54,7 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
         disposable?.clear()
         fileProvider?.let { provider ->
             disposable?.add(
-                provider.getFiles(folderId, filters)
+                provider.getRooms(filters)
                     .doOnSubscribe { viewState.onFilterProgress() }
                     .subscribe(
                         { explorer: Explorer ->

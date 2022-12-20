@@ -1,6 +1,7 @@
 package app.editors.manager.managers.providers
 
 import android.net.Uri
+import app.documents.core.network.ApiContract
 import app.editors.manager.app.Api
 import app.editors.manager.app.App
 import app.editors.manager.app.roomApi
@@ -18,12 +19,13 @@ import retrofit2.Response
 class CloudFileProvider : BaseFileProvider {
 
     var api: Api = App.getApp().getApi().api
+    var isRoomRoot: ((String?) -> Boolean)? = null
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        return when (id) {
-            "7" -> getRooms(filter)
-            null -> Observable.create { Explorer() }
-            else -> api.getItemById(id, filter)
+        return if (isRoomRoot?.invoke(id) == true) {
+            getRooms(filter)
+        } else {
+            api.getItemById(id.orEmpty(), filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { responseExplorerResponse: Response<ResponseExplorer> ->
@@ -232,8 +234,12 @@ class CloudFileProvider : BaseFileProvider {
             }
     }
 
-    private fun getRooms(filters: Map<String, String>?): Observable<Explorer> {
-        return App.getApp().roomApi.getAllRooms(filters)
+    fun getRooms(filters: Map<String, String>?): Observable<Explorer> {
+        val roomFilter = filters?.toMutableMap()?.apply {
+            remove(ApiContract.Parameters.ARG_FILTER_BY_TYPE)
+            remove(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS)
+        }
+        return App.getApp().roomApi.getAllRooms(roomFilter)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseExplorerResponse: Response<ResponseExplorer> ->

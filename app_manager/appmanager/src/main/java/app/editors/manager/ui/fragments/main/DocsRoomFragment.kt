@@ -8,14 +8,17 @@ import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.popup.MainActionBarPopup
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
 
 class DocsRoomFragment : DocsCloudFragment() {
 
+    private val isRoom get() = cloudPresenter.isCurrentRoom && cloudPresenter.isRoot
+
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
-        if (cloudPresenter.isCurrentRoom && cloudPresenter.isRoot) {
+        if (isRoom) {
             AddRoomBottomDialog().apply {
                 onClickListener = object : AddRoomBottomDialog.OnClickListener {
                     override fun onActionButtonClick(roomType: Int) {
@@ -41,14 +44,40 @@ class DocsRoomFragment : DocsCloudFragment() {
         }
     }
 
+    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
+        if (!presenter.isSelectionMode) {
+            if (isRoom) {
+                MainActionBarPopup(
+                    context = requireContext(),
+                    section = presenter.getSectionType(),
+                    clickListener = mainActionBarClickListener,
+                    sortBy = presenter.preferenceTool.sortBy.orEmpty(),
+                    isAsc = isAsc,
+                    excluded = excluded
+                ).show(requireActivity().window.decorView)
+            } else {
+                MainActionBarPopup(
+                    context = requireContext(),
+                    section = -1,
+                    clickListener = mainActionBarClickListener,
+                    sortBy = presenter.preferenceTool.sortBy.orEmpty(),
+                    isAsc = isAsc,
+                    excluded = excluded
+                ).show(requireActivity().window.decorView)
+            }
+        } else super.showMainActionBarMenu(excluded)
+    }
+
     override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        return super.showSelectedActionBarMenu(
-            excluded = listOf(
-                SelectActionBarPopup.Move,
-                SelectActionBarPopup.Copy,
-                SelectActionBarPopup.Download
+        return if (isRoom) {
+            super.showSelectedActionBarMenu(
+                excluded = listOf(
+                    SelectActionBarPopup.Move,
+                    SelectActionBarPopup.Copy,
+                    SelectActionBarPopup.Download
+                )
             )
-        )
+        } else super.showSelectedActionBarMenu(excluded)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -59,12 +88,14 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     override fun onStateMenuSelection() {
-        menuInflater?.inflate(R.menu.docs_select_room, menu)
-        menu?.forEach { menuItem ->
-            menuItem.isVisible = true
-            UiUtils.setMenuItemTint(requireContext(), menuItem, lib.toolkit.base.R.color.colorPrimary)
-        }
-        setAccountEnable(false)
+        if (isRoom) {
+            menuInflater?.inflate(R.menu.docs_select_room, menu)
+            menu?.forEach { menuItem ->
+                menuItem.isVisible = true
+                UiUtils.setMenuItemTint(requireContext(), menuItem, lib.toolkit.base.R.color.colorPrimary)
+            }
+            setAccountEnable(false)
+        } else super.onStateMenuSelection()
     }
 
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
@@ -86,8 +117,10 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     override fun getFilters(): Boolean {
-        val filter = presenter.preferenceTool.filter
-        return filter.roomType != RoomFilterType.None || filter.author.id.isNotEmpty()
+        return if (isRoom) {
+            val filter = presenter.preferenceTool.filter
+            filter.roomType != RoomFilterType.None || filter.author.id.isNotEmpty()
+        } else super.getFilters()
     }
 
     companion object {

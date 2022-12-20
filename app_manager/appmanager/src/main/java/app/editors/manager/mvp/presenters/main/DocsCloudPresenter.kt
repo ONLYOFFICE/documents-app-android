@@ -66,7 +66,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         App.getApp().appComponent.inject(this)
         api = context.api()
         roomProvider = RoomProvider(context.roomApi)
-        fileProvider = CloudFileProvider()
+        fileProvider = CloudFileProvider().apply {
+            isRoomRoot = { id ->
+                isRoom && modelExplorerStack.rootId == id
+            }
+        }
     }
 
     override fun onFirstViewAttach() {
@@ -371,6 +375,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun getBackStack(): Boolean {
         val backStackResult = super.getBackStack()
         if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type) {
+            refresh()
+        } else if (isRoom && isRoot) {
+            resetFilters()
             refresh()
         }
         return backStackResult
@@ -713,7 +720,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = (itemClicked as? CloudFile)?.folderId ?: (itemClicked as? CloudFolder)?.parentId
 
     val isCurrentRoom: Boolean
-        get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM && modelExplorerStack.last()?.current?.isCanEdit == true
+        get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM // && modelExplorerStack.last()?.current?.isCanEdit == true
 
     private fun showDownloadFolderActivity(uri: Uri) {
         viewState.onDownloadActivity(uri)
