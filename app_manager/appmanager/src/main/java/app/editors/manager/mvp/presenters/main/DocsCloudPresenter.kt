@@ -697,14 +697,22 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = itemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE || isUserSection
 
     private val isItemEditable: Boolean
-        get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
-                itemClicked?.intAccess == ApiContract.ShareCode.REVIEW ||
-                itemClicked?.intAccess == ApiContract.ShareCode.FILL_FORMS ||
-                itemClicked?.intAccess == ApiContract.ShareCode.COMMENT)
+        get() = if (networkSettings.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+            itemClicked?.isCanEdit == true
+        } else {
+            !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
+                    itemClicked?.intAccess == ApiContract.ShareCode.REVIEW ||
+                    itemClicked?.intAccess == ApiContract.ShareCode.FILL_FORMS ||
+                    itemClicked?.intAccess == ApiContract.ShareCode.COMMENT)
+        }
 
     private val isItemShareable: Boolean
-        get() = isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection
-                && !isBunchSection && isItemReadWrite
+        get() = if (networkSettings.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+            itemClicked?.isCanShare == true
+        } else {
+            isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection
+                    && !isBunchSection && isItemReadWrite
+        }
 
     private val isClickedItemStorage: Boolean
         get() = itemClicked?.providerItem == true

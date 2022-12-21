@@ -266,13 +266,12 @@ class ContextBottomDialog : BaseBottomDialog() {
     private fun setRoomState() {
         viewBinding?.let { binding ->
             if (!state.isTrash) {
-                binding.listExplorerContextArchive.isVisible = true
-                binding.listExplorerContextRename.isVisible = true
+                binding.listExplorerContextArchive.isVisible = state.isItemEditable
+                binding.listExplorerContextRename.isVisible = state.isItemEditable
                 binding.listExplorerContextPin.isVisible = true
-                binding.listExplorerContextAddUser.isVisible = true
-                binding.listExplorerContextDelete.isVisible = true
+                binding.listExplorerContextAddUser.isVisible = state.isCanShare
                 binding.listExplorerContextInfo.isVisible = true
-                binding.viewLineSeparatorDelete.root.isVisible = true
+                binding.viewLineSeparatorDelete.root.isVisible = binding.listExplorerContextArchive.isVisible
                 if (state.isPin) binding.listExplorerContextPinText.setText(R.string.list_context_unpin)
             } else {
                 binding.listExplorerContextRestoreText.setText(R.string.context_room_unarchive)

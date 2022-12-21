@@ -142,6 +142,11 @@ object ApiContract {
         }
     }
 
+    object ActivationStatus {
+        const val Activate = 1
+        const val Pending = 2
+    }
+
     object Parameters {
         const val ARG_ACTION = "action"
         const val ARG_COUNT = "count"
