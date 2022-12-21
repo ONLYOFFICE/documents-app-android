@@ -4,7 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -32,6 +37,7 @@ import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.popup.SharePopup
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -43,7 +49,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     @ProvidePresenter
     fun provideSettingsPresenter(): SettingsPresenter {
-        return SettingsPresenter(arguments?.getSerializable(TAG_ITEM) as Item)
+        return SettingsPresenter(arguments?.getSerializableExt(TAG_ITEM, Item::class.java) as Item)
     }
 
     private var sharePopup: SharePopup? = null
@@ -55,7 +61,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     private var headerBinding: IncludeShareSettingsHeaderBinding? = null
     private var popupBinding: IncludeButtonPopupBinding? = null
     private val item: Item
-        get() = arguments?.getSerializable(TAG_ITEM) as Item
+        get() = arguments?.getSerializableExt(TAG_ITEM, Item::class.java) as Item
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -263,7 +269,12 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        setActionBarTitle(getString(R.string.share_title_main))
+        if (item is CloudFolder && (item as CloudFolder).isRoom) {
+            setActionBarTitle(item.title)
+        } else {
+            setActionBarTitle(getString(R.string.share_title_main))
+        }
+
         supportActionBar?.let { actionBar ->
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeButtonEnabled(true)
