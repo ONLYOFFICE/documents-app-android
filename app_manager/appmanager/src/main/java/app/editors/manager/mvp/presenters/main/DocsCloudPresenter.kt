@@ -66,11 +66,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         App.getApp().appComponent.inject(this)
         api = context.api()
         roomProvider = RoomProvider(context.roomApi)
-        fileProvider = CloudFileProvider().apply {
-            isRoomRoot = { id ->
-                isRoom && modelExplorerStack.rootId == id
-            }
-        }
+        fileProvider = CloudFileProvider(isRoomRoot = { id -> isRoom && modelExplorerStack.rootId == id })
     }
 
     override fun onFirstViewAttach() {

@@ -16,10 +16,9 @@ import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
 
-class CloudFileProvider : BaseFileProvider {
+class CloudFileProvider(private val isRoomRoot: ((String?) -> Boolean)? = null) : BaseFileProvider {
 
     var api: Api = App.getApp().getApi().api
-    var isRoomRoot: ((String?) -> Boolean)? = null
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return if (isRoomRoot?.invoke(id) == true) {
