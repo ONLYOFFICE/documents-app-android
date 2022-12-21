@@ -50,7 +50,6 @@ class RoomFilterFragment : BaseFilterFragment() {
                 setTitle(R.string.filter_title_author)
                 setChip(RoomFilterAuthor.Me, presenter.filterAuthor.id == account.id) { _, checked ->
                     presenter.filterAuthor = if (checked) FilterAuthor(account.id) else FilterAuthor()
-                    presenter.update()
                 }
                 setChip(RoomFilterAuthor.OtherUsers, closeListener = presenter::clearAuthor, checked = false) { _, _ ->
                     showAuthorFragment(
