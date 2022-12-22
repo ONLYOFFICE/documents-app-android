@@ -29,7 +29,6 @@
     <string name="about_policy">隐私政策</string>
     <string name="about_license">许可协议</string>
     <string name="about_website">ONLYOFFICE网站</string>
-    <string name="about_email_subject">适用于安卓反馈的ONLYOFFICE文档</string>
     <!-- ======================================================================================= -->
     <!-- Common errors -->
     <string name="errors_unknown_error">连接错误。稍后再试。</string>
@@ -184,7 +183,6 @@
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
     <string name="chooser_web_browser">选择浏览器…</string>
-    <string name="chooser_email_client">选择电子邮件客户端…</string>
     <!-- ======================================================================================= -->
     <!-- Main -->
     <!-- Title -->
@@ -481,7 +479,6 @@
     <string name="download_manager_exceed_size_25">超出最大文件大小（25MB）</string>
     <string name="snackbar_undo">撤消</string>
     <string name="errors_server_auth_too_many_attempts">尝试次数过多。请稍后重试或 </string>
-    <string name="navigation_drawer_menu_feedback">反馈和支持</string>
     <string name="share_snackbar_remove_user">用户被删除</string>
     <string name="share_group_admin">管理员</string>
     <string name="share_group_everyone">每个人</string>

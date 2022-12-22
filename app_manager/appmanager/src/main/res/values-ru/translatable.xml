@@ -1,6 +1,5 @@
 <resources>
     <string name="about_app_version">Версия %1$s, сборка %2$s, SDK %3$s</string>
-    <string name="about_email_subject">Обратная связь по приложению ONLYOFFICE Документы для Android</string>
     <string name="about_license">Лицензионное соглашение</string>
     <string name="about_policy">Конфиденциальность</string>
     <string name="about_terms">Условия использования</string>
@@ -32,7 +31,6 @@
     <string name="bottom_sheet_cloud_title">Облака</string>
     <string name="bottom_sheet_portal_title">Портал</string>
     <string name="chooser_activity_not_found">Не найдено приложений для этого действия…</string>
-    <string name="chooser_email_client">Выберите почтовый клиент…</string>
     <string name="chooser_web_browser">Выберите браузер…</string>
     <string name="countries_codes_title">Выбор страны</string>
     <string name="device_path_file_error">Этот файл не существует.</string>
@@ -239,7 +237,6 @@
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
     <string name="login_accounts_select_add">Добавить аккаунт</string>
     <string name="navigation_drawer_menu_common">Общие</string>
-    <string name="navigation_drawer_menu_feedback">Обратная связь и поддержка</string>
     <string name="navigation_drawer_menu_help">Справка</string>
     <string name="navigation_drawer_menu_logout">Выйти</string>
     <string name="navigation_drawer_menu_my">Мои документы</string>

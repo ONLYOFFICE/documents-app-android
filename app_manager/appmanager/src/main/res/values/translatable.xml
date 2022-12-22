@@ -39,7 +39,6 @@
     <string name="about_policy">Privacy policy</string>
     <string name="about_license">License agreement</string>
     <string name="about_website">ONLYOFFICE website</string>
-    <string name="about_email_subject">ONLYOFFICE Documents for Android feedback</string>
 
     <!-- ======================================================================================= -->
     <!-- Common errors -->
@@ -236,7 +235,6 @@
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
     <string name="chooser_web_browser">Choose browser…</string>
-    <string name="chooser_email_client">Choose email client…</string>
 
     <!-- ======================================================================================= -->
     <!-- Main -->
@@ -264,7 +262,6 @@
     <string name="navigation_drawer_menu_help">Help</string>
     <string name="navigation_drawer_menu_logout">Log out</string>
     <string name="navigation_drawer_menu_sign_in">Sign in</string>
-    <string name="navigation_drawer_menu_feedback">Feedback and support</string>
     <string name="settings_item_title">Settings</string>
     <string name="settings_item_change_account">Change account</string>
     <string name="settings_clear_cache">Clear cache</string>

@@ -66,7 +66,7 @@ abstract class BaseAppActivity : BaseActivity(), FragmentManager.OnBackStackChan
     }
 
     private fun showEmailClients(to: String?, subject: String?, body: String?) {
-        showEmail(this, getString(R.string.chooser_email_client), to!!, subject!!, body!!)
+        showEmail(this, getString(lib.toolkit.base.R.string.chooser_email_client), to!!, subject!!, body!!)
     }
 
     /*
@@ -89,14 +89,14 @@ abstract class BaseAppActivity : BaseActivity(), FragmentManager.OnBackStackChan
 
     protected fun showEmailClientTemplate() {
         showEmailClients(
-            getString(R.string.app_support_email), getString(R.string.about_email_subject),
+            getString(R.string.app_support_email), getString(lib.toolkit.base.R.string.about_email_subject),
             getDeviceInfoString(null, true)
         )
     }
 
     protected fun showEmailClientTemplate(message: String) {
         showEmailClients(
-            getString(R.string.app_support_email), getString(R.string.about_email_subject),
+            getString(R.string.app_support_email), getString(lib.toolkit.base.R.string.about_email_subject),
             message + getDeviceInfoString(null, false)
         )
     }

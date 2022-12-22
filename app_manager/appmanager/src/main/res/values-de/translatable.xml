@@ -20,7 +20,6 @@
     <string name="about_policy">Datenschutzerklärung</string>
     <string name="about_license">Lizenzvereinbarung</string>
     <string name="about_website">ONLYOFFICE Webseite</string>
-    <string name="about_email_subject">ONLYOFFICE Documents Android-Feedback</string>
     <string name="errors_unknown_error">Verbindungsfehler. Versuchen Sie es erneut.</string>
     <string name="errors_ssl_error">SSL-Handshake fehlgeschlagenr</string>
     <string name="errors_connection_error">Überprüfen Sie Ihre Internetverbindung</string>
@@ -151,7 +150,6 @@
     <string name="dialogs_edit_feedback_rate_hint">Erzählen Sie uns was wir noch verbessern können</string>
     <string name="dialogs_edit_feedback_rate_accept">SENDEN</string>
     <string name="chooser_web_browser">Browser wählen…</string>
-    <string name="chooser_email_client">E-Mail-Client wählen</string>
     <string name="actionbar_title_main">Dokumente</string>
     <string name="chooser_activity_not_found">Es konnte keine Anwendung für diese Aktion gefunden werden…</string>
     <string name="fragment_clouds_title">Clouds</string>
@@ -424,7 +422,6 @@
     <string name="download_manager_exceed_size_25">Die maximale Dateigröße ist überschritten (25MB)</string>
     <string name="snackbar_undo">RÜCKGÄNGIG MACHEN</string>
     <string name="errors_server_auth_too_many_attempts">Zu viele Versuche. Bitte versuchen Sie es später erneut.</string>
-    <string name="navigation_drawer_menu_feedback">Feedback und Support</string>
     <string name="share_snackbar_remove_user">Benutzer wurde entfernt</string>
     <string name="share_group_admin">Administrator</string>
     <string name="share_group_everyone">Alle</string>

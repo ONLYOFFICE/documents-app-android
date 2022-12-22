@@ -22,6 +22,7 @@ import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.ActivitiesUtils.IMAGE_TYPE
 import java.io.Serializable
 
@@ -248,6 +249,18 @@ object ActivitiesUtils {
             true
         } catch (error: Throwable) {
             false
+        }
+    }
+
+    fun sendFeedbackEmail(context: Context, message: String) {
+        with(context) {
+            showEmail(
+                this,
+                getString(R.string.chooser_email_client),
+                getString(R.string.app_support_email),
+                getString(R.string.about_email_subject),
+                message + UiUtils.getDeviceInfoString(this, false)
+            )
         }
     }
 }
