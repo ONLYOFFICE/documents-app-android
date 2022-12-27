@@ -19,6 +19,7 @@ import okhttp3.Protocol
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Scope
 
@@ -32,7 +33,8 @@ class GoogleDriveModule {
 
     @Provides
     @GoogleDriveScope
-    fun provideGoogleDrive(googleDriveService: GoogleDriveService): IGoogleDriveServiceProvider = GoogleDriveServiceProvider(googleDriveService)
+    fun provideGoogleDrive(googleDriveService: GoogleDriveService): IGoogleDriveServiceProvider =
+        GoogleDriveServiceProvider(googleDriveService)
 
 
     @Provides
@@ -63,11 +65,17 @@ class GoogleDriveModule {
     @Provides
     @GoogleDriveScope
     @Named("token")
-    fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
-        account?.let { cloudAccount ->
-            return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
-                ?: throw RuntimeException("Token null")
-        } ?: throw RuntimeException("Account null")
-    }
+    @Inject
+    fun provideToken(context: Context, account: CloudAccount?, @Named("userInfo") userInfo: String): String =
+        runBlocking {
+            if (userInfo.isNotEmpty()) {
+                return@runBlocking userInfo
+            } else {
+                account?.let { cloudAccount ->
+                    return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
+                        ?: throw RuntimeException("Token null")
+                } ?: throw RuntimeException("Account null")
+            }
+        }
 
 }

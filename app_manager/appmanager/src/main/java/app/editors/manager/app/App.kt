@@ -188,8 +188,9 @@ class App : Application() {
             .dropboxServiceProvider
     }
 
-    fun getGoogleDriveComponent(): IGoogleDriveServiceProvider {
+    fun getGoogleDriveComponent(token: String = ""): IGoogleDriveServiceProvider {
         return DaggerGoogleDriveComponent.builder().appComponent(appComponent)
+            .token(token)
             .build()
             .googleDriveServiceProvider
     }
@@ -272,9 +273,9 @@ fun Context.getDropboxServiceProvider(): IDropboxServiceProvider {
         else -> this.applicationContext.getDropboxServiceProvider()
     }
 }
-fun Context.getGoogleDriveServiceProvider(): IGoogleDriveServiceProvider {
+fun Context.getGoogleDriveServiceProvider(token: String = ""): IGoogleDriveServiceProvider {
     return when(this) {
-        is App -> this.getGoogleDriveComponent()
-        else -> this.applicationContext.getGoogleDriveServiceProvider()
+        is App -> this.getGoogleDriveComponent(token)
+        else -> this.applicationContext.getGoogleDriveServiceProvider(token)
     }
 }

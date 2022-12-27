@@ -32,7 +32,7 @@ class GoogleDriveSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInV
 
         disposable = App.getApp().googleDriveLoginService.getToken(map).flatMap { tokenResponse ->
             token = tokenResponse
-            App.getApp().getGoogleDriveServiceProvider().getUserInfo("Bearer ${token.accessToken}")
+            App.getApp().getGoogleDriveServiceProvider(token.accessToken).getUserInfo("Bearer ${token.accessToken}")
         }.subscribe { loginResponse ->
             when (loginResponse) {
                 is GoogleDriveResponse.Success -> {
