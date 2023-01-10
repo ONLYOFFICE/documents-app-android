@@ -7,10 +7,10 @@ import android.text.InputFilter
 import android.text.InputType
 import android.text.Spanned
 import android.view.View
+import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.doOnTextChanged
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -30,7 +30,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     private var layout: FrameLayout? = null
     private var editInputLayout: TextInputLayout? = null
-    private var editValueView: TextInputEditText? = null
+    private var editValueView: EditText? = null
 
     private var editValue: String? = null
     private var hintValue: String? = null

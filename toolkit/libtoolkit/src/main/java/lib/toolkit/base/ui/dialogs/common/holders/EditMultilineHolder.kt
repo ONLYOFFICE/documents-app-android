@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
 import android.view.View
+import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.textfield.TextInputLayout
@@ -30,7 +31,7 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
 
     private var layout: ConstraintLayout? = null
     private var editInputLayout: TextInputLayout? = null
-    private var editValueView: AppCompatEditText? = null
+    private var editValueView: EditText? = null
 
     private var mEditValue: String? = null
     private var editHintValue: String? = null
