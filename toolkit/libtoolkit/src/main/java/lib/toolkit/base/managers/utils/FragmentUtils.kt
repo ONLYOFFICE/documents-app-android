@@ -2,6 +2,7 @@ package lib.toolkit.base.managers.utils
 
 import androidx.annotation.AnimRes
 import androidx.annotation.IdRes
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import lib.toolkit.base.R
@@ -84,4 +85,13 @@ object FragmentUtils {
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
+}
+
+fun <T : Fragment> T.putArgs(vararg pairs: Pair<String, Any?>): T {
+    if (arguments != null) {
+        arguments?.putAll(bundleOf(*pairs))
+    } else {
+        arguments = bundleOf(*pairs)
+    }
+    return this
 }
