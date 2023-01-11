@@ -200,10 +200,6 @@ class SharePopup(
             binding.viewItem.itemIcon.setImageResource(R.drawable.ic_access_read)
             binding.viewItem.itemText.setText(R.string.share_access_room_viewer)
 
-            binding.denyItem.popupItemLayout.isVisible = true
-            binding.denyItem.itemIcon.setImageResource(R.drawable.ic_access_deny)
-            binding.denyItem.itemText.setText(R.string.share_popup_access_deny_access)
-
             binding.popupShareAccessSeparatorDeny.root.isVisible = true
 
             if (isFullAccess) {

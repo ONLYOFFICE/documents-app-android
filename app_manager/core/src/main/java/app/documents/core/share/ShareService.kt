@@ -132,6 +132,6 @@ interface ShareService {
     fun shareRoom(
         @Path(value = "id") id: String,
         @Body body: RequestRoomShare
-    ): Single<ResponseShare>
+    ): Single<ResponseRoomShare>
 
 }
