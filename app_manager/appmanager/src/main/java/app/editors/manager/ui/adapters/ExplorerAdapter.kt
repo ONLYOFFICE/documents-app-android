@@ -147,18 +147,4 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
             }
         }
     }
-
-    override fun removeItem(item: Entity?) {
-        val index = itemList.indexOf(item)
-        if (index > 0) {
-            val next = itemList[index + 1]
-            val previous = itemList[index - 1]
-            if (previous is Header && next is Header) {
-                super.removeItem(previous)
-                super.removeItem(item)
-            } else {
-                super.removeItem(item)
-            }
-        }
-    }
 }
