@@ -16,13 +16,13 @@ import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
 
-class CloudFileProvider(private val isRoomRoot: ((String?) -> Boolean)? = null) : BaseFileProvider {
+class CloudFileProvider(private val isRoomRoot: ((String?) -> Boolean)? = null, private val isArchive: (() -> Boolean)? = null) : BaseFileProvider {
 
     var api: Api = App.getApp().getApi().api
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return if (isRoomRoot?.invoke(id) == true) {
-            getRooms(filter)
+            getRooms(filter, isArchive)
         } else {
             api.getItemById(id.orEmpty(), filter)
                 .subscribeOn(Schedulers.io())
@@ -233,10 +233,13 @@ class CloudFileProvider(private val isRoomRoot: ((String?) -> Boolean)? = null) 
             }
     }
 
-    fun getRooms(filters: Map<String, String>?): Observable<Explorer> {
+    fun getRooms(filters: Map<String, String>?, isArchive: (() -> Boolean)? = null): Observable<Explorer> {
         val roomFilter = filters?.toMutableMap()?.apply {
             remove(ApiContract.Parameters.ARG_FILTER_BY_TYPE)
             remove(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS)
+            if (isArchive?.invoke() == true) {
+                put("searchArea", "Archive")
+            }
         }
         return App.getApp().roomApi.getAllRooms(roomFilter)
             .subscribeOn(Schedulers.io())
