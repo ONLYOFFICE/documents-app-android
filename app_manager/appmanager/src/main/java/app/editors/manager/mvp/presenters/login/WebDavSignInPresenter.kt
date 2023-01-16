@@ -20,6 +20,7 @@ import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 import okhttp3.Credentials
 import okhttp3.ResponseBody
 import retrofit2.HttpException
@@ -169,7 +170,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         val cloudAccount = CloudAccount(
             id = "$login@${webUrl.host}",
             isWebDav = true,
-            portal = webUrl.host,
+            portal = webUrl.host + if (webUrl.port != -1 ) ":${webUrl.port}" else "",
             webDavPath = webUrl.path,
             webDavProvider = provider.name,
             login = login,
@@ -180,7 +181,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         )
 
         val accountData = AccountData(
-            portal = cloudAccount.portal ?: "",
+            portal = cloudAccount.portal + if (webUrl.port != -1 ) ":${webUrl.port}" else "",
             scheme = cloudAccount.scheme ?: "",
             displayName = login,
             userId = cloudAccount.id,
@@ -201,7 +202,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
     }
 
     private fun addAccountToDb(cloudAccount: CloudAccount) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             accountDao.getAccountOnline()?.let {
                 accountDao.addAccount(it.copy(isOnline = false))
             }
