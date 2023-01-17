@@ -141,7 +141,7 @@ class SettingsPresenter(
                 invitations = shareList.map { share ->
                     Invitation(
                         id = share?.sharedTo?.id,
-                        access = ApiContract.ShareType.getCode(share?.access)
+                        access = share?.access?.toInt() ?: 0
                     )
                 },
                 notify = isNotify,
@@ -150,7 +150,7 @@ class SettingsPresenter(
         ).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                getShareList(it.response)
+                getShareList(it.response.members)
             }, { error ->
                 if (error is HttpException && error.response()
                         ?.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN) {
