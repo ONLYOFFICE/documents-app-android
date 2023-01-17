@@ -6,6 +6,7 @@ import app.documents.core.network.models.room.RequestCreateRoom
 import app.documents.core.network.models.room.RequestDeleteRoom
 import app.documents.core.network.models.room.RequestRenameRoom
 import app.editors.manager.app.RoomApi
+import app.editors.manager.mvp.models.explorer.CloudFolder
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -49,7 +50,7 @@ class RoomProvider(private val roomApi: RoomApi) {
             .map { it.body() }
     }
 
-    fun createRoom(title: String, type: Int): Observable<Base> {
+    fun createRoom(title: String, type: Int): Observable<CloudFolder> {
         return roomApi.createRoom(
             RequestCreateRoom(
                 title = title,
@@ -58,7 +59,7 @@ class RoomProvider(private val roomApi: RoomApi) {
         )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { it.body() }
+            .map { it.response }
 
     }
 

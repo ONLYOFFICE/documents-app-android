@@ -68,7 +68,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         roomProvider = RoomProvider(context.roomApi)
         fileProvider = CloudFileProvider(
             isRoomRoot = { id -> isRoom && modelExplorerStack.rootId == id },
-            isArchive = { currentSectionType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM}
+            isArchive = { currentSectionType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }
         )
     }
 
@@ -227,10 +227,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     viewState.onStateActionButton(false)
                     viewState.onActionBarTitle("")
                 }
+
                 isFoldersMode -> {
                     viewState.onActionBarTitle(context.getString(R.string.operation_title))
                     viewState.onStateActionButton(false)
                 }
+
                 else -> {
                     viewState.onActionBarTitle("")
                     //TODO For docspace
@@ -274,6 +276,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 item.isRoom -> ManagerUiUtils.getRoomIcon(itemClicked as CloudFolder)
                 else -> if (item.shared) R.drawable.ic_type_folder_shared else R.drawable.ic_type_folder
             }
+
             else -> getIconContext(StringUtils.getExtensionFromPath(itemClickedTitle))
         }
         viewState.onItemContext(state)
@@ -553,9 +556,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     it.isNotEmpty() -> {
                         showMoveCopyDialog(it, action, modelExplorerStack.currentTitle)
                     }
+
                     action == MoveCopyDialog.ACTION_COPY -> {
                         transfer(ApiContract.Operation.DUPLICATE, false)
                     }
+
                     action == MoveCopyDialog.ACTION_MOVE -> {
                         transfer(ApiContract.Operation.DUPLICATE, true)
                     }
@@ -585,10 +590,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 //                    file.isReadOnly = true
                     viewState.onFileWebView(file)
                 }
+
                 StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                     addRecent(itemClicked as CloudFile)
                     viewState.onFileMedia(getListMedia(file.id), false)
                 }
+
                 else -> viewState.onFileDownloadPermission()
             }
             FirebaseUtils.addAnalyticsOpenEntity(networkSettings.getPortal(), extension)
@@ -615,9 +622,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
                         viewState.onFileWebView(file)
                     }
+
                     StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                         viewState.onFileMedia(getListMedia(file.id), false)
                     }
+
                     else -> viewState.onFileDownloadPermission()
                 }
             }
@@ -798,10 +807,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun createRoom(title: String, roomType: Int) {
         roomProvider?.let {
             disposable.add(
-                it.createRoom(title, roomType).subscribe({
+                it.createRoom(title, roomType).subscribe({ cloudFolder ->
                     viewState.onDialogClose()
-                    viewState.onSnackBar(context.getString(R.string.room_create_success))
-                    refresh()
+                    addFolder(cloudFolder)
                 }) { throwable: Throwable ->
                     fetchError(throwable)
                 }

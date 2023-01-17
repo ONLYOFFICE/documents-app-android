@@ -3,6 +3,7 @@ package app.editors.manager.app
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.Base
 import app.documents.core.network.models.room.*
+import app.editors.manager.mvp.models.response.ResponseCreateFolder
 import app.editors.manager.mvp.models.response.ResponseExplorer
 import io.reactivex.Observable
 import retrofit2.Response
@@ -68,7 +69,7 @@ interface RoomApi {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/files/rooms")
-    fun createRoom(@Body body: RequestCreateRoom): Observable<Response<Base>>
+    fun createRoom(@Body body: RequestCreateRoom): Observable<ResponseCreateFolder>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
