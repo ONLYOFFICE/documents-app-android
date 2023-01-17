@@ -748,7 +748,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
     }
 
-    private fun addFolder(folder: CloudFolder) {
+    protected fun addFolder(folder: CloudFolder) {
         folder.isJustCreated = true
         modelExplorerStack.addFolderFirst(folder)
         viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
@@ -908,7 +908,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             if (explorer.folders.isNotEmpty()) {
                 if (!isFolderHeader) {
                     isFolderHeader = true
-                    entityList.add(Header(context.getString(R.string.list_headers_folder)))
+
+                    val header = if (isRoot && currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM) {
+                        Header(context.getString(R.string.list_rooms_title))
+                    } else {
+                        Header(context.getString(R.string.list_headers_folder))
+                    }
+                    entityList.add(header)
                 }
                 entityList.addAll(explorer.folders)
             }
