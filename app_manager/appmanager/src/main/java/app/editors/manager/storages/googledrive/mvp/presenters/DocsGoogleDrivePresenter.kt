@@ -216,7 +216,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
         }
     }
 
-    fun upload(uri: Uri?, uris: ClipData?, tag: String) {
+    fun upload(uri: Uri?, uris: List<Uri>?, tag: String) {
         val uploadUris = mutableListOf<Uri>()
         var index = 0
 
@@ -224,8 +224,8 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
             uploadUris.add(uri)
         } ?: run {
             uris?.let {
-                while (index != uris.itemCount) {
-                    uploadUris.add(uris.getItemAt(index).uri)
+                while (index != uris.count()) {
+                    uploadUris.add(uris[index])
                     index++
                 }
             }
