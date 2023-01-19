@@ -482,3 +482,7 @@ object StringUtils {
         return context.getString(R.string.app_url_help)
     }
 }
+
+fun String.capitalize(): String {
+    return lowercase().replaceFirstChar(Char::titlecase)
+}

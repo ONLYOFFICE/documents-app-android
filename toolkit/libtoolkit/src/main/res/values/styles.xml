@@ -27,6 +27,7 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="floatingActionButtonStyle">@style/Widget.Design.FloatingActionButton</item>
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.FilledBox</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Material3.LabelLarge</item>
     </style>
 
     <style name="CommonEditText" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
@@ -478,15 +479,27 @@
         <item name="android:padding">0dp</item>
     </style>
 
-    <style name="DialogTextInputLayout">
-        <item name="boxBackgroundColor">@color/colorSurface</item>
-    </style>
-
     <style name="MainPopupAnimation" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/popup_in</item>
         <item name="android:windowExitAnimation">@anim/popup_out</item>
     </style>
+
+    <!-- Dialog styles -->
+    <style name="DialogTextInputLayout">
+        <item name="boxBackgroundColor">@color/colorSurface</item>
+    </style>
+
+    <style name="DialogTitleStyle">
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
+    </style>
     
-    
+    <style name="DialogButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textSize">16sp</item>
+        <item name="cornerRadius">6dp</item>
+        <item name="android:textAppearance">@style/MediumTextView</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
 
 </resources>

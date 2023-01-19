@@ -25,7 +25,6 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         private const val TAG_EDIT_VALUE = "TAG_EDIT_VALUE"
         private const val TAG_HINT_VALUE = "TAG_HINT_VALUE"
         private const val TAG_ERROR_VALUE = "TAG_ERROR_VALUE"
-        private const val TAG_COLOR_TINT = "TAG_COLOR_TINT"
     }
 
     private var layout: FrameLayout? = null
@@ -36,7 +35,6 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     private var hintValue: String? = null
     private var errorValue: String? = null
     private var suffixValue: String? = null
-    private var colorTint: Int? = null
     private var isPassword: Boolean = false
 
     override fun onClick(v: View) {
@@ -64,11 +62,13 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
     override fun setTint() {
         super.setTint()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            editValueView?.textCursorDrawable?.setTint(colorPrimary)
+        dialog.view?.post {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                editValueView?.textCursorDrawable?.setTint(colorPrimary)
+            }
+            editInputLayout?.boxStrokeColor = colorPrimary
+            editInputLayout?.hintTextColor = ColorStateList.valueOf(colorPrimary)
         }
-        editInputLayout?.boxStrokeColor = colorPrimary
-        editInputLayout?.hintTextColor = ColorStateList.valueOf(colorPrimary)
     }
 
     override fun show() {
@@ -79,8 +79,11 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             editValueView?.apply {
                 if (isPassword) {
                     inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
-                    doOnTextChanged { _, _, _, _ ->
-                        editInputLayout?.error = null
+                    doOnTextChanged { text, _, _, _ ->
+                        if (text.isNullOrEmpty()) {
+                            editInputLayout?.error = null
+                            editInputLayout?.setEndIconTintList(editInputLayout?.defaultHintTextColor)
+                        }
                         acceptView.isEnabled = !text?.trim().isNullOrEmpty()
                     }
                 } else {
@@ -100,6 +103,10 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
                 if (!errorValue.isNullOrEmpty()) {
                     isErrorEnabled = true
                     error = errorValue
+                    if (isPassword) {
+                        errorIconDrawable = null
+                        setEndIconTintList(ColorStateList.valueOf(context.getColor(R.color.colorError)))
+                    }
                 }
 
                 if (isPassword && errorValue.isNullOrEmpty()) {
@@ -116,9 +123,13 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 //                    PorterDuffColorFilter(ContextCompat.getColor(dialog.context!!, mColorTint), PorterDuff.Mode.SRC_ATOP)
 //            }
 
-            editValueView?.postDelayed({
-                KeyboardUtils.showKeyboard(editValueView)
-            }, 100)
+            if (errorValue.isNullOrEmpty()) {
+                editValueView?.postDelayed({
+                    KeyboardUtils.showKeyboard(editValueView)
+                }, 100)
+            } else {
+                editValueView?.clearFocus()
+            }
         }
     }
 
@@ -135,7 +146,6 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             bundle.putString(TAG_EDIT_VALUE, editValueView?.text.toString())
             bundle.putString(TAG_HINT_VALUE, hintValue)
             bundle.putString(TAG_ERROR_VALUE, errorValue)
-            colorTint?.let { bundle.putInt(TAG_COLOR_TINT, it) }
         }
     }
 
@@ -145,7 +155,6 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             editValue = bundle.getString(TAG_EDIT_VALUE)
             hintValue = bundle.getString(TAG_HINT_VALUE)
             errorValue = bundle.getString(TAG_ERROR_VALUE)
-            colorTint = bundle.getInt(TAG_COLOR_TINT)
         }
     }
 
@@ -231,11 +240,6 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
         fun setIsPassword(password: Boolean): Builder {
             isPassword = password
-            return this
-        }
-
-        fun setColorTint(int: Int?): Builder {
-            colorTint = int
             return this
         }
 
