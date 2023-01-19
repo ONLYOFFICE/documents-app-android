@@ -34,7 +34,8 @@ class SettingsPresenter(
 
     companion object {
         val TAG: String = SettingsPresenter::class.java.simpleName
-        private const val TAG_FOLDER_PATH = "/products/files/#"
+        private const val TAG_FOLDER_PATH = "products/files/#"
+        private const val TAG_ROOM_PATH = "rooms/shared/filter?folder="
     }
 
     /*
@@ -203,7 +204,11 @@ class SettingsPresenter(
     val internalLink: Unit
         get() {
             if (item is CloudFolder) {
-                val internalLink = networkSettings.getBaseUrl() + TAG_FOLDER_PATH + item.id
+                val internalLink = if (item.isRoom) {
+                    networkSettings.getBaseUrl() + TAG_ROOM_PATH + item.id
+                } else {
+                    networkSettings.getBaseUrl() + TAG_FOLDER_PATH + item.id
+                }
                 viewState.onInternalLink(internalLink)
             } else if (item is CloudFile) {
                 viewState.onInternalLink(item.webUrl)
