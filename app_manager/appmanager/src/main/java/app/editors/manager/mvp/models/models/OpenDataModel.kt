@@ -14,13 +14,15 @@ data class OpenDataModel(
     val email: String? = null,
     val file: OpenFileModel? = null,
     val folder: OpenFolderModel? = null,
-    val originalUrl: String? = null
+    val originalUrl: String? = null,
+    val errorMsg: String? = null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
         parcel.readParcelable(OpenFileModel::class.java.classLoader),
         parcel.readParcelable(OpenFolderModel::class.java.classLoader),
+        parcel.readString(),
         parcel.readString()
     )
 
@@ -30,6 +32,7 @@ data class OpenDataModel(
         parcel.writeParcelable(file, flags)
         parcel.writeParcelable(folder, flags)
         parcel.writeString(originalUrl)
+        parcel.writeString(errorMsg)
     }
 
     override fun describeContents(): Int {
