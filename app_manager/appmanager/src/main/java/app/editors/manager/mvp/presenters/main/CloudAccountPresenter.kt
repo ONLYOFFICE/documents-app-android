@@ -9,6 +9,7 @@ import app.documents.core.account.copyWithToken
 import app.documents.core.login.LoginResponse
 import app.documents.core.network.ApiContract
 import app.documents.core.network.models.login.Capabilities
+import app.documents.core.network.models.login.response.ResponseAllSettings
 import app.documents.core.network.models.login.response.ResponseCapabilities
 import app.documents.core.network.models.login.response.ResponseSettings
 import app.documents.core.network.models.login.response.ResponseUser
@@ -128,7 +129,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             contextAccount?.let { account ->
                 if (account.isWebDav) {
                     AccountUtils.setPassword(context, account.getAccountName(), null)
-                } else if(account.isOneDrive || account.isDropbox || account.isGoogleDrive) {
+                } else if (account.isOneDrive || account.isDropbox || account.isGoogleDrive) {
                     AccountUtils.setToken(context, account.getAccountName(), "")
                 } else {
                     AccountUtils.setPassword(context, account.getAccountName(), null)
@@ -222,6 +223,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         )
                     }
                 }
+
                 account.isOneDrive -> {
                     AccountUtils.getToken(context, account.getAccountName())?.let { token ->
                         if (token.isNotEmpty()) {
@@ -231,6 +233,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         }
                     }
                 }
+
                 account.isDropbox -> {
                     AccountUtils.getToken(context, account.getAccountName())?.let { token ->
                         if (token.isNotEmpty()) {
@@ -240,6 +243,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         }
                     }
                 }
+
                 account.isGoogleDrive -> {
                     AccountUtils.getToken(context, account.getAccountName())?.let { token ->
                         if (token.isNotEmpty()) {
@@ -249,6 +253,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         }
                     }
                 }
+
                 else -> {
                     AccountUtils.getToken(context, account.getAccountName())?.let { token ->
                         if (token.isNotEmpty()) {
@@ -260,13 +265,22 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         setSettings(account)
                         disposable = context.loginService.capabilities().subscribe({ response ->
                             if (response is LoginResponse.Success) {
-                                if (response.response is ResponseCapabilities) {
-                                    val capability = (response.response as ResponseCapabilities).response
-                                    setSettings(capability)
-                                    viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
-                                } else {
-                                    networkSettings.serverVersion =
-                                        (response.response as ResponseSettings).response.communityServer ?: ""
+                                when (response.response) {
+                                    is ResponseCapabilities -> {
+                                        val capability = (response.response as ResponseCapabilities).response
+                                        setSettings(capability)
+                                        viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
+                                    }
+
+                                    is ResponseSettings -> {
+                                        networkSettings.serverVersion =
+                                            (response.response as ResponseSettings).response.communityServer ?: ""
+                                    }
+
+                                    is ResponseAllSettings -> {
+                                        networkSettings.isDocSpace =
+                                            (response.response as ResponseAllSettings).response.docSpace
+                                    }
                                 }
                             } else {
                                 fetchError((response as LoginResponse.Error).error)
@@ -295,20 +309,43 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     private fun login(account: CloudAccount, token: String) {
         setSettings(account)
         val loginService = context.loginService
-        disposable = loginService
-            .getUserInfo(token)
-            .map {
-                when (it) {
-                    is LoginResponse.Success -> return@map it.response as ResponseUser
-                    is LoginResponse.Error -> throw throw it.error
-                }
+        disposable = loginService.capabilities().flatMap { capabilityResponse ->
+            checkSettings(capabilityResponse)
+            loginService.getUserInfo(token).toObservable()
+        }.map {
+            when (it) {
+                is LoginResponse.Success -> return@map it.response as ResponseUser
+                is LoginResponse.Error -> throw throw it.error
             }
-            .flatMap { loginService.subscribe(token, preferenceTool.deviceMessageToken, true) }
+        }
+            .flatMap { loginService.subscribe(token, preferenceTool.deviceMessageToken, true).toObservable() }
             .subscribe({
                 loginSuccess(account)
             }, {
                 checkError(it, account)
             })
+    }
+
+    private fun checkSettings(capabilityResponse: LoginResponse) {
+        when (capabilityResponse) {
+            is LoginResponse.Success -> {
+                when (capabilityResponse.response) {
+                    is ResponseSettings -> {
+                        networkSettings.serverVersion =
+                            (capabilityResponse.response as ResponseSettings).response.communityServer ?: ""
+                    }
+
+                    is ResponseAllSettings -> {
+                        networkSettings.isDocSpace =
+                            (capabilityResponse.response as ResponseAllSettings).response.docSpace
+                    }
+                }
+            }
+
+            is LoginResponse.Error -> {
+                networkSettings.isDocSpace = false
+            }
+        }
     }
 
     private fun webDavLogin(account: CloudAccount, password: String) {
@@ -336,7 +373,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         context.accountOnline?.let { onlineAccount ->
             setSettings(onlineAccount)
             unsubscribePush(onlineAccount, AccountUtils.getToken(context, onlineAccount.getAccountName())) {
-               presenterScope.launch {
+                presenterScope.launch {
                     setSettings(account)
                     accountDao.updateAccount(onlineAccount.copyWithToken(isOnline = false))
                     accountDao.updateAccount(account.copyWithToken(isOnline = true))
