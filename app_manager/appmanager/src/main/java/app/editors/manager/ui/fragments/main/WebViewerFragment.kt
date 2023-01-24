@@ -194,6 +194,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
                     isLostConnection = true
                     webView.stopLoading()
                 }
+
                 MESSAGE_AVAILABLE -> post {
                     if (isLostConnection) {
                         isLostConnection = false
@@ -390,11 +391,9 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     private fun loadWebView(url: String) {
         CookieManager.getInstance().apply {
-            if (url.contains(ApiContract.PERSONAL_SUBDOMAIN)) {
-                setAcceptCookie(true)
-                setCookie(URL(url).protocol + "://" + URL(url).host, "asc_auth_key=$token")
-                setAcceptThirdPartyCookies(webView, true)
-            }
+            setAcceptCookie(true)
+            setCookie(URL(url).protocol + "://" + URL(url).host, "asc_auth_key=$token")
+            setAcceptThirdPartyCookies(webView, true)
         }
         webView.loadUrl(url, headers)
         progressBar.visibility = View.VISIBLE
