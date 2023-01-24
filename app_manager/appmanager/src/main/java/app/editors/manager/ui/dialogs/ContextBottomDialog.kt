@@ -40,7 +40,10 @@ class ContextBottomDialog : BaseBottomDialog() {
     private var viewBinding: ListExplorerContextMenuBinding? = null
 
     private val viewModel by viewModels<ContextBottomViewModel> {
-        ContextBottomViewModelFactory(checkNotNull(arguments?.getSerializableExt(ARG_ITEM, Item::class.java)), checkNotNull(arguments?.getInt(ARG_SECTION)))
+        ContextBottomViewModelFactory(
+            checkNotNull(arguments?.getSerializableExt(ARG_ITEM, Item::class.java)),
+            checkNotNull(arguments?.getInt(ARG_SECTION))
+        )
     }
 
     var onClickListener: OnClickListener? = null
@@ -266,8 +269,11 @@ class ContextBottomDialog : BaseBottomDialog() {
     private fun setRoomState() {
         viewBinding?.let { binding ->
             if (!state.isTrash) {
-                binding.listExplorerContextArchive.isVisible = state.isItemEditable
-                binding.listExplorerContextRename.isVisible = state.isItemEditable
+                //TODO Flag always false
+//                binding.listExplorerContextArchive.isVisible = state.isItemEditable
+//                binding.listExplorerContextRename.isVisible = state.isItemEditable
+                binding.listExplorerContextArchive.isVisible = true
+                binding.listExplorerContextRename.isVisible = true
                 binding.listExplorerContextPin.isVisible = true
                 binding.listExplorerContextAddUser.isVisible = state.isCanShare
                 binding.listExplorerContextInfo.isVisible = true
