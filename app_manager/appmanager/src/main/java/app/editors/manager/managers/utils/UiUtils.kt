@@ -101,62 +101,24 @@ object ManagerUiUtils {
     }
 
     fun ImageView.setFolderIcon(folder: CloudFolder, isRoot: Boolean) {
-        @DrawableRes var resId = R.drawable.ic_type_folder
-        if (folder.shared && folder.providerKey.isEmpty()) {
-            resId = R.drawable.ic_type_folder_shared
-        } else if (isRoot && folder.providerItem && folder.providerKey.isNotEmpty()) {
-            when (folder.providerKey) {
-                ApiContract.Storage.BOXNET -> resId = R.drawable.ic_storage_box
-                ApiContract.Storage.NEXTCLOUD -> resId = R.drawable.ic_storage_nextcloud
-                ApiContract.Storage.DROPBOX -> resId = R.drawable.ic_storage_dropbox
-                ApiContract.Storage.SHAREPOINT -> resId = R.drawable.ic_storage_sharepoint
-                ApiContract.Storage.GOOGLEDRIVE -> resId = R.drawable.ic_storage_google
-                ApiContract.Storage.KDRIVE -> resId = R.drawable.ic_storage_kdrive
-                ApiContract.Storage.ONEDRIVE, ApiContract.Storage.SKYDRIVE -> resId =
-                    R.drawable.ic_storage_onedrive
-                ApiContract.Storage.YANDEX -> resId = R.drawable.ic_storage_yandex
-                ApiContract.Storage.WEBDAV -> {
-                    resId = R.drawable.ic_storage_webdav
-                    this.setImageResource(resId)
-                    return
-                }
-            }
-            this.setImageResource(resId)
-            this.alpha = 1.0f
-            return
-        }
-        if (folder.isRoom) resId = getRoomIcon(folder)
-        this.setImageResource(resId)
+        setImageResource(getFolderIcon(folder, isRoot))
     }
 
-    fun getFolderIcon(folder: CloudFolder): Int {
-        @DrawableRes var resId = R.drawable.ic_type_folder
-        if (folder.shared && folder.providerKey.isEmpty()) {
-            resId = R.drawable.ic_type_folder_shared
-        } else if ( folder.providerItem && folder.providerKey.isNotEmpty()) {
-            when (folder.providerKey) {
-                ApiContract.Storage.BOXNET -> resId = R.drawable.ic_storage_box
-                ApiContract.Storage.NEXTCLOUD -> resId = R.drawable.ic_storage_nextcloud
-                ApiContract.Storage.DROPBOX -> resId = R.drawable.ic_storage_dropbox
-                ApiContract.Storage.SHAREPOINT -> resId = R.drawable.ic_storage_sharepoint
-                ApiContract.Storage.GOOGLEDRIVE -> resId = R.drawable.ic_storage_google
-                ApiContract.Storage.KDRIVE -> resId = R.drawable.ic_storage_kdrive
-                ApiContract.Storage.ONEDRIVE, ApiContract.Storage.SKYDRIVE -> resId =
-                    R.drawable.ic_storage_onedrive
-                ApiContract.Storage.YANDEX -> resId = R.drawable.ic_storage_yandex
-                ApiContract.Storage.WEBDAV -> {
-                    resId = R.drawable.ic_storage_webdav
-                    return resId
-                }
+    fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
+         return when {
+            folder.shared && folder.providerKey.isEmpty() -> R.drawable.ic_type_folder_shared
+            isRoot && folder.providerItem && folder.providerKey.isNotEmpty() -> {
+                StorageUtils.getStorageIcon(folder.providerKey)
             }
-
-            return resId
+            folder.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM.toString() -> {
+                R.drawable.ic_type_archive
+            }
+            folder.isRoom -> getRoomIcon(folder)
+            else -> R.drawable.ic_type_folder
         }
-        if (folder.isRoom) resId = getRoomIcon(folder)
-        return resId
     }
 
-    fun getRoomIcon(folder: CloudFolder): Int {
+    private fun getRoomIcon(folder: CloudFolder): Int {
         return when (folder.roomType) {
             ApiContract.RoomType.FILLING_FORM_ROOM -> R.drawable.ic_room_fill_forms
             ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_room_custom
