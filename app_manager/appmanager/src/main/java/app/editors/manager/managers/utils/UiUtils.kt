@@ -182,6 +182,7 @@ object ManagerUiUtils {
                     imageView.setImageResource(R.drawable.ic_access_full)
                 }
             }
+            ApiContract.ShareCode.EDITOR -> imageView.setImageResource(R.drawable.ic_access_full)
             ApiContract.ShareCode.COMMENT -> imageView.setImageResource(R.drawable.ic_access_comment)
             ApiContract.ShareCode.FILL_FORMS -> imageView.setImageResource(R.drawable.ic_access_fill_form)
         }

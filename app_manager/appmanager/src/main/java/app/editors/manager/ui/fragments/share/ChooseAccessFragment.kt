@@ -63,6 +63,7 @@ class ChooseAccessFragment : BaseAppFragment() {
                         R.id.fullAccessItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.READ_WRITE), position)
                         R.id.reviewItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.REVIEW), position)
                         R.id.viewItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.READ), position)
+                        R.id.editorItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.EDITOR), position)
                         R.id.denyItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.RESTRICT), position)
                         R.id.deleteItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.NONE), position)
                         R.id.commentItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.COMMENT), position)

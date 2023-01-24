@@ -437,6 +437,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 R.id.fullAccessItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ_WRITE)
                 R.id.reviewItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.REVIEW)
                 R.id.viewItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ)
+                R.id.editorItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.EDITOR)
                 R.id.denyItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.RESTRICT)
                 R.id.deleteItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.NONE)
                 R.id.commentItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.COMMENT)
