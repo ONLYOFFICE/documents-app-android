@@ -496,7 +496,7 @@
     <string name="filter_exclude_subfolders">Pas de sous-dossiers</string>
     <string name="filter_show_results">Afficher %1$s résultats </string>
     <string name="filter_button_reset">RÉINITIALISER</string>
-    <string name="errors_web_viewr">Une erreur s\'est produite lors de l\'édition d'un document Web</string>
+    <string name="errors_web_viewr">Une erreur s\'est produite lors de l\'édition d\'un document Web</string>
     <string name="errors_webdav_sign_in">Serveur, nom d\'utilisateur ou mot de passe incorrect</string>
     <string name="errors_webdav_username_password">Nom d\'utilisateur ou mot de passe incorrect</string>
     <string name="errors_webdav_server">Serveur incorrect</string>
