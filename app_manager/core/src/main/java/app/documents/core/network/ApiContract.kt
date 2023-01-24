@@ -99,6 +99,7 @@ object ApiContract {
         const val COMMENT = "Comment"
         const val FILL_FORMS = "FillForms"
         const val CUSTOM_FILLER = "CustomFilter"
+        const val EDITOR = "Editor"
 
         fun getCode(type: String?): Int {
             return when (type) {
@@ -111,6 +112,7 @@ object ApiContract {
                 COMMENT -> ShareCode.COMMENT
                 FILL_FORMS -> ShareCode.FILL_FORMS
                 CUSTOM_FILLER -> ShareCode.CUSTOM_FILLER
+                EDITOR -> ShareCode.EDITOR
                 else -> ShareCode.NONE
             }
         }
@@ -127,6 +129,7 @@ object ApiContract {
         const val COMMENT = 6
         const val FILL_FORMS = 7
         const val CUSTOM_FILLER = 8
+        const val EDITOR = 10
 
         fun getType(code: Int): String {
             return when (code) {
@@ -137,6 +140,7 @@ object ApiContract {
                 VARIES -> ShareType.VARIES
                 REVIEW -> ShareType.REVIEW
                 CUSTOM_FILLER -> ShareType.CUSTOM_FILLER
+                EDITOR -> ShareType.EDITOR
                 else -> ShareType.NONE
             }
         }
