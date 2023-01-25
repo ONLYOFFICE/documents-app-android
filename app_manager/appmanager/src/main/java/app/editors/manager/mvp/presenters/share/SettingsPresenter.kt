@@ -9,6 +9,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.getShareApi
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
@@ -153,8 +154,7 @@ class SettingsPresenter(
             .subscribe({
                 getShareList(it.response.members)
             }, { error ->
-                if (error is HttpException && error.response()
-                        ?.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN) {
+                if (error is HttpException && error.response()?.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN) {
                     viewState.onError(context.getString(R.string.placeholder_access_denied))
                 } else {
                     fetchError(error)
@@ -350,7 +350,11 @@ class SettingsPresenter(
                 ShareUi(
                     access = it.intAccess,
                     sharedTo = it.sharedTo,
-                    isLocked = it.isLocked,
+                    isLocked = if (networkSettings.isDocSpace) {
+                        !item.isCanShare
+                    } else {
+                        it.isLocked
+                    },
                     isOwner = it.isOwner,
                     isGuest = it.sharedTo.isVisitor,
                     isRoom = item is CloudFolder && item.isRoom
@@ -453,7 +457,8 @@ class SettingsPresenter(
             .subscribe({
                 viewState.onUpdateAvatar(it as ShareUi)
             }, { error ->
-                fetchError(error)
+                FirebaseUtils.addCrash(error)
+                // Stub
             })
     }
 
