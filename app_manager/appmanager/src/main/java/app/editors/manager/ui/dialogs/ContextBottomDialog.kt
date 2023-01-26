@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
@@ -263,6 +264,13 @@ class ContextBottomDialog : BaseBottomDialog() {
             if (state.isPersonalAccount) {
                 binding.listExplorerContextShare.isVisible = !state.isFolder
                 binding.viewLineSeparatorShare.root.isVisible = !state.isFolder
+                binding.listExplorerContextExternalLink.isVisible = false
+            }
+
+            //TODO Need refactoring. This is a trash solution
+            if (requireContext().appComponent.networkSettings.isDocSpace) {
+                binding.listExplorerContextShare.isVisible = false
+                binding.viewLineSeparatorShare.root.isVisible = false
                 binding.listExplorerContextExternalLink.isVisible = false
             }
         }
