@@ -9,6 +9,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.getShareApi
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
@@ -161,7 +162,9 @@ class AddPresenter(
             .subscribe({
                 viewState.onUpdateAvatar(it)
             }, { error ->
-                fetchError(error)
+                //TODO Avatar not found
+                FirebaseUtils.addCrash(error)
+//                fetchError(error)
             })
     }
 

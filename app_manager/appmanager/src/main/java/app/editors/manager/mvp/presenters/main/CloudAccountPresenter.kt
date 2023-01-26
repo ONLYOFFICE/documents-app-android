@@ -319,6 +319,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             }
         }
             .flatMap { loginService.subscribe(token, preferenceTool.deviceMessageToken, true).toObservable() }
+            .toList()
             .subscribe({
                 loginSuccess(account)
             }, {
