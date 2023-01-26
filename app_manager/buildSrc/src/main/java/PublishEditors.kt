@@ -1,7 +1,7 @@
 object PublishEditors {
 
     //TODO Add repo url
-    val publishUrl = ""
+    val publishUrl = "https://github.com/ONLYOFFICE/editors-android-packages"
 
     val groupId = "com.onlyoffice.android"
     val version = "1.0.0"

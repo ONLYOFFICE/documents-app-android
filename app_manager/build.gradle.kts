@@ -30,10 +30,6 @@ allprojects {
         maven { setUrl("https://jitpack.io") }
         maven {
             url = uri(PublishEditors.publishUrl)
-            credentials {
-                username = ""
-                password = ""
-            }
         }
     }
 
