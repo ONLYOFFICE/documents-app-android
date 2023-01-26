@@ -351,7 +351,7 @@ class SettingsPresenter(
                     access = it.intAccess,
                     sharedTo = it.sharedTo,
                     isLocked = if (networkSettings.isDocSpace) {
-                        !item.isCanShare
+                        !item.security.editAccess
                     } else {
                         it.isLocked
                     },

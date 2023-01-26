@@ -249,6 +249,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         onClickEvent(item, position)
         isContextClick = true
         val state = ContextBottomDialog.State()
+        state.item = itemClicked
         state.title = itemClickedTitle
         state.info = TimeUtils.formatDate(itemClickedDate)
         state.isFolder = !isClickedItemFile

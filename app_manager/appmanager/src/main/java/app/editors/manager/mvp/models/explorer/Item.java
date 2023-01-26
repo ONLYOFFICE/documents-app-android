@@ -67,6 +67,10 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
     @Expose
     private boolean canEdit = false;
 
+    @SerializedName("security")
+    @Expose
+    private Security security = new Security();
+
     public boolean getFavorite() {
         return favorite;
     }
@@ -169,6 +173,14 @@ public class Item extends ItemProperties implements Serializable, Entity, Clonea
 
     public void setCanEdit(boolean canEdit) {
         this.canEdit = canEdit;
+    }
+
+    public Security getSecurity() {
+        return security;
+    }
+
+    public void setSecurity(Security security) {
+        this.security = security;
     }
 
     public int getIntAccess() {

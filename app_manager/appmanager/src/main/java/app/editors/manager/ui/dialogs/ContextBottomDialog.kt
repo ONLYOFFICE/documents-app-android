@@ -15,6 +15,7 @@ import app.editors.manager.app.App
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
+import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.explorer.Item
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -187,6 +188,7 @@ class ContextBottomDialog : BaseBottomDialog() {
                 setRoomState()
                 return
             }
+
             if (state.isRecent) {
                 setRecentState()
                 return
@@ -269,13 +271,11 @@ class ContextBottomDialog : BaseBottomDialog() {
     private fun setRoomState() {
         viewBinding?.let { binding ->
             if (!state.isTrash) {
-                //TODO Flag always false
-//                binding.listExplorerContextArchive.isVisible = state.isItemEditable
-//                binding.listExplorerContextRename.isVisible = state.isItemEditable
-                binding.listExplorerContextArchive.isVisible = true
-                binding.listExplorerContextRename.isVisible = true
-                binding.listExplorerContextPin.isVisible = true
-                binding.listExplorerContextAddUser.isVisible = state.isCanShare
+                val room = (state.item) as? CloudFolder
+                binding.listExplorerContextArchive.isVisible = room?.security?.moveTo == true && room.security?.editRoom == true
+                binding.listExplorerContextRename.isVisible = room?.security?.rename ?: false
+                binding.listExplorerContextPin.isVisible = room?.security?.pin ?: false
+                binding.listExplorerContextAddUser.isVisible = room?.security?.editAccess ?: false
                 binding.listExplorerContextInfo.isVisible = true
                 binding.viewLineSeparatorDelete.root.isVisible = binding.listExplorerContextArchive.isVisible
                 if (state.isPin) binding.listExplorerContextPinText.setText(R.string.list_context_unpin)
@@ -448,7 +448,9 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isGoogleDrive: Boolean = false,
         var isVisitor: Boolean = false,
         var isRoom: Boolean = false,
-        var isPin: Boolean = false
+        var isPin: Boolean = false,
+        //TODO Remove
+        var item: Item? = null
     ) : Serializable
 }
 
