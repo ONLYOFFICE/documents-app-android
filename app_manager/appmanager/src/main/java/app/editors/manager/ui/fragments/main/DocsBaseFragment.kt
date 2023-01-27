@@ -1191,7 +1191,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     SelectActionBarPopup.Copy -> OperationsState.OperationType.COPY
                     else -> OperationsState.OperationType.NONE
                 }
-                presenter.moveCopyOperation(type)
+                presenter.moveCopySelected(type)
             }
             SelectActionBarPopup.Deselect -> presenter.deselectAll()
             SelectActionBarPopup.SelectAll -> presenter.selectAll()
