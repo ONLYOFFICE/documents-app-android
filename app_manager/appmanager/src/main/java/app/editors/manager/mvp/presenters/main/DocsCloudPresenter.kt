@@ -271,13 +271,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isPdf = isPdf
         state.isRoom = item is CloudFolder && item.isRoom
         state.isPin = item is CloudFolder && item.pinned
-        state.iconResId = when (val item = itemClicked) {
-            is CloudFolder -> when {
-                item.providerKey.isNotEmpty() -> StorageUtils.getStorageIcon(item.providerKey)
-                item.isRoom -> ManagerUiUtils.getRoomIcon(itemClicked as CloudFolder)
-                else -> if (item.shared) R.drawable.ic_type_folder_shared else R.drawable.ic_type_folder
-            }
-
+        state.iconResId = when (item) {
+            is CloudFolder -> ManagerUiUtils.getFolderIcon(item, isRoot)
             else -> getIconContext(StringUtils.getExtensionFromPath(itemClickedTitle))
         }
         viewState.onItemContext(state)
