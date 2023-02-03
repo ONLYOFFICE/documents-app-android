@@ -15,14 +15,15 @@ object Moxy {
 }
 
 object Koin {
-    private const val version = "3.1.6"
+    private const val version = "3.3.2"
+    private const val versionCompose = "3.4.1"
 
     const val koinAndroid = "io.insert-koin:koin-android:$version"
-    const val koinCompose = "io.insert-koin:koin-androidx-compose:$version"
+    const val koinCompose = "io.insert-koin:koin-androidx-compose:$versionCompose"
 }
 
 object AndroidX {
-    private const val androidxVersion = "1.5.1"
+    private const val androidxVersion = "1.6.0"
     private const val recyclerViewVersion = "1.2.1"
     private const val recyclerViewSelectionVersion = "1.1.0"
     private const val kotlinKtxVersion = "1.9.0"
@@ -51,8 +52,8 @@ object Retrofit {
 }
 
 object Kotlin {
-    const val version = "1.7.0"
-    const val kspVersion = "1.7.0-1.0.6"
+    const val version = "1.7.10"
+    const val kspVersion = "1.7.10-1.0.6"
     private const val coroutinesVersion = "1.6.0"
     private const val serializationVersion = "1.3.2"
 
@@ -63,9 +64,9 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "20.4.0"
+    private const val playServicesAuthVersion = "20.4.1"
     private const val playCoreVersion = "1.10.3"
-    private const val materialVersion = "1.7.0"
+    private const val materialVersion = "1.8.0"
     private const val gsonVersion = "2.9.1"
     private const val safetynetVersion = "18.0.1"
 
@@ -80,9 +81,9 @@ object Google {
 
 object Firebase {
     private const val firebaseCoreVersion = "21.1.1"
-    private const val firebaseConfigVersion = "21.2.0"
+    private const val firebaseConfigVersion = "21.2.1"
     private const val firebaseMessagingVersion = "23.1.1"
-    private const val firebaseCrashlyticsVersion = "18.3.2"
+    private const val firebaseCrashlyticsVersion = "18.3.3"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"
@@ -91,7 +92,7 @@ object Firebase {
 }
 
 object Room {
-    private const val roomVersion = "2.4.3"
+    private const val roomVersion = "2.5.0"
 
     const val roomRuntime = "androidx.room:room-runtime:$roomVersion"
     const val roomKtx = "androidx.room:room-ktx:$roomVersion"
@@ -114,12 +115,13 @@ object Lifecycle {
 }
 
 object Compose {
-    const val version = "1.1.1"
-    const val versionCompiler = "1.2.0"
-    private const val navigationVersion = "2.4.1"
+    const val version = "1.3.3"
+    const val versionMaterial = "1.3.1"
+    const val versionCompiler = "1.3.1"
+    private const val navigationVersion = "2.5.3"
 
     const val ui = "androidx.compose.ui:ui:$version"
-    const val material = "androidx.compose.material:material:$version"
+    const val material = "androidx.compose.material:material:$versionMaterial"
     const val preview = "androidx.compose.ui:ui-tooling-preview:$version"
     const val tooling = "androidx.compose.ui:ui-tooling:$version"
     const val navigation = "androidx.navigation:navigation-compose:$navigationVersion"
