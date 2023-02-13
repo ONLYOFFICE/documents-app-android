@@ -1,17 +1,17 @@
 package app.editors.manager.ui.activities.main
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import app.editors.manager.databinding.ActivityViewerWebBinding
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import app.editors.manager.ui.fragments.main.WebViewerFragment.Companion.newInstance
+import app.editors.manager.ui.fragments.main.WebViewerFragment
+import lib.toolkit.base.managers.utils.getSerializable
 
 class WebViewerActivity : BaseAppActivity() {
+
     private var viewBinding: ActivityViewerWebBinding? = null
     private var uncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
 
@@ -31,8 +31,8 @@ class WebViewerActivity : BaseAppActivity() {
     private fun init(savedInstanceState: Bundle?) {
         initException()
         savedInstanceState ?: run {
-            val file = intent.getSerializableExtra(TAG_FILE) as CloudFile?
-            showFragment(newInstance(file), null)
+            val file = intent.getSerializable(TAG_FILE, CloudFile::class.java)
+            showFragment(WebViewerFragment.newInstance(file), null)
         }
     }
 
@@ -47,25 +47,15 @@ class WebViewerActivity : BaseAppActivity() {
 
     companion object {
 
-        val TAG = WebViewerActivity::class.java.simpleName
+        val TAG: String = WebViewerActivity::class.java.simpleName
         const val TAG_VIEWER_FAIL = "TAG_VIEWER_FAIL"
         private const val TAG_FILE = "TAG_FILE"
 
-        private fun getActivityIntent(context: Context?) =
+        fun getActivityIntent(context: Context, file: CloudFile) =
             Intent(context, WebViewerActivity::class.java).apply {
+                putExtra(TAG_FILE, file)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
                 addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
             }
-
-        fun show(fragment: Fragment, file: CloudFile?) {
-            val intent = getActivityIntent(fragment.context).apply { putExtra(TAG_FILE, file) }
-            fragment.startActivityForResult(intent, REQUEST_ACTIVITY_WEB_VIEWER)
-        }
-
-        @JvmStatic
-        fun show(activity: Activity, file: CloudFile?) {
-            val intent = getActivityIntent(activity).apply { putExtra(TAG_FILE, file) }
-            activity.startActivityForResult(intent, REQUEST_ACTIVITY_WEB_VIEWER)
-        }
     }
 }

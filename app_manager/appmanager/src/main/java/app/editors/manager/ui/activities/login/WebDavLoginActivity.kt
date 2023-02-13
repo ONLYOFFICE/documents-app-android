@@ -7,7 +7,6 @@ import androidx.appcompat.widget.Toolbar
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.BuildConfig
-import app.editors.manager.R
 import app.editors.manager.app.App
 import app.documents.core.network.common.models.Storage
 import app.documents.core.network.common.utils.GoogleDriveUtils
@@ -18,9 +17,11 @@ import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.login.WebDavSignInFragment
+import app.editors.manager.ui.interfaces.WebDavInterface
+import lib.toolkit.base.managers.utils.getSerializable
 import javax.inject.Inject
 
-class WebDavLoginActivity : BaseAppActivity() {
+class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     companion object {
         private const val KEY_PROVIDER = "KEY_PROVIDER"
@@ -41,19 +42,16 @@ class WebDavLoginActivity : BaseAppActivity() {
         }
     }
 
+    private var viewBinding: ActivityWebDavLoginBinding? = null
+    override val isMySection: Boolean = false
     @Inject
     lateinit var dropboxLoginHelper: DropboxLoginHelper
-
-    private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         App.getApp().appComponent.inject(this)
-        setContentView(R.layout.activity_web_dav_login)
-
-        toolbar = findViewById(R.id.app_bar_toolbar)
-        setSupportActionBar(toolbar)
-
+        viewBinding = ActivityWebDavLoginBinding.inflate(layoutInflater)
+        setContentView(viewBinding?.root)
         init(savedInstanceState)
     }
 
@@ -63,23 +61,35 @@ class WebDavLoginActivity : BaseAppActivity() {
         finish()
     }
 
+    override fun showConnectButton(isShow: Boolean) {
+        viewBinding?.appBarToolbarConnectButton?.isVisible = isShow
+    }
+
+    override fun enableConnectButton(isEnable: Boolean) {
+        viewBinding?.appBarToolbarConnectButton?.isEnabled = isEnable
+    }
+
+    override fun setOnConnectButtonClickListener(onClick: () -> Unit) {
+        viewBinding?.appBarToolbarConnectButton?.setOnClickListener { onClick() }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressedDispatcher.onBackPressed()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun finishWithResult(folder: CloudFolder?) { }
+
     private fun init(savedInstanceState: Bundle?) {
-        toolbar.setNavigationOnClickListener { onBackPressed() }
+        setSupportActionBar(viewBinding?.appBarToolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
-            intent.let { data ->
-                it.title = getString(
-                    R.string.login_web_dav_title,
-                    (data.getSerializableExtra(KEY_PROVIDER) as WebDavService.Providers?)?.name
-                )
-            }
-
+            it.title = intent.getSerializable(KEY_PROVIDER, WebDavApi.Providers::class.java).name
         }
-        savedInstanceState?.let {
-            // Nothing
-        } ?: run {
-            showFragment()
-        }
+        if (savedInstanceState == null) showFragment()
     }
 
     private fun showFragment() {

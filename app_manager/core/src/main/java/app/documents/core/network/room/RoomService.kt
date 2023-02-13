@@ -68,7 +68,7 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/files/rooms")
-    fun createRoom(@Body body: RequestCreateRoom): Observable<Response<BaseResponse>>
+    fun createRoom(@Body body: RequestCreateRoom): Observable<ResponseCreateFolder>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

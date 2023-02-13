@@ -290,6 +290,10 @@
         <item name="android:textColor">@color/colorLightRed</item>
     </style>
 
+    <style name="TextInputEmptyErrorMessage">
+        <item name="android:textSize">0sp</item>
+    </style>
+
     <!-- On boarding -->
     <style name="OnBoardingTextView" parent="CommonTextView">
         <item name="android:textColor">@color/colorOnBackground</item>

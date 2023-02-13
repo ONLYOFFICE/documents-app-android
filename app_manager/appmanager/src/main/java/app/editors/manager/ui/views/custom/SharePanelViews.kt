@@ -99,6 +99,7 @@ class SharePanelViews(
                         it.buttonPopupImage.setImageResource(R.drawable.ic_access_full)
                     }
                 }
+                ApiContract.ShareCode.EDITOR -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_full)
                 ApiContract.ShareCode.REVIEW -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_review)
                 ApiContract.ShareCode.COMMENT -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_comment)
                 ApiContract.ShareCode.FILL_FORMS -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_fill_form)
@@ -168,6 +169,7 @@ class SharePanelViews(
                 R.id.fullAccessItem -> onPopupAccess(ApiContract.ShareCode.READ_WRITE)
                 R.id.reviewItem -> onPopupAccess(ApiContract.ShareCode.REVIEW)
                 R.id.viewItem -> onPopupAccess(ApiContract.ShareCode.READ)
+                R.id.editorItem -> onPopupAccess(ApiContract.ShareCode.EDITOR)
                 R.id.denyItem -> onPopupAccess(ApiContract.ShareCode.NONE)
                 R.id.commentItem -> onPopupAccess(ApiContract.ShareCode.COMMENT)
                 R.id.fillFormItem -> onPopupAccess(ApiContract.ShareCode.FILL_FORMS)

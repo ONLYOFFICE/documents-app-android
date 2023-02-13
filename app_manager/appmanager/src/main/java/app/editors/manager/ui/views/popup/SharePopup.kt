@@ -36,6 +36,7 @@ class SharePopup(
             fillFormItem.popupItemLayout.setOnClickListener()
             commentItem.popupItemLayout.setOnClickListener()
             reviewItem.popupItemLayout.setOnClickListener()
+            editorItem.popupItemLayout.setOnClickListener()
             deleteItem.popupItemLayout.setOnClickListener()
             viewItem.popupItemLayout.setOnClickListener()
             denyItem.popupItemLayout.setOnClickListener()
@@ -200,10 +201,6 @@ class SharePopup(
             binding.viewItem.itemIcon.setImageResource(R.drawable.ic_access_read)
             binding.viewItem.itemText.setText(R.string.share_access_room_viewer)
 
-            binding.denyItem.popupItemLayout.isVisible = true
-            binding.denyItem.itemIcon.setImageResource(R.drawable.ic_access_deny)
-            binding.denyItem.itemText.setText(R.string.share_popup_access_deny_access)
-
             binding.popupShareAccessSeparatorDeny.root.isVisible = true
 
             if (isFullAccess) {
@@ -212,13 +209,27 @@ class SharePopup(
 
             when (cloudFolder.roomType) {
                 ApiContract.RoomType.FILLING_FORM_ROOM -> {
-                    binding.fullAccessItem.popupItemLayout.isVisible = false
                     binding.commentItem.popupItemLayout.isVisible = false
                     binding.reviewItem.popupItemLayout.isVisible = false
                 }
-                ApiContract.RoomType.REVIEW_ROOM -> {
-                    binding.fullAccessItem.popupItemLayout.isVisible = false
+                ApiContract.RoomType.EDITING_ROOM -> {
                     binding.fillFormItem.popupItemLayout.isVisible = false
+                    binding.reviewItem.popupItemLayout.isVisible = false
+                    binding.commentItem.popupItemLayout.isVisible = false
+                }
+                ApiContract.RoomType.REVIEW_ROOM -> {
+                    binding.fillFormItem.popupItemLayout.isVisible = false
+                }
+                ApiContract.RoomType.READ_ONLY_ROOM -> {
+                    binding.fillFormItem.popupItemLayout.isVisible = false
+                    binding.reviewItem.popupItemLayout.isVisible = false
+                    binding.commentItem.popupItemLayout.isVisible = false
+                }
+                ApiContract.RoomType.CUSTOM_ROOM -> {
+                    binding.viewItem.popupItemLayout.isVisible = false
+                    binding.editorItem.popupItemLayout.isVisible = true
+                    binding.editorItem.itemIcon.setImageResource(R.drawable.ic_access_full)
+                    binding.editorItem.itemText.setText(R.string.share_access_room_editor)
                 }
             }
         }

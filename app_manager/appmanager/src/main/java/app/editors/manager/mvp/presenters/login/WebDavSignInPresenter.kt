@@ -20,6 +20,7 @@ import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 import okhttp3.Credentials
 import okhttp3.ResponseBody
 import retrofit2.HttpException
@@ -70,7 +71,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
 
             networkSettings.setDefault()
             networkSettings.setScheme(webUrl.protocol + "://")
-            networkSettings.setBaseUrl(webUrl.protocol + "://" + webUrl.host)
+            networkSettings.setBaseUrl(webUrl.protocol + "://" + webUrl.host + if (webUrl.port == -1) "" else ":" + webUrl.port)
 
             viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title))
             disposable = context.webDavApi
@@ -135,7 +136,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ response ->
-                    if (response.isSuccessful && response.code() == 200) {
+                    if (response.isSuccessful && response.code() == 200 || response.code() == 401) {
                         viewState.onNextCloudLogin(correctUrl.toString())
                     } else {
                         if (correctUrl.toString().startsWith(ApiContract.SCHEME_HTTPS)) {
@@ -169,7 +170,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         val cloudAccount = CloudAccount(
             id = "$login@${webUrl.host}",
             isWebDav = true,
-            portal = webUrl.host,
+            portal = webUrl.host + if (webUrl.port != -1 ) ":${webUrl.port}" else "",
             webDavPath = webUrl.path,
             webDavProvider = provider.name,
             login = login,
@@ -180,7 +181,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         )
 
         val accountData = AccountData(
-            portal = cloudAccount.portal ?: "",
+            portal = cloudAccount.portal + if (webUrl.port != -1 ) ":${webUrl.port}" else "",
             scheme = cloudAccount.scheme ?: "",
             displayName = login,
             userId = cloudAccount.id,
@@ -201,7 +202,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
     }
 
     private fun addAccountToDb(cloudAccount: CloudAccount) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             accountDao.getAccountOnline()?.let {
                 accountDao.addAccount(it.copy(isOnline = false))
             }
@@ -242,56 +243,4 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             }
         }
     }
-
-    private fun correctUrl(url: String, provider: WebDavService.Providers): String {
-        var copyUrl = url
-        val correctUrl = StringBuilder()
-        copyUrl = copyUrl.replace("\\s+".toRegex(), "")
-        val uri = Uri.parse(copyUrl)
-        val path = uri.path
-        when (provider) {
-            WebDavService.Providers.NextCloud, WebDavService.Providers.OwnCloud -> {
-            }
-            WebDavService.Providers.Yandex, WebDavService.Providers.WebDav -> {
-            }
-            else -> {
-                // Stub
-            }
-        }
-        if (copyUrl.startsWith(ApiContract.SCHEME_HTTP)) {
-            correctUrl.append(ApiContract.SCHEME_HTTPS).append(copyUrl.replace(ApiContract.SCHEME_HTTP.toRegex(), ""))
-        } else if (copyUrl.startsWith(ApiContract.SCHEME_HTTPS)) {
-            correctUrl.append(copyUrl)
-        } else {
-            correctUrl.append(ApiContract.SCHEME_HTTPS).append(copyUrl)
-        }
-        if (correctUrl[correctUrl.length - 1] != '/') {
-            correctUrl.append("/")
-        }
-        if (provider != WebDavService.Providers.Yandex) {
-            try {
-                val checkUrl = URL(correctUrl.toString())
-            } catch (e: MalformedURLException) {
-                viewState.onUrlError(context.getString(R.string.errors_path_url))
-                return ""
-            }
-        }
-        return correctUrl.toString()
-    }
-
-    private fun correctPortal(portal: String): String {
-        var copyPortal = portal
-        if (copyPortal.contains(ApiContract.SCHEME_HTTP)) {
-            copyPortal = copyPortal.replace(ApiContract.SCHEME_HTTP.toRegex(), "")
-        } else if (copyPortal.contains(ApiContract.SCHEME_HTTPS)) {
-            copyPortal = copyPortal.replace(ApiContract.SCHEME_HTTPS.toRegex(), "")
-        }
-        return if (copyPortal.contains("/")) {
-            correctPortal(copyPortal.substring(0, copyPortal.indexOf("/")))
-        } else {
-            copyPortal
-        }
-    }
-
-
 }

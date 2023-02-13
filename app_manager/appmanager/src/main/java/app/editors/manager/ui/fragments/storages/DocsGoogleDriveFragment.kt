@@ -15,6 +15,12 @@ import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.googledrive.UploadWork
 import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
+import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
+import app.editors.manager.storages.base.view.DocsGoogleDriveView
+import app.editors.manager.storages.base.work.BaseStorageUploadWork
+import app.editors.manager.storages.googledrive.managers.works.UploadWork
+import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
+import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.MainActionBarPopup
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -44,28 +50,24 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
                         presenter.upload(uri, null, KEY_UPLOAD)
                     }
                 }
-                BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
-                    onRefresh()
-                }
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
                     if(data.getBooleanExtra(KEY_MODIFIED, false)) {
-                        presenter.upload(
-                            uri,
-                            null,
-                            KEY_UPDATE
-                        )
+                        presenter.upload(uri, null, KEY_UPDATE)
                     }
                 }
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let { clipData ->
-                    presenter.upload(
-                        null,
-                        clipData,
-                        KEY_UPLOAD
-                    )
-                }.run {
-                    presenter.upload(data?.data, null, KEY_UPLOAD)
+            }
+        }
+    }
+
+    override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
+        if (buttons == ActionBottomDialog.Buttons.UPLOAD) {
+            showMultipleFilePickerActivity { uris ->
+                if (!uris.isNullOrEmpty()) {
+                    presenter.upload(null, uris, KEY_UPLOAD)
                 }
             }
+        } else {
+            super.onActionButtonClick(buttons)
         }
     }
 
@@ -75,8 +77,6 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
 
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         when (buttons) {
-            ContextBottomDialog.Buttons.MOVE -> presenter.moveContext()
-            ContextBottomDialog.Buttons.COPY -> presenter.copy()
             ContextBottomDialog.Buttons.DOWNLOAD -> onFileDownloadPermission()
             ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
                 getString(R.string.dialogs_edit_rename_title),

@@ -177,7 +177,7 @@ class App : Application() {
     private fun addDataBaseObserver() {
         appComponent.accountsDataBase.invalidationTracker.addObserver(object :
             InvalidationTracker.Observer(arrayOf(CloudAccount::class.java.simpleName)) {
-            override fun onInvalidated(tables: MutableSet<String>) {
+            override fun onInvalidated(tables: Set<String>) {
                 appComponent.preference.dbTimestamp = System.currentTimeMillis()
             }
         })

@@ -39,7 +39,6 @@
     <string name="about_policy">Privacy policy</string>
     <string name="about_license">License agreement</string>
     <string name="about_website">ONLYOFFICE website</string>
-    <string name="about_email_subject">ONLYOFFICE Documents for Android feedback</string>
 
     <!-- ======================================================================================= -->
     <!-- Common errors -->
@@ -65,6 +64,10 @@
     <string name="errors_create_local_file">Failed create file</string>
     <string name="errors_import_local_file_desc">Permission denied</string>
     <string name="errors_import_local_file">Access denied. Give read and write permissions</string>
+    <string name="errors_web_viewr">An error occurred while editing a web document</string>
+    <string name="errors_webdav_sign_in">Wrong server, username or password</string>
+    <string name="errors_webdav_username_password">Wrong username or password</string>
+    <string name="errors_webdav_server">Wrong server</string>
 
     <!-- SignIn -->
     <string name="errors_sign_in_splash_error">Failed to access the portal</string>
@@ -232,7 +235,6 @@
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
     <string name="chooser_web_browser">Choose browser…</string>
-    <string name="chooser_email_client">Choose email client…</string>
 
     <!-- ======================================================================================= -->
     <!-- Main -->
@@ -260,7 +262,6 @@
     <string name="navigation_drawer_menu_help">Help</string>
     <string name="navigation_drawer_menu_logout">Log out</string>
     <string name="navigation_drawer_menu_sign_in">Sign in</string>
-    <string name="navigation_drawer_menu_feedback">Feedback and support</string>
     <string name="settings_item_title">Settings</string>
     <string name="settings_item_change_account">Change account</string>
     <string name="settings_clear_cache">Clear cache</string>
@@ -329,14 +330,14 @@
     <!-- Dialog info -->
 
     <!-- Pager -->
-    <string name="main_pager_docs_my">My</string>
+    <string name="main_pager_docs_my">My document</string>
     <string name="main_pager_docs_common">Common</string>
     <string name="main_pager_docs_share">Shared with me</string>
     <string name="main_pager_docs_projects">Projects</string>
     <string name="main_pager_docs_trash">Trash</string>
     <string name="main_pager_docs_favorites">Favorites</string>
-    <string name="main_pager_docs_virtual_room">Shared</string>
-    <string name="main_pager_docs_archive_room">Archived</string>
+    <string name="main_pager_docs_virtual_room">My rooms</string>
+    <string name="main_pager_docs_archive_room">My archive</string>
 
     <!-- Placeholder -->
     <string name="placeholder_connection">Connection error</string>
@@ -436,10 +437,12 @@
     <string name="storage_web_title">Connect service </string>
     <string name="storage_connect_button">CONNECT</string>
 
-    <string name="storage_web_dav_settings_url">Connection URL</string>
     <string name="storage_web_dav_settings_login">Login</string>
     <string name="storage_web_dav_settings_password">Password</string>
     <string name="storage_web_dav_settings_title">Input title for service</string>
+    <string name="storage_web_dav_settings_hint" tools:ignore="MissingTranslation">https://cloud.yourdomain.com</string>
+    <string name="storage_web_dav_settings_server">Server</string>
+    <string name="storage_web_dav_settings_required">Required</string>
 
     <string name="storage_onedrive_error_opened">File is opened on portal</string>
     <string name="storage_onedrive_error_exist">File with same name is already exist in this folder</string>
@@ -666,6 +669,7 @@
     <string name="context_room_unarchive">Move from archive</string>
     <string name="context_room_unarchive_message">Room removed from archive</string>
     <string name="list_context_pin_to_top">Pin to top</string>
+    <string name="list_rooms_title">Rooms</string>
     <string name="list_context_unpin">Unpin</string>
     <string name="list_context_info">Info</string>
     <string name="list_context_add_users">Add users</string>

@@ -26,6 +26,11 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.exceptions.NoConnectivityException
+import app.editors.manager.managers.providers.BaseFileProvider
+import app.editors.manager.managers.providers.LocalFileProvider
+import app.editors.manager.managers.providers.ProviderError
+import app.editors.manager.managers.providers.ProviderError.Companion.throwInterruptException
+import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
@@ -53,6 +58,7 @@ import moxy.MvpPresenter
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
+import java.io.File
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -624,9 +630,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         if (filesIds.size > 1 || foldersIds.isNotEmpty()) {
             startDownloadWork(downloadTo, null, null, RequestDownload()
                 .also {
-                it.filesIds = filesIds
-                it.foldersIds = foldersIds
-            })
+                    it.filesIds = filesIds
+                    it.foldersIds = foldersIds
+                }
+            )
         } else {
             startDownloadWork(downloadTo, filesIds[0], files?.get(0)?.viewUrl, null)
         }
@@ -653,7 +660,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    open fun upload(uri: Uri?, uris: ClipData?) {
+    open fun upload(uri: Uri?, uris: List<Uri>?) {
         if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
             viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
         } else {
@@ -663,8 +670,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                         uploadUri = uri
                         add(uri)
                     } else if (uris != null) {
-                        for (i in 0 until uris.itemCount) {
-                            add(uris.getItemAt(i).uri)
+                        for (i in uris.indices) {
+                            add(uris[i])
                         }
                     }
                 }
@@ -747,7 +754,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
     }
 
-    private fun addFolder(folder: CloudFolder) {
+    protected fun addFolder(folder: CloudFolder) {
         folder.isJustCreated = true
         modelExplorerStack.addFolderFirst(folder)
         viewState.onDocsGet(getListWithHeaders(modelExplorerStack.last(), true))
@@ -785,7 +792,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return plus(
             mutableMapOf<String, String>().apply {
                 put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
-                if (filter.type != FilterType.None || isFilteringMode)
+                if (filter.type != FilterType.None || isFilteringMode && filteringValue.isNotEmpty())
                     put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
                 if (App.getApp().accountOnline?.isPersonal() == false) {
                     if (ApiContract.SectionType.isRoom(currentSectionType)) {
@@ -823,11 +830,18 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * Batch operations
      * */
 
-    fun moveSelected() {
+
+    fun moveCopyOperation(operationsState: OperationsState.OperationType) {
+        modelExplorerStack.last()?.clone()?.let { explorer ->
+            viewState.onBatchMoveCopy(operationsState, getBatchExplorer(explorer))
+        }
+    }
+
+    open fun moveCopySelected(operationsState: OperationsState.OperationType) {
         if (modelExplorerStack.countSelectedItems > 0) {
             modelExplorerStack.clone()?.let { clonedStack ->
                 clonedStack.removeUnselected()
-                viewState.onBatchMove(clonedStack.explorer)
+                viewState.onBatchMoveCopy(operationsState, clonedStack.explorer)
                 getBackStack()
             }
         } else {
@@ -835,27 +849,27 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    fun moveContext() {
-        modelExplorerStack.last()?.copy()?.let { explorer ->
-            viewState.onBatchMove(getBatchExplorer(explorer))
-        }
-    }
-
-    open fun copySelected() {
-        if (modelExplorerStack.countSelectedItems > 0) {
-            modelExplorerStack.clone()?.let { clonedStack ->
-                clonedStack.removeUnselected()
-                viewState.onBatchCopy(clonedStack.explorer)
-            }
-        }
-        viewState.onError(context.getString(R.string.operation_empty_lists_data))
-    }
-
-    fun copyContext() {
-        modelExplorerStack.last()?.copy()?.let { explorer ->
-            viewState.onBatchCopy(getBatchExplorer(explorer))
-        }
-    }
+//    fun moveContext() {
+//        modelExplorerStack.last()?.clone()?.let { explorer ->
+//            viewState.onBatchMove(getBatchExplorer(explorer))
+//        }
+//    }
+//
+//    open fun copySelected() {
+//        if (modelExplorerStack.countSelectedItems > 0) {
+//            modelExplorerStack.clone()?.let { clonedStack ->
+//                clonedStack.removeUnselected()
+//                viewState.onBatchCopy(clonedStack.explorer)
+//            }
+//        }
+//        viewState.onError(context.getString(R.string.operation_empty_lists_data))
+//    }
+//
+//    fun copyContext() {
+//        modelExplorerStack.last()?.clone()?.let { explorer ->
+//            viewState.onBatchCopy(getBatchExplorer(explorer))
+//        }
+//    }
 
     private fun getBatchExplorer(explorer: Explorer): Explorer {
         return explorer.also {
@@ -900,7 +914,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             if (explorer.folders.isNotEmpty()) {
                 if (!isFolderHeader) {
                     isFolderHeader = true
-                    entityList.add(Header(context.getString(R.string.list_headers_folder)))
+
+                    val header = if (isRoot && currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM) {
+                        Header(context.getString(R.string.list_rooms_title))
+                    } else {
+                        Header(context.getString(R.string.list_headers_folder))
+                    }
+                    entityList.add(header)
                 }
                 entityList.addAll(explorer.folders)
             }
@@ -1341,6 +1361,28 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             }
         }
         return false
+    }
+
+    protected var photoUri: Uri? = null
+
+    @SuppressLint("MissingPermission")
+    fun createPhoto() {
+        val photo = if (fileProvider is LocalFileProvider) {
+            FileUtils.createFile(File(stack?.current?.id ?: ""), TimeUtils.fileTimeStamp, "png")
+        } else {
+            FileUtils.createFile(File(context.cacheDir.absolutePath), TimeUtils.fileTimeStamp, "png")
+        }
+        if (photo != null) {
+            photoUri = ContentResolverUtils.getFileUri(context, photo).also { uri ->
+                viewState.onShowCamera(uri)
+            }
+        }
+    }
+
+    fun deletePhoto() {
+        photoUri?.let { uri ->
+            context.contentResolver.delete(uri, null, null)
+        }
     }
 
     @SuppressLint("StringFormatInvalid", "StringFormatMatches")

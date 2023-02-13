@@ -36,18 +36,19 @@
         tools:text="Folder name" />
 
     <ImageView
+        style="@style/AlphaImageButton"
         android:id="@+id/list_explorer_room_pin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/default_margin_medium"
         android:src="@drawable/ic_pin_to_top"
+        android:visibility="visible"
         app:layout_constrainedWidth="true"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/list_explorer_folder_name"
         app:layout_constraintEnd_toStartOf="@+id/list_explorer_folder_context"
         app:layout_constraintTop_toTopOf="@+id/list_explorer_folder_name"
-        tools:ignore="ContentDescription"
-        app:tint="?attr/colorOnSurface" />
+        app:tint="?attr/colorOnSurface"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_explorer_folder_info"

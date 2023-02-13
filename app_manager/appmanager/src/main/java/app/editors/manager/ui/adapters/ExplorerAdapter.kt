@@ -94,6 +94,14 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
         }
     }
 
+    private fun setFileFavoriteStatus(position: Int) {
+        val file = mList[position]
+        if (file is CloudFile && file.fileStatus.isNotEmpty()) {
+            val favoriteMask = file.fileStatus.toInt() and ApiContract.FileStatus.FAVORITE
+            file.favorite = favoriteMask != 0
+        }
+    }
+
     fun isLoading(isShow: Boolean) {
         isFooter = isShow
         notifyItemChanged(itemCount - 1)
@@ -118,14 +126,6 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
                     break
                 }
             }
-        }
-    }
-
-    private fun setFileFavoriteStatus(position: Int) {
-        val file = mList[position]
-        if (file is CloudFile && file.fileStatus.isNotEmpty()) {
-            val favoriteMask = file.fileStatus.toInt() and ApiContract.FileStatus.FAVORITE
-            file.favorite = favoriteMask != 0
         }
     }
 

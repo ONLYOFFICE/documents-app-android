@@ -3,36 +3,35 @@ package app.editors.manager.ui.fragments.base
 import android.content.Context
 import android.view.Menu
 import android.view.MenuInflater
+import androidx.activity.result.ActivityResult
 import androidx.fragment.app.Fragment
 import app.editors.manager.R
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.mvp.models.explorer.Explorer
+import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
-import app.editors.manager.ui.activities.main.OperationActivity.Companion.showCopy
-import app.editors.manager.ui.activities.main.OperationActivity.Companion.showMove
-import app.editors.manager.ui.activities.main.OperationActivity.Companion.showRestore
+import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.activities.main.ShareActivity.Companion.show
 import app.editors.manager.ui.activities.main.StorageActivity.Companion.show
-import app.editors.manager.ui.activities.main.WebViewerActivity.Companion.show
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.interfaces.ContextDialogInterface
 import lib.toolkit.base.managers.utils.FragmentUtils.showFragment
+import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.ui.fragments.base.BaseFragment
 
 abstract class BaseAppFragment : BaseFragment() {
 
-    var mContextDialogListener: ContextDialogInterface? = null
+    var contextDialogListener: ContextDialogInterface? = null
     protected var menu: Menu? = null
     protected var menuInflater: MenuInflater? = null
-    private val TAG = javaClass.simpleName
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
-            mContextDialogListener = context as ContextDialogInterface
+            contextDialogListener = context as ContextDialogInterface
             addOnDispatchTouchEvent()
         } catch (e: ClassCastException) {
             throw RuntimeException(
@@ -56,13 +55,11 @@ abstract class BaseAppFragment : BaseFragment() {
      * Fragment operations
      * */
     protected fun showFragment(fragment: Fragment, tag: String?, isAdd: Boolean) {
-        fragmentManager?.let {
-            showFragment(it, fragment, R.id.frame_container, tag, isAdd)
-        }
+        showFragment(parentFragmentManager, fragment, R.id.frame_container, tag, isAdd)
     }
 
     protected fun showParentFragment(fragment: Fragment, tag: String?, isAdd: Boolean) {
-        parentFragment?.fragmentManager?.let {
+        parentFragment?.parentFragmentManager?.let {
             showFragment(it, fragment, R.id.frame_container, tag, isAdd)
         }
     }
@@ -77,24 +74,12 @@ abstract class BaseAppFragment : BaseFragment() {
     /**
      * Show activity
      * */
-    protected fun showOperationMoveActivity(explorer: Explorer) {
-        showMove(this, explorer)
-    }
-
-    protected fun showOperationCopyActivity(explorer: Explorer) {
-        showCopy(this, explorer)
-    }
-
-    protected fun showOperationRestoreActivity(explorer: Explorer) {
-        showRestore(this, explorer)
-    }
-
-    protected fun showViewerActivity(file: CloudFile?) {
-        show(requireActivity(), file)
-    }
-
-    protected fun showMediaActivity(explorer: Explorer?, isWebDAv: Boolean) {
-        show(this, explorer, isWebDAv)
+    protected fun showMediaActivity(explorer: Explorer, isWebDAv: Boolean, callback: (result: ActivityResult) -> Unit) {
+        LaunchActivityForResult(
+            activityResultRegistry = requireActivity().activityResultRegistry,
+            callback = callback,
+            intent = MediaActivity.getIntent(requireContext(), explorer, isWebDAv)
+        ).show()
     }
 
     protected fun showShareActivity(item: Item?) {
@@ -111,8 +96,8 @@ abstract class BaseAppFragment : BaseFragment() {
     }
 
     companion object {
-        @JvmStatic
-        protected val PERMISSION_SMS = 0
+
+        val TAG: String = BaseAppFragment::class.java.simpleName
 
         @JvmStatic
         protected val PERMISSION_WRITE_STORAGE = 1

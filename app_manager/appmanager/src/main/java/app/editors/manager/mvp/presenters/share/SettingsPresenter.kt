@@ -36,7 +36,8 @@ class SettingsPresenter(
 
     companion object {
         val TAG: String = SettingsPresenter::class.java.simpleName
-        private const val TAG_FOLDER_PATH = "/products/files/#"
+        private const val TAG_FOLDER_PATH = "products/files/#"
+        private const val TAG_ROOM_PATH = "rooms/shared/filter?folder="
     }
 
     /*
@@ -106,15 +107,56 @@ class SettingsPresenter(
         message: String?,
         vararg shareList: Share?
     ) {
-        request(
-            func = { shareApi.setFolderAccess(id, getRequestShare(isNotify, message, *shareList)) },
-            map = { it.response },
-            onSuccess = ::getShareList, onError = ::fetchError
-        )
+        if ((item as CloudFolder).isRoom) {
+            shareRoom(id, isNotify, message, shareList)
+        } else {
+            request(
+                func = {
+                    shareApi.setFolderAccess(
+                        id,
+                        getRequestShare(isNotify, message, *shareList)
+                    )
+                },
+                map = { it.response },
+                onSuccess = ::getShareList, onError = ::fetchError
+            )
+        }
+    }
+
+    private fun shareRoom(
+        id: String,
+        isNotify: Boolean,
+        message: String?,
+        shareList: Array<out Share?>
+    ) {
+        disposable = sharedService.shareRoom(
+            id = id,
+            body = RequestRoomShare(
+                invitations = shareList.map { share ->
+                    Invitation(
+                        id = share?.sharedTo?.id,
+                        access = share?.access?.toInt() ?: 0
+                    )
+                },
+                notify = isNotify,
+                message = message ?: ""
+            )
+        ).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                getShareList(it.response.members)
+            }, { error ->
+                if (error is HttpException && error.response()?.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN) {
+                    viewState.onError(context.getString(R.string.placeholder_access_denied))
+                } else {
+                    fetchError(error)
+                }
+            })
     }
 
     private fun isShared(accessCode: Int): Boolean {
-        val isShared = accessCode != ApiContract.ShareCode.RESTRICT && accessCode != ApiContract.ShareCode.NONE
+        val isShared =
+            accessCode != ApiContract.ShareCode.RESTRICT && accessCode != ApiContract.ShareCode.NONE
         viewState.onResultState(isShared)
         return isShared
     }
@@ -128,9 +170,18 @@ class SettingsPresenter(
         shareList.forEach { share ->
             val idItem = share?.sharedTo?.id
             val accessCode = share?.access
-            shareRights.add(RequestShareItem(shareTo = idItem ?: "", access = accessCode.toString()))
+            shareRights.add(
+                RequestShareItem(
+                    shareTo = idItem ?: "",
+                    access = accessCode.toString()
+                )
+            )
         }
-        return RequestShare(share = shareRights, isNotify = isNotify, sharingMessage = message ?: "")
+        return RequestShare(
+            share = shareRights,
+            isNotify = isNotify,
+            sharingMessage = message ?: ""
+        )
     }
 
     fun getShared() {
@@ -145,7 +196,11 @@ class SettingsPresenter(
 
     fun getInternalLink() {
         if (item is CloudFolder) {
-            val internalLink = networkSettings.getBaseUrl() + TAG_FOLDER_PATH + item.id
+            val internalLink = if (item.isRoom) {
+                networkSettings.getBaseUrl() + TAG_ROOM_PATH + item.id
+            } else {
+                networkSettings.getBaseUrl() + TAG_FOLDER_PATH + item.id
+            }
             viewState.onInternalLink(internalLink)
         } else if (item is CloudFile) {
             viewState.onInternalLink(item.webUrl)
@@ -199,35 +254,23 @@ class SettingsPresenter(
 
             isRemove = true
         }
-        presenterScope.launch {
-            if (item is CloudFolder) {
-                shareItem?.let { shareUi ->
-                    setShareFolder(
-                        id = item.id,
-                        isNotify = false,
-                        message = null,
-                        Share(
-                            access = accessCode.toString(),
-                            sharedTo = shareUi.sharedTo,
-                            isLocked = shareUi.isLocked,
-                            isOwner = shareUi.isOwner
-                        )
-                    )
-                }
-            } else {
-                shareItem?.let {
-                    setShareFile(
-                        id = item.id,
-                        isNotify = false,
-                        message = null,
-                        Share(
-                            access = accessCode.toString(),
-                            sharedTo = it.sharedTo,
-                            isLocked = it.isLocked,
-                            isOwner = it.isOwner
-                        )
-                    )
-                }
+        if (item is CloudFolder) {
+            shareItem?.let {
+                setShareFolder(
+                    item.id,
+                    false,
+                    null,
+                    Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner)
+                )
+            }
+        } else {
+            shareItem?.let {
+                setShareFile(
+                    item.id ?: "",
+                    false,
+                    null,
+                    Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner)
+                )
             }
         }
     }
@@ -311,8 +354,32 @@ class SettingsPresenter(
 
     private fun getShareList(shareList: List<Share>) {
         isAccessDenied = false
-        val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() }.map { mapShareUi(it, false) }
-        val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }.map { mapShareUi(it, true) }
+        val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() }
+            .map {
+                ShareUi(
+                    access = it.intAccess,
+                    sharedTo = it.sharedTo,
+                    isLocked = if (networkSettings.isDocSpace) {
+                        !item.security.editAccess
+                    } else {
+                        it.isLocked
+                    },
+                    isOwner = it.isOwner,
+                    isGuest = it.sharedTo.isVisitor,
+                    isRoom = item is CloudFolder && item.isRoom
+                )
+            }
+        val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }
+            .map {
+                ShareUi(
+                    access = it.intAccess,
+                    sharedTo = it.sharedTo,
+                    isLocked = it.isLocked,
+                    isOwner = it.isOwner,
+                    isGuest = it.sharedTo.isVisitor,
+                    isRoom = false
+                )
+            }
             .sortedWith(groupComparator())
 
         shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {
@@ -324,8 +391,7 @@ class SettingsPresenter(
         commonList.clear()
 
         if (userList.isNotEmpty()) {
-            commonList.add(ShareHeaderUi(context.getString(R.string.share_goal_user)))
-            commonList.addAll(userList)
+            checkUsers(userList)
         }
 
         if (groupList.isNotEmpty()) {
@@ -342,7 +408,14 @@ class SettingsPresenter(
             return
         }
 
-        viewState.onActionButtonState(true)
+        viewState.onActionButtonState(
+            if (context.appComponent.networkSettings.isDocSpace) {
+                item.isCanShare
+            } else {
+                true
+            }
+        )
+
         if (isShare && commonList.isNotEmpty()) {
             viewState.onGetShareItem(commonList[sharePosition], sharePosition, item.intAccess)
             isShare = false
@@ -359,6 +432,28 @@ class SettingsPresenter(
         loadAvatars(commonList)
     }
 
+    private fun checkUsers(userList: List<ShareUi>) {
+        val pending = mutableListOf<ShareUi>()
+        val members = mutableListOf<ShareUi>()
+
+        userList.forEach {
+            if (it.sharedTo.activationStatus == ApiContract.ActivationStatus.Pending) {
+                pending.add(it)
+            } else {
+                members.add(it)
+            }
+        }
+        if (members.isNotEmpty()) {
+            commonList.add(ShareHeaderUi(context.getString(R.string.share_goal_user)))
+            commonList.addAll(members.sortedByDescending { it.isOwner })
+        }
+
+        if (pending.isNotEmpty()) {
+            commonList.add(ShareHeaderUi("Expect members"))
+            commonList.addAll(pending)
+        }
+    }
+
     private fun loadAvatars(commonList: ArrayList<ViewType>) {
         val users = commonList.filterIsInstance<ShareUi>().filter { it.sharedTo.avatar.isNotEmpty() }
         presenterScope.launch {
@@ -369,7 +464,8 @@ class SettingsPresenter(
                         user.avatar = GlideUtils.loadAvatar(user.sharedTo.avatarMedium)
                     }
                 },
-                onEach = viewState::onUpdateAvatar
+                onEach = viewState::onUpdateAvatar,
+                onError = FirebaseUtils::addCrash
             )
         }
     }
@@ -384,7 +480,9 @@ class SettingsPresenter(
     }
 
     override fun fetchError(throwable: Throwable) {
-        if (throwable is HttpException && throwable.response()?.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN) {
+        if (throwable is HttpException && throwable.response()
+                ?.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN
+        ) {
             isAccessDenied = true
             viewState.onPlaceholderState(PlaceholderViews.Type.ACCESS)
             viewState.onPopupState(false)

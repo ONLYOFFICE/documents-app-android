@@ -6,4 +6,9 @@
   <string name="sizes_megabytes">MB</string>
   <string name="sizes_gigabytes">GB</string>
   <string name="sizes_terabytes">TB</string>
+
+  <string name="chooser_email_client">E-Mail-Client wählen</string>
+  <string name="about_email_subject">ONLYOFFICE Documents Android-Feedback</string>
+  <string name="about_feedback">Feedback und Support</string>
+
 </resources>

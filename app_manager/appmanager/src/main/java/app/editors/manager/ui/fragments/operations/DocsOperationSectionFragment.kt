@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import app.documents.core.network.common.contracts.ApiContract
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentOperationSectionBinding
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,10 +38,17 @@ class DocsOperationSectionFragment : BaseAppFragment() {
         val sectionType = when (id) {
             R.id.operation_sections_my ->  ApiContract.SectionType.CLOUD_USER
             R.id.operation_sections_share ->  ApiContract.SectionType.CLOUD_SHARE
-            R.id.operation_sections_common ->  ApiContract.SectionType.CLOUD_COMMON
+            R.id.operation_sections_common ->  {
+                if (context?.appComponent?.networkSettings?.isDocSpace == true) {
+                    ApiContract.SectionType.CLOUD_VIRTUAL_ROOM
+                } else {
+                    ApiContract.SectionType.CLOUD_COMMON
+                }
+            }
             R.id.operation_sections_projects ->  ApiContract.SectionType.CLOUD_PROJECTS
             else -> ApiContract.SectionType.CLOUD_USER
         }
+
         showFragment(
             DocsCloudOperationFragment.newInstance(sectionType),
             DocsCloudOperationFragment.TAG, false
@@ -66,11 +76,20 @@ class DocsOperationSectionFragment : BaseAppFragment() {
         setActionBarTitle(getString(R.string.operation_choose_section))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
+        checkRoom()
+    }
 
+    private fun checkRoom() {
+        if (context?.appComponent?.networkSettings?.isDocSpace == true) {
+            viewBinding?.operationSectionsProjects?.isVisible = false
+            viewBinding?.operationSectionsShare?.isVisible = false
+            viewBinding?.sectionIcon?.setImageResource(R.drawable.ic_type_folder)
+            viewBinding?.sectionName?.text = getString(R.string.main_pager_docs_virtual_room)
+        }
     }
 
     private fun checkVisitor() {
-        CoroutineScope(Dispatchers.Default).launch {
+        lifecycleScope.launch {
             App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
                 withContext(Dispatchers.Main) {
                     viewBinding?.operationSectionsMy?.visibility = if (it.isVisitor) View.GONE else View.VISIBLE

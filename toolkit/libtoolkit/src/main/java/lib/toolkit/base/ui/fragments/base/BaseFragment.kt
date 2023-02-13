@@ -33,7 +33,6 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         private const val TAG_TITLE = "TAG_TITLE"
         private const val TAG_CAMERA = "TAG_CAMERA"
 
-        protected const val PERMISSION_SMS = 0
         protected const val PERMISSION_WRITE_STORAGE = 1
         protected const val PERMISSION_READ_STORAGE = 2
         protected const val PERMISSION_CAMERA = 3
@@ -457,8 +456,9 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     @SuppressLint("MissingPermission")
-    protected fun showMultipleFilePickerActivity() {
-        ActivitiesUtils.showMultipleFilePicker(this, BaseActivity.REQUEST_ACTIVITY_FILE_PICKER)
+    protected fun showMultipleFilePickerActivity(callback: (uris: List<Uri>?) -> Unit) {
+        DocumentsPicker(requireActivity().activityResultRegistry, callback = callback)
+            .show()
     }
 
     protected fun showFileShareActivity(uri: Uri) {

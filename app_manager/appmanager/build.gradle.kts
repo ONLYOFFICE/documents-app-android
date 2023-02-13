@@ -61,8 +61,8 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 410
-        versionName = "5.5.2"
+        versionCode = 428
+        versionName = "5.6.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
@@ -216,8 +216,7 @@ android {
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_HTMLFILE")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_HTMLRENDERER")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_PDFREADER")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_PDFWRITER")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_PDF_FILE")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_UNICODECONVERTER")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_X2T")}.so")
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_XPSFILE")}.so")

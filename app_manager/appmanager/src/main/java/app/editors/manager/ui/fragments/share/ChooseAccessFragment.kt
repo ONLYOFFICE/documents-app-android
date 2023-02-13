@@ -29,12 +29,13 @@ import app.editors.manager.ui.views.popup.SharePopup
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.adapters.holder.ViewType
 
 class ChooseAccessFragment : BaseAppFragment() {
 
     private val item: Item
-        get() = checkNotNull(arguments?.getSerializable(TAG_ITEM, Item::class.java))
+        get() = arguments?.getSerializableExt(TAG_ITEM, Item::class.java) as Item
 
     private var viewBinding: ChooseAccessFragmentLayoutBinding? = null
 
@@ -60,6 +61,7 @@ class ChooseAccessFragment : BaseAppFragment() {
                         R.id.fullAccessItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.READ_WRITE), position)
                         R.id.reviewItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.REVIEW), position)
                         R.id.viewItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.READ), position)
+                        R.id.editorItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.EDITOR), position)
                         R.id.denyItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.RESTRICT), position)
                         R.id.deleteItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.NONE), position)
                         R.id.commentItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.COMMENT), position)
@@ -69,7 +71,7 @@ class ChooseAccessFragment : BaseAppFragment() {
                 }
 
             })
-            setFullAccess(true)
+            setFullAccess(false)
             setItem(item)
             showDropAt(view, requireActivity())
         }

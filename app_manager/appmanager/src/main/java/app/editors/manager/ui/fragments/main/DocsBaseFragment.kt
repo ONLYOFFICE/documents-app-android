@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -12,6 +13,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import androidx.activity.result.ActivityResult
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -26,12 +28,15 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
+import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
-import app.editors.manager.ui.activities.main.MediaActivity.Companion.show
+import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
@@ -44,16 +49,13 @@ import app.editors.manager.ui.popup.MainActionBarPopup
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import app.editors.manager.ui.views.custom.CommonSearchView
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.managers.utils.ActivitiesUtils.createFile
 import lib.toolkit.base.managers.utils.ActivitiesUtils.getExternalStoragePermission
-import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
-import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
-import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.BaseAdapter.OnItemContextListener
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog.OnBottomDialogCloseListener
@@ -65,10 +67,6 @@ import lib.toolkit.base.ui.popup.ActionBarPopupItem
 abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnItemClickListener,
     OnItemContextListener, BaseAdapter.OnItemLongClickListener, ContextBottomDialog.OnClickListener,
     ActionBottomDialog.OnClickListener, SearchView.OnQueryTextListener, DialogButtonOnClick, LifecycleObserver {
-
-    protected enum class EditorsType {
-        DOCS, CELLS, PRESENTATION, PDF
-    }
 
     /*
      * Toolbar menu
@@ -94,7 +92,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected abstract val isWebDav: Boolean?
 
     private val lifecycleEventObserver = LifecycleEventObserver { _, event ->
-        if (event == Lifecycle.Event.ON_RESUME ) {
+        if (event == Lifecycle.Event.ON_RESUME) {
             contextBottomDialog?.onClickListener = this
             actionBottomDialog?.onClickListener = this
         }
@@ -123,14 +121,17 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         init()
     }
 
+    protected fun showOperationActivity(operation: OperationsState.OperationType, explorer: Explorer, callback: (result: ActivityResult) -> Unit) {
+        LaunchActivityForResult(
+            requireActivity().activityResultRegistry,
+            callback,
+            OperationActivity.getIntent(requireContext(), operation, explorer)
+        ).show()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (isActivePage && resultCode == Activity.RESULT_CANCELED &&
-            requestCode == BaseActivity.REQUEST_ACTIVITY_OPERATION ||
-            data?.getBooleanExtra(BaseActivity.EXTRA_IS_REFRESH, false) == true
-        ) {
-            onRefresh()
-        } else if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_DOCS,
                 REQUEST_SHEETS,
@@ -144,8 +145,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                         }
                         presenter.download(it.data!!)
                     }
-                BaseActivity.REQUEST_ACTIVITY_MEDIA -> {
-                }
             }
         }
     }
@@ -168,11 +167,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 PERMISSION_WRITE_STORAGE -> {
                     if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         presenter.createDownloadFile()
-                    }
-                }
-                PERMISSION_READ_STORAGE -> {
-                    if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        showMultipleFilePickerActivity()
                     }
                 }
                 PERMISSION_CAMERA -> {
@@ -237,7 +231,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onQueryTextChange(newText: String): Boolean {
         val isEmpty = newText.isEmpty()
-        if(isEmpty) {
+        if (isEmpty) {
             searchCloseButton?.alpha = 0.5f
         } else {
             searchCloseButton?.alpha = 1.0f
@@ -250,7 +244,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onItemContextClick(view: View, position: Int) {
         val item = explorerAdapter?.getItem(position)
         if (item is Item && !isFastClick) {
-            mContextDialogListener?.onContextDialogOpen()
+            contextDialogListener?.onContextDialogOpen()
             presenter.onContextClick(item, position, false)
         }
     }
@@ -310,7 +304,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 val explorer = Explorer().apply {
                     files = mutableListOf(videoFile)
                 }
-                show(this, explorer, true)
+                showMediaActivity(explorer, true) {
+                    // Stub
+                }
             }
             StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH,
             StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
@@ -323,8 +319,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         when (buttons) {
-            ContextBottomDialog.Buttons.MOVE -> presenter.moveContext()
-            ContextBottomDialog.Buttons.COPY -> presenter.copyContext()
+            ContextBottomDialog.Buttons.MOVE, ContextBottomDialog.Buttons.COPY -> {
+                presenter.moveCopyOperation(if (buttons == ContextBottomDialog.Buttons.MOVE) OperationsState.OperationType.MOVE else OperationsState.OperationType.COPY)
+            }
             ContextBottomDialog.Buttons.DOWNLOAD -> onFileDownloadPermission()
             ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
                 getString(R.string.dialogs_edit_rename_title),
@@ -385,8 +382,31 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_common_cancel_button)
             )
             ActionBottomDialog.Buttons.UPLOAD -> presenter.uploadPermission()
+            ActionBottomDialog.Buttons.PHOTO -> {
+                presenter.createPhoto()
+            }
             else -> {}
         }
+    }
+
+    override fun onShowCamera(photoUri: Uri) {
+        RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
+            if (permissions[Manifest.permission.CAMERA] == true) {
+                CameraPicker(requireActivity().activityResultRegistry, { isCreate ->
+                    if (isCreate) {
+                        if (this is DocsOnDeviceFragment) {
+                            onRefresh()
+                        } else {
+                            presenter.upload(photoUri, null)
+                        }
+                    } else {
+                        presenter.deletePhoto()
+                    }
+                }, photoUri).show()
+            } else {
+                presenter.deletePhoto()
+            }
+        }, arrayOf(Manifest.permission.CAMERA)).request()
     }
 
     override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
@@ -626,7 +646,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onCreateFile(file: CloudFile) {
-        showViewerActivity(file)
+        if (requireActivity() is IMainActivity) {
+            (requireActivity() as IMainActivity).showWebViewer(file)
+        }
     }
 
     override fun onDeleteBatch(list: List<Entity>) {
@@ -642,22 +664,20 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         explorerAdapter?.setItem(item, position)
     }
 
-    override fun onBatchMove(explorer: Explorer) {
-        if (presenter.isTrashMode) {
-            showOperationRestoreActivity(explorer)
-        } else {
-            showOperationMoveActivity(explorer)
+    override fun onBatchMoveCopy(operation: OperationsState.OperationType, explorer: Explorer) {
+        showOperationActivity(operation, explorer) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                showSnackBar(R.string.operation_complete_message)
+            }
+            onRefresh()
         }
-    }
-
-    override fun onBatchCopy(explorer: Explorer) {
-        showOperationCopyActivity(explorer)
     }
 
     override fun onActionBarTitle(title: String) {
         // Stub
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onItemsSelection(countSelected: String) {
         onActionBarTitle(countSelected)
         explorerAdapter?.notifyDataSetChanged()
@@ -686,7 +706,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
-        showMediaActivity(explorer, isWebDAv)
+        showMediaActivity(explorer, isWebDAv) {
+            // Stub
+        }
     }
 
     override fun onFileDownloadPermission() {
@@ -694,8 +716,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onFileUploadPermission() {
-        if (checkReadPermission()) {
-            showMultipleFilePickerActivity()
+        showMultipleFilePickerActivity { uris ->
+            if (!uris.isNullOrEmpty()) {
+                presenter.upload(null, uris)
+            }
         }
     }
 
@@ -1071,6 +1095,31 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
+    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, isNew: Boolean = false): Intent {
+        val intent = Intent().apply {
+            data = uri
+            putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
+            putExtra(EditorsContract.KEY_NEW_FILE, isNew)
+            action = Intent.ACTION_VIEW
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
+        when (type) {
+            EditorsType.DOCS -> {
+                intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
+            }
+            EditorsType.CELLS -> {
+                intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
+            }
+            EditorsType.PRESENTATION -> {
+                intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
+            }
+            EditorsType.PDF -> {
+                intent.setClassName(requireContext(), EditorsContract.PDF)
+            }
+        }
+        return intent
+    }
+
     private fun removeCommonDialog() {
         val fragment = parentFragmentManager.findFragmentByTag(CommonDialog.TAG)
         fragment?.let {
@@ -1104,7 +1153,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         ).show(requireActivity().window.decorView)
     }
 
-    private val isAsc: Boolean
+    val isAsc: Boolean
         get() = presenter.preferenceTool.sortOrder.equals(
             ApiContract.Parameters.VAL_SORT_ORDER_ASC,
             ignoreCase = true
@@ -1134,9 +1183,15 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     protected open val selectActionBarClickListener: (ActionBarPopupItem) -> Unit = { item ->
         when (item) {
-            SelectActionBarPopup.Move -> presenter.moveSelected()
-            SelectActionBarPopup.Restore -> presenter.moveSelected()
-            SelectActionBarPopup.Copy -> presenter.copySelected()
+            SelectActionBarPopup.Move, SelectActionBarPopup.Restore, SelectActionBarPopup.Copy -> {
+                val type = when (item) {
+                    SelectActionBarPopup.Move -> OperationsState.OperationType.MOVE
+                    SelectActionBarPopup.Restore -> OperationsState.OperationType.RESTORE
+                    SelectActionBarPopup.Copy -> OperationsState.OperationType.COPY
+                    else -> OperationsState.OperationType.NONE
+                }
+                presenter.moveCopySelected(type)
+            }
             SelectActionBarPopup.Deselect -> presenter.deselectAll()
             SelectActionBarPopup.SelectAll -> presenter.selectAll()
             SelectActionBarPopup.Download -> presenter.createDownloadFile()

@@ -31,6 +31,8 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.StringUtils.getUrlWithoutScheme
 import lib.toolkit.base.managers.utils.StringUtils.isValidUrl
 import moxy.presenterScope
+import okhttp3.HttpUrl
+import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import javax.net.ssl.SSLHandshakeException
@@ -59,9 +61,32 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                         requestSignIn,
                         (loginResponse.response as ResponseSignIn).response
                     )
-                    is LoginResponse.Error -> fetchError(loginResponse.error)
+
+                    is LoginResponse.Error -> {
+                        if (loginResponse.error is HttpException &&
+                            (loginResponse.error as HttpException).response()?.code() == 307) {
+                            checkRedirect(requestSignIn, loginResponse.error as HttpException)
+                        } else {
+                            fetchError(loginResponse.error)
+                        }
+                    }
                 }
             }, { fetchError(it) })
+    }
+
+    private fun checkRedirect(requestSignIn: RequestSignIn, error: HttpException) {
+        try {
+            if (error.response()?.headers()?.get("Location") != null) {
+                val url = error.response()?.headers()?.get("Location")
+                networkSettings.setScheme((HttpUrl.parse(url ?: "")?.scheme() + "://"))
+                networkSettings.setBaseUrl(HttpUrl.parse(url ?: "")?.host() ?: "")
+                signIn(requestSignIn)
+            } else {
+                fetchError(error)
+            }
+        } catch (error: Throwable) {
+            fetchError(error)
+        }
     }
 
     protected fun signInSuccess(requestSignIn: RequestSignIn, token: Token) {
@@ -79,6 +104,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                     is LoginResponse.Success -> {
                         subscribePush((response.response as ResponseUser).response, request, token)
                     }
+
                     is LoginResponse.Error -> fetchError(response.error)
                 }
             }, { fetchError(it) })
@@ -89,7 +115,11 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
             disposable = context.loginService.setFirebaseToken(token.token ?: "", deviceToken)
                 .flatMap { responseRegisterToken ->
                     if (responseRegisterToken.isSuccessful) {
-                        return@flatMap context.loginService.subscribe(token.token ?: "", deviceToken, true)
+                        return@flatMap context.loginService.subscribe(
+                            token.token ?: "",
+                            deviceToken,
+                            true
+                        )
                     } else {
                         throw RuntimeException("Error subscribe push")
                     }
@@ -109,7 +139,11 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     }
 
     @SuppressLint("CheckResult")
-    protected fun unsubscribePush(account: CloudAccount, token: String? = null, result: ((error: Throwable?) -> Unit)? = null) {
+    protected fun unsubscribePush(
+        account: CloudAccount,
+        token: String? = null,
+        result: ((error: Throwable?) -> Unit)? = null
+    ) {
         if (token == null || token.isEmpty()) {
             result?.invoke(null)
             return
@@ -142,7 +176,8 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
             password = accessToken
         }
 
-        val account = Account("$login@$portal", context.getString(lib.toolkit.base.R.string.account_type))
+        val account =
+            Account("$login@$portal", context.getString(lib.toolkit.base.R.string.account_type))
 
         val accountData = AccountData(
             portal = networkSettings.getPortal(),

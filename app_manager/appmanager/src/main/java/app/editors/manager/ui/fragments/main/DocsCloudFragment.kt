@@ -16,11 +16,13 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.activities.main.FilterActivity
+import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
@@ -31,8 +33,8 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.B
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
+import lib.toolkit.base.managers.utils.getSerializable
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
@@ -61,15 +63,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                BaseActivity.REQUEST_ACTIVITY_WEB_VIEWER -> {
-                    showViewerActivity(data!!.getSerializableExtra("TAG_FILE") as CloudFile?)
-                }
-                BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
-                    showSnackBar(R.string.operation_complete_message)
-                    onRefresh()
-                }
                 BaseActivity.REQUEST_ACTIVITY_STORAGE -> {
-                    val folder = data?.getSerializableExtra(StorageActivity.TAG_RESULT) as CloudFolder?
+                    val folder = data?.getSerializable(StorageActivity.TAG_RESULT, CloudFolder::class.java)
                     cloudPresenter.addFolderAndOpen(folder, linearLayoutManager?.findFirstVisibleItemPosition() ?: -1)
                 }
                 BaseActivity.REQUEST_ACTIVITY_SHARE -> {
@@ -80,14 +75,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
                     cameraUri?.let { uri ->
                         cloudPresenter.upload(uri, null)
-                    }
-                }
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> {
-                    data?.clipData?.let {
-                        cloudPresenter.upload(null, it)
-                    }
-                    data?.data?.let {
-                        cloudPresenter.upload(it, null)
                     }
                 }
                 FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED -> {
@@ -164,15 +151,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
-        super.onActionButtonClick(buttons)
         when (buttons) {
-            ActionBottomDialog.Buttons.PHOTO -> if (checkCameraPermission()) {
-                showCameraActivity(fileTimeStamp)
-            }
             ActionBottomDialog.Buttons.STORAGE -> {
                 showStorageActivity(cloudPresenter.isUserSection)
             }
-            else -> {}
+            else -> {
+                super.onActionButtonClick(buttons)
+            }
         }
     }
 
@@ -189,7 +174,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         super.onContextButtonClick(buttons)
         when (buttons) {
-            ContextBottomDialog.Buttons.RESTORE -> presenter.moveContext()
+            ContextBottomDialog.Buttons.RESTORE -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
             ContextBottomDialog.Buttons.EDIT -> cloudPresenter.onEditContextClick()
             ContextBottomDialog.Buttons.SHARE -> showShareActivity(
                 cloudPresenter.itemClicked
@@ -231,7 +216,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onFileWebView(file: CloudFile) {
-        showViewerActivity(file)
+        if (requireActivity() is IMainActivity) {
+            (requireActivity() as IMainActivity).showWebViewer(file)
+        }
     }
 
     fun setFileData(fileData: String) {
@@ -348,6 +335,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         if (explorerAdapter?.itemList?.none { it !is Header } == true) {
             onPlaceholder(PlaceholderViews.Type.EMPTY)
         }
+    }
+
+    override fun onUpdateFavoriteItem() {
+        if (section == ApiContract.SectionType.CLOUD_FAVORITES) explorerAdapter?.removeItem(presenter.itemClicked)
+        else super.onUpdateFavoriteItem()
     }
 
     protected open fun getFilters(): Boolean {

@@ -8,4 +8,8 @@
     <string name="sizes_megabytes">MB</string>
     <string name="sizes_terabytes">TB</string>
 
+    <string name="chooser_email_client">Изберете имейл клиент …</string>
+    <string name="about_email_subject">ONLYOFFICE Документи Android Обратна връзка</string>
+    <string name="about_feedback">Обратна връзка и поддръжка</string>
+
 </resources>

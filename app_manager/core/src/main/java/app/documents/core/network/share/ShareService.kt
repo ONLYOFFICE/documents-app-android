@@ -132,6 +132,6 @@ interface ShareService {
     suspend fun shareRoom(
         @Path(value = "id") id: String,
         @Body body: RequestRoomShare
-    ): ResponseShare
+    ): Single<ResponseRoomShare>
 
 }

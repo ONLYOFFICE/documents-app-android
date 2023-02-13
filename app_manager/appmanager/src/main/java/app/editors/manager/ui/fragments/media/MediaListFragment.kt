@@ -17,6 +17,7 @@ import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.adapters.MediaAdapter
 import app.editors.manager.ui.fragments.base.ListFragment
 import lib.toolkit.base.managers.utils.UiUtils.getScreenSize
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import java.util.*
 
@@ -82,7 +83,7 @@ class MediaListFragment : ListFragment(), BaseAdapter.OnItemClickListener {
     private fun getArgs() {
         arguments?.let { bundle ->
             mediaExplorer = Objects.requireNonNull(bundle, "Media must not be null")
-                .getSerializable(TAG_MEDIA) as Explorer?
+                .getSerializableExt(TAG_MEDIA, Explorer::class.java)
             isWebDav = bundle.getBoolean(TAG_WEB_DAV)
         }
     }
@@ -140,7 +141,7 @@ class MediaListFragment : ListFragment(), BaseAdapter.OnItemClickListener {
     }
 
     companion object {
-        val TAG = MediaListFragment::class.java.simpleName
+        val TAG: String = MediaListFragment::class.java.simpleName
         private const val TAG_MEDIA = "TAG_MEDIA"
         private const val TAG_WEB_DAV = "TAG_WEB_DAV"
         private const val RECYCLER_CACHE_SIZE = 30

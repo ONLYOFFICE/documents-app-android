@@ -39,6 +39,7 @@ import lib.toolkit.base.managers.utils.ContentResolverUtils.OnUriListener
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getBitmapUriAsync
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import javax.inject.Inject
 
@@ -52,7 +53,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
 
     private var bitmap: Bitmap? = null
     private var gifDrawable: GifDrawable? = null
-    private var asyncTaskShare: Job? = null
+    private var shareJob: Job? = null
     private var isWebDav: Boolean = false
     private var image: CloudFile? = null
     private var placeholderViews: PlaceholderViews? = null
@@ -116,7 +117,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
         bitmap?.let {
             cancelSharing()
             showWaitingDialog(null, getString(R.string.dialogs_common_cancel_button), TAG_DIALOG_SHARE)
-            asyncTaskShare = getBitmapUriAsync(
+            shareJob = getBitmapUriAsync(
                 requireContext(), it, this,
                 StringUtils.getNameWithoutExtension(image?.title ?: ""),
                 lifecycleScope
@@ -142,7 +143,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
 
     private fun getArgs() {
         arguments?.let {
-            image = it.getSerializable(TAG_IMAGE) as CloudFile
+            image = it.getSerializableExt(TAG_IMAGE, CloudFile::class.java)
             isWebDav = it.getBoolean(TAG_WEB_DAV)
         }
     }
@@ -264,7 +265,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     }
 
     private fun cancelSharing() {
-        asyncTaskShare?.cancel()
+        shareJob?.cancel()
     }
 
     private val isActivePage: Boolean

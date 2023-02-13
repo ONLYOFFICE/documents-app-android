@@ -1,8 +1,10 @@
 package app.editors.manager.ui.activities.main
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import app.documents.core.storage.account.AccountDao
@@ -25,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.utils.getSerializable
 import javax.inject.Inject
 
 class OperationActivity : BaseAppActivity(){
@@ -40,28 +43,9 @@ class OperationActivity : BaseAppActivity(){
         const val TAG_OPERATION_EXPLORER = "TAG_OPERATION_EXPLORER"
         const val TAG_IS_WEB_DAV = "TAG_IS_WEB_DAV"
 
-        @JvmStatic
-        fun showCopy(fragment: Fragment, explorer: Explorer) {
-            val intent = Intent(fragment.context, OperationActivity::class.java)
-            intent.putExtra(TAG_OPERATION_TYPE, OperationType.COPY)
-            intent.putExtra(TAG_OPERATION_EXPLORER, explorer)
-            fragment.startActivityForResult(intent, REQUEST_ACTIVITY_OPERATION)
-        }
-
-        @JvmStatic
-        fun showMove(fragment: Fragment, explorer: Explorer) {
-            val intent = Intent(fragment.context, OperationActivity::class.java)
-            intent.putExtra(TAG_OPERATION_TYPE, OperationType.MOVE)
-            intent.putExtra(TAG_OPERATION_EXPLORER, explorer)
-            fragment.startActivityForResult(intent, REQUEST_ACTIVITY_OPERATION)
-        }
-
-        @JvmStatic
-        fun showRestore(fragment: Fragment, explorer: Explorer) {
-            val intent = Intent(fragment.context, OperationActivity::class.java)
-            intent.putExtra(TAG_OPERATION_TYPE, OperationType.RESTORE)
-            intent.putExtra(TAG_OPERATION_EXPLORER, explorer)
-            fragment.startActivityForResult(intent, REQUEST_ACTIVITY_OPERATION)
+        fun getIntent(context: Context, operation: OperationType, explorer: Explorer) = Intent(context, OperationActivity::class.java).apply {
+            putExtra(TAG_OPERATION_TYPE, operation)
+            putExtra(TAG_OPERATION_EXPLORER, explorer)
         }
     }
 
@@ -100,7 +84,7 @@ class OperationActivity : BaseAppActivity(){
     private fun init(savedInstanceState: Bundle?) {
         setFinishOnTouchOutside(true)
         setSupportActionBar(viewBinding?.appBarToolbar)
-        operationType = intent.getSerializableExtra(TAG_OPERATION_TYPE) as OperationType?
+        operationType = intent.getSerializable(TAG_OPERATION_TYPE, OperationType::class.java)
         initButton(operationType)
         if (savedInstanceState == null) {
             initState()

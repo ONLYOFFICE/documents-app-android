@@ -1,6 +1,7 @@
 package app.editors.manager.ui.activities.main
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -8,14 +9,13 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewPropertyAnimator
-import androidx.fragment.app.Fragment
 import app.editors.manager.R
 import app.editors.manager.databinding.ActivityMediaBinding
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.media.MediaPagerFragment
 import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.managers.utils.getSerializable
 
 class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
@@ -66,7 +66,7 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
         initException()
         initToolbar()
         savedInstanceState ?: run {
-            val explorer = intent.getSerializableExtra(TAG_MEDIA) as Explorer
+            val explorer = intent.getSerializable(TAG_MEDIA, Explorer::class.java)
             val isWebDav = intent.getBooleanExtra(TAG_WEB_DAV, false)
             showFragment(MediaPagerFragment.newInstance(explorer, isWebDav), null)
         }
@@ -137,13 +137,11 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
         const val ALPHA_FROM = 0.0f
         const val ALPHA_TO = 1.0f
 
-        @JvmStatic
-        fun show(fragment: Fragment, explorer: Explorer?, isWebDAv: Boolean) {
-            val intent = Intent(fragment.context, MediaActivity::class.java).apply {
+        fun getIntent(context: Context, explorer: Explorer, isWebDav: Boolean): Intent {
+            return Intent(context, MediaActivity::class.java).apply {
                 putExtra(TAG_MEDIA, explorer)
-                putExtra(TAG_WEB_DAV, isWebDAv)
+                putExtra(TAG_WEB_DAV, isWebDav)
             }
-            fragment.startActivityForResult(intent, BaseActivity.Companion.REQUEST_ACTIVITY_MEDIA)
         }
     }
 }

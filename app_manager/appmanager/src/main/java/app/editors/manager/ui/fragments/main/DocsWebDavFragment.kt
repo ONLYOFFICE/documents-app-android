@@ -8,6 +8,7 @@ import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
+import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
@@ -19,6 +20,7 @@ import app.editors.manager.ui.popup.MainActionBarPopup
 import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
@@ -42,7 +44,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            provider = it.getSerializable(KEY_PROVIDER) as WebDavService.Providers
+            provider = it.getSerializableExt(KEY_PROVIDER, WebDavApi.Providers::class.java)
         }
     }
 
@@ -62,11 +64,8 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
             }
         } else if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
-                    webDavPresenter.checkBackStack()
-                }
                 BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> {
-                    webDavPresenter.upload(data!!.data, data.clipData)
+//                    webDavPresenter.upload(data!!.data, data.clipData)
                 }
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
                     webDavPresenter.upload(cameraUri, null)
@@ -78,15 +77,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
                         }
                     }
                 }
-            }
-        }
-    }
-
-    override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
-        super.onActionButtonClick(buttons)
-        if (buttons == ActionBottomDialog.Buttons.PHOTO) {
-            if (checkCameraPermission()) {
-                showCameraActivity(fileTimeStamp)
             }
         }
     }
@@ -148,6 +138,12 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 //        if (requireActivity() instanceof MainActivity) {
 //            ((MainActivity) requireActivity()).expandToolBar();
 //        }
+    }
+
+    override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
+        showMediaActivity(explorer, isWebDAv) {
+            webDavPresenter.deleteTempFile()
+        }
     }
 
     override fun setVisibilityActionButton(isShow: Boolean) {

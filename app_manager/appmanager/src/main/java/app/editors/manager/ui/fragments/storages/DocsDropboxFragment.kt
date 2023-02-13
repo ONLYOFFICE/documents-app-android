@@ -63,9 +63,6 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
                 }.run {
                     presenter.upload(data?.data, null, KEY_UPLOAD)
                 }
-                BaseActivity.REQUEST_ACTIVITY_OPERATION -> {
-                    onRefresh()
-                }
             }
         }
     }

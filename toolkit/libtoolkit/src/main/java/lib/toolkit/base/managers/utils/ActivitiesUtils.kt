@@ -8,7 +8,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.BadParcelableException
+import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.result.ActivityResult
@@ -20,7 +22,9 @@ import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.ActivitiesUtils.IMAGE_TYPE
+import java.io.Serializable
 
 
 object ActivitiesUtils {
@@ -247,6 +251,32 @@ object ActivitiesUtils {
             false
         }
     }
+
+    fun sendFeedbackEmail(context: Context, message: String) {
+        with(context) {
+            showEmail(
+                this,
+                getString(R.string.chooser_email_client),
+                getString(R.string.app_support_email),
+                getString(R.string.about_email_subject),
+                message + UiUtils.getDeviceInfoString(this, false)
+            )
+        }
+    }
+}
+
+class DocumentsPicker(
+    activityResultRegistry: ActivityResultRegistry,
+    private val callback: (uris: List<Uri>?) -> Unit,
+) {
+    private val choseDocuments: ActivityResultLauncher<Array<String>> =
+        activityResultRegistry.register("Documents", ActivityResultContracts.OpenMultipleDocuments()) {
+            callback.invoke(it)
+        }
+
+    fun show() {
+        choseDocuments.launch(arrayOf("*/*"))
+    }
 }
 
 class CreateDocument : ActivityResultContract<String, Uri?>() {
@@ -316,11 +346,11 @@ class CameraPicker(
 class LaunchActivityForResult(
     activityResultRegistry: ActivityResultRegistry,
     private val callback: (result: ActivityResult) -> Unit,
-    private val intent: Intent
+    private val intent: Intent,
 ) {
 
     private val launchActivity: ActivityResultLauncher<Intent> =
-        activityResultRegistry.register("ActivityForResult", ActivityResultContracts.StartActivityForResult()) { result ->
+        activityResultRegistry.register("EditorsForResult", ActivityResultContracts.StartActivityForResult()) { result ->
             callback.invoke(result)
         }
 
@@ -331,8 +361,8 @@ class LaunchActivityForResult(
 }
 
 class FontPicker(
-    private val activityResultRegistry: ActivityResultRegistry,
-    private val callback: (uris: List<Uri>?) -> Unit
+    activityResultRegistry: ActivityResultRegistry,
+    callback: (uris: List<Uri>?) -> Unit
 ) {
 
     private val getContent: ActivityResultLauncher<String> =
@@ -342,6 +372,27 @@ class FontPicker(
         getContent.launch("font/*")
     }
 
+}
+
+fun <T : Serializable> Intent.getSerializable(key: String, clazz: Class<T>): T {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        this.getSerializableExtra(key, clazz)!!
+    else
+        this.getSerializableExtra(key) as T
+}
+
+fun <T : Serializable> Bundle.getSerializableExt(key: String, clazz: Class<T>): T {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        this.getSerializable(key, clazz)!!
+    else
+        this.getSerializable(key) as T
+}
+
+fun <T : Parcelable> Intent.getParcelable(key: String, clazz: Class<T>): T {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        this.getParcelableExtra(key, clazz)!!
+    else
+        this.getParcelableExtra<T>(key) as T
 }
 
 fun Bundle.contains(key: String): Boolean {

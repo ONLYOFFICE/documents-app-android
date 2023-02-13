@@ -12,6 +12,7 @@ import kotlinx.coroutines.withContext
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
+import moxy.presenterScope
 
 open class BaseStorageSignInPresenter<view: BaseStorageSignInView>: BasePresenter<view>() {
 
@@ -36,7 +37,7 @@ open class BaseStorageSignInPresenter<view: BaseStorageSignInView>: BasePresente
     }
 
     private fun addAccountToDb(cloudAccount: CloudAccount) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             accountDao.getAccountOnline()?.let {
                 accountDao.addAccount(it.copy(isOnline = false))
             }

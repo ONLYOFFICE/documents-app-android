@@ -7,6 +7,14 @@ import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.*
 import app.documents.core.network.manager.models.response.*
 import app.documents.core.network.room.RoomService
+import app.documents.core.network.ApiContract
+import app.editors.manager.app.Api
+import app.editors.manager.app.App
+import app.editors.manager.app.roomApi
+import app.editors.manager.mvp.models.base.Base
+import app.editors.manager.mvp.models.explorer.*
+import app.editors.manager.mvp.models.request.*
+import app.editors.manager.mvp.models.response.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -20,11 +28,14 @@ class CloudFileProvider @Inject constructor(
     private val roomService: RoomService
 ) : BaseFileProvider {
 
+    private val isRoomRoot: ((String?) -> Boolean)? = null
+    private val isArchive: (() -> Boolean)? = null
+
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        return when (id) {
-            "7" -> getRooms(filter)
-            null -> Observable.create { Explorer() }
-            else -> managerService.getItemById(id, filter)
+        return if (isRoomRoot?.invoke(id) == true) {
+            getRooms(filter, isArchive)
+        } else {
+            managerService.getItemById(id.orEmpty(), filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { responseExplorerResponse: Response<ResponseExplorer> ->
@@ -234,8 +245,15 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
-    private fun getRooms(filters: Map<String, String>?): Observable<Explorer> {
-        return roomService.getAllRooms(filters)
+    fun getRooms(filters: Map<String, String>?, isArchive: (() -> Boolean)? = null): Observable<Explorer> {
+        val roomFilter = filters?.toMutableMap()?.apply {
+            remove(ApiContract.Parameters.ARG_FILTER_BY_TYPE)
+            remove(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS)
+            if (isArchive?.invoke() == true) {
+                put("searchArea", "Archive")
+            }
+        }
+        return roomService.getAllRooms(roomFilter)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseExplorerResponse: Response<ResponseExplorer> ->

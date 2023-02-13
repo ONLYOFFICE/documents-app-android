@@ -50,7 +50,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .map { it.body() }
     }
 
-    fun createRoom(title: String, type: Int): Observable<BaseResponse> {
+    fun createRoom(title: String, type: Int): Observable<CloudFolder> {
         return roomService.createRoom(
             RequestCreateRoom(
                 title = title,
@@ -59,7 +59,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { it.body() }
+            .map { it.response }
 
     }
 

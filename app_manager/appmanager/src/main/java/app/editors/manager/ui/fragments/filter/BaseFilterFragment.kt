@@ -168,9 +168,9 @@ abstract class BaseFilterFragment : BaseAppFragment(), FilterView {
     }
 
     protected fun addChipGroups(vararg chipGroups: SingleChoiceChipGroupView?) {
-        chipGroups.reversed()
-            .filterNotNull()
+        chipGroups.filterNotNull()
             .also { this.chipGroups = it.toTypedArray() }
+            .reversed()
             .forEach { chipGroup ->
                 linearLayout?.addView(chipGroup, 0)
             }

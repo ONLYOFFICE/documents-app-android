@@ -27,6 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
+import moxy.presenterScope
 import java.io.File
 import java.util.*
 
@@ -43,7 +44,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         checkWebDav()
     }
 
-    private var photoUri: Uri? = null
     private var webDavFileProvider: WebDavFileProvider? = null
 
     private fun checkWebDav() {
@@ -85,7 +85,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             recentDao.addRecent(
                 Recent(
                     idFile = null,
@@ -102,7 +102,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     private fun addRecent(uri: Uri) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             DocumentFile.fromSingleUri(context, uri)?.let { file ->
                 recentDao.addRecent(
                     Recent(
@@ -134,8 +134,10 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(currentTitle.takeIf(String::isNotEmpty)
-                ?: context.getString(R.string.toolbar_menu_search_result))
+            viewState.onActionBarTitle(
+                currentTitle.takeIf(String::isNotEmpty)
+                    ?: context.getString(R.string.toolbar_menu_search_result)
+            )
         } else {
             if (isFoldersMode) {
                 viewState.onActionBarTitle(context.getString(R.string.operation_title))
@@ -336,7 +338,10 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun openFile(uri: Uri, ext: String, isNew: Boolean = false) {
         when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> viewState.onShowDocs(uri, isNew)
+            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> viewState.onShowDocs(
+                uri,
+                isNew
+            )
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
@@ -403,22 +408,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                         viewState.onSnackBar(context.getString(R.string.operation_complete_message))
                     })
             }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun createPhoto() {
-        val photo = FileUtils.createFile(File(stack?.current?.id ?: ""), TimeUtils.fileTimeStamp, "png")
-        if (photo != null) {
-            photoUri = ContentResolverUtils.getFileUri(context, photo).also { uri ->
-                viewState.onShowCamera(uri)
-            }
-        }
-    }
-
-    fun deletePhoto() {
-        photoUri?.let { uri ->
-            context.contentResolver.delete(uri, null, null)
         }
     }
 

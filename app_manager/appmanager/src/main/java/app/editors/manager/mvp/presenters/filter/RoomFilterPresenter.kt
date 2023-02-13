@@ -50,7 +50,7 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
         viewState.updateViewState(isChanged = !initialCall)
         disposable?.clear()
         disposable?.add(
-            context.cloudFileProvider.getFiles(folderId, filters)
+            context.cloudFileProvider.getRooms(filters)
                 .doOnSubscribe { viewState.onFilterProgress() }
                 .subscribe(
                     { explorer: Explorer ->

@@ -230,7 +230,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             viewBinding?.mainViewPager?.addOnPageChangeListener(it)
         }
         activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
-        adapter?.selectedPage = selectedPage
+        if (requireContext().appComponent.networkSettings.isDocSpace) {
+            viewBinding?.mainViewPager?.currentItem = fragments.indexOf(fragments.find { it.mFragment is DocsRoomFragment })
+        } else {
+            adapter?.selectedPage = selectedPage
+        }
     }
 
     override fun setFileData(fileData: String) {

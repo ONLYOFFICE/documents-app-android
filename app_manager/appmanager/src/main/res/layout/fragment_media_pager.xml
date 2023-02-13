@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <app.editors.manager.ui.views.pager.PagingViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/media_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
