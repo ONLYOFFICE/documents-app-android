@@ -2,6 +2,7 @@ package app.documents.core.network.room
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.room.models.*
 import app.documents.core.network.manager.models.response.ResponseExplorer
 import io.reactivex.Observable

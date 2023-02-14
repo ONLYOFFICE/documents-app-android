@@ -22,7 +22,7 @@ class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        provider = requireArguments().getSerializableExt(KEY_PROVIDER, WebDavApi.Providers::class.java)
+        provider = requireArguments().getSerializableExt(KEY_PROVIDER, WebDavService.Providers::class.java)
         setHasOptionsMenu(false)
     }
 

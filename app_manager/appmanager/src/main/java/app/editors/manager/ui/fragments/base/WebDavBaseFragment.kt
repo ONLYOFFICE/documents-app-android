@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebDavBinding
 import app.editors.manager.mvp.views.base.BaseView
@@ -20,7 +20,7 @@ abstract class WebDavBaseFragment : BaseAppFragment(), BaseView {
 
     protected var viewBinding: FragmentStorageWebDavBinding? = null
     protected var parentActivity: WebDavInterface? = null
-    protected var webDavProvider: WebDavApi.Providers? = null
+    protected var webDavProvider: WebDavService.Providers? = null
 
     private var textWatcher: FieldsWatcher? = null
 
@@ -62,8 +62,8 @@ abstract class WebDavBaseFragment : BaseAppFragment(), BaseView {
         viewBinding?.let { binding ->
             binding.storageWebDavLoginLayout.error()
             when (webDavProvider) {
-                WebDavApi.Providers.NextCloud -> onServerError()
-                WebDavApi.Providers.KDrive -> {
+                WebDavService.Providers.NextCloud -> onServerError()
+                WebDavService.Providers.KDrive -> {
                     binding.storageWebDavPasswordLayout.error(R.string.errors_webdav_username_password)
                 }
                 else -> {

@@ -1,20 +1,13 @@
 package app.documents.core.providers
 
 import android.net.Uri
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.*
 import app.documents.core.network.manager.models.response.*
 import app.documents.core.network.room.RoomService
-import app.documents.core.network.ApiContract
-import app.editors.manager.app.Api
-import app.editors.manager.app.App
-import app.editors.manager.app.roomApi
-import app.editors.manager.mvp.models.base.Base
-import app.editors.manager.mvp.models.explorer.*
-import app.editors.manager.mvp.models.request.*
-import app.editors.manager.mvp.models.response.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -28,14 +21,17 @@ class CloudFileProvider @Inject constructor(
     private val roomService: RoomService
 ) : BaseFileProvider {
 
-    private val isRoomRoot: ((String?) -> Boolean)? = null
-    private val isArchive: (() -> Boolean)? = null
+    interface RoomCallback {
+        fun isRoomRoot(id: String?): Boolean
+        fun isArchive(): Boolean
+    }
+
+    var roomCallback: RoomCallback? = null
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        return if (isRoomRoot?.invoke(id) == true) {
-            getRooms(filter, isArchive)
-        } else {
-            managerService.getItemById(id.orEmpty(), filter)
+        return when {
+            roomCallback?.isRoomRoot(id) == true -> getRooms(filter, roomCallback!!::isArchive)
+            else -> managerService.getItemById(id.orEmpty(), filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { responseExplorerResponse: Response<ResponseExplorer> ->

@@ -1,6 +1,7 @@
 package app.documents.core.providers
 
 import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestDeleteRoom

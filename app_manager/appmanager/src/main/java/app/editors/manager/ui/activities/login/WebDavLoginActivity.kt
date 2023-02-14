@@ -3,20 +3,20 @@ package app.editors.manager.ui.activities.login
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.widget.Toolbar
-import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavService
-import app.editors.manager.BuildConfig
-import app.editors.manager.app.App
-import app.documents.core.network.common.models.Storage
+import android.view.MenuItem
+import androidx.core.view.isVisible
 import app.documents.core.network.common.utils.GoogleDriveUtils
-import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
-import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
 import app.documents.core.network.common.utils.OneDriveUtils
-import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
+import app.documents.core.network.webdav.WebDavService
+import app.editors.manager.app.App
+import app.editors.manager.databinding.ActivityWebDavLoginBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.login.WebDavSignInFragment
+import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
+import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.interfaces.WebDavInterface
 import lib.toolkit.base.managers.utils.getSerializable
 import javax.inject.Inject
@@ -87,7 +87,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
         setSupportActionBar(viewBinding?.appBarToolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
-            it.title = intent.getSerializable(KEY_PROVIDER, WebDavApi.Providers::class.java).name
+            it.title = intent.getSerializable(KEY_PROVIDER, WebDavService.Providers::class.java).name
         }
         if (savedInstanceState == null) showFragment()
     }

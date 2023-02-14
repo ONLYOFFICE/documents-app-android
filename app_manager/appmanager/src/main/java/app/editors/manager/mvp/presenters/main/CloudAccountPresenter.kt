@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.login.models.Capabilities
+import app.documents.core.network.login.models.response.ResponseAllSettings
 import app.documents.core.network.login.models.response.ResponseCapabilities
 import app.documents.core.network.login.models.response.ResponseSettings
 import app.documents.core.network.login.models.response.ResponseUser
@@ -15,17 +16,6 @@ import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.account.copyWithToken
 import app.documents.core.storage.preference.NetworkSettings
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.copyWithToken
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.Capabilities
-import app.documents.core.network.models.login.response.ResponseAllSettings
-import app.documents.core.network.models.login.response.ResponseCapabilities
-import app.documents.core.network.models.login.response.ResponseSettings
-import app.documents.core.network.models.login.response.ResponseUser
-import app.documents.core.settings.NetworkSettings
-import app.documents.core.webdav.WebDavApi
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -79,7 +69,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     companion object {
         val TAG: String = CloudAccountPresenter::class.java.simpleName
 
-        val KEY_SWITCH = "switch"
+        const val KEY_SWITCH = "switch"
     }
 
     @Inject

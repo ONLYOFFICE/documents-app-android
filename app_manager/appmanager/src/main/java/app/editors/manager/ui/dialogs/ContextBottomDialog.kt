@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
@@ -17,8 +18,6 @@ import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.documents.core.network.manager.models.explorer.Item
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Item
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -281,7 +280,7 @@ class ContextBottomDialog : BaseBottomDialog() {
         viewBinding?.let { binding ->
             if (!state.isTrash) {
                 val room = (state.item) as? CloudFolder
-                binding.listExplorerContextArchive.isVisible = room?.security?.moveTo == true && room.security?.editRoom == true
+                binding.listExplorerContextArchive.isVisible = room?.security?.moveTo == true && room.security.editRoom == true
                 binding.listExplorerContextRename.isVisible = room?.security?.rename ?: false
                 binding.listExplorerContextPin.isVisible = room?.security?.pin ?: false
                 binding.listExplorerContextAddUser.isVisible = room?.security?.editAccess ?: false

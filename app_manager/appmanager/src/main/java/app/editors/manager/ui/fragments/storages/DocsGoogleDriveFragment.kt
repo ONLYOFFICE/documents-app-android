@@ -15,11 +15,6 @@ import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.googledrive.UploadWork
 import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
-import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
-import app.editors.manager.storages.base.view.DocsGoogleDriveView
-import app.editors.manager.storages.base.work.BaseStorageUploadWork
-import app.editors.manager.storages.googledrive.managers.works.UploadWork
-import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.MainActionBarPopup

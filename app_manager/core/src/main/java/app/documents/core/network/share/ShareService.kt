@@ -2,6 +2,7 @@ package app.documents.core.network.share
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.models.share.response.ResponseRoomShare
 import app.documents.core.network.share.models.request.*
 import app.documents.core.network.share.models.response.ResponseExternal
 import app.documents.core.network.share.models.response.ResponseGroups
@@ -132,6 +133,6 @@ interface ShareService {
     suspend fun shareRoom(
         @Path(value = "id") id: String,
         @Body body: RequestRoomShare
-    ): Single<ResponseRoomShare>
+    ): ResponseRoomShare
 
 }

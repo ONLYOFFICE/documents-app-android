@@ -2,36 +2,32 @@ package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.recent.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
-import app.editors.manager.R
 import app.documents.core.network.manager.ManagerService
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDeleteShare
+import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.RoomProvider
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.recent.Recent
+import app.editors.manager.R
+import app.editors.manager.app.*
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.ManagerUiUtils
-import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.managers.works.UploadWork
-import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.models.OpenDataModel
-import app.editors.manager.mvp.models.request.RequestCreate
-import app.editors.manager.mvp.models.request.RequestDeleteShare
-import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.states.OperationsState
-import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestDeleteShare
-import app.documents.core.network.manager.models.request.RequestFavorites
-import app.editors.manager.app.*
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
@@ -69,8 +65,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         api = context.api
         roomProvider = context.roomProvider
         fileProvider = context.cloudFileProvider.apply {
-            isRoomRoot = { id -> isRoom && modelExplorerStack.rootId == id },
-            isArchive = { currentSectionType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }
+            roomCallback = object : CloudFileProvider.RoomCallback {
+                override fun isRoomRoot(id: String?): Boolean {
+                    return isRoom && modelExplorerStack.rootId == id
+                }
+
+                override fun isArchive(): Boolean {
+                    return currentSectionType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
+                }
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 package app.editors.manager.mvp.models.models
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
 import java.lang.ref.WeakReference

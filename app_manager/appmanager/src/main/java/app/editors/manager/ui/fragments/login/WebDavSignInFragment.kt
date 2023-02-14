@@ -55,7 +55,7 @@ class WebDavSignInFragment : WebDavBaseFragment(), WebDavSignInView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            webDavProvider = it.getSerializableExt(KEY_PROVIDER, WebDavApi.Providers::class.java)
+            webDavProvider = it.getSerializableExt(KEY_PROVIDER, WebDavService.Providers::class.java)
         }
     }
 
@@ -90,9 +90,9 @@ class WebDavSignInFragment : WebDavBaseFragment(), WebDavSignInView {
 
     override fun initViews(isNextCloud: Boolean) {
         when (webDavProvider) {
-            WebDavApi.Providers.Yandex -> initYandexState()
-            WebDavApi.Providers.NextCloud -> initNextCloudState()
-            WebDavApi.Providers.KDrive -> initKDriveState()
+            WebDavService.Providers.Yandex -> initYandexState()
+            WebDavService.Providers.NextCloud -> initNextCloudState()
+            WebDavService.Providers.KDrive -> initKDriveState()
             else -> {
                 viewBinding?.storageWebDavPasswordEdit?.setActionDoneListener(this::connect)
             }
@@ -100,7 +100,7 @@ class WebDavSignInFragment : WebDavBaseFragment(), WebDavSignInView {
 
         viewBinding?.storageWebDavTitleLayout?.isVisible = false
         parentActivity?.setOnConnectButtonClickListener(this::connect)
-        super.initViews(webDavProvider === WebDavApi.Providers.NextCloud)
+        super.initViews(webDavProvider === WebDavService.Providers.NextCloud)
     }
 
     private fun initNextCloudState() {
@@ -138,7 +138,7 @@ class WebDavSignInFragment : WebDavBaseFragment(), WebDavSignInView {
             val password = binding.storageWebDavPasswordEdit.text?.trim().toString()
 
             webDavProvider?.let { provider ->
-                if (provider === WebDavApi.Providers.NextCloud) {
+                if (provider === WebDavService.Providers.NextCloud) {
                     presenter.checkNextCloud(provider, url)
                 } else {
                     presenter.checkPortal(provider, url, login, password)

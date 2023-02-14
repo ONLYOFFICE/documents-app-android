@@ -52,6 +52,10 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var providerItem = false
 
+    @SerializedName("security")
+    @Expose
+    var security = Security()
+
     @SerializedName("favorite")
     @Expose
     var favorite = false

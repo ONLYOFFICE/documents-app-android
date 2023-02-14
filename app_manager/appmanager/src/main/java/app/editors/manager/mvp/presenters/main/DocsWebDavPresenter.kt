@@ -88,12 +88,15 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             val requestCreate = RequestCreate()
             requestCreate.title = title
             fileProvider?.let { provider ->
-                disposable.add(provider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
-                    addFile(file)
-                    setPlaceholderType(PlaceholderViews.Type.NONE)
-                    viewState.onDialogClose()
-                    viewState.onOpenLocalFile(file)
-                }) { throwable: Throwable -> fetchError(throwable) })
+                disposable.add(
+                    provider.createFile(id, requestCreate)
+                        .subscribe({ file: CloudFile? ->
+                            addFile(file)
+                            setPlaceholderType(PlaceholderViews.Type.NONE)
+                            viewState.onDialogClose()
+                            viewState.onOpenLocalFile(file)
+                        }, ::fetchError)
+                )
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }

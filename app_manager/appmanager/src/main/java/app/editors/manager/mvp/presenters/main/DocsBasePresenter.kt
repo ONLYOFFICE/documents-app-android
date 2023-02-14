@@ -16,6 +16,7 @@ import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.BaseFileProvider
+import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
 import app.documents.core.providers.WebDavFileProvider
@@ -26,11 +27,6 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.exceptions.NoConnectivityException
-import app.editors.manager.managers.providers.BaseFileProvider
-import app.editors.manager.managers.providers.LocalFileProvider
-import app.editors.manager.managers.providers.ProviderError
-import app.editors.manager.managers.providers.ProviderError.Companion.throwInterruptException
-import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
@@ -219,7 +215,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return refresh()
     }
 
-    protected fun reverseSortOrder() {
+    private fun reverseSortOrder() {
         if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
         } else {
@@ -1363,7 +1359,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return false
     }
 
-    protected var photoUri: Uri? = null
+    private var photoUri: Uri? = null
 
     @SuppressLint("MissingPermission")
     fun createPhoto() {

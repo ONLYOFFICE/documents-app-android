@@ -9,6 +9,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
@@ -16,7 +17,6 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityState

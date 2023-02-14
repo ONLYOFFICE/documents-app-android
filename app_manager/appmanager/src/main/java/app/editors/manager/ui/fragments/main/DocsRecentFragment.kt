@@ -18,14 +18,10 @@ import app.documents.core.storage.recent.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import app.documents.core.account.Recent
-import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.app.appComponent
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.main.RecentState
@@ -67,7 +63,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         presenter.contextClick(recent, position)
     }
 
-    private val readStorage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
+    private val readStorage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         presenter.recreateStack()
         presenter.getRecentFiles()
     }
