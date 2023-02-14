@@ -3,12 +3,7 @@ package app.editors.manager.mvp.presenters.share
 import android.content.Intent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
-import app.documents.core.network.common.extensions.requestIterable
 import app.documents.core.network.share.models.Share
-import app.documents.core.network.share.models.request.RequestExternal
-import app.documents.core.network.share.models.request.RequestExternalAccess
-import app.documents.core.network.share.models.request.RequestShare
-import app.documents.core.network.share.models.request.RequestShareItem
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.GlideUtils
@@ -16,6 +11,8 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.share.ShareService
+import app.documents.core.network.share.models.request.*
+import app.editors.manager.app.appComponent
 import app.editors.manager.app.shareApi
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
@@ -129,29 +126,35 @@ class SettingsPresenter(
         message: String?,
         shareList: Array<out Share?>
     ) {
-        disposable = sharedService.shareRoom(
-            id = id,
-            body = RequestRoomShare(
-                invitations = shareList.map { share ->
-                    Invitation(
-                        id = share?.sharedTo?.id,
-                        access = share?.access?.toInt() ?: 0
+        presenterScope.launch {
+            request(
+                func = {
+                    shareApi.shareRoom(
+                        id = id,
+                        body = RequestRoomShare(
+                            invitations = shareList.map { share ->
+                                Invitation(
+                                    id = share?.sharedTo?.id,
+                                    access = share?.access?.toInt() ?: 0
+                                )
+                            },
+                            notify = isNotify,
+                            message = message.orEmpty()
+                        )
                     )
                 },
-                notify = isNotify,
-                message = message ?: ""
-            )
-        ).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                getShareList(it.response.members)
-            }, { error ->
-                if (error is HttpException && error.response()?.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN) {
+                map = { it.response.members },
+                onSuccess = ::getShareList
+            ) { error ->
+                if (error is HttpException && error.response()
+                        ?.code() == ApiContract.HttpCodes.CLIENT_FORBIDDEN
+                ) {
                     viewState.onError(context.getString(R.string.placeholder_access_denied))
                 } else {
                     fetchError(error)
                 }
-            })
+            }
+        }
     }
 
     private fun isShared(accessCode: Int): Boolean {
@@ -254,23 +257,25 @@ class SettingsPresenter(
 
             isRemove = true
         }
-        if (item is CloudFolder) {
-            shareItem?.let {
-                setShareFolder(
-                    item.id,
-                    false,
-                    null,
-                    Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner)
-                )
-            }
-        } else {
-            shareItem?.let {
-                setShareFile(
-                    item.id ?: "",
-                    false,
-                    null,
-                    Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner)
-                )
+        presenterScope.launch {
+            if (item is CloudFolder) {
+                shareItem?.let {
+                    setShareFolder(
+                        item.id,
+                        false,
+                        null,
+                        Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner)
+                    )
+                }
+            } else {
+                shareItem?.let {
+                    setShareFile(
+                        item.id,
+                        false,
+                        null,
+                        Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner)
+                    )
+                }
             }
         }
     }
@@ -326,7 +331,9 @@ class SettingsPresenter(
 
     fun setIsPopupShow(isPopupShow: Boolean) {
         this.isPopupShow = isPopupShow
-    } /*
+    }
+
+    /*
      * Callbacks for response
      * */
 
@@ -455,17 +462,12 @@ class SettingsPresenter(
     }
 
     private fun loadAvatars(commonList: ArrayList<ViewType>) {
-        val users = commonList.filterIsInstance<ShareUi>().filter { it.sharedTo.avatar.isNotEmpty() }
+        val users = commonList.filterIsInstance<ShareUi>().filter { it.sharedTo.avatarSmall.isNotEmpty() }
         presenterScope.launch {
-            requestIterable(
-                iterable = users,
-                map = { user ->
-                    user.also {
-                        user.avatar = GlideUtils.loadAvatar(user.sharedTo.avatarMedium)
-                    }
-                },
-                onEach = viewState::onUpdateAvatar,
-                onError = FirebaseUtils::addCrash
+            users.request(
+                func = { user -> GlideUtils.getAvatarFromUrl(context, user.sharedTo.avatarSmall) },
+                map = { user, avatar -> user.also { user.avatar = avatar } },
+                onEach = viewState::onUpdateAvatar
             )
         }
     }

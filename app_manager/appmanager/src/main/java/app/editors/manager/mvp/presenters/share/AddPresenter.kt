@@ -14,8 +14,6 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.shareApi
-import app.editors.manager.app.getShareApi
-import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
@@ -68,7 +66,7 @@ class AddPresenter(
                         id = user.id,
                         department = user.department,
                         displayName = user.displayName.takeIf { name -> name.isNotEmpty() } ?: user.email ?: "",
-                        avatarUrl = user.avatarMedium,
+                        avatarUrl = user.avatar,
                         status = user.activationStatus)
                 }.sortedBy { it.status } },
             onSuccess = { users ->
@@ -131,7 +129,8 @@ class AddPresenter(
                             department = user.department,
                             displayName = user.displayName.takeIf { it.isNotEmpty() } ?: user.email ?: "",
                             avatarUrl = user.avatarMedium,
-                            status = user.activationStatus)
+                            status = user.activationStatus
+                        )
                     })
                     viewState.onGetCommon(commonList)
                     loadAvatars()
@@ -142,17 +141,11 @@ class AddPresenter(
 
     private fun loadAvatars() {
         presenterScope.launch {
-            try {
-                shareStack.userSet.forEach { user ->
-                    val loadedAvatar = GlideUtils.loadAvatar(user.avatarUrl)
-                    withContext(Dispatchers.Main) {
-                        val userUi = user.also { it.avatar = loadedAvatar }
-                        viewState.onUpdateAvatar(userUi)
-                    }
-                }
-            } catch (e: Exception) {
-                FirebaseUtils.addCrash(error)
-            }
+            shareStack.userSet.request(
+                func = { user -> GlideUtils.getAvatarFromUrl(context, user.avatarUrl) },
+                map = { user, avatar -> user.also { user.avatar = avatar } },
+                onEach = viewState::onUpdateAvatar
+            )
         }
     }
 
@@ -163,7 +156,8 @@ class AddPresenter(
                 onSuccess = {
                     shareStack.resetChecked()
                     viewState.onSuccessAdd()
-                }, onError = ::fetchError
+                },
+                onError = ::fetchError
             )
         }
     }
@@ -343,9 +337,7 @@ class AddPresenter(
         job?.cancel()
         job = presenterScope.launch {
             delay(350L)
-            withContext(Dispatchers.Main) {
-                getFilter(searchValue.orEmpty())
-            }
+            getFilter(searchValue.orEmpty())
         }
     }
 }

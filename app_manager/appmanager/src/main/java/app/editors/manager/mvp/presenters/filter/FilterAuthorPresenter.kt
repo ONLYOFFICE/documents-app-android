@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.filter
 
 import app.documents.core.network.common.extensions.request
-import app.documents.core.network.common.extensions.requestIterable
 import app.documents.core.network.share.ShareService
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -31,12 +30,6 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
     private val accountId: String?
         get() = context.accountOnline?.id
 
-    private val avatarMapper: (Author.User) -> Author.User = { user ->
-        user.also {
-            user.avatar = GlideUtils.loadAvatar(user.avatarUrl)
-        }
-    }
-
     init {
         App.getApp().appComponent.inject(this)
     }
@@ -46,9 +39,13 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
         job = null
     }
 
-    private fun loadAvatars(list: List<Author.User>) {
+    private fun loadAvatars(users: List<Author.User>) {
         presenterScope.launch {
-            requestIterable(iterable = list, map = avatarMapper, onEach = viewState::onUpdateAvatar)
+            users.request(
+                func = { user -> GlideUtils.getAvatarFromUrl(context, user.avatarUrl) },
+                map = { user, avatar -> user.also { it.avatar = avatar } },
+                onEach = viewState::onUpdateAvatar
+            )
         }
     }
 
@@ -80,17 +77,19 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
 
     fun getUsers(withSelf: Boolean = true) {
         presenterScope.launch {
-            request(func = shareApi::getUsers,
+            request(
+                func = shareApi::getUsers,
                 map = { response ->
                     response.response
-                        .map { Author.User(it.id, it.displayName, it.department, it.avatarMedium) }
+                        .map { Author.User(it.id, it.displayName, it.department, it.avatar) }
                         .moveOwnerToFirstPosition(withSelf)
                         .also(this@FilterAuthorPresenter::setStackItems)
                 },
                 onSuccess = { users ->
                     viewState.onGetUsers(users)
                     loadAvatars(users)
-                }, onError = ::fetchError
+                },
+                onError = ::fetchError
             )
         }
     }

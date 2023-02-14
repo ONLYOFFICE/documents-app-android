@@ -12,8 +12,8 @@ import retrofit2.Response
 suspend fun <R : BaseResponse> request(
     func: suspend () -> R,
     onSuccess: (R) -> Unit,
-    onError: (Throwable) -> Unit
-) {
+    onError: ((Throwable) -> Unit)? = null
+) = withContext(Dispatchers.IO) {
     try {
         val response: R = func.invoke()
         withContext(Dispatchers.Main) {
@@ -21,7 +21,9 @@ suspend fun <R : BaseResponse> request(
             onSuccess.invoke(response)
         }
     } catch (e: Throwable) {
-        onError.invoke(e)
+        withContext(Dispatchers.Main) {
+            onError?.invoke(e)
+        }
     }
 }
 
@@ -29,8 +31,8 @@ suspend fun <R : BaseResponse, T> request(
     func: suspend () -> R,
     map: ((R) -> T),
     onSuccess: (T) -> Unit,
-    onError: (Throwable) -> Unit,
-) {
+    onError: ((Throwable) -> Unit)? = null,
+) = withContext(Dispatchers.IO) {
     try {
         val response: R = func.invoke()
         withContext(Dispatchers.Main) {
@@ -38,16 +40,18 @@ suspend fun <R : BaseResponse, T> request(
             map.invoke(response)?.let(onSuccess)
         }
     } catch (e: Throwable) {
-        onError.invoke(e)
+        withContext(Dispatchers.Main) {
+            onError?.invoke(e)
+        }
     }
 }
 
-suspend fun <R1: BaseResponse, R2: BaseResponse> requestZip(
+suspend fun <R1 : BaseResponse, R2 : BaseResponse> requestZip(
     func1: suspend () -> R1,
     func2: suspend () -> R2,
     onSuccess: (R1, R2) -> Unit,
-    onError: (Throwable) -> Unit
-) {
+    onError: ((Throwable) -> Unit)? = null
+) = withContext(Dispatchers.IO) {
     try {
         val response1: R1 = func1.invoke()
         val response2: R2 = func2.invoke()
@@ -57,41 +61,70 @@ suspend fun <R1: BaseResponse, R2: BaseResponse> requestZip(
             onSuccess.invoke(response1, response2)
         }
     } catch (e: Throwable) {
-        onError.invoke(e)
+        withContext(Dispatchers.Main) {
+            onError?.invoke(e)
+        }
     }
 }
 
-suspend fun <T, R> requestIterable(
-    iterable: Iterable<T>,
-    map: (T) -> R,
-    onEach: (R) -> Unit,
-    onFinish: ((Iterable<R>) -> Unit)? = null,
+suspend fun <C : Collection<T>, T, R> C.request(
+    func: suspend (T) -> R,
+    onEach: ((R) -> Unit)? = null,
+    onFinish: ((List<R>) -> Unit)? = null,
     onError: ((Throwable) -> Unit)? = null
-) {
+) = withContext(Dispatchers.IO) {
     try {
-        val mappedList = mutableListOf<R>()
-        iterable.forEach {
-            val result = map.invoke(it)
-            mappedList += result
+        val listResult = mutableListOf<R>()
+        forEach { arg ->
+            val result = func(arg)
+            listResult.add(result)
             withContext(Dispatchers.Main) {
-                onEach.invoke(result)
+                onEach?.invoke(result)
             }
         }
         withContext(Dispatchers.Main) {
-            onFinish?.invoke(mappedList)
+            onFinish?.invoke(listResult)
         }
     } catch (e: Throwable) {
-        onError?.invoke(e)
+        withContext(Dispatchers.Main) {
+            onError?.invoke(e)
+        }
+    }
+}
+
+suspend fun <C : Collection<T>, T, R> C.request(
+    func: suspend (T) -> R,
+    map: (T, R) -> T,
+    onEach: ((T) -> Unit)? = null,
+    onFinish: ((List<T>) -> Unit)? = null,
+    onError: ((Throwable) -> Unit)? = null
+) = withContext(Dispatchers.IO) {
+    try {
+        val listResult = mutableListOf<T>()
+        forEach { arg ->
+            val result = map(arg, func(arg))
+            listResult.add(result)
+            withContext(Dispatchers.Main) {
+                onEach?.invoke(result)
+            }
+        }
+        withContext(Dispatchers.Main) {
+            onFinish?.invoke(listResult)
+        }
+    } catch (e: Throwable) {
+        withContext(Dispatchers.Main) {
+            onError?.invoke(e)
+        }
     }
 }
 
 private val BaseResponse.httpExtension: HttpException
     get() = HttpException(
-            Response.error<ResponseBody>(
-                this.statusCode.toInt(),
-                ResponseBody.create(MediaType.parse(ApiContract.VALUE_CONTENT_TYPE), status)
-            )
+        Response.error<ResponseBody>(
+            this.statusCode.toInt(),
+            ResponseBody.create(MediaType.parse(ApiContract.VALUE_CONTENT_TYPE), status)
         )
+    )
 
 private fun BaseResponse.checkStatusCode() {
     if (statusCode.isNotEmpty()) {
