@@ -333,13 +333,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_common_cancel_button),
                 presenter.itemExtension
             )
-            ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
-                getString(R.string.dialogs_question_delete),
-                presenter.itemTitle,
-                getString(R.string.dialogs_question_accept_remove),
-                getString(R.string.dialogs_common_cancel_button),
-                DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
-            )
+            ContextBottomDialog.Buttons.DELETE -> {
+                showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
+            }
             else -> {}
         }
     }
@@ -776,6 +772,29 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (isActivePage) {
             updateProgressDialog(total, progress)
         }
+    }
+
+    override fun onDialogDelete(count: Int, toTrash: Boolean, tag: String) {
+        showDeleteDialog(count, toTrash, tag)
+    }
+
+    protected open fun showDeleteDialog(count: Int = 1, toTrash: Boolean = true, tag: String) {
+        showQuestionDialog(
+            title = if (count > 0) {
+                resources.getQuantityString(R.plurals.dialogs_question_delete_title, count, count)
+            } else {
+                getString(R.string.dialogs_question_delete_all_title)
+            },
+            string = if (toTrash) {
+                resources.getQuantityString(R.plurals.dialogs_question_message_to_trash, count)
+            } else {
+                resources.getQuantityString(R.plurals.dialogs_question_message_delete, count)
+            },
+            acceptButton = getString(R.string.dialogs_question_accept_delete),
+            cancelButton = getString(R.string.dialogs_common_cancel_button),
+            tag = tag,
+            acceptErrorTint = true
+        )
     }
 
     override fun onSnackBar(message: String) {

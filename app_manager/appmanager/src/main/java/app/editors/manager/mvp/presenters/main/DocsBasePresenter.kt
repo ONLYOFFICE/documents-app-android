@@ -385,7 +385,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     )
                 }
             }
-            viewState.onDialogQuestion(context.getString(R.string.dialogs_question_delete), null, TAG_DIALOG_BATCH_DELETE_SELECTED)
+            viewState.onDialogDelete(
+                modelExplorerStack.countSelectedItems,
+                true,
+                TAG_DIALOG_BATCH_DELETE_SELECTED
+            )
         } else if (!isSelectionMode) {
             if (itemClicked is CloudFile) {
                 fileProvider?.let { provider ->

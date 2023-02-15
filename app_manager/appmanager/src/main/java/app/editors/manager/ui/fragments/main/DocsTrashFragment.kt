@@ -56,29 +56,16 @@ class DocsTrashFragment: DocsCloudFragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        if (isResumed) {
-            emptyTrashItem = menu.findItem(R.id.toolbar_item_empty_trash)
-            emptyTrashItem?.isVisible = isEmptyTrashVisible && section != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
-            showMenu()
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.toolbar_item_empty_trash -> {
-                showQuestionDialog(
-                    getString(R.string.trash_dialog_empty_title),
-                    null,
-                    getString(R.string.dialogs_question_accept_yes),
-                    getString(R.string.dialogs_question_accept_no),
-                    DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
-                )
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when (item.itemId) {
+//            R.id.toolbar_item_empty_trash -> showDeleteDialog(
+//                count = -1,
+//                tag = DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
+//            )
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
     override fun onItemContextClick(view: View, position: Int) {
         val item = explorerAdapter?.getItem(position) as Item
@@ -115,12 +102,8 @@ class DocsTrashFragment: DocsCloudFragment() {
 
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         when (buttons) {
-            ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
-                getString(R.string.trash_popup_delete),
-                cloudPresenter.itemTitle,
-                getString(R.string.dialogs_question_accept_delete),
-                getString(R.string.dialogs_common_cancel_button),
-                DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
+            ContextBottomDialog.Buttons.DELETE -> showDeleteDialog(
+                tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
             ContextBottomDialog.Buttons.RESTORE -> {
                 if (isArchive) {
@@ -140,6 +123,10 @@ class DocsTrashFragment: DocsCloudFragment() {
             setMenuMainEnabled(false)
         }
         super.onDeleteBatch(list)
+    }
+
+    override fun showDeleteDialog(count: Int, toTrash: Boolean, tag: String) {
+        super.showDeleteDialog(count, false, tag)
     }
 
     override fun onResume() {

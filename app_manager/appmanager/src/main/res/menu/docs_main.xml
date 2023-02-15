@@ -22,15 +22,6 @@
         tools:ignore="MenuTitle" />
 
     <item
-        android:id="@+id/toolbar_item_empty_trash"
-        android:icon="@drawable/ic_trash_delete"
-        android:orderInCategory="1"
-        android:title="@string/toolbar_menu_main_delete"
-        android:visible="false"
-        app:showAsAction="always"
-        tools:ignore="MenuTitle" />
-
-    <item
         android:id="@+id/toolbar_item_filter"
         android:icon="@drawable/drawable_selector_toolbar_filter"
         android:orderInCategory="10"

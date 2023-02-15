@@ -199,7 +199,6 @@
     <string name="dialogs_question_accept_not_really">NOT REALLY</string>
     <string name="dialogs_question_accept_sure">OK, SURE</string>
     <string name="dialogs_question_accept_no_thanks">NO, THANKS</string>
-    <string name="dialogs_question_delete">Delete selected item?</string>
     <string name="dialogs_question_share_remove">Remove the selected item from list?</string>
     <string name="dialogs_question_http_title">Security warning</string>
     <string name="dialogs_question_http_question">HTTPS connection is not available, but HTTP connection can be used. Continue?</string>
@@ -214,8 +213,30 @@
     <string name="dialogs_question_personal_confirm_accept">CONTINUE</string>
     <string name="dialogs_question_rate_first_info">Do you enjoy using ONLYOFFICE Documents?</string>
     <string name="dialogs_question_rate_second_info">Would you mind rating the app on Google Play?</string>
-    <string name="dialog_question_delete_file">The file will be irretrievably deleted.</string>
-    <string name="dialog_question_delete_folder">The folder will be irretrievably deleted.</string>
+
+    <plurals name="dialogs_question_message_delete">
+        <item quantity="one">It will be irretrievably deleted.\nThis action is irreversible.</item>
+        <item quantity="other">They will be irretrievably deleted.\nThis action is irreversible.</item>
+    </plurals>
+
+    <plurals name="dialogs_question_message_to_trash">
+        <item quantity="one">It will be moved to the Trash.</item>
+        <item quantity="other">They will be moved to the Trash.</item>
+    </plurals>
+
+
+    <string name="dialogs_question_delete_all_title">Delete all items?</string>
+    <plurals name="dialogs_question_delete_title">
+        <item quantity="one">Delete this item?</item>
+        <!--        TODO sample for russian -->
+        <!--        <item quantity="one">1 элемент</item>-->
+        <!--        <item quantity="two">2 элемента</item>-->
+        <!--        <item quantity="few">3 элемента</item>-->
+        <!--        <item quantity="few">4 элемента</item>-->
+        <!--        <item quantity="many">5 элементов</item>-->
+        <item quantity="other">Delete %1$d items?</item>
+    </plurals>
+
 
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Rename</string>

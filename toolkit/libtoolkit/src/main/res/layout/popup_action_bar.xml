@@ -11,12 +11,6 @@
 
     <include layout="@layout/include_action_bar_item" />
 
-    <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        app:dividerColor="@color/colorBgDescription" />
-
     <include layout="@layout/include_action_bar_item" />
 
     <include layout="@layout/include_action_bar_item" />

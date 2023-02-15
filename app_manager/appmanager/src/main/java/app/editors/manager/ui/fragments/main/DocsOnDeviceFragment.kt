@@ -193,7 +193,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         when (buttons) {
             ContextBottomDialog.Buttons.DOWNLOAD -> presenter.upload()
-            ContextBottomDialog.Buttons.DELETE -> presenter.showDeleteDialog()
             ContextBottomDialog.Buttons.COPY, ContextBottomDialog.Buttons.MOVE -> {
                 operation = if (buttons == ContextBottomDialog.Buttons.COPY) {
                     Operation.COPY
@@ -202,6 +201,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 }
                 showFolderChooser()
             }
+            ContextBottomDialog.Buttons.DELETE -> showDeleteDialog(
+                tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT
+            )
             ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
                 getString(R.string.dialogs_edit_rename_title),
                 presenter.itemTitle,
@@ -241,6 +243,10 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             setPlaceholder(it.itemList?.size == 0)
             onClearMenu()
         }
+    }
+
+    override fun showDeleteDialog(count: Int, toTrash: Boolean, tag: String) {
+        super.showDeleteDialog(count, false, tag)
     }
 
     override fun onShowDocs(uri: Uri, isNew: Boolean) {
