@@ -19,27 +19,26 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.DiffUtil
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
-import app.editors.manager.mvp.models.base.Entity
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
-import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
-import app.editors.manager.ui.adapters.holders.factory.TypeFactory
-import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer.Companion.factory
+import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
@@ -87,7 +86,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     private var lastClickTime: Long = 0
     private var selectItem: MenuItem? = null
-    private val typeFactory: TypeFactory = factory
 
     protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
     protected abstract val isWebDav: Boolean?
@@ -299,11 +297,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             StringUtils.Extension.VIDEO_SUPPORT -> {
                 presenter.addRecent(file)
                 val videoFile = file.clone().apply {
-                    webUrl = uri.path
+                    webUrl = uri?.path.orEmpty()
                     id = ""
                 }
                 val explorer = Explorer().apply {
-                    files = listOf(videoFile)
+                    files = mutableListOf(videoFile)
                 }
                 showMediaActivity(explorer, true) {
                     // Stub
@@ -885,7 +883,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * */
     private fun init() {
         setDialogs()
-        explorerAdapter = ExplorerAdapter(typeFactory).apply {
+        explorerAdapter = ExplorerAdapter(TypeFactoryExplorer.factory).apply {
             setOnItemContextListener(this@DocsBaseFragment)
             setOnItemClickListener(this@DocsBaseFragment)
             setOnItemLongClickListener(this@DocsBaseFragment)

@@ -7,8 +7,8 @@ import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import app.documents.core.account.AccountDao
-import app.documents.core.account.CloudAccount
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.app.appComponent
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString

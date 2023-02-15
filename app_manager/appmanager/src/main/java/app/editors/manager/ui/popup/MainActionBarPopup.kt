@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.LinearLayout
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import lib.toolkit.base.databinding.IncludeActionBarItemBinding
 import lib.toolkit.base.databinding.PopupActionBarBinding

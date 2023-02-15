@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
-import app.documents.core.account.CloudAccount
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentProfileLayoutBinding
-import app.editors.manager.mvp.models.user.Thirdparty
+import app.documents.core.network.manager.models.user.Thirdparty
 import app.editors.manager.mvp.presenters.main.ProfilePresenter
 import app.editors.manager.mvp.presenters.main.ProfileState
 import app.editors.manager.mvp.views.main.ProfileView

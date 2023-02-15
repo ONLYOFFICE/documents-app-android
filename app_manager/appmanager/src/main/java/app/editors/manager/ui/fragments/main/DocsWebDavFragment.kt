@@ -5,10 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
-import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
@@ -18,7 +18,6 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.popup.MainActionBarPopup
 import app.editors.manager.ui.popup.SelectActionBarPopup
-import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -27,7 +26,7 @@ import moxy.presenter.InjectPresenter
 
 open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButtonFragment {
 
-    protected var provider: WebDavApi.Providers? = null
+    protected var provider: WebDavService.Providers? = null
 
     @InjectPresenter
     lateinit var webDavPresenter: DocsWebDavPresenter
@@ -44,7 +43,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            provider = it.getSerializableExt(KEY_PROVIDER, WebDavApi.Providers::class.java)
+            provider = it.getSerializableExt(KEY_PROVIDER, WebDavService.Providers::class.java)
         }
     }
 
@@ -170,7 +169,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 
         const val KEY_PROVIDER = "KEY_PROVIDER"
 
-        fun newInstance(provider: WebDavApi.Providers): DocsWebDavFragment {
+        fun newInstance(provider: WebDavService.Providers): DocsWebDavFragment {
             return DocsWebDavFragment().apply {
                 arguments = Bundle(1).apply {
                     putSerializable(KEY_PROVIDER, provider)

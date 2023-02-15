@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentMediaListBinding
 import app.editors.manager.databinding.IncludeMediaHeaderListBinding
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.adapters.MediaAdapter
 import app.editors.manager.ui.fragments.base.ListFragment
@@ -98,7 +98,7 @@ class MediaListFragment : ListFragment(), BaseAdapter.OnItemClickListener {
             columnsCount = resources.getInteger(lib.toolkit.base.R.integer.screen_media_grid_columns)
             mediaAdapter = MediaAdapter(getCellSize(columnsCount), lifecycleScope).apply {
                 setOnItemClickListener(this@MediaListFragment)
-                setItems(mediaExplorer?.files!!)
+                setItems(mediaExplorer?.files.orEmpty())
             }
             gridLayoutManager = GridLayoutManager(requireContext(), columnsCount)
             it.listSwipeRefresh.isEnabled = false

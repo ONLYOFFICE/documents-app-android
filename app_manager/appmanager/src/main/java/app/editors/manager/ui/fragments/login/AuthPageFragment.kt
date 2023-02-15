@@ -15,7 +15,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import app.documents.core.network.models.login.request.RequestSignIn
+import app.documents.core.network.login.models.request.RequestSignIn
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentAuthPageBinding

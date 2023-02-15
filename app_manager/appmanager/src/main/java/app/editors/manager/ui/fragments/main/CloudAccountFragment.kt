@@ -8,19 +8,16 @@ import android.view.*
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
-import app.editors.manager.BuildConfig
+import app.documents.core.network.common.utils.GoogleDriveUtils
+import app.documents.core.network.common.utils.OneDriveUtils
+import app.documents.core.network.webdav.WebDavService
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
-import app.editors.manager.mvp.models.account.Storage
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.presenters.main.CloudAccountState
 import app.editors.manager.mvp.views.main.CloudAccountView
-import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
-import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
-import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
@@ -33,6 +30,8 @@ import app.editors.manager.ui.adapters.CloudAccountAdapter
 import app.editors.manager.ui.dialogs.AccountContextDialog
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
+import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -364,7 +363,7 @@ class CloudAccountFragment : BaseAppFragment(),
         presenter.checkContextLogin()
     }
 
-    override fun onWebDavLogin(account: String, provider: WebDavApi.Providers) {
+    override fun onWebDavLogin(account: String, provider: WebDavService.Providers) {
         hideDialog()
         WebDavLoginActivity.show(requireActivity(), provider, account)
     }
@@ -375,31 +374,22 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onGoogleDriveLogin() {
-        hideDialog()
-        val storage = Storage(
-            ApiContract.Storage.GOOGLEDRIVE,
-            BuildConfig.GOOGLE_COM_CLIENT_ID,
-            BuildConfig.GOOGLE_COM_REDIRECT_URL
-        )
-        showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
+        hideDialog(forceHide = true)
+        showFragment(GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage), GoogleDriveSignInFragment.TAG, false)
     }
 
     override fun onDropboxLogin() {
         hideDialog(forceHide = true)
         presenter.dropboxLogin(this) {
+            App.getApp().refreshDropboxInstance()
             MainActivity.show(requireContext())
             requireActivity().finish()
         }
     }
 
     override fun onOneDriveLogin() {
-        hideDialog()
-        val storage = Storage(
-            OneDriveUtils.ONEDRIVE_STORAGE,
-            BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
-            BuildConfig.ONE_DRIVE_COM_REDIRECT_URL
-        )
-        showFragment(OneDriveSignInFragment.newInstance(storage), OneDriveSignInFragment.TAG, false)
+        hideDialog(forceHide = true)
+        showFragment(OneDriveSignInFragment.newInstance(OneDriveUtils.storage), OneDriveSignInFragment.TAG, false)
     }
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {

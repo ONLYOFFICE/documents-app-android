@@ -1,7 +1,7 @@
 package app.editors.manager.managers.tools
 
 import android.util.Log
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.utils.FirebaseUtils

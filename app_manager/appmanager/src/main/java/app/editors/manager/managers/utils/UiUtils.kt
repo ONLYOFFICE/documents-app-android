@@ -5,11 +5,11 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
-import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
@@ -18,32 +18,32 @@ object ManagerUiUtils {
 
     @JvmStatic
     fun setWebDavImage(providerName: String?, image: ImageView) {
-        when (WebDavApi.Providers.valueOf(providerName ?: "")) {
-            WebDavApi.Providers.NextCloud -> image.setImageDrawable(
+        when (WebDavService.Providers.valueOf(providerName ?: "")) {
+            WebDavService.Providers.NextCloud -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_nextcloud
                 )
             )
-            WebDavApi.Providers.OwnCloud -> image.setImageDrawable(
+            WebDavService.Providers.OwnCloud -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_owncloud
                 )
             )
-            WebDavApi.Providers.Yandex -> image.setImageDrawable(
+            WebDavService.Providers.Yandex -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_yandex
                 )
             )
-            WebDavApi.Providers.KDrive -> image.setImageDrawable(
+            WebDavService.Providers.KDrive -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_kdrive
                 )
             )
-            WebDavApi.Providers.WebDav -> image.setImageDrawable(
+            WebDavService.Providers.WebDav -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_webdav

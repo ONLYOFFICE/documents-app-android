@@ -2,9 +2,9 @@ package app.editors.manager.ui.adapters.diffutilscallback;
 
 import java.util.List;
 
-import app.editors.manager.mvp.models.base.Entity;
-import app.editors.manager.mvp.models.explorer.CloudFile;
-import app.editors.manager.mvp.models.explorer.CloudFolder;
+import app.documents.core.network.manager.models.base.Entity;
+import app.documents.core.network.manager.models.explorer.CloudFile;
+import app.documents.core.network.manager.models.explorer.CloudFolder;
 import app.editors.manager.mvp.models.list.Footer;
 import app.editors.manager.mvp.models.list.Header;
 

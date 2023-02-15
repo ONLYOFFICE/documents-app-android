@@ -10,24 +10,22 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.transition.TransitionManager
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.share.SharedTo
-import app.documents.core.network.models.share.request.Invitation
-import app.documents.core.network.models.share.request.RequestRoomShare
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.extensions.request
+import app.documents.core.network.share.models.SharedTo
+import app.documents.core.network.share.models.request.Invitation
+import app.documents.core.network.share.models.request.RequestRoomShare
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.getShareApi
 import app.editors.manager.databinding.ChooseAccessFragmentLayoutBinding
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.ui.adapters.ShareAdapter
 import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.popup.SharePopup
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -198,37 +196,31 @@ sealed class InviteUserState {
 
 class InviteUserViewModel(private val item: Item) : ViewModel() {
 
-    private val shareApi = App.getApp().getShareApi()
-
-    private var disposable: Disposable? = null
+    private val shareApi = App.getApp().coreComponent.shareService
 
     private val _state: MutableStateFlow<InviteUserState> = MutableStateFlow(InviteUserState.None)
     val state: StateFlow<InviteUserState> = _state
 
-    override fun onCleared() {
-        super.onCleared()
-        disposable?.dispose()
-    }
-
     fun inviteUsers(emails: List<ShareUi>, message: String) {
         _state.value = InviteUserState.Loading
-        disposable = shareApi.shareRoom(
-            id = item.id,
-            body = RequestRoomShare(
-                invitations = emails.map { email ->
-                    Invitation(email = email.sharedTo.email, access = email.access)
+        viewModelScope.launch {
+            request(
+                func = {
+                    shareApi.shareRoom(
+                        id = item.id,
+                        body = RequestRoomShare(
+                            invitations = emails.map { email ->
+                                Invitation(email = email.sharedTo.email, access = email.access)
+                            },
+                            notify = false,
+                            message = message
+                        )
+                    )
                 },
-                notify = false,
-                message = message
+                onSuccess = { _state.value = InviteUserState.Success },
+                onError = { _state.value = InviteUserState.Error(it.message ?: "Error") }
             )
-        )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                _state.value = InviteUserState.Success
-            }, {
-                _state.value = InviteUserState.Error(it.message ?: "Error")
-            })
+        }
     }
 
 }

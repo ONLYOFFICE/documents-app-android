@@ -1,14 +1,14 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
-import app.editors.manager.app.Api
+import app.documents.core.network.manager.ManagerService
 import app.editors.manager.app.App
 import app.editors.manager.app.api
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -40,7 +40,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
 
     private var disposable: Disposable? = null
 
-    private val api: Api = context.api()
+    private val api: ManagerService = context.api
 
     override fun onDestroy() {
         super.onDestroy()
@@ -76,8 +76,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { cloudTree ->
-                val folderTypes =
-                    cloudTree.response.map { explorer -> explorer?.current?.rootFolderType }
+                val folderTypes = cloudTree.response.map { explorer -> explorer.current.rootFolderType }
                 preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
                 preferenceTool.isProjectDisable =
                     !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)

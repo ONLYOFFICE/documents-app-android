@@ -9,11 +9,11 @@ import androidx.work.WorkerParameters
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.managers.retrofit.ProgressRequestBody
+import app.documents.core.network.login.models.request.ProgressRequestBody
 import app.editors.manager.managers.utils.NotificationUtils
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.UploadFile
-import app.editors.manager.mvp.models.response.ResponseFile
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.UploadFile
+import app.documents.core.network.manager.models.response.ResponseFile
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
@@ -70,11 +70,9 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
     }
     private var call: Call<ResponseFile>? = null
 
-    private val api = applicationContext.api()
-
     override fun doWork(): Result {
         getArgs()
-
+        val api = applicationContext.api
         val responseFile: ResponseFile
         path = from?.path
         title = ContentResolverUtils.getName(applicationContext, from ?: Uri.EMPTY)

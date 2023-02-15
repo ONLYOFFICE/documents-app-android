@@ -7,7 +7,7 @@ import android.view.MenuItem
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import app.editors.manager.databinding.ActivityStorageBinding
-import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.storage.SelectFragment
 import app.editors.manager.ui.interfaces.WebDavInterface

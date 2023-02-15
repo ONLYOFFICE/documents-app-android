@@ -9,21 +9,21 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
-import app.documents.core.account.CloudAccount
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
-import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
-import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment
-import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
+import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
+import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
@@ -643,7 +643,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         } ?: run {
             FragmentUtils.showFragment(
                 supportFragmentManager,
-                DocsWebDavFragment.newInstance(WebDavApi.Providers.valueOf(account.webDavProvider ?: "")),
+                DocsWebDavFragment.newInstance(WebDavService.Providers.valueOf(account.webDavProvider ?: "")),
                 R.id.frame_container
             )
         }

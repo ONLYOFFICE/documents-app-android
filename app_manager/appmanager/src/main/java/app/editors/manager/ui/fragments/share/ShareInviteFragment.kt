@@ -10,7 +10,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import app.editors.manager.R
 import app.editors.manager.databinding.ShareInviteFragmentLayoutBinding
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.popup.SharePopup

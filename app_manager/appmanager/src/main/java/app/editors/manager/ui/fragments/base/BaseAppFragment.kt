@@ -5,9 +5,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import androidx.activity.result.ActivityResult
 import androidx.fragment.app.Fragment
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.activities.main.ShareActivity.Companion.show

@@ -12,12 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.MediaController
-import app.documents.core.account.AccountDao
-import app.documents.core.network.ApiContract
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentMediaVideoBinding
-import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.media.MediaPagerFragment.OnMediaListener
 import app.editors.manager.ui.views.custom.PlaceholderViews

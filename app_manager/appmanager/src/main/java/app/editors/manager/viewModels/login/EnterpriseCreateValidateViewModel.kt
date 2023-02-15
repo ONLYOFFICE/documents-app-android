@@ -3,9 +3,9 @@ package app.editors.manager.viewModels.login
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.request.RequestValidatePortal
+import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.models.request.RequestValidatePortal
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.viewModels.base.BaseLoginViewModel
@@ -91,7 +91,7 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
         networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + domain)
 
         _stateLiveData.value = CreatePortalState.Progress
-        disposable = App.getApp().appComponent.loginService.validatePortal(RequestValidatePortal(portalName))
+        disposable = App.getApp().coreComponent.loginService.validatePortal(RequestValidatePortal(portalName))
             .subscribe({ loginResponse ->
                 when (loginResponse) {
                     is LoginResponse.Success -> {
