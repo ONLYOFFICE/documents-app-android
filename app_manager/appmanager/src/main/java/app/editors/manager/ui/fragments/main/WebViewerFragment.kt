@@ -135,7 +135,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var webView: KeyboardWebView
-    private lateinit var progressBar: ProgressBar
 
     private var cloudFile: CloudFile? = null
     private var uri: Uri? = null
@@ -239,7 +238,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         return inflater.inflate(R.layout.fragment_viewer_web, container, false)?.apply {
             swipeRefresh = findViewById(R.id.web_viewer_layout)
             webView = findViewById(R.id.web_viewer_webview)
-            progressBar = findViewById(R.id.web_viewer_progress)
         }
     }
 
@@ -302,11 +300,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun init(savedInstanceState: Bundle?) {
-        UiUtils.setColorFilter(
-            requireContext(),
-            progressBar.indeterminateDrawable,
-            lib.toolkit.base.R.color.colorSecondary
-        )
         connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         isDesktopMode = UiUtils.checkDeXEnabled(resources.configuration)
         isPageLoad = false
@@ -358,7 +351,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(TAG_WEB_VIEW)) {
                 val bundle = savedInstanceState.getBundle(TAG_WEB_VIEW)
-                progressBar.visibility = View.VISIBLE
                 webView.restoreState(bundle!!)
             }
             if (savedInstanceState.containsKey(TAG_PAGE_LOAD)) {
@@ -396,7 +388,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             setAcceptThirdPartyCookies(webView, true)
         }
         webView.loadUrl(url, headers)
-        progressBar.visibility = View.VISIBLE
     }
 
 
@@ -462,13 +453,11 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             addJsHardBackListener()
-            progressBar.visibility = View.INVISIBLE
             swipeRefresh.isEnabled = false
             isPageLoad = true
         }
 
         override fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
-            progressBar.visibility = View.INVISIBLE
             this@WebViewerFragment.errorCode = errorCode
             if (!NetworkUtils.isOnline(requireContext())) {
                 showSnackBarWithAction(
