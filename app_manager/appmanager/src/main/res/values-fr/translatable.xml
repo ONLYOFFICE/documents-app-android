@@ -348,7 +348,7 @@
     <string name="toolbar_menu_sort_title">Titre</string>
     <string name="toolbar_menu_sort_type">Type</string>
     <string name="toolbar_menu_main_open">Ouvrir</string>
-    <string name="trash_dialog_empty_title">Vider la corbeille?</string>
+    <string name="trash_dialog_empty_title">Vider la corbeille</string>
     <string name="trash_popup_delete">Supprimer définitivement</string>
     <string name="upload_error_wifi">Vous ne pouvez télécharger que lorsque le Wi-Fi est activé</string>
     <string name="upload_manager_cancel">Chargement annulé</string>

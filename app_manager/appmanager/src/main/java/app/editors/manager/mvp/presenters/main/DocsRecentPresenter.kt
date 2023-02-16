@@ -22,6 +22,8 @@ import app.editors.manager.storages.dropbox.managers.providers.DropboxFileProvid
 import app.editors.manager.storages.googledrive.managers.providers.GoogleDriveFileProvider
 import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProvider
 import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.popup.MainPopup
+import app.editors.manager.ui.popup.MainPopupItem
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
@@ -203,15 +205,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         } else {
             viewState.onError(context.getString(R.string.error_recent_account))
         }
-    }
-
-    fun reverseOrder() {
-        if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
-            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
-        } else {
-            preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
-        }
-        update()
     }
 
     private fun addRecent(recent: Recent) {
@@ -493,24 +486,27 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         temp = null
     }
 
-    fun update(sortBy: String = preferenceTool.sortBy.orEmpty()) {
-        preferenceTool.sortBy = sortBy
-        presenterScope.launch {
-            val list = recentDao.getRecents().sort()
+    fun updateFiles(list: List<Recent>) {
+        val sortByUpdated = preferenceTool.sortBy == ApiContract.Parameters.VAL_SORT_BY_UPDATED
+        viewState.updateFiles(list, sortByUpdated)
+    }
+
+    override fun sortBy(type: MainPopupItem.SortBy): Boolean {
+        val isRepeatedTap = MainPopup.getSortPopupItem(preferenceTool.sortBy) == type
+        preferenceTool.sortBy = type.value
+        if (isRepeatedTap) {
+            reverseSortOrder()
+        }
+        presenterScope.launch(Dispatchers.IO) {
+            val list = recentDao.getRecents().sort(type.value)
             withContext(Dispatchers.Main) {
                 updateFiles(list)
             }
         }
+        return false
     }
 
-    fun updateFiles(list: List<Recent>) {
-        val sortBy = preferenceTool.sortBy.orEmpty()
-        val sortOrder = preferenceTool.sortOrder.orEmpty()
-
-        viewState.updateFiles(list, sortBy, sortOrder)
-    }
-
-    private fun List<Recent>.sort(sortBy: String = preferenceTool.sortBy.orEmpty()): List<Recent> {
+    private fun List<Recent>.sort(sortBy: String? = preferenceTool.sortBy): List<Recent> {
         var sortedList = when (sortBy) {
             ApiContract.Parameters.VAL_SORT_BY_TITLE -> sortedBy { it.name }
             ApiContract.Parameters.VAL_SORT_BY_UPDATED -> sortedBy { it.date }

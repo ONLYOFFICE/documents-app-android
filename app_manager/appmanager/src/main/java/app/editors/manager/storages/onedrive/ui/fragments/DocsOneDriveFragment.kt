@@ -3,13 +3,11 @@ package app.editors.manager.storages.onedrive.ui.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import app.editors.manager.app.App
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
-import app.editors.manager.ui.popup.SelectActionBarPopup
+import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.ui.activities.base.BaseActivity
-import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
 class DocsOneDriveFragment : BaseStorageDocsFragment() {
@@ -65,11 +63,12 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
         }
     }
 
-
-    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(mutableListOf<ActionBarPopupItem>().apply {
-            if (!presenter.isFoldersInSelection()) add(SelectActionBarPopup.Download)
-        })
+    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
+        if (!presenter.isFoldersInSelection()) {
+            super.showSelectActionPopup(SelectPopupItem.Download)
+        } else {
+            super.showSelectActionPopup(*excluded)
+        }
     }
 
     override fun onRefreshToken() {

@@ -346,7 +346,7 @@
     <string name="toolbar_menu_sort_title">Título</string>
     <string name="toolbar_menu_sort_type">Tipo</string>
     <string name="toolbar_menu_main_open">Abrir</string>
-    <string name="trash_dialog_empty_title">Esvaziar lixeira?</string>
+    <string name="trash_dialog_empty_title">Esvaziar lixeira</string>
     <string name="trash_popup_delete">EXCLUIR definitivamente</string>
     <string name="upload_error_wifi">Você pode fazer upload apenas quando Wi-Fi estiver habilitada</string>
     <string name="upload_manager_cancel">Upload cancelado</string>

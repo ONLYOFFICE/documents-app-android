@@ -20,6 +20,7 @@ import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.Item
+import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter
 import app.editors.manager.mvp.presenters.main.OpenState
@@ -29,26 +30,20 @@ import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.popup.MainActionBarPopup
-import app.editors.manager.ui.popup.SelectActionBarPopup
+import app.editors.manager.ui.popup.MainPopupItem
+import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
-import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 import java.util.*
 
 class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonFragment {
 
-    internal enum class Operation {
-        COPY, MOVE
-    }
-
     @InjectPresenter
     override lateinit var presenter: DocsOnDevicePresenter
     private var activity: IMainActivity? = null
-    private var operation: Operation? = null
     private var preferenceTool: PreferenceTool? = null
 
     private val importFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) { data: Uri? ->
@@ -94,7 +89,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_item_main -> showMainActionBarMenu()
+            R.id.toolbar_item_main -> showActionBarMenu()
             R.id.toolbar_selection_delete -> presenter.delete()
             R.id.toolbar_item_open -> showSingleFragmentFilePicker()
         }
@@ -193,14 +188,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         when (buttons) {
             ContextBottomDialog.Buttons.DOWNLOAD -> presenter.upload()
-            ContextBottomDialog.Buttons.COPY, ContextBottomDialog.Buttons.MOVE -> {
-                operation = if (buttons == ContextBottomDialog.Buttons.COPY) {
-                    Operation.COPY
-                } else {
-                    Operation.MOVE
-                }
-                showFolderChooser()
-            }
+            ContextBottomDialog.Buttons.COPY -> showFolderChooser(OperationsState.OperationType.COPY)
+            ContextBottomDialog.Buttons.MOVE -> showFolderChooser(OperationsState.OperationType.MOVE)
             ContextBottomDialog.Buttons.DELETE -> showDeleteDialog(
                 tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT
             )
@@ -375,17 +364,12 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         onPlaceholder(if (isEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
     }
 
-    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showMainActionBarMenu(listOf(MainActionBarPopup.Author))
+    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
+        super.showMainActionPopup(MainPopupItem.SortBy.Author)
     }
 
-    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(
-            excluded = listOf(
-                SelectActionBarPopup.Restore,
-                SelectActionBarPopup.Download
-            )
-        )
+    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
+        super.showSelectActionPopup(SelectPopupItem.Operation.Restore, SelectPopupItem.Download)
     }
 
     fun showRoot() {
@@ -395,31 +379,18 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         onScrollToPosition(0)
     }
 
-    private fun showFolderChooser() {
+    private fun showFolderChooser(operation: OperationsState.OperationType) {
         FolderChooser(requireActivity().activityResultRegistry, { data ->
-            if (operation != null && data != null) {
-                if (operation == Operation.MOVE) {
-                    presenter.moveFile(data, false)
-                } else if (operation == Operation.COPY) {
-                    presenter.moveFile(data, true)
-                }
+            data?.let { uri ->
+                presenter.moveFile(uri, operation == OperationsState.OperationType.COPY)
             }
         }).show()
     }
 
-    override val selectActionBarClickListener: (ActionBarPopupItem) -> Unit = {
-        when (it) {
-            SelectActionBarPopup.Copy, SelectActionBarPopup.Move -> {
-                operation = if (it == SelectActionBarPopup.Copy) {
-                    Operation.COPY
-                } else {
-                    Operation.MOVE
-                }
-                showFolderChooser()
-            }
-            else -> {
-                super.selectActionBarClickListener(it)
-            }
+    override val selectActionBarClickListener: (SelectPopupItem) -> Unit = { item ->
+        when (item) {
+            is SelectPopupItem.Operation -> showFolderChooser(item.value)
+            else -> super.selectActionBarClickListener(item)
         }
     }
 

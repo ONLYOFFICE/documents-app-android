@@ -362,7 +362,7 @@
     <string name="operation_share_send_link">发送</string>
     <!-- ======================================================================================= -->
     <!-- Trash -->
-    <string name="trash_dialog_empty_title">清空垃圾箱？</string>
+    <string name="trash_dialog_empty_title">清空垃圾箱</string>
     <string name="trash_popup_delete">永久删除</string>
     <!-- ======================================================================================= -->
     <!-- Managers load -->

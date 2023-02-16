@@ -319,7 +319,7 @@
     <string name="toolbar_menu_sort_title">Заглавие</string>
     <string name="toolbar_menu_sort_type">Тип</string>
     <string name="toolbar_menu_main_open">Отвори</string>
-    <string name="trash_dialog_empty_title">Празен боклук?</string>
+    <string name="trash_dialog_empty_title">Празен боклук</string>
     <string name="trash_popup_delete">Изтрийте завинаги</string>
     <string name="upload_manager_cancel">Качването е анулирано</string>
     <string name="upload_manager_complete">Качването е завършено</string>

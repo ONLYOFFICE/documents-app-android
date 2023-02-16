@@ -346,7 +346,7 @@
     <string name="toolbar_menu_sort_title">Titolo</string>
     <string name="toolbar_menu_sort_type">Tipo</string>
     <string name="toolbar_menu_main_open">Apri</string>
-    <string name="trash_dialog_empty_title">Svuotare il cestino?</string>
+    <string name="trash_dialog_empty_title">Svuotare il cestino</string>
     <string name="trash_popup_delete">Elimina definitivamente</string>
     <string name="upload_error_wifi">Puoi caricare solo quando il Wi-Fi è abilitato</string>
     <string name="upload_manager_cancel">Upload annullato</string>

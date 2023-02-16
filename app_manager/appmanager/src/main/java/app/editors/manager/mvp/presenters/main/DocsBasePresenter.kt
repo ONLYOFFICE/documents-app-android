@@ -40,6 +40,8 @@ import app.editors.manager.mvp.models.request.RequestDownload
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
+import app.editors.manager.ui.popup.MainPopup
+import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.gson.Gson
 import io.reactivex.Observable
@@ -207,8 +209,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return false
     }
 
-    open fun sortBy(value: String, isRepeatedTap: Boolean): Boolean {
-        preferenceTool.sortBy = value
+    open fun sortBy(type: MainPopupItem.SortBy): Boolean {
+        val isRepeatedTap = MainPopup.getSortPopupItem(preferenceTool.sortBy) == type
+        preferenceTool.sortBy = type.value
         if (isRepeatedTap) {
             reverseSortOrder()
         }
@@ -221,11 +224,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } else {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
         }
-    }
-
-    open fun orderBy(value: String): Boolean {
-        preferenceTool.sortOrder = value
-        return refresh()
     }
 
     open fun filter(value: String, isSubmitted: Boolean): Boolean {

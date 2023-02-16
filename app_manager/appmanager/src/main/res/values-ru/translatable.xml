@@ -376,7 +376,7 @@
     <string name="toolbar_menu_sort_title">Название</string>
     <string name="toolbar_menu_sort_type">Тип</string>
     <string name="toolbar_menu_main_open">Открыть</string>
-    <string name="trash_dialog_empty_title">Очистить корзину?</string>
+    <string name="trash_dialog_empty_title">Очистить корзину</string>
     <string name="trash_popup_delete">Удалить навсегда</string>
     <string name="upload_error_wifi">Загружать можно только когда включен Wi-Fi</string>
     <string name="upload_manager_cancel">Загрузка отменена</string>

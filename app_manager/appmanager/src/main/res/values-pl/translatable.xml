@@ -346,7 +346,7 @@
     <string name="toolbar_menu_sort_title">Tytuł</string>
     <string name="toolbar_menu_sort_type">Rodzaj</string>
     <string name="toolbar_menu_main_open">Otwórz</string>
-    <string name="trash_dialog_empty_title">Opróżnić kosz?</string>
+    <string name="trash_dialog_empty_title">Opróżnić kosz</string>
     <string name="trash_popup_delete">Usuń trwale</string>
     <string name="upload_error_wifi">Możesz przesyłać tylko, jeśli Wi-Fi jest włączone</string>
     <string name="upload_manager_cancel">Anulowano przesyłanie</string>

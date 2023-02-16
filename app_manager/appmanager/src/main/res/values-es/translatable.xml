@@ -348,7 +348,7 @@
     <string name="toolbar_menu_sort_title">Título</string>
     <string name="toolbar_menu_sort_type">Tipo</string>
     <string name="toolbar_menu_main_open">Abrir</string>
-    <string name="trash_dialog_empty_title">¿Vaciar Papelera?</string>
+    <string name="trash_dialog_empty_title">Vaciar Papelera</string>
     <string name="trash_popup_delete">Eliminar para siempre</string>
     <string name="upload_error_wifi">Solamente puede subir archivos cuando está conectado a una red Wi-Fi</string>
     <string name="upload_manager_cancel">Subida cancelada</string>

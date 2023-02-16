@@ -309,7 +309,7 @@
     <string name="operation_snackbar_send_link">LINK SENDEN</string>
     <string name="operation_snackbar_return">ZURÜCK</string>
     <string name="operation_share_send_link">SENDEN</string>
-    <string name="trash_dialog_empty_title">Papierkorb leeren?</string>
+    <string name="trash_dialog_empty_title">Papierkorb leeren</string>
     <string name="trash_popup_delete">Endgültig löschen</string>
     <string name="download_manager_title">ONLYOFFICE Downloads</string>
     <string name="download_manager_progress_title">Herunterladen wird ausgeführt</string>

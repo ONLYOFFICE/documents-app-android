@@ -31,13 +31,12 @@ import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
-import app.editors.manager.ui.popup.SelectActionBarPopup
+import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializable
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
-import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -87,10 +86,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
-    }
-
-    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showMainActionBarMenu(excluded)
     }
 
     override fun onActionBarTitle(title: String) {
@@ -206,13 +201,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         cloudPresenter.transfer(operationType, action != MoveCopyDialog.ACTION_COPY)
     }
 
-    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(excluded = excluded.toMutableList().apply {
-            if (!cloudPresenter.isTrashMode) {
-                add(SelectActionBarPopup.Restore)
-                if (!cloudPresenter.isContextItemEditable) add(SelectActionBarPopup.Move)
-            }
-        })
+    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
+        super.showSelectActionPopup(*excluded.toMutableList().apply {
+            if (!cloudPresenter.isContextItemEditable) add(SelectPopupItem.Operation.Move)
+        }.toTypedArray())
     }
 
     override fun onFileWebView(file: CloudFile) {

@@ -18,9 +18,8 @@ import app.editors.manager.storages.googledrive.managers.works.UploadWork
 import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.MainPopupItem
 import lib.toolkit.base.ui.activities.base.BaseActivity
-import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
 class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
@@ -128,7 +127,7 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
         showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
     }
 
-    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showMainActionBarMenu(listOf(MainActionBarPopup.Size))
+    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
+        super.showMainActionPopup(MainPopupItem.SortBy.Size)
     }
 }

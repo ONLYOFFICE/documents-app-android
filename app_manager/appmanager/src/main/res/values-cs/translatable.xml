@@ -414,7 +414,7 @@
 
     <!-- ======================================================================================= -->
     <!-- Trash -->
-    <string name="trash_dialog_empty_title">Vysypat koš?</string>
+    <string name="trash_dialog_empty_title">Vysypat koš</string>
     <string name="trash_popup_delete">Trvale odstranit</string>
 
     <!-- ======================================================================================= -->
