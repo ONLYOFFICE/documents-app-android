@@ -181,7 +181,6 @@
     <string name="dialogs_question_accept_not_really">ບໍ່ແມ່ນບໍ</string>
     <string name="dialogs_question_accept_sure">ຕົກລົງ, ໝັ້ນໃຈ</string>
     <string name="dialogs_question_accept_no_thanks">ບໍ່, ຂອບໃຈ</string>
-    <string name="dialogs_question_delete">ລຶບລາຍການທີ່ເລືອກ?</string>
     <string name="dialogs_question_share_remove">ເອົາລາຍການທີ່ເລືອກອອກຈາກລາຍຊື່ບໍ?</string>
     <string name="dialogs_question_http_title">ແຈ້ງເຕືອນກ່ຽວກັບຄວາມປອດໄພ</string>
     <string name="dialogs_question_http_question">ການເຊື່ອມຕໍ່ HTTPS ບໍ່ສາມາດໃຊ້ໄດ້, ແຕ່ການເຊື່ອມຕໍ່ HTTP ສາມາດໃຊ້ໄດ້. ດຳເນີນການຕໍ່ບໍ?</string>

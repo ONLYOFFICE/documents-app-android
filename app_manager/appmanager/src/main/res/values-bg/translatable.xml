@@ -54,7 +54,6 @@
     <string name="dialogs_question_accept_remove">ПРЕМАХВАНЕ</string>
     <string name="dialogs_question_accept_sure">ДОБРЕ, СИГУРНО</string>
     <string name="dialogs_question_accept_yes">ДА</string>
-    <string name="dialogs_question_delete">Изтриване на избрания елемент?</string>
     <string name="dialogs_question_facebook_question">Продължете с акаунт:\u0020</string>
     <string name="dialogs_question_facebook_title">Facebook</string>
     <string name="dialogs_question_http_question">HTTPS връзката не е достъпна, но може да се използва HTTP връзка. Продължи?</string>

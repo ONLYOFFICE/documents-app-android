@@ -59,7 +59,6 @@
     <string name="dialogs_question_accept_remove">SUPPRIMER</string>
     <string name="dialogs_question_accept_sure">Oui, bien sûr</string>
     <string name="dialogs_question_accept_yes">OUI</string>
-    <string name="dialogs_question_delete">Supprimer l’élément sélectionné ?</string>
     <string name="dialogs_question_facebook_question">Continuer avec le compte:\u0020</string>
     <string name="dialogs_question_facebook_title">Facebook</string>
     <string name="dialogs_question_http_question">La connexion HTTPS n’est pas disponible, mais une connexion HTTP peut être utilisée. Continuer ?</string>

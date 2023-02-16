@@ -59,7 +59,6 @@
     <string name="dialogs_question_accept_remove">REMOVER</string>
     <string name="dialogs_question_accept_sure">OK, TUDO BEM</string>
     <string name="dialogs_question_accept_yes">SIM</string>
-    <string name="dialogs_question_delete">Apagar item selecionado?</string>
     <string name="dialogs_question_facebook_question">Continue com uma conta:\u0020</string>
     <string name="dialogs_question_facebook_title">Facebook</string>
     <string name="dialogs_question_http_question">Conexão HTTPS não está disponível, mas a conexão HTTP pode ser usada. Continuar?</string>

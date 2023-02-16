@@ -180,7 +180,6 @@
     <string name="dialogs_question_accept_not_really">NE TAK DOCELA</string>
     <string name="dialogs_question_accept_sure">ANO, JISTĚ</string>
     <string name="dialogs_question_accept_no_thanks">NE, DÍKY</string>
-    <string name="dialogs_question_delete">Přejete si vybranou položku odstranit?</string>
     <string name="dialogs_question_share_remove">Přejete si vybranou položku odebrat ze seznamu?</string>
     <string name="dialogs_question_http_title">Bezpečnostní varování</string>
     <string name="dialogs_question_http_question">Připojení prostřednictvím protokolu HTTPS není k dispozici, lze však použít protokol HTTP. Přejete si pokračovat?</string>

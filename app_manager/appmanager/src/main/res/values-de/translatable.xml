@@ -121,7 +121,6 @@
     <string name="dialogs_question_accept_not_really">NICHT GANZ</string>
     <string name="dialogs_question_accept_sure">OK, NATÜRLICH</string>
     <string name="dialogs_question_accept_no_thanks">NEIN, DANKE</string>
-    <string name="dialogs_question_delete">Ausgewähltes Element löschen?</string>
     <string name="dialogs_question_share_remove">Ausgewähltes Objekt aus der Liste entfernen?</string>
     <string name="dialogs_question_http_title">Sicherheitswarnung</string>
     <string name="dialogs_question_http_question">HTTPS-Verbindung ist nicht verfügbar, aber es kann eine HTTP-Verbindung verwendet werden. Fortsetzen?</string>

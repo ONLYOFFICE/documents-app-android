@@ -149,7 +149,6 @@
     <string name="dialogs_question_accept_not_really">不一定</string>
     <string name="dialogs_question_accept_sure">好的，当然</string>
     <string name="dialogs_question_accept_no_thanks">不用了，谢谢</string>
-    <string name="dialogs_question_delete">删除选定的项目？</string>
     <string name="dialogs_question_share_remove">从列表中移除选定项目？</string>
     <string name="dialogs_question_http_title">安全警告</string>
     <string name="dialogs_question_http_question">HTTPS链接不可用，但可使用HTTP连接。继续？</string>

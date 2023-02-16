@@ -65,7 +65,6 @@
     <string name="dialogs_question_accept_remove">УДАЛИТЬ</string>
     <string name="dialogs_question_accept_sure">ДА, КОНЕЧНО</string>
     <string name="dialogs_question_accept_yes">ДА</string>
-    <string name="dialogs_question_delete">Удалить выбранный элемент?</string>
     <string name="dialogs_question_facebook_question">Продолжить с аккаунтом:\u0020</string>
     <string name="dialogs_question_facebook_title">Facebook</string>
     <string name="dialogs_question_http_question">HTTPS-подключение недоступно, но можно использовать HTTP-подключение. Продолжить?</string>
