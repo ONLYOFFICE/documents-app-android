@@ -66,8 +66,6 @@
     <string name="dialogs_question_remove_account_info">Профилът с имейл %1$s от офиса в облака %2$s ще бъде изведен и премахнат от списъка</string>
     <string name="dialogs_question_remove_account_title">Да се ​​премахне ли профилът?</string>
     <string name="dialogs_question_share_remove">Да се ​​премахне ли избраният елемент от списъка?</string>
-    <string name="dialog_question_delete_file">Файлът ще бъде безвъзвратно изтрит.</string>
-    <string name="dialog_question_delete_folder">Папката ще бъде безвъзвратно изтрита.</string>
     <string name="dialogs_sign_in_portal_header_text">Влезте в облачния офис</string>
     <string name="dialogs_sign_in_register_portal">Регистриране на облачния офис</string>
     <string name="dialogs_wait_title">Операцията е в ход …</string>

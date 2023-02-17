@@ -385,8 +385,6 @@
     <string name="profile_thirdparty_title">Połączone usługi</string>
     <string name="error_unsupported_format">Nieobsługiwany format</string>
     <string name="errors_create_local_file">Nie udało się utworzyć pliku</string>
-    <string name="dialog_question_delete_file">Plik zostanie trwale usunięty.</string>
-    <string name="dialog_question_delete_folder">Folder zostanie trwale usunięty.</string>
     <string name="operation_delete_impossible">Nie można usunąć pliku. Plik jest otwarty w portalu.</string>
     <string name="operation_delete_multiple">. Usuwanie jednego lub wielu plików zakończyło się niepowodzeniem, ponieważ są otwarte w portalu</string>
     <string name="app_settings_analytic_title">Pomóż nam poprawić produkt</string>

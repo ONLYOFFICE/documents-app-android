@@ -71,8 +71,6 @@
     <string name="dialogs_question_remove_account_info">Le compte avec l’email %1$s du portail %2$s sera déconnecté et supprimé du liste</string>
     <string name="dialogs_question_remove_account_title">Supprimer le compte ?</string>
     <string name="dialogs_question_share_remove">Supprimer l’élément sélectionné de la liste ?</string>
-    <string name="dialog_question_delete_file">Le fichier sera irrémédiablement supprimé.</string>
-    <string name="dialog_question_delete_folder">Le dossier sera irrémédiablement supprimé.</string>
     <string name="dialogs_sign_in_portal_header_text">Se connecter au bureau dans les nuages</string>
     <string name="dialogs_sign_in_register_portal">Enregistrement du bureau dans les nuages</string>
     <string name="dialogs_wait_title">Opération en cours…</string>

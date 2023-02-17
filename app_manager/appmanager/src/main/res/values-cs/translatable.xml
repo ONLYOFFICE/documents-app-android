@@ -526,8 +526,6 @@
     <string name="profile_type_user">User</string>
     <string name="profile_thirdparty_title">Připojené služby</string>
     <string name="errors_create_local_file">Vytvoření souboru se nezdařilo</string>
-    <string name="dialog_question_delete_file">Soubor bude nenávratně smazán.</string>
-    <string name="dialog_question_delete_folder">Složka bude nenávratně smazána.</string>
     <string name="operation_delete_impossible">Soubor nelze odstranit. Soubor je otevřen na portálu.</string>
     <string name="operation_delete_multiple">. Jeden nebo více souborů nebyly smazány, protože jsou otevřeny na portálu</string>
     <string name="app_settings_analytic_title">Pomožte vylepšit produkt</string>

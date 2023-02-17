@@ -390,8 +390,6 @@
     <string name="profile_thirdparty_title">Verbundene Services</string>
     <string name="error_unsupported_format">Das Format wird nicht unterstützt</string>
     <string name="errors_create_local_file">Datei konnte nicht erstellt werden</string>
-    <string name="dialog_question_delete_file">Die Datei wird unwiderruflich gelöscht.</string>
-    <string name="dialog_question_delete_folder">Der Ordner wird unwiderruflich gelöscht.</string>
     <string name="operation_delete_impossible">Datei konnte nicht gelöscht werden. Die Datei wurde auf dem Portal geöffnet.</string>
     <string name="operation_delete_multiple">. Eine oder mehrere Dateien wurden nicht gelöscht, weil sie auf dem Portal geöffnet sind</string>
     <string name="app_settings_analytic_title">Bei der App-Verbesserung helfen</string>

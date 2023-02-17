@@ -71,8 +71,6 @@
     <string name="dialogs_question_remove_account_info">Cuenta con email %1$s de portal %2$s se cerrará y se eliminará de la lista</string>
     <string name="dialogs_question_remove_account_title">¿Eliminar cuenta?</string>
     <string name="dialogs_question_share_remove">¿Eliminar elemento seleccionado de la lista?</string>
-    <string name="dialog_question_delete_file">El archivo será eliminado irremediablemente.</string>
-    <string name="dialog_question_delete_folder">La carpeta será eliminado irremediablemente.</string>
     <string name="dialogs_sign_in_portal_header_text">Acceso a la oficina en nube</string>
     <string name="dialogs_sign_in_register_portal">Registro de oficina en nube</string>
     <string name="dialogs_wait_title">Operación en progreso…</string>

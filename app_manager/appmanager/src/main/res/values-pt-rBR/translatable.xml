@@ -385,8 +385,6 @@
     <string name="profile_thirdparty_title">Serviços conectados</string>
     <string name="error_unsupported_format">Formato não suportado</string>
     <string name="errors_create_local_file">Falha ao criar arquivo</string>
-    <string name="dialog_question_delete_file">O arquivo será excluído permanentemente.</string>
-    <string name="dialog_question_delete_folder">A pasta será excluída permanentemente.</string>
     <string name="operation_delete_impossible">Não é possível excluir o arquivo. O arquivo está aberto no portal.</string>
     <string name="operation_delete_multiple">. Um ou mais arquivos não foram excluídos por estarem abertos no portal</string>
     <string name="app_settings_analytic_title">Ajude a melhorar o produto</string>

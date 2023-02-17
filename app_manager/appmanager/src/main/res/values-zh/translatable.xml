@@ -163,8 +163,6 @@
     <string name="dialogs_question_personal_confirm_accept">继续</string>
     <string name="dialogs_question_rate_first_info">您喜欢ONLYOFFICE文档的使用体验吗？</string>
     <string name="dialogs_question_rate_second_info">请在Google Play中评价我们的应用。</string>
-    <string name="dialog_question_delete_file">该文件将被不可撤销地删除。</string>
-    <string name="dialog_question_delete_folder">该文件夹将被不可撤销地删除。</string>
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">重命名</string>
     <string name="dialogs_edit_hint">输入标题</string>

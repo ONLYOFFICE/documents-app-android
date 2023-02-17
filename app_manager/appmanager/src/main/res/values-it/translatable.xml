@@ -385,8 +385,6 @@
     <string name="profile_thirdparty_title">Servizi connessi</string>
     <string name="error_unsupported_format">Formato non supportato</string>
     <string name="errors_create_local_file">Creazione del file non riuscita</string>
-    <string name="dialog_question_delete_file">Il file sarà irrimediabilmente eliminato.</string>
-    <string name="dialog_question_delete_folder">La cartella sarà irrimediabilmente eliminata.</string>
     <string name="operation_delete_impossible">Impossibile eliminare il file. Il file è aperto sul portale.</string>
     <string name="operation_delete_multiple">. Uno o più file non sono stati eliminati perché erano aperti sul portale</string>
     <string name="app_settings_analytic_title">Aiuta a migliorare il prodotto</string>
