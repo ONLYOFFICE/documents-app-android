@@ -11,6 +11,7 @@ import androidx.fragment.app.clearFragmentResultListener
 import app.documents.core.network.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
+import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.models.base.Entity
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
@@ -31,6 +32,7 @@ import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
+import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
@@ -205,6 +207,12 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         super.showSelectActionPopup(*excluded.toMutableList().apply {
             if (!cloudPresenter.isContextItemEditable) add(SelectPopupItem.Operation.Move)
         }.toTypedArray())
+    }
+
+    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
+        if (requireContext().accountOnline?.isPersonal() == true) {
+            super.showMainActionPopup(MainPopupItem.SortBy.Author)
+        } else super.showMainActionPopup(*excluded)
     }
 
     override fun onFileWebView(file: CloudFile) {

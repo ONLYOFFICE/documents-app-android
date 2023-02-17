@@ -475,6 +475,21 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         // stub
     }
 
+    override fun sortBy(type: MainPopupItem.SortBy): Boolean {
+        val isRepeatedTap = MainPopup.getSortPopupItem(preferenceTool.sortBy) == type
+        preferenceTool.sortBy = type.value
+        if (isRepeatedTap) {
+            reverseSortOrder()
+        }
+        presenterScope.launch(Dispatchers.IO) {
+            val list = recentDao.getRecents().sort(type.value)
+            withContext(Dispatchers.Main) {
+                updateFiles(list)
+            }
+        }
+        return false
+    }
+
     @SuppressLint("MissingPermission")
     fun deleteTempFile() {
         if (temp != null && checkReadWritePermission(context)) {
@@ -489,21 +504,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     fun updateFiles(list: List<Recent>) {
         val sortByUpdated = preferenceTool.sortBy == ApiContract.Parameters.VAL_SORT_BY_UPDATED
         viewState.updateFiles(list, sortByUpdated)
-    }
-
-    override fun sortBy(type: MainPopupItem.SortBy): Boolean {
-        val isRepeatedTap = MainPopup.getSortPopupItem(preferenceTool.sortBy) == type
-        preferenceTool.sortBy = type.value
-        if (isRepeatedTap) {
-            reverseSortOrder()
-        }
-        presenterScope.launch(Dispatchers.IO) {
-            val list = recentDao.getRecents().sort(type.value)
-            withContext(Dispatchers.Main) {
-                updateFiles(list)
-            }
-        }
-        return false
     }
 
     private fun List<Recent>.sort(sortBy: String? = preferenceTool.sortBy): List<Recent> {

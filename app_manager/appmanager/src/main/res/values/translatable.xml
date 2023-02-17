@@ -237,7 +237,6 @@
         <item quantity="other">Delete %1$d items?</item>
     </plurals>
 
-
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Rename</string>
     <string name="dialogs_edit_hint">Enter title</string>
