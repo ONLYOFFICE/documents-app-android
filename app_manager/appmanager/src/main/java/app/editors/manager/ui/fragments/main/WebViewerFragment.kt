@@ -323,6 +323,8 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
         if (isDesktopMode || UiUtils.isHuaweiDesktopMode(resources.configuration)) {
             webView.settings.userAgentString = DESKTOP_USER_AGENT
+        } else {
+            webView.settings.userAgentString = MOBILE_USER_AGENT
         }
         NetworkUtils.clearCookies()
         getArgs()
