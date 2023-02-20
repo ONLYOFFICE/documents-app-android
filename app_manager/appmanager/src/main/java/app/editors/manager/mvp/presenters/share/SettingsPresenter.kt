@@ -266,7 +266,7 @@ class SettingsPresenter(
                     item.id,
                     false,
                     null,
-                    Share(accessCode.toString(), it.sharedTo, it.isLocked, it.isOwner)
+                    Share(item.getAdminCode(accessCode).toString(), it.sharedTo, it.isLocked, it.isOwner)
                 )
             }
         } else {
@@ -485,4 +485,10 @@ class SettingsPresenter(
         }
     }
 
+}
+
+fun CloudFolder.getAdminCode(code: Int): Int {
+    return if (isRoom && code == ApiContract.ShareCode.ROOM_ADMIN) {
+         ApiContract.ShareCode.ROOM_ADMIN
+    } else code
 }
