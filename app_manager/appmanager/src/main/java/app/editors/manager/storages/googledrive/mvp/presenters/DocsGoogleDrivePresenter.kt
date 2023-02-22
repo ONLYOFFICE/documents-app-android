@@ -1,7 +1,6 @@
 package app.editors.manager.storages.googledrive.mvp.presenters
 
 import android.accounts.Account
-import android.content.ClipData
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
@@ -11,6 +10,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.googleDriveLoginService
 import app.editors.manager.managers.utils.StorageUtils
+import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.GoogleDriveFolder
@@ -18,11 +18,11 @@ import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.DocsGoogleDriveView
-import app.editors.manager.storages.base.work.BaseStorageDownloadWork
 import app.editors.manager.storages.googledrive.managers.providers.GoogleDriveFileProvider
 import app.editors.manager.storages.googledrive.managers.receiver.GoogleDriveUploadReceiver
 import app.editors.manager.storages.googledrive.managers.utils.GoogleDriveUtils
 import app.editors.manager.storages.googledrive.managers.works.DownloadWork
+import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveCloudFile
 import app.editors.manager.storages.googledrive.mvp.models.request.ShareRequest
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -43,6 +43,8 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     init {
         App.getApp().appComponent.inject(this)
     }
+
+    val isFolderSelected get() = modelExplorerStack.selectedFolders.isNotEmpty()
 
     override val externalLink: Unit
         get() {
@@ -159,14 +161,16 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     }
 
     override fun startDownload(downloadTo: Uri, item: Item?) {
-        val data = Data.Builder()
-            .putString(BaseStorageDownloadWork.FILE_ID_KEY, item?.id)
-            .putString(BaseStorageDownloadWork.FILE_URI_KEY, downloadTo.toString())
-            .putString(
-                DownloadWork.DOWNLOADABLE_ITEM_KEY,
-                if (item is CloudFile) DownloadWork.DOWNLOADABLE_ITEM_FILE else DownloadWork.DOWNLOADABLE_ITEM_FOLDER
-            )
-            .build()
+        val data = Data.Builder().apply {
+            putString(BaseDownloadWork.FILE_ID_KEY, item?.id)
+            putString(BaseDownloadWork.FILE_URI_KEY, downloadTo.toString())
+            when (item) {
+                is GoogleDriveCloudFile -> {
+                    val isGoogleMimeType = GoogleDriveFileProvider.GoogleMimeType.isGoogleMimeType(item.mimeType)
+                    putString(DownloadWork.GOOGLE_MIME_TYPE, item.mimeType.takeIf { isGoogleMimeType })
+                }
+            }
+        }.build()
 
         val request = OneTimeWorkRequest.Builder(DownloadWork::class.java)
             .setInputData(data)

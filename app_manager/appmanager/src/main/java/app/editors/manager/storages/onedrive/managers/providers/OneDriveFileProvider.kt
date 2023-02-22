@@ -10,12 +10,9 @@ import app.documents.core.network.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.managers.providers.BaseFileProvider
-import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
-import app.editors.manager.mvp.models.base.Base
 import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.request.RequestCreate
 import app.editors.manager.mvp.models.request.RequestExternal
-import app.editors.manager.mvp.models.request.RequestFavorites
 import app.editors.manager.mvp.models.response.ResponseExternal
 import app.editors.manager.mvp.models.response.ResponseOperation
 import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
@@ -29,6 +26,7 @@ import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemValue
 import app.editors.manager.storages.onedrive.mvp.models.request.*
 import app.editors.manager.storages.onedrive.mvp.models.response.ExternalLinkResponse
 import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
+import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -39,14 +37,12 @@ import lib.toolkit.base.managers.utils.FileUtils.createFile
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
-import okhttp3.ResponseBody
 import retrofit2.HttpException
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class OneDriveFileProvider : BaseFileProvider {
-
 
     companion object {
         private const val PATH_TEMPLATES = "templates/"
@@ -353,13 +349,13 @@ class OneDriveFileProvider : BaseFileProvider {
         return Observable.create { emitter: ObservableEmitter<CloudFile> ->
             val outputFile = checkDirectory(item)
 
-            outputFile?.let {
-                if(it.exists()) {
+            outputFile?.let { file ->
+                if (file.exists()) {
                     if (item is CloudFile) {
                         if (item.pureContentLength != outputFile.length()) {
                             download(emitter, item, outputFile)
                         } else {
-                            setFile(item, outputFile).let { emitter.onNext(it) }
+                            emitter.onNext(setFile(item, outputFile))
                             emitter.onComplete()
                         }
                     }
@@ -378,7 +374,7 @@ class OneDriveFileProvider : BaseFileProvider {
                         if (isDownload) {
                             download(emitter, item, outputFile)
                         } else {
-                            emitter.onNext(setFile(item, outputFile)!!)
+                            emitter.onNext(setFile(item, outputFile))
                             emitter.onComplete()
                         }
                     }
@@ -415,10 +411,11 @@ class OneDriveFileProvider : BaseFileProvider {
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
-        val result = api.download((item as CloudFile).id).blockingGet()
-        if(result is OneDriveResponse.Success) {
+        val response = api.download((item as CloudFile).id).blockingGet()
+        val responseBody = response.body()
+        if (response.isSuccessful && responseBody != null) {
             try {
-                (result.response as ResponseBody).byteStream().use { inputStream ->
+                responseBody.byteStream().use { inputStream ->
                     FileOutputStream(outputFile).use { outputStream ->
                         val buffer = ByteArray(4096)
                         var count: Int
@@ -426,15 +423,13 @@ class OneDriveFileProvider : BaseFileProvider {
                             outputStream.write(buffer, 0, count)
                         }
                         outputStream.flush()
-                        emitter.onNext(setFile(item, outputFile)!!)
+                        emitter.onNext(setFile(item, outputFile))
                         emitter.onComplete()
                     }
                 }
             } catch (error: IOException) {
                 emitter.onError(error)
             }
-        } else if(result is OneDriveResponse.Error) {
-            throw result.error
         }
     }
 

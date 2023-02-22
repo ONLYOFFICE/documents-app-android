@@ -171,9 +171,9 @@ abstract class BaseStorageDocsPresenter<view: BaseStorageDocsView>: DocsBasePres
         }
     }
 
-    override fun onDownloadError(id: String?, url: String?, title: String?, info: String?, uri: Uri?) {
-        info?.let { viewState.onSnackBar(it) }
-        viewState.onFinishDownload(uri)
+    override fun onDownloadError(info: String?) {
+        viewState.onDialogClose()
+        viewState.onSnackBar(info ?: context.getString(R.string.download_manager_error))
     }
 
     override fun onDownloadProgress(id: String?, total: Int, progress: Int) {

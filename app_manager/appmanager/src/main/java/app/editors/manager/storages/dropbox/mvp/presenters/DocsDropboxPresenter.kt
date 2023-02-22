@@ -9,12 +9,12 @@ import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.dropboxLoginService
+import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.Explorer
 import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
 import app.editors.manager.storages.base.view.BaseStorageDocsView
-import app.editors.manager.storages.base.work.BaseStorageDownloadWork
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.storages.dropbox.dropbox.api.DropboxService
 import app.editors.manager.storages.dropbox.dropbox.login.DropboxResponse
@@ -104,8 +104,8 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun startDownload(downloadTo: Uri, item: Item?) {
         val data = Data.Builder()
-            .putString(BaseStorageDownloadWork.FILE_ID_KEY, item?.id)
-            .putString(BaseStorageDownloadWork.FILE_URI_KEY, downloadTo.toString())
+            .putString(BaseDownloadWork.FILE_ID_KEY, item?.id)
+            .putString(BaseDownloadWork.FILE_URI_KEY, downloadTo.toString())
             .putString(
                 DownloadWork.DOWNLOADABLE_ITEM_KEY,
                 if (item is CloudFile) DownloadWork.DOWNLOADABLE_ITEM_FILE else DownloadWork.DOWNLOADABLE_ITEM_FOLDER

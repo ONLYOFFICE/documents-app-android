@@ -47,7 +47,14 @@ class GoogleDriveFileProvider: BaseFileProvider {
     enum class GoogleMimeType(val value: String) {
         Docs("application/vnd.google-apps.document"),
         Cells("application/vnd.google-apps.spreadsheet"),
-        Slides("application/vnd.google-apps.presentation")
+        Slides("application/vnd.google-apps.presentation");
+
+        companion object {
+            fun isGoogleMimeType(mimeType: String): Boolean {
+                return values().map { it.value }
+                    .contains(mimeType)
+            }
+        }
     }
 
     companion object {
@@ -70,7 +77,7 @@ class GoogleDriveFileProvider: BaseFileProvider {
             } else return name
         }
 
-        private fun getCommonMimeType(googleMimeType: String): String {
+        fun getCommonMimeType(googleMimeType: String): String {
             return when (googleMimeType) {
                 GoogleMimeType.Docs.value -> LocalContentTools.MIME_TYPE_DOCX
                 GoogleMimeType.Cells.value -> LocalContentTools.MIME_TYPE_XLSX

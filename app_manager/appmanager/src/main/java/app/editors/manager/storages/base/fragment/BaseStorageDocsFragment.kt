@@ -200,7 +200,9 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     }
 
     override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(listOf(SelectActionBarPopup.Restore))
+        super.showSelectedActionBarMenu(excluded.toMutableList().apply {
+            add(SelectActionBarPopup.Restore)
+        })
     }
 
     abstract fun getDocsPresenter(): BaseStorageDocsPresenter<out BaseStorageDocsView>

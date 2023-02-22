@@ -117,6 +117,7 @@ public class NotificationUtils {
         Notification notification = getDownloadNotificationBuilder(title)
                 .addAction(R.drawable.drawable_ic_cancel_download_upload, context.getString(R.string.operation_panel_cancel_button), getDownloadIntent(tag))
                 .setProgress(100, progress, false)
+                .setSilent(true)
                 .build();
         notificationManager.notify(id, notification);
     }
@@ -125,6 +126,7 @@ public class NotificationUtils {
         Notification notification = getArchivingNotificationBuilder(title)
                 .addAction(R.drawable.drawable_ic_cancel_download_upload, context.getString(R.string.operation_panel_cancel_button), getDownloadIntent(tag))
                 .setProgress(100, progress, false)
+                .setSilent(true)
                 .build();
         notificationManager.notify(id, notification);
     }
@@ -133,6 +135,7 @@ public class NotificationUtils {
         Notification notification = getUploadNotificationBuilder(title)
                 .addAction(R.drawable.drawable_ic_cancel_download_upload, context.getString(R.string.operation_panel_cancel_button), getUploadIntent(tag))
                 .setProgress(100, progress, false)
+                .setSilent(true)
                 .build();
         notificationManager.notify(id, notification);
     }

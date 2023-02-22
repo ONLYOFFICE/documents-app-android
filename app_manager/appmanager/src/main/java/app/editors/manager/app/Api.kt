@@ -263,7 +263,7 @@ interface Api {
      * */
     @Streaming
     @GET
-    fun downloadFile(@Url url: String, @Header("Cookie") cookie: String): Call<ResponseBody>
+    fun downloadFile(@Url url: String, @Header("Cookie") cookie: String): Single<Response<ResponseBody>>
 
     @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/bulkdownload")
     fun downloadFiles(@Body requestDownload: RequestDownload): Single<ResponseDownload>

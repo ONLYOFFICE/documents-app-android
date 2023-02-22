@@ -37,7 +37,7 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
         disposable = App.getApp().oneDriveLoginService.getToken(map)
             .map { oneDriveResponse ->
                 viewState.onStartLogin()
-                when(oneDriveResponse) {
+                when (oneDriveResponse) {
                     is OneDriveResponse.Success -> {
                         accessToken = (oneDriveResponse.response as AuthResponse).access_token
                         refreshToken = oneDriveResponse.response.refresh_token
@@ -48,9 +48,10 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
                         throw oneDriveResponse.error
                     }
                 }
-            }.flatMap {accessToken -> App.getApp().oneDriveLoginService.getUserInfo((accessToken).access_token) }
+            }
+            .flatMap { authResponse -> App.getApp().oneDriveLoginService.getUserInfo(authResponse.access_token) }
             .subscribe { oneDriveResponse ->
-                when(oneDriveResponse) {
+                when (oneDriveResponse) {
                     is OneDriveResponse.Success -> {
                         createUser((oneDriveResponse.response as User), accessToken, refreshToken)
                     }

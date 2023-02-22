@@ -288,10 +288,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     /*
      * Loading callbacks
      * */
-    override fun onDownloadError(id: String?, url: String?, title: String, info: String, uri: Uri) {
-
+    override fun onDownloadError(info: String?) {
         viewState.onDialogClose()
-        viewState.onSnackBar(info)
+        viewState.onSnackBar(info ?: context.getString(R.string.download_manager_error))
     }
 
     override fun onDownloadProgress(id: String, total: Int, progress: Int) {

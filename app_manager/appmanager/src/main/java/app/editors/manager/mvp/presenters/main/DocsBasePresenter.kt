@@ -26,6 +26,7 @@ import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
+import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.base.Entity
@@ -635,10 +636,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     private fun startDownloadWork(to: Uri, id: String?, url: String?, requestDownload: RequestDownload?) {
         val workData = Data.Builder()
-            .putString(DownloadWork.FILE_ID_KEY, id)
-            .putString(DownloadWork.URL_KEY, url)
-            .putString(DownloadWork.FILE_URI_KEY, to.toString())
-            .putString(DownloadWork.REQUEST_DOWNLOAD, Gson().toJson(requestDownload))
+            .putString(BaseDownloadWork.FILE_ID_KEY, id)
+            .putString(BaseDownloadWork.URL_KEY, url)
+            .putString(BaseDownloadWork.FILE_URI_KEY, to.toString())
+            .putString(BaseDownloadWork.REQUEST_DOWNLOAD, Gson().toJson(requestDownload))
             .build()
 
         val request = OneTimeWorkRequest.Builder(DownloadWork::class.java)
