@@ -105,7 +105,7 @@ object ManagerUiUtils {
     }
 
     fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
-         return when {
+        return when {
             folder.shared && folder.providerKey.isEmpty() -> R.drawable.ic_type_folder_shared
             isRoot && folder.providerItem && folder.providerKey.isNotEmpty() -> {
                 StorageUtils.getStorageIcon(folder.providerKey)
@@ -129,7 +129,7 @@ object ManagerUiUtils {
         }
     }
 
-    fun setAccessIcon(imageView: ImageView, accessCode: Int, isRoom: Boolean = false) {
+    fun setAccessIcon(imageView: ImageView, accessCode: Int) {
         when (accessCode) {
             ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> {
                 imageView.setImageResource(R.drawable.ic_access_deny)
@@ -137,13 +137,8 @@ object ManagerUiUtils {
             }
             ApiContract.ShareCode.REVIEW -> imageView.setImageResource(R.drawable.ic_access_review)
             ApiContract.ShareCode.READ -> imageView.setImageResource(R.drawable.ic_access_read)
-            ApiContract.ShareCode.READ_WRITE -> {
-                if (isRoom) {
-                    imageView.setImageResource(R.drawable.ic_drawer_menu_my_docs)
-                } else {
-                    imageView.setImageResource(R.drawable.ic_access_full)
-                }
-            }
+            ApiContract.ShareCode.ROOM_ADMIN -> imageView.setImageResource(R.drawable.ic_drawer_menu_my_docs)
+            ApiContract.ShareCode.READ_WRITE -> imageView.setImageResource(R.drawable.ic_access_full)
             ApiContract.ShareCode.EDITOR -> imageView.setImageResource(R.drawable.ic_access_full)
             ApiContract.ShareCode.COMMENT -> imageView.setImageResource(R.drawable.ic_access_comment)
             ApiContract.ShareCode.FILL_FORMS -> imageView.setImageResource(R.drawable.ic_access_fill_form)
