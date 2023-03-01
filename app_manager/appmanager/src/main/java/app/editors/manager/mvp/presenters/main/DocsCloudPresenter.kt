@@ -234,8 +234,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
                 else -> {
                     viewState.onActionBarTitle("")
-                    //TODO Move to getter isContextEditable
-                    viewState.onStateActionButton(isContextEditable || modelExplorerStack.last()?.current?.security?.create == true)
+                    if (isRoom) {
+                        viewState.onStateActionButton(false)
+                    } else {
+                        viewState.onStateActionButton(isContextEditable)
+                    }
+//                    TODO from room
+//                    viewState.onStateActionButton(isContextEditable || modelExplorerStack.last()?.current?.security?.create == true)
                 }
             }
             viewState.onStateAdapterRoot(true)
