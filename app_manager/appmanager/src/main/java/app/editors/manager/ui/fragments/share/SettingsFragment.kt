@@ -25,6 +25,7 @@ import app.editors.manager.databinding.IncludeButtonPopupBinding
 import app.editors.manager.databinding.IncludeShareSettingsHeaderBinding
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
@@ -226,7 +227,13 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     override fun onActionButtonState(isVisible: Boolean) {
         viewBinding?.let { binding ->
             if (isVisible && !settingsPresenter.isPersonalAccount) {
-                binding.shareSettingsAddItem.show()
+                if (requireContext().appComponent.networkSettings.isDocSpace) {
+                    if (item.isCanShare) {
+                        binding.shareSettingsAddItem.show()
+                    }
+                } else {
+                    binding.shareSettingsAddItem.show()
+                }
             } else {
                 binding.shareSettingsAddItem.hide()
             }

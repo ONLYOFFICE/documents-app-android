@@ -415,14 +415,6 @@ class SettingsPresenter(
             return
         }
 
-        viewState.onActionButtonState(
-            if (context.appComponent.networkSettings.isDocSpace) {
-                item.isCanShare
-            } else {
-                true
-            }
-        )
-
         if (isShare && commonList.isNotEmpty()) {
             viewState.onGetShareItem(commonList[sharePosition], sharePosition, item.intAccess)
             isShare = false
@@ -436,6 +428,7 @@ class SettingsPresenter(
             viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
         }
 
+        viewState.onActionButtonState(true)
         loadAvatars(commonList)
     }
 
