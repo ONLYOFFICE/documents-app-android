@@ -19,7 +19,6 @@ import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.ManagerUiUtils
-import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.mvp.models.explorer.CloudFolder
@@ -235,9 +234,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
                 else -> {
                     viewState.onActionBarTitle("")
-                    //TODO For docspace
-//                    viewState.onStateActionButton(isContextEditable && (modelExplorerStack.last()?.current?.isCanEdit == true))
-                    viewState.onStateActionButton(isContextEditable)
+                    //TODO Move to getter isContextEditable
+                    viewState.onStateActionButton(isContextEditable || modelExplorerStack.last()?.current?.security?.create == true)
                 }
             }
             viewState.onStateAdapterRoot(true)

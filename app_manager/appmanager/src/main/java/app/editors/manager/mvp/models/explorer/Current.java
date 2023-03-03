@@ -81,6 +81,10 @@ public class Current implements Cloneable, Serializable {
     @Expose
     private boolean canEdit = false;
 
+    @SerializedName("security")
+    @Expose
+    private Security security = new Security();
+
     public String getParentId() {
         return parentId;
     }
@@ -207,6 +211,14 @@ public class Current implements Cloneable, Serializable {
 
     public void setRoomType(int roomType) {
         this.roomType = roomType;
+    }
+
+    public Security getSecurity() {
+        return security;
+    }
+
+    public void setSecurity(Security security) {
+        this.security = security;
     }
 
     @Override
