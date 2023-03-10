@@ -216,7 +216,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
         }
     }
 
-    fun upload(uri: Uri?, uris: List<Uri>?, tag: String) {
+    override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         val uploadUris = mutableListOf<Uri>()
         var index = 0
 
@@ -235,7 +235,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
             uploadUris = uploadUris,
             folderId = modelExplorerStack.currentId.orEmpty(),
             fileId = itemClicked?.id.orEmpty(),
-            tag = tag
+            tag = tag ?: "KEY_UPLOAD"
         )
     }
 

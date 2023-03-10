@@ -247,7 +247,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    override fun upload(uri: Uri?, uris: List<Uri>?) {
+    override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         item?.let { item ->
             if (item.isWebDav) {
                 account?.let { account ->

@@ -15,12 +15,14 @@ import app.editors.manager.storages.base.view.BaseStorageDocsView
 import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.popup.MainActionBarPopup
 import app.editors.manager.ui.popup.SelectActionBarPopup
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.FolderChooser
+import lib.toolkit.base.managers.utils.PathUtils
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import java.io.File
 
@@ -201,6 +203,17 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
         super.showSelectedActionBarMenu(listOf(SelectActionBarPopup.Restore))
+    }
+
+    override fun onFileUploadPermission() {
+        showMultipleFilePickerActivity { uris ->
+            if (!uris.isNullOrEmpty()) {
+                presenter.upload(
+                    null,
+                    uris,
+                    KEY_UPLOAD)
+            }
+        }
     }
 
     abstract fun getDocsPresenter(): BaseStorageDocsPresenter<out BaseStorageDocsView>

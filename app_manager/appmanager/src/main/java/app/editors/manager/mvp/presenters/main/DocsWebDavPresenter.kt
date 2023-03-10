@@ -229,7 +229,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         }
     }
 
-    override fun upload(uri: Uri?, uris: List<Uri>?) {
+    override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         if (preferenceTool.uploadWifiState && !isWifiEnable(context)) {
             viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
             return

@@ -54,15 +54,6 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
                         )
                     }
                 }
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let { clipData ->
-                    presenter.upload(
-                        null,
-                        clipData,
-                        KEY_UPLOAD
-                    )
-                }.run {
-                    presenter.upload(data?.data, null, KEY_UPLOAD)
-                }
             }
         }
     }
@@ -75,5 +66,7 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
             requireActivity().finish()
         }
     }
+
+
 
 }

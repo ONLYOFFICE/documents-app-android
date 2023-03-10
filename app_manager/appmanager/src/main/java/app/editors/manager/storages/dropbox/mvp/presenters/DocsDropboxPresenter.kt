@@ -145,7 +145,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
 
-    fun upload(uri: Uri?, uris: ClipData?, tag: String) {
+    override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         setBaseUrl(DropboxService.DROPBOX_BASE_URL_CONTENT)
         val uploadUris = mutableListOf<Uri>()
         var index = 0
@@ -154,8 +154,8 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             uploadUris.add(uri)
         } ?: run {
             uris?.let {
-                while(index != uris.itemCount) {
-                    uploadUris.add(uris.getItemAt(index).uri)
+                while(index != uris.size) {
+                    uploadUris.add(uris[index])
                     index++
                 }
             }
