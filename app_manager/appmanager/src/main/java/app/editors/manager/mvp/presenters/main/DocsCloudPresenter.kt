@@ -218,7 +218,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         } else if (!modelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
-            viewState.onStateActionButton(isContextEditable)
+            // TODO check security...
+            if (isRoom && modelExplorerStack.last()?.current?.security?.create == true) {
+                viewState.onStateActionButton(true)
+            } else {
+                viewState.onStateActionButton(isContextEditable)
+            }
             viewState.onActionBarTitle(currentTitle)
         } else {
             when {
