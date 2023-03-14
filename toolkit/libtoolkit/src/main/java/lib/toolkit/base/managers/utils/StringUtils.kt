@@ -487,3 +487,10 @@ object StringUtils {
         return SimpleDateFormat(pattern, Locale.getDefault()).parse(date)
     }
 }
+
+fun String.capitalize(locale: Locale? = null): String {
+    return replaceFirstChar { char ->
+        if (char.isLowerCase())
+            locale?.let { char.titlecase(it) } ?: char.titlecase() else char.toString()
+    }
+}

@@ -85,16 +85,15 @@ class AboutActivity : BaseAppActivity() {
 }
 
 @Composable
-private fun AppBar(@StringRes title: Int, @DrawableRes icon: Int, click: () -> Unit) {
+private fun AppBar(@StringRes title: Int, @DrawableRes icon: Int, onClick: () -> Unit) {
     TopAppBar(
         title = { Text(text = stringResource(id = title)) },
         navigationIcon = {
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+            IconButton(onClick = onClick) {
                 Icon(
                     painter = painterResource(id = icon),
                     contentDescription = "Close",
                     tint = MaterialTheme.colors.primary,
-                    modifier = Modifier.clickable { click() }
                 )
             }
         },

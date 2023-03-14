@@ -1,6 +1,7 @@
 package app.editors.manager.ui.fragments.main
 
 import android.Manifest
+import android.app.LocaleManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,7 @@ import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentAppSettingsLayoutBinding
 import app.editors.manager.ui.activities.main.AboutActivity
+import app.editors.manager.ui.activities.main.AppLocalePickerActivity
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.dialogs.AppThemeDialog
@@ -22,7 +24,9 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.capitalize
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
+
 
 class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
 
@@ -85,7 +89,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
 
     private fun init() {
         viewModel.cacheLiveData.observe(viewLifecycleOwner) { size: Long? ->
-            viewBinding?.cacheSizeTextView?.text = StringUtils.getFormattedSize(requireContext(), size ?: -1)
+            viewBinding?.clearCache?.optionText?.text = StringUtils.getFormattedSize(requireContext(), size ?: -1)
         }
         viewModel.analyticState.observe(viewLifecycleOwner) { isChecked ->
             viewBinding?.analyticSwitch?.isChecked = isChecked
@@ -113,7 +117,6 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
 
     private fun initSettingItems() {
         viewBinding?.let { binding ->
-            binding.clearCacheLayout.setOnClickListener(this)
             binding.settingAboutItem.root.setOnClickListener(this)
             binding.settingHelpItem.root.setOnClickListener(this)
             binding.settingSupportItem.root.setOnClickListener(this)
@@ -121,6 +124,27 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
             binding.analyticSwitch.setOnClickListener(this)
             binding.passcodeLayout.setOnClickListener(this)
             binding.settingsAppTheme.root.setOnClickListener(this)
+
+            with(binding.clearCache) {
+                settingIcon.isVisible = false
+                settingIconArrow.isVisible = false
+                settingText.setText(R.string.settings_clear_cache)
+                root.setOnClickListener(this@AppSettingsFragment)
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val currentAppLocale = with(requireContext().getSystemService(LocaleManager::class.java)) {
+                    applicationLocales.get(0) ?: systemLocales.get(0)
+                }
+
+                with(binding.appLocale) {
+                    root.isVisible = true
+                    settingIcon.isVisible = false
+                    settingText.setText(R.string.settings_language)
+                    optionText.text = currentAppLocale.displayLanguage.capitalize(currentAppLocale)
+                    root.setOnClickListener(this@AppSettingsFragment)
+                }
+            }
 
             binding.settingAboutItem.settingIcon.setImageResource(R.drawable.ic_drawer_menu_about)
             binding.settingAboutItem.settingText.text = getString(R.string.about_title)
@@ -163,14 +187,19 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.clearCacheLayout -> {
+            R.id.clearCache -> {
                 showQuestionDialog(
                    "",
-                    requireContext().getString(R.string.dialog_clear_cache),
+                    getString(R.string.dialog_clear_cache),
                     getString(R.string.dialogs_common_ok_button),
                     getString(R.string.dialogs_common_cancel_button),
                     TAG_DIALOG_TRASH
                 )
+            }
+            R.id.appLocale -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    AppLocalePickerActivity.show(requireContext())
+                }
             }
             R.id.settingAboutItem -> {
                 AboutActivity.show(requireContext())
