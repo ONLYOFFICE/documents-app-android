@@ -1,7 +1,6 @@
 package app.editors.manager.storages.googledrive.mvp.presenters
 
 import android.accounts.Account
-import android.content.ClipData
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
@@ -31,10 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.*
 
 class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>(), GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
 
@@ -231,11 +227,19 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
             }
         }
 
+        val name = ContentResolverUtils.getName(context, uri?: Uri.EMPTY)
+
+        val newTag = if (itemClicked?.title == name) {
+            "KEY_UPDATE"
+        } else {
+            "KEY_UPLOAD"
+        }
+
         viewState.onUpload(
             uploadUris = uploadUris,
             folderId = modelExplorerStack.currentId.orEmpty(),
             fileId = itemClicked?.id.orEmpty(),
-            tag = tag ?: "KEY_UPLOAD"
+            tag = newTag
         )
     }
 

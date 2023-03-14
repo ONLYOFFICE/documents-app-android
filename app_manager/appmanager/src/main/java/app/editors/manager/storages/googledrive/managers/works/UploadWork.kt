@@ -14,6 +14,7 @@ import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
 import app.editors.manager.storages.base.work.BaseStorageUploadWork
 import app.editors.manager.storages.googledrive.managers.receiver.GoogleDriveUploadReceiver
 import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveFile
+import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import java.io.DataOutputStream
 import java.io.OutputStream
@@ -41,7 +42,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
 
         when(tag) {
             BaseStorageDocsFragment.KEY_UPLOAD -> {
-                title = file?.name.toString()
+                title = ContentResolverUtils.getName(applicationContext, file?.uri ?: Uri.EMPTY)
             }
             BaseStorageDocsFragment.KEY_UPDATE, BaseStorageDocsFragment.KEY_CREATE -> {
                 title = path?.let { FileUtils.getFileName(it, true) }.toString()
