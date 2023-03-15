@@ -72,13 +72,14 @@ class SettingsPresenter(
         )
     }
 
-    private suspend fun getShareFile(id: String) {
-        request(
-            func = { shareApi.getShareFile(id) },
-            onSuccess = { response ->
-                getShareList(response.response)
-                if (response.response.isNotEmpty()) {
-                    externalLink = response.response[0].sharedTo.shareLink
+    private fun getShareFile(id: String) {
+        disposable = sharedService.getShareFile(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                getShareList(it.response)
+                if (it.response.isNotEmpty()) {
+                    externalLink = it.response[0].sharedTo.shareLink
                 }
             }, onError = ::fetchError
         )
@@ -135,7 +136,7 @@ class SettingsPresenter(
                             invitations = shareList.map { share ->
                                 Invitation(
                                     id = share?.sharedTo?.id,
-                                    access = share?.access?.toInt() ?: 0
+                                    access = if (share?.intAccess == 1) ApiContract.ShareCode.ROOM_ADMIN else share?.intAccess ?: 0
                                 )
                             },
                             notify = isNotify,

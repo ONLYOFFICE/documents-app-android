@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.presenters.storages
 
+import android.accounts.Account
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
@@ -24,6 +25,11 @@ import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -201,7 +207,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
         }
     }
 
-    fun upload(uri: Uri?, uris: List<Uri>?, tag: String) {
+    override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         val uploadUris = mutableListOf<Uri>()
         var index = 0
 
@@ -216,11 +222,19 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
             }
         }
 
+        val name = ContentResolverUtils.getName(context, uri?: Uri.EMPTY)
+
+        val newTag = if (itemClicked?.title == name) {
+            "KEY_UPDATE"
+        } else {
+            "KEY_UPLOAD"
+        }
+
         viewState.onUpload(
             uploadUris = uploadUris,
             folderId = modelExplorerStack.currentId.orEmpty(),
             fileId = itemClicked?.id.orEmpty(),
-            tag = tag
+            tag = newTag
         )
     }
 

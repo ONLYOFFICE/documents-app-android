@@ -656,7 +656,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    open fun upload(uri: Uri?, uris: List<Uri>?) {
+    open fun upload(uri: Uri?, uris: List<Uri>?, tag: String? = null) {
         if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
             viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
         } else {

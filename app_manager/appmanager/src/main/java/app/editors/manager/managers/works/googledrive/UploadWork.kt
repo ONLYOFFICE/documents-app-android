@@ -41,7 +41,7 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
 
         when(tag) {
             BaseStorageDocsFragment.KEY_UPLOAD -> {
-                title = file?.name.toString()
+                title = ContentResolverUtils.getName(applicationContext, file?.uri ?: Uri.EMPTY)
             }
             BaseStorageDocsFragment.KEY_UPDATE, BaseStorageDocsFragment.KEY_CREATE -> {
                 title = path?.let { FileUtils.getFileName(it, true) }.toString()

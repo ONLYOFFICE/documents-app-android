@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.storages
 
 import android.accounts.Account
-import android.content.ClipData
 import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
@@ -152,7 +151,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         }
     }
 
-    fun upload(uri: Uri?, uris: ClipData?, tag: String) {
+    override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         val uploadUris = mutableListOf<Uri>()
         var index = 0
 
@@ -160,8 +159,8 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             uploadUris.add(uri)
         } ?: run {
             uris?.let {
-                while(index != uris.itemCount) {
-                    uploadUris.add(uris.getItemAt(index).uri)
+                while(index != uris.size) {
+                    uploadUris.add(uris[index])
                     index++
                 }
             }
