@@ -129,37 +129,43 @@ class CloudFileProvider @Inject constructor(
     }
 
     override fun delete(items: List<Item>, from: CloudFolder?): Observable<List<Operation>> {
-        val filesId: MutableList<String> = ArrayList()
-        val foldersId: MutableList<String> = ArrayList()
-        for (item in items) {
-            if (item is CloudFile) {
-                filesId.add(item.id)
-            } else if (item is CloudFolder) {
-                if (item.providerItem) {
-                    removeStorage(item.id)
-                } else {
-                    foldersId.add(item.id)
-                }
-            }
-        }
-        val request = RequestBatchBase()
-        request.isDeleteAfter = false
-        request.fileIds = filesId
-        request.folderIds = foldersId
-        return Observable.fromCallable {
-            managerService.deleteBatch(
-                request
-            ).execute()
-        }
+        return managerService.deleteBatch(getDeleteRequest(items))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { responseOperationResponse: Response<ResponseOperation?> ->
+            .map { responseOperationResponse: Response<ResponseOperation> ->
                 if (responseOperationResponse.isSuccessful && responseOperationResponse.body() != null) {
-                    return@map responseOperationResponse.body()!!.response
+                    responseOperationResponse.body()!!.response
                 } else {
                     throw HttpException(responseOperationResponse)
                 }
             }
+    }
+
+    private fun getDeleteRequest(items: List<Item>): RequestBatchBase {
+        val isArchive = roomCallback?.isArchive() == true
+        val filesId: MutableList<String> = mutableListOf()
+        val foldersId: MutableList<String> = mutableListOf()
+
+        items.forEach { item ->
+            val id = item.id
+            when (item) {
+                is CloudFile -> filesId.add(id)
+                is CloudFolder -> {
+                    if (item.providerItem) {
+                        removeStorage(id)
+                    } else {
+                        foldersId.add(id)
+                    }
+                }
+            }
+        }
+
+        return RequestBatchBase().apply {
+            isDeleteAfter = isArchive
+            isImmediately = isArchive
+            fileIds = filesId
+            folderIds = foldersId
+        }
     }
 
     private fun removeStorage(id: String) {

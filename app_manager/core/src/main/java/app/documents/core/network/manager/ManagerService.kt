@@ -113,7 +113,7 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/delete")
-    fun deleteBatch(@Body body: RequestBatchBase): Call<ResponseOperation>
+    fun deleteBatch(@Body body: RequestBatchBase): Observable<Response<ResponseOperation>>
 
     /*
      * Move items

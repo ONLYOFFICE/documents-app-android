@@ -15,4 +15,8 @@ open class RequestBatchBase {
     @SerializedName("deleteAfter")
     @Expose
     var isDeleteAfter = false
+
+    @SerializedName("immediately")
+    @Expose
+    var isImmediately = false
 }
