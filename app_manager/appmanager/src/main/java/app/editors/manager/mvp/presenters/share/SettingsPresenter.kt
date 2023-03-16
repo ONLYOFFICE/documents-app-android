@@ -72,14 +72,13 @@ class SettingsPresenter(
         )
     }
 
-    private fun getShareFile(id: String) {
-        disposable = sharedService.getShareFile(id)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                getShareList(it.response)
-                if (it.response.isNotEmpty()) {
-                    externalLink = it.response[0].sharedTo.shareLink
+    private suspend fun getShareFile(id: String) {
+        request(
+            func = { shareApi.getShareFile(id) },
+            onSuccess = { response ->
+                getShareList(response.response)
+                if (response.response.isNotEmpty()) {
+                    externalLink = response.response[0].sharedTo.shareLink
                 }
             }, onError = ::fetchError
         )
