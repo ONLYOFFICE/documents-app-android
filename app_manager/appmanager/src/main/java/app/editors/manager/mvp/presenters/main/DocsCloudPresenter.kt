@@ -224,7 +224,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         } else if (!modelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
-            viewState.onStateActionButton(isContextEditable)
+            // TODO check security...
+            if (isRoom && modelExplorerStack.last()?.current?.security?.create == true) {
+                viewState.onStateActionButton(true)
+            } else {
+                viewState.onStateActionButton(isContextEditable)
+            }
             viewState.onActionBarTitle(currentTitle)
         } else {
             when {
@@ -240,9 +245,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
                 else -> {
                     viewState.onActionBarTitle("")
-                    //TODO For docspace
-//                    viewState.onStateActionButton(isContextEditable && (modelExplorerStack.last()?.current?.isCanEdit == true))
-                    viewState.onStateActionButton(isContextEditable)
+                    if (isRoom) {
+                        viewState.onStateActionButton(false)
+                    } else {
+                        viewState.onStateActionButton(isContextEditable)
+                    }
+//                    TODO from room
+//                    viewState.onStateActionButton(isContextEditable || modelExplorerStack.last()?.current?.security?.create == true)
                 }
             }
             viewState.onStateAdapterRoot(true)

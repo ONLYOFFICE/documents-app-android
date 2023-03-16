@@ -80,6 +80,10 @@ class Current : Cloneable, Serializable {
     @Expose
     var isCanEdit = false
 
+    @SerializedName("security")
+    @Expose
+    var security: Security? = null
+
     public override fun clone(): Current {
         return (super.clone() as Current).apply {
             createdBy = createdBy.clone()

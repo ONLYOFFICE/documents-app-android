@@ -51,7 +51,7 @@ class LoginServiceProvider(
 
     override fun signIn(request: RequestSignIn, smsCode: String?): Single<LoginResponse> {
         smsCode?.let { sms ->
-            return loginService.smsSignIn(request, sms).map { fetchResponse(it) }
+            return loginService.smsSignIn(request.copy(code = smsCode), sms).map { fetchResponse(it) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
         } ?: run {

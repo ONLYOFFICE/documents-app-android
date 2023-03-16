@@ -135,7 +135,7 @@ class SettingsPresenter(
                             invitations = shareList.map { share ->
                                 Invitation(
                                     id = share?.sharedTo?.id,
-                                    access = share?.access?.toInt() ?: 0
+                                    access = if (share?.intAccess == 1) ApiContract.ShareCode.ROOM_ADMIN else share?.intAccess ?: 0
                                 )
                             },
                             notify = isNotify,

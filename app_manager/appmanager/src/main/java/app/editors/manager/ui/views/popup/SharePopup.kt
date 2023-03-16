@@ -213,6 +213,9 @@ class SharePopup(
                     binding.reviewItem.popupItemLayout.isVisible = false
                 }
                 ApiContract.RoomType.EDITING_ROOM -> {
+                    binding.editorItem.popupItemLayout.isVisible = true
+                    binding.editorItem.itemIcon.setImageResource(R.drawable.ic_access_full)
+                    binding.editorItem.itemText.setText(R.string.share_access_room_editor)
                     binding.fillFormItem.popupItemLayout.isVisible = false
                     binding.reviewItem.popupItemLayout.isVisible = false
                     binding.commentItem.popupItemLayout.isVisible = false
