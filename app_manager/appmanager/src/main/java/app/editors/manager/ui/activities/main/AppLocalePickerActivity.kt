@@ -48,64 +48,63 @@ class AppLocalePickerActivity : AppCompatActivity() {
         }
     }
 
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@Composable
-private fun AppLocalePickerScreen(onBackListener: () -> Unit, onPick: () -> Unit) {
-    val context = LocalContext.current
-    val localeManager = remember { context.getSystemService(LocaleManager::class.java) }
-    val locales = remember {
-        context.resources.getStringArray(R.array.app_locales).map { stringLocale ->
-            with(stringLocale.split("_")) {
-                if (size > 1) {
-                    Locale(this[0], this[1])
-                } else {
-                    Locale(this[0])
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @Composable
+    private fun AppLocalePickerScreen(onBackListener: () -> Unit, onPick: () -> Unit) {
+        val context = LocalContext.current
+        val localeManager = remember { context.getSystemService(LocaleManager::class.java) }
+        val locales = remember {
+            context.resources.getStringArray(R.array.app_locales).map { stringLocale ->
+                with(stringLocale.split("_")) {
+                    if (size > 1) {
+                        Locale(this[0], this[1])
+                    } else {
+                        Locale(this[0])
+                    }
                 }
             }
         }
-    }
-    
-    val currentLocale = remember {
-        with(localeManager) {
-            applicationLocales.get(0) ?: systemLocales.get(0)
-        }
-    }
 
-    AppManagerTheme {
-        Scaffold(topBar = {
-            CustomAppBar(
-                title = R.string.settings_language,
-                icon = R.drawable.ic_toolbar_back,
-                onClick = onBackListener
-            )
-        }) { padding ->
-            Surface(color = MaterialTheme.colors.background, modifier = Modifier.padding(padding)) {
-                LazyColumn {
-                    items(locales) { locale ->
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    localeManager.applicationLocales = LocaleList(locale)
-                                    onPick()
-                                }
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                text = locale.getDisplayName(locale).capitalize(),
+        val currentLocale = remember {
+            with(localeManager) {
+                applicationLocales.get(0) ?: systemLocales.get(0)
+            }
+        }
+
+        AppManagerTheme {
+            Scaffold(topBar = {
+                CustomAppBar(
+                    title = R.string.settings_language,
+                    icon = R.drawable.ic_toolbar_back,
+                    onClick = onBackListener
+                )
+            }) { padding ->
+                Surface(color = MaterialTheme.colors.background, modifier = Modifier.padding(padding)) {
+                    LazyColumn {
+                        items(locales) { locale ->
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .weight(1f)
-                            )
-                            if (currentLocale.language == locale.language) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.drawable_ic_done),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colors.primary
+                                    .clickable {
+                                        localeManager.applicationLocales = LocaleList(locale)
+                                        onPick()
+                                    }
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    text = locale.getDisplayName(locale).capitalize(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
                                 )
+                                if (currentLocale.language == locale.language) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.drawable_ic_done),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colors.primary
+                                    )
+                                }
                             }
                         }
                     }
@@ -113,4 +112,5 @@ private fun AppLocalePickerScreen(onBackListener: () -> Unit, onPick: () -> Unit
             }
         }
     }
+
 }

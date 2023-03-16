@@ -15,10 +15,7 @@ import androidx.fragment.app.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentAppSettingsLayoutBinding
-import app.editors.manager.ui.activities.main.AboutActivity
-import app.editors.manager.ui.activities.main.AppLocalePickerActivity
-import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.activities.main.PasscodeActivity
+import app.editors.manager.ui.activities.main.*
 import app.editors.manager.ui.dialogs.AppThemeDialog
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.AppSettingsViewModel
@@ -188,13 +185,9 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
     override fun onClick(view: View) {
         when (view.id) {
             R.id.clearCache -> {
-                showQuestionDialog(
-                   "",
-                    getString(R.string.dialog_clear_cache),
-                    getString(R.string.dialogs_common_ok_button),
-                    getString(R.string.dialogs_common_cancel_button),
-                    TAG_DIALOG_TRASH
-                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    AppLocaleConfirmationActivity.show(requireContext())
+                }
             }
             R.id.appLocale -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

@@ -3,6 +3,12 @@ package app.editors.manager.managers.utils
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import app.documents.core.storage.account.CloudAccount
@@ -153,4 +159,8 @@ object ManagerUiUtils {
         layoutParams.bottomMargin = bottom
         this.layoutParams = layoutParams
     }
+}
+
+fun Modifier.fillMaxWidth(isTablet: Boolean): Modifier {
+    return if (isTablet) fillMaxWidth(0.3f) else fillMaxWidth()
 }
