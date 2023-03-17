@@ -38,10 +38,8 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         const val REQUEST_ACTIVITY_ONBOARDING = 101
         const val REQUEST_ACTIVITY_ACCOUNTS = 102
         const val REQUEST_ACTIVITY_MEDIA = 103
-        const val REQUEST_ACTIVITY_WEB_VIEWER = 104
         const val REQUEST_ACTIVITY_SHARE = 105
         const val REQUEST_ACTIVITY_STORAGE = 106
-        const val REQUEST_ACTIVITY_OPERATION = 107
         const val REQUEST_ACTIVITY_FILE_PICKER = 108
         const val REQUEST_ACTIVITY_IMAGE_PICKER = 109
         const val REQUEST_ACTIVITY_CAMERA = 110
@@ -129,7 +127,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         return false
     }
 
-    protected fun isFragmentBackPress(fragment: Fragment): Boolean {
+    private fun isFragmentBackPress(fragment: Fragment): Boolean {
         fragment.childFragmentManager.fragments.asReversed().forEach { childFragment ->
             if (isFragmentBackPress(childFragment)) {
                 return true
@@ -217,7 +215,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
 
     fun hideDialog(forceHide: Boolean = false) {
         lifecycleScope.launchWhenResumed {
-            if (commonDialog?.isAdded == true) {
+            if (commonDialog?.isAdded == true || forceHide) {
                 commonDialog?.dismiss()
             }
         }

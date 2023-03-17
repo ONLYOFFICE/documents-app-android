@@ -1,6 +1,6 @@
 package app.editors.manager.mvp.models.ui
 
-import app.documents.core.account.Recent
+import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import lib.toolkit.base.ui.adapters.holder.ViewType
 

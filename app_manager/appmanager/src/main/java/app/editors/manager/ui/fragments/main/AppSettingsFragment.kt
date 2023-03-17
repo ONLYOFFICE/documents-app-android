@@ -2,6 +2,7 @@ package app.editors.manager.ui.fragments.main
 
 import android.Manifest
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,9 +20,8 @@ import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.dialogs.AppThemeDialog
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.AppSettingsViewModel
-import lib.toolkit.base.managers.utils.ActivitiesUtils.showEmail
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.UiUtils.getDeviceInfoString
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 
 class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
@@ -131,7 +131,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
 
             binding.settingSupportItem.settingIcon.setImageResource(R.drawable.ic_drawer_menu_feedback)
             binding.settingSupportItem.settingIconArrow.setImageResource(R.drawable.ic_open_in_new)
-            binding.settingSupportItem.settingText.text = getString(R.string.navigation_drawer_menu_feedback)
+            binding.settingSupportItem.settingText.text = getString(lib.toolkit.base.R.string.about_feedback)
 
             binding.settingsAppTheme.apply {
                 settingIcon.isVisible = true
@@ -147,7 +147,11 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
         if (tag != null) {
             when (tag) {
                 TAG_DIALOG_TRASH -> {
-                    getWritePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        viewModel.clearCache()
+                    } else {
+                        getWritePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    }
                 }
                 TAG_DIALOG_RATE_FEEDBACK -> {
                     value?.let { showEmailClientTemplate(it) }
@@ -193,13 +197,7 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
     }
 
     private fun showEmailClientTemplate(message: String) {
-        showEmail(
-            requireContext(),
-            getString(R.string.chooser_email_client),
-            getString(R.string.app_support_email),
-            getString(R.string.about_email_subject),
-            message + getDeviceInfoString(requireContext(), false)
-        )
+        ActivitiesUtils.sendFeedbackEmail(requireContext(), message)
     }
 
 }

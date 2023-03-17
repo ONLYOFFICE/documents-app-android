@@ -2,9 +2,9 @@ package app.editors.manager.mvp.presenters.base
 
 import android.content.Context
 import android.util.Log
-import app.documents.core.account.AccountDao
-import app.documents.core.network.ApiContract
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.tools.PreferenceTool

@@ -1,7 +1,7 @@
 package app.editors.manager.ui.fragments.filter
 
 import android.os.Bundle
-import app.documents.core.account.CloudAccount
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -50,7 +50,6 @@ class RoomFilterFragment : BaseFilterFragment() {
                 setTitle(R.string.filter_title_author)
                 setChip(RoomFilterAuthor.Me, presenter.filterAuthor.id == account.id) { _, checked ->
                     presenter.filterAuthor = if (checked) FilterAuthor(account.id) else FilterAuthor()
-                    presenter.update()
                 }
                 setChip(RoomFilterAuthor.OtherUsers, closeListener = presenter::clearAuthor, checked = false) { _, _ ->
                     showAuthorFragment(

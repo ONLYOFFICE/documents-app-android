@@ -1,13 +1,13 @@
 package app.editors.manager.di.component
 
 import android.content.Context
-import app.documents.core.account.AccountDao
-import app.documents.core.account.AccountsDataBase
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.RecentDao
-import app.documents.core.login.ILoginServiceProvider
-import app.documents.core.settings.NetworkSettings
-import app.documents.core.settings.WebDavInterceptor
+import app.documents.core.di.dagger.Token
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.storage.account.AccountsDataBase
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.recent.RecentDao
+import app.documents.core.storage.preference.NetworkSettings
+import app.documents.core.network.common.interceptors.WebDavInterceptor
 import app.editors.manager.di.module.AppModule
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
@@ -21,23 +21,21 @@ import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
-import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
-import app.editors.manager.storages.dropbox.dropbox.login.IDropboxLoginServiceProvider
-import app.editors.manager.storages.dropbox.mvp.presenters.DocsDropboxPresenter
-import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
-import app.editors.manager.storages.googledrive.googledrive.login.IGoogleDriveLoginServiceProvider
-import app.editors.manager.storages.googledrive.mvp.presenters.DocsGoogleDrivePresenter
-import app.editors.manager.storages.googledrive.mvp.presenters.GoogleDriveSignInPresenter
-import app.editors.manager.storages.onedrive.managers.providers.OneDriveFileProvider
-import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
-import app.editors.manager.storages.onedrive.mvp.presenters.OneDriveSingInPresenter
-import app.editors.manager.storages.onedrive.onedrive.login.IOneDriveLoginServiceProvider
+import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
+import app.documents.core.providers.OneDriveFileProvider
+import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
+import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
+import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
+import app.editors.manager.mvp.presenters.storages.GoogleDriveSignInPresenter
+import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
+import app.editors.manager.mvp.presenters.storages.OneDriveSingInPresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
+import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.login.*
 import app.editors.manager.ui.fragments.main.CloudsFragment
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
@@ -48,7 +46,7 @@ import app.editors.manager.ui.fragments.onboarding.OnBoardingPagerFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
 import app.editors.manager.ui.fragments.storage.ConnectFragment
 import app.editors.manager.ui.fragments.storage.SelectFragment
-import app.editors.manager.ui.fragments.storage.WebDavFragment
+import app.editors.manager.ui.fragments.storage.WebDavStorageFragment
 import app.editors.manager.ui.fragments.storage.WebTokenFragment
 import app.editors.manager.viewModels.login.EnterpriseCreateValidateViewModel
 import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
@@ -87,10 +85,6 @@ interface AppComponent {
     val networkSettings: NetworkSettings
     val accountsDataBase: AccountsDataBase
     val accountsDao: AccountDao
-    val loginService: ILoginServiceProvider
-    val oneDriveLoginService: IOneDriveLoginServiceProvider
-    val dropboxLoginService: IDropboxLoginServiceProvider
-    val googleDriveLoginService: IGoogleDriveLoginServiceProvider
     val accountOnline: CloudAccount?
     val recentDao: RecentDao?
 
@@ -158,7 +152,7 @@ interface AppComponent {
     fun inject(webTokenFragment: WebTokenFragment?)
     fun inject(connectFragment: ConnectFragment?)
     fun inject(settingsFragment: ConnectPresenter?)
-    fun inject(webDavFragment: WebDavFragment?)
+    fun inject(webDavFragment: WebDavStorageFragment?)
 
     /*
     * On boarding
@@ -185,4 +179,5 @@ interface AppComponent {
     fun inject(passcodeActivity: PasscodeActivity?)
     fun inject(baseFilterPresenter: BaseFilterPresenter)
     fun inject(filterAuthorPresenter: FilterAuthorPresenter)
+    fun inject(contextBottomDialog: ContextBottomDialog)
 }

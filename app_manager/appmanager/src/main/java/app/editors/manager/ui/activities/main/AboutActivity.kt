@@ -126,7 +126,7 @@ private fun AboutScreen(
                         .padding(top = 48.dp)
                         .verticalScroll(state = scrollState, enabled = true)
                 ) {
-                    Image(painter = painterResource(id = R.drawable.image_onlyoffice_text), contentDescription = null)
+                    Image(painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text), contentDescription = null)
                     Text(
                         text = stringResource(
                             id = R.string.about_app_version,

@@ -1,23 +1,18 @@
 package app.editors.manager.ui.adapters.holders.factory
 
 import android.view.View
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.list.Footer
-import app.editors.manager.mvp.models.explorer.UploadFile
+import app.documents.core.network.manager.models.explorer.UploadFile
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.holders.*
 import java.lang.RuntimeException
 
-class TypeFactoryExplorer private constructor() : TypeFactory {
-    override fun type(file: CloudFile) = FileViewHolder.LAYOUT
-    override fun type(folder: CloudFolder) = FolderViewHolder.LAYOUT
-    override fun type(header: Header) = HeaderViewHolder.LAYOUT
-    override fun type(header: Footer) = FooterViewHolder.LAYOUT
-    override fun type(uploadFile: UploadFile) = UploadFileViewHolder.LAYOUT
+class TypeFactoryExplorer private constructor() {
 
-    override fun createViewHolder(parent: View, type: Int, adapter: ExplorerAdapter):
+    fun createViewHolder(parent: View, type: Int, adapter: ExplorerAdapter):
             BaseViewHolderExplorer<*> = when (type) {
         FileViewHolder.LAYOUT -> FileViewHolder(parent, adapter)
         FolderViewHolder.LAYOUT -> FolderViewHolder(parent, adapter)
@@ -32,7 +27,7 @@ class TypeFactoryExplorer private constructor() : TypeFactory {
 
         @JvmStatic
         val factory: TypeFactoryExplorer
-            get() = typeFactoryExplorer ?: TypeFactoryExplorer()
+            get() = typeFactoryExplorer ?: TypeFactoryExplorer().also { typeFactoryExplorer = it }
 
     }
 }

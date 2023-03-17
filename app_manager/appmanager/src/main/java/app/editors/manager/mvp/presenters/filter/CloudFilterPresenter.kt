@@ -1,16 +1,14 @@
 package app.editors.manager.mvp.presenters.filter
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
-import app.editors.manager.managers.providers.CloudFileProvider
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.filter.FilterAuthor
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.isNotEmpty
+import app.editors.manager.app.cloudFileProvider
 
 class CloudFilterPresenter(private val folderId: String?) : BaseFilterPresenter() {
-
-    private var fileProvider: CloudFileProvider? = null
 
     var filterType: FilterType = FilterType.None
     var filterAuthor: FilterAuthor = FilterAuthor()
@@ -37,7 +35,6 @@ class CloudFilterPresenter(private val folderId: String?) : BaseFilterPresenter(
 
     init {
         App.getApp().appComponent.inject(this)
-        fileProvider = CloudFileProvider()
         loadFilter()
     }
 
@@ -60,18 +57,16 @@ class CloudFilterPresenter(private val folderId: String?) : BaseFilterPresenter(
         saveFilter()
         viewState.updateViewState(isChanged = !initialCall)
         disposable?.clear()
-        fileProvider?.let { provider ->
-            disposable?.add(
-                provider.getFiles(folderId, filters)
-                    .doOnSubscribe { viewState.onFilterProgress() }
-                    .subscribe(
-                        { explorer: Explorer ->
-                            resultCount = explorer.count
-                            viewState.onFilterResult(resultCount)
-                        }, { error: Throwable -> viewState.onError(error.localizedMessage) }
-                    )
-            )
-        }
+        disposable?.add(
+            context.cloudFileProvider.getFiles(folderId, filters)
+                .doOnSubscribe { viewState.onFilterProgress() }
+                .subscribe(
+                    { explorer: Explorer ->
+                        resultCount = explorer.count
+                        viewState.onFilterResult(resultCount)
+                    }, { error: Throwable -> viewState.onError(error.localizedMessage) }
+                )
+        )
     }
 
     override fun reset() {

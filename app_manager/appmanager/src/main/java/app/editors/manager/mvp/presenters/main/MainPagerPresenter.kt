@@ -1,14 +1,14 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
-import app.editors.manager.app.Api
+import app.documents.core.network.manager.ManagerService
 import app.editors.manager.app.App
 import app.editors.manager.app.api
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -25,7 +25,7 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.CryptUtils
 import moxy.InjectViewState
 import moxy.presenterScope
-import java.util.*
+import java.util.Collections
 import javax.inject.Inject
 
 @InjectViewState
@@ -40,7 +40,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
 
     private var disposable: Disposable? = null
 
-    private val api: Api = context.api()
+    private val api: ManagerService = context.api
 
     override fun onDestroy() {
         super.onDestroy()
@@ -51,10 +51,16 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
         disposable = getPortalModules().subscribe({ sections ->
             viewState.onFinishRequest()
             accountJson?.let { account ->
-                viewState.onRender(account, sections)
+                viewState.onRender(account, if (networkSetting.isDocSpace) {
+                    sections?.filter { it.current.rootFolderType != ApiContract.SectionType.CLOUD_FAVORITES }
+                } else {
+                    sections
+                })
                 checkFileData(Json.decodeFromString(account), fileData)
             }
-        }) { throwable: Throwable -> fetchError(throwable) }
+        }) { throwable: Throwable ->
+            fetchError(throwable)
+        }
     }
 
 
@@ -70,31 +76,51 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { cloudTree ->
-                val folderTypes = cloudTree.response.map { explorer -> explorer?.current?.rootFolderType }
+                val folderTypes = cloudTree.response.map { explorer -> explorer.current.rootFolderType }
                 preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
-                preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
+                preferenceTool.isProjectDisable =
+                    !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
                 return@map cloudTree.response.apply {
                     // My section
-                    Collections.swap(this, this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_USER }), 0)
-                    // Trash section
-                    Collections.swap(
-                        this,
-                        this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }),
-                        this.lastIndex
-                    )
-                    //Rooms sections
-                    if (this.contains(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM })) {
+                    if (contains(find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_USER })) {
                         Collections.swap(
                             this,
-                            this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }),
-                            1
+                            indexOf(find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_USER }),
+                            0
                         )
                     }
-                    if (this.contains(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM })) {
+                    // Trash section
+                    if (contains(find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH })) {
                         Collections.swap(
                             this,
-                            this.indexOf(this.find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }),
-                            this.lastIndex - 1
+                            indexOf(find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }),
+                            lastIndex
+                        )
+                    }
+
+                    //Rooms sections
+                    if (contains(find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM })) {
+                        val position = if (contains(find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_USER })) {
+                            1
+                        } else {
+                            0
+                        }
+                        Collections.swap(
+                            this,
+                            indexOf(find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }),
+                            position
+                        )
+                    }
+                    if (contains(find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM })) {
+                        val position = if (contains(find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_TRASH })) {
+                            lastIndex - 1
+                        } else {
+                            lastIndex
+                        }
+                        Collections.swap(
+                            this,
+                            indexOf(find { it.current?.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }),
+                            position
                         )
                     }
                 }
@@ -113,7 +139,10 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 Json.decodeFromString(CryptUtils.decodeUri(fileData?.query))
             }
             preferenceTool.fileData = ""
-            if (dataModel.portal?.equals(account.portal, ignoreCase = true) == true && dataModel.email?.equals(
+            if (dataModel.portal?.equals(
+                    account.portal,
+                    ignoreCase = true
+                ) == true && dataModel.email?.equals(
                     account.login,
                     ignoreCase = true
                 ) == true

@@ -1,36 +1,33 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.Recent
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.share.response.ResponseShare
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.extensions.request
+import app.documents.core.network.manager.ManagerService
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDeleteShare
+import app.documents.core.network.manager.models.request.RequestFavorites
+import app.documents.core.providers.CloudFileProvider
+import app.documents.core.providers.RoomProvider
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
-import app.editors.manager.app.Api
-import app.editors.manager.app.App
-import app.editors.manager.app.api
-import app.editors.manager.app.roomApi
-import app.editors.manager.managers.providers.CloudFileProvider
-import app.editors.manager.managers.providers.RoomProvider
+import app.editors.manager.app.*
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.ManagerUiUtils
-import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.managers.works.UploadWork
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.models.OpenDataModel
-import app.editors.manager.mvp.models.request.RequestCreate
-import app.editors.manager.mvp.models.request.RequestDeleteShare
-import app.editors.manager.mvp.models.request.RequestFavorites
+import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
@@ -48,6 +45,7 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 import java.util.*
 
 @InjectViewState
@@ -58,15 +56,25 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private val downloadReceiver: DownloadReceiver = DownloadReceiver()
     private val uploadReceiver: UploadReceiver = UploadReceiver()
 
-    private var api: Api? = null
+    private var api: ManagerService? = null
     private var roomProvider: RoomProvider? = null
 
 
     init {
         App.getApp().appComponent.inject(this)
-        api = context.api()
-        roomProvider = RoomProvider(context.roomApi)
-        fileProvider = CloudFileProvider()
+        api = context.api
+        roomProvider = context.roomProvider
+        fileProvider = context.cloudFileProvider.apply {
+            roomCallback = object : CloudFileProvider.RoomCallback {
+                override fun isRoomRoot(id: String?): Boolean {
+                    return isRoom && modelExplorerStack.rootId == id
+                }
+
+                override fun isArchive(): Boolean {
+                    return currentSectionType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
+                }
+            }
+        }
     }
 
     override fun onFirstViewAttach() {
@@ -110,7 +118,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onSnackBarWithAction(
                 context.getString(R.string.trash_snackbar_move_text),
                 context.getString(R.string.trash_snackbar_move_button)
-            ) { moveContext() }
+            ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
         }
     }
 
@@ -216,7 +224,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         } else if (!modelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
-            viewState.onStateActionButton(isContextEditable)
+            // TODO check security...
+            if (isRoom && modelExplorerStack.last()?.current?.security?.create == true) {
+                viewState.onStateActionButton(true)
+            } else {
+                viewState.onStateActionButton(isContextEditable)
+            }
             viewState.onActionBarTitle(currentTitle)
         } else {
             when {
@@ -224,13 +237,21 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     viewState.onStateActionButton(false)
                     viewState.onActionBarTitle("")
                 }
+
                 isFoldersMode -> {
                     viewState.onActionBarTitle(context.getString(R.string.operation_title))
                     viewState.onStateActionButton(false)
                 }
+
                 else -> {
                     viewState.onActionBarTitle("")
-                    viewState.onStateActionButton(isContextEditable && modelExplorerStack.last()?.current?.isCanEdit == true)
+                    if (isRoom) {
+                        viewState.onStateActionButton(false)
+                    } else {
+                        viewState.onStateActionButton(isContextEditable)
+                    }
+//                    TODO from room
+//                    viewState.onStateActionButton(isContextEditable || modelExplorerStack.last()?.current?.security?.create == true)
                 }
             }
             viewState.onStateAdapterRoot(true)
@@ -242,6 +263,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         onClickEvent(item, position)
         isContextClick = true
         val state = ContextBottomDialog.State()
+        state.item = itemClicked
         state.title = itemClickedTitle
         state.info = TimeUtils.formatDate(itemClickedDate)
         state.isFolder = !isClickedItemFile
@@ -263,12 +285,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isPdf = isPdf
         state.isRoom = item is CloudFolder && item.isRoom
         state.isPin = item is CloudFolder && item.pinned
-        state.iconResId = when (val item = itemClicked) {
-            is CloudFolder -> when {
-                item.providerKey.isNotEmpty() -> StorageUtils.getStorageIcon(item.providerKey)
-                item.isRoom -> ManagerUiUtils.getRoomIcon(itemClicked as CloudFolder)
-                else -> if (item.shared) R.drawable.ic_type_folder_shared else R.drawable.ic_type_folder
-            }
+        state.iconResId = when (item) {
+            is CloudFolder -> ManagerUiUtils.getFolderIcon(item, isRoot)
             else -> getIconContext(StringUtils.getExtensionFromPath(itemClickedTitle))
         }
         viewState.onItemContext(state)
@@ -368,7 +386,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun getBackStack(): Boolean {
         val backStackResult = super.getBackStack()
-        if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type) {
+        if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type.filterVal) {
+            refresh()
+        } else if (isRoom && isRoot) {
+            resetFilters()
             refresh()
         }
         return backStackResult
@@ -428,26 +449,28 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
-            val shareApi = App.getApp().getShareService()
-            disposable.add(shareApi.getShareFile(item.id)
-                .subscribeOn(Schedulers.io())
-                .map { response: ResponseShare ->
-                    response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
-                }.observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ externalLink ->
-                    if (!externalLink.isNullOrEmpty()) {
-                        setDataToClipboard(externalLink)
-                    } else {
-                        viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
-                    }
-                }, this::fetchError)
-            )
+            presenterScope.launch {
+                val shareApi = context.shareApi
+                request(
+                    func = { shareApi.getShareFile(item.id) },
+                    map = { response ->
+                        response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
+                    },
+                    onSuccess = { externalLink ->
+                        if (externalLink.isNotEmpty()) {
+                            setDataToClipboard(externalLink)
+                        } else {
+                            viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
+                        }
+                    }, onError = ::fetchError
+                )
+            }
         }
     }
 
     fun addToFavorite() {
         val requestFavorites = RequestFavorites()
-        requestFavorites.fileIds = ArrayList(listOf(itemClicked?.id))
+        requestFavorites.fileIds = listOf(itemClicked?.id!!)
         (fileProvider as CloudFileProvider).let { provider ->
             val isAdd = itemClicked?.favorite?.not() == true
 
@@ -531,30 +554,30 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val filesIds = operationStack?.selectedFilesIds
         val foldersIds = operationStack?.selectedFoldersIds
 
-        disposable.add((fileProvider as CloudFileProvider).api.checkFiles(
-            destFolderId ?: "",
-            foldersIds,
-            filesIds
-        )
-            .map { it.response }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                when {
-                    it.isNotEmpty() -> {
-                        showMoveCopyDialog(it, action, modelExplorerStack.currentTitle)
+        api?.let { api ->
+            disposable.add(api.checkFiles(
+                destFolderId ?: "",
+                foldersIds,
+                filesIds
+            )
+                .map { it.response }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    when {
+                        it.isNotEmpty() -> {
+                            showMoveCopyDialog(it, action, modelExplorerStack.currentTitle)
+                        }
+                        action == MoveCopyDialog.ACTION_COPY -> {
+                            transfer(ApiContract.Operation.DUPLICATE, false)}
+
+                        action == MoveCopyDialog.ACTION_MOVE -> {
+                            transfer(ApiContract.Operation.DUPLICATE, true)
+                        }
                     }
-                    action == MoveCopyDialog.ACTION_COPY -> {
-                        transfer(ApiContract.Operation.DUPLICATE, false)
-                    }
-                    action == MoveCopyDialog.ACTION_MOVE -> {
-                        transfer(ApiContract.Operation.DUPLICATE, true)
-                    }
-                }
-            }, {
-                fetchError(it)
-            })
-        )
+                }, ::fetchError)
+            )
+        }
     }
 
     private fun showMoveCopyDialog(files: List<CloudFile>, action: String, titleFolder: String?) {
@@ -576,10 +599,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 //                    file.isReadOnly = true
                     viewState.onFileWebView(file)
                 }
+
                 StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                     addRecent(itemClicked as CloudFile)
                     viewState.onFileMedia(getListMedia(file.id), false)
                 }
+
                 else -> viewState.onFileDownloadPermission()
             }
             FirebaseUtils.addAnalyticsOpenEntity(networkSettings.getPortal(), extension)
@@ -606,9 +631,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
                         viewState.onFileWebView(file)
                     }
+
                     StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                         viewState.onFileMedia(getListMedia(file.id), false)
                     }
+
                     else -> viewState.onFileDownloadPermission()
                 }
             }
@@ -694,14 +721,22 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = itemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE || isUserSection
 
     private val isItemEditable: Boolean
-        get() = !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
-                itemClicked?.intAccess == ApiContract.ShareCode.REVIEW ||
-                itemClicked?.intAccess == ApiContract.ShareCode.FILL_FORMS ||
-                itemClicked?.intAccess == ApiContract.ShareCode.COMMENT)
+        get() = if (networkSettings.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+            itemClicked?.isCanEdit == true
+        } else {
+            !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
+                    itemClicked?.intAccess == ApiContract.ShareCode.REVIEW ||
+                    itemClicked?.intAccess == ApiContract.ShareCode.FILL_FORMS ||
+                    itemClicked?.intAccess == ApiContract.ShareCode.COMMENT)
+        }
 
     private val isItemShareable: Boolean
-        get() = isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection
-                && !isBunchSection && isItemReadWrite
+        get() = if (networkSettings.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+            itemClicked?.isCanShare == true
+        } else {
+            isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection
+                    && !isBunchSection && isItemReadWrite
+        }
 
     private val isClickedItemStorage: Boolean
         get() = itemClicked?.providerItem == true
@@ -710,7 +745,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = (itemClicked as? CloudFile)?.folderId ?: (itemClicked as? CloudFolder)?.parentId
 
     val isCurrentRoom: Boolean
-        get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM && modelExplorerStack.last()?.current?.isCanEdit == true
+        get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM // && modelExplorerStack.last()?.current?.isCanEdit == true
 
     private fun showDownloadFolderActivity(uri: Uri) {
         viewState.onDownloadActivity(uri)
@@ -751,16 +786,17 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             itemClicked?.let { folder ->
                 if (folder is CloudFolder) {
                     disposable.add(
-                        it.pinRoom(folder.id , !folder.pinned)
+                        it.pinRoom(folder.id, !folder.pinned)
                             .doOnSubscribe { viewState.onSwipeEnable(true) }
                             .subscribe({ response ->
-                            if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
-                                folder.pinned = !folder.pinned
-                                viewState.onUpdateFavoriteItem()
-                            }
-                        }, ::fetchError)
-                    )}
+                                if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
+                                    folder.pinned = !folder.pinned
+                                    viewState.onUpdateFavoriteItem()
+                                }
+                            }, ::fetchError)
+                    )
                 }
+            }
         }
     }
 
@@ -780,10 +816,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun createRoom(title: String, roomType: Int) {
         roomProvider?.let {
             disposable.add(
-                it.createRoom(title, roomType).subscribe({
+                it.createRoom(title, roomType).subscribe({ cloudFolder ->
                     viewState.onDialogClose()
-                    viewState.onSnackBar(context.getString(R.string.room_create_success))
-                    refresh()
+                    addFolder(cloudFolder)
                 }) { throwable: Throwable ->
                     fetchError(throwable)
                 }
@@ -802,7 +837,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         viewState.onDialogClose()
                         viewState.onSnackBar(context.getString(R.string.room_delete_success))
                         refresh()
-                    }) { fetchError(it)}
+                    }) { fetchError(it) }
                 )
             }
         } else if (itemClicked != null) {
@@ -811,7 +846,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     provider.deleteRoom(itemClicked?.id ?: "").subscribe({
                         viewState.onDialogClose()
                         viewState.onSnackBar(context.getString(R.string.room_delete_success))
-                    }) { fetchError(it)}
+                    }) { fetchError(it) }
                 )
             }
 

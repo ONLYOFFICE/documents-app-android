@@ -1,11 +1,12 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.request.RequestRegister
-import app.documents.core.network.models.login.response.ResponseRegisterPersonalPortal
+import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.models.request.RequestRegister
+import app.documents.core.network.login.models.response.ResponseRegisterPersonalPortal
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.PersonalRegisterView
 import io.reactivex.disposables.Disposable
 import lib.toolkit.base.BuildConfig
@@ -47,8 +48,13 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
 
 
         email?.let {
-            disposable = App.getApp().appComponent.loginService
-                .registerPersonal(RequestRegister(email = email, language = Locale.getDefault().language))
+            disposable = context.loginService
+                .registerPersonal(
+                    RequestRegister(
+                        email = email,
+                        language = Locale.getDefault().language
+                    )
+                )
                 .subscribe({ loginResponse ->
                     when (loginResponse) {
                         is LoginResponse.Success -> {

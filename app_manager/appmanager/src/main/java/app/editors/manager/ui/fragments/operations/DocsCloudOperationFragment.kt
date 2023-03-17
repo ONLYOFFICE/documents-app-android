@@ -4,14 +4,15 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
-import app.editors.manager.mvp.models.base.Entity
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.OperationActivity.OnActionClickListener
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
+import lib.toolkit.base.managers.utils.getSerializable
 
 class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
@@ -65,7 +66,11 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
     override fun onDocsGet(list: List<Entity>?) {
         super.onDocsGet(list)
-        operationActivity?.setEnabledActionButton(true)
+        if (sectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM && presenter.isRoot) {
+            operationActivity?.setEnabledActionButton(false)
+        } else {
+            operationActivity?.setEnabledActionButton(true)
+        }
     }
 
     override fun onDocsBatchOperation() {
@@ -102,13 +107,12 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
         arguments?.let {
             sectionType = it.getInt(TAG_OPERATION_SECTION_TYPE)
             operationType = requireActivity().intent
-                .getSerializableExtra(OperationActivity.TAG_OPERATION_TYPE) as
-                    OperationsState.OperationType
+                .getSerializable(OperationActivity.TAG_OPERATION_TYPE, OperationsState.OperationType::class.java)
             savedInstanceState ?: run {
                 requireActivity().intent
-                    .getSerializableExtra(OperationActivity.TAG_OPERATION_EXPLORER)?.let { explorer ->
-                        cloudPresenter.setOperationExplorer(explorer as Explorer)
-                    } ?: run { requireActivity().finish() }
+                    .getSerializable(OperationActivity.TAG_OPERATION_EXPLORER, Explorer::class.java).let { explorer ->
+                        cloudPresenter.setOperationExplorer(explorer)
+                    }
             }
         }
     }
@@ -126,6 +130,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
             ApiContract.SectionType.CLOUD_SHARE -> cloudPresenter.getItemsById(ApiContract.SectionPath.SHARED)
             ApiContract.SectionType.CLOUD_COMMON -> cloudPresenter.getItemsById(ApiContract.SectionPath.COMMON)
             ApiContract.SectionType.CLOUD_PROJECTS -> cloudPresenter.getItemsById(ApiContract.SectionPath.PROJECTS)
+            ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> cloudPresenter.getItemsById(ApiContract.SectionPath.ROOMS)
         }
     }
 

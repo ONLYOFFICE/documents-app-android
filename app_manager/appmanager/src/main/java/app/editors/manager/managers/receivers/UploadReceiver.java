@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import app.editors.manager.R;
 import app.editors.manager.managers.utils.FirebaseUtils;
-import app.editors.manager.mvp.models.explorer.CloudFile;
+import app.documents.core.network.manager.models.explorer.CloudFile;
 
 public class UploadReceiver extends BaseReceiver<Intent> {
 

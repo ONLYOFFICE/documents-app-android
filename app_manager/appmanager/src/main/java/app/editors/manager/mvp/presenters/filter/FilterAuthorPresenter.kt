@@ -1,46 +1,34 @@
 package app.editors.manager.mvp.presenters.filter
 
-import app.documents.core.share.ShareService
+import app.documents.core.network.common.extensions.request
+import app.documents.core.network.share.ShareService
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.getShareApi
+import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.filter.Author
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.filter.FilterAuthorView
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import moxy.presenterScope
-import java.util.concurrent.TimeUnit
 
 class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
 
     companion object {
         private const val DEBOUNCE_DURATION = 300L
-        private const val TIMEOUT_TIME = 5000L
     }
 
-    private var disposable: Disposable? = null
     private val authorStack: MutableList<Author> = mutableListOf()
     private var job: Job? = null
     var searchingValue: String = ""
     var isSearchingMode: Boolean = false
 
-    private val api: ShareService
-        get() = App.getApp().appComponent.context.getShareApi()
+    private val shareApi: ShareService
+        get() = context.shareApi
 
     private val accountId: String?
-        get() = App.getApp().appComponent.context.accountOnline?.id
-
-    private val avatarMapper: (Author.User) -> Author.User = { user ->
-        user.also {
-            user.avatar = GlideUtils.loadAvatar(user.avatarUrl)
-        }
-    }
+        get() = context.accountOnline?.id
 
     init {
         App.getApp().appComponent.inject(this)
@@ -48,17 +36,17 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
 
     override fun onDestroy() {
         super.onDestroy()
-        disposable = null
         job = null
     }
 
-    private fun loadAvatars(list: List<Author.User>) {
-        disposable = Observable.fromIterable(list)
-            .subscribeOn(Schedulers.io())
-            .onErrorResumeNext(Observable.empty())
-            .map(avatarMapper)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(viewState::onUpdateAvatar, this::fetchError)
+    private fun loadAvatars(users: List<Author.User>) {
+        presenterScope.launch {
+            users.request(
+                func = { user -> GlideUtils.getAvatarFromUrl(context, user.avatarUrl) },
+                map = { user, avatar -> user.also { it.avatar = avatar } },
+                onEach = viewState::onUpdateAvatar
+            )
+        }
     }
 
     private fun setStackItems(items: List<Author>) {
@@ -88,33 +76,37 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
     }
 
     fun getUsers(withSelf: Boolean = true) {
-        disposable = api.getUsers()
-            .subscribeOn(Schedulers.io())
-            .doOnSubscribe { viewState.onLoadingUsers() }
-            .timeout(TIMEOUT_TIME, TimeUnit.MILLISECONDS)
-            .map { response ->
-                response.response
-                    .map { Author.User(it.id, it.displayName, it.department, it.avatarMedium) }
-                    .moveOwnerToFirstPosition(withSelf)
-                    .also(this::setStackItems)
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ users ->
-                viewState.onGetUsers(users)
-                loadAvatars(users)
-            }, this::fetchError)
+        presenterScope.launch {
+            request(
+                func = shareApi::getUsers,
+                map = { response ->
+                    response.response
+                        .map { Author.User(it.id, it.displayName, it.department, it.avatar) }
+                        .moveOwnerToFirstPosition(withSelf)
+                        .also(this@FilterAuthorPresenter::setStackItems)
+                },
+                onSuccess = { users ->
+                    viewState.onGetUsers(users)
+                    loadAvatars(users)
+                },
+                onError = ::fetchError
+            )
+        }
     }
 
     fun getGroups() {
-        disposable = api.getGroups()
-            .subscribeOn(Schedulers.io())
-            .doOnSubscribe { viewState.onLoadingGroups() }
-            .timeout(TIMEOUT_TIME, TimeUnit.MILLISECONDS)
-            .map { response ->
-                response.response.map { Author.Group(it.id, it.name) }.also(this::setStackItems)
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(viewState::onGetGroups, this::fetchError)
+        presenterScope.launch {
+            request(
+                func = shareApi::getGroups,
+                map = { response ->
+                    response.response.map { Author.Group(it.id, it.name) }
+                        .also(this@FilterAuthorPresenter::setStackItems)
+
+                },
+                onSuccess = viewState::onGetGroups,
+                onError = ::fetchError
+            )
+        }
     }
 
     fun search(value: String) {

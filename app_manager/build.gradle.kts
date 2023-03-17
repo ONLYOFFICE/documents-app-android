@@ -14,7 +14,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:7.3.0")
+        classpath("com.android.tools.build:gradle:7.3.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Kotlin.version}")
         classpath("com.google.gms:google-services:4.3.14")
         classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
@@ -28,6 +28,9 @@ allprojects {
         mavenCentral()
         gradlePluginPortal()
         maven { setUrl("https://jitpack.io") }
+        maven {
+            url = uri(PublishEditors.publishUrl)
+        }
     }
 
     configurations.configureEach {
@@ -35,6 +38,10 @@ allprojects {
             force("org.xerial:sqlite-jdbc:3.34.0")
         }
     }
+}
+
+plugins {
+    id("maven-publish")
 }
 
 tasks.register("clean", Delete::class) {
@@ -56,5 +63,15 @@ tasks.create("buildAar") {
                 into("${rootDir.parent}/libs")
             }
         }
+    }
+}
+
+tasks.create("publishToGithub") {
+    childProjects.forEach { (projectKey, project) ->
+        if (projectKey == "libtoolkit" || projectKey == "appmanager" || projectKey == "core") {
+            return@forEach
+        }
+        dependsOn("$projectKey::assembleRelease")
+        dependsOn("$projectKey::publish")
     }
 }

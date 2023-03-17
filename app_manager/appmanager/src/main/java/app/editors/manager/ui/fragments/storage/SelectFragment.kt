@@ -10,7 +10,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageSelectBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.mvp.models.account.Storage
+import app.documents.core.network.common.models.Storage
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.mvp.views.storage.SelectView
 import app.editors.manager.ui.adapters.StorageAdapter
@@ -88,7 +88,7 @@ class SelectFragment : BaseAppFragment(), BaseAdapter.OnItemClickListener, Selec
     }
 
     override fun showWebDavFragment(providerKey: String, url: String, title: String) {
-        showFragment(WebDavFragment.newInstance(providerKey, url, title), WebDavFragment.TAG, false)
+        showFragment(WebDavStorageFragment.newInstance(providerKey, url, title), WebDavStorageFragment.TAG, false)
     }
 
     override fun showProgress(isVisible: Boolean) {

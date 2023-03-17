@@ -1,8 +1,8 @@
 package app.editors.manager.mvp.presenters.login
 
 import android.content.Intent
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.models.login.request.RequestSignIn
+import app.documents.core.network.login.models.request.RequestSignIn
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.CommonSignInView

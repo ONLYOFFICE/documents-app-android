@@ -25,7 +25,7 @@
             android:layout_height="@dimen/image_default_size"
             android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="@dimen/default_margin_large"
-            android:src="@drawable/ic_add"
+            android:src="@drawable/ic_action_button_docs_add"
             app:tint="?attr/colorPrimary"
             tools:ignore="ContentDescription" />
 

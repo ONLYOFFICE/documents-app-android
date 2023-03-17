@@ -10,17 +10,22 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
+import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Item
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import java.io.Serializable
+import javax.inject.Inject
 
 class ContextBottomDialog : BaseBottomDialog() {
 
@@ -37,7 +42,10 @@ class ContextBottomDialog : BaseBottomDialog() {
     private var viewBinding: ListExplorerContextMenuBinding? = null
 
     private val viewModel by viewModels<ContextBottomViewModel> {
-        ContextBottomViewModelFactory(checkNotNull(arguments?.getSerializable(ARG_ITEM)) as Item, checkNotNull(arguments?.getInt(ARG_SECTION)))
+        ContextBottomViewModelFactory(
+            checkNotNull(arguments?.getSerializableExt(ARG_ITEM, Item::class.java)),
+            checkNotNull(arguments?.getInt(ARG_SECTION))
+        )
     }
 
     var onClickListener: OnClickListener? = null
@@ -47,6 +55,9 @@ class ContextBottomDialog : BaseBottomDialog() {
             field = value
             setItemSharedState(state.isShared)
         }
+
+    @Inject
+    lateinit var preferenceTool: PreferenceTool
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,11 +92,12 @@ class ContextBottomDialog : BaseBottomDialog() {
 
     private fun restoreValues(savedInstanceState: Bundle?) {
         savedInstanceState?.let {
-            state = it.getSerializable(TAG_STATE) as State
+            state = it.getSerializableExt(TAG_STATE, State::class.java)
         }
     }
 
     private fun init(dialog: Dialog) {
+        App.getApp().appComponent.inject(this)
         viewBinding = ListExplorerContextMenuBinding.inflate(LayoutInflater.from(context))
         viewBinding?.let {
             dialog.setContentView(it.root)
@@ -177,6 +189,7 @@ class ContextBottomDialog : BaseBottomDialog() {
                 setRoomState()
                 return
             }
+
             if (state.isRecent) {
                 setRecentState()
                 return
@@ -221,6 +234,16 @@ class ContextBottomDialog : BaseBottomDialog() {
 
                 /** File can access by link */
                 binding.listExplorerContextExternalLink.isVisible = state.isCanShare
+
+                if (preferenceTool.isFavoritesEnabled) {
+                    viewBinding?.listExplorerContextFavorite?.isVisible = true
+                    if (state.isFavorite) {
+                        viewBinding?.favoriteImage?.setImageResource(R.drawable.ic_favorites_fill)
+                        viewBinding?.favoriteText?.setText(R.string.list_context_delete_from_favorite)
+                    } else {
+                        viewBinding?.favoriteText?.setText(R.string.list_context_add_to_favorite)
+                    }
+                }
             }
 
             /**Folders and files*/
@@ -238,10 +261,16 @@ class ContextBottomDialog : BaseBottomDialog() {
             /** Only for share section, instead of delete */
             binding.listExplorerContextShareDelete.isVisible = state.isDeleteShare
 
-
             if (state.isPersonalAccount) {
                 binding.listExplorerContextShare.isVisible = !state.isFolder
                 binding.viewLineSeparatorShare.root.isVisible = !state.isFolder
+                binding.listExplorerContextExternalLink.isVisible = false
+            }
+
+            //TODO Need refactoring. This is a trash solution
+            if (requireContext().appComponent.networkSettings.isDocSpace) {
+                binding.listExplorerContextShare.isVisible = false
+                binding.viewLineSeparatorShare.root.isVisible = false
                 binding.listExplorerContextExternalLink.isVisible = false
             }
         }
@@ -250,13 +279,13 @@ class ContextBottomDialog : BaseBottomDialog() {
     private fun setRoomState() {
         viewBinding?.let { binding ->
             if (!state.isTrash) {
-                binding.listExplorerContextArchive.isVisible = true
-                binding.listExplorerContextRename.isVisible = true
-                binding.listExplorerContextPin.isVisible = true
-                binding.listExplorerContextAddUser.isVisible = true
-                binding.listExplorerContextDelete.isVisible = true
+                val room = (state.item) as? CloudFolder
+                binding.listExplorerContextArchive.isVisible = room?.security?.moveTo == true && room.security.editRoom == true
+                binding.listExplorerContextRename.isVisible = room?.security?.rename ?: false
+                binding.listExplorerContextPin.isVisible = room?.security?.pin ?: false
+                binding.listExplorerContextAddUser.isVisible = room?.security?.editAccess ?: false
                 binding.listExplorerContextInfo.isVisible = true
-                binding.viewLineSeparatorDelete.root.isVisible = true
+                binding.viewLineSeparatorDelete.root.isVisible = binding.listExplorerContextArchive.isVisible
                 if (state.isPin) binding.listExplorerContextPinText.setText(R.string.list_context_unpin)
             } else {
                 binding.listExplorerContextRestoreText.setText(R.string.context_room_unarchive)
@@ -427,7 +456,9 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isGoogleDrive: Boolean = false,
         var isVisitor: Boolean = false,
         var isRoom: Boolean = false,
-        var isPin: Boolean = false
+        var isPin: Boolean = false,
+        //TODO Remove
+        var item: Item? = null
     ) : Serializable
 }
 

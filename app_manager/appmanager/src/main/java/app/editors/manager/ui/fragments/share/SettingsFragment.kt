@@ -4,7 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -13,13 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import androidx.transition.TransitionManager
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareSettingsListBinding
 import app.editors.manager.databinding.IncludeButtonPopupBinding
 import app.editors.manager.databinding.IncludeShareSettingsHeaderBinding
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
@@ -32,6 +37,7 @@ import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.popup.SharePopup
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -43,7 +49,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     @ProvidePresenter
     fun provideSettingsPresenter(): SettingsPresenter {
-        return SettingsPresenter(arguments?.getSerializable(TAG_ITEM) as Item)
+        return SettingsPresenter(arguments?.getSerializableExt(TAG_ITEM, Item::class.java) as Item)
     }
 
     private var sharePopup: SharePopup? = null
@@ -54,8 +60,9 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     private var viewBinding: FragmentShareSettingsListBinding? = null
     private var headerBinding: IncludeShareSettingsHeaderBinding? = null
     private var popupBinding: IncludeButtonPopupBinding? = null
+
     private val item: Item
-        get() = arguments?.getSerializable(TAG_ITEM) as Item
+        get() = arguments?.getSerializableExt(TAG_ITEM, Item::class.java) as Item
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -128,7 +135,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_share_settings) settingsPresenter.internalLink
+        if (item.itemId == R.id.menu_share_settings) settingsPresenter.getInternalLink()
         return super.onOptionsItemSelected(item)
     }
 
@@ -263,7 +270,12 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        setActionBarTitle(getString(R.string.share_title_main))
+        if (item is CloudFolder && (item as CloudFolder).isRoom) {
+            setActionBarTitle(item.title)
+        } else {
+            setActionBarTitle(getString(R.string.share_title_main))
+        }
+
         supportActionBar?.let { actionBar ->
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeButtonEnabled(true)
@@ -318,7 +330,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     private fun getSharedItems() {
         viewBinding?.shareSettingsListSwipeRefresh?.isRefreshing = true
-        settingsPresenter.shared
+        settingsPresenter.getShared()
     }
 
     private fun setExternalViewState(accessCode: Int, isMessage: Boolean) {
@@ -426,6 +438,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 R.id.fullAccessItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ_WRITE)
                 R.id.reviewItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.REVIEW)
                 R.id.viewItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ)
+                R.id.editorItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.EDITOR)
                 R.id.denyItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.RESTRICT)
                 R.id.deleteItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.NONE)
                 R.id.commentItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.COMMENT)

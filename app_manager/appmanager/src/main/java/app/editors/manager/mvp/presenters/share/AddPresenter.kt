@@ -1,18 +1,20 @@
 package app.editors.manager.mvp.presenters.share
 
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.share.request.RequestShare
-import app.documents.core.network.models.share.request.RequestShareItem
-import app.documents.core.share.ShareService
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.extensions.request
+import app.documents.core.network.common.extensions.requestZip
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.share.ShareService
+import app.documents.core.network.share.models.request.RequestShare
+import app.documents.core.network.share.models.request.RequestShareItem
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
-import app.editors.manager.app.getShareApi
+import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
@@ -20,14 +22,10 @@ import app.editors.manager.mvp.models.ui.UserUi
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.share.AddView
 import app.editors.manager.ui.fragments.share.AddFragment
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.*
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
-import java.util.concurrent.TimeUnit
+import moxy.presenterScope
 
 @InjectViewState
 class AddPresenter(
@@ -42,8 +40,7 @@ class AddPresenter(
     private val shareStack: ModelShareStack = ModelShareStack.getInstance()
     private var isCommon: Boolean = false
     private var searchValue: String? = null
-    private var publishSearch: PublishSubject<String>? = null
-    private var disposable: Disposable? = null
+    private var job: Job? = null
 
     init {
         App.getApp().appComponent.inject(this)
@@ -51,146 +48,129 @@ class AddPresenter(
 
     private val account: CloudAccount =
         context.appComponent.accountOnline ?: throw RuntimeException("Account can't be null")
-    private val shareApi: ShareService = context.getShareApi()
+
+    private val shareApi: ShareService = context.shareApi
 
     override fun onDestroy() {
         super.onDestroy()
-        disposable = null
+        job = null
     }
 
-
-    private fun getUsers() {
+    private suspend fun getUsers() {
         isCommon = false
-        disposable = shareApi.getUsers()
-            .subscribeOn(Schedulers.io())
-            .map { response ->
-                response.response.filter { it.id != account.id && it.id != item.createdBy?.id }.map { user ->
+        request(
+            func = shareApi::getUsers,
+            map = { response ->
+                response.response.filter { it.id != account.id && it.id != item.createdBy.id }.map { user ->
                     UserUi(
                         id = user.id,
                         department = user.department,
-                        displayName = user.displayName.takeIf { name -> name.isEmpty() } ?: user.email ?: "",
-                        avatarUrl = user.avatarMedium,
+                        displayName = user.displayName.takeIf { name -> name.isNotEmpty() } ?: user.email ?: "",
+                        avatarUrl = user.avatar,
                         status = user.activationStatus)
-                }.sortedBy { it.status }
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ response ->
-                shareStack.addUsers(response)
+                }.sortedBy { it.status } },
+            onSuccess = { users ->
+                shareStack.addUsers(users)
                 viewState.onGetUsers(userListItems)
                 loadAvatars()
-            }, { error ->
-                fetchError(error)
-            })
+            }, onError = ::fetchError
+        )
     }
 
-    private fun getGroups() {
+    private suspend fun getGroups() {
         isCommon = false
-        disposable = shareApi.getGroups()
-            .subscribeOn(Schedulers.io())
-            .map { response -> response.response.map { GroupUi(it.id, it.name, it.manager ?: "null") } }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ response ->
+        request(
+            func = shareApi::getGroups,
+            map = { response -> response.response.map { GroupUi(it.id, it.name, it.manager ?: "null") } },
+            onSuccess = { response ->
                 shareStack.addGroups(response.toMutableList().also {
                     it.add(GroupUi(GroupUi.GROUP_ADMIN_ID, "", ""))
                     it.add(GroupUi(GroupUi.GROUP_EVERYONE_ID, "", ""))
                 })
                 viewState.onGetGroups(groupListItems)
-            }, { error ->
-                fetchError(error)
-            })
+            }, onError = ::fetchError
+        )
     }
 
     fun getCommons() {
         isCommon = true
-        disposable = Observable.zip(shareApi.getUsers(), shareApi.getGroups()) { users, groups ->
-            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
-            shareStack.addUsers(users.response.filter { it.id != account.id }.map { user ->
-                UserUi(
-                    id = user.id,
-                    department = user.department,
-                    displayName = user.displayName.takeIf { it.isEmpty() } ?: user.email ?: "",
-                    avatarUrl = user.avatarMedium, status = user.activationStatus)
-            })
-            return@zip true
-        }.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                viewState.onGetCommon(commonList)
-                loadAvatars()
-            }, { error ->
-                fetchError(error)
-            })
+        presenterScope.launch {
+            requestZip(
+                func1 = shareApi::getUsers,
+                func2 = shareApi::getGroups,
+                onSuccess = { users, groups ->
+                    shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
+                    shareStack.addUsers(users.response.filter { it.id != account.id }.map { user ->
+                        UserUi(
+                            id = user.id,
+                            department = user.department,
+                            displayName = user.displayName.takeIf { it.isNotEmpty() } ?: user.email ?: "",
+                            avatarUrl = user.avatarMedium, status = user.activationStatus)
+                    })
+                    viewState.onGetCommon(commonList)
+                    loadAvatars()
+                }, onError = ::fetchError
+            )
+        }
     }
 
     fun getFilter(searchValue: String) {
         isCommon = true
-
-        disposable = Observable.zip(
-            shareApi.getUsers(getOptions(searchValue)),
-            shareApi.getGroups(getOptions(searchValue, true))
-        ) { users, groups ->
-            shareStack.clearModel()
-            shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
-            shareStack.addUsers(users.response.filter { it.id != account.id }.map { user ->
-                UserUi(
-                    id = user.id,
-                    department = user.department,
-                    displayName = user.displayName.takeIf { it.isEmpty() } ?: user.email ?: "",
-                    avatarUrl = user.avatarMedium,
-                    status = user.activationStatus)
-            })
-            return@zip true
-        }.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                viewState.onGetCommon(commonList)
-                loadAvatars()
-            }, { error ->
-                fetchError(error)
-            })
+        presenterScope.launch {
+            requestZip(
+                func1 = { shareApi.getUsers(getOptions(searchValue)) },
+                func2 = { shareApi.getGroups(getOptions(searchValue, true)) },
+                onSuccess = { users, groups ->
+                    shareStack.clearModel()
+                    shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
+                    shareStack.addUsers(users.response.filter { it.id != account.id }.map { user ->
+                        UserUi(
+                            id = user.id,
+                            department = user.department,
+                            displayName = user.displayName.takeIf { it.isNotEmpty() } ?: user.email ?: "",
+                            avatarUrl = user.avatarMedium,
+                            status = user.activationStatus
+                        )
+                    })
+                    viewState.onGetCommon(commonList)
+                    loadAvatars()
+                }, onError = ::fetchError
+            )
+        }
     }
 
     private fun loadAvatars() {
-        disposable = Observable.fromIterable(shareStack.userSet)
-            .subscribeOn(Schedulers.io())
-            .map { user ->
-                user.avatar = GlideUtils.loadAvatar(user.avatarUrl)
-                user
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                viewState.onUpdateAvatar(it)
-            }, { error ->
-                fetchError(error)
-            })
-    }
-
-    private fun shareFileTo(id: String) {
-        requestShare?.let { request ->
-            disposable = shareApi.setFileAccess(id, request)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    shareStack.resetChecked()
-                    viewState.onSuccessAdd()
-                }) { error ->
-                    fetchError(error)
-                }
+        presenterScope.launch {
+            shareStack.userSet.request(
+                func = { user -> GlideUtils.getAvatarFromUrl(context, user.avatarUrl) },
+                map = { user, avatar -> user.also { user.avatar = avatar } },
+                onEach = viewState::onUpdateAvatar
+            )
         }
-
     }
 
-    private fun shareFolderTo(id: String) {
+    private suspend fun shareFileTo(id: String) {
         requestShare?.let { request ->
-            disposable = shareApi.setFolderAccess(id, request)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
+            request(
+                func = { shareApi.setFileAccess(id, request) },
+                onSuccess = {
                     shareStack.resetChecked()
                     viewState.onSuccessAdd()
-                }) { error ->
-                    fetchError(error)
-                }
+                },
+                onError = ::fetchError
+            )
+        }
+    }
+
+    private suspend fun shareFolderTo(id: String) {
+        requestShare?.let { request ->
+            request(
+                func = { shareApi.setFolderAccess(id, request) },
+                onSuccess = {
+                    shareStack.resetChecked()
+                    viewState.onSuccessAdd()
+                }, onError = ::fetchError
+            )
         }
     }
 
@@ -262,28 +242,21 @@ class AddPresenter(
 
     val shared: Unit
         get() {
-            if (type == AddFragment.Type.USERS) {
-                getUsers()
-            } else {
-                getGroups()
+            presenterScope.launch {
+                if (type == AddFragment.Type.USERS) {
+                    getUsers()
+                } else {
+                    getGroups()
+                }
             }
         }
 
     fun shareItem() {
-        when (item) {
-            is CloudFolder -> shareFolderTo(item.id)
-            is CloudFile -> shareFileTo(item.id)
-        }
-    }
-
-    fun startSearch() {
-        publishSearch = PublishSubject.create<String>().apply {
-            disposable = subscribeOn(Schedulers.io())
-                .debounce(350, TimeUnit.MILLISECONDS)
-                .distinctUntilChanged()
-                .doOnNext { value ->
-                    getFilter(value)
-                }.subscribe()
+        presenterScope.launch {
+            when (item) {
+                is CloudFolder -> shareFolderTo(item.id)
+                is CloudFile -> shareFileTo(item.id)
+            }
         }
     }
 
@@ -361,9 +334,10 @@ class AddPresenter(
 
     fun setSearchValue(searchValue: String?) {
         this.searchValue = searchValue
-
-        searchValue?.let { value ->
-            publishSearch?.onNext(value)
+        job?.cancel()
+        job = presenterScope.launch {
+            delay(350L)
+            getFilter(searchValue.orEmpty())
         }
     }
 }

@@ -1,7 +1,7 @@
 package app.editors.manager.mvp.views.main
 
 import android.net.Uri
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.OpenState
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
@@ -11,7 +11,6 @@ interface DocsOnDeviceView : DocsBaseView {
     fun onActionDialog()
     fun onRemoveItem(item: Item)
     fun onRemoveItems(items: List<Item>)
-    fun onShowCamera(photoUri: Uri)
     fun onShowPortals()
     fun onOpenMedia(state: OpenState.Media)
 

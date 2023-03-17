@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ListExplorerActionMenuBinding
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 
@@ -109,6 +110,11 @@ class ActionBottomDialog : BaseBottomDialog() {
 
             it.listExplorerActionImport.isVisible = isLocal && !isWebDav
             it.listExplorerActionUpload.isVisible = !isLocal || isWebDav
+
+            if (!isLocal && !isWebDav) {
+                it.viewLineSeparatorStorage.viewLineSeparator.isVisible = !requireContext().appComponent.networkSettings.isDocSpace
+                it.listExplorerActionStorage.isVisible = !requireContext().appComponent.networkSettings.isDocSpace
+            }
         }
     }
 

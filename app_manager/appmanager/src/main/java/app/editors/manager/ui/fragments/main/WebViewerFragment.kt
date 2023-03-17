@@ -28,13 +28,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import app.documents.core.account.AccountDao
-import app.documents.core.network.ApiContract
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.webview.KeyboardWebView
@@ -69,7 +69,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         private const val DESKTOP_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36 AscAndroidWebView"
         private const val MOBILE_USER_AGENT =
-            "Mozilla/5.0 (Linux; U; Android 4.4; en-us; Nexus 4 Build/JOP24G) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 AscAndroidWebView"
+            "Mozilla/5.0 (Linux; U; Android 4.4; en-us; Nexus 4 Build/JOP24G) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 Chrome/37.0.2049.0 AscAndroidWebView"
 
         const val INTERFACE = "Android"
         const val KEY_EVENT = "event"
@@ -135,7 +135,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var webView: KeyboardWebView
-    private lateinit var progressBar: ProgressBar
 
     private var cloudFile: CloudFile? = null
     private var uri: Uri? = null
@@ -194,6 +193,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
                     isLostConnection = true
                     webView.stopLoading()
                 }
+
                 MESSAGE_AVAILABLE -> post {
                     if (isLostConnection) {
                         isLostConnection = false
@@ -238,7 +238,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         return inflater.inflate(R.layout.fragment_viewer_web, container, false)?.apply {
             swipeRefresh = findViewById(R.id.web_viewer_layout)
             webView = findViewById(R.id.web_viewer_webview)
-            progressBar = findViewById(R.id.web_viewer_progress)
         }
     }
 
@@ -301,11 +300,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun init(savedInstanceState: Bundle?) {
-        UiUtils.setColorFilter(
-            requireContext(),
-            progressBar.indeterminateDrawable,
-            lib.toolkit.base.R.color.colorSecondary
-        )
         connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         isDesktopMode = UiUtils.checkDeXEnabled(resources.configuration)
         isPageLoad = false
@@ -329,6 +323,8 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
         if (isDesktopMode || UiUtils.isHuaweiDesktopMode(resources.configuration)) {
             webView.settings.userAgentString = DESKTOP_USER_AGENT
+        } else {
+            webView.settings.userAgentString = MOBILE_USER_AGENT
         }
         NetworkUtils.clearCookies()
         getArgs()
@@ -357,7 +353,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(TAG_WEB_VIEW)) {
                 val bundle = savedInstanceState.getBundle(TAG_WEB_VIEW)
-                progressBar.visibility = View.VISIBLE
                 webView.restoreState(bundle!!)
             }
             if (savedInstanceState.containsKey(TAG_PAGE_LOAD)) {
@@ -390,14 +385,11 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     private fun loadWebView(url: String) {
         CookieManager.getInstance().apply {
-            if (url.contains(ApiContract.PERSONAL_SUBDOMAIN)) {
-                setAcceptCookie(true)
-                setCookie(URL(url).protocol + "://" + URL(url).host, "asc_auth_key=$token")
-                setAcceptThirdPartyCookies(webView, true)
-            }
+            setAcceptCookie(true)
+            setCookie(URL(url).protocol + "://" + URL(url).host, "asc_auth_key=$token")
+            setAcceptThirdPartyCookies(webView, true)
         }
         webView.loadUrl(url, headers)
-        progressBar.visibility = View.VISIBLE
     }
 
 
@@ -463,13 +455,11 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             addJsHardBackListener()
-            progressBar.visibility = View.INVISIBLE
             swipeRefresh.isEnabled = false
             isPageLoad = true
         }
 
         override fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
-            progressBar.visibility = View.INVISIBLE
             this@WebViewerFragment.errorCode = errorCode
             if (!NetworkUtils.isOnline(requireContext())) {
                 showSnackBarWithAction(

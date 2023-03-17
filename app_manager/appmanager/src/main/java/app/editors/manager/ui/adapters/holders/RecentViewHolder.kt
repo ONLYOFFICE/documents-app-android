@@ -2,7 +2,7 @@ package app.editors.manager.ui.adapters.holders
 
 import android.view.View
 import androidx.core.view.isVisible
-import app.documents.core.account.Recent
+import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon

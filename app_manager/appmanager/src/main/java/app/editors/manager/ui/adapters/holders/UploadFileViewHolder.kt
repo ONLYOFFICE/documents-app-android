@@ -5,7 +5,7 @@ import androidx.work.WorkManager
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerUploadFilesBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
-import app.editors.manager.mvp.models.explorer.UploadFile
+import app.documents.core.network.manager.models.explorer.UploadFile
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.StringUtils
 import java.util.*
@@ -34,7 +34,7 @@ class UploadFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             listExplorerUploadFileName.text = file.name
             viewIconSelectableLayout.viewIconSelectableLayout.background = null
             viewIconSelectableLayout.viewIconSelectableMask.background = null
-            file.uri.path?.let { path ->
+            file.uri?.path?.let { path ->
                 viewIconSelectableLayout.viewIconSelectableImage.setFileIcon(StringUtils.getExtensionFromPath(path))
             }
         }
@@ -47,7 +47,7 @@ class UploadFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
     }
 
     private fun getFileProgress(file: UploadFile): String {
-        val stringSize: String = file.size.substring(0, file.size.indexOf(" "))
+        val stringSize: String = file.size?.substring(0, file.size?.indexOf(" ") ?: 0).orEmpty()
         val total = stringSize.replace(',', '.').toDouble()
         val kof = total / 100
         val progressSize: Double = kof * file.progress

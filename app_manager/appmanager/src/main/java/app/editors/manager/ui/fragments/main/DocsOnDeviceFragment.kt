@@ -14,12 +14,12 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.mvp.models.base.Entity
-import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter
 import app.editors.manager.mvp.presenters.main.OpenState
@@ -27,7 +27,6 @@ import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.MainActionBarPopup
@@ -145,9 +144,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
         when (buttons) {
-            ActionBottomDialog.Buttons.PHOTO -> {
-                presenter.createPhoto()
-            }
             ActionBottomDialog.Buttons.IMPORT -> {
                 importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
             }
@@ -247,22 +243,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
-    override fun onShowCamera(photoUri: Uri) {
-        RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
-            if (permissions[Manifest.permission.CAMERA] == true) {
-                CameraPicker(requireActivity().activityResultRegistry, { isCreate ->
-                    if (isCreate) {
-                        presenter.refresh()
-                    } else {
-                        presenter.deletePhoto()
-                    }
-                }, photoUri).show()
-            } else {
-                presenter.deletePhoto()
-            }
-        }, arrayOf(Manifest.permission.CAMERA)).request()
-    }
-
     override fun onShowDocs(uri: Uri, isNew: Boolean) {
         showEditors(uri, EditorsType.DOCS, isNew)
     }
@@ -280,7 +260,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun onOpenMedia(state: OpenState.Media) {
-        MediaActivity.show(this, state.explorer, state.isWebDav)
+        showMediaActivity(state.explorer, state.isWebDav) {
+            // Stub
+        }
     }
 
     override fun onShowPortals() {
@@ -357,7 +339,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 presenter.recreateStack()
                 presenter.getItemsById(LocalContentTools.getDir(requireContext()))
             } else {
-                openItem?.isVisible = false
+                swipeRefreshLayout?.isEnabled = false
+                openItem?.isVisible = true
                 activity?.showActionButton(false)
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
             }
@@ -376,6 +359,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
         } catch (e: ActivityNotFoundException) {
             openItem?.isVisible = false
+            swipeRefreshLayout?.isEnabled = false
             activity?.showActionButton(false)
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
         }

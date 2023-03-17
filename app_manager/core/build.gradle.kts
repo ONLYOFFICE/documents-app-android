@@ -1,3 +1,6 @@
+import java.util.*
+import java.io.*
+
 plugins {
     id("com.android.library")
     id("kotlinx-serialization")
@@ -27,6 +30,55 @@ android {
                 ))
             }
         }
+
+        val keystoreProperties = Properties()
+
+        rootProject.file("Onlyoffice-keystore.properties").let { file ->
+            if (file.exists()) {
+                keystoreProperties.load(FileInputStream(file))
+            }
+        }
+
+        //Box
+        buildConfigField("String", "BOX_INFO_CLIENT_ID","\"" + keystoreProperties["BOX_INFO_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "BOX_INFO_REDIRECT_URL","\"" + keystoreProperties["BOX_INFO_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "BOX_COM_CLIENT_ID","\"" + keystoreProperties["BOX_COM_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "BOX_COM_REDIRECT_URL","\"" + keystoreProperties["BOX_COM_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "BOX_AUTH_URL","\"" + keystoreProperties["BOX_AUTH_URL"] + "\"" )
+        buildConfigField("String", "BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["BOX_VALUE_RESPONSE_TYPE"] + "\"" )
+
+        //DropBox
+        buildConfigField("String", "DROP_BOX_COM_CLIENT_ID","\"" + keystoreProperties["DROP_BOX_COM_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "DROP_BOX_INFO_CLIENT_ID","\"" + keystoreProperties["DROP_BOX_INFO_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "DROP_BOX_INFO_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_INFO_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "DROP_BOX_COM_CLIENT_SECRET","\"" + keystoreProperties["DROP_BOX_COM_CLIENT_SECRET"] + "\"" )
+        buildConfigField("String", "DROP_BOX_COM_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_COM_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "DROP_BOX_AUTH_URL","\"" + keystoreProperties["DROP_BOX_AUTH_URL"] + "\"" )
+        buildConfigField("String", "DROP_BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["DROP_BOX_VALUE_RESPONSE_TYPE"] + "\"" )
+
+        //OneDrive
+        buildConfigField("String", "ONE_DRIVE_INFO_CLIENT_ID","\"" + keystoreProperties["ONE_DRIVE_INFO_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_INFO_REDIRECT_URL","\"" + keystoreProperties["ONE_DRIVE_INFO_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_COM_CLIENT_ID","\"" + keystoreProperties["ONE_DRIVE_COM_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_COM_CLIENT_SECRET","\"" + keystoreProperties["ONE_DRIVE_COM_CLIENT_SECRET"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_COM_REDIRECT_URL","\"" + keystoreProperties["ONE_DRIVE_COM_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_AUTH_URL","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
+        buildConfigField("String", "ONE_DRIVE_VALUE_SCOPE","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
+
+        //Google
+        buildConfigField("String", "GOOGLE_INFO_CLIENT_ID","\"" + keystoreProperties["GOOGLE_INFO_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "GOOGLE_INFO_REDIRECT_URL","\"" + keystoreProperties["GOOGLE_INFO_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "GOOGLE_COM_CLIENT_ID","\"" + keystoreProperties["GOOGLE_COM_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "GOOGLE_COM_CLIENT_SECRET","\"" + keystoreProperties["GOOGLE_COM_CLIENT_SECRET"] + "\"" )
+        buildConfigField("String", "GOOGLE_COM_REDIRECT_URL","\"" + keystoreProperties["GOOGLE_COM_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "GOOGLE_AUTH_URL","\"" + keystoreProperties["GOOGLE_AUTH_URL"] + "\"" )
+        buildConfigField("String", "GOOGLE_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["GOOGLE_VALUE_RESPONSE_TYPE"] + "\"" )
+        buildConfigField("String", "GOOGLE_VALUE_ACCESS_TYPE","\"" + keystoreProperties["GOOGLE_VALUE_ACCESS_TYPE"] + "\"" )
+        buildConfigField("String", "GOOGLE_VALUE_APPROVAL_PROMPT","\"" + keystoreProperties["GOOGLE_VALUE_APPROVAL_PROMPT"] + "\"" )
+        buildConfigField("String", "GOOGLE_VALUE_SCOPE","\"" + keystoreProperties["GOOGLE_VALUE_SCOPE"] + "\"" )
+        buildConfigField("String", "GOOGLE_WEB_ID","\"" + keystoreProperties["GOOGLE_WEB_ID"] + "\"" )
+
     }
 
     buildTypes {
@@ -52,10 +104,13 @@ dependencies {
     // Kotlin
     implementation(Kotlin.kotlinCore)
     implementation(Kotlin.kotlinSerialization)
+    implementation(Kotlin.coroutineCore)
+    implementation(Kotlin.coroutineAndroid)
 
     // Androidx
     implementation(AndroidX.ktx)
     implementation(AndroidX.appCompat)
+    implementation(Lifecycle.runtime)
 
     // Google
     implementation(Google.material)
@@ -64,11 +119,18 @@ dependencies {
     implementation(Dagger.dagger)
     kapt(Dagger.daggerCompiler)
 
+    // Koin
+    implementation(Koin.koinAndroid)
+
     // Retrofit
     implementation(Retrofit.retrofit)
     implementation(Retrofit.retrofitRx)
     implementation(Retrofit.retrofitKotlinSerialization)
     implementation(Retrofit.retrofitXml)
+    implementation(Retrofit.retrofitGson)
+
+    // Dropbox
+    implementation(Libs.dropboxSdk)
 
     // Rx
     implementation(Rx.androidRx)

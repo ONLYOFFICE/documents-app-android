@@ -38,7 +38,6 @@
     <string name="about_policy">Zásady ochrany osobních údajů</string>
     <string name="about_license">Licenční smlouva</string>
     <string name="about_website">Webové stránky ONLYOFFICE</string>
-    <string name="about_email_subject">Zpětná vazba k aplikaci Dokumenty ONLYOFFICE pro Android</string>
 
     <!-- ======================================================================================= -->
     <!-- Common errors -->
@@ -215,7 +214,6 @@
     <!-- ======================================================================================= -->
     <!-- Activity chooser -->
     <string name="chooser_web_browser">Zvolte prohlížeč…</string>
-    <string name="chooser_email_client">Zvolte e-mailového klienta…</string>
 
     <!-- ======================================================================================= -->
     <!-- Main -->
@@ -304,7 +302,6 @@
     <!-- Dialog info -->
 
     <!-- Pager -->
-    <string name="main_pager_docs_my">Moje</string>
     <string name="main_pager_docs_common">Společné</string>
     <string name="main_pager_docs_share">Sdílené se mnou</string>
     <string name="main_pager_docs_projects">Projekty</string>
@@ -396,7 +393,6 @@
     <string name="storage_web_title">Připojení služby </string>
     <string name="storage_connect_button">PŘIPOJIT</string>
 
-    <string name="storage_web_dav_settings_url">Adresa URL připojení</string>
     <string name="storage_web_dav_settings_login">Přihlásit se</string>
     <string name="storage_web_dav_settings_password">Heslo</string>
     <string name="storage_web_dav_settings_title">Vstupní název služby</string>
@@ -559,7 +555,6 @@
     <string name="download_manager_exceed_size_25">Překračuje maximální velikost souboru (25MB)</string>
     <string name="snackbar_undo">UNDO</string>
     <string name="errors_server_auth_too_many_attempts">Příliš mnoho pokusů. Zkuste to později</string>
-    <string name="navigation_drawer_menu_feedback">Zpětná vazba a podpora</string>
     <string name="share_snackbar_remove_user">Uživatel je odstraněn</string>
     <string name="share_group_admin">Admin</string>
     <string name="share_group_everyone">Všichni</string>
@@ -643,4 +638,59 @@
     <string name="filter_exclude_subfolders">Vyloučit podsložky</string>
     <string name="filter_show_results">Zobrazit výsledky %1$s</string>
     <string name="filter_button_reset">OBNOVIT</string>
+    <string name="errors_web_viewr">Při úpravě webového dokumentu došlo k chybě</string>
+    <string name="errors_webdav_sign_in">Chybný server, uživatelské jméno nebo heslo</string>
+    <string name="errors_webdav_username_password">Chybné uživatelské jméno nebo heslo</string>
+    <string name="errors_webdav_server">Chybný server</string>
+    <string name="toolbar_menu_sort_tags">Štítky</string>
+    <string name="main_pager_docs_my">Moje dokumenty</string>
+    <string name="main_pager_docs_virtual_room">Moje místnosti</string>
+    <string name="main_pager_docs_archive_room">Můj archiv</string>
+    <string name="share_invite_user">Pozvat uživatele</string>
+    <string name="storage_web_dav_settings_server">Server</string>
+    <string name="storage_web_dav_settings_required">Požadované</string>
+    <string name="context_room_archive">Archiv</string>
+    <string name="context_room_archive_message">Místnost přesunuta do archivu</string>
+    <string name="context_rooms_archive_message">Místnosti přesunuté do archivu</string>
+    <string name="context_room_unarchive">Přesun z archivu</string>
+    <string name="context_room_unarchive_message">Místnost vyjmutá z archivu</string>
+    <string name="list_context_pin_to_top">Připnout na začátek</string>
+    <string name="list_rooms_title">Místnosti</string>
+    <string name="list_context_unpin">Zrušit připnutí</string>
+    <string name="list_context_info">Informace</string>
+    <string name="list_context_add_users">Přidat uživatele</string>
+    <string name="rooms_add_filling_forms">Vyplňování formulářů místnosti</string>
+    <string name="rooms_add_filling_forms_des">Vytvářejte, sdílejte a vyplňujte šablony dokumentů nebo pracujte s připravenými předvolbami a rychle vytvářejte dokumenty libovolného typu</string>
+    <string name="rooms_add_collaboration">Místnost pro spolupráci</string>
+    <string name="rooms_add_collaboration_des">Spolupracujte se svým týmem na jednom nebo více dokumentech</string>
+    <string name="rooms_add_review">Místnost pro recenze</string>
+    <string name="rooms_add_review_des">Vyžádejte si recenzi nebo komentáře k dokumentům</string>
+    <string name="rooms_add_view_only">Místnost pouze pro prohlížení</string>
+    <string name="rooms_add_view_only_des">Sdílejte libovolné připravené dokumenty, zprávy, dokumentaci a další soubory k prohlížení</string>
+    <string name="rooms_add_custom">Vlastní místnost</string>
+    <string name="rooms_add_custom_des">Použijte vlastní nastavení a používejte tuto místnost k jakémukoli vlastnímu účelu</string>
+    <string name="rooms_filter_type_filling_forms">Vyplňování formuláře</string>
+    <string name="rooms_filter_type_collaboration">Spolupráce</string>
+    <string name="rooms_filter_type_review">Přehled</string>
+    <string name="rooms_filter_type_view_only">Pouze k prohlížení</string>
+    <string name="rooms_filter_type_custom">Vlastní</string>
+    <string name="rooms_filter_author_other_users">Ostatní uživatelé…</string>
+    <string name="rooms_filter_third_party_title">Zdroj třetí strany</string>
+    <string name="dialog_create_room">Vytvořit místnost</string>
+    <string name="dialog_create_room_value">Nová místnost</string>
+    <string name="invite_by_email">Pozvat uživatele e-mailem</string>
+    <string name="share_access_room_admin">Správce místnosti</string>
+    <string name="share_access_room_editor">Editor</string>
+    <string name="share_access_room_form_filler">Výplň formuláře</string>
+    <string name="share_access_room_reviewer">Recenzent</string>
+    <string name="share_access_room_commentator">Komentátor</string>
+    <string name="share_access_room_viewer">Prohlížeč</string>
+    <string name="share_invite_error_empty">Zadejte prosím e-maily</string>
+    <string name="invite_link_send_success">Byl odeslán odkaz na pozvánku</string>
+    <string name="share_choose_access_title">Zvolte přístup</string>
+    <string name="share_invite_title">Pozvánka</string>
+    <string name="room_create_success">Vytvořená místnost</string>
+    <string name="room_delete_success">Místnost smazána</string>
+    <string name="switch_account_title">Přepnout účet?</string>
+    <string name="switch_account_description">Pro otevření dokumentu se přihlaste k účtu portálu %1$s.</string>
 </resources>

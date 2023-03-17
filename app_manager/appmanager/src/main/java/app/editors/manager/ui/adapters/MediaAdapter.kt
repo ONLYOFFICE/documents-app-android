@@ -13,14 +13,14 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
-import app.documents.core.account.AccountDao
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.mvp.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -208,7 +208,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
         }
 
         private suspend fun loadCloud(file: CloudFile?, token: String) {
-            val url = GlideUtils.getCorrectLoad(file?.webUrl ?: "", token)
+            val url = GlideUtils.getCorrectLoad(file?.viewUrl ?: "", token)
             withContext(Dispatchers.Main) {
                 glideTool.load(imageView, url, false, Point(cellSize, cellSize), requestListener)
             }

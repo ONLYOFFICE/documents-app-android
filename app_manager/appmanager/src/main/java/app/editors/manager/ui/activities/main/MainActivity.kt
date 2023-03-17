@@ -1,5 +1,6 @@
 package app.editors.manager.ui.activities.main
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,8 +9,9 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
-import app.documents.core.account.CloudAccount
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
@@ -19,9 +21,9 @@ import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
-import app.editors.manager.storages.dropbox.ui.fragments.DocsDropboxFragment
-import app.editors.manager.storages.googledrive.ui.fragments.DocsGoogleDriveFragment
-import app.editors.manager.storages.onedrive.ui.fragments.DocsOneDriveFragment
+import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
+import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
+import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
@@ -35,10 +37,7 @@ import com.google.android.play.core.tasks.Task
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.FragmentUtils
-import lib.toolkit.base.managers.utils.PermissionUtils
-import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.managers.utils.contains
+import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.views.animation.collapse
@@ -61,6 +60,7 @@ interface IMainActivity {
     fun onSwitchAccount()
     fun showOnCloudFragment(account: CloudAccount? = null)
     fun showAccountsActivity(isSwitch: Boolean = false)
+    fun showWebViewer(file: CloudFile, callback: (() -> Unit)? = null)
     fun onLogOut()
 }
 
@@ -105,6 +105,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         super.onSaveInstanceState(outState)
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         intent?.action?.let { action ->
@@ -171,12 +172,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_CANCELED) {
             when (requestCode) {
-                REQUEST_ACTIVITY_WEB_VIEWER -> {
-                    presenter.getRemoteConfigRate()
-                    if (data != null && data.hasExtra(WebViewerActivity.TAG_VIEWER_FAIL)) {
-                        showSnackBar("BAD bad viewer activity... :(")
-                    }
-                }
                 REQUEST_ACTIVITY_PORTAL -> {
                     presenter.init(true)
                 }
@@ -398,6 +393,20 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             },
             acceptTitle = getString(R.string.switch_account_open_project_file)
         )
+    }
+
+    override fun showWebViewer(file: CloudFile, callback: (() -> Unit)?) {
+        LaunchActivityForResult(
+            activityResultRegistry = activityResultRegistry,
+            callback = { result ->
+                presenter.getRemoteConfigRate()
+                if (result.data != null && result.data?.hasExtra(WebViewerActivity.TAG_VIEWER_FAIL) == true) {
+                    showSnackBar(getString(R.string.errors_web_viewr))
+                }
+                callback?.invoke()
+            },
+            intent = WebViewerActivity.getActivityIntent(this, file)
+        ).show()
     }
 
     override fun onClick(view: View?) {
@@ -634,7 +643,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         } ?: run {
             FragmentUtils.showFragment(
                 supportFragmentManager,
-                DocsWebDavFragment.newInstance(WebDavApi.Providers.valueOf(account.webDavProvider ?: "")),
+                DocsWebDavFragment.newInstance(WebDavService.Providers.valueOf(account.webDavProvider ?: "")),
                 R.id.frame_container
             )
         }

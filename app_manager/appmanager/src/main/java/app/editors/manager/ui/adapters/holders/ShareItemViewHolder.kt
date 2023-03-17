@@ -63,7 +63,7 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
             contextLayoutButton.isVisible = !item.isOwner
             itemBinding.listShareSettingsOwner.isVisible = item.isOwner
             if (!item.isOwner) {
-                ManagerUiUtils.setAccessIcon(contextButton, item.access, item.isRoom)
+                ManagerUiUtils.setAccessIcon(contextButton, item.access)
             }
         }
     }

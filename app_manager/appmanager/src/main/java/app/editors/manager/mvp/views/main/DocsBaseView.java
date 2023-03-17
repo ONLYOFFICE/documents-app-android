@@ -8,11 +8,12 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import app.editors.manager.mvp.models.base.Entity;
-import app.editors.manager.mvp.models.explorer.CloudFolder;
-import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.CloudFile;
-import app.editors.manager.mvp.models.explorer.Item;
+import app.documents.core.network.manager.models.base.Entity;
+import app.documents.core.network.manager.models.explorer.CloudFile;
+import app.documents.core.network.manager.models.explorer.CloudFolder;
+import app.documents.core.network.manager.models.explorer.Explorer;
+import app.documents.core.network.manager.models.explorer.Item;
+import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.views.base.BaseViewExt;
 import app.editors.manager.ui.dialogs.ContextBottomDialog;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
@@ -75,9 +76,7 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onRename(Item item, int position);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onBatchMove(@NonNull Explorer explorer);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onBatchCopy(@NonNull Explorer explorer);
+    void onBatchMoveCopy(@NonNull OperationsState.OperationType operation, @NonNull Explorer explorer);
 
     /*
      * On click
@@ -146,4 +145,8 @@ public interface DocsBaseView extends BaseViewExt {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onFinishDownload(Uri uri);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onShowCamera(Uri photoUri);
+
 }

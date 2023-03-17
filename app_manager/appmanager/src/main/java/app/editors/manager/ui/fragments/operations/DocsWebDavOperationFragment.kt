@@ -4,14 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
-import app.editors.manager.mvp.models.base.Entity
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.OperationActivity.OnActionClickListener
 import app.editors.manager.ui.fragments.main.DocsWebDavFragment
+import lib.toolkit.base.managers.utils.getSerializable
+import lib.toolkit.base.managers.utils.getSerializableExt
 
 class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener {
 
@@ -20,7 +22,7 @@ class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        provider = requireArguments().getSerializable(KEY_PROVIDER) as WebDavApi.Providers?
+        provider = requireArguments().getSerializableExt(KEY_PROVIDER, WebDavService.Providers::class.java)
         setHasOptionsMenu(false)
     }
 
@@ -102,14 +104,10 @@ class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener 
         val bundle = arguments
         if (bundle != null) {
             val intent = requireActivity().intent
-            operationType = intent.getSerializableExtra(OperationActivity.TAG_OPERATION_TYPE) as OperationType?
+            operationType = intent.getSerializable(OperationActivity.TAG_OPERATION_TYPE, OperationType::class.java)
             if (savedInstanceState == null) {
-                val explorer = intent.getSerializableExtra(OperationActivity.TAG_OPERATION_EXPLORER) as Explorer?
-                if (explorer != null) {
-                    webDavPresenter.setOperationExplorer(explorer)
-                } else {
-                    requireActivity().finish()
-                }
+                val explorer = intent.getSerializable(OperationActivity.TAG_OPERATION_EXPLORER, Explorer::class.java)
+                webDavPresenter.setOperationExplorer(explorer)
             }
         }
     }
@@ -128,7 +126,7 @@ class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener 
     companion object {
         val TAG: String = DocsWebDavOperationFragment::class.java.simpleName
 
-        fun newInstance(provider: WebDavApi.Providers?): DocsWebDavOperationFragment {
+        fun newInstance(provider: WebDavService.Providers?): DocsWebDavOperationFragment {
             return DocsWebDavOperationFragment().apply {
                 arguments = Bundle(1).apply {
                     putSerializable(KEY_PROVIDER, provider)

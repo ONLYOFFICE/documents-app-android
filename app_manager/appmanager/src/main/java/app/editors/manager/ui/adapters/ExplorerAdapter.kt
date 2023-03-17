@@ -3,23 +3,22 @@ package app.editors.manager.ui.adapters
 import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.mvp.models.base.Entity
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.UploadFile
+import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.UploadFile
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.ui.adapters.base.BaseAdapter
-import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
-import app.editors.manager.ui.adapters.holders.FooterViewHolder
-import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
-import app.editors.manager.ui.adapters.holders.factory.TypeFactory
+import app.editors.manager.ui.adapters.holders.*
+import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
 import javax.inject.Inject
 
-class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() {
+class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<Entity>() {
 
     @Inject
     lateinit var context: Context
@@ -52,7 +51,6 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
     override fun onCreateViewHolder(view: ViewGroup, type: Int):
             BaseViewHolderExplorer<*> {
         return factory.createViewHolder(view.inflate(type), type, this)
-            ?: throw RuntimeException("ViewHolder can not be null")
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -86,7 +84,21 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
         return if (position == itemCount - 1) {
             FooterViewHolder.LAYOUT
         } else {
-            itemList[position].getType(factory)
+            when (itemList[position]) {
+                is CloudFile -> FileViewHolder.LAYOUT
+                is CloudFolder -> FolderViewHolder.LAYOUT
+                is UploadFile -> UploadFileViewHolder.LAYOUT
+                is Header -> HeaderViewHolder.LAYOUT
+                else -> 0
+            }
+        }
+    }
+
+    private fun setFileFavoriteStatus(position: Int) {
+        val file = mList[position]
+        if (file is CloudFile && file.fileStatus.isNotEmpty()) {
+            val favoriteMask = file.fileStatus.toInt() and ApiContract.FileStatus.FAVORITE
+            file.favorite = favoriteMask != 0
         }
     }
 
@@ -114,14 +126,6 @@ class ExplorerAdapter(private val factory: TypeFactory) : BaseAdapter<Entity>() 
                     break
                 }
             }
-        }
-    }
-
-    private fun setFileFavoriteStatus(position: Int) {
-        val file = mList[position]
-        if (file is CloudFile && file.fileStatus.isNotEmpty()) {
-            val favoriteMask = file.fileStatus.toInt() and ApiContract.FileStatus.FAVORITE
-            file.favorite = favoriteMask != 0
         }
     }
 

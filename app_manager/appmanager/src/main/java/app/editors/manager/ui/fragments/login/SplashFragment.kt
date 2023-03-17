@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentSplashBinding
 import app.editors.manager.managers.tools.PreferenceTool
@@ -71,7 +70,7 @@ class SplashFragment : BaseAppFragment() {
     private fun init() {
         try {
             val drawable =
-                ContextCompat.getDrawable(requireContext(), R.drawable.image_onlyoffice_text)
+                ContextCompat.getDrawable(requireContext(), lib.toolkit.base.R.drawable.image_onlyoffice_text)
             viewBinding?.appCompatImageView?.setImageDrawable(drawable)
         } catch (e: InflateException) {
             FirebaseUtils.addCrash("Inflate error when start")

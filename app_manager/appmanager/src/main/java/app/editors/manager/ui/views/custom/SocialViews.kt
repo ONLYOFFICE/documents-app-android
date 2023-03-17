@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
+import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.editors.manager.BuildConfig
 import app.editors.manager.databinding.IncludeSocialNetworksLayoutBinding
 import com.facebook.*
@@ -85,7 +86,7 @@ class SocialViews(private val activity: Activity, view: View?,
     private fun onGoogleClick() {
         val gso: GoogleSignInOptions =
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(BuildConfig.GOOGLE_WEB_ID)
+                .requestIdToken(GoogleDriveUtils.webId)
                 .requestProfile()
                 .requestEmail()
                 .build()

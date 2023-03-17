@@ -5,18 +5,18 @@ import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
-import app.documents.core.account.Recent
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.manager.models.explorer.*
+import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.webDavApi
-import app.editors.manager.managers.providers.LocalFileProvider
-import app.editors.manager.managers.providers.ProviderError
-import app.editors.manager.managers.providers.WebDavFileProvider
+import app.documents.core.providers.LocalFileProvider
+import app.documents.core.providers.ProviderError
+import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.managers.works.UploadWork
-import app.editors.manager.mvp.models.explorer.*
-import app.editors.manager.mvp.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.editors.manager.app.localFileProvider
+import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -25,9 +25,9 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.*
 import moxy.InjectViewState
+import moxy.presenterScope
 import java.io.File
 import java.util.*
 
@@ -40,21 +40,17 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     init {
         App.getApp().appComponent.inject(this)
-        fileProvider = LocalFileProvider(LocalContentTools(context))
+        fileProvider = context.localFileProvider
         checkWebDav()
     }
 
-    private var photoUri: Uri? = null
     private var webDavFileProvider: WebDavFileProvider? = null
 
     private fun checkWebDav() {
         CoroutineScope(Dispatchers.Default).launch {
             accountDao.getAccountOnline()?.let {
                 if (it.isWebDav) {
-                    webDavFileProvider = WebDavFileProvider(
-                        context.webDavApi(),
-                        WebDavApi.Providers.valueOf(it.webDavProvider ?: "")
-                    )
+                    webDavFileProvider = context.webDavFileProvider
                 }
             }
         }
@@ -89,7 +85,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             recentDao.addRecent(
                 Recent(
                     idFile = null,
@@ -106,7 +102,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     private fun addRecent(uri: Uri) {
-        CoroutineScope(Dispatchers.Default).launch {
+        presenterScope.launch {
             DocumentFile.fromSingleUri(context, uri)?.let { file ->
                 recentDao.addRecent(
                     Recent(
@@ -138,8 +134,10 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(currentTitle.takeIf(String::isNotEmpty)
-                ?: context.getString(R.string.toolbar_menu_search_result))
+            viewState.onActionBarTitle(
+                currentTitle.takeIf(String::isNotEmpty)
+                    ?: context.getString(R.string.toolbar_menu_search_result)
+            )
         } else {
             if (isFoldersMode) {
                 viewState.onActionBarTitle(context.getString(R.string.operation_title))
@@ -340,7 +338,10 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun openFile(uri: Uri, ext: String, isNew: Boolean = false) {
         when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> viewState.onShowDocs(uri, isNew)
+            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> viewState.onShowDocs(
+                uri,
+                isNew
+            )
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
@@ -410,22 +411,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    fun createPhoto() {
-        val photo = FileUtils.createFile(File(stack?.current?.id ?: ""), TimeUtils.fileTimeStamp, "png")
-        if (photo != null) {
-            photoUri = ContentResolverUtils.getFileUri(context, photo).also { uri ->
-                viewState.onShowCamera(uri)
-            }
-        }
-    }
-
-    fun deletePhoto() {
-        photoUri?.let { uri ->
-            context.contentResolver.delete(uri, null, null)
-        }
-    }
-
     fun upload() {
         itemClicked?.let { item ->
             context.accountOnline?.let {
@@ -458,7 +443,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                 title = file.name
                 filesCount = "1"
             }
-            files = listOf(explorerFile)
+            files = mutableListOf(explorerFile)
             addRecent(explorerFile)
         }
 

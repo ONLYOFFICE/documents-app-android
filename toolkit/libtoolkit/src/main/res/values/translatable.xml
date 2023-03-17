@@ -10,4 +10,10 @@
     <string name="sizes_megabytes">Mb</string>
     <string name="sizes_gigabytes">Gb</string>
     <string name="sizes_terabytes">Tb</string>
+
+    <!--  Feedback  -->
+    <string name="chooser_email_client">Choose email client…</string>
+    <string name="about_email_subject">ONLYOFFICE Documents for Android feedback</string>
+    <string name="about_feedback">Feedback and support</string>
+
 </resources>

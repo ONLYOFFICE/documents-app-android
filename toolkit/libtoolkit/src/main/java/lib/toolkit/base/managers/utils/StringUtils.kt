@@ -19,6 +19,7 @@ import org.json.JSONObject
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
@@ -480,6 +481,10 @@ object StringUtils {
     @JvmStatic
     fun getHelpUrl(context: Context): String {
         return context.getString(R.string.app_url_help)
+    }
+
+    fun getDate(pattern: String, date: String): Date {
+        return SimpleDateFormat(pattern, Locale.getDefault()).parse(date)
     }
 }
 

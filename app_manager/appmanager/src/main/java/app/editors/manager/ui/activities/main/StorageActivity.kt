@@ -4,14 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import app.editors.manager.R
 import app.editors.manager.databinding.ActivityStorageBinding
-import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.storage.SelectFragment
+import app.editors.manager.ui.interfaces.WebDavInterface
 
-class StorageActivity : BaseAppActivity() {
+class StorageActivity : BaseAppActivity(), WebDavInterface {
 
     private var viewBinding: ActivityStorageBinding? = null
 
@@ -23,11 +24,13 @@ class StorageActivity : BaseAppActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            com.facebook.common.R.id.home -> {
+        if (item.itemId == android.R.id.home) {
+            if (supportFragmentManager.fragments.size > 1) {
+                supportFragmentManager.popBackStack()
+            } else {
                 onBackPressed()
-                return true
             }
+            return true
         }
         return super.onOptionsItemSelected(item)
     }
@@ -50,13 +53,25 @@ class StorageActivity : BaseAppActivity() {
         setFinishOnTouchOutside(true)
     }
 
-    fun finishWithResult(folder: CloudFolder?) {
+    override fun finishWithResult(folder: CloudFolder?) {
         val intent = Intent().apply { putExtra(TAG_RESULT, folder) }
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
 
-    val isMySection: Boolean
+    override fun showConnectButton(isShow: Boolean) {
+        viewBinding?.appBarToolbarConnectButton?.isVisible = isShow
+    }
+
+    override fun enableConnectButton(isEnable: Boolean) {
+        viewBinding?.appBarToolbarConnectButton?.isEnabled = isEnable
+    }
+
+    override fun setOnConnectButtonClickListener(onClick: () -> Unit) {
+        viewBinding?.appBarToolbarConnectButton?.setOnClickListener { onClick() }
+    }
+
+    override val isMySection: Boolean
         get() {
             return if (intent.hasExtra(TAG_SECTION)) {
                 intent.getBooleanExtra(TAG_SECTION, false)

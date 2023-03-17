@@ -1,25 +1,33 @@
 package app.editors.manager.ui.fragments.main
 
+import android.Manifest
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
-import app.documents.core.account.Recent
-import app.documents.core.network.ApiContract
+import app.documents.core.storage.recent.Recent
+import app.documents.core.network.common.contracts.ApiContract
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import app.editors.manager.R
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.main.RecentState
 import app.editors.manager.mvp.views.main.DocsRecentView
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
-import app.editors.manager.ui.activities.main.MediaActivity
-import app.editors.manager.ui.activities.main.WebViewerActivity
 import app.editors.manager.ui.adapters.RecentAdapter
 import app.editors.manager.ui.adapters.holders.factory.RecentHolderFactory
 import app.editors.manager.ui.dialogs.ContextBottomDialog
@@ -29,8 +37,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.LaunchActivityForResult
+import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
@@ -42,6 +53,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private var activity: IMainActivity? = null
     private var adapter: RecentAdapter? = null
     private var filterValue: CharSequence? = null
+    private var clearItem: MenuItem? = null
 
     private val recentListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
         Debounce.perform(1000L) { presenter.fileClick(recent, position) }
@@ -51,14 +63,9 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         presenter.contextClick(recent, position)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == PERMISSION_READ_STORAGE) {
-            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                presenter.getRecentFiles()
-            } else {
-                placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
-            }
-        }
+    private val readStorage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        presenter.recreateStack()
+        presenter.getRecentFiles()
     }
 
     override fun onAttach(context: Context) {
@@ -71,6 +78,26 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                         MainActivity::class.java.simpleName
             )
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        if (isResumed) {
+            clearItem = menu.findItem(R.id.toolbar_item_empty_trash)
+            clearItem?.isVisible = true
+            clearItem?.let { item ->
+                UiUtils.setMenuItemTint(requireContext(), item, lib.toolkit.base.R.color.colorPrimary)
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.toolbar_item_empty_trash -> {
+                showClearDialog()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,22 +122,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         super.onPrepareOptionsMenu(menu)
         setMenuSearchEnabled(true)
         mainItem?.isVisible = true
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            BaseActivity.REQUEST_ACTIVITY_WEB_VIEWER -> presenter.getRecentFiles()
-            REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION, REQUEST_PDF ->
-                if (resultCode == Activity.RESULT_CANCELED) {
-                    presenter.deleteTempFile()
-                } else if (resultCode == Activity.RESULT_OK) {
-                    data?.data?.let {
-                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
-                            presenter.upload(it, null)
-                        }
-                    }
-                }
+        clearItem?.let { item ->
+            UiUtils.setMenuItemTint(requireContext(), item, lib.toolkit.base.R.color.colorPrimary)
         }
     }
 
@@ -148,14 +161,50 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             )
         }
         swipeRefreshLayout?.isEnabled = false
-        if (checkReadPermission()) {
-            presenter.getRecentFiles()
-        }
+        checkStorage()
         setActionBarTitle(getString(R.string.fragment_recent_title))
     }
 
-    override fun onListEnd() {
-        presenter.loadMore(adapter?.itemCount)
+    override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
+        requestManage()
+    }
+
+    private fun checkStorage() {
+        when {
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> {
+                requestReadWritePermission()
+            }
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                requestAccessStorage()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun requestAccessStorage() {
+        if (!Environment.isExternalStorageManager() && requireContext().appComponent.preference.isShowStorageAccess) {
+            showQuestionDialog(
+                getString(R.string.app_manage_files_title),
+                getString(R.string.app_manage_files_description),
+                getString(R.string.dialogs_common_ok_button),
+                getString(R.string.dialogs_common_cancel_button),
+                TAG_STORAGE_ACCESS
+            )
+        } else {
+            presenter.getRecentFiles()
+        }
+    }
+
+    private fun requestReadWritePermission() {
+        RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
+            if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true && permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
+                presenter.recreateStack()
+                presenter.getRecentFiles()
+            } else {
+                swipeRefreshLayout?.isEnabled = false
+                placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
+            }
+        }, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)).request()
     }
 
     override fun updateFiles(files: List<Recent>, sortBy: String, sortOrder: String) {
@@ -180,9 +229,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun openFile(response: CloudFile) {
         val ext = response.fileExst
         if (StringUtils.isVideoSupport(ext) || StringUtils.isImage(ext)) {
-            MediaActivity.show(this, getExplorer(response), false)
+            showMediaActivity(getExplorer(response), false) {
+                // Stub
+            }
         } else if (StringUtils.isDocument(ext)) {
-            WebViewerActivity.show(requireActivity(), response)
+            activity?.showWebViewer(response)
         } else {
             onError(getString(R.string.error_unsupported_format))
         }
@@ -206,8 +257,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onContextShow(state: ContextBottomDialog.State) {
         parentFragmentManager.let {
-//            contextBottomDialog?.state = state
             contextBottomDialog?.onClickListener = this
+            contextBottomDialog?.state = state
             contextBottomDialog?.show(it, ContextBottomDialog.TAG)
         }
     }
@@ -250,20 +301,27 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onOpenFile(state: OpenState) {
         when (state) {
-            is OpenState.Docs -> {
-                showEditors(state.uri, EditorsType.DOCS)
-            }
-            is OpenState.Cells -> {
-                showEditors(state.uri, EditorsType.CELLS)
-            }
-            is OpenState.Slide -> {
-                showEditors(state.uri, EditorsType.PRESENTATION)
-            }
-            is OpenState.Pdf -> {
-                showEditors(state.uri, EditorsType.PDF)
+            is OpenState.Docs, is OpenState.Cells, is OpenState.Slide, is OpenState.Pdf -> {
+                LaunchActivityForResult(
+                    requireActivity().activityResultRegistry,
+                    { result ->
+                        if (result.resultCode == Activity.RESULT_CANCELED) {
+                            presenter.deleteTempFile()
+                        } else if (result.resultCode == Activity.RESULT_OK) {
+                            result.data?.data?.let {
+                                if (result.data?.getBooleanExtra("EXTRA_IS_MODIFIED", false) == true) {
+                                    presenter.upload(it, null)
+                                }
+                            }
+                        }
+                    },
+                    getEditorsIntent(state.uri, checkNotNull(state.type))
+                ).show()
             }
             is OpenState.Media -> {
-                MediaActivity.show(this, state.explorer, state.isWebDav)
+                showMediaActivity(state.explorer, state.isWebDav) {
+                    // Stub
+                }
             }
         }
     }
@@ -282,7 +340,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         get() = false
 
     object Debounce {
-        var isClickable = true
+        private var isClickable = true
 
         fun perform(timeMillis: Long, func: () -> Unit) {
             if (isClickable) {
@@ -293,6 +351,32 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                     isClickable = true
                 }
             }
+        }
+    }
+
+    private fun showClearDialog() {
+        UiUtils.showQuestionDialog(requireContext(), "Clear recents?", acceptListener = {
+            presenter.clearRecents()
+        }, cancelListener = {
+            // stub
+        })
+    }
+
+    private fun requestManage() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                readStorage.launch(
+                    Intent(
+                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                        Uri.parse("package:" + requireContext().packageName)
+                    )
+                )
+            }
+        } catch (e: ActivityNotFoundException) {
+            openItem?.isVisible = false
+            swipeRefreshLayout?.isEnabled = false
+            activity?.showActionButton(false)
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
         }
     }
 
@@ -315,6 +399,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     companion object {
         var TAG: String = DocsRecentFragment::class.java.simpleName
+
+        private const val TAG_STORAGE_ACCESS = "TAG_STORAGE_ACCESS"
 
         fun newInstance(): DocsRecentFragment {
             return DocsRecentFragment()

@@ -6,4 +6,9 @@
   <string name="sizes_kilobytes">Кб</string>
   <string name="sizes_megabytes">Мб</string>
   <string name="sizes_terabytes">Тб</string>
+
+  <string name="chooser_email_client">Выберите почтовый клиент…</string>
+  <string name="about_email_subject">Обратная связь по приложению ONLYOFFICE Документы для Android</string>
+  <string name="about_feedback">Обратная связь и поддержка</string>
+
 </resources>

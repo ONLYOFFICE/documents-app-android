@@ -3,11 +3,11 @@ package app.editors.manager.ui.views.custom
 import android.text.Editable
 import android.view.View
 import androidx.core.view.isVisible
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludeSharePanelBinding
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.ui.views.popup.SharePopup
@@ -99,6 +99,7 @@ class SharePanelViews(
                         it.buttonPopupImage.setImageResource(R.drawable.ic_access_full)
                     }
                 }
+                ApiContract.ShareCode.EDITOR -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_full)
                 ApiContract.ShareCode.REVIEW -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_review)
                 ApiContract.ShareCode.COMMENT -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_comment)
                 ApiContract.ShareCode.FILL_FORMS -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_fill_form)
@@ -168,6 +169,7 @@ class SharePanelViews(
                 R.id.fullAccessItem -> onPopupAccess(ApiContract.ShareCode.READ_WRITE)
                 R.id.reviewItem -> onPopupAccess(ApiContract.ShareCode.REVIEW)
                 R.id.viewItem -> onPopupAccess(ApiContract.ShareCode.READ)
+                R.id.editorItem -> onPopupAccess(ApiContract.ShareCode.EDITOR)
                 R.id.denyItem -> onPopupAccess(ApiContract.ShareCode.NONE)
                 R.id.commentItem -> onPopupAccess(ApiContract.ShareCode.COMMENT)
                 R.id.fillFormItem -> onPopupAccess(ApiContract.ShareCode.FILL_FORMS)

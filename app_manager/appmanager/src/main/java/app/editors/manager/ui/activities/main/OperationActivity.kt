@@ -1,21 +1,23 @@
 package app.editors.manager.ui.activities.main
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import app.documents.core.account.AccountDao
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityOperationBinding
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
-import app.editors.manager.storages.dropbox.ui.fragments.operations.DocsDropboxOperationFragment
-import app.editors.manager.storages.googledrive.ui.fragments.operations.DocsGoogleDriveOperationFragment
-import app.editors.manager.storages.onedrive.ui.fragments.operations.DocsOneDriveOperationFragment
+import app.editors.manager.ui.fragments.operations.DocsDropboxOperationFragment
+import app.editors.manager.ui.fragments.operations.DocsGoogleDriveOperationFragment
+import app.editors.manager.ui.fragments.operations.DocsOneDriveOperationFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
@@ -25,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.utils.getSerializable
 import javax.inject.Inject
 
 class OperationActivity : BaseAppActivity(){
@@ -40,28 +43,9 @@ class OperationActivity : BaseAppActivity(){
         const val TAG_OPERATION_EXPLORER = "TAG_OPERATION_EXPLORER"
         const val TAG_IS_WEB_DAV = "TAG_IS_WEB_DAV"
 
-        @JvmStatic
-        fun showCopy(fragment: Fragment, explorer: Explorer) {
-            val intent = Intent(fragment.context, OperationActivity::class.java)
-            intent.putExtra(TAG_OPERATION_TYPE, OperationType.COPY)
-            intent.putExtra(TAG_OPERATION_EXPLORER, explorer)
-            fragment.startActivityForResult(intent, REQUEST_ACTIVITY_OPERATION)
-        }
-
-        @JvmStatic
-        fun showMove(fragment: Fragment, explorer: Explorer) {
-            val intent = Intent(fragment.context, OperationActivity::class.java)
-            intent.putExtra(TAG_OPERATION_TYPE, OperationType.MOVE)
-            intent.putExtra(TAG_OPERATION_EXPLORER, explorer)
-            fragment.startActivityForResult(intent, REQUEST_ACTIVITY_OPERATION)
-        }
-
-        @JvmStatic
-        fun showRestore(fragment: Fragment, explorer: Explorer) {
-            val intent = Intent(fragment.context, OperationActivity::class.java)
-            intent.putExtra(TAG_OPERATION_TYPE, OperationType.RESTORE)
-            intent.putExtra(TAG_OPERATION_EXPLORER, explorer)
-            fragment.startActivityForResult(intent, REQUEST_ACTIVITY_OPERATION)
+        fun getIntent(context: Context, operation: OperationType, explorer: Explorer) = Intent(context, OperationActivity::class.java).apply {
+            putExtra(TAG_OPERATION_TYPE, operation)
+            putExtra(TAG_OPERATION_EXPLORER, explorer)
         }
     }
 
@@ -100,7 +84,7 @@ class OperationActivity : BaseAppActivity(){
     private fun init(savedInstanceState: Bundle?) {
         setFinishOnTouchOutside(true)
         setSupportActionBar(viewBinding?.appBarToolbar)
-        operationType = intent.getSerializableExtra(TAG_OPERATION_TYPE) as OperationType?
+        operationType = intent.getSerializable(TAG_OPERATION_TYPE, OperationType::class.java)
         initButton(operationType)
         if (savedInstanceState == null) {
             initState()
@@ -114,7 +98,7 @@ class OperationActivity : BaseAppActivity(){
                     if (account.isWebDav) {
                         showFragment(
                             DocsWebDavOperationFragment.newInstance(
-                                WebDavApi.Providers.valueOf(
+                                WebDavService.Providers.valueOf(
                                     account.webDavProvider ?: ""
                                 )
                             ), null

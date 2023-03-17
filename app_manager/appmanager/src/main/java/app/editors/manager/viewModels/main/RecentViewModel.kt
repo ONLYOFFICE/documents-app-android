@@ -3,7 +3,7 @@ package app.editors.manager.viewModels.main
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import app.documents.core.account.Recent
+import app.documents.core.storage.recent.Recent
 import app.editors.manager.app.appComponent
 
 class RecentViewModel(context: Application): AndroidViewModel(context) {
