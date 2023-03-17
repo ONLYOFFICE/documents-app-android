@@ -78,7 +78,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         dialog.view?.post {
             editValueView?.apply {
                 if (isPassword) {
-                    inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
                     doOnTextChanged { text, _, _, _ ->
                         if (text.isNullOrEmpty()) {
                             editInputLayout?.error = null
@@ -98,7 +98,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             }
 
             editInputLayout?.apply {
-                suffixText = suffixValue.orEmpty()
+                suffixText = suffixValue
                 hintValue?.let(::setHint)
                 if (!errorValue.isNullOrEmpty()) {
                     isErrorEnabled = true
@@ -109,9 +109,8 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
                     }
                 }
 
-                if (isPassword && errorValue.isNullOrEmpty()) {
+                if (isPassword) {
                     endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
-                    endIconDrawable = AppCompatResources.getDrawable(context, R.drawable.drawable_selector_password_visibility)
                 }
             }
 
