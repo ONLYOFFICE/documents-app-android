@@ -4,57 +4,34 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import lib.toolkit.base.databinding.ActionPopupItemListBinding
 import lib.toolkit.base.ui.adapters.factory.inflate
 import lib.toolkit.base.ui.popup.ActionBarPopup
 import lib.toolkit.base.ui.popup.BasePopupItem
 
-sealed class MainPopupItem(title: Int, withDivider: Boolean = false) :
-    BasePopupItem(title, withDivider) {
+sealed class MainPopupItem(
+    title: Int,
+    withDivider: Boolean = false
+) : BasePopupItem(title, withDivider) {
 
     object Select : MainPopupItem(R.string.toolbar_menu_main_select)
     object SelectAll : MainPopupItem(R.string.toolbar_menu_main_select_all, true)
     object EmptyTrash : MainPopupItem(R.string.trash_dialog_empty_title, true)
 
-    sealed class SortBy(title: Int, val value: String, withDivider: Boolean = false) :
-        MainPopupItem(title, withDivider) {
-
-        object Date : SortBy(
-            R.string.toolbar_menu_sort_date_modified,
-            ApiContract.Parameters.VAL_SORT_BY_UPDATED
-        )
-
-        object Title : SortBy(
-            R.string.toolbar_menu_sort_title,
-            ApiContract.Parameters.VAL_SORT_BY_TITLE
-        )
-
-        object Type : SortBy(
-            R.string.toolbar_menu_sort_type,
-            ApiContract.Parameters.VAL_SORT_BY_TYPE
-        )
-
-        object Size : SortBy(
-            R.string.toolbar_menu_sort_size,
-            ApiContract.Parameters.VAL_SORT_BY_SIZE
-        )
-
-        object Author : SortBy(
-            R.string.filter_title_author,
-            ApiContract.Parameters.VAL_SORT_BY_OWNER
-        )
-
-        object RoomTags : SortBy(
-            R.string.toolbar_menu_sort_tags,
-            ApiContract.Parameters.VAL_SORT_BY_TAGS
-        )
-
-        object RoomType : SortBy(
-            R.string.toolbar_menu_sort_type,
-            ApiContract.Parameters.VAL_SORT_BY_ROOM_TYPE
-        )
+    sealed class SortBy(
+        title: Int,
+        val value: String,
+        withDivider: Boolean = false
+    ) : MainPopupItem(title, withDivider) {
+        object Date : SortBy(R.string.toolbar_menu_sort_date_modified, ApiContract.Parameters.VAL_SORT_BY_UPDATED)
+        object Title : SortBy(R.string.toolbar_menu_sort_title, ApiContract.Parameters.VAL_SORT_BY_TITLE)
+        object Type : SortBy(R.string.toolbar_menu_sort_type, ApiContract.Parameters.VAL_SORT_BY_TYPE)
+        object Size : SortBy(R.string.toolbar_menu_sort_size, ApiContract.Parameters.VAL_SORT_BY_SIZE)
+        object Author : SortBy(R.string.filter_title_author, ApiContract.Parameters.VAL_SORT_BY_OWNER)
+        object RoomTags : SortBy(R.string.toolbar_menu_sort_tags, ApiContract.Parameters.VAL_SORT_BY_TAGS)
+        object RoomType : SortBy(R.string.toolbar_menu_sort_type, ApiContract.Parameters.VAL_SORT_BY_ROOM_TYPE)
     }
 }
 

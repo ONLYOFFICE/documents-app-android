@@ -6,12 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import app.editors.manager.app.App
-import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
-import app.editors.manager.storages.onedrive.mvp.presenters.DocsOneDrivePresenter
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
-import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.ui.activities.base.BaseActivity

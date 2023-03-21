@@ -218,7 +218,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return refresh()
     }
 
-    private fun reverseSortOrder() {
+    fun reverseSortOrder() {
         if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
         } else {

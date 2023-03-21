@@ -4,32 +4,25 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import app.documents.core.storage.account.CloudAccount
-import app.editors.manager.R
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.storage.account.CloudAccount
+import app.editors.manager.R
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.storages.BaseStorageDocsPresenter
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
-import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
+import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.FolderChooser
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
-import app.editors.manager.ui.popup.MainActionBarPopup
-import app.editors.manager.ui.popup.SelectActionBarPopup
-import lib.toolkit.base.managers.utils.FolderChooser
-import lib.toolkit.base.managers.utils.PathUtils
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import java.io.File
 
 abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment, BaseStorageDocsView {
