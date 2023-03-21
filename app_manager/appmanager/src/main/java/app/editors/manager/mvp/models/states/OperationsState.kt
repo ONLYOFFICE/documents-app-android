@@ -1,6 +1,6 @@
 package app.editors.manager.mvp.models.states
 
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import java.util.*
 import javax.inject.Inject
 

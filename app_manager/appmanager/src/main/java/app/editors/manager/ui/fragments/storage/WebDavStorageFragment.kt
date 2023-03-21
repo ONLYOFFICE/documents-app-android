@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
-import app.editors.manager.mvp.models.explorer.CloudFolder
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.views.storage.ConnectView
 import app.editors.manager.ui.activities.main.MainActivity

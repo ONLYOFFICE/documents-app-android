@@ -3,11 +3,11 @@ package app.editors.manager.ui.views.custom
 import android.text.Editable
 import android.view.View
 import androidx.core.view.isVisible
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludeSharePanelBinding
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.ui.views.popup.SharePopup

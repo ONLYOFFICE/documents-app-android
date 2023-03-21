@@ -9,13 +9,13 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -186,20 +186,18 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                     else -> {
                         fragments.add(
                             ViewPagerAdapter.Container(
-                                section.current?.rootFolderType?.let { folderType ->
-                                    when (folderType) {
-                                        ApiContract.SectionType.CLOUD_TRASH, ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
-                                            DocsTrashFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
-                                        }
-                                        ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
-                                            DocsRoomFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
-                                        }
-                                        else -> {
-                                            DocsCloudFragment.newInstance(stringAccount, folderType, section.current?.id ?: "")
-                                        }
+                                when (val folderType = section.current.rootFolderType) {
+                                    ApiContract.SectionType.CLOUD_TRASH, ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
+                                        DocsTrashFragment.newInstance(stringAccount, folderType, section.current.id)
+                                    }
+                                    ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
+                                        DocsRoomFragment.newInstance(stringAccount, folderType, section.current.id)
+                                    }
+                                    else -> {
+                                        DocsCloudFragment.newInstance(stringAccount, folderType, section.current.id)
                                     }
                                 },
-                                getTabTitle(section.current?.rootFolderType ?: -1)
+                                getTabTitle(section.current.rootFolderType)
                             )
                         )
                     }

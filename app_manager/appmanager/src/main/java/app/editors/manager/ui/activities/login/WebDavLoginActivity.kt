@@ -5,20 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.core.view.isVisible
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
-import app.editors.manager.BuildConfig
+import app.documents.core.network.common.utils.GoogleDriveUtils
+import app.documents.core.network.common.utils.OneDriveUtils
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityWebDavLoginBinding
-import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
-import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
-import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
-import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.login.WebDavSignInFragment
+import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
+import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.interfaces.WebDavInterface
 import lib.toolkit.base.managers.utils.getSerializable
 import javax.inject.Inject
@@ -35,7 +33,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
         const val GOOGLEDRIVE_FRAGMENT_VALUE = 3
 
         @JvmStatic
-        fun show(activity: Activity, provider: WebDavApi.Providers? = null, account: String?, fragment: Int = 0) {
+        fun show(activity: Activity, provider: WebDavService.Providers? = null, account: String?, fragment: Int = 0) {
             activity.startActivityForResult(Intent(activity, WebDavLoginActivity::class.java).apply {
                 putExtra(KEY_PROVIDER, provider)
                 putExtra(KEY_ACCOUNT, account)
@@ -89,7 +87,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
         setSupportActionBar(viewBinding?.appBarToolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
-            it.title = intent.getSerializable(KEY_PROVIDER, WebDavApi.Providers::class.java).name
+            it.title = intent.getSerializable(KEY_PROVIDER, WebDavService.Providers::class.java).name
         }
         if (savedInstanceState == null) showFragment()
     }
@@ -105,40 +103,29 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     private fun showSignInFragment() {
         showFragment(
-            WebDavSignInFragment.newInstance(intent.getSerializableExtra(KEY_PROVIDER) as WebDavApi.Providers),
+            WebDavSignInFragment.newInstance(intent.getSerializableExtra(KEY_PROVIDER) as WebDavService.Providers),
             null
         )
     }
 
     private fun showOneDriveSignInFragment() {
-        val storage = Storage(
-            OneDriveUtils.ONEDRIVE_STORAGE,
-            BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
-            BuildConfig.ONE_DRIVE_COM_REDIRECT_URL
-        )
-
         showFragment(
-            OneDriveSignInFragment.newInstance(storage),
+            OneDriveSignInFragment.newInstance(OneDriveUtils.storage),
             OneDriveSignInFragment.TAG
         )
     }
 
     private fun showDropboxSignInFragment() {
         dropboxLoginHelper.startSignInActivity(this) {
+            App.getApp().refreshDropboxInstance()
             MainActivity.show(this)
             finish()
         }
     }
 
     private fun showGoogleDriveSignInFragment() {
-        val storage = Storage(
-            ApiContract.Storage.GOOGLEDRIVE,
-            BuildConfig.GOOGLE_COM_CLIENT_ID,
-            BuildConfig.GOOGLE_COM_REDIRECT_URL
-        )
-
         showFragment(
-            GoogleDriveSignInFragment.newInstance(storage),
+            GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage),
             GoogleDriveSignInFragment.TAG
         )
     }

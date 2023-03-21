@@ -1,20 +1,21 @@
 package app.editors.manager.managers.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
-import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
-import lib.toolkit.base.managers.tools.ResourcesProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.Credentials
 
@@ -23,7 +24,7 @@ object GlideUtils {
         return GlideUrl(
             url, LazyHeaders.Builder()
                 .addHeader(
-                    WebDavApi.HEADER_AUTHORIZATION,
+                    WebDavService.HEADER_AUTHORIZATION,
                     Credentials.basic(account.login!!, password)
                 )
                 .build()
@@ -51,33 +52,31 @@ object GlideUtils {
             .placeholder(R.drawable.ic_account_placeholder)
             .circleCrop()
 
-    /**
-     * Load avatar if use RxJava
-     * */
-    fun loadAvatar(avatar: String): Drawable {
-        val context = App.getApp().appComponent.context
-        val placeholderDrawable = R.drawable.drawable_list_share_image_item_user_placeholder
-        var drawable = ResourcesProvider(context).getDrawable(placeholderDrawable)
-            ?: throw RuntimeException("Invalid drawable")
-        context.accountOnline?.let { account ->
-            val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
-            val url = if (avatar.contains("http")) {
-                getCorrectLoad(avatar, token)
-            } else {
-                getCorrectLoad(account.scheme + account.portal + avatar, token)
+    suspend fun getAvatarFromUrl(context: Context, avatarUrl: String): Drawable? =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                context.accountOnline?.let { account ->
+                    val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
+                    val url = when {
+                        avatarUrl.contains("http") -> avatarUrl
+                        avatarUrl.contains("storage") -> "${account.scheme}${account.portal}$avatarUrl"
+                        else -> "${account.scheme}${account.portal}/static/$avatarUrl"
+                    }
+                    Glide.with(context)
+                        .asDrawable()
+                        .load(getCorrectLoad(url, token))
+                        .submit()
+                        .get()
+                }
+            } catch (e: Exception) {
+                null
             }
-            drawable = Glide.with(context)
-                .asDrawable()
-                .load(url)
-                .submit().get()
-            return drawable
-        } ?: return drawable
-    }
+        }
 
     /**
      * Load avatar into ImageView
      * */
-    fun ImageView.loadAvatar(avatar: String) {
+    fun ImageView.getAvatarFromUrl(avatar: String) {
         val placeholderDrawable = R.drawable.drawable_list_share_image_item_user_placeholder
         context.accountOnline?.let { account ->
             val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))

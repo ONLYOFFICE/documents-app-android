@@ -7,8 +7,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareAddPagerBinding
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment

@@ -4,18 +4,18 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.RecentDao
-import app.documents.core.account.copyWithToken
-import app.documents.core.login.ILoginServiceProvider
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.models.login.response.ResponseUser
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.recent.RecentDao
+import app.documents.core.storage.account.copyWithToken
+import app.documents.core.network.login.ILoginServiceProvider
+import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.login.models.response.ResponseUser
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.GoogleUtils
-import app.editors.manager.mvp.models.user.Thirdparty
+import app.documents.core.network.manager.models.user.Thirdparty
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.ProfileView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -81,7 +81,7 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
 
     private fun getThirdparty(account: CloudAccount) {
         try {
-            disposable.add(context.api()
+            disposable.add(context.api
                 .thirdPartyList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

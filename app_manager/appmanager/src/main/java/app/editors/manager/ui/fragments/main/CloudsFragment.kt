@@ -5,17 +5,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentChooseCloudsBinding
-import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
-import app.editors.manager.storages.googledrive.ui.fragments.GoogleDriveSignInFragment
-import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
-import app.editors.manager.storages.onedrive.ui.fragments.OneDriveSignInFragment
+import app.documents.core.network.common.models.Storage
+import app.documents.core.network.common.utils.GoogleDriveUtils
+import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
+import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
+import app.documents.core.network.common.utils.OneDriveUtils
+import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.activities.main.MainActivity
@@ -82,33 +83,28 @@ class CloudsFragment : BaseAppFragment() {
             R.drawable.ic_storage_nextcloud,
             R.string.storage_select_next_cloud
         ) {
-            WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.NextCloud, null)
+            WebDavLoginActivity.show(requireActivity(), WebDavService.Providers.NextCloud, null)
         }
 
         viewBinding?.cloudsItemOwnCloud?.bind(
             R.drawable.ic_storage_owncloud,
             R.string.storage_select_own_cloud
         ) {
-            WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.OwnCloud, null)
+            WebDavLoginActivity.show(requireActivity(), WebDavService.Providers.OwnCloud, null)
         }
 
         viewBinding?.cloudsItemKDrive?.bind(
             R.drawable.ic_storage_kdrive,
             R.string.storage_select_kdrive
         ) {
-            WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.KDrive, null)
+            WebDavLoginActivity.show(requireActivity(), WebDavService.Providers.KDrive, null)
         }
 
         viewBinding?.cloudsItemOneDrive?.bind(
             R.drawable.ic_storage_onedrive,
             R.string.storage_select_one_drive
         ) {
-            val storage = Storage(
-                OneDriveUtils.ONEDRIVE_STORAGE,
-                BuildConfig.ONE_DRIVE_COM_CLIENT_ID,
-                BuildConfig.ONE_DRIVE_COM_REDIRECT_URL
-            )
-            showFragment(OneDriveSignInFragment.newInstance(storage), OneDriveSignInFragment.TAG, false)
+            showFragment(OneDriveSignInFragment.newInstance(OneDriveUtils.storage), OneDriveSignInFragment.TAG, false)
         }
 
         viewBinding?.cloudsItemDropbox?.bind(
@@ -116,6 +112,7 @@ class CloudsFragment : BaseAppFragment() {
             R.string.storage_select_drop_box
         ) {
             dropboxLoginHelper.startSignInActivity(this) {
+                App.getApp().refreshDropboxInstance()
                 MainActivity.show(requireContext())
                 requireActivity().finish()
             }
@@ -125,12 +122,7 @@ class CloudsFragment : BaseAppFragment() {
             R.drawable.ic_storage_google,
             R.string.storage_select_google_drive
         ) {
-            val storage = Storage(
-                ApiContract.Storage.GOOGLEDRIVE,
-                BuildConfig.GOOGLE_COM_CLIENT_ID,
-                BuildConfig.GOOGLE_COM_REDIRECT_URL
-            )
-            showFragment(GoogleDriveSignInFragment.newInstance(storage), GoogleDriveSignInFragment.TAG, false)
+            showFragment(GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage), GoogleDriveSignInFragment.TAG, false)
         }
 
 
@@ -146,7 +138,7 @@ class CloudsFragment : BaseAppFragment() {
             R.drawable.ic_storage_webdav,
             R.string.storage_select_web_dav
         ) {
-            WebDavLoginActivity.show(requireActivity(), WebDavApi.Providers.WebDav, null)
+            WebDavLoginActivity.show(requireActivity(), WebDavService.Providers.WebDav, null)
         }
     }
 

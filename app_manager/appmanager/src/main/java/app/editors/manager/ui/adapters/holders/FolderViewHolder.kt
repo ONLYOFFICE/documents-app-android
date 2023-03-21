@@ -5,7 +5,7 @@ import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFolderBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFolderIcon
-import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.TimeUtils
 

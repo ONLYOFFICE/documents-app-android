@@ -1,10 +1,10 @@
 package app.editors.manager.viewModels.login
 
 import androidx.lifecycle.*
-import app.documents.core.login.ILoginServiceProvider
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.models.login.request.RequestNumber
-import app.documents.core.network.models.login.request.RequestSignIn
+import app.documents.core.network.login.ILoginServiceProvider
+import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.login.models.request.RequestNumber
+import app.documents.core.network.login.models.request.RequestSignIn
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.viewModels.base.BaseViewModel

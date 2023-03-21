@@ -215,7 +215,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
 
     fun hideDialog(forceHide: Boolean = false) {
         lifecycleScope.launchWhenResumed {
-            if (commonDialog?.isAdded == true) {
+            if (commonDialog?.isAdded == true || forceHide) {
                 commonDialog?.dismiss()
             }
         }

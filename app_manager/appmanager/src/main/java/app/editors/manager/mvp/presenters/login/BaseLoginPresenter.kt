@@ -6,15 +6,15 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.webkit.URLUtil
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.copyWithToken
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.Token
-import app.documents.core.network.models.login.User
-import app.documents.core.network.models.login.request.RequestSignIn
-import app.documents.core.network.models.login.response.ResponseSignIn
-import app.documents.core.network.models.login.response.ResponseUser
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.account.copyWithToken
+import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.models.Token
+import app.documents.core.network.login.models.User
+import app.documents.core.network.login.models.request.RequestSignIn
+import app.documents.core.network.login.models.response.ResponseSignIn
+import app.documents.core.network.login.models.response.ResponseUser
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.loginService
@@ -245,7 +245,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         FirebaseUtils.addAnalyticsLogin(account.portal ?: "", account.provider)
     }
 
-    protected open fun onGetUser(user: app.editors.manager.mvp.models.user.User) {
+    protected open fun onGetUser(user: User) {
     }
 
     override fun onDestroy() {
@@ -257,11 +257,21 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
      * Socials
      * */
     fun signInWithTwitter(token: String) {
-        signIn(RequestSignIn(provider = ApiContract.Social.TWITTER, accessToken = token))
+        signIn(
+            RequestSignIn(
+                provider = ApiContract.Social.TWITTER,
+                accessToken = token
+            )
+        )
     }
 
     fun signInWithFacebook(token: String) {
-        signIn(RequestSignIn(provider = ApiContract.Social.FACEBOOK, accessToken = token))
+        signIn(
+            RequestSignIn(
+                provider = ApiContract.Social.FACEBOOK,
+                accessToken = token
+            )
+        )
     }
 
     fun retrySignInWithGoogle() {

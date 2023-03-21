@@ -10,7 +10,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageSelectBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.mvp.models.account.Storage
+import app.documents.core.network.common.models.Storage
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.mvp.views.storage.SelectView
 import app.editors.manager.ui.adapters.StorageAdapter

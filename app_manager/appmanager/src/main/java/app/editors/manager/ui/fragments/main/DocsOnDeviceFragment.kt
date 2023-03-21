@@ -14,12 +14,12 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.mvp.models.base.Entity
-import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter
 import app.editors.manager.mvp.presenters.main.OpenState

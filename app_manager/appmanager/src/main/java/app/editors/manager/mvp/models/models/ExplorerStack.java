@@ -4,10 +4,10 @@ package app.editors.manager.mvp.models.models;
 import java.io.Serializable;
 import java.util.List;
 
-import app.editors.manager.mvp.models.explorer.CloudFile;
-import app.editors.manager.mvp.models.explorer.CloudFolder;
-import app.editors.manager.mvp.models.explorer.Explorer;
-import app.editors.manager.mvp.models.explorer.Item;
+import app.documents.core.network.manager.models.explorer.CloudFile;
+import app.documents.core.network.manager.models.explorer.CloudFolder;
+import app.documents.core.network.manager.models.explorer.Explorer;
+import app.documents.core.network.manager.models.explorer.Item;
 
 public interface ExplorerStack extends Serializable, Cloneable {
 

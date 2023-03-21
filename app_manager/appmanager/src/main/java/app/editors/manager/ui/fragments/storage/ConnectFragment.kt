@@ -6,13 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageConnectBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.mvp.models.account.Storage
-import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.documents.core.network.common.models.Storage
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.views.storage.ConnectView
 import app.editors.manager.ui.activities.main.MainActivity

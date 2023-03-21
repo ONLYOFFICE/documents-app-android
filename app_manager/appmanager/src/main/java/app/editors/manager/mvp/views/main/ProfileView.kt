@@ -1,6 +1,6 @@
 package app.editors.manager.mvp.views.main
 
-import app.documents.core.account.CloudAccount
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.mvp.presenters.main.ProfileState
 import app.editors.manager.mvp.views.base.BaseView
 import moxy.viewstate.strategy.OneExecutionStateStrategy

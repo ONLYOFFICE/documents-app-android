@@ -11,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import androidx.lifecycle.lifecycleScope
-import app.documents.core.account.CloudAccount
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
@@ -225,15 +225,15 @@ class NextCloudLoginFragment : BaseAppFragment() {
     private fun createCloudAccount(url: URL, login: String) = CloudAccount(
         id = "$login@${url.host}",
         isWebDav = true,
-        webDavProvider = WebDavApi.Providers.NextCloud.name,
+        webDavProvider = WebDavService.Providers.NextCloud.name,
         scheme = url.protocol + "://",
         login = login,
         name = login,
         portal = url.host,
         webDavPath = if (url.path != null && url.path.isNotEmpty()) {
-            url.path + WebDavApi.Providers.NextCloud.path + login + "/"
+            url.path + WebDavService.Providers.NextCloud.path + login + "/"
         } else {
-            WebDavApi.Providers.NextCloud.path + login + "/"
+            WebDavService.Providers.NextCloud.path + login + "/"
         }
     )
 

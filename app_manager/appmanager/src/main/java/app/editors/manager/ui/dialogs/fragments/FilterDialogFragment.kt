@@ -3,7 +3,7 @@ package app.editors.manager.ui.dialogs.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.ui.fragments.filter.CloudFilterFragment
 import app.editors.manager.ui.fragments.filter.FilterAuthorFragment
