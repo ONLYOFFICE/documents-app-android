@@ -2,9 +2,9 @@ package app.editors.manager.managers.works.googledrive
 
 import android.content.Context
 import androidx.work.WorkerParameters
-import app.editors.manager.app.getGoogleDriveServiceProvider
+import app.documents.core.providers.GoogleDriveFileProvider
+import app.editors.manager.app.googleDriveProvider
 import app.editors.manager.managers.works.BaseDownloadWork
-import app.editors.manager.storages.googledrive.managers.providers.GoogleDriveFileProvider
 import okhttp3.ResponseBody
 import retrofit2.Response
 
@@ -18,7 +18,7 @@ class DownloadWork(
     }
 
     override fun download(): Response<ResponseBody> =
-        with(applicationContext.getGoogleDriveServiceProvider()) {
+        with(applicationContext.googleDriveProvider) {
             val googleMimeType = data?.getString(GOOGLE_MIME_TYPE)
             when {
                 !googleMimeType.isNullOrEmpty() -> export(

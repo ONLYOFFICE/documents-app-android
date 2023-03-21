@@ -2,9 +2,9 @@ package app.editors.manager.managers.works.dropbox
 
 import android.content.Context
 import androidx.work.WorkerParameters
-import app.editors.manager.app.getDropboxServiceProvider
+import app.documents.core.network.common.utils.DropboxUtils
+import app.editors.manager.app.dropboxProvider
 import app.editors.manager.managers.works.BaseDownloadWork
-import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils
 import okhttp3.ResponseBody
 import retrofit2.Response
 
@@ -20,8 +20,8 @@ class DownloadWork(
     }
 
     override fun download(): Response<ResponseBody> =
-        with(applicationContext.getDropboxServiceProvider()) {
-            val request = "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox(id!!)}\"}"
+        with(applicationContext.dropboxProvider) {
+            val request = "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox(id.orEmpty())}\"}"
             when (DOWNLOADABLE_ITEM_FILE) {
                 data?.getString(DOWNLOADABLE_ITEM_KEY) -> download(request)
                 else -> downloadFolder(request)

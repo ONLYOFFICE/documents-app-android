@@ -9,25 +9,10 @@ import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
-import app.editors.manager.mvp.models.explorer.Operation
-import app.editors.manager.mvp.models.request.RequestDownload
-import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
-import app.editors.manager.app.api
-import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.managers.utils.NotificationUtils
 import com.google.gson.Gson
 import lib.toolkit.base.managers.utils.*
-import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.managers.utils.FileUtils.Finish
-import lib.toolkit.base.managers.utils.FileUtils.Progress
-import lib.toolkit.base.managers.utils.PathUtils
-import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
@@ -51,7 +36,7 @@ class DownloadWork(
             )
         )
 
-    private val api: Api = applicationContext.api()
+    private val api: ManagerService = applicationContext.api
 
     @SuppressLint("MissingPermission")
     override fun download(): Response<ResponseBody> {
@@ -93,7 +78,7 @@ class DownloadWork(
                                 id.hashCode(),
                                 file?.name.orEmpty()
                             )
-                            onError(getExceedFileException(operations[0].error))
+                            onError(getExceedFileException(operations[0].error.orEmpty()))
                             file?.delete()
                             break
                         }

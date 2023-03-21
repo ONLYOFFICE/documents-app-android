@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.presenters.storages
 
-import android.accounts.Account
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
@@ -9,46 +8,24 @@ import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.GoogleDriveFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.storages.googledrive.models.GoogleDriveCloudFile
 import app.documents.core.network.storages.googledrive.models.request.ShareRequest
 import app.documents.core.providers.GoogleDriveFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.googleDriveLoginService
-import app.editors.manager.managers.utils.StorageUtils
-import app.editors.manager.managers.works.BaseDownloadWork
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.explorer.GoogleDriveFolder
-import app.editors.manager.mvp.models.explorer.Item
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.googleDriveLoginProvider
 import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.receivers.GoogleDriveUploadReceiver
-import app.editors.manager.managers.works.BaseStorageDownloadWork
+import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.googledrive.DownloadWork
 import app.editors.manager.mvp.models.states.OperationsState
-import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
-import app.editors.manager.storages.base.view.DocsGoogleDriveView
-import app.editors.manager.storages.googledrive.managers.providers.GoogleDriveFileProvider
-import app.editors.manager.storages.googledrive.managers.receiver.GoogleDriveUploadReceiver
-import app.editors.manager.storages.googledrive.managers.utils.GoogleDriveUtils
-import app.editors.manager.storages.googledrive.managers.works.DownloadWork
-import app.editors.manager.storages.googledrive.mvp.models.GoogleDriveCloudFile
-import app.editors.manager.storages.googledrive.mvp.models.request.ShareRequest
 import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.*
-import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils
 
 class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>(), GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
 
@@ -202,7 +179,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
             else -> itemClicked?.let { itemList.add(it) }
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
-        disposable.add(googleDriveFileProvider.copy(itemList, modelExplorerStack.currentId!!)
+        disposable.add(googleDriveFileProvider.copy(itemList)
             .subscribe({}, {
                 fetchError(it)
                 if (isSelectionMode) {

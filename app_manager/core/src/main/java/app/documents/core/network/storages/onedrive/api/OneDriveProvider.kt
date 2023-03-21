@@ -55,7 +55,7 @@ class OneDriveProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun download(itemId: String): Single<Response<ResponseBody>> {
+    fun download(itemId: String): Single<Response<ResponseBody>> {
         return oneDriveService.download(itemId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

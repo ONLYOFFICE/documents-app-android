@@ -287,7 +287,7 @@ class DropboxFileProvider(
 
     override fun transfer(
         items: List<Item>,
-        to: CloudFolder?,
+        to: CloudFolder,
         conflict: Int,
         isMove: Boolean,
         isOverwrite: Boolean
@@ -298,7 +298,7 @@ class DropboxFileProvider(
             listItem.add(
                 MoveCopyPaths(
                     from_path = it.id,
-                    to_path = to?.id?.trim() + it.title
+                    to_path = to.id.trim() + it.title
                 )
             )
         }

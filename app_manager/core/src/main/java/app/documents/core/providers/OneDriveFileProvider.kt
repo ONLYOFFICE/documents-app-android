@@ -4,30 +4,25 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import app.documents.core.network.ApiContract
-import app.editors.manager.app.App
-import app.editors.manager.app.App.Companion.getApp
-import app.editors.manager.managers.providers.BaseFileProvider
-import app.editors.manager.mvp.models.explorer.*
-import app.editors.manager.mvp.models.request.RequestCreate
-import app.editors.manager.mvp.models.request.RequestExternal
-import app.editors.manager.mvp.models.response.ResponseExternal
-import app.editors.manager.mvp.models.response.ResponseOperation
-import app.editors.manager.storages.base.fragment.BaseStorageDocsFragment
-import app.editors.manager.storages.base.work.BaseStorageUploadWork
-import app.editors.manager.storages.onedrive.managers.utils.OneDriveUtils
-import app.editors.manager.storages.onedrive.managers.works.UploadWork
-import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemCloudTree
-import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemFolder
-import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemParentReference
-import app.editors.manager.storages.onedrive.mvp.models.explorer.DriveItemValue
-import app.editors.manager.storages.onedrive.mvp.models.request.*
-import app.editors.manager.storages.onedrive.mvp.models.response.ExternalLinkResponse
-import app.editors.manager.storages.onedrive.onedrive.api.IOneDriveServiceProvider
-import app.editors.manager.storages.onedrive.onedrive.api.OneDriveResponse
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.utils.OneDriveUtils
+import app.documents.core.network.manager.models.explorer.*
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestExternal
+import app.documents.core.network.manager.models.response.ResponseExternal
+import app.documents.core.network.manager.models.response.ResponseOperation
+import app.documents.core.network.storages.IStorageHelper
+import app.documents.core.network.storages.onedrive.api.OneDriveProvider
+import app.documents.core.network.storages.onedrive.api.OneDriveResponse
+import app.documents.core.network.storages.onedrive.models.explorer.DriveItemCloudTree
+import app.documents.core.network.storages.onedrive.models.explorer.DriveItemFolder
+import app.documents.core.network.storages.onedrive.models.explorer.DriveItemParentReference
+import app.documents.core.network.storages.onedrive.models.explorer.DriveItemValue
+import app.documents.core.network.storages.onedrive.models.request.CopyItemRequest
+import app.documents.core.network.storages.onedrive.models.request.CreateFolderRequest
+import app.documents.core.network.storages.onedrive.models.request.ExternalLinkRequest
+import app.documents.core.network.storages.onedrive.models.request.RenameRequest
+import app.documents.core.network.storages.onedrive.models.response.ExternalLinkResponse
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -249,19 +244,15 @@ class OneDriveFileProvider(
 
     override fun transfer(
         items: List<Item>,
-        to: CloudFolder?,
+        to: CloudFolder,
         conflict: Int,
         isMove: Boolean,
         isOverwrite: Boolean
-    ): Observable<List<Operation>>? {
-        return if (isMove) {
-            to?.id?.let { moveItem(items, it, isOverwrite) }
-        } else {
-            to?.id?.let { copyItem(items, it, isOverwrite) }
-        }
+    ): Observable<List<Operation>> {
+        return if (isMove) moveItem(items, to.id) else copyItem(items, to.id)
     }
 
-    private fun copyItem(items: List<Item>?, to: String, isOverwrite: Boolean): Observable<List<Operation>> {
+    private fun copyItem(items: List<Item>?, to: String): Observable<List<Operation>> {
         return Observable.fromIterable(items)
             .flatMap { item ->
                 val request = CopyItemRequest(
@@ -288,7 +279,7 @@ class OneDriveFileProvider(
             }
     }
 
-    private fun moveItem(items: List<Item>?, to: String, isOverwrite: Boolean): Observable<List<Operation>> {
+    private fun moveItem(items: List<Item>?, to: String): Observable<List<Operation>> {
         return Observable.fromIterable(items)
             .flatMap { item ->
                 val request = CopyItemRequest(

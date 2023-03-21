@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.presenters.storages
 
-import android.content.ClipData
 import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
@@ -19,28 +18,11 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.dropboxLoginProvider
 import app.editors.manager.managers.providers.DropboxStorageHelper
-import app.editors.manager.managers.works.BaseStorageDownloadWork
+import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.dropbox.DownloadWork
 import app.editors.manager.managers.works.dropbox.UploadWork
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
-import app.editors.manager.app.dropboxLoginService
-import app.editors.manager.managers.works.BaseDownloadWork
-import app.editors.manager.mvp.models.explorer.CloudFile
-import app.editors.manager.mvp.models.explorer.Explorer
-import app.editors.manager.mvp.models.explorer.Item
-import app.editors.manager.storages.base.presenter.BaseStorageDocsPresenter
-import app.editors.manager.storages.base.view.BaseStorageDocsView
-import app.editors.manager.storages.base.work.BaseStorageUploadWork
-import app.editors.manager.storages.dropbox.dropbox.api.DropboxService
-import app.editors.manager.storages.dropbox.dropbox.login.DropboxResponse
-import app.editors.manager.storages.dropbox.managers.providers.DropboxFileProvider
-import app.editors.manager.storages.dropbox.managers.utils.DropboxUtils
-import app.editors.manager.storages.dropbox.managers.works.DownloadWork
-import app.editors.manager.storages.dropbox.managers.works.UploadWork
-import app.editors.manager.storages.dropbox.mvp.models.request.TokenRefreshRequest
-import app.editors.manager.storages.dropbox.mvp.models.request.TokenRequest
-import app.editors.manager.storages.dropbox.mvp.models.response.RefreshTokenResponse
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
