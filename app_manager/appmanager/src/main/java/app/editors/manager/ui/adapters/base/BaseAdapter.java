@@ -1,7 +1,7 @@
 package app.editors.manager.ui.adapters.base;
 
 
-import app.editors.manager.mvp.models.explorer.UploadFile;
+import app.documents.core.network.manager.models.explorer.UploadFile;
 import app.editors.manager.mvp.models.list.Header;
 
 public abstract class BaseAdapter<D> extends lib.toolkit.base.ui.adapters.BaseListAdapter<D> {

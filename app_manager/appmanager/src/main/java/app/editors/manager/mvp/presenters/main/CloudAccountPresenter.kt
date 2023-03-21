@@ -4,17 +4,18 @@ import android.accounts.Account
 import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.LifecycleOwner
-import app.documents.core.account.CloudAccount
-import app.documents.core.account.copyWithToken
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.Capabilities
-import app.documents.core.network.models.login.response.ResponseAllSettings
-import app.documents.core.network.models.login.response.ResponseCapabilities
-import app.documents.core.network.models.login.response.ResponseSettings
-import app.documents.core.network.models.login.response.ResponseUser
-import app.documents.core.settings.NetworkSettings
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.login.models.Capabilities
+import app.documents.core.network.login.models.response.ResponseAllSettings
+import app.documents.core.network.login.models.response.ResponseCapabilities
+import app.documents.core.network.login.models.response.ResponseSettings
+import app.documents.core.network.login.models.response.ResponseUser
+import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
+import app.documents.core.network.webdav.WebDavService
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.account.copyWithToken
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -23,7 +24,6 @@ import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.login.BaseLoginPresenter
 import app.editors.manager.mvp.views.main.CloudAccountView
-import app.editors.manager.storages.dropbox.dropbox.login.DropboxLoginHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -69,7 +69,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     companion object {
         val TAG: String = CloudAccountPresenter::class.java.simpleName
 
-        val KEY_SWITCH = "switch"
+        const val KEY_SWITCH = "switch"
     }
 
     @Inject
@@ -213,13 +213,13 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                         } else {
                             viewState.onWebDavLogin(
                                 Json.encodeToString(account),
-                                WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                                WebDavService.Providers.valueOf(account.webDavProvider ?: "")
                             )
                         }
                     } ?: run {
                         viewState.onWebDavLogin(
                             Json.encodeToString(account),
-                            WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                            WebDavService.Providers.valueOf(account.webDavProvider ?: "")
                         )
                     }
                 }
@@ -351,7 +351,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun webDavLogin(account: CloudAccount, password: String) {
         setSettings(account)
-        disposable = context.webDavApi()
+        disposable = context.webDavApi
             .capabilities(Credentials.basic(account.login ?: "", password), account.webDavPath)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -362,7 +362,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     restoreSettings()
                     viewState.onWebDavLogin(
                         Json.encodeToString(account),
-                        WebDavApi.Providers.valueOf(account.webDavProvider ?: "")
+                        WebDavService.Providers.valueOf(account.webDavProvider ?: "")
                     )
                 }
             }, {

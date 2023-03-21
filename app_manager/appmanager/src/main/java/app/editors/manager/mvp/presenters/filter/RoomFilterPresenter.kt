@@ -1,15 +1,13 @@
 package app.editors.manager.mvp.presenters.filter
 
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
-import app.editors.manager.managers.providers.CloudFileProvider
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.filter.FilterAuthor
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.app.cloudFileProvider
 
 class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
-
-    private var fileProvider: CloudFileProvider? = null
 
     var filterType: RoomFilterType = RoomFilterType.None
         set(value) {
@@ -34,7 +32,6 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
 
     init {
         App.getApp().appComponent.inject(this)
-        fileProvider = CloudFileProvider()
         loadFilter()
     }
 
@@ -52,17 +49,15 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
         saveFilter()
         viewState.updateViewState(isChanged = !initialCall)
         disposable?.clear()
-        fileProvider?.let { provider ->
-            disposable?.add(
-                provider.getRooms(filters)
-                    .doOnSubscribe { viewState.onFilterProgress() }
-                    .subscribe(
-                        { explorer: Explorer ->
-                            viewState.onFilterResult(explorer.count)
-                        }, { error: Throwable -> viewState.onError(error.localizedMessage) }
-                    )
-            )
-        }
+        disposable?.add(
+            context.cloudFileProvider.getRooms(filters)
+                .doOnSubscribe { viewState.onFilterProgress() }
+                .subscribe(
+                    { explorer: Explorer ->
+                        viewState.onFilterResult(explorer.count)
+                    }, { error: Throwable -> viewState.onError(error.localizedMessage) }
+                )
+        )
     }
 
     override fun reset() {

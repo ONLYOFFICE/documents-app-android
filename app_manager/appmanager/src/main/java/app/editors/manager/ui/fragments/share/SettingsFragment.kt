@@ -18,13 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import androidx.transition.TransitionManager
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareSettingsListBinding
 import app.editors.manager.databinding.IncludeButtonPopupBinding
 import app.editors.manager.databinding.IncludeShareSettingsHeaderBinding
-import app.editors.manager.mvp.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
@@ -60,6 +60,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     private var viewBinding: FragmentShareSettingsListBinding? = null
     private var headerBinding: IncludeShareSettingsHeaderBinding? = null
     private var popupBinding: IncludeButtonPopupBinding? = null
+
     private val item: Item
         get() = arguments?.getSerializableExt(TAG_ITEM, Item::class.java) as Item
 
@@ -134,7 +135,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_share_settings) settingsPresenter.internalLink
+        if (item.itemId == R.id.menu_share_settings) settingsPresenter.getInternalLink()
         return super.onOptionsItemSelected(item)
     }
 
@@ -329,7 +330,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     private fun getSharedItems() {
         viewBinding?.shareSettingsListSwipeRefresh?.isRefreshing = true
-        settingsPresenter.shared
+        settingsPresenter.getShared()
     }
 
     private fun setExternalViewState(accessCode: Int, isMessage: Boolean) {

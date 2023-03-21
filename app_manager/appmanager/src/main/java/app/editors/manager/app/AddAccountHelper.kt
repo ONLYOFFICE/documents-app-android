@@ -4,7 +4,7 @@ import android.accounts.Account
 import android.app.Application
 import android.database.Cursor
 import android.net.Uri
-import app.documents.core.account.CloudAccount
+import app.documents.core.storage.account.CloudAccount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

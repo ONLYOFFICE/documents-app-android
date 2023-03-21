@@ -10,33 +10,33 @@ import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import app.documents.core.account.AccountDao
-import app.documents.core.account.RecentDao
-import app.documents.core.network.ApiContract
-import app.documents.core.settings.NetworkSettings
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.network.manager.models.explorer.*
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDownload
+import app.documents.core.providers.BaseFileProvider
+import app.documents.core.providers.LocalFileProvider
+import app.documents.core.providers.ProviderError
+import app.documents.core.providers.ProviderError.Companion.throwInterruptException
+import app.documents.core.providers.WebDavFileProvider
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.storage.preference.NetworkSettings
+import app.documents.core.storage.recent.RecentDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.exceptions.NoConnectivityException
-import app.editors.manager.managers.providers.BaseFileProvider
-import app.editors.manager.managers.providers.LocalFileProvider
-import app.editors.manager.managers.providers.ProviderError
-import app.editors.manager.managers.providers.ProviderError.Companion.throwInterruptException
-import app.editors.manager.managers.providers.WebDavFileProvider
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.managers.works.UploadWork
-import app.editors.manager.mvp.models.base.Entity
-import app.editors.manager.mvp.models.explorer.*
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
-import app.editors.manager.mvp.models.request.RequestCreate
-import app.editors.manager.mvp.models.request.RequestDownload
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
@@ -176,13 +176,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         fileProvider = null
     }
 
-    fun getItemsById(id: String?) {
+    open fun getItemsById(id: String?) {
         id?.let {
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.getFiles(id, mapOf<String, String>().putFilters())
-                        .doOnNext { it.filterType = preferenceTool.filter.type }
+                        .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
                         .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
                 )
             }
@@ -195,7 +195,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.getFiles(id, getArgs(filteringValue).putFilters())
-                        .doOnNext { it.filterType = preferenceTool.filter.type }
+                        .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
                         .subscribe({ explorer ->
                             modelExplorerStack.refreshStack(explorer)
                             updateViewsState()
@@ -218,7 +218,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return refresh()
     }
 
-    protected fun reverseSortOrder() {
+    private fun reverseSortOrder() {
         if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
         } else {
@@ -234,7 +234,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 fileProvider?.let { provider ->
                     provider.getFiles(id, getArgs(value).putFilters())
                         .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
-                        .doOnNext { it.filterType = preferenceTool.filter.type }
+                        .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
                         .subscribe({ explorer ->
                             modelExplorerStack.setFilter(explorer)
                             setPlaceholderType(
@@ -273,7 +273,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         modelExplorerStack.currentId?.let { id ->
             val requestCreate = RequestCreate().apply {
-                setTitle(title?.takeIf { title.isNotEmpty() } ?: context.getString(R.string.dialogs_edit_create_docs))
+                this.title = title?.takeIf { title.isNotEmpty() } ?: context.getString(R.string.dialogs_edit_create_docs)
             }
 
             fileProvider?.let { provider ->
@@ -462,7 +462,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun transfer(conflict: Int, isMove: Boolean) {
         operationStack?.let { operationStack ->
-            val destination = CloudFolder().apply { id = destFolderId }
+            val destination = CloudFolder().apply { id = destFolderId.orEmpty() }
 
             val items = mutableListOf<Item>().apply {
                 addAll(operationStack.selectedFiles)
@@ -479,7 +479,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                             if (!operationStack.currentId.equals(destFolderId, ignoreCase = true)) {
                                 operationStack.setSelectionAll(false)
                                 operationStack.explorer?.also {
-                                    it.destFolderId = destFolderId
+                                    it.destFolderId = destFolderId.orEmpty()
                                     operationsState.insert(modelExplorerStack.rootFolderType, it.takeIf {
                                         modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_USER
                                     } ?: setAccess(it))
@@ -626,10 +626,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         val foldersIds = folders?.map { it.id } ?: listOf()
 
         if (filesIds.size > 1 || foldersIds.isNotEmpty()) {
-            startDownloadWork(downloadTo, null, null, RequestDownload().also {
-                it.filesIds = filesIds
-                it.foldersIds = foldersIds
-            })
+            startDownloadWork(downloadTo, null, null, RequestDownload()
+                .also {
+                    it.filesIds = filesIds
+                    it.foldersIds = foldersIds
+                }
+            )
         } else {
             startDownloadWork(downloadTo, filesIds[0], files?.get(0)?.viewUrl, null)
         }
@@ -656,7 +658,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    open fun upload(uri: Uri?, uris: List<Uri>?) {
+    open fun upload(uri: Uri?, uris: List<Uri>?, tag: String? = null) {
         if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
             viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
         } else {
@@ -698,8 +700,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 folderId = id
                 name = ContentResolverUtils.getName(context, uri)
                 size = setSize(uri)
-                setUri(uri)
-                setId(uri.path)
+                this.uri = uri
+                this.id = uri.path
             })
         }
 
@@ -874,11 +876,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             itemClicked?.let { item ->
                 when (item) {
                     is CloudFolder -> {
-                        it.folders = listOf(item.clone().also { folder -> folder.isSelected = true })
+                        it.folders = mutableListOf(item.clone().also { folder -> folder.isSelected = true })
                         it.files.clear()
                     }
                     is CloudFile -> {
-                        it.files = listOf(item.clone().also { file -> file.isSelected = true })
+                        it.files = mutableListOf(item.clone().also { file -> file.isSelected = true })
                         it.folders.clear()
                     }
                 }
@@ -1162,7 +1164,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 }
             } else {
                 if (itemClicked is CloudFolder) {
-                    openFolder(itemClicked.getId(), position)
+                    openFolder(itemClicked.id, position)
                 } else if (itemClicked is CloudFile) {
                     getFileInfo()
                 }
@@ -1183,10 +1185,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     fun getListMedia(clickedId: String?): Explorer {
         return modelExplorerStack.last()?.let { explorer ->
             Explorer().apply {
-                folders = listOf()
+                folders = mutableListOf()
                 files = explorer.files
                     .filter { StringUtils.isImage(it.fileExst) || StringUtils.isVideoSupport(it.fileExst) }
                     .onEach { it.isClicked = it.id.equals(clickedId, ignoreCase = true) }
+                    .toMutableList()
             }
         } ?: Explorer()
     }
@@ -1326,7 +1329,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         while (fileList.hasNext()) {
             val file = fileList.next()
             val currentFolder = CloudFolder()
-            currentFolder.id = modelExplorerStack.currentId
+            currentFolder.id = modelExplorerStack.currentId.orEmpty()
             if (file.fileType.isEmpty() && file.fileExst.isEmpty()) {
                 fileList.remove()
                 fileProvider?.let { provider ->
@@ -1358,7 +1361,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return false
     }
 
-    protected var photoUri: Uri? = null
+    private var photoUri: Uri? = null
 
     @SuppressLint("MissingPermission")
     fun createPhoto() {

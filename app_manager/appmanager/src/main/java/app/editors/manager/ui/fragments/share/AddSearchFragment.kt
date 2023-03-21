@@ -10,7 +10,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DiffUtil
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareAddListSearchBinding
-import app.editors.manager.mvp.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
@@ -37,7 +37,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
 
     @ProvidePresenter
     fun providePresenter(): AddPresenter {
-        return AddPresenter(arguments?.getSerializable(TAG_ITEM) as Item, AddFragment.Type.NONE)
+        return AddPresenter(inputItem, AddFragment.Type.NONE)
     }
 
     private var shareActivity: ShareActivity? = null
@@ -248,7 +248,6 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         resetChecked()
         restoreViews(savedInstanceState)
         initViews()
-        addPresenter.startSearch()
     }
 
     private fun initViews() {

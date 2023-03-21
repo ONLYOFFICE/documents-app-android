@@ -1,14 +1,15 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.account.CloudAccount
-import app.documents.core.login.LoginResponse
-import app.documents.core.network.ApiContract
-import app.documents.core.network.models.login.request.RequestRegister
-import app.documents.core.network.models.login.request.RequestSignIn
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.login.LoginResponse
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.models.User
+import app.documents.core.network.login.models.request.RequestRegister
+import app.documents.core.network.login.models.request.RequestSignIn
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.mvp.models.user.User
+import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.EnterpriseCreateSignInView
 import io.reactivex.disposables.Disposable
 import kotlinx.serialization.encodeToString
@@ -72,7 +73,6 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         viewState.onShowProgress()
         val domain = partsPortal[PORTAL_PART_HOST] + "." + partsPortal[PORTAL_PART_DOMAIN]
         networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + "." + domain)
-        val loginService = App.getApp().appComponent.loginService
 
         // Validate portal
         val requestRegister = RequestRegister(
@@ -83,13 +83,18 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
             password = password,
             recaptchaResponse = recaptcha
         )
-        disposable = loginService.registerPortal(requestRegister)
+        disposable = context.loginService.registerPortal(requestRegister)
             .subscribe({ loginResponse ->
                 when (loginResponse) {
                     is LoginResponse.Success -> {
                         networkSettings.setBaseUrl(portal)
-                        FirebaseUtils.addAnalyticsCreatePortal(networkSettings.getPortal(), email);
-                        signIn(RequestSignIn(userName = email, password = password))
+                        FirebaseUtils.addAnalyticsCreatePortal(networkSettings.getPortal(), email)
+                        signIn(
+                            RequestSignIn(
+                                userName = email,
+                                password = password
+                            )
+                        )
                     }
                     is LoginResponse.Error -> {
                         fetchError(loginResponse.error)

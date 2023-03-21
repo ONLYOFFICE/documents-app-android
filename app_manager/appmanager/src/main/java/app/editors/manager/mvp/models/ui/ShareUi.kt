@@ -1,7 +1,7 @@
 package app.editors.manager.mvp.models.ui
 
 import android.graphics.drawable.Drawable
-import app.documents.core.network.models.share.SharedTo
+import app.documents.core.network.share.models.SharedTo
 import app.editors.manager.R
 import lib.toolkit.base.ui.adapters.holder.ViewType
 

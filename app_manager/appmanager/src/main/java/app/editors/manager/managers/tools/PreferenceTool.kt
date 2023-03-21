@@ -2,7 +2,7 @@ package app.editors.manager.managers.tools
 
 import android.content.Context
 import android.content.SharedPreferences
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.mvp.models.filter.Filter
 import java.util.*
 import javax.inject.Inject

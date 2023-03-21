@@ -18,7 +18,7 @@ import androidx.viewpager2.widget.ViewPager2
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentMediaPagerBinding
 import app.editors.manager.databinding.IncludeMediaHeaderPagerBinding
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.pager.PagingViewPager

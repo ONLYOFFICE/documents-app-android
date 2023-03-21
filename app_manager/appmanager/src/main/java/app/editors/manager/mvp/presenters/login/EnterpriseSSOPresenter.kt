@@ -1,8 +1,8 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.models.login.Token
-import app.documents.core.network.models.login.request.RequestSignIn
+import app.documents.core.network.login.models.Token
+import app.documents.core.network.login.models.request.RequestSignIn
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.EnterpriseSSOView
 

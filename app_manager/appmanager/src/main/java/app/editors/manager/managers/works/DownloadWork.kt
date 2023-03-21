@@ -10,19 +10,18 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.ManagerService
+import app.documents.core.network.manager.models.explorer.Operation
+import app.documents.core.network.manager.models.request.RequestDownload
 import app.editors.manager.R
-import app.editors.manager.app.Api
 import app.editors.manager.app.App
-import app.editors.manager.di.component.DaggerApiComponent
+import app.editors.manager.app.accountOnline
+import app.editors.manager.app.api
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.NotificationUtils
-import app.editors.manager.mvp.models.explorer.Operation
-import app.editors.manager.mvp.models.request.RequestDownload
 import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FileUtils.Finish
@@ -35,7 +34,7 @@ import retrofit2.Call
 import retrofit2.HttpException
 import java.io.IOException
 
-class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+class DownloadWork(private val context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
     companion object {
         private val TAG = DownloadWork::class.java.simpleName
@@ -90,22 +89,17 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
     private var to: Uri? = null
     private var timeMark = 0L
     private var downloadRequest: RequestDownload? = null
-    private var token: String
-
-    private val api: Api = runBlocking(Dispatchers.Default) {
-        App.getApp().appComponent.accountsDao.getAccountOnline()?.let { account ->
+    private val api: ManagerService = context.api
+    private val token: String get() {
+        return checkNotNull(
             AccountUtils.getToken(
                 applicationContext,
-                Account(account.getAccountName(), applicationContext.getString(lib.toolkit.base.R.string.account_type))
-            )?.let {
-                token = it
-                return@runBlocking DaggerApiComponent.builder()
-                    .appComponent(App.getApp().appComponent)
-                    .build().api
-            }
-        } ?: run {
-            throw Error("No account")
-        }
+                Account(
+                    context.accountOnline?.getAccountName(),
+                    applicationContext.getString(lib.toolkit.base.R.string.account_type)
+                )
+            )
+        ) { "No account" }
     }
 
     @SuppressLint("MissingPermission")
@@ -212,7 +206,7 @@ class DownloadWork(context: Context, workerParams: WorkerParameters) : Worker(co
                                 }
                             } else {
                                 notificationUtils.showErrorNotification(id.hashCode(), fileName)
-                                onError(operations[0].error)
+                                onError(operations[0].error.toString())
                                 file?.delete()
                                 break
                             }

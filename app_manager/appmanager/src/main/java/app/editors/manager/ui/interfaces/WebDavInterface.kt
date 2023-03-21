@@ -1,6 +1,7 @@
 package app.editors.manager.ui.interfaces
 
-import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.CloudFolder
+
 
 interface WebDavInterface {
     val isMySection: Boolean

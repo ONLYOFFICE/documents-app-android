@@ -395,6 +395,13 @@ fun <T : Parcelable> Intent.getParcelable(key: String, clazz: Class<T>): T {
         this.getParcelableExtra<T>(key) as T
 }
 
+fun <T : Parcelable> Bundle.getParcelableExt(key: String, clazz: Class<T>): T {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        this.getParcelable(key, clazz)!!
+    else
+        this.getParcelable<T>(key) as T
+}
+
 fun Bundle.contains(key: String): Boolean {
     return try {
         this.containsKey(key)

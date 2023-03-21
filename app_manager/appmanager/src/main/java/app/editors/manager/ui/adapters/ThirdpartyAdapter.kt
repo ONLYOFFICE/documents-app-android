@@ -3,7 +3,7 @@ package app.editors.manager.ui.adapters
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.editors.manager.R
-import app.editors.manager.mvp.models.user.Thirdparty
+import app.documents.core.network.manager.models.user.Thirdparty
 import app.editors.manager.ui.adapters.holders.ThirdpartyViewHolder
 import lib.toolkit.base.ui.adapters.BaseListAdapter
 import lib.toolkit.base.ui.adapters.factory.inflate

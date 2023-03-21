@@ -467,6 +467,7 @@
     <string name="storage_onedrive_error_opened">File is opened on portal</string>
     <string name="storage_onedrive_error_exist">File with same name is already exist in this folder</string>
     <string name="storage_google_drive_copy_folder_error">Folders can not be copied</string>
+    <string name="storage_dropbox_email_not_verified_error">Email not verified</string>
 
     <!-- ======================================================================================= -->
     <!-- Operations -->

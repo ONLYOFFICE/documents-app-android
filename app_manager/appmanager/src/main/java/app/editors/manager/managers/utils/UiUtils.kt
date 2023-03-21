@@ -5,11 +5,11 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import app.documents.core.account.CloudAccount
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
-import app.editors.manager.mvp.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
@@ -18,32 +18,32 @@ object ManagerUiUtils {
 
     @JvmStatic
     fun setWebDavImage(providerName: String?, image: ImageView) {
-        when (WebDavApi.Providers.valueOf(providerName ?: "")) {
-            WebDavApi.Providers.NextCloud -> image.setImageDrawable(
+        when (WebDavService.Providers.valueOf(providerName ?: "")) {
+            WebDavService.Providers.NextCloud -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_nextcloud
                 )
             )
-            WebDavApi.Providers.OwnCloud -> image.setImageDrawable(
+            WebDavService.Providers.OwnCloud -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_owncloud
                 )
             )
-            WebDavApi.Providers.Yandex -> image.setImageDrawable(
+            WebDavService.Providers.Yandex -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_yandex
                 )
             )
-            WebDavApi.Providers.KDrive -> image.setImageDrawable(
+            WebDavService.Providers.KDrive -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_kdrive
                 )
             )
-            WebDavApi.Providers.WebDav -> image.setImageDrawable(
+            WebDavService.Providers.WebDav -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_webdav
@@ -105,7 +105,7 @@ object ManagerUiUtils {
     }
 
     fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
-         return when {
+        return when {
             folder.shared && folder.providerKey.isEmpty() -> R.drawable.ic_type_folder_shared
             isRoot && folder.providerItem && folder.providerKey.isNotEmpty() -> {
                 StorageUtils.getStorageIcon(folder.providerKey)
@@ -129,7 +129,7 @@ object ManagerUiUtils {
         }
     }
 
-    fun setAccessIcon(imageView: ImageView, accessCode: Int, isRoom: Boolean = false) {
+    fun setAccessIcon(imageView: ImageView, accessCode: Int) {
         when (accessCode) {
             ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> {
                 imageView.setImageResource(R.drawable.ic_access_deny)
@@ -137,13 +137,8 @@ object ManagerUiUtils {
             }
             ApiContract.ShareCode.REVIEW -> imageView.setImageResource(R.drawable.ic_access_review)
             ApiContract.ShareCode.READ -> imageView.setImageResource(R.drawable.ic_access_read)
-            ApiContract.ShareCode.READ_WRITE -> {
-                if (isRoom) {
-                    imageView.setImageResource(R.drawable.ic_drawer_menu_my_docs)
-                } else {
-                    imageView.setImageResource(R.drawable.ic_access_full)
-                }
-            }
+            ApiContract.ShareCode.ROOM_ADMIN -> imageView.setImageResource(R.drawable.ic_drawer_menu_my_docs)
+            ApiContract.ShareCode.READ_WRITE -> imageView.setImageResource(R.drawable.ic_access_full)
             ApiContract.ShareCode.EDITOR -> imageView.setImageResource(R.drawable.ic_access_full)
             ApiContract.ShareCode.COMMENT -> imageView.setImageResource(R.drawable.ic_access_comment)
             ApiContract.ShareCode.FILL_FORMS -> imageView.setImageResource(R.drawable.ic_access_fill_form)

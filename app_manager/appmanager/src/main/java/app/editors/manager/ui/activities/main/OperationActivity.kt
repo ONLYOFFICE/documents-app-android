@@ -7,17 +7,17 @@ import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import app.documents.core.account.AccountDao
-import app.documents.core.network.ApiContract
-import app.documents.core.webdav.WebDavApi
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityOperationBinding
-import app.editors.manager.mvp.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
-import app.editors.manager.storages.dropbox.ui.fragments.operations.DocsDropboxOperationFragment
-import app.editors.manager.storages.googledrive.ui.fragments.operations.DocsGoogleDriveOperationFragment
-import app.editors.manager.storages.onedrive.ui.fragments.operations.DocsOneDriveOperationFragment
+import app.editors.manager.ui.fragments.operations.DocsDropboxOperationFragment
+import app.editors.manager.ui.fragments.operations.DocsGoogleDriveOperationFragment
+import app.editors.manager.ui.fragments.operations.DocsOneDriveOperationFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
@@ -98,7 +98,7 @@ class OperationActivity : BaseAppActivity(){
                     if (account.isWebDav) {
                         showFragment(
                             DocsWebDavOperationFragment.newInstance(
-                                WebDavApi.Providers.valueOf(
+                                WebDavService.Providers.valueOf(
                                     account.webDavProvider ?: ""
                                 )
                             ), null

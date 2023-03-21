@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import app.documents.core.network.ApiContract
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.ActivityFilterBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity

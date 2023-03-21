@@ -11,12 +11,13 @@ import android.view.ViewGroup
 import android.webkit.*
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import app.documents.core.network.common.contracts.StorageContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageWebBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.StorageUtils
-import app.editors.manager.mvp.models.account.Storage
+import app.documents.core.network.common.models.Storage
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.NetworkUtils
 import javax.inject.Inject
@@ -144,7 +145,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             if (url.startsWith(redirectUrl!!)) {
                 val uri = Uri.parse(url)
-                val token = uri.getQueryParameter(StorageUtils.ARG_CODE)
+                val token = uri.getQueryParameter(StorageContract.ARG_CODE)
                 if (token?.equals("null", ignoreCase = true) == false) {
                     showFragment(
                         ConnectFragment.newInstance(token, storage),
