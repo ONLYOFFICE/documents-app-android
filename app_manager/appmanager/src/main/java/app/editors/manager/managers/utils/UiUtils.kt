@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import app.documents.core.account.CloudAccount
 import app.documents.core.network.ApiContract
 import app.documents.core.webdav.WebDavApi
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.mvp.models.explorer.CloudFolder
 import com.bumptech.glide.Glide
@@ -77,6 +78,7 @@ object ManagerUiUtils {
         }
     }
 
+    @Suppress("KotlinConstantConditions")
     fun ImageView.setFileIcon(ext: String) {
         @DrawableRes val resId = when (StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
@@ -91,8 +93,12 @@ object ManagerUiUtils {
             StringUtils.Extension.VIDEO -> R.drawable.ic_type_video
             StringUtils.Extension.ARCH -> R.drawable.ic_type_archive
             StringUtils.Extension.FORM -> {
-                if (ext == ".${LocalContentTools.OFORM_EXTENSION}") R.drawable.ic_format_oform
-                else R.drawable.ic_format_docxf
+                if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
+                    if (ext == ".${LocalContentTools.OFORM_EXTENSION}") R.drawable.ic_format_oform
+                    else R.drawable.ic_format_docxf
+                } else {
+                    R.drawable.ic_type_file
+                }
             }
             else -> R.drawable.ic_type_file
         }
