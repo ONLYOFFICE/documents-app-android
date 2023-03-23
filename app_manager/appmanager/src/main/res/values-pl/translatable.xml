@@ -59,7 +59,6 @@
     <string name="dialogs_question_accept_remove">USUŃ</string>
     <string name="dialogs_question_accept_sure">OK, W PORZĄDKU</string>
     <string name="dialogs_question_accept_yes">TAK</string>
-    <string name="dialogs_question_delete">Usunąć wybrany element?</string>
     <string name="dialogs_question_facebook_question">Kontynuuj z konta:\u0020</string>
     <string name="dialogs_question_facebook_title">Facebook</string>
     <string name="dialogs_question_http_question">Połączenie HTTPS jest niedostępne, ale można użyć połączenia HTTP. Kontynuować?</string>
@@ -346,7 +345,7 @@
     <string name="toolbar_menu_sort_title">Tytuł</string>
     <string name="toolbar_menu_sort_type">Rodzaj</string>
     <string name="toolbar_menu_main_open">Otwórz</string>
-    <string name="trash_dialog_empty_title">Opróżnić kosz?</string>
+    <string name="trash_dialog_empty_title">Opróżnić kosz</string>
     <string name="trash_popup_delete">Usuń trwale</string>
     <string name="upload_error_wifi">Możesz przesyłać tylko, jeśli Wi-Fi jest włączone</string>
     <string name="upload_manager_cancel">Anulowano przesyłanie</string>
@@ -386,8 +385,6 @@
     <string name="profile_thirdparty_title">Połączone usługi</string>
     <string name="error_unsupported_format">Nieobsługiwany format</string>
     <string name="errors_create_local_file">Nie udało się utworzyć pliku</string>
-    <string name="dialog_question_delete_file">Plik zostanie trwale usunięty.</string>
-    <string name="dialog_question_delete_folder">Folder zostanie trwale usunięty.</string>
     <string name="operation_delete_impossible">Nie można usunąć pliku. Plik jest otwarty w portalu.</string>
     <string name="operation_delete_multiple">. Usuwanie jednego lub wielu plików zakończyło się niepowodzeniem, ponieważ są otwarte w portalu</string>
     <string name="app_settings_analytic_title">Pomóż nam poprawić produkt</string>

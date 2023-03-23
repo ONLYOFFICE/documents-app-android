@@ -59,7 +59,6 @@
     <string name="dialogs_question_accept_remove">ELIMINAR</string>
     <string name="dialogs_question_accept_sure">SÍ, CLARO</string>
     <string name="dialogs_question_accept_yes">SÍ</string>
-    <string name="dialogs_question_delete">¿Eliminar el elemento seleccionado?</string>
     <string name="dialogs_question_facebook_question">Continuar con la cuenta:\u0020</string>
     <string name="dialogs_question_facebook_title">Facebook</string>
     <string name="dialogs_question_http_question">La conexión HTTPS no está disponible, pero se puede utilizar la conexión HTTP. ¿Continuar?</string>
@@ -72,8 +71,6 @@
     <string name="dialogs_question_remove_account_info">Cuenta con email %1$s de portal %2$s se cerrará y se eliminará de la lista</string>
     <string name="dialogs_question_remove_account_title">¿Eliminar cuenta?</string>
     <string name="dialogs_question_share_remove">¿Eliminar elemento seleccionado de la lista?</string>
-    <string name="dialog_question_delete_file">El archivo será eliminado irremediablemente.</string>
-    <string name="dialog_question_delete_folder">La carpeta será eliminado irremediablemente.</string>
     <string name="dialogs_sign_in_portal_header_text">Acceso a la oficina en nube</string>
     <string name="dialogs_sign_in_register_portal">Registro de oficina en nube</string>
     <string name="dialogs_wait_title">Operación en progreso…</string>
@@ -348,7 +345,7 @@
     <string name="toolbar_menu_sort_title">Título</string>
     <string name="toolbar_menu_sort_type">Tipo</string>
     <string name="toolbar_menu_main_open">Abrir</string>
-    <string name="trash_dialog_empty_title">¿Vaciar Papelera?</string>
+    <string name="trash_dialog_empty_title">Vaciar Papelera</string>
     <string name="trash_popup_delete">Eliminar para siempre</string>
     <string name="upload_error_wifi">Solamente puede subir archivos cuando está conectado a una red Wi-Fi</string>
     <string name="upload_manager_cancel">Subida cancelada</string>

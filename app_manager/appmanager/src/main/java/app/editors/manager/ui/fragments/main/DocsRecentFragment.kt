@@ -31,7 +31,7 @@ import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.adapters.RecentAdapter
 import app.editors.manager.ui.adapters.holders.factory.RecentHolderFactory
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.popup.MainActionBarPopup
+import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +42,6 @@ import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
-import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
 class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
@@ -207,9 +206,9 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)).request()
     }
 
-    override fun updateFiles(files: List<Recent>, sortBy: String, sortOrder: String) {
+    override fun updateFiles(files: List<Recent>, sortByUpdated: Boolean) {
         if (files.isNotEmpty()) {
-            adapter?.setRecent(files, sortBy == ApiContract.Parameters.VAL_SORT_BY_UPDATED)
+            adapter?.setRecent(files, sortByUpdated)
             recyclerView?.scrollToPosition(0)
             placeholderViews?.setVisibility(false)
             updateMenu(true)
@@ -326,13 +325,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showMainActionBarMenu(
-            listOf(
-                MainActionBarPopup.Author,
-                MainActionBarPopup.SelectAll,
-                MainActionBarPopup.Select
-            )
+    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
+        super.showMainActionPopup(
+            MainPopupItem.SortBy.Author,
+            MainPopupItem.Select,
+            MainPopupItem.SelectAll
         )
     }
 
@@ -377,23 +374,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             swipeRefreshLayout?.isEnabled = false
             activity?.showActionButton(false)
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
-        }
-    }
-
-    override val mainActionBarClickListener: (ActionBarPopupItem) -> Unit = { item ->
-        if (item == MainActionBarPopup.getSortPopupItem(presenter.preferenceTool.sortBy)) {
-            presenter.reverseOrder()
-        } else {
-            when (item) {
-                MainActionBarPopup.Date ->
-                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_UPDATED)
-                MainActionBarPopup.Type ->
-                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_TYPE)
-                MainActionBarPopup.Size ->
-                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_SIZE)
-                MainActionBarPopup.Title ->
-                    presenter.update(ApiContract.Parameters.VAL_SORT_BY_TITLE)
-            }
         }
     }
 

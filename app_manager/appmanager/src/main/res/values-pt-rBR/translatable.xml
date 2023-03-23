@@ -59,7 +59,6 @@
     <string name="dialogs_question_accept_remove">REMOVER</string>
     <string name="dialogs_question_accept_sure">OK, TUDO BEM</string>
     <string name="dialogs_question_accept_yes">SIM</string>
-    <string name="dialogs_question_delete">Apagar item selecionado?</string>
     <string name="dialogs_question_facebook_question">Continue com uma conta:\u0020</string>
     <string name="dialogs_question_facebook_title">Facebook</string>
     <string name="dialogs_question_http_question">Conexão HTTPS não está disponível, mas a conexão HTTP pode ser usada. Continuar?</string>
@@ -346,7 +345,7 @@
     <string name="toolbar_menu_sort_title">Título</string>
     <string name="toolbar_menu_sort_type">Tipo</string>
     <string name="toolbar_menu_main_open">Abrir</string>
-    <string name="trash_dialog_empty_title">Esvaziar lixeira?</string>
+    <string name="trash_dialog_empty_title">Esvaziar lixeira</string>
     <string name="trash_popup_delete">EXCLUIR definitivamente</string>
     <string name="upload_error_wifi">Você pode fazer upload apenas quando Wi-Fi estiver habilitada</string>
     <string name="upload_manager_cancel">Upload cancelado</string>
@@ -386,8 +385,6 @@
     <string name="profile_thirdparty_title">Serviços conectados</string>
     <string name="error_unsupported_format">Formato não suportado</string>
     <string name="errors_create_local_file">Falha ao criar arquivo</string>
-    <string name="dialog_question_delete_file">O arquivo será excluído permanentemente.</string>
-    <string name="dialog_question_delete_folder">A pasta será excluída permanentemente.</string>
     <string name="operation_delete_impossible">Não é possível excluir o arquivo. O arquivo está aberto no portal.</string>
     <string name="operation_delete_multiple">. Um ou mais arquivos não foram excluídos por estarem abertos no portal</string>
     <string name="app_settings_analytic_title">Ajude a melhorar o produto</string>
