@@ -1,135 +1,127 @@
-package app.editors.manager.managers.receivers;
+package app.editors.manager.managers.receivers
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.Uri;
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.Uri
+import app.editors.manager.R
+import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 
-import app.editors.manager.R;
-import app.editors.manager.managers.utils.FirebaseUtils;
+class DownloadReceiver : BaseReceiver<Intent?>() {
 
+    companion object {
+        const val DOWNLOAD_ACTION_ERROR = "DOWNLOAD_ACTION_ERROR"
+        const val DOWNLOAD_ACTION_ERROR_FREE_SPACE = "DOWNLOAD_ACTION_ERROR_FREE_SPACE"
+        const val DOWNLOAD_ACTION_ERROR_URL_INIT = "DOWNLOAD_ACTION_ERROR_URL_INIT"
+        const val DOWNLOAD_ACTION_PROGRESS = "DOWNLOAD_ACTION_PROGRESS"
+        const val DOWNLOAD_ACTION_COMPLETE = "DOWNLOAD_ACTION_COMPLETE"
+        const val DOWNLOAD_ACTION_REPEAT = "DOWNLOAD_ACTION_REPEAT"
+        const val DOWNLOAD_ACTION_CANCELED = "DOWNLOAD_ACTION_CANCELED"
 
-public class DownloadReceiver extends BaseReceiver<Intent> {
+        const val EXTRAS_KEY_ID = "EXTRAS_KEY_ID"
+        const val EXTRAS_KEY_URL = "EXTRAS_KEY_URL"
+        const val EXTRAS_KEY_TITLE = "EXTRAS_KEY_TITLE"
+        const val EXTRAS_KEY_TOTAL = "EXTRAS_KEY_TOTAL"
+        const val EXTRAS_KEY_PATH = "EXTRAS_KEY_PATH"
+        const val EXTRAS_KEY_MIME_TYPE = "EXTRAS_KEY_MIME_TYPE"
+        const val EXTRAS_KEY_PROGRESS = "EXTRAS_KEY_PROGRESS"
+        const val EXTRAS_KEY_CANCELED = "EXTRAS_KEY_CANCELED"
+        const val EXTRAS_KEY_ERROR = "EXTRAS_KEY_ERROR"
+        const val EXTRAS_KEY_URI = "EXTRAS_KEY_URI"
 
-    public static final String DOWNLOAD_ACTION_ERROR = "DOWNLOAD_ACTION_ERROR";
-    public static final String DOWNLOAD_ACTION_ERROR_FREE_SPACE = "DOWNLOAD_ACTION_ERROR_FREE_SPACE";
-    public static final String DOWNLOAD_ACTION_ERROR_URL_INIT = "DOWNLOAD_ACTION_ERROR_URL_INIT";
-    public static final String DOWNLOAD_ACTION_PROGRESS = "DOWNLOAD_ACTION_PROGRESS";
-    public static final String DOWNLOAD_ACTION_COMPLETE = "DOWNLOAD_ACTION_COMPLETE";
-    public static final String DOWNLOAD_ACTION_REPEAT = "DOWNLOAD_ACTION_REPEAT";
-    public static final String DOWNLOAD_ACTION_CANCELED = "DOWNLOAD_ACTION_CANCELED";
-
-    public static final String EXTRAS_KEY_ID = "EXTRAS_KEY_ID";
-    public static final String EXTRAS_KEY_URL = "EXTRAS_KEY_URL";
-    public static final String EXTRAS_KEY_TITLE = "EXTRAS_KEY_TITLE";
-    public static final String EXTRAS_KEY_TOTAL = "EXTRAS_KEY_TOTAL";
-    public static final String EXTRAS_KEY_PATH = "EXTRAS_KEY_PATH";
-    public static final String EXTRAS_KEY_MIME_TYPE = "EXTRAS_KEY_MIME_TYPE";
-    public static final String EXTRAS_KEY_PROGRESS = "EXTRAS_KEY_PROGRESS";
-    public static final String EXTRAS_KEY_CANCELED = "EXTRAS_KEY_CANCELED";
-    public static final String EXTRAS_KEY_ERROR = "EXTRAS_KEY_ERROR";
-    public static final String EXTRAS_KEY_URI = "EXTRAS_KEY_URI";
-
-    public static final int EXTRAS_VALUE_CANCELED = 0;
-    public static final int EXTRAS_VALUE_CANCELED_NOT_FOUND = 1;
-
-
-    public interface OnDownloadListener {
-        void onDownloadError(String info);
-        void onDownloadProgress(String id, int total, int progress);
-        void onDownloadComplete(String id, String url, String title, String info, String path, String mime, Uri uri);
-        void onDownloadCanceled(String id, String info);
-        void onDownloadRepeat(String id, String title, String info);
+        const val EXTRAS_VALUE_CANCELED = 0
+        const val EXTRAS_VALUE_CANCELED_NOT_FOUND = 1
     }
 
-    private OnDownloadListener onDownloadListener;
-
-    public DownloadReceiver() {
-
+    interface OnDownloadListener {
+        fun onDownloadError(info: String?)
+        fun onDownloadProgress(id: String?, total: Int, progress: Int)
+        fun onDownloadCanceled(id: String?, info: String?)
+        fun onDownloadRepeat(id: String?, title: String?, info: String?)
+        fun onDownloadComplete(
+            id: String?,
+            url: String?,
+            title: String?,
+            info: String?,
+            path: String?,
+            mime: String?,
+            uri: Uri?
+        )
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
+    private var onDownloadListener: OnDownloadListener? = null
+
+    override fun onReceive(context: Context, intent: Intent) {
         try {
             if (onDownloadListener != null) {
-                final String action = intent.getAction();
-                switch (action) {
-                    case DOWNLOAD_ACTION_ERROR: {
-                        final String info = intent.getStringExtra(EXTRAS_KEY_ERROR);
-                        onDownloadListener.onDownloadError(info);
-                        break;
-                    }
+                val id = intent.getStringExtra(EXTRAS_KEY_ID)
+                val title = intent.getStringExtra(EXTRAS_KEY_TITLE)
 
-                    case DOWNLOAD_ACTION_ERROR_FREE_SPACE: {
-                        final String info = context.getString(R.string.download_manager_error_free_space);
-                        onDownloadListener.onDownloadError(info);
-                        break;
+                when (intent.action) {
+                    DOWNLOAD_ACTION_ERROR -> {
+                        onDownloadListener?.onDownloadError(info = intent.getStringExtra(EXTRAS_KEY_ERROR))
                     }
-
-                    case DOWNLOAD_ACTION_ERROR_URL_INIT: {
-                        final String info = context.getString(R.string.download_manager_error_url);
-                        onDownloadListener.onDownloadError(info);
-                        break;
+                    DOWNLOAD_ACTION_ERROR_FREE_SPACE -> {
+                        onDownloadListener?.onDownloadError(
+                            info = context.getString(R.string.download_manager_error_free_space)
+                        )
                     }
-
-                    case DOWNLOAD_ACTION_PROGRESS: {
-                        final String id = intent.getStringExtra(EXTRAS_KEY_ID);
-                        final int total = intent.getIntExtra(EXTRAS_KEY_TOTAL, 0);
-                        final int progress = intent.getIntExtra(EXTRAS_KEY_PROGRESS, 0);
-                        onDownloadListener.onDownloadProgress(id, total, progress);
-                        break;
+                    DOWNLOAD_ACTION_ERROR_URL_INIT -> {
+                        onDownloadListener?.onDownloadError(
+                            info = context.getString(R.string.download_manager_error_url)
+                        )
                     }
-
-                    case DOWNLOAD_ACTION_COMPLETE: {
-                        final String id = intent.getStringExtra(EXTRAS_KEY_ID);
-                        final String url = intent.getStringExtra(EXTRAS_KEY_URL);
-                        final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
-                        final String path = intent.getStringExtra(EXTRAS_KEY_PATH);
-                        final String mime = intent.getStringExtra(EXTRAS_KEY_MIME_TYPE);
-                        final String info = context.getString(R.string.download_manager_complete);
-                        final Uri uri = Uri.parse(intent.getStringExtra(EXTRAS_KEY_URI));
-                        onDownloadListener.onDownloadComplete(id, url, title, info, path, mime, uri);
-                        break;
+                    DOWNLOAD_ACTION_PROGRESS -> {
+                        onDownloadListener?.onDownloadProgress(
+                            id = id,
+                            total = intent.getIntExtra(EXTRAS_KEY_TOTAL, 0),
+                            progress = intent.getIntExtra(EXTRAS_KEY_PROGRESS, 0)
+                        )
                     }
-
-                    case DOWNLOAD_ACTION_REPEAT: {
-                        final String id = intent.getStringExtra(EXTRAS_KEY_ID);
-                        final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
-                        final String info = context.getString(R.string.download_manager_repeat);
-                        onDownloadListener.onDownloadRepeat(id, title, info);
-                        break;
+                    DOWNLOAD_ACTION_COMPLETE -> {
+                        onDownloadListener?.onDownloadComplete(
+                            id = id,
+                            url = intent.getStringExtra(EXTRAS_KEY_URL),
+                            title = title,
+                            info = context.getString(R.string.download_manager_complete),
+                            path = intent.getStringExtra(EXTRAS_KEY_PATH),
+                            mime = intent.getStringExtra(EXTRAS_KEY_MIME_TYPE),
+                            uri = Uri.parse(intent.getStringExtra(EXTRAS_KEY_URI))
+                        )
                     }
-
-                    case DOWNLOAD_ACTION_CANCELED: {
-                        final String id = intent.getStringExtra(EXTRAS_KEY_ID);
-                        final String info = context.getString(R.string.download_manager_cancel);
-                        final int value = intent.getIntExtra(EXTRAS_KEY_CANCELED, EXTRAS_VALUE_CANCELED);
-                        onDownloadListener.onDownloadCanceled(id, info);
-                        break;
+                    DOWNLOAD_ACTION_REPEAT -> {
+                        onDownloadListener?.onDownloadRepeat(
+                            id = id,
+                            title = title,
+                            info = context.getString(R.string.download_manager_repeat)
+                        )
+                    }
+                    DOWNLOAD_ACTION_CANCELED -> {
+                        onDownloadListener?.onDownloadCanceled(
+                            id = id,
+                            info = context.getString(R.string.download_manager_cancel)
+                        )
                     }
                 }
             }
-        } catch (RuntimeException e) {
-            // No need handle
-            FirebaseUtils.addCrash(e);
+        } catch (e: RuntimeException) {
+            addCrash(e)
         }
     }
 
-    @Override
-    public IntentFilter getFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(DOWNLOAD_ACTION_ERROR);
-        intentFilter.addAction(DOWNLOAD_ACTION_ERROR_FREE_SPACE);
-        intentFilter.addAction(DOWNLOAD_ACTION_ERROR_URL_INIT);
-        intentFilter.addAction(DOWNLOAD_ACTION_PROGRESS);
-        intentFilter.addAction(DOWNLOAD_ACTION_COMPLETE);
-        intentFilter.addAction(DOWNLOAD_ACTION_REPEAT);
-        intentFilter.addAction(DOWNLOAD_ACTION_CANCELED);
-        return intentFilter;
+    override fun getFilter(): IntentFilter {
+        return IntentFilter().apply {
+            addAction(DOWNLOAD_ACTION_ERROR)
+            addAction(DOWNLOAD_ACTION_ERROR_FREE_SPACE)
+            addAction(DOWNLOAD_ACTION_ERROR_URL_INIT)
+            addAction(DOWNLOAD_ACTION_PROGRESS)
+            addAction(DOWNLOAD_ACTION_COMPLETE)
+            addAction(DOWNLOAD_ACTION_REPEAT)
+            addAction(DOWNLOAD_ACTION_CANCELED)
+        }
     }
 
-    public void setOnDownloadListener(OnDownloadListener onDownloadListener) {
-        this.onDownloadListener = onDownloadListener;
+    fun setOnDownloadListener(onDownloadListener: OnDownloadListener?) {
+        this.onDownloadListener = onDownloadListener
     }
-
 }

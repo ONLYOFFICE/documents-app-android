@@ -307,37 +307,34 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onSnackBar(info ?: context.getString(R.string.download_manager_error))
     }
 
-    override fun onDownloadProgress(id: String, total: Int, progress: Int) {
+    override fun onDownloadProgress(id: String?, total: Int, progress: Int) {
         viewState.onDialogProgress(total, progress)
     }
 
     override fun onDownloadComplete(
-        id: String,
-        url: String,
-        title: String,
-        info: String,
-        path: String,
-        mime: String,
-        uri: Uri,
+        id: String?,
+        url: String?,
+        title: String?,
+        info: String?,
+        path: String?,
+        mime: String?,
+        uri: Uri?,
     ) {
         viewState.onFinishDownload(uri)
         viewState.onDialogClose()
-        viewState.onSnackBarWithAction(
-            """
-    $info
-    $title
-    """.trimIndent(), context.getString(R.string.download_manager_open)
-        ) { showDownloadFolderActivity(uri) }
+        viewState.onSnackBarWithAction("$info\n$title", context.getString(R.string.download_manager_open)) {
+            uri?.let(::showDownloadFolderActivity)
+        }
     }
 
-    override fun onDownloadCanceled(id: String, info: String) {
+    override fun onDownloadCanceled(id: String?, info: String?) {
         viewState.onDialogClose()
-        viewState.onSnackBar(info)
+        info?.let(viewState::onSnackBar)
     }
 
-    override fun onDownloadRepeat(id: String, title: String, info: String) {
+    override fun onDownloadRepeat(id: String?, title: String?, info: String?) {
         viewState.onDialogClose()
-        viewState.onSnackBar(info)
+        info?.let(viewState::onSnackBar)
     }
 
     override fun onUploadError(path: String?, info: String, file: String) {
