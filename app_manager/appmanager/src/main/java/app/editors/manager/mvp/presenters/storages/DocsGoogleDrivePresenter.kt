@@ -204,33 +204,13 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     }
 
     override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
-        val uploadUris = mutableListOf<Uri>()
-        var index = 0
-
-        uri?.let {
-            uploadUris.add(uri)
-        } ?: run {
-            uris?.let {
-                while (index != uris.count()) {
-                    uploadUris.add(uris[index])
-                    index++
-                }
-            }
-        }
-
-        val name = ContentResolverUtils.getName(context, uri?: Uri.EMPTY)
-
-        val newTag = if (itemClicked?.title == name) {
-            "KEY_UPDATE"
-        } else {
-            "KEY_UPLOAD"
-        }
-
         viewState.onUpload(
-            uploadUris = uploadUris,
             folderId = modelExplorerStack.currentId.orEmpty(),
             fileId = itemClicked?.id.orEmpty(),
-            tag = newTag
+            uploadUris = uri?.let(::listOf) ?: uris ?: listOf(),
+            tag = if (itemClicked?.title == ContentResolverUtils.getName(context, uri ?: Uri.EMPTY))
+                "KEY_UPDATE"
+            else "KEY_UPLOAD"
         )
     }
 

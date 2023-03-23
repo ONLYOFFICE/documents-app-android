@@ -20,8 +20,8 @@ interface GoogleDriveService {
     )
     @GET("drive/v3/files")
     fun getFiles(
-        @QueryMap stringMap: Map<String, String> = mutableMapOf(),
-        @QueryMap integerMap: Map<String, Int> = mutableMapOf()
+        @QueryMap stringMap: Map<String, String> = mapOf(),
+        @QueryMap integerMap: Map<String, Int> = mapOf()
     ): Single<Response<GoogleDriveExplorerResponse>>
 
     @Headers(
@@ -84,14 +84,14 @@ interface GoogleDriveService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("upload/drive/v3/files")
+    @POST("upload/drive/v3/files?uploadType=resumable")
     fun upload(@Body  request: CreateItemRequest, @QueryMap map: Map<String, String>): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PATCH("upload/drive/v3/files/{fileId}")
+    @PATCH("upload/drive/v3/files/{fileId}?uploadType=resumable")
     fun update(@Path(value = "fileId") fileId: String, @QueryMap map: Map<String, String>): Single<Response<ResponseBody>>
 
     @Headers(
