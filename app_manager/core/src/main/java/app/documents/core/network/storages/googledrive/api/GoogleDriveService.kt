@@ -24,7 +24,6 @@ interface GoogleDriveService {
         @QueryMap integerMap: Map<String, Int> = mutableMapOf()
     ): Single<Response<GoogleDriveExplorerResponse>>
 
-
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT

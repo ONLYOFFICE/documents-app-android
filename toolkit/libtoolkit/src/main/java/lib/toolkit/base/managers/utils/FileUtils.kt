@@ -640,9 +640,28 @@ object FileUtils {
 
     }
 
-    @JvmStatic
     fun writeFromResponseBody(
-        response: ResponseBody?,
+        response: ResponseBody,
+        to: Uri,
+        context: Context,
+        progress: Progress,
+        finish: Finish,
+        error: Error
+    ) {
+        writeFromResponseBody(
+            stream = response.byteStream(),
+            length = response.contentLength(),
+            to = to,
+            context = context,
+            progress = progress,
+            finish = finish,
+            error = error
+        )
+    }
+
+    fun writeFromResponseBody(
+        stream: InputStream,
+        length: Long,
         to: Uri,
         context: Context,
         progress: Progress?,
@@ -652,7 +671,7 @@ object FileUtils {
         var inputStream: InputStream? = null
         var outputStream: OutputStream? = null
         try {
-            inputStream = BufferedInputStream(response?.byteStream(), 1024 * 8)
+            inputStream = BufferedInputStream(stream, 1024 * 8)
             outputStream = BufferedOutputStream(context.contentResolver.openOutputStream(to))
             val buffer = ByteArray(1024 * 4)
             // Downloading with progress
@@ -662,7 +681,7 @@ object FileUtils {
                 totalBytes += countBytes.toLong()
                 outputStream.write(buffer, 0, countBytes)
 
-                if (progress?.onProgress(response?.contentLength() ?: 0, totalBytes, false) == true) {
+                if (progress?.onProgress(length, totalBytes, false) == true) {
                     throw Exception()
                 }
             }
@@ -686,9 +705,9 @@ object FileUtils {
         return (bytes.toDouble() / MEGA_BYTES).toFloat()
     }
 
-    fun isEnoughFreeSpace(itemSize: Long?): Boolean {
+    fun isEnoughFreeSpace(itemSize: Long): Boolean {
         val availableBytes = StatFs(Environment.getExternalStorageDirectory().path).availableBytes
-        return (itemSize ?: 0) < availableBytes
+        return itemSize < availableBytes
     }
 
 }

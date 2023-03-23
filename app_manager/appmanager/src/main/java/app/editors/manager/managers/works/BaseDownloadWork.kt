@@ -59,9 +59,9 @@ abstract class BaseDownloadWork(
 
     protected open fun writeFromResponse(response: Response<ResponseBody>) {
         try {
-            if (response.isSuccessful && response.body() != null) {
-                val responseBody = response.body()
-                if (!FileUtils.isEnoughFreeSpace(getContentSize(responseBody))) {
+            val responseBody = response.body()
+            if (response.isSuccessful && responseBody != null) {
+                if (!FileUtils.isEnoughFreeSpace(responseBody.contentLength())) {
                     onError(DownloadException.NotEnoughFreeSpace)
                 } else {
                     FileUtils.writeFromResponseBody(
@@ -79,10 +79,6 @@ abstract class BaseDownloadWork(
         } catch (error: Throwable) {
             onError(error)
         }
-    }
-
-    protected open fun getContentSize(responseBody: ResponseBody?): Long? {
-        return responseBody?.contentLength()
     }
 
     protected fun showProgress(total: Long, progress: Long, isArchiving: Boolean): Boolean {
@@ -125,7 +121,7 @@ abstract class BaseDownloadWork(
         id = data?.getString(FILE_ID_KEY)
     }
 
-    private fun onFinish() {
+    protected fun onFinish() {
         notificationUtils.removeNotification(id.hashCode())
         notificationUtils.showCompleteNotification(id.hashCode(), file?.name, to)
         sendBroadcastDownloadComplete(
