@@ -1,6 +1,7 @@
 package lib.toolkit.base.ui.dialogs.common.holders
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
@@ -49,11 +50,12 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         super.show()
         rootLayout?.visibility = View.VISIBLE
         progressBarView?.visibility = View.VISIBLE
-
-        UiUtils.setProgressBarColorDrawable(
-            progressBarView,
-            MaterialColors.getColor(checkNotNull(progressBarView), androidx.appcompat.R.attr.colorPrimary)
-        )
+        progressBarView?.indeterminateTintList = ColorStateList.valueOf(colorPrimary)
+//
+//        UiUtils.setProgressBarColorDrawable(
+//            progressBarView,
+//            MaterialColors.getColor(checkNotNull(progressBarView), androidx.appcompat.R.attr.colorPrimary)
+//        )
     }
 
     override fun hide() {

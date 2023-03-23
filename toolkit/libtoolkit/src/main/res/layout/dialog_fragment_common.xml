@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:theme="@style/DialogCommonTheme"
-    app:cardCornerRadius="@dimen/default_corner_radius_micro">
+    app:cardCornerRadius="@dimen/default_corner_radius_medium">
 
     <LinearLayout
         android:id="@+id/dialogContainer"
@@ -16,7 +16,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/dialogCommonTopTitleText"
-            style="@style/ItemLargeText"
+            style="@style/DialogTitleStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/screen_margin_large"
@@ -84,16 +84,17 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dialogCommonCancelButton"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+                style="@style/DialogButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="Cancel" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dialogCommonAcceptButton"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+                style="@style/DialogButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:cornerRadius="6dp"
                 android:layout_marginEnd="@dimen/screen_margin_medium"
                 tools:text="Accept" />
         </LinearLayout>

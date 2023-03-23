@@ -430,13 +430,11 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         isPassword: Boolean = false,
         error: String?,
         tag: String?,
-        tintColor: Int? = null,
         suffix: String? = null
     ) {
         getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)?.run {
             setIsPassword(isPassword)
             setError(error)
-            setColorTint(tintColor)
             setSuffix(suffix)
             show()
         }
