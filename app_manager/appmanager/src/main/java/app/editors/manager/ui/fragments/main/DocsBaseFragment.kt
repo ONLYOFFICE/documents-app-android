@@ -776,8 +776,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onSnackBar(message: String) {
-        if (isActivePage) {
+    override fun onSnackBar(message: String?) {
+        if (isActivePage && message != null) {
             showSnackBar(message)
         }
     }

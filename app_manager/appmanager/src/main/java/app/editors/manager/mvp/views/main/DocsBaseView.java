@@ -120,7 +120,7 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogProgress(int total, int progress);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onSnackBar(@NonNull String message);
+    void onSnackBar(String message);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onSnackBarWithAction(@NonNull String message, @NonNull String button, @NonNull View.OnClickListener action);
 

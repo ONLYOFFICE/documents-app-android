@@ -329,34 +329,34 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun onDownloadCanceled(id: String?, info: String?) {
         viewState.onDialogClose()
-        info?.let(viewState::onSnackBar)
+        viewState.onSnackBar(info)
     }
 
     override fun onDownloadRepeat(id: String?, title: String?, info: String?) {
         viewState.onDialogClose()
-        info?.let(viewState::onSnackBar)
+        viewState.onSnackBar(info)
     }
 
-    override fun onUploadError(path: String?, info: String, file: String) {
-        viewState.onSnackBar(info)
+    override fun onUploadError(path: String?, info: String?, file: String?) {
         viewState.onDeleteUploadFile(file)
+        viewState.onSnackBar(info)
     }
 
     override fun onUploadComplete(
-        path: String,
-        info: String,
+        path: String?,
+        info: String?,
         title: String?,
-        file: CloudFile,
-        id: String,
+        file: CloudFile?,
+        id: String?,
     ) {
-        viewState.onSnackBar(info)
-        if (modelExplorerStack.currentId == file.folderId) {
+        if (modelExplorerStack.currentId == file?.folderId) {
             addFile(file)
         }
         viewState.onDeleteUploadFile(id)
+        viewState.onSnackBar(info)
     }
 
-    override fun onUploadAndOpen(path: String, title: String?, file: CloudFile, id: String) {
+    override fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?) {
         viewState.onFileWebView(file)
     }
 
@@ -366,7 +366,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    override fun onUploadCanceled(path: String, info: String, id: String) {
+    override fun onUploadCanceled(path: String?, info: String?, id: String?) {
         viewState.onSnackBar(info)
         viewState.onDeleteUploadFile(id)
         if (UploadWork.getUploadFiles(modelExplorerStack.currentId)?.isEmpty() == true) {
@@ -375,7 +375,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    override fun onUploadRepeat(path: String, info: String) {
+    override fun onUploadRepeat(path: String?, info: String?) {
         viewState.onDialogClose()
         viewState.onSnackBar(info)
     }

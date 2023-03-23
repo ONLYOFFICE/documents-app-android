@@ -1,138 +1,123 @@
-package app.editors.manager.managers.receivers;
+package app.editors.manager.managers.receivers
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.editors.manager.R
+import app.editors.manager.managers.utils.FirebaseUtils.addCrash
+import lib.toolkit.base.managers.utils.getSerializableExt
 
-import androidx.annotation.Nullable;
+open class UploadReceiver : BaseReceiver<Intent?>() {
 
-import app.editors.manager.R;
-import app.editors.manager.managers.utils.FirebaseUtils;
-import app.documents.core.network.manager.models.explorer.CloudFile;
+    companion object {
+        const val UPLOAD_ACTION_ERROR = "UPLOAD_ACTION_ERROR"
+        const val UPLOAD_ACTION_ERROR_URL_INIT = "UPLOAD_ACTION_ERROR_URL_INIT"
+        const val UPLOAD_ACTION_PROGRESS = "UPLOAD_ACTION_PROGRESS"
+        const val UPLOAD_ACTION_COMPLETE = "UPLOAD_ACTION_COMPLETE"
+        const val UPLOAD_ACTION_REPEAT = "UPLOAD_ACTION_REPEAT"
+        const val UPLOAD_ACTION_CANCELED = "UPLOAD_ACTION_CANCELED"
+        const val UPLOAD_AND_OPEN = "UPLOAD_AND_OPEN"
 
-public class UploadReceiver extends BaseReceiver<Intent> {
-
-    public static final String UPLOAD_ACTION_ERROR = "UPLOAD_ACTION_ERROR";
-    public static final String UPLOAD_ACTION_ERROR_URL_INIT = "UPLOAD_ACTION_ERROR_URL_INIT";
-    public static final String UPLOAD_ACTION_PROGRESS = "UPLOAD_ACTION_PROGRESS";
-    public static final String UPLOAD_ACTION_COMPLETE = "UPLOAD_ACTION_COMPLETE";
-    public static final String UPLOAD_ACTION_REPEAT = "UPLOAD_ACTION_REPEAT";
-    public static final String UPLOAD_ACTION_CANCELED = "UPLOAD_ACTION_CANCELED";
-    public static final String UPLOAD_AND_OPEN = "UPLOAD_AND_OPEN";
-
-    public static final String EXTRAS_KEY_PATH = "EXTRAS_KEY_PATH";
-    public static final String EXTRAS_KEY_TITLE = "EXTRAS_KEY_TITLE";
-    public static final String EXTRAS_KEY_FILE = "EXTRAS_KEY_FILE";
-    public static final String EXTRAS_KEY_PROGRESS = "EXTRAS_KEY_PROGRESS";
-    public static final String EXTRAS_KEY_ID = "EXTRAS_KEY_ID";
-    public static final String EXTRAS_FOLDER_ID = "EXTRAS_FOLDER_ID";
-
-
-    public interface OnUploadListener {
-        void onUploadError(@Nullable String path, String info, String file);
-
-        void onUploadComplete(String path, String info, @Nullable String title, CloudFile file, String id);
-
-        void onUploadAndOpen(String path, @Nullable String title, CloudFile file, String id);
-
-        void onUploadFileProgress(int progress, @Nullable String id, @Nullable String folderId);
-
-        void onUploadCanceled(String path, String info, String id);
-
-        void onUploadRepeat(String path, String info);
+        const val EXTRAS_KEY_PATH = "EXTRAS_KEY_PATH"
+        const val EXTRAS_KEY_TITLE = "EXTRAS_KEY_TITLE"
+        const val EXTRAS_KEY_FILE = "EXTRAS_KEY_FILE"
+        const val EXTRAS_KEY_PROGRESS = "EXTRAS_KEY_PROGRESS"
+        const val EXTRAS_KEY_ID = "EXTRAS_KEY_ID"
+        const val EXTRAS_FOLDER_ID = "EXTRAS_FOLDER_ID"
     }
 
-    private OnUploadListener mOnUploadListener;
-
-    public UploadReceiver() {
-
+    interface OnUploadListener {
+        fun onUploadError(path: String?, info: String?, file: String?)
+        fun onUploadComplete(path: String?, info: String?, title: String?, file: CloudFile?, id: String?)
+        fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?)
+        fun onUploadFileProgress(progress: Int, id: String?, folderId: String?)
+        fun onUploadCanceled(path: String?, info: String?, id: String?)
+        fun onUploadRepeat(path: String?, info: String?)
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
+    private var onUploadListener: OnUploadListener? = null
+
+    override fun onReceive(context: Context, intent: Intent) {
         try {
-            if (mOnUploadListener != null) {
-                final String action = intent.getAction();
-                switch (action) {
-                    case UPLOAD_ACTION_ERROR: {
-                        final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
-                        final String file = intent.getStringExtra(EXTRAS_KEY_FILE);
-                        final String info = context.getString(R.string.upload_manager_error);
-                        mOnUploadListener.onUploadError(title, info, file);
-                        break;
-                    }
+            if (onUploadListener != null) {
+                val title = intent.getStringExtra(EXTRAS_KEY_TITLE)
+                val file = intent.getSerializableExt<CloudFile>(EXTRAS_KEY_FILE)
+                val path = intent.getStringExtra(EXTRAS_KEY_PATH)
+                val id = intent.getStringExtra(EXTRAS_KEY_ID)
 
-                    case UPLOAD_ACTION_ERROR_URL_INIT: {
-                        final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
-                        final String info = context.getString(R.string.upload_manager_error_url);
-                        mOnUploadListener.onUploadError(title, info, null);
-                        break;
+                when (intent.action) {
+                    UPLOAD_ACTION_ERROR -> {
+                        onUploadListener?.onUploadError(
+                            path = title,
+                            info = context.getString(R.string.upload_manager_error),
+                            file = intent.getStringExtra(EXTRAS_KEY_FILE)
+                        )
                     }
-
-                    case UPLOAD_ACTION_PROGRESS: {
-                        final String file = intent.getStringExtra(EXTRAS_KEY_FILE);
-                        final String folder = intent.getStringExtra(EXTRAS_FOLDER_ID);
-                        final int progress = intent.getIntExtra(EXTRAS_KEY_PROGRESS, 0);
-                        mOnUploadListener.onUploadFileProgress(progress, file, folder);
-                        break;
+                    UPLOAD_ACTION_ERROR_URL_INIT -> {
+                        onUploadListener?.onUploadError(
+                            path = title,
+                            info = context.getString(R.string.upload_manager_error_url),
+                            file = null
+                        )
                     }
-
-                    case UPLOAD_ACTION_COMPLETE: {
-                        final String path = intent.getStringExtra(EXTRAS_KEY_PATH);
-                        final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
-                        final CloudFile file = (CloudFile) intent.getSerializableExtra(EXTRAS_KEY_FILE);
-                        final String id = intent.getStringExtra(EXTRAS_KEY_ID);
-                        final String info = context.getString(R.string.upload_manager_complete);
-                        mOnUploadListener.onUploadComplete(path, info, title, file, id);
-                        break;
+                    UPLOAD_ACTION_PROGRESS -> {
+                        onUploadListener?.onUploadFileProgress(
+                            progress = intent.getIntExtra(EXTRAS_KEY_PROGRESS, 0),
+                            folderId = intent.getStringExtra(EXTRAS_FOLDER_ID),
+                            id = intent.getStringExtra(EXTRAS_KEY_FILE)
+                        )
                     }
-
-                    case UPLOAD_AND_OPEN: {
-                        final String path = intent.getStringExtra(EXTRAS_KEY_PATH);
-                        final String title = intent.getStringExtra(EXTRAS_KEY_TITLE);
-                        final CloudFile file = (CloudFile) intent.getSerializableExtra(EXTRAS_KEY_FILE);
-                        final String id = intent.getStringExtra(EXTRAS_KEY_ID);
-                        mOnUploadListener.onUploadAndOpen(path, title, file, id);
-                        break;
+                    UPLOAD_ACTION_COMPLETE -> {
+                        onUploadListener?.onUploadComplete(
+                            path = path,
+                            info = context.getString(R.string.upload_manager_complete),
+                            title = title,
+                            file = file,
+                            id = id
+                        )
                     }
-
-                    case UPLOAD_ACTION_REPEAT: {
-                        final String path = intent.getStringExtra(EXTRAS_KEY_PATH);
-                        final String info = context.getString(R.string.upload_manager_repeat);
-                        mOnUploadListener.onUploadRepeat(path, info);
-                        break;
+                    UPLOAD_AND_OPEN -> {
+                        onUploadListener?.onUploadAndOpen(
+                            path = path,
+                            title = title,
+                            file = file,
+                            id = id
+                        )
                     }
-
-                    case UPLOAD_ACTION_CANCELED: {
-                        final String path = intent.getStringExtra(EXTRAS_KEY_PATH);
-                        final String id = intent.getStringExtra(EXTRAS_KEY_ID);
-                        final String info = context.getString(R.string.upload_manager_cancel);
-                        mOnUploadListener.onUploadCanceled(path, info, id);
-                        break;
+                    UPLOAD_ACTION_REPEAT -> {
+                        onUploadListener?.onUploadRepeat(
+                            path = path,
+                            info = context.getString(R.string.upload_manager_repeat)
+                        )
+                    }
+                    UPLOAD_ACTION_CANCELED -> {
+                        onUploadListener?.onUploadCanceled(
+                            path = path,
+                            info = context.getString(R.string.upload_manager_cancel),
+                            id = id
+                        )
                     }
                 }
             }
-        } catch (RuntimeException e) {
-            // No need handle
-            FirebaseUtils.addCrash(e);
+        } catch (e: RuntimeException) {
+            addCrash(e)
         }
     }
 
-    @Override
-    public IntentFilter getFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(UPLOAD_ACTION_ERROR);
-        intentFilter.addAction(UPLOAD_ACTION_ERROR_URL_INIT);
-        intentFilter.addAction(UPLOAD_ACTION_PROGRESS);
-        intentFilter.addAction(UPLOAD_ACTION_COMPLETE);
-        intentFilter.addAction(UPLOAD_ACTION_REPEAT);
-        intentFilter.addAction(UPLOAD_ACTION_CANCELED);
-        intentFilter.addAction(UPLOAD_AND_OPEN);
-        return intentFilter;
+    override fun getFilter(): IntentFilter {
+        return IntentFilter().apply {
+            addAction(UPLOAD_ACTION_ERROR)
+            addAction(UPLOAD_ACTION_ERROR_URL_INIT)
+            addAction(UPLOAD_ACTION_PROGRESS)
+            addAction(UPLOAD_ACTION_COMPLETE)
+            addAction(UPLOAD_ACTION_REPEAT)
+            addAction(UPLOAD_ACTION_CANCELED)
+            addAction(UPLOAD_AND_OPEN)
+        }
     }
 
-    public void setOnUploadListener(OnUploadListener onUploadListener) {
-        mOnUploadListener = onUploadListener;
+    fun setOnUploadListener(onUploadListener: OnUploadListener?) {
+        this.onUploadListener= onUploadListener
     }
-
 }
