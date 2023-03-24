@@ -4,12 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -19,13 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import androidx.transition.TransitionManager
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareSettingsListBinding
 import app.editors.manager.databinding.IncludeButtonPopupBinding
 import app.editors.manager.databinding.IncludeShareSettingsHeaderBinding
-import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Item
-import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
@@ -226,14 +220,8 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     override fun onActionButtonState(isVisible: Boolean) {
         viewBinding?.let { binding ->
-            if (isVisible && !settingsPresenter.isPersonalAccount) {
-                if (requireContext().appComponent.networkSettings.isDocSpace) {
-                    if (item.isCanShare) {
-                        binding.shareSettingsAddItem.show()
-                    }
-                } else {
-                    binding.shareSettingsAddItem.show()
-                }
+            if (isVisible) {
+                binding.shareSettingsAddItem.show()
             } else {
                 binding.shareSettingsAddItem.hide()
             }
