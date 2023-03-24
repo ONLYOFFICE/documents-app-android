@@ -145,17 +145,17 @@ class OneDriveFileProvider(
                 when (response) {
                     is OneDriveResponse.Success -> {
                         val item = response.response as DriveItemValue
-                        val path = FileUtils.getTemplates(
+                        val path = PATH_TEMPLATES + FileUtils.getTemplates(
                             context = context,
                             locale = Locale.getDefault().language,
-                            extension = getExtensionFromPath(PATH_TEMPLATES + item.name.lowercase())
+                            extension = getExtensionFromPath(item.name.lowercase())
                         )
                         val temp = FileUtils.createTempAssetsFile(
-                                context,
-                                path.orEmpty(),
-                                StringUtils.getNameWithoutExtension(item.name),
-                                getExtensionFromPath(item.name)
-                            )
+                            context = context,
+                            from = path,
+                            name = StringUtils.getNameWithoutExtension(item.name),
+                            ext = getExtensionFromPath(item.name)
+                        )
                         upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
                         return@map CloudFile().apply {
                             webUrl = Uri.fromFile(temp).toString()

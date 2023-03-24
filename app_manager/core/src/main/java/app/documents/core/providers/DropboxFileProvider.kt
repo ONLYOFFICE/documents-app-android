@@ -175,15 +175,16 @@ class DropboxFileProvider(
 
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
         val title = body.title
-        val path = FileUtils.getTemplates(
-            context, Locale.getDefault().language,
-            StringUtils.getExtensionFromPath(PATH_TEMPLATES + title.lowercase())
+        val path = PATH_TEMPLATES + FileUtils.getTemplates(
+            context = context,
+            locale = Locale.getDefault().language,
+            extension = StringUtils.getExtensionFromPath(title.lowercase())
         )
         val temp = FileUtils.createTempAssetsFile(
-            context,
-            path.orEmpty(),
-            StringUtils.getNameWithoutExtension(title),
-            StringUtils.getExtensionFromPath(title)
+            context = context,
+            from = path,
+            name = StringUtils.getNameWithoutExtension(title),
+            ext = StringUtils.getExtensionFromPath(title)
         )
         upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
         val file = CloudFile()
