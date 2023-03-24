@@ -180,7 +180,6 @@
     <string name="dialogs_question_accept_not_really">NE TAK DOCELA</string>
     <string name="dialogs_question_accept_sure">ANO, JISTĚ</string>
     <string name="dialogs_question_accept_no_thanks">NE, DÍKY</string>
-    <string name="dialogs_question_delete">Přejete si vybranou položku odstranit?</string>
     <string name="dialogs_question_share_remove">Přejete si vybranou položku odebrat ze seznamu?</string>
     <string name="dialogs_question_http_title">Bezpečnostní varování</string>
     <string name="dialogs_question_http_question">Připojení prostřednictvím protokolu HTTPS není k dispozici, lze však použít protokol HTTP. Přejete si pokračovat?</string>
@@ -414,7 +413,7 @@
 
     <!-- ======================================================================================= -->
     <!-- Trash -->
-    <string name="trash_dialog_empty_title">Vysypat koš?</string>
+    <string name="trash_dialog_empty_title">Vysypat koš</string>
     <string name="trash_popup_delete">Trvale odstranit</string>
 
     <!-- ======================================================================================= -->
@@ -527,8 +526,6 @@
     <string name="profile_type_user">User</string>
     <string name="profile_thirdparty_title">Připojené služby</string>
     <string name="errors_create_local_file">Vytvoření souboru se nezdařilo</string>
-    <string name="dialog_question_delete_file">Soubor bude nenávratně smazán.</string>
-    <string name="dialog_question_delete_folder">Složka bude nenávratně smazána.</string>
     <string name="operation_delete_impossible">Soubor nelze odstranit. Soubor je otevřen na portálu.</string>
     <string name="operation_delete_multiple">. Jeden nebo více souborů nebyly smazány, protože jsou otevřeny na portálu</string>
     <string name="app_settings_analytic_title">Pomožte vylepšit produkt</string>

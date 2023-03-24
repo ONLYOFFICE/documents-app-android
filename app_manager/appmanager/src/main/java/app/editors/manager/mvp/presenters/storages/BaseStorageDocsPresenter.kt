@@ -134,8 +134,9 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
 
     override fun delete(): Boolean {
         if (modelExplorerStack.countSelectedItems > 0) {
-            viewState.onDialogQuestion(
-                context.getString(R.string.dialogs_question_delete), null,
+            viewState.onDialogDelete(
+                modelExplorerStack.countSelectedItems,
+                false,
                 TAG_DIALOG_BATCH_DELETE_SELECTED
             )
         } else {

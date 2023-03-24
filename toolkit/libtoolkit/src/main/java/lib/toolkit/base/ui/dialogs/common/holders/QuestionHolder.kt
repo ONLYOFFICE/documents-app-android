@@ -1,6 +1,7 @@
 package lib.toolkit.base.ui.dialogs.common.holders
 
 import android.content.res.ColorStateList
+import android.os.Build
 import android.view.View
 import lib.toolkit.base.R
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -8,7 +9,7 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
-    private val tintedAcceptTags = arrayOf("TAG_REMOVE", "TAG_LOGOUT")
+    private var errorTint: Boolean = false
 
     override fun show() {
         super.show()
@@ -17,7 +18,7 @@ class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             frameLayout.visibility = View.GONE
             acceptView.isEnabled = true
             cancelView.isEnabled = true
-            if (tintedAcceptTags.contains(holderTag)) {
+            if (errorTint) {
                 val color = dialog.requireContext().getColor(R.color.colorLightRed)
                 acceptView.setTextColor(color)
                 acceptView.rippleColor = ColorStateList.valueOf(color).withAlpha(30)
@@ -56,6 +57,11 @@ class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
         fun setIsBackPress(isBack: Boolean = true): Builder {
             isBackPress = isBack
+            return this
+        }
+
+        fun setAcceptErrorTint(errorTint: Boolean): Builder {
+            this@QuestionHolder.errorTint = errorTint
             return this
         }
 

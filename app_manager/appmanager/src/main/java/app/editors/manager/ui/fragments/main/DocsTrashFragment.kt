@@ -2,21 +2,18 @@ package app.editors.manager.ui.fragments.main
 
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.Item
-import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.popup.MainActionBarPopup
-import app.editors.manager.ui.popup.SelectActionBarPopup
+import app.editors.manager.ui.popup.MainPopupItem
+import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
-import lib.toolkit.base.ui.popup.ActionBarPopupItem
 
 class DocsTrashFragment: DocsCloudFragment() {
 
@@ -56,30 +53,6 @@ class DocsTrashFragment: DocsCloudFragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        if (isResumed) {
-            emptyTrashItem = menu.findItem(R.id.toolbar_item_empty_trash)
-            emptyTrashItem?.isVisible = isEmptyTrashVisible && section != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
-            showMenu()
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.toolbar_item_empty_trash -> {
-                showQuestionDialog(
-                    getString(R.string.trash_dialog_empty_title),
-                    null,
-                    getString(R.string.dialogs_question_accept_yes),
-                    getString(R.string.dialogs_question_accept_no),
-                    DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
-                )
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onItemContextClick(view: View, position: Int) {
         val item = explorerAdapter?.getItem(position) as Item
         cloudPresenter.onContextClick(item, position, true)
@@ -115,12 +88,8 @@ class DocsTrashFragment: DocsCloudFragment() {
 
     override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
         when (buttons) {
-            ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
-                getString(R.string.trash_popup_delete),
-                cloudPresenter.itemTitle,
-                getString(R.string.dialogs_question_accept_delete),
-                getString(R.string.dialogs_common_cancel_button),
-                DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
+            ContextBottomDialog.Buttons.DELETE -> showDeleteDialog(
+                tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
             )
             ContextBottomDialog.Buttons.RESTORE -> {
                 if (isArchive) {
@@ -142,6 +111,10 @@ class DocsTrashFragment: DocsCloudFragment() {
         super.onDeleteBatch(list)
     }
 
+    override fun showDeleteDialog(count: Int, toTrash: Boolean, tag: String) {
+        super.showDeleteDialog(count, false, tag)
+    }
+
     override fun onResume() {
         super.onResume()
         cloudPresenter.isTrashMode = true
@@ -152,26 +125,25 @@ class DocsTrashFragment: DocsCloudFragment() {
         cloudPresenter.isTrashMode = false
     }
 
-    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(excluded = mutableListOf(
-            SelectActionBarPopup.Move,
-            SelectActionBarPopup.Copy,
-            SelectActionBarPopup.Download
-        ).apply {
-            if (isArchive) add(SelectActionBarPopup.Restore)
-        })
-    }
-
-    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        val sortItems = MainActionBarPopup.sortPopupItems.toMutableList().apply {
-            add(MainActionBarPopup.RoomType)
-            add(MainActionBarPopup.RoomTags)
-        }
-        super.showMainActionBarMenu(if (isArchive) sortItems else excluded)
-    }
-
     override fun setMenuFilterEnabled(isEnabled: Boolean) {
         filterItem?.isVisible = !isArchive
+    }
+
+    override val mainActionBarClickListener: (MainPopupItem) -> Unit = { item ->
+        if (item == MainPopupItem.EmptyTrash) {
+            showDeleteDialog(
+                count = -1,
+                tag = DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
+            )
+        } else super.mainActionBarClickListener(item)
+    }
+
+    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
+        super.showSelectActionPopup(
+            SelectPopupItem.Operation.Move,
+            SelectPopupItem.Operation.Copy,
+            SelectPopupItem.Download
+        )
     }
 
     companion object {

@@ -54,7 +54,6 @@
     <string name="dialogs_question_accept_remove">ПРЕМАХВАНЕ</string>
     <string name="dialogs_question_accept_sure">ДОБРЕ, СИГУРНО</string>
     <string name="dialogs_question_accept_yes">ДА</string>
-    <string name="dialogs_question_delete">Изтриване на избрания елемент?</string>
     <string name="dialogs_question_facebook_question">Продължете с акаунт:\u0020</string>
     <string name="dialogs_question_facebook_title">Facebook</string>
     <string name="dialogs_question_http_question">HTTPS връзката не е достъпна, но може да се използва HTTP връзка. Продължи?</string>
@@ -67,8 +66,6 @@
     <string name="dialogs_question_remove_account_info">Профилът с имейл %1$s от офиса в облака %2$s ще бъде изведен и премахнат от списъка</string>
     <string name="dialogs_question_remove_account_title">Да се ​​премахне ли профилът?</string>
     <string name="dialogs_question_share_remove">Да се ​​премахне ли избраният елемент от списъка?</string>
-    <string name="dialog_question_delete_file">Файлът ще бъде безвъзвратно изтрит.</string>
-    <string name="dialog_question_delete_folder">Папката ще бъде безвъзвратно изтрита.</string>
     <string name="dialogs_sign_in_portal_header_text">Влезте в облачния офис</string>
     <string name="dialogs_sign_in_register_portal">Регистриране на облачния офис</string>
     <string name="dialogs_wait_title">Операцията е в ход …</string>
@@ -319,7 +316,7 @@
     <string name="toolbar_menu_sort_title">Заглавие</string>
     <string name="toolbar_menu_sort_type">Тип</string>
     <string name="toolbar_menu_main_open">Отвори</string>
-    <string name="trash_dialog_empty_title">Празен боклук?</string>
+    <string name="trash_dialog_empty_title">Празен боклук</string>
     <string name="trash_popup_delete">Изтрийте завинаги</string>
     <string name="upload_manager_cancel">Качването е анулирано</string>
     <string name="upload_manager_complete">Качването е завършено</string>

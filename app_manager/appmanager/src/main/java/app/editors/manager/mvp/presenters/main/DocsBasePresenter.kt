@@ -41,6 +41,8 @@ import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
+import app.editors.manager.ui.popup.MainPopup
+import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.gson.Gson
 import io.reactivex.Observable
@@ -208,25 +210,21 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return false
     }
 
-    open fun sortBy(value: String, isRepeatedTap: Boolean): Boolean {
-        preferenceTool.sortBy = value
+    open fun sortBy(type: MainPopupItem.SortBy): Boolean {
+        val isRepeatedTap = MainPopup.getSortPopupItem(preferenceTool.sortBy) == type
+        preferenceTool.sortBy = type.value
         if (isRepeatedTap) {
             reverseSortOrder()
         }
         return refresh()
     }
 
-    private fun reverseSortOrder() {
+    fun reverseSortOrder() {
         if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
         } else {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
         }
-    }
-
-    open fun orderBy(value: String): Boolean {
-        preferenceTool.sortOrder = value
-        return refresh()
     }
 
     open fun filter(value: String, isSubmitted: Boolean): Boolean {
@@ -386,7 +384,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     )
                 }
             }
-            viewState.onDialogQuestion(context.getString(R.string.dialogs_question_delete), null, TAG_DIALOG_BATCH_DELETE_SELECTED)
+            viewState.onDialogDelete(
+                modelExplorerStack.countSelectedItems,
+                true,
+                TAG_DIALOG_BATCH_DELETE_SELECTED
+            )
         } else if (!isSelectionMode) {
             if (itemClicked is CloudFile) {
                 fileProvider?.let { provider ->

@@ -44,8 +44,10 @@ import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog.DialogButtonOnClick
 import app.editors.manager.ui.fragments.base.ListFragment
-import app.editors.manager.ui.popup.MainActionBarPopup
-import app.editors.manager.ui.popup.SelectActionBarPopup
+import app.editors.manager.ui.popup.MainPopup
+import app.editors.manager.ui.popup.MainPopupItem
+import app.editors.manager.ui.popup.SelectPopup
+import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.CommonSearchView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.*
@@ -61,7 +63,6 @@ import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog.OnBottomDialogCloseList
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
-import lib.toolkit.base.ui.popup.ActionBarPopupItem
 
 abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnItemClickListener,
     OnItemContextListener, BaseAdapter.OnItemLongClickListener, ContextBottomDialog.OnClickListener,
@@ -193,7 +194,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_item_main -> showMainActionBarMenu()
+            R.id.toolbar_item_main -> showActionBarMenu()
             R.id.toolbar_selection_delete -> presenter.delete()
         }
         return super.onOptionsItemSelected(item)
@@ -331,13 +332,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_common_cancel_button),
                 presenter.itemExtension
             )
-            ContextBottomDialog.Buttons.DELETE -> showQuestionDialog(
-                getString(R.string.dialogs_question_delete),
-                presenter.itemTitle,
-                getString(R.string.dialogs_question_accept_remove),
-                getString(R.string.dialogs_common_cancel_button),
-                DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
-            )
+            ContextBottomDialog.Buttons.DELETE -> {
+                showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
+            }
             else -> {}
         }
     }
@@ -776,8 +773,31 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onSnackBar(message: String?) {
-        if (isActivePage && message != null) {
+    override fun onDialogDelete(count: Int, toTrash: Boolean, tag: String) {
+        showDeleteDialog(count, toTrash, tag)
+    }
+
+    protected open fun showDeleteDialog(count: Int = 1, toTrash: Boolean = true, tag: String) {
+        showQuestionDialog(
+            title = if (count > 0) {
+                resources.getQuantityString(R.plurals.dialogs_question_delete_title, count, count)
+            } else {
+                getString(R.string.dialogs_question_delete_all_title)
+            },
+            string = if (toTrash) {
+                resources.getQuantityString(R.plurals.dialogs_question_message_to_trash, count)
+            } else {
+                resources.getQuantityString(R.plurals.dialogs_question_message_delete, count)
+            },
+            acceptButton = getString(R.string.dialogs_question_accept_delete),
+            cancelButton = getString(R.string.dialogs_common_cancel_button),
+            tag = tag,
+            acceptErrorTint = true
+        )
+    }
+
+    override fun onSnackBar(message: String) {
+        if (isActivePage) {
             showSnackBar(message)
         }
     }
@@ -789,11 +809,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onClearMenu() {
-        menu?.let {
-            if (explorerAdapter?.itemList?.size == 0) {
-                it.findItem(R.id.toolbar_item_empty_trash).isVisible = false
-                searchItem?.isVisible = false
-            }
+        if (explorerAdapter?.itemList?.size == 0) {
+            searchItem?.isVisible = false
         }
     }
 
@@ -1129,26 +1146,33 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected open fun showMainActionBarMenu(excluded: List<ActionBarPopupItem> = emptyList()) {
-        if (!presenter.isSelectionMode) {
-            MainActionBarPopup(
-                context = requireContext(),
-                section = presenter.getSectionType(),
-                clickListener = mainActionBarClickListener,
-                sortBy = presenter.preferenceTool.sortBy.orEmpty(),
-                isAsc = isAsc,
-                excluded = excluded
-            ).show(requireActivity().window.decorView)
+    protected fun showActionBarMenu() {
+        if (presenter.isSelectionMode) {
+            showSelectActionPopup()
         } else {
-            showSelectedActionBarMenu()
+            showMainActionPopup()
         }
     }
 
-    protected open fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem> = emptyList()) {
-        SelectActionBarPopup(
+    protected open fun showMainActionPopup(vararg excluded: MainPopupItem) {
+        MainPopup(
             context = requireContext(),
+            section = presenter.getSectionType(),
+            clickListener = mainActionBarClickListener,
+            sortBy = presenter.preferenceTool.sortBy.orEmpty(),
+            isAsc = isAsc,
+            excluded = excluded.toList()
+        ).show(requireActivity().window.decorView)
+    }
+
+    protected open fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
+        SelectPopup(
+            context = requireContext(),
+            section = presenter.getSectionType(),
             clickListener = selectActionBarClickListener,
-            excluded = excluded
+            excluded = excluded.toMutableList().apply {
+                if (presenter.isSelectedAll) add(SelectPopupItem.SelectAll)
+            }
         ).show(requireActivity().window.decorView)
     }
 
@@ -1158,42 +1182,21 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             ignoreCase = true
         )
 
-    protected open val mainActionBarClickListener: (ActionBarPopupItem) -> Unit = { item ->
-        val isRepeatedTap = item == MainActionBarPopup.getSortPopupItem(presenter.preferenceTool.sortBy)
+    protected open val mainActionBarClickListener: (MainPopupItem) -> Unit = { item ->
         when (item) {
-            MainActionBarPopup.Select -> presenter.setSelection(true)
-            MainActionBarPopup.SelectAll -> presenter.setSelectionAll()
-            MainActionBarPopup.Date ->
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_UPDATED, isRepeatedTap)
-            MainActionBarPopup.Type ->
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TYPE, isRepeatedTap)
-            MainActionBarPopup.Size ->
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_SIZE, isRepeatedTap)
-            MainActionBarPopup.Title ->
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TITLE, isRepeatedTap)
-            MainActionBarPopup.Author ->
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_OWNER, isRepeatedTap)
-            MainActionBarPopup.RoomTags ->
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_TAGS, isRepeatedTap)
-            MainActionBarPopup.RoomType ->
-                presenter.sortBy(ApiContract.Parameters.VAL_SORT_BY_ROOM_TYPE, isRepeatedTap)
+            MainPopupItem.Select -> presenter.setSelection(true)
+            MainPopupItem.SelectAll -> presenter.setSelectionAll()
+            is MainPopupItem.SortBy -> presenter.sortBy(item)
+            else -> { }
         }
     }
 
-    protected open val selectActionBarClickListener: (ActionBarPopupItem) -> Unit = { item ->
+    protected open val selectActionBarClickListener: (SelectPopupItem) -> Unit = { item ->
         when (item) {
-            SelectActionBarPopup.Move, SelectActionBarPopup.Restore, SelectActionBarPopup.Copy -> {
-                val type = when (item) {
-                    SelectActionBarPopup.Move -> OperationsState.OperationType.MOVE
-                    SelectActionBarPopup.Restore -> OperationsState.OperationType.RESTORE
-                    SelectActionBarPopup.Copy -> OperationsState.OperationType.COPY
-                    else -> OperationsState.OperationType.NONE
-                }
-                presenter.moveCopySelected(type)
-            }
-            SelectActionBarPopup.Deselect -> presenter.deselectAll()
-            SelectActionBarPopup.SelectAll -> presenter.selectAll()
-            SelectActionBarPopup.Download -> presenter.createDownloadFile()
+            SelectPopupItem.Deselect -> presenter.deselectAll()
+            SelectPopupItem.Download -> presenter.createDownloadFile()
+            SelectPopupItem.SelectAll -> presenter.selectAll()
+            is SelectPopupItem.Operation -> presenter.moveCopySelected(item.value)
         }
     }
 }

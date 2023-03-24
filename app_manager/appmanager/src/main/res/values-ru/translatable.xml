@@ -65,7 +65,6 @@
     <string name="dialogs_question_accept_remove">УДАЛИТЬ</string>
     <string name="dialogs_question_accept_sure">ДА, КОНЕЧНО</string>
     <string name="dialogs_question_accept_yes">ДА</string>
-    <string name="dialogs_question_delete">Удалить выбранный элемент?</string>
     <string name="dialogs_question_facebook_question">Продолжить с аккаунтом:\u0020</string>
     <string name="dialogs_question_facebook_title">Facebook</string>
     <string name="dialogs_question_http_question">HTTPS-подключение недоступно, но можно использовать HTTP-подключение. Продолжить?</string>
@@ -79,8 +78,6 @@
     </string>
     <string name="dialogs_question_remove_account_title">Удалить аккаунт?</string>
     <string name="dialogs_question_share_remove">Убрать выбранный элемент из списка?</string>
-    <string name="dialog_question_delete_file">Файл будет безвозвратно удален.</string>
-    <string name="dialog_question_delete_folder">Папка будет безвозвратно удалена.</string>
     <string name="dialogs_sign_in_portal_header_text">Вход в облачный офис</string>
     <string name="dialogs_sign_in_register_portal">Регистрация облачного офиса</string>
     <string name="dialogs_wait_title">Операция выполняется…</string>
@@ -376,7 +373,7 @@
     <string name="toolbar_menu_sort_title">Название</string>
     <string name="toolbar_menu_sort_type">Тип</string>
     <string name="toolbar_menu_main_open">Открыть</string>
-    <string name="trash_dialog_empty_title">Очистить корзину?</string>
+    <string name="trash_dialog_empty_title">Очистить корзину</string>
     <string name="trash_popup_delete">Удалить навсегда</string>
     <string name="upload_error_wifi">Загружать можно только когда включен Wi-Fi</string>
     <string name="upload_manager_cancel">Загрузка отменена</string>
