@@ -17,7 +17,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.oneDriveLoginProvider
 import app.editors.manager.managers.providers.OneDriveStorageHelper
-import app.editors.manager.managers.works.BaseStorageDownloadWork
+import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.onedrive.DownloadWork
 import app.editors.manager.managers.works.onedrive.UploadWork
@@ -104,8 +104,8 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun startDownload(downloadTo: Uri, item: Item?) {
         val data = Data.Builder()
-            .putString(BaseStorageDownloadWork.FILE_ID_KEY, item?.id)
-            .putString(BaseStorageDownloadWork.FILE_URI_KEY, downloadTo.toString())
+            .putString(BaseDownloadWork.FILE_ID_KEY, item?.id)
+            .putString(BaseDownloadWork.FILE_URI_KEY, downloadTo.toString())
             .build()
 
         val request = OneTimeWorkRequest.Builder(DownloadWork::class.java)

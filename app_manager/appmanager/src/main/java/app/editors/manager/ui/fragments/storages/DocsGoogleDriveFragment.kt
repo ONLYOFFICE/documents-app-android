@@ -128,4 +128,5 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
     override fun showMainActionPopup(vararg excluded: MainPopupItem) {
         super.showMainActionPopup(MainPopupItem.SortBy.Size)
     }
+
 }

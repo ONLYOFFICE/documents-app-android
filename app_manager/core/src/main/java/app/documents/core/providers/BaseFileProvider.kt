@@ -17,7 +17,7 @@ interface BaseFileProvider {
     fun delete(items: List<Item>, from: CloudFolder?): Observable<List<Operation>>
     fun transfer(
         items: List<Item>,
-        to: CloudFolder?,
+        to: CloudFolder,
         conflict: Int,
         isMove: Boolean,
         isOverwrite: Boolean

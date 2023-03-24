@@ -193,7 +193,7 @@ class CloudFileProvider @Inject constructor(
 
     override fun transfer(
         items: List<Item>,
-        to: CloudFolder?,
+        to: CloudFolder,
         conflict: Int,
         isMove: Boolean,
         isOverwrite: Boolean
@@ -212,7 +212,7 @@ class CloudFileProvider @Inject constructor(
         batchOperation.fileIds = filesId
         batchOperation.folderIds = foldersId
         batchOperation.isDeleteAfter = false
-        batchOperation.destFolderId = to!!.id
+        batchOperation.destFolderId = to.id
         batchOperation.conflictResolveType = conflict
         return if (isMove) {
             moveItems(batchOperation)

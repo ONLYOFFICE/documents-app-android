@@ -534,17 +534,13 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     private fun downloadFile(uri: Uri) {
         showWaitingDialog(getString(R.string.download_manager_progress_title))
         downloadUrl?.let {
-            FileUtils.downloadFromUrl(requireContext(), uri, it, object : FileUtils.Finish {
-                override fun onFinish() {
-                    hideDialog()
-                    showSnackBar(R.string.download_manager_complete)
-                }
-            }, object : FileUtils.Error {
-                override fun onError(message: String) {
-                    showSnackBar(R.string.download_manager_error)
-                    Log.d(TAG, "downloadError: $message")
-                }
-            })
+            FileUtils.downloadFromUrl(requireContext(), uri, it, {
+                hideDialog()
+                showSnackBar(R.string.download_manager_complete)
+            }) { error ->
+                showSnackBar(R.string.download_manager_error)
+                Log.d(TAG, "downloadError: ${error.message}")
+            }
         }
     }
 
