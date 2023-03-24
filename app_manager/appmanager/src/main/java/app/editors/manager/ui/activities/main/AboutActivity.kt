@@ -138,16 +138,16 @@ private fun AboutScreen(
                         )
                     )
                     Spacer(modifier = Modifier.height(48.dp))
-                    AboutItem(title = R.string.about_terms) {
+                    AboutItem(title = R.string.about_terms, isTablet = isTablet) {
                         onClick(R.string.app_url_terms)
                     }
-                    AboutItem(title = R.string.about_policy) {
+                    AboutItem(title = R.string.about_policy, isTablet = isTablet) {
                         onClick(R.string.app_url_policy)
                     }
-                    AboutItem(title = R.string.about_license) {
+                    AboutItem(title = R.string.about_license, isTablet = isTablet) {
                         navController.navigate(Screen.License.screen)
                     }
-                    AboutItem(title = R.string.about_website) {
+                    AboutItem(title = R.string.about_website, isTablet = isTablet) {
                         onClick(R.string.app_url_main)
                     }
                 }
@@ -157,8 +157,11 @@ private fun AboutScreen(
 }
 
 @Composable
-private fun AboutItem(@StringRes title: Int, onClick: () -> Unit) {
-    Column(modifier = Modifier.clickable(onClick = onClick)) {
+private fun AboutItem(@StringRes title: Int, isTablet: Boolean, onClick: () -> Unit) {
+    Column(modifier = Modifier
+        .fillMaxWidth(isTablet)
+        .clickable(onClick = onClick)
+    ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
