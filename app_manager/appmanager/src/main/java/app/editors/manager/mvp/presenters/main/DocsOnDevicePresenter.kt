@@ -378,24 +378,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
-    fun showDeleteDialog() {
-        if (itemClicked != null) {
-            if (itemClicked is CloudFolder) {
-                viewState.onDialogQuestion(
-                    context.getString(R.string.dialogs_question_delete),
-                    context.getString(R.string.dialog_question_delete_folder),
-                    TAG_DIALOG_DELETE_CONTEXT
-                )
-            } else {
-                viewState.onDialogQuestion(
-                    context.getString(R.string.dialogs_question_delete),
-                    context.getString(R.string.dialog_question_delete_file),
-                    TAG_DIALOG_DELETE_CONTEXT
-                )
-            }
-        }
-    }
-
     fun deleteFile() {
         itemClicked?.let { item ->
             val items: MutableList<Item> = ArrayList()

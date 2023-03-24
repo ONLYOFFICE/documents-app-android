@@ -487,3 +487,7 @@ object StringUtils {
         return SimpleDateFormat(pattern, Locale.getDefault()).parse(date)
     }
 }
+
+fun String.capitalize(): String {
+    return lowercase().replaceFirstChar(Char::titlecase)
+}

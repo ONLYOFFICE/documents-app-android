@@ -219,7 +219,7 @@ class ContextBottomDialog : BaseBottomDialog() {
                     binding.listExplorerContextDeleteText.text =
                         getString(R.string.list_context_delete)
                 }
-                binding.listExplorerContextDownload.isVisible = !state.isOneDrive
+                binding.listExplorerContextDownload.isVisible = !(state.isOneDrive || state.isGoogleDrive)
                 binding.listExplorerContextExternalLink.isVisible = state.isOneDrive || state.isGoogleDrive
                 binding.listExplorerContextCopy.isVisible = !state.isGoogleDrive
             } else {

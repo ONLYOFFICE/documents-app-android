@@ -7,11 +7,10 @@
         android:duration="150"/>
 
     <scale android:fromXScale="95%"
-        android:fromYScale="95%"
+        android:fromYScale="50%"
         android:toXScale="100%"
         android:toYScale="100%"
         android:pivotX="100%"
-        android:pivotY="100%"
         android:duration="200"
-        android:interpolator="@android:anim/overshoot_interpolator"/>
+        android:interpolator="@android:anim/decelerate_interpolator"/>
 </set>

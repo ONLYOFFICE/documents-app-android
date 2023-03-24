@@ -222,10 +222,11 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         string: String?,
         acceptButton: String,
         cancelButton: String?,
-        tag: String
+        tag: String,
+        acceptErrorTint: Boolean = false,
     ) {
         baseActivity.addDialogListener(this)
-        baseActivity.showQuestionDialog(title, tag, acceptButton, cancelButton, string)
+        baseActivity.showQuestionDialog(title, tag, acceptButton, cancelButton, string, acceptErrorTint)
     }
 
     protected fun showEditDialogCreate(

@@ -388,6 +388,13 @@ fun <T : Serializable> Bundle.getSerializableExt(key: String, clazz: Class<T>): 
         this.getSerializable(key) as T
 }
 
+inline fun <reified T : Serializable> Intent.getSerializableExt(key: String): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        getSerializableExtra(key, T::class.java)
+    else
+        getSerializableExtra(key) as? T
+}
+
 fun <T : Parcelable> Intent.getParcelable(key: String, clazz: Class<T>): T {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         this.getParcelableExtra(key, clazz)!!

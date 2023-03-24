@@ -69,7 +69,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         private const val DESKTOP_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36 AscAndroidWebView"
         private const val MOBILE_USER_AGENT =
-            "Mozilla/5.0 (Linux; U; Android 4.4; en-us; Nexus 4 Build/JOP24G) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 AscAndroidWebView"
+            "Mozilla/5.0 (Linux; U; Android 4.4; en-us; Nexus 4 Build/JOP24G) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 Chrome/37.0.2049.0 AscAndroidWebView"
 
         const val INTERFACE = "Android"
         const val KEY_EVENT = "event"
@@ -534,17 +534,13 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     private fun downloadFile(uri: Uri) {
         showWaitingDialog(getString(R.string.download_manager_progress_title))
         downloadUrl?.let {
-            FileUtils.downloadFromUrl(requireContext(), uri, it, object : FileUtils.Finish {
-                override fun onFinish() {
-                    hideDialog()
-                    showSnackBar(R.string.download_manager_complete)
-                }
-            }, object : FileUtils.Error {
-                override fun onError(message: String) {
-                    showSnackBar(R.string.download_manager_error)
-                    Log.d(TAG, "downloadError: $message")
-                }
-            })
+            FileUtils.downloadFromUrl(requireContext(), uri, it, {
+                hideDialog()
+                showSnackBar(R.string.download_manager_complete)
+            }) { error ->
+                showSnackBar(R.string.download_manager_error)
+                Log.d(TAG, "downloadError: ${error.message}")
+            }
         }
     }
 

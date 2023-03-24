@@ -1,20 +1,23 @@
 package app.editors.manager.ui.fragments.storages
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import app.editors.manager.app.App
-import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
+import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
-import app.editors.manager.ui.popup.SelectActionBarPopup
+import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
+import lib.toolkit.base.managers.utils.CameraPicker
+import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.ui.activities.base.BaseActivity
-import lib.toolkit.base.ui.popup.ActionBarPopupItem
 import moxy.presenter.InjectPresenter
 
 class DocsOneDriveFragment : BaseStorageDocsFragment() {
 
     companion object {
-        val TAG = DocsOneDriveFragment::class.java.simpleName
+        val TAG: String = DocsOneDriveFragment::class.java.simpleName
 
         fun newInstance(account: String) = DocsOneDriveFragment().apply {
             arguments = Bundle(1).apply {
@@ -52,27 +55,36 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
                         )
                     }
                 }
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> data?.clipData?.let { clipData ->
-                    presenter.upload(
-                        null,
-                        clipData,
-                        KEY_UPLOAD)
-                }.run {
-                    presenter.upload(data?.data, null, KEY_UPLOAD)
-                }
             }
         }
     }
 
-
-    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(mutableListOf<ActionBarPopupItem>().apply {
-            if (!presenter.isFoldersInSelection()) add(SelectActionBarPopup.Download)
-        })
+    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
+        if (!presenter.isFoldersInSelection()) {
+            super.showSelectActionPopup(SelectPopupItem.Download)
+        } else {
+            super.showSelectActionPopup(*excluded)
+        }
     }
 
     override fun onRefreshToken() {
         //stub
+    }
+
+    override fun onShowCamera(photoUri: Uri) {
+        RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
+            if (permissions[Manifest.permission.CAMERA] == true) {
+                CameraPicker(requireActivity().activityResultRegistry, { isCreate ->
+                    if (isCreate) {
+                        presenter.upload(photoUri, null, KEY_UPLOAD)
+                    } else {
+                        presenter.deletePhoto()
+                    }
+                }, photoUri).show()
+            } else {
+                presenter.deletePhoto()
+            }
+        }, arrayOf(Manifest.permission.CAMERA)).request()
     }
 
 }

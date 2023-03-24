@@ -8,6 +8,7 @@ import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.GoogleDriveFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.storages.googledrive.models.GoogleDriveCloudFile
 import app.documents.core.network.storages.googledrive.models.request.ShareRequest
 import app.documents.core.providers.GoogleDriveFileProvider
 import app.editors.manager.R
@@ -16,7 +17,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.app.googleDriveLoginProvider
 import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.receivers.GoogleDriveUploadReceiver
-import app.editors.manager.managers.works.BaseStorageDownloadWork
+import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.googledrive.DownloadWork
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.base.DocsGoogleDriveView
@@ -24,10 +25,7 @@ import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.*
 
 class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>(), GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
 
@@ -43,6 +41,8 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     init {
         App.getApp().appComponent.inject(this)
     }
+
+    val isFolderSelected get() = modelExplorerStack.selectedFolders.isNotEmpty()
 
     override val externalLink: Unit
         get() {
@@ -148,14 +148,16 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     }
 
     override fun startDownload(downloadTo: Uri, item: Item?) {
-        val data = Data.Builder()
-            .putString(BaseStorageDownloadWork.FILE_ID_KEY, item?.id)
-            .putString(BaseStorageDownloadWork.FILE_URI_KEY, downloadTo.toString())
-            .putString(
-                DownloadWork.DOWNLOADABLE_ITEM_KEY,
-                if (item is CloudFile) DownloadWork.DOWNLOADABLE_ITEM_FILE else DownloadWork.DOWNLOADABLE_ITEM_FOLDER
-            )
-            .build()
+        val data = Data.Builder().apply {
+            putString(BaseDownloadWork.FILE_ID_KEY, item?.id)
+            putString(BaseDownloadWork.FILE_URI_KEY, downloadTo.toString())
+            when (item) {
+                is GoogleDriveCloudFile -> {
+                    val isGoogleMimeType = GoogleDriveFileProvider.GoogleMimeType.isGoogleMimeType(item.mimeType)
+                    putString(DownloadWork.GOOGLE_MIME_TYPE, item.mimeType.takeIf { isGoogleMimeType })
+                }
+            }
+        }.build()
 
         val request = OneTimeWorkRequest.Builder(DownloadWork::class.java)
             .setInputData(data)
@@ -177,7 +179,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
             else -> itemClicked?.let { itemList.add(it) }
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
-        disposable.add(googleDriveFileProvider.copy(itemList, modelExplorerStack.currentId!!)
+        disposable.add(googleDriveFileProvider.copy(itemList)
             .subscribe({}, {
                 fetchError(it)
                 if (isSelectionMode) {
@@ -201,26 +203,14 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
         }
     }
 
-    fun upload(uri: Uri?, uris: List<Uri>?, tag: String) {
-        val uploadUris = mutableListOf<Uri>()
-        var index = 0
-
-        uri?.let {
-            uploadUris.add(uri)
-        } ?: run {
-            uris?.let {
-                while (index != uris.count()) {
-                    uploadUris.add(uris[index])
-                    index++
-                }
-            }
-        }
-
+    override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         viewState.onUpload(
-            uploadUris = uploadUris,
             folderId = modelExplorerStack.currentId.orEmpty(),
             fileId = itemClicked?.id.orEmpty(),
-            tag = tag
+            uploadUris = uri?.let(::listOf) ?: uris ?: listOf(),
+            tag = if (itemClicked?.title == ContentResolverUtils.getName(context, uri ?: Uri.EMPTY))
+                "KEY_UPDATE"
+            else "KEY_UPLOAD"
         )
     }
 

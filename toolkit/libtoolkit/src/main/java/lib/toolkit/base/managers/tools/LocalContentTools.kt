@@ -84,10 +84,17 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         fun toOOXML(ext: String): String {
             return when (ext) {
-                ODT_EXTENSION -> DOCX_EXTENSION
-                ODS_EXTENSION -> XLSX_EXTENSION
-                ODP_EXTENSION -> PPTX_EXTENSION
+                ODT_EXTENSION, OTT_EXTENSION -> DOCX_EXTENSION
+                ODS_EXTENSION, OTS_EXTENSION -> XLSX_EXTENSION
+                ODP_EXTENSION, OTP_EXTENSION -> PPTX_EXTENSION
                 else -> throw IllegalArgumentException(".$ext can not be converted to OOXML extension")
+            }
+        }
+
+        fun isOpenFormat(ext: String): Boolean {
+            return when (ext) {
+                ODT_EXTENSION, OTT_EXTENSION, ODS_EXTENSION, OTS_EXTENSION, ODP_EXTENSION, OTP_EXTENSION -> true
+                else -> false
             }
         }
 
@@ -238,7 +245,8 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     private fun getAllFiles(): List<File> {
         val files = ArrayList<File>()
-        contentResolver.query(uri,
+        contentResolver.query(
+            uri,
             arrayOf(MediaStore.Files.FileColumns.DATA),
             MediaStore.Files.FileColumns.MIME_TYPE + " =? OR " + MediaStore.Files.FileColumns.MIME_TYPE + " =? OR " + MediaStore.Files.FileColumns.MIME_TYPE + " =?",
             arrayOf(
@@ -246,7 +254,8 @@ class LocalContentTools @Inject constructor(val context: Context) {
                 MIME_TYPE_PPTX,
                 MIME_TYPE_XLSX
             ),
-            MediaStore.Files.FileColumns.MIME_TYPE)?.use {
+            MediaStore.Files.FileColumns.MIME_TYPE
+        )?.use {
             val dataIndex = it.getColumnIndex(MediaStore.Files.FileColumns.DATA)
             while (it.moveToNext()) {
                 files.add(File(it.getString(dataIndex)))
@@ -263,9 +272,11 @@ class LocalContentTools @Inject constructor(val context: Context) {
     @SuppressLint("Range")
     fun getIdByPath(path: String): Int {
         var id = 0
-        contentResolver.query(uri, arrayOf(MediaStore.Files.FileColumns._ID),
+        contentResolver.query(
+            uri, arrayOf(MediaStore.Files.FileColumns._ID),
             MediaStore.Files.FileColumns.DATA + " =? ",
-            arrayOf(path), null)?.use {
+            arrayOf(path), null
+        )?.use {
             while (it.moveToNext()) {
                 id = it.getInt(it.getColumnIndex(MediaStore.Files.FileColumns._ID))
                 return@use
@@ -278,8 +289,10 @@ class LocalContentTools @Inject constructor(val context: Context) {
     private fun getSdCard(): String {
         val fileList = File("/storage/").listFiles()
         for (file in fileList) {
-            if (!file.absolutePath.equals(Environment.getExternalStorageDirectory().absolutePath,
-                    ignoreCase = true) && file.isDirectory && file.canRead()
+            if (!file.absolutePath.equals(
+                    Environment.getExternalStorageDirectory().absolutePath,
+                    ignoreCase = true
+                ) && file.isDirectory && file.canRead()
             )
                 if (getExternalStorage(context).size >= 2) {
                     return file.absolutePath

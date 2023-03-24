@@ -3,13 +3,11 @@ package app.editors.manager.managers.receivers
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import app.editors.manager.managers.receivers.UploadReceiver
 
 class GoogleDriveUploadReceiver : UploadReceiver() {
 
     companion object {
         const val UPLOAD_ITEM_ID = "UPLOAD_ITEM_ID"
-
         const val KEY_ITEM_ID = "KEY_ITEM_ID"
     }
 
@@ -19,10 +17,10 @@ class GoogleDriveUploadReceiver : UploadReceiver() {
 
     private var onUploadListener: OnGoogleDriveUploadListener? = null
 
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
 
-        if (intent?.action == UPLOAD_ITEM_ID) {
+        if (intent.action == UPLOAD_ITEM_ID) {
             intent.getStringExtra(KEY_ITEM_ID)?.let { onUploadListener?.onItemId(it) }
         }
 
@@ -33,8 +31,8 @@ class GoogleDriveUploadReceiver : UploadReceiver() {
     }
 
     override fun getFilter(): IntentFilter {
-        val intentFilter = super.getFilter()
-        intentFilter.addAction(UPLOAD_ITEM_ID)
-        return intentFilter
+        return super.getFilter().apply {
+            addAction(UPLOAD_ITEM_ID)
+        }
     }
 }

@@ -6,14 +6,14 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.WorkerParameters
-import app.editors.manager.app.App
-import app.documents.core.network.storages.googledrive.models.request.CreateItemRequest
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
-import app.editors.manager.managers.works.BaseStorageUploadWork
-import app.editors.manager.managers.receivers.GoogleDriveUploadReceiver
 import app.documents.core.network.storages.googledrive.models.GoogleDriveFile
+import app.documents.core.network.storages.googledrive.models.request.CreateItemRequest
 import app.editors.manager.app.googleDriveProvider
+import app.editors.manager.managers.receivers.GoogleDriveUploadReceiver
+import app.editors.manager.managers.works.BaseStorageUploadWork
+import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
+import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import java.io.DataOutputStream
 import java.io.OutputStream
@@ -21,7 +21,10 @@ import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.math.min
 
-class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStorageUploadWork(context, workerParameters) {
+class UploadWork(
+    context: Context,
+    workerParameters: WorkerParameters
+) : BaseStorageUploadWork(context, workerParameters) {
 
 
     companion object {
@@ -39,63 +42,60 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
     override fun doWork(): Result {
         getArgs()
 
-        when(tag) {
+        when (tag) {
             BaseStorageDocsFragment.KEY_UPLOAD -> {
-                title = file?.name.toString()
+                title = ContentResolverUtils.getName(applicationContext, file?.uri ?: Uri.EMPTY)
             }
             BaseStorageDocsFragment.KEY_UPDATE, BaseStorageDocsFragment.KEY_CREATE -> {
                 title = path?.let { FileUtils.getFileName(it, true) }.toString()
             }
         }
 
-        val request = title?.let { title ->
-            @Suppress("UNCHECKED_CAST")
-            (CreateItemRequest(
-        name = title,
-        parents = listOf(folderId) as List<String>
-    ))
-        }
+        title?.let { title ->
+            val request = CreateItemRequest(
+                name = title,
+                parents = listOf(folderId.orEmpty())
+            )
 
-        val response = when(tag) {
-            BaseStorageDocsFragment.KEY_UPLOAD -> request?.let { request ->
-                applicationContext.googleDriveProvider.upload(
-                    request
-                ).blockingGet()
-            }
-            BaseStorageDocsFragment.KEY_CREATE -> request?.let { request ->
-                applicationContext.googleDriveProvider.createFile(
-                    request
-                ).blockingGet()
-            }
-            BaseStorageDocsFragment.KEY_UPDATE -> fileId?.let { applicationContext.googleDriveProvider.update(it).blockingGet() }
-            else -> request?.let { applicationContext.googleDriveProvider.upload(it).blockingGet() }
-        }
-
-        if(response?.isSuccessful == true) {
-            when(tag) {
-                BaseStorageDocsFragment.KEY_UPLOAD, BaseStorageDocsFragment.KEY_UPDATE -> {
-                    from?.let { from -> response.headers().get(HEADER_LOCATION)?.let { url -> uploadSession(url, from) } }
+            val response = with(applicationContext.googleDriveProvider) {
+                when (tag) {
+                    BaseStorageDocsFragment.KEY_CREATE -> createFile(request)
+                    BaseStorageDocsFragment.KEY_UPDATE -> update(fileId.orEmpty())
+                    else -> upload(request)
                 }
-                BaseStorageDocsFragment.KEY_CREATE -> {
-                    sendUploadItemId((response.body() as GoogleDriveFile).id)
+            }.blockingGet()
+
+            if (response.isSuccessful) {
+                when (tag) {
+                    BaseStorageDocsFragment.KEY_UPLOAD,
+                    BaseStorageDocsFragment.KEY_UPDATE -> {
+                        from?.let { from ->
+                            response.headers().get(HEADER_LOCATION)?.let { url ->
+                                uploadSession(url, from)
+                            }
+                        }
+                    }
+                    BaseStorageDocsFragment.KEY_CREATE -> {
+                        sendUploadItemId((response.body() as GoogleDriveFile).id)
+                        file?.delete()
+                    }
+                    else -> {}
+                }
+            } else {
+                if (tag == BaseStorageDocsFragment.KEY_UPDATE || tag == BaseStorageDocsFragment.KEY_CREATE) {
                     file?.delete()
                 }
-            }
-        } else {
-            notificationUtils.showUploadErrorNotification(id.hashCode(), title)
-            title?.let { sendBroadcastUnknownError(it, path) }
-            if(tag == BaseStorageDocsFragment.KEY_UPDATE || tag == BaseStorageDocsFragment.KEY_CREATE) {
-                file?.delete()
+                notificationUtils.showUploadErrorNotification(id.hashCode(), title)
+                sendBroadcastUnknownError(title, path)
             }
         }
 
         return Result.success()
     }
 
-
-    private fun uploadSession(url: String, uri: Uri) {
+    private fun uploadSession(url: String, from: Uri) {
         val connection = URL(url).openConnection() as HttpURLConnection
-        val fileInputStream = App.getApp().contentResolver.openInputStream(uri)
+        val fileInputStream = applicationContext.contentResolver.openInputStream(from)
         val maxBufferSize = 2 * 1024 * 1024
         var outputStream: OutputStream? = null
         val bytesAvailable = fileInputStream?.available()
@@ -125,14 +125,14 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
                 if (tag == BaseStorageDocsFragment.KEY_UPLOAD) {
                     notificationUtils.showUploadCompleteNotification(id.hashCode(), title)
                     title?.let { sendBroadcastUploadComplete(path, it, CloudFile(), path) }
-                } else if( tag == BaseStorageDocsFragment.KEY_UPDATE) {
+                } else if (tag == BaseStorageDocsFragment.KEY_UPDATE) {
                     file?.delete()
                 }
             } else {
                 notificationUtils.removeNotification(id.hashCode())
                 notificationUtils.showUploadErrorNotification(id.hashCode(), title)
                 title?.let { sendBroadcastUnknownError(it, path) }
-                if(tag == BaseStorageDocsFragment.KEY_UPDATE) {
+                if (tag == BaseStorageDocsFragment.KEY_UPDATE) {
                     file?.delete()
                 }
             }
@@ -140,13 +140,17 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
             notificationUtils.showUploadErrorNotification(id.hashCode(), title)
             title?.let { sendBroadcastUnknownError(it, path) }
             throw e
+        } finally {
+            connection.disconnect()
+            fileInputStream?.close()
+            outputStream?.close()
         }
     }
 
     private fun sendUploadItemId(itemId: String) {
         val intent = Intent(GoogleDriveUploadReceiver.UPLOAD_ITEM_ID)
         intent.putExtra(GoogleDriveUploadReceiver.KEY_ITEM_ID, itemId)
-        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
+        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
     }
 
     override fun getArgs() {

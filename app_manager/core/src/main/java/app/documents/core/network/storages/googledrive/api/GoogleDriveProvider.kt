@@ -42,7 +42,7 @@ class GoogleDriveProvider(
 
     fun download(
         fileId: String,
-        map: Map<String, String> = mapOf()
+        map: Map<String, String> = mapOf("alt" to "media")
     ): Single<Response<ResponseBody>> {
         return googleDriveService.download(fileId, map)
             .subscribeOn(Schedulers.io())

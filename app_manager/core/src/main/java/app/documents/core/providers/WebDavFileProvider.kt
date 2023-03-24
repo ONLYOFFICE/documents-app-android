@@ -184,7 +184,7 @@ class WebDavFileProvider @Inject constructor(
 
     override fun transfer(
         items: List<Item>,
-        to: CloudFolder?,
+        to: CloudFolder,
         conflict: Int,
         isMove: Boolean,
         isOverwrite: Boolean
@@ -196,13 +196,13 @@ class WebDavFileProvider @Inject constructor(
         }
     }
 
-    private fun copyItems(items: List<Item>, to: CloudFolder?, overwrite: Boolean): Observable<List<Operation>> {
+    private fun copyItems(items: List<Item>, to: CloudFolder, overwrite: Boolean): Observable<List<Operation>> {
         val headerOverwrite = if (overwrite) "T" else "F"
         return Observable.fromIterable(items)
             .flatMap { item: Item ->
                 Observable.fromCallable {
                     webDavService.copy(
-                        getEncodedString(to!!.id) +
+                        getEncodedString(to.id) +
                                 getEncodedString(item.title), item.id, headerOverwrite
                     )
                         .execute()
@@ -223,14 +223,14 @@ class WebDavFileProvider @Inject constructor(
             }
     }
 
-    private fun moveItems(items: List<Item>, to: CloudFolder?, overwrite: Boolean): Observable<List<Operation>> {
+    private fun moveItems(items: List<Item>, to: CloudFolder, overwrite: Boolean): Observable<List<Operation>> {
         val headerOverwrite = if (overwrite) "T" else "F"
         return Observable.fromIterable(items)
             .flatMap { item: Item ->
                 Observable.fromCallable {
                     webDavService
                         .move(
-                            getEncodedString(to!!.id) +
+                            getEncodedString(to.id) +
                                     getEncodedString(item.title), item.id, headerOverwrite
                         )
                         .execute()

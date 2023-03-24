@@ -33,7 +33,6 @@ import lib.toolkit.base.managers.utils.FileUtils.createFile
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
-import okhttp3.ResponseBody
 import retrofit2.HttpException
 import java.io.*
 import java.util.*
@@ -42,7 +41,6 @@ class OneDriveFileProvider(
     private val context: Context,
     private val helper: IStorageHelper<OneDriveProvider>
 ) : BaseFileProvider {
-
     companion object {
         private const val PATH_TEMPLATES = "templates/"
     }
@@ -246,19 +244,15 @@ class OneDriveFileProvider(
 
     override fun transfer(
         items: List<Item>,
-        to: CloudFolder?,
+        to: CloudFolder,
         conflict: Int,
         isMove: Boolean,
         isOverwrite: Boolean
-    ): Observable<List<Operation>>? {
-        return if (isMove) {
-            to?.id?.let { moveItem(items, it, isOverwrite) }
-        } else {
-            to?.id?.let { copyItem(items, it, isOverwrite) }
-        }
+    ): Observable<List<Operation>> {
+        return if (isMove) moveItem(items, to.id) else copyItem(items, to.id)
     }
 
-    private fun copyItem(items: List<Item>?, to: String, isOverwrite: Boolean): Observable<List<Operation>> {
+    private fun copyItem(items: List<Item>?, to: String): Observable<List<Operation>> {
         return Observable.fromIterable(items)
             .flatMap { item ->
                 val request = CopyItemRequest(
@@ -285,7 +279,7 @@ class OneDriveFileProvider(
             }
     }
 
-    private fun moveItem(items: List<Item>?, to: String, isOverwrite: Boolean): Observable<List<Operation>> {
+    private fun moveItem(items: List<Item>?, to: String): Observable<List<Operation>> {
         return Observable.fromIterable(items)
             .flatMap { item ->
                 val request = CopyItemRequest(
@@ -316,8 +310,8 @@ class OneDriveFileProvider(
         return Observable.create { emitter: ObservableEmitter<CloudFile> ->
             val outputFile = checkDirectory(item)
 
-            outputFile?.let {
-                if (it.exists()) {
+            outputFile?.let { file ->
+                if (file.exists()) {
                     if (item is CloudFile) {
                         if (item.pureContentLength != outputFile.length()) {
                             download(emitter, item, outputFile)
@@ -360,10 +354,11 @@ class OneDriveFileProvider(
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
-        val result = api.download((item as CloudFile).id).blockingGet()
-        if (result is OneDriveResponse.Success) {
+        val response = api.download((item as CloudFile).id).blockingGet()
+        val responseBody = response.body()
+        if (response.isSuccessful && responseBody != null) {
             try {
-                (result.response as ResponseBody).byteStream().use { inputStream ->
+                responseBody.byteStream().use { inputStream ->
                     FileOutputStream(outputFile).use { outputStream ->
                         val buffer = ByteArray(4096)
                         var count: Int
@@ -378,8 +373,6 @@ class OneDriveFileProvider(
             } catch (error: IOException) {
                 emitter.onError(error)
             }
-        } else if (result is OneDriveResponse.Error) {
-            throw result.error
         }
     }
 

@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Environment
+import android.os.StatFs
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
 import okhttp3.ResponseBody
@@ -574,19 +575,16 @@ object FileUtils {
         }
     }
 
-    @FunctionalInterface
-    interface Finish {
+    fun interface Finish {
         fun onFinish()
     }
 
-    @FunctionalInterface
-    interface Error {
-        fun onError(message: String)
+    fun interface Error {
+        fun onError(error: Throwable)
     }
 
-    @FunctionalInterface
-    interface Progress {
-        fun onProgress(total: Long, progress: Long): Boolean
+    fun interface Progress {
+        fun onProgress(total: Long, progress: Long, isArchiving: Boolean): Boolean
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
@@ -608,7 +606,7 @@ object FileUtils {
         }, {
             finish?.onFinish()
         }, {
-            error?.onError(it.message.toString())
+            error?.onError(it)
         })
 
     }
@@ -642,9 +640,28 @@ object FileUtils {
 
     }
 
-    @JvmStatic
     fun writeFromResponseBody(
-        response: ResponseBody?,
+        response: ResponseBody,
+        to: Uri,
+        context: Context,
+        progress: Progress,
+        finish: Finish,
+        error: Error
+    ) {
+        writeFromResponseBody(
+            stream = response.byteStream(),
+            length = response.contentLength(),
+            to = to,
+            context = context,
+            progress = progress,
+            finish = finish,
+            error = error
+        )
+    }
+
+    fun writeFromResponseBody(
+        stream: InputStream,
+        length: Long,
         to: Uri,
         context: Context,
         progress: Progress?,
@@ -654,7 +671,7 @@ object FileUtils {
         var inputStream: InputStream? = null
         var outputStream: OutputStream? = null
         try {
-            inputStream = BufferedInputStream(response?.byteStream(), 1024 * 8)
+            inputStream = BufferedInputStream(stream, 1024 * 8)
             outputStream = BufferedOutputStream(context.contentResolver.openOutputStream(to))
             val buffer = ByteArray(1024 * 4)
             // Downloading with progress
@@ -664,14 +681,14 @@ object FileUtils {
                 totalBytes += countBytes.toLong()
                 outputStream.write(buffer, 0, countBytes)
 
-                if (progress?.onProgress(response?.contentLength() ?: 0, totalBytes) == true) {
+                if (progress?.onProgress(length, totalBytes, false) == true) {
                     throw Exception()
                 }
             }
             finish?.onFinish()
             outputStream.flush()
         } catch (e: Exception) {
-            error?.onError(e.message ?: "")
+            error?.onError(e)
         } finally {
             inputStream?.close()
             outputStream?.close()
@@ -686,6 +703,11 @@ object FileUtils {
     @JvmStatic
     fun getMbFromBytes(bytes: Long): Float {
         return (bytes.toDouble() / MEGA_BYTES).toFloat()
+    }
+
+    fun isEnoughFreeSpace(itemSize: Long): Boolean {
+        val availableBytes = StatFs(Environment.getExternalStorageDirectory().path).availableBytes
+        return itemSize < availableBytes
     }
 
 }

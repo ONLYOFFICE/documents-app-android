@@ -320,7 +320,8 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         acceptTitle: String? = null,
         cancelTitle: String? = null,
         question: String? = null,
-        tag: String? = null
+        tag: String? = null,
+        acceptErrorTint: Boolean = false
     ): QuestionHolder.Builder? {
         return commonDialog?.question()?.apply {
             setTopTitle(title)
@@ -328,6 +329,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
             setAcceptTitle(acceptTitle)
             setCancelTitle(cancelTitle)
             setTag(tag)
+            setAcceptErrorTint(acceptErrorTint)
         }
     }
 
@@ -430,13 +432,11 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         isPassword: Boolean = false,
         error: String?,
         tag: String?,
-        tintColor: Int? = null,
         suffix: String? = null
     ) {
         getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)?.run {
             setIsPassword(isPassword)
             setError(error)
-            setColorTint(tintColor)
             setSuffix(suffix)
             show()
         }
@@ -445,10 +445,15 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     /*
     * Question
     * */
-    fun showQuestionDialog(title: String, tag: String?, acceptTitle: String?, cancelTitle: String?, question: String?) {
-        getQuestionDialog(title, acceptTitle, cancelTitle, question, tag)?.run {
-            show()
-        }
+    fun showQuestionDialog(
+        title: String,
+        tag: String?,
+        acceptTitle: String?,
+        cancelTitle: String?,
+        question: String?,
+        acceptErrorTint: Boolean = false
+    ) {
+        getQuestionDialog(title, acceptTitle, cancelTitle, question, tag, acceptErrorTint)?.show()
     }
 
     fun showEditMultilineDialog(title: String, hint: String, acceptTitle: String?, cancelTitle: String?, tag: String?) {
