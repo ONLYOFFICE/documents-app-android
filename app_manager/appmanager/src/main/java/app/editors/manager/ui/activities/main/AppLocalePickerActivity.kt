@@ -1,11 +1,9 @@
 package app.editors.manager.ui.activities.main
 
-import android.app.LocaleManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.LocaleList
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -18,12 +16,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import app.editors.manager.R
+import app.editors.manager.app.appComponent
 import app.editors.manager.compose.ui.theme.AppManagerTheme
 import app.editors.manager.ui.compose.base.CustomAppBar
 import lib.toolkit.base.managers.utils.capitalize
@@ -43,34 +40,17 @@ class AppLocalePickerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             setContent {
-                AppLocalePickerScreen(onBackListener = onBackPressedDispatcher::onBackPressed, onPick = ::finish)
+                AppLocalePickerScreen(
+                    localeHelper = appComponent.appLocaleHelper,
+                    onBackListener = onBackPressedDispatcher::onBackPressed
+                )
             }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
-    private fun AppLocalePickerScreen(onBackListener: () -> Unit, onPick: () -> Unit) {
-        val context = LocalContext.current
-        val localeManager = remember { context.getSystemService(LocaleManager::class.java) }
-        val locales = remember {
-            context.resources.getStringArray(R.array.app_locales).map { stringLocale ->
-                with(stringLocale.split("_")) {
-                    if (size > 1) {
-                        Locale(this[0], this[1])
-                    } else {
-                        Locale(this[0])
-                    }
-                }
-            }
-        }
-
-        val currentLocale = remember {
-            with(localeManager) {
-                applicationLocales.get(0) ?: systemLocales.get(0)
-            }
-        }
-
+    private fun AppLocalePickerScreen(localeHelper: AppLocaleHelper, onBackListener: () -> Unit) {
         AppManagerTheme {
             Scaffold(topBar = {
                 CustomAppBar(
@@ -81,14 +61,14 @@ class AppLocalePickerActivity : AppCompatActivity() {
             }) { padding ->
                 Surface(color = MaterialTheme.colors.background, modifier = Modifier.padding(padding)) {
                     LazyColumn {
-                        items(locales) { locale ->
+                        items(localeHelper.locales) { locale ->
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        localeManager.applicationLocales = LocaleList(locale)
-                                        onPick()
+                                        localeHelper.changeLocale(locale, false)
+                                        onBackListener()
                                     }
                                     .padding(16.dp)
                             ) {
@@ -98,7 +78,7 @@ class AppLocalePickerActivity : AppCompatActivity() {
                                         .fillMaxWidth()
                                         .weight(1f)
                                 )
-                                if (currentLocale.language == locale.language) {
+                                if (localeHelper.currentLocale.language == locale.language) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.drawable_ic_done),
                                         contentDescription = null,
@@ -112,5 +92,4 @@ class AppLocalePickerActivity : AppCompatActivity() {
             }
         }
     }
-
 }
