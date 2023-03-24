@@ -18,8 +18,6 @@ import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.MainActionBarPopup
-import app.editors.manager.ui.popup.SelectActionBarPopup
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
@@ -131,10 +129,4 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
         super.showMainActionPopup(MainPopupItem.SortBy.Size)
     }
 
-    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        super.showSelectedActionBarMenu(
-            listOf<ActionBarPopupItem>(SelectActionBarPopup.Download)
-                .takeIf { presenter.isFolderSelected } ?: excluded
-        )
-    }
 }
