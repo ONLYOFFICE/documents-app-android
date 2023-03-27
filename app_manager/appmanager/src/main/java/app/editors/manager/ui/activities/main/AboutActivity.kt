@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -26,9 +25,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
-import app.editors.manager.compose.ui.theme.AppManagerTheme
-import app.editors.manager.compose.ui.theme.colorAppBar
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.UiUtils
 
@@ -85,24 +83,6 @@ class AboutActivity : BaseAppActivity() {
 }
 
 @Composable
-private fun AppBar(@StringRes title: Int, @DrawableRes icon: Int, click: () -> Unit) {
-    TopAppBar(
-        title = { Text(text = stringResource(id = title)) },
-        navigationIcon = {
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-                Icon(
-                    painter = painterResource(id = icon),
-                    contentDescription = "Close",
-                    tint = MaterialTheme.colors.primary,
-                    modifier = Modifier.clickable { click() }
-                )
-            }
-        },
-        backgroundColor = MaterialTheme.colors.colorAppBar
-    )
-}
-
-@Composable
 private fun AboutScreen(
     sdkVersion: String,
     isTablet: Boolean?,
@@ -111,13 +91,13 @@ private fun AboutScreen(
 ) {
     val scrollState = rememberScrollState()
 
-    AppManagerTheme {
+    ManagerTheme {
         Scaffold(topBar = {
             AppBar(title = R.string.about_title, icon = R.drawable.ic_toolbar_close) {
                 backPressed()
             }
-        }) {
-            Surface(color = MaterialTheme.colors.background) {
+        }) { padding ->
+            Surface(color = MaterialTheme.colors.background, modifier = Modifier.padding(padding)) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
@@ -126,7 +106,10 @@ private fun AboutScreen(
                         .padding(top = 48.dp)
                         .verticalScroll(state = scrollState, enabled = true)
                 ) {
-                    Image(painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text), contentDescription = null)
+                    Image(
+                        painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text),
+                        contentDescription = null
+                    )
                     Text(
                         text = stringResource(
                             id = R.string.about_app_version,
@@ -219,7 +202,7 @@ private fun AboutItem(title: String, @DrawableRes icon: Int, isTablet: Boolean? 
 
 @Composable
 private fun LicenseScreen(backListener: () -> Unit) {
-    AppManagerTheme {
+    ManagerTheme {
         Scaffold(topBar = {
             AppBar(title = R.string.about_license, icon = R.drawable.ic_toolbar_back) {
                 backListener()

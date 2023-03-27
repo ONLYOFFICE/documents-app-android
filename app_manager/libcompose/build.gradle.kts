@@ -43,6 +43,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":libtoolkit"))
+
     implementation(Compose.ui)
     implementation(Compose.material)
     implementation(Compose.preview)
