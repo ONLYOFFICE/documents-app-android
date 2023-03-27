@@ -488,9 +488,12 @@ object StringUtils {
     }
 }
 
-fun String.capitalize(locale: Locale? = null): String {
-    return replaceFirstChar { char ->
-        if (char.isLowerCase())
-            locale?.let { char.titlecase(it) } ?: char.titlecase() else char.toString()
+fun String.capitalize(locale: Locale): String {
+    return lowercase().replaceFirstChar { char ->
+        if (char.isLowerCase()) char.titlecase(locale) else char.toString()
     }
+}
+
+fun String.capitalize(): String {
+    return lowercase().replaceFirstChar(Char::titlecase)
 }

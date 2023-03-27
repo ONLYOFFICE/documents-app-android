@@ -13,6 +13,7 @@ import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.google.android.material.button.MaterialButton
 import lib.toolkit.base.R
+import lib.toolkit.base.managers.utils.capitalize
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 
@@ -98,14 +99,14 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
             acceptView.visibility = View.GONE
         } else {
             acceptView.visibility = View.VISIBLE
-            acceptView.text = acceptTitle
+            acceptView.text = acceptTitle?.capitalize()
         }
 
         if (cancelTitle.isNullOrBlank()) {
             cancelView.visibility = View.GONE
         } else {
             cancelView.visibility = View.VISIBLE
-            cancelView.text = cancelTitle
+            cancelView.text = cancelTitle?.capitalize()
         }
 
         dialog.view?.let { TransitionManager.beginDelayedTransition(it as ViewGroup, Fade()) }

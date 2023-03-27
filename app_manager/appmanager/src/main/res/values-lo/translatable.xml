@@ -181,7 +181,6 @@
     <string name="dialogs_question_accept_not_really">ບໍ່ແມ່ນບໍ</string>
     <string name="dialogs_question_accept_sure">ຕົກລົງ, ໝັ້ນໃຈ</string>
     <string name="dialogs_question_accept_no_thanks">ບໍ່, ຂອບໃຈ</string>
-    <string name="dialogs_question_delete">ລຶບລາຍການທີ່ເລືອກ?</string>
     <string name="dialogs_question_share_remove">ເອົາລາຍການທີ່ເລືອກອອກຈາກລາຍຊື່ບໍ?</string>
     <string name="dialogs_question_http_title">ແຈ້ງເຕືອນກ່ຽວກັບຄວາມປອດໄພ</string>
     <string name="dialogs_question_http_question">ການເຊື່ອມຕໍ່ HTTPS ບໍ່ສາມາດໃຊ້ໄດ້, ແຕ່ການເຊື່ອມຕໍ່ HTTP ສາມາດໃຊ້ໄດ້. ດຳເນີນການຕໍ່ບໍ?</string>
@@ -196,8 +195,6 @@
     <string name="dialogs_question_personal_confirm_accept">ສືບຕໍ່</string>
     <string name="dialogs_question_rate_first_info">ທ່ານມັກໃຊ້ເອກະສານ ONLYOFFICE ບໍ?</string>
     <string name="dialogs_question_rate_second_info">ທ່ານຕ້ອງການໃຫ້ຄະແນນແອັບໃນ Google Playບໍ?</string>
-    <string name="dialog_question_delete_file">ແຟ້ມຂໍ້ມູນຈະຖືກລຶບອອກຢ່າງບໍ່ໜ້າເຊື່ອ. .</string>
-    <string name="dialog_question_delete_folder"> ໂຟນເດີຈະຖືກລຶບອອກຢ່າງບໍ່ໜ້າເຊື່ອ.</string>
 
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">ປ່ຽນຊື່</string>
@@ -419,7 +416,7 @@
 
     <!-- ======================================================================================= -->
     <!-- Trash -->
-    <string name="trash_dialog_empty_title">ລ້າງຖັງຂີ້ເຫຍື້ອບໍ?</string>
+    <string name="trash_dialog_empty_title">ລ້າງຖັງຂີ້ເຫຍື້ອບໍ</string>
     <string name="trash_popup_delete">ລືບອອກເລີຍ</string>
 
     <!-- ======================================================================================= -->

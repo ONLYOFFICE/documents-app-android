@@ -130,7 +130,7 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
 
     override fun transfer(
         items: List<Item>,
-        to: CloudFolder?,
+        to: CloudFolder,
         conflict: Int,
         isMove: Boolean,
         isOverwrite: Boolean

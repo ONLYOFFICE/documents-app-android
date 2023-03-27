@@ -43,7 +43,14 @@ class GoogleDriveFileProvider(
     enum class GoogleMimeType(val value: String) {
         Docs("application/vnd.google-apps.document"),
         Cells("application/vnd.google-apps.spreadsheet"),
-        Slides("application/vnd.google-apps.presentation")
+        Slides("application/vnd.google-apps.presentation");
+
+        companion object {
+            fun isGoogleMimeType(mimeType: String): Boolean {
+                return values().map { it.value }
+                    .contains(mimeType)
+            }
+        }
     }
 
     companion object {
@@ -66,7 +73,7 @@ class GoogleDriveFileProvider(
             } else return name
         }
 
-        private fun getCommonMimeType(googleMimeType: String): String {
+        fun getCommonMimeType(googleMimeType: String): String {
             return when (googleMimeType) {
                 GoogleMimeType.Docs.value -> LocalContentTools.MIME_TYPE_DOCX
                 GoogleMimeType.Cells.value -> LocalContentTools.MIME_TYPE_XLSX
@@ -273,41 +280,43 @@ class GoogleDriveFileProvider(
 
     override fun transfer(
         items: List<Item>,
-        to: CloudFolder?,
+        to: CloudFolder,
         conflict: Int,
         isMove: Boolean,
         isOverwrite: Boolean
     ): Observable<List<Operation>>? {
-        return items.size.let {
-            Observable.fromIterable(items)
-                .flatMap { item ->
-                    val map = mapOf(
-                        GoogleDriveUtils.MOVE_ADD_PARENTS to to?.id,
-                        GoogleDriveUtils.MOVE_REMOVE_PARENTS to if (item is CloudFile) item.folderId else (item as CloudFolder).parentId
-                    )
-                    Observable.fromCallable { api.move(item.id, map).blockingGet() }
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { response ->
-                    when (response) {
-                        is GoogleDriveResponse.Success -> {
-                            return@map response.response
-                        }
-                        is GoogleDriveResponse.Error -> {
-                            throw response.error
-                        }
+        return Observable.fromIterable(items)
+            .flatMap { item ->
+                val map = mapOf(
+                    GoogleDriveUtils.MOVE_ADD_PARENTS to to.id,
+                    GoogleDriveUtils.MOVE_REMOVE_PARENTS to when (item) {
+                        is CloudFile -> item.folderId
+                        is CloudFolder -> item.parentId
+                        else -> null
                     }
-                }.buffer(it)
-                .map {
-                    val operation = Operation()
-                    operation.progress = 100
-                    return@map mutableListOf(operation)
+                )
+                Observable.fromCallable { api.move(item.id, map).blockingGet() }
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { response ->
+                when (response) {
+                    is GoogleDriveResponse.Success -> {
+                        return@map response.response
+                    }
+                    is GoogleDriveResponse.Error -> {
+                        throw response.error
+                    }
                 }
-        }
+            }.buffer(items.size)
+            .map {
+                val operation = Operation()
+                operation.progress = 100
+                return@map mutableListOf(operation)
+            }
     }
 
-    fun copy(items: List<Item>, dest: String): Observable<Boolean> {
+    fun copy(items: List<Item>): Observable<Boolean> {
         return items.size.let {
             Observable.fromIterable(items)
                 .map { item ->

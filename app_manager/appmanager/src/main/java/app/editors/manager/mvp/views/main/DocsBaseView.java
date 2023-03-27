@@ -116,11 +116,13 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogQuestion(@Nullable String title, @Nullable String question, @Nullable String tag);
     @StateStrategyType(OneExecutionStateStrategy.class)
+    void onDialogDelete(int count, boolean toTrash, String tag);
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogProgress(@Nullable String title, boolean isHideButtons, @Nullable String tag);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogProgress(int total, int progress);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onSnackBar(@NonNull String message);
+    void onSnackBar(String message);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onSnackBarWithAction(@NonNull String message, @NonNull String button, @NonNull View.OnClickListener action);
 

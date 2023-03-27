@@ -113,7 +113,7 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/delete")
-    fun deleteBatch(@Body body: RequestBatchBase): Call<ResponseOperation>
+    fun deleteBatch(@Body body: RequestBatchBase): Observable<Response<ResponseOperation>>
 
     /*
      * Move items
@@ -260,7 +260,7 @@ interface ManagerService {
      * */
     @Streaming
     @GET
-    fun downloadFile(@Url url: String, @Header("Cookie") cookie: String): Call<ResponseBody>
+    fun downloadFile(@Url url: String, @Header("Cookie") cookie: String): Single<Response<ResponseBody>>
 
     @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/bulkdownload")
     fun downloadFiles(@Body requestDownload: RequestDownload): Single<ResponseDownload>

@@ -30,6 +30,7 @@ import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
+import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.FilterType
@@ -40,6 +41,8 @@ import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
+import app.editors.manager.ui.popup.MainPopup
+import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.gson.Gson
 import io.reactivex.Observable
@@ -207,25 +210,21 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return false
     }
 
-    open fun sortBy(value: String, isRepeatedTap: Boolean): Boolean {
-        preferenceTool.sortBy = value
+    open fun sortBy(type: MainPopupItem.SortBy): Boolean {
+        val isRepeatedTap = MainPopup.getSortPopupItem(preferenceTool.sortBy) == type
+        preferenceTool.sortBy = type.value
         if (isRepeatedTap) {
             reverseSortOrder()
         }
         return refresh()
     }
 
-    private fun reverseSortOrder() {
+    fun reverseSortOrder() {
         if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
         } else {
             preferenceTool.sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_ASC
         }
-    }
-
-    open fun orderBy(value: String): Boolean {
-        preferenceTool.sortOrder = value
-        return refresh()
     }
 
     open fun filter(value: String, isSubmitted: Boolean): Boolean {
@@ -385,7 +384,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     )
                 }
             }
-            viewState.onDialogQuestion(context.getString(R.string.dialogs_question_delete), null, TAG_DIALOG_BATCH_DELETE_SELECTED)
+            viewState.onDialogDelete(
+                modelExplorerStack.countSelectedItems,
+                true,
+                TAG_DIALOG_BATCH_DELETE_SELECTED
+            )
         } else if (!isSelectionMode) {
             if (itemClicked is CloudFile) {
                 fileProvider?.let { provider ->
@@ -637,10 +640,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     private fun startDownloadWork(to: Uri, id: String?, url: String?, requestDownload: RequestDownload?) {
         val workData = Data.Builder()
-            .putString(DownloadWork.FILE_ID_KEY, id)
-            .putString(DownloadWork.URL_KEY, url)
-            .putString(DownloadWork.FILE_URI_KEY, to.toString())
-            .putString(DownloadWork.REQUEST_DOWNLOAD, Gson().toJson(requestDownload))
+            .putString(BaseDownloadWork.FILE_ID_KEY, id)
+            .putString(BaseDownloadWork.URL_KEY, url)
+            .putString(BaseDownloadWork.FILE_URI_KEY, to.toString())
+            .putString(BaseDownloadWork.REQUEST_DOWNLOAD, Gson().toJson(requestDownload))
             .build()
 
         val request = OneTimeWorkRequest.Builder(DownloadWork::class.java)

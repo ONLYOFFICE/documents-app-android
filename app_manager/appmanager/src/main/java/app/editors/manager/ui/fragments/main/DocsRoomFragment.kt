@@ -8,10 +8,10 @@ import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.ContextBottomDialog
-import app.editors.manager.ui.popup.MainActionBarPopup
-import app.editors.manager.ui.popup.SelectActionBarPopup
+import app.editors.manager.ui.popup.MainPopup
+import app.editors.manager.ui.popup.MainPopupItem
+import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.ui.popup.ActionBarPopupItem
 
 class DocsRoomFragment : DocsCloudFragment() {
 
@@ -44,40 +44,25 @@ class DocsRoomFragment : DocsCloudFragment() {
         }
     }
 
-    override fun showMainActionBarMenu(excluded: List<ActionBarPopupItem>) {
-        if (!presenter.isSelectionMode) {
-            if (isRoom) {
-                MainActionBarPopup(
-                    context = requireContext(),
-                    section = presenter.getSectionType(),
-                    clickListener = mainActionBarClickListener,
-                    sortBy = presenter.preferenceTool.sortBy.orEmpty(),
-                    isAsc = isAsc,
-                    excluded = excluded
-                ).show(requireActivity().window.decorView)
-            } else {
-                MainActionBarPopup(
-                    context = requireContext(),
-                    section = -1,
-                    clickListener = mainActionBarClickListener,
-                    sortBy = presenter.preferenceTool.sortBy.orEmpty(),
-                    isAsc = isAsc,
-                    excluded = excluded
-                ).show(requireActivity().window.decorView)
-            }
-        } else super.showMainActionBarMenu(excluded)
+    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
+        MainPopup(
+            context = requireContext(),
+            section = if (isRoom) presenter.getSectionType() else -1,
+            clickListener = mainActionBarClickListener,
+            sortBy = presenter.preferenceTool.sortBy.orEmpty(),
+            isAsc = isAsc,
+            excluded = excluded.toList()
+        ).show(requireActivity().window.decorView)
     }
 
-    override fun showSelectedActionBarMenu(excluded: List<ActionBarPopupItem>) {
+    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
         return if (isRoom) {
-            super.showSelectedActionBarMenu(
-                excluded = listOf(
-                    SelectActionBarPopup.Move,
-                    SelectActionBarPopup.Copy,
-                    SelectActionBarPopup.Download
-                )
+            super.showSelectActionPopup(
+                SelectPopupItem.Operation.Move,
+                SelectPopupItem.Operation.Copy,
+                SelectPopupItem.Download
             )
-        } else super.showSelectedActionBarMenu(excluded)
+        } else super.showSelectActionPopup(*excluded)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
