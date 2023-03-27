@@ -19,7 +19,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.editors.manager.R
-import app.editors.manager.compose.ui.theme.AppManagerTheme
+import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.base.BaseDialog
@@ -33,7 +33,7 @@ class AppThemeDialog : BaseDialog() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val preferences = ThemePreferencesTools(requireContext())
         (view as ComposeView).setContent {
-            AppManagerTheme() {
+            ManagerTheme {
                 MainScreen(themeMode = preferences.mode, cancel = { dismiss() }, ok = { mode ->
                     preferences.mode = mode
                     AppCompatDelegate.setDefaultNightMode(mode)

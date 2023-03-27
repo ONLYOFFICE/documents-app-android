@@ -3,12 +3,13 @@ package app.editors.manager.ui.activities.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import app.editors.manager.app.App
-import app.editors.manager.compose.ui.theme.AppManagerTheme
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.compose.activities.main.PasscodeActivity
+import lib.compose.ui.theme.ManagerTheme
 import javax.inject.Inject
 
 
@@ -38,19 +39,16 @@ class PasscodeActivity : BaseAppActivity() {
         App.getApp().appComponent.inject(this)
 
         isEnterPasscode = intent.getBooleanExtra(ENTER_PASSCODE_KEY, false)
-
+        onBackPressedDispatcher.addCallback { finish() }
         setContent {
-            AppManagerTheme() {
-                PasscodeActivity(preferencesTool, intent.extras) {
-                    onBackPressed()
-                }
+            ManagerTheme {
+                PasscodeActivity(
+                    preferenceTool = preferencesTool,
+                    data = intent.extras,
+                    backPressed = ::finish
+                )
             }
         }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
     }
 
     fun onBiometricError(errorMessage: String) {

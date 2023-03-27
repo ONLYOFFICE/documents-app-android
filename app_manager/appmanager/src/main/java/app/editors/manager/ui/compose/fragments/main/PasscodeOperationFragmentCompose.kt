@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.editors.manager.managers.utils.BiometricsUtils
 import app.editors.manager.ui.activities.main.PasscodeActivity
-import app.editors.manager.ui.compose.base.Spacer
 import app.editors.manager.viewModels.main.PasscodeLockState
 import app.editors.manager.viewModels.main.SetPasscodeViewModel
+import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.UiUtils
 
@@ -71,9 +71,7 @@ fun PasscodeOperation(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = title, style = MaterialTheme.typography.h6, color = MaterialTheme.colors.onBackground, textAlign = TextAlign.Center)
-
-        Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
-
+        VerticalSpacer(height = R.dimen.default_margin_large)
         if (!isError) {
             Text(text = subtitle, style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onBackground, textAlign = TextAlign.Center)
         } else {
@@ -86,10 +84,7 @@ fun PasscodeOperation(
             viewModel.resetCodeCount()
         }
 
-        Spacer(size = dimensionResource(id = R.dimen.default_margin_xxlarge))
-
-        val margins = if (UiUtils.isTablet(LocalContext.current)) 128.dp else 32.dp
-
+        VerticalSpacer(height = R.dimen.default_margin_xxlarge)
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -120,9 +115,7 @@ fun PasscodeOperation(
                 }
             }
         }
-
-        Spacer(size = dimensionResource(id = R.dimen.passcode_keyboard_margin))
-
+        VerticalSpacer(height = R.dimen.passcode_keyboard_margin)
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()

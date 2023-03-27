@@ -27,6 +27,8 @@ import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.views.AppScaffold
+import lib.compose.ui.views.TopAppBar
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.UiUtils
 
@@ -92,69 +94,65 @@ private fun AboutScreen(
     val scrollState = rememberScrollState()
 
     ManagerTheme {
-        Scaffold(topBar = {
-            AppBar(title = R.string.about_title, icon = R.drawable.ic_toolbar_close) {
-                backPressed()
-            }
-        }) { padding ->
-            Surface(color = MaterialTheme.colors.background, modifier = Modifier.padding(padding)) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+        AppScaffold(topBar = {
+            TopAppBar(title = R.string.about_title, backListener = backPressed)
+        }) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(top = 48.dp)
+                    .verticalScroll(state = scrollState, enabled = true)
+            ) {
+                Image(
+                    painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text),
+                    contentDescription = null
+                )
+                Text(
+                    text = stringResource(
+                        id = R.string.about_app_version,
+                        formatArgs = arrayOf(
+                            BuildConfig.VERSION_NAME,
+                            BuildConfig.VERSION_CODE.toString(),
+                            sdkVersion
+                        )
+                    ),
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.onSurface,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(top = 48.dp)
-                        .verticalScroll(state = scrollState, enabled = true)
+                        .padding(top = 16.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.padding(top = 48.dp))
+                AboutItem(
+                    title = stringResource(id = R.string.about_terms),
+                    icon = R.drawable.ic_open_in_new,
+                    isTablet = isTablet
                 ) {
-                    Image(
-                        painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text),
-                        contentDescription = null
-                    )
-                    Text(
-                        text = stringResource(
-                            id = R.string.about_app_version,
-                            formatArgs = arrayOf(
-                                BuildConfig.VERSION_NAME,
-                                BuildConfig.VERSION_CODE.toString(),
-                                sdkVersion
-                            )
-                        ),
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .padding(top = 16.dp)
-                            .align(Alignment.CenterHorizontally)
-                    )
-                    Spacer(modifier = Modifier.padding(top = 48.dp))
-                    AboutItem(
-                        title = stringResource(id = R.string.about_terms),
-                        icon = R.drawable.ic_open_in_new,
-                        isTablet = isTablet
-                    ) {
-                        itemClick(AboutClickedItem.Terms)
-                    }
-                    AboutItem(
-                        title = stringResource(id = R.string.about_policy),
-                        icon = R.drawable.ic_open_in_new,
-                        isTablet = isTablet
-                    ) {
-                        itemClick(AboutClickedItem.Policy)
-                    }
-                    AboutItem(
-                        title = stringResource(id = R.string.about_license),
-                        icon = R.drawable.ic_open_in_new,
-                        isTablet = isTablet
-                    ) {
-                        itemClick(AboutClickedItem.License)
-                    }
-                    AboutItem(
-                        title = stringResource(id = R.string.about_website),
-                        icon = R.drawable.ic_open_in_new,
-                        isTablet = isTablet
-                    ) {
-                        itemClick(AboutClickedItem.Web)
-                    }
+                    itemClick(AboutClickedItem.Terms)
+                }
+                AboutItem(
+                    title = stringResource(id = R.string.about_policy),
+                    icon = R.drawable.ic_open_in_new,
+                    isTablet = isTablet
+                ) {
+                    itemClick(AboutClickedItem.Policy)
+                }
+                AboutItem(
+                    title = stringResource(id = R.string.about_license),
+                    icon = R.drawable.ic_open_in_new,
+                    isTablet = isTablet
+                ) {
+                    itemClick(AboutClickedItem.License)
+                }
+                AboutItem(
+                    title = stringResource(id = R.string.about_website),
+                    icon = R.drawable.ic_open_in_new,
+                    isTablet = isTablet
+                ) {
+                    itemClick(AboutClickedItem.Web)
                 }
             }
         }
@@ -163,9 +161,7 @@ private fun AboutScreen(
 
 @Composable
 private fun AboutItem(title: String, @DrawableRes icon: Int, isTablet: Boolean? = null, click: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)
@@ -203,10 +199,8 @@ private fun AboutItem(title: String, @DrawableRes icon: Int, isTablet: Boolean? 
 @Composable
 private fun LicenseScreen(backListener: () -> Unit) {
     ManagerTheme {
-        Scaffold(topBar = {
-            AppBar(title = R.string.about_license, icon = R.drawable.ic_toolbar_back) {
-                backListener()
-            }
+        AppScaffold(topBar = {
+            TopAppBar(title = R.string.about_license, backListener = backListener)
         }) {
             AndroidView(factory = { context ->
                 WebView(context).apply {

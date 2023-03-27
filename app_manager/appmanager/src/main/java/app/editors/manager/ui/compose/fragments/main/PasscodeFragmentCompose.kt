@@ -19,14 +19,13 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.navigation.NavController
-import app.editors.manager.compose.ui.theme.Typography
 import app.editors.manager.managers.utils.BiometricsUtils
 import app.editors.manager.ui.compose.activities.main.PasscodeScreens
-import app.editors.manager.ui.compose.base.CustomAppBar
-import app.editors.manager.ui.compose.base.Spacer
 import app.editors.manager.viewModels.main.SetPasscodeViewModel
+import lib.compose.ui.views.AppScaffold
+import lib.compose.ui.views.TopAppBar
+import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
-
 
 @Composable
 fun PasscodeLock(
@@ -38,26 +37,22 @@ fun PasscodeLock(
     val isEnableFingerprint by viewModel.isFingerprintEnable.observeAsState(initial = false)
 
 
-    Scaffold(topBar = {
-        CustomAppBar(
+    AppScaffold(topBar = {
+        TopAppBar(
             title = app.editors.manager.R.string.app_settings_passcode,
-            icon = app.editors.manager.R.drawable.ic_toolbar_back
-        ) {
-            backPressed()
-        }
+            backListener = backPressed
+        )
     }) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(
                     start = dimensionResource(id = R.dimen.screen_left_right_padding),
                     end = dimensionResource(id = R.dimen.screen_left_right_padding)
                 )
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
         ) {
-
-            Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
-
+            VerticalSpacer(height = R.dimen.default_margin_large)
             PasscodeSwitchItem(
                 isEnable = isEnablePasscode,
                 text = stringResource(id = app.editors.manager.R.string.app_Settings_passcode_enable),
@@ -106,15 +101,11 @@ fun PasscodeLock(
                     )
                 }
             }
-
-            Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
-
-            val header = stringResource(id = app.editors.manager.R.string.app_settings_passcode)
-
+            VerticalSpacer(height = R.dimen.default_margin_large)
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(header)
+                        append(stringResource(id = app.editors.manager.R.string.app_settings_passcode))
                     }
                     append(stringResource(id = app.editors.manager.R.string.app_settings_passcode_description))
                 },
@@ -122,14 +113,11 @@ fun PasscodeLock(
                     start = dimensionResource(id = R.dimen.default_margin_medium),
                     end = dimensionResource(id = R.dimen.default_margin_medium)
                 ),
-                style = Typography.subtitle2,
+                style = MaterialTheme.typography.subtitle2,
                 color = MaterialTheme.colors.onBackground
             )
-
             if (isEnablePasscode && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
-
-                Spacer(size = dimensionResource(id = R.dimen.default_margin_large))
-
+                VerticalSpacer(R.dimen.default_margin_large)
                 PasscodeSwitchItem(
                     isEnable = isEnableFingerprint,
                     text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_fingerprint),
