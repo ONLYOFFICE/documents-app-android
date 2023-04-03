@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -33,7 +32,7 @@ internal fun AppListItem(
     subtitle: String? = null,
     background: Color? = null,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color? = null,
+    startIconTint: Color = MaterialTheme.colors.primary,
     endContent: @Composable () -> Unit = {},
     paddingEnd: Dp = 16.dp,
     dividerVisible: Boolean = true,
@@ -65,8 +64,8 @@ internal fun AppListItem(
                             .size(24.dp)
                             .enabled(enabled),
                         painter = painterResource(id = startIcon),
-                        contentDescription = null,
-                        tint = startIconTint ?: LocalContentColor.current
+                        tint = startIconTint,
+                        contentDescription = null
                     )
                 }
                 Column(modifier = Modifier.enabled(enabled)) {

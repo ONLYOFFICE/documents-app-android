@@ -25,9 +25,10 @@ fun AppArrowItem(
     title: String,
     subtitle: String? = null,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color? = MaterialTheme.colors.primary,
+    startIconTint: Color = MaterialTheme.colors.primary,
     @DrawableRes endIcon: Int = R.drawable.ic_arrow_right,
     endIconTint: Color = MaterialTheme.colors.colorGrey,
+    optionTint: Color = MaterialTheme.colors.colorGrey,
     background: Color? = null,
     option: String? = null,
     arrowVisible: Boolean = true,
@@ -45,12 +46,12 @@ fun AppArrowItem(
         title = title,
         subtitle = subtitle,
         endContent = {
-            Row( verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 option?.let { option ->
                     Text(
                         text = option,
                         style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.colorGrey,
+                        color = optionTint,
                         textAlign = TextAlign.End,
                     )
                 }
@@ -71,7 +72,10 @@ fun AppArrowItem(
     @StringRes title: Int,
     @StringRes subtitle: Int? = null,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color? = MaterialTheme.colors.primary,
+    startIconTint: Color = MaterialTheme.colors.primary,
+    @DrawableRes endIcon: Int = R.drawable.ic_arrow_right,
+    endIconTint: Color = MaterialTheme.colors.colorGrey,
+    optionTint: Color = MaterialTheme.colors.colorGrey,
     background: Color? = null,
     option: String? = null,
     arrowVisible: Boolean = true,
@@ -84,6 +88,9 @@ fun AppArrowItem(
         subtitle = subtitle?.let { stringResource(id = subtitle) },
         startIcon = startIcon,
         startIconTint = startIconTint,
+        endIcon = endIcon,
+        endIconTint = endIconTint,
+        optionTint = optionTint,
         option = option,
         background = background,
         arrowVisible = arrowVisible,
