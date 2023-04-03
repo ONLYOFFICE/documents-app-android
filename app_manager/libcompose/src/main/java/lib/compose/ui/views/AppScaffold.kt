@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun AppScaffold(topBar: @Composable () -> Unit = {}, content: @Composable () -> Unit) {
-    Scaffold(topBar = topBar) { padding ->
+fun AppScaffold(modifier: Modifier = Modifier, topBar: @Composable () -> Unit = {}, content: @Composable () -> Unit) {
+    Scaffold(modifier = modifier, topBar = topBar) { padding ->
         Surface(
             modifier = Modifier.fillMaxSize().padding(padding),
             color = MaterialTheme.colors.surface,

@@ -10,5 +10,6 @@
   <string name="chooser_email_client">Seleccionar cliente de correo…</string>
   <string name="about_email_subject">ONLYOFFICE Documents Android Feedback</string>
   <string name="about_feedback">Feedback y soporte</string>
+    <string name="text_hint_required">Necesaria</string>
 
 </resources>
