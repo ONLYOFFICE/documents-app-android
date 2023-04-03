@@ -1,6 +1,6 @@
 package lib.compose.ui.views
 
-import android.util.Log
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
@@ -13,6 +13,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.colorTopAppBar
 import lib.toolkit.base.R
 
 @Composable
@@ -34,7 +36,7 @@ fun TopAppBar(
                     modifier = Modifier.padding(end = 16.dp)
                 )
             },
-            backgroundColor = MaterialTheme.colors.background,
+            backgroundColor = MaterialTheme.colors.colorTopAppBar,
             navigationIcon = {
                 IconButton(onClick = backListener) {
                     Icon(
@@ -67,10 +69,30 @@ fun TopAppBar(
     )
 }
 
-@Preview
 @Composable
-private fun PreviewEditorsAppBar() {
-    TopAppBar(title = R.string.app_title, isClose = true) {
-        Log.d("PreviewEditorsAppBar", "PreviewEditorsAppBar: back click")
+private fun TopAppBarPreview() {
+    ManagerTheme {
+        TopAppBar(
+            title = R.string.app_title,
+            actions = {
+                TopAppBarAction(icon = R.drawable.drawable_ic_visibility_off, enabled = false) { }
+                TopAppBarAction(icon = R.drawable.ic_close) { }
+            }
+        ) { }
+    }
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun TopAppBarPreviewDark() {
+    ManagerTheme {
+        TopAppBar(
+            title = R.string.app_title,
+            isClose = true,
+            actions = {
+                TopAppBarAction(icon = R.drawable.drawable_ic_logo) { }
+                TopAppBarAction(icon = R.drawable.drawable_ic_visibility_off, enabled = false) { }
+            }
+        ) { }
     }
 }

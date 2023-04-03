@@ -4,6 +4,7 @@ import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 
 val ColorPrimary = Color(0xFF1565C0)
 val ColorOnPrimary = Color.White
@@ -30,3 +31,7 @@ val NightColorOnError = Color.Black
 val Colors.colorGrey: Color
     @Composable
     get() = MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
+
+val Colors.colorTopAppBar: Color
+    @Composable
+    get() = colorResource(id = lib.toolkit.base.R.color.colorAppBar)

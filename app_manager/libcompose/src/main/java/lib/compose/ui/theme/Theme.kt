@@ -7,7 +7,7 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-val ManagerLightColors by lazy {
+val ManagerNightColors by lazy {
     darkColors(
         primary = NightColorPrimary,
         secondary = NightColorSecondary,
@@ -22,7 +22,7 @@ val ManagerLightColors by lazy {
     )
 }
 
-val ManagerDarkColors by lazy {
+val ManagerLightColors by lazy {
     lightColors(
         primary = ColorPrimary,
         secondary = ColorSecondary,
@@ -44,21 +44,13 @@ fun ManagerTheme(
     content: @Composable () -> Unit
 ) {
     val colors = if (!darkTheme) {
-        ManagerDarkColors.also { colors ->
-            primaryColor?.let {
-                colors.copy(primary = primaryColor)
-            }
-        }
+        ManagerLightColors
     } else {
-        ManagerLightColors.also { colors ->
-            primaryColor?.let {
-                colors.copy(primary = primaryColor)
-            }
-        }
+        ManagerNightColors
     }
 
     MaterialTheme(
-        colors = colors,
+        colors = primaryColor?.let { colors.copy(primary = it) } ?: colors,
         typography = Typography,
         shapes = Shapes,
         content = content
