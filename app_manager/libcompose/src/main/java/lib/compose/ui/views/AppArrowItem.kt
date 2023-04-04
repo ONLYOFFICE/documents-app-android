@@ -11,6 +11,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -22,6 +23,7 @@ import lib.toolkit.base.R
 
 @Composable
 fun AppArrowItem(
+    modifier: Modifier = Modifier,
     title: String,
     subtitle: String? = null,
     @DrawableRes startIcon: Int? = null,
@@ -37,6 +39,7 @@ fun AppArrowItem(
     onClick: (() -> Unit)? = null
 ) {
     AppListItem(
+        modifier = modifier,
         startIcon = startIcon,
         startIconTint = startIconTint,
         background = background,
@@ -69,6 +72,7 @@ fun AppArrowItem(
 
 @Composable
 fun AppArrowItem(
+    modifier: Modifier = Modifier,
     @StringRes title: Int,
     @StringRes subtitle: Int? = null,
     @DrawableRes startIcon: Int? = null,
@@ -84,6 +88,7 @@ fun AppArrowItem(
     onClick: (() -> Unit)? = null
 ) {
     AppArrowItem(
+        modifier = modifier,
         title = stringResource(id = title),
         subtitle = subtitle?.let { stringResource(id = subtitle) },
         startIcon = startIcon,

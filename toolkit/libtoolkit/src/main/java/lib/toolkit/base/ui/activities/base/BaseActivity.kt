@@ -347,6 +347,22 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         }
     }
 
+    fun getCustomDialog(
+        view: View,
+        acceptListener: () -> Unit,
+        title: String? = null,
+        acceptTitle: String? = null,
+        cancelTitle: String? = null,
+    ): CustomHolder.Builder? {
+        return commonDialog?.custom()?.apply {
+            setTopTitle(title)
+            setAcceptTitle(acceptTitle)
+            setCancelTitle(cancelTitle)
+            setAcceptClickListener(acceptListener)
+            setView(view)
+        }
+    }
+
     fun getEditMultilineDialog(
         title: String? = null,
         hint: String? = null,

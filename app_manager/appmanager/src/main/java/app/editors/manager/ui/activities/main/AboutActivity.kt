@@ -6,15 +6,18 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.activity.compose.setContent
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -26,11 +29,11 @@ import androidx.navigation.compose.rememberNavController
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.fragments.main.AppSettingsItem
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.TopAppBar
+import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.managers.utils.UiUtils
 
 private sealed class AboutClickedItem {
     object Terms : AboutClickedItem()
@@ -61,8 +64,7 @@ class AboutActivity : BaseAppActivity() {
                 composable(Screen.About.screen) {
                     AboutScreen(
                         sdkVersion = FileUtils.readSdkVersion(this@AboutActivity, "sdk.version"),
-                        isTablet = UiUtils.isTablet(this@AboutActivity),
-                        backPressed = { onBackPressed() },
+                        backPressed = ::finish,
                         itemClick = { itemClick ->
                             when (itemClick) {
                                 is AboutClickedItem.Terms -> showUrlInBrowser(getString(R.string.app_url_terms))
@@ -87,72 +89,53 @@ class AboutActivity : BaseAppActivity() {
 @Composable
 private fun AboutScreen(
     sdkVersion: String,
-    isTablet: Boolean?,
     itemClick: (item: AboutClickedItem) -> Unit,
     backPressed: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
     ManagerTheme {
-        AppScaffold(topBar = {
+        Scaffold(topBar = {
             TopAppBar(title = R.string.about_title, backListener = backPressed)
-        }) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(top = 48.dp)
-                    .verticalScroll(state = scrollState, enabled = true)
-            ) {
-                Image(
-                    painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text),
-                    contentDescription = null
-                )
-                Text(
-                    text = stringResource(
-                        id = R.string.about_app_version,
-                        formatArgs = arrayOf(
-                            BuildConfig.VERSION_NAME,
-                            BuildConfig.VERSION_CODE.toString(),
-                            sdkVersion
-                        )
-                    ),
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-                Spacer(modifier = Modifier.padding(top = 48.dp))
-                AboutItem(
-                    title = stringResource(id = R.string.about_terms),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
+        }) { padding ->
+            Surface(modifier = Modifier.padding(padding), color = MaterialTheme.colors.background) {
+                Column(
+                    modifier = Modifier.verticalScroll(scrollState),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    itemClick(AboutClickedItem.Terms)
-                }
-                AboutItem(
-                    title = stringResource(id = R.string.about_policy),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
-                ) {
-                    itemClick(AboutClickedItem.Policy)
-                }
-                AboutItem(
-                    title = stringResource(id = R.string.about_license),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
-                ) {
-                    itemClick(AboutClickedItem.License)
-                }
-                AboutItem(
-                    title = stringResource(id = R.string.about_website),
-                    icon = R.drawable.ic_open_in_new,
-                    isTablet = isTablet
-                ) {
-                    itemClick(AboutClickedItem.Web)
+                    VerticalSpacer(height = 40.dp)
+                    Image(
+                        painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text),
+                        contentDescription = null
+                    )
+                    VerticalSpacer(height = 16.dp)
+                    Text(
+                        text = stringResource(
+                            id = R.string.about_app_version,
+                            formatArgs = arrayOf(
+                                BuildConfig.VERSION_NAME,
+                                BuildConfig.VERSION_CODE.toString(),
+                                sdkVersion
+                            )
+                        ),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    VerticalSpacer(height = 48.dp)
+                    AppSettingsItem(title = R.string.about_terms) {
+                        itemClick(AboutClickedItem.Terms)
+                    }
+                    AppSettingsItem(title = R.string.about_policy) {
+                        itemClick(AboutClickedItem.Policy)
+                    }
+                    AppSettingsItem(title = R.string.about_license) {
+                        itemClick(AboutClickedItem.License)
+                    }
+                    AppSettingsItem(title = R.string.about_website) {
+                        itemClick(AboutClickedItem.Web)
+                    }
                 }
             }
         }
@@ -160,49 +143,12 @@ private fun AboutScreen(
 }
 
 @Composable
-private fun AboutItem(title: String, @DrawableRes icon: Int, isTablet: Boolean? = null, click: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .align(alignment = Alignment.CenterHorizontally)
-                .height(48.dp)
-                .fillMaxWidth(if (isTablet == true) 0.7f else 1f)
-                .background(color = MaterialTheme.colors.surface)
-                .clickable { click() }
-                .padding(start = 16.dp, end = 16.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.onSurface,
-                modifier = Modifier.align(Alignment.CenterStart)
-            )
-            Image(
-                painter = painterResource(id = icon),
-                contentDescription = "",
-                colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-
-        }
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth(if (isTablet == true) 0.7f else 1f)
-                .height(1.dp)
-                .align(alignment = Alignment.CenterHorizontally)
-                .padding(start = 0.dp, end = 0.dp)
-                .background(color = colorResource(id = lib.toolkit.base.R.color.colorOutline))
-        )
-    }
-}
-
-@Composable
 private fun LicenseScreen(backListener: () -> Unit) {
     ManagerTheme {
-        AppScaffold(topBar = {
+        Scaffold(topBar = {
             TopAppBar(title = R.string.about_license, backListener = backListener)
-        }) {
-            AndroidView(factory = { context ->
+        }) { padding ->
+            AndroidView(modifier = Modifier.padding(padding), factory = { context ->
                 WebView(context).apply {
                     layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
