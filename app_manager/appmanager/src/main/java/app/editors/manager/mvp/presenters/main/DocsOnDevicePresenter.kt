@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
+import app.editors.manager.BuildConfig
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
@@ -336,12 +337,16 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         openFile(uri, ext, isNew)
     }
 
+    @Suppress("KotlinConstantConditions")
     private fun openFile(uri: Uri, ext: String, isNew: Boolean = false) {
-        when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> viewState.onShowDocs(
-                uri,
-                isNew
-            )
+        when (val enumExt = StringUtils.getExtension(ext)) {
+            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
+                if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && enumExt == StringUtils.Extension.FORM) {
+                    viewState.onError(context.getString(R.string.error_unsupported_format))
+                } else {
+                    viewState.onShowDocs(uri, isNew)
+                }
+            }
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)

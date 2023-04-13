@@ -4,6 +4,7 @@ import android.accounts.Account
 import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.LifecycleOwner
+import app.editors.manager.BuildConfig
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.login.models.Capabilities
@@ -183,13 +184,14 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         }
     }
 
+    @Suppress("KotlinConstantConditions")
     private fun deleteAccount(account: CloudAccount) {
         presenterScope.launch {
             AccountUtils.removeAccount(context, account.getAccountName())
             accountDao.deleteAccount(account)
             accountDao.getAccounts().let {
                 withContext(Dispatchers.Main) {
-                    if (ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
+                    if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents" && ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
                         context.contentResolver.delete(
                             Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"),
                             null,

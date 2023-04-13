@@ -16,6 +16,7 @@ import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.recent.Recent
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.*
 import app.editors.manager.managers.receivers.DownloadReceiver
@@ -612,6 +613,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onStateUpdateFilterMenu()
     }
 
+    @Suppress("KotlinConstantConditions")
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
         if (model.file?.id == null && model.folder?.id != null) {
@@ -623,9 +625,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 id = model.file?.id.toString()
             }).subscribe({ file: CloudFile ->
                 itemClicked = file
-                when (StringUtils.getExtension(file.fileExst)) {
+                when (val ext = StringUtils.getExtension(file.fileExst)) {
                     StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
-                        viewState.onFileWebView(file)
+                        if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
+                            viewState.onError(context.getString(R.string.error_unsupported_format))
+                        } else {
+                            viewState.onFileWebView(file)
+                        }
                     }
 
                     StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {

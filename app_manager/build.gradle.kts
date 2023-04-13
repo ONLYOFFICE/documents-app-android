@@ -7,7 +7,7 @@ buildscript {
 
     repositories {
         google()
-        maven { setUrl("https://jitpack.io") }
+        maven { setUrl("https://mvnrepository.com/artifact/com.github.gundy/semver4j") }
         mavenCentral()
         maven { setUrl("https://maven.google.com") }
         gradlePluginPortal()
