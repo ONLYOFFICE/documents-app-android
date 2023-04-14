@@ -10,6 +10,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
@@ -77,8 +78,16 @@ object ManagerUiUtils {
         }
     }
 
-    fun ImageView.setFileIcon(ext: String) {
-        @DrawableRes val resId = when (StringUtils.getExtension(ext)) {
+    fun getIcon(item: Item): Int {
+        return if (item is CloudFolder) {
+            getFolderIcon(item)
+        } else {
+            getFileIcon(StringUtils.getExtensionFromPath(item.title))
+        }
+    }
+
+    fun getFileIcon(ext: String): Int {
+       return when (StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
             StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
             StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
@@ -96,7 +105,10 @@ object ManagerUiUtils {
             }
             else -> R.drawable.ic_type_file
         }
-        setImageResource(resId)
+    }
+
+    fun ImageView.setFileIcon(ext: String) {
+        setImageResource(getFileIcon(ext))
         alpha = 1.0f
     }
 
