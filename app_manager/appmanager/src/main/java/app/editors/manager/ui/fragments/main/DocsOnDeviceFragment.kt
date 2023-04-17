@@ -29,7 +29,7 @@ import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
-import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -185,27 +185,14 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
-        when (buttons) {
-            ContextBottomDialog.Buttons.DOWNLOAD -> presenter.upload()
-            ContextBottomDialog.Buttons.COPY -> showFolderChooser(OperationsState.OperationType.COPY)
-            ContextBottomDialog.Buttons.MOVE -> showFolderChooser(OperationsState.OperationType.MOVE)
-            ContextBottomDialog.Buttons.DELETE -> showDeleteDialog(
-                tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT
-            )
-            ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
-                getString(R.string.dialogs_edit_rename_title),
-                presenter.itemTitle,
-                getString(R.string.dialogs_edit_hint),
-                DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                getString(R.string.dialogs_edit_accept_rename),
-                getString(R.string.dialogs_common_cancel_button),
-                presenter.itemExtension
-            )
-            else -> {
-            }
+    override fun onContextButtonClick(contextItem: ExplorerContextItem) {
+        when (contextItem) {
+            ExplorerContextItem.Upload -> presenter.upload()
+            ExplorerContextItem.Copy -> showFolderChooser(OperationsState.OperationType.COPY)
+            ExplorerContextItem.Move -> showFolderChooser(OperationsState.OperationType.MOVE)
+            is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT)
+            else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onActionDialog() {

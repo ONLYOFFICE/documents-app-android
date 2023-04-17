@@ -7,7 +7,7 @@ import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
-import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
@@ -83,21 +83,13 @@ class DocsRoomFragment : DocsCloudFragment() {
         } else super.onStateMenuSelection()
     }
 
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
-        when (buttons) {
-            ContextBottomDialog.Buttons.ARCHIVE -> {
-                cloudPresenter.archiveRoom()
-            }
-            ContextBottomDialog.Buttons.PIN -> {
-                cloudPresenter.pinRoom()
-            }
-            ContextBottomDialog.Buttons.INFO -> {
-                ShareActivity.show(this, cloudPresenter.itemClicked, true)
-            }
-            ContextBottomDialog.Buttons.SHARE -> {
-                ShareActivity.show(this, cloudPresenter.itemClicked, false)
-            }
-            else -> super.onContextButtonClick(buttons)
+    override fun onContextButtonClick(contextItem: ExplorerContextItem) {
+        when (contextItem) {
+            ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
+            ExplorerContextItem.RoomInfo -> ShareActivity.show(this, cloudPresenter.itemClicked, true)
+            ExplorerContextItem.Share -> ShareActivity.show(this, cloudPresenter.itemClicked, false)
+            is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
+            else -> super.onContextButtonClick(contextItem)
         }
     }
 

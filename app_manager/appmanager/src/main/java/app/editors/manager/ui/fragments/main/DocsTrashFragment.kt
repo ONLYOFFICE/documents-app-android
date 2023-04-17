@@ -6,10 +6,9 @@ import android.view.MenuItem
 import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
-import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
-import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.UiUtils
@@ -49,13 +48,8 @@ class DocsTrashFragment: DocsCloudFragment() {
         if (presenter.isSelectionMode) {
             super.onItemClick(view, position)
         } else {
-            onItemContextClick(view, position)
+            onItemContextClick(position)
         }
-    }
-
-    override fun onItemContextClick(view: View, position: Int) {
-        val item = explorerAdapter?.getItem(position) as Item
-        cloudPresenter.onContextClick(item, position, true)
     }
 
     override fun setMenuMainEnabled(isEnabled: Boolean) {
@@ -86,20 +80,17 @@ class DocsTrashFragment: DocsCloudFragment() {
         }
     }
 
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
-        when (buttons) {
-            ContextBottomDialog.Buttons.DELETE -> showDeleteDialog(
-                tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT
-            )
-            ContextBottomDialog.Buttons.RESTORE -> {
+    override fun onContextButtonClick(contextItem: ExplorerContextItem) {
+        when (contextItem) {
+            is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
+            ExplorerContextItem.Restore -> {
                 if (isArchive) {
                     cloudPresenter.archiveRoom(false)
                 } else {
                     cloudPresenter.moveCopyOperation(OperationsState.OperationType.RESTORE)
                 }
             }
-            else -> {
-            }
+            else -> super.onContextButtonClick(contextItem)
         }
         contextBottomDialog?.dismiss()
     }

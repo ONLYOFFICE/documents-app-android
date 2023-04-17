@@ -22,13 +22,10 @@ import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.onedrive.DownloadWork
 import app.editors.manager.managers.works.onedrive.UploadWork
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import retrofit2.HttpException
 
@@ -52,11 +49,8 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                                     link,
                                     context.getString(R.string.share_clipboard_external_link_label)
                                 )
+                                viewState.onSnackBar(context.getString(R.string.share_clipboard_external_copied))
                             }
-                            viewState.onDocsAccess(
-                                true,
-                                context.getString(R.string.share_clipboard_external_copied)
-                            )
                         }) { throwable: Throwable -> fetchError(throwable) }
                     )
                 }
@@ -180,36 +174,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             workManager.enqueue(request)
         }
 
-    }
-
-    override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
-        onClickEvent(item, position)
-        isContextClick = true
-        val state = ContextBottomDialog.State()
-        state.title = itemClickedTitle
-        state.info = TimeUtils.formatDate(itemClickedDate)
-        state.isFolder = !isClickedItemFile
-        state.isDocs = isClickedItemDocs
-        state.isWebDav = false
-        state.isOneDrive = true
-        state.isTrash = isTrash
-        state.isItemEditable = true
-        state.isContextEditable = true
-        state.isCanShare = true
-        if (!isClickedItemFile) {
-            state.iconResId = R.drawable.ic_type_folder
-        } else {
-            state.iconResId = getIconContext(
-                StringUtils.getExtensionFromPath(
-                    itemClickedTitle
-                )
-            )
-        }
-        state.isPdf = isPdf
-        if (state.isShared && state.isFolder) {
-            state.iconResId = R.drawable.ic_type_folder_shared
-        }
-        viewState.onItemContext(state)
     }
 
     override fun copy(): Boolean {

@@ -170,6 +170,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     protected var currentSectionType = ApiContract.SectionType.UNKNOWN
 
+    val currentFolderAccess: ApiContract.Access
+        get() = ApiContract.Access.get(modelExplorerStack.currentFolderAccess)
+
     override fun onDestroy() {
         super.onDestroy()
         disposable.clear()
@@ -1148,9 +1151,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * Get clicked item and do action with current state
      * */
 
-    protected fun onClickEvent(item: Item?, position: Int) {
+    fun onClickEvent(item: Item?, position: Int, isContext: Boolean = false) {
         itemClickedPosition = position
         itemClicked = modelExplorerStack.getItemById(item)
+        isContextClick = isContext
     }
 
     open fun onItemClick(item: Item, position: Int) {
@@ -1581,8 +1585,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     abstract fun createDocs(title: String)
 
     abstract fun addRecent(file: CloudFile)
-
-    abstract fun onContextClick(item: Item, position: Int, isTrash: Boolean)
 
     abstract fun onActionClick()
 

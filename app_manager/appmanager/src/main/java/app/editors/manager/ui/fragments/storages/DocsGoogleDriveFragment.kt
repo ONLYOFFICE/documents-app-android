@@ -6,17 +6,15 @@ import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import app.editors.manager.R
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.manager.models.base.Entity
-import app.editors.manager.mvp.presenters.main.DocsBasePresenter
-import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
-import app.editors.manager.mvp.views.base.DocsGoogleDriveView
+import app.editors.manager.R
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.googledrive.UploadWork
 import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
+import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.ui.dialogs.ActionBottomDialog
-import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import app.editors.manager.ui.popup.MainPopupItem
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
@@ -67,31 +65,6 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
 
     override fun onDocsNext(list: List<Entity>?) {
         explorerAdapter?.addItems(list)
-    }
-
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
-        when (buttons) {
-            ContextBottomDialog.Buttons.DOWNLOAD -> onFileDownloadPermission()
-            ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
-                getString(R.string.dialogs_edit_rename_title),
-                presenter.itemTitle,
-                getString(R.string.dialogs_edit_hint),
-                DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                getString(R.string.dialogs_edit_accept_rename),
-                getString(R.string.dialogs_common_cancel_button),
-                presenter.itemExtension
-            )
-
-            ContextBottomDialog.Buttons.EXTERNAL -> {
-                presenter.externalLink
-            }
-            ContextBottomDialog.Buttons.EDIT -> {
-                presenter.getFileInfo()
-            }
-            else -> {
-                super.onContextButtonClick(buttons)
-            }
-        }
     }
 
     override fun onDocsBatchOperation() {

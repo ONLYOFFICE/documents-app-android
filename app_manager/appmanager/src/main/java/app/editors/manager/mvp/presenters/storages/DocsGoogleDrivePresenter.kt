@@ -21,7 +21,6 @@ import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.googledrive.DownloadWork
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.base.DocsGoogleDriveView
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -41,8 +40,6 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     init {
         App.getApp().appComponent.inject(this)
     }
-
-    val isFolderSelected get() = modelExplorerStack.selectedFolders.isNotEmpty()
 
     override val externalLink: Unit
         get() {
@@ -65,15 +62,9 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
                                     externalLink,
                                     context.getString(R.string.share_clipboard_external_link_label)
                                 )
-                                viewState.onDocsAccess(
-                                    true,
-                                    context.getString(R.string.share_clipboard_external_copied)
-                                )
+                                viewState.onSnackBar(context.getString(R.string.share_clipboard_external_copied))
                             } else {
-                                viewState.onDocsAccess(
-                                    false,
-                                    context.getString(R.string.errors_client_forbidden)
-                                )
+                                viewState.onSnackBar(context.getString(R.string.errors_client_forbidden))
                             }
                         },
                             { throwable: Throwable -> fetchError(throwable) }
@@ -212,38 +203,6 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
                 "KEY_UPDATE"
             else "KEY_UPLOAD"
         )
-    }
-
-    override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
-        onClickEvent(item, position)
-        isContextClick = true
-        val state = ContextBottomDialog.State()
-        state.title = itemClickedTitle
-        state.info = TimeUtils.formatDate(itemClickedDate)
-        state.isFolder = !isClickedItemFile
-        state.isDocs = isClickedItemDocs
-        state.isWebDav = false
-        state.isOneDrive = false
-        state.isDropBox = false
-        state.isGoogleDrive = true
-        state.isTrash = isTrash
-        state.isItemEditable = true
-        state.isContextEditable = true
-        state.isCanShare = true
-        if (!isClickedItemFile) {
-            state.iconResId = R.drawable.ic_type_folder
-        } else {
-            state.iconResId = getIconContext(
-                StringUtils.getExtensionFromPath(
-                    itemClickedTitle
-                )
-            )
-        }
-        state.isPdf = isPdf
-        if (state.isShared && state.isFolder) {
-            state.iconResId = R.drawable.ic_type_folder_shared
-        }
-        viewState.onItemContext(state)
     }
 
     override fun onItemId(itemId: String) {

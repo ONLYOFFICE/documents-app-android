@@ -20,19 +20,18 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.R
-import app.editors.manager.app.App.Companion.getApp
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.R
+import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
-import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.OperationActivity
@@ -40,10 +39,13 @@ import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import app.editors.manager.ui.dialogs.ActionBottomDialog
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog.DialogButtonOnClick
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextBottomDialog
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextState
 import app.editors.manager.ui.fragments.base.ListFragment
+import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopup
@@ -65,7 +67,7 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
 
 abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnItemClickListener,
-    OnItemContextListener, BaseAdapter.OnItemLongClickListener, ContextBottomDialog.OnClickListener,
+    OnItemContextListener, BaseAdapter.OnItemLongClickListener, ExplorerContextBottomDialog.OnClickListener,
     ActionBottomDialog.OnClickListener, SearchView.OnQueryTextListener, DialogButtonOnClick, LifecycleObserver {
 
     /*
@@ -81,7 +83,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected var searchCloseButton: ImageView? = null
     protected var explorerAdapter: ExplorerAdapter? = null
 
-    var contextBottomDialog: ContextBottomDialog? = null
+    var contextBottomDialog: ExplorerContextBottomDialog? = null
     var actionBottomDialog: ActionBottomDialog? = null
     var moveCopyDialog: MoveCopyDialog? = null
 
@@ -146,12 +148,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                         presenter.download(it.data!!)
                     }
             }
-        }
-    }
-
-    override fun onContextDialogClose() {
-        if (requireActivity() is OnBottomDialogCloseListener) {
-            (requireActivity() as OnBottomDialogCloseListener).onBottomDialogClose()
         }
     }
 
@@ -241,11 +237,17 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         return false
     }
 
-    override fun onItemContextClick(view: View, position: Int) {
-        val item = explorerAdapter?.getItem(position)
-        if (item is Item && !isFastClick) {
-            contextDialogListener?.onContextDialogOpen()
-            presenter.onContextClick(item, position, false)
+    override fun onItemContextClick(position: Int) {
+        val item = explorerAdapter?.getItem(position) as? Item
+        if (item != null && !isFastClick) {
+            val state = ExplorerContextState(
+                item = item,
+                section = ApiContract.Section.getSection(presenter.getSectionType()),
+                folderAccess = presenter.currentFolderAccess,
+                isSearching = presenter.isFilteringMode
+            )
+            presenter.onClickEvent(item, position, true)
+            showExplorerContextBottomDialog(state)
         }
     }
 
@@ -317,26 +319,24 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
-        when (buttons) {
-            ContextBottomDialog.Buttons.MOVE, ContextBottomDialog.Buttons.COPY -> {
-                presenter.moveCopyOperation(if (buttons == ContextBottomDialog.Buttons.MOVE) OperationsState.OperationType.MOVE else OperationsState.OperationType.COPY)
-            }
-            ContextBottomDialog.Buttons.DOWNLOAD -> onFileDownloadPermission()
-            ContextBottomDialog.Buttons.RENAME -> showEditDialogRename(
-                getString(R.string.dialogs_edit_rename_title),
-                presenter.itemTitle,
-                getString(R.string.dialogs_edit_hint),
-                DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
-                getString(R.string.dialogs_edit_accept_rename),
-                getString(R.string.dialogs_common_cancel_button),
-                presenter.itemExtension
+    override fun onContextButtonClick(contextItem: ExplorerContextItem) {
+        when (contextItem) {
+            ExplorerContextItem.Move -> presenter.moveCopyOperation(OperationsState.OperationType.MOVE)
+            ExplorerContextItem.Copy -> presenter.moveCopyOperation(OperationsState.OperationType.COPY)
+            ExplorerContextItem.Download -> onFileDownloadPermission()
+            ExplorerContextItem.Rename -> showEditDialogRename(
+                title = getString(R.string.dialogs_edit_rename_title),
+                value = presenter.itemTitle,
+                hint = getString(R.string.dialogs_edit_hint),
+                tag = DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME,
+                acceptButton = getString(R.string.dialogs_edit_accept_rename),
+                cancelButton = getString(R.string.dialogs_common_cancel_button),
+                suffix = presenter.itemExtension
             )
-            ContextBottomDialog.Buttons.DELETE -> {
-                showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
-            }
+            is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             else -> {}
         }
+        contextBottomDialog?.dismiss()
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
@@ -518,11 +518,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         explorerAdapter?.setItems(list)
     }
 
-    override fun onDocsAccess(isAccess: Boolean, message: String) {
-        setContextDialogExternalLinkEnable(true)
-        setContextDialogExternalLinkSwitch(isAccess, message)
-    }
-
     override fun onFinishDownload(uri: Uri?) {
         activity?.let { activity ->
             uri?.let { uri ->
@@ -682,10 +677,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onItemSelected(position: Int, countSelected: String) {
         onActionBarTitle(countSelected)
         explorerAdapter?.notifyItemChanged(position)
-    }
-
-    override fun onItemContext(state: ContextBottomDialog.State) {
-        showContextDialog(state)
     }
 
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
@@ -938,7 +929,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
         }
         explorerAdapter?.isLoading(false)
-        setContextDialogExternalLinkEnable(true)
     }
 
     private fun setViewState(isEmpty: Boolean) {
@@ -952,36 +942,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * BottomSheetFragmentDialogs context/action
      * */
     private fun setDialogs() {
-        contextBottomDialog = parentFragmentManager.findFragmentByTag(ContextBottomDialog.TAG)?.let {
-            it as ContextBottomDialog?
-        } ?: ContextBottomDialog.newInstance()
-
         actionBottomDialog = parentFragmentManager.findFragmentByTag(ActionBottomDialog.TAG)?.let {
             it as ActionBottomDialog?
         } ?: ActionBottomDialog.newInstance()
 
         moveCopyDialog = parentFragmentManager.findFragmentByTag(MoveCopyDialog.TAG) as MoveCopyDialog?
         moveCopyDialog?.dialogButtonOnClick = this
-    }
-
-    private fun showContextDialog(state: ContextBottomDialog.State) {
-//        contextBottomDialog =  ContextBottomDialog.newInstance(checkNotNull(presenter.itemClicked), presenter.getSectionType())
-        contextBottomDialog?.let { dialog ->
-            dialog.state = state
-            dialog.onClickListener = this
-            dialog.show(parentFragmentManager, ContextBottomDialog.TAG)
-        }
-    }
-
-    private fun setContextDialogExternalLinkSwitch(isCheck: Boolean, message: String) {
-        contextBottomDialog?.let { dialog ->
-            dialog.setItemSharedState(isCheck)
-            dialog.showMessage(message, requireView())
-        }
-    }
-
-    fun setContextDialogExternalLinkEnable(isEnable: Boolean) {
-        contextBottomDialog?.setItemSharedEnable(isEnable)
     }
 
     fun showActionDialog() {
@@ -1197,6 +1163,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             SelectPopupItem.Download -> presenter.createDownloadFile()
             SelectPopupItem.SelectAll -> presenter.selectAll()
             is SelectPopupItem.Operation -> presenter.moveCopySelected(item.value)
+        }
+    }
+
+    protected fun showExplorerContextBottomDialog(state: ExplorerContextState) {
+        ExplorerContextBottomDialog.newInstance(state).also { dialog ->
+            dialog.onClickListener = this
+            contextBottomDialog = dialog
+            dialog.show(parentFragmentManager, ExplorerContextBottomDialog.TAG)
         }
     }
 }
