@@ -1,7 +1,6 @@
 package app.editors.manager.di.component
 
 import android.content.Context
-import app.documents.core.di.dagger.Token
 import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.account.AccountsDataBase
 import app.documents.core.storage.account.CloudAccount
@@ -35,7 +34,7 @@ import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
-import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextBottomDialog
 import app.editors.manager.ui.fragments.login.*
 import app.editors.manager.ui.fragments.main.CloudsFragment
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
@@ -53,6 +52,7 @@ import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModel
+import app.editors.manager.viewModels.main.ExplorerContextViewModel
 import dagger.BindsInstance
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
@@ -176,8 +176,8 @@ interface AppComponent {
     fun inject(viewModel: EnterprisePortalViewModel)
     fun inject(viewModel: EnterpriseCreateValidateViewModel)
     fun inject(viewModel: RemoteUrlViewModel)
+    fun inject(viewModel: ExplorerContextViewModel)
     fun inject(passcodeActivity: PasscodeActivity?)
     fun inject(baseFilterPresenter: BaseFilterPresenter)
     fun inject(filterAuthorPresenter: FilterAuthorPresenter)
-    fun inject(contextBottomDialog: ContextBottomDialog)
 }

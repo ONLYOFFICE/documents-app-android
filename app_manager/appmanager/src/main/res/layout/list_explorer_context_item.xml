@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/default_one_line_height"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="@dimen/default_one_line_height"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="12dp">
+
+        <ImageView
+            android:id="@+id/icon"
+            style="@style/ContextListImage"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_favorites_outline" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/ItemMediumBlackText"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginEnd="12dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            tools:text="Get link for external access" />
+
+        <include
+            android:id="@+id/divider"
+            layout="@layout/view_line_separator" />
+
+    </LinearLayout>
+
+</LinearLayout>
