@@ -256,13 +256,16 @@ object ApiContract {
         const val CLOUD_ARCHIVE_ROOM = 20
 
         const val WEB_DAV = 100
+        const val GOOGLE_DRIVE = 110
+        const val DROPBOX = 111
+        const val ONEDRIVE = 112
 
-        fun isRoom(type: Int): Boolean {
-            return type >= 14
-        }
+        fun isRoom(type: Int): Boolean = type >= 14
+        fun isArchive(type: String): Boolean = isArchive(type.toInt())
+        fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
     }
 
-    sealed class Section(open val type: Int) {
+    sealed class Section(val type: Int) {
         object Common : Section(SectionType.CLOUD_COMMON)
         object Trash : Section(SectionType.CLOUD_TRASH)
         object User : Section(SectionType.CLOUD_USER)
@@ -272,7 +275,7 @@ object ApiContract {
         object Favorites : Section(SectionType.CLOUD_FAVORITES)
         object Recent : Section(SectionType.CLOUD_RECENT)
 
-        sealed class Room(override val type: Int) : Section(type) {
+        sealed class Room(type: Int) : Section(type) {
             object Private : Room(SectionType.CLOUD_PRIVATE_ROOM)
             object Virtual : Room(SectionType.CLOUD_VIRTUAL_ROOM)
             object Archive : Room(SectionType.CLOUD_ARCHIVE_ROOM)
@@ -283,14 +286,15 @@ object ApiContract {
             class Custom(val restrictionType: Int = RoomType.CUSTOM_ROOM) : Room(SectionType.CLOUD_CUSTOM_ROOM)
         }
 
-        sealed interface Storage {
-            object GoogleDrive : Storage
-            object Dropbox : Storage
-            object OneDrive : Storage
+        sealed class Storage(type: Int) : Section(type) {
+            object GoogleDrive : Storage(SectionType.GOOGLE_DRIVE)
+            object Dropbox : Storage(SectionType.DROPBOX)
+            object OneDrive : Storage(SectionType.ONEDRIVE)
         }
 
-        val isRoom: Boolean get() = type >= 14
-        val isLocal: Boolean get() = this == Device || this == Recent
+        val isRoom: Boolean get() = this is Room
+        val isArchive: Boolean get() = this == Room.Archive
+        val isLocal: Boolean get() = this in listOf(Device, Recent)
 
         companion object {
 

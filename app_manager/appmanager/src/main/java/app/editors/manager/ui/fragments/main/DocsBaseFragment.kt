@@ -242,9 +242,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (item != null && !isFastClick) {
             val state = ExplorerContextState(
                 item = item,
-                section = ApiContract.Section.getSection(presenter.getSectionType()),
+                section = getSection(),
                 folderAccess = presenter.currentFolderAccess,
-                isSearching = presenter.isFilteringMode
+                isSearching = presenter.isFilteringMode,
+                isRoot = presenter.isRoot
             )
             presenter.onClickEvent(item, position, true)
             showExplorerContextBottomDialog(state)
@@ -1147,6 +1148,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             ApiContract.Parameters.VAL_SORT_ORDER_ASC,
             ignoreCase = true
         )
+
+    protected open fun getSection(): ApiContract.Section = ApiContract.Section.getSection(presenter.getSectionType())
 
     protected open val mainActionBarClickListener: (MainPopupItem) -> Unit = { item ->
         when (item) {

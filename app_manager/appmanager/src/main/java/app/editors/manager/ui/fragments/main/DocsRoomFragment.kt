@@ -86,11 +86,11 @@ class DocsRoomFragment : DocsCloudFragment() {
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
             ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
-            ExplorerContextItem.RoomInfo -> ShareActivity.show(this, cloudPresenter.itemClicked, true)
-            ExplorerContextItem.Share -> ShareActivity.show(this, cloudPresenter.itemClicked, false)
+            ExplorerContextItem.AddUsers -> ShareActivity.show(this, cloudPresenter.itemClicked, false)
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
             else -> super.onContextButtonClick(contextItem)
         }
+        contextBottomDialog?.dismiss()
     }
 
     override fun getFilters(): Boolean {

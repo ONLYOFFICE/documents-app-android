@@ -83,7 +83,7 @@ class DocsTrashFragment: DocsCloudFragment() {
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
-            ExplorerContextItem.Restore -> {
+            is ExplorerContextItem.Restore -> {
                 if (isArchive) {
                     cloudPresenter.archiveRoom(false)
                 } else {

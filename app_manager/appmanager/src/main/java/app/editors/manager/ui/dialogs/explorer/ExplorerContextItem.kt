@@ -35,13 +35,24 @@ sealed class ExplorerContextItem(
         title = R.string.list_context_get_external_link
     ), ExplorerContextBlockOrder.Share
 
+    object RoomInfo : ExplorerContextItem(
+        icon = R.drawable.ic_drawer_menu_about,
+        title = R.string.list_context_info
+    ), ExplorerContextBlockOrder.Share
+
+    object AddUsers : ExplorerContextItem(
+        icon = R.drawable.ic_add_users,
+        title = R.string.list_context_add_users
+    ), ExplorerContextBlockOrder.Share
+
+
     object Send : ExplorerContextItem(
         icon = R.drawable.ic_list_context_send_copy,
         title = R.string.list_context_send_copy
     ), ExplorerContextBlockOrder.Operation
 
     class Pin(pinned: Boolean) : ExplorerContextItem(
-        icon = R.drawable.ic_pin_to_top,
+        icon = if (!pinned) R.drawable.ic_pin_to_top else R.drawable.ic_unpin,
         title = if (!pinned) R.string.list_context_pin_to_top else R.string.list_context_unpin
     ), ExplorerContextBlockOrder.Operation
 
@@ -60,11 +71,6 @@ sealed class ExplorerContextItem(
                 R.string.list_context_delete_from_favorite
         }
     }
-
-    object RoomInfo : ExplorerContextItem(
-        icon = R.drawable.ic_drawer_menu_about,
-        title = R.string.list_context_info
-    ), ExplorerContextBlockOrder.Operation
 
     object Location : ExplorerContextItem(
         icon = R.drawable.ic_list_context_location,
@@ -96,15 +102,15 @@ sealed class ExplorerContextItem(
         title = R.string.list_context_rename
     ), ExplorerContextBlockOrder.Operation
 
-    object Restore : ExplorerContextItem(
-        icon = R.drawable.ic_trash_restore,
-        title = R.string.device_trash_files_restore
-    ), ExplorerContextBlockOrder.Operation
-
     object Archive : ExplorerContextItem(
         icon = R.drawable.ic_room_archive,
         title = R.string.context_room_archive
     ), ExplorerContextBlockOrder.Remove
+
+    class Restore(isRoom: Boolean) : ExplorerContextItem(
+        icon = R.drawable.ic_trash_restore,
+        title = if (!isRoom) R.string.device_trash_files_restore else R.string.context_room_unarchive
+    ), ExplorerContextBlockOrder.Operation
 
     object ShareDelete : ExplorerContextItem(
         icon = R.drawable.drawable_ic_visibility_off,

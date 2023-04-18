@@ -116,15 +116,11 @@ object ManagerUiUtils {
         setImageResource(getFolderIcon(folder, isRoot))
     }
 
-    fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
+    private fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
         return when {
             folder.shared && folder.providerKey.isEmpty() -> R.drawable.ic_type_folder_shared
-            isRoot && folder.providerItem && folder.providerKey.isNotEmpty() -> {
-                StorageUtils.getStorageIcon(folder.providerKey)
-            }
-            folder.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM.toString() -> {
-                R.drawable.ic_type_archive
-            }
+            isRoot && folder.providerItem -> StorageUtils.getStorageIcon(folder.providerKey)
+            ApiContract.SectionType.isArchive(folder.rootFolderType)-> R.drawable.ic_type_archive
             folder.isRoom -> getRoomIcon(folder)
             else -> R.drawable.ic_type_folder
         }

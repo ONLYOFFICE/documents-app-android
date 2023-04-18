@@ -170,11 +170,12 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
             ExplorerContextItem.Edit -> cloudPresenter.onEditContextClick()
             ExplorerContextItem.Share -> showShareActivity(cloudPresenter.itemClicked)
             ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
+            ExplorerContextItem.RoomInfo -> ShareActivity.show(this, cloudPresenter.itemClicked, true)
+            is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             ExplorerContextItem.ShareDelete -> showQuestionDialog(
                 title = getString(R.string.dialogs_question_share_remove),

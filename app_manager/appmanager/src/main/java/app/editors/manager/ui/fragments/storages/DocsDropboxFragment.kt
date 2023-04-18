@@ -3,6 +3,7 @@ package app.editors.manager.ui.fragments.storages
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
@@ -27,6 +28,8 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
 
     @InjectPresenter
     override lateinit var presenter: DocsDropboxPresenter
+
+    override fun getSection(): ApiContract.Section = ApiContract.Section.Storage.Dropbox
 
     @Inject
     lateinit var dropboxLoginHelper: DropboxLoginHelper

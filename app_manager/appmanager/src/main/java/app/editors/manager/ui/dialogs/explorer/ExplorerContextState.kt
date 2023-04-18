@@ -10,6 +10,7 @@ data class ExplorerContextState(
     val section: ApiContract.Section,
     val folderAccess: ApiContract.Access,
     val isSearching: Boolean = false,
+    val isRoot: Boolean = false,
     val headerInfo: String? = null
 ) : Serializable {
 

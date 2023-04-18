@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.manager.models.base.Entity
 import app.editors.manager.R
@@ -30,6 +31,8 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
 
     @InjectPresenter
     override lateinit var presenter: DocsGoogleDrivePresenter
+
+    override fun getSection(): ApiContract.Section = ApiContract.Section.Storage.GoogleDrive
 
     override fun getDocsPresenter() = presenter
 

@@ -110,6 +110,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
             ExplorerContextItem.Edit -> presenter.getFileInfo()
             else -> super.onContextButtonClick(contextItem)
         }
+        contextBottomDialog?.dismiss()
     }
 
     override fun onOpenLocalFile(file: CloudFile) {

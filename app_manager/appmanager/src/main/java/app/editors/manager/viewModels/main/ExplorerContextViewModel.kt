@@ -22,18 +22,40 @@ class ExplorerContextViewModel : ViewModel() {
     }
 
     private fun getItems(state: ExplorerContextState): List<ExplorerContextItem> {
-        return when (state.section) {
-            ApiContract.Section.Recent -> listOf(
+        return when {
+
+            state.section == ApiContract.Section.Recent -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit,
                 ExplorerContextItem.Delete(state)
             )
+
+            state.section is ApiContract.Section.Room && state.isRoot -> listOf(
+                ExplorerContextItem.Header(state),
+                ExplorerContextItem.Share,
+                ExplorerContextItem.RoomInfo,
+                ExplorerContextItem.AddUsers,
+                ExplorerContextItem.Rename,
+                ExplorerContextItem.Pin(state.pinned),
+                ExplorerContextItem.Archive,
+                ExplorerContextItem.Restore(true),
+                ExplorerContextItem.Delete(state)
+            )
+
+            state.section is ApiContract.Section.Storage -> listOf(
+                ExplorerContextItem.Header(state),
+                ExplorerContextItem.Edit,
+                ExplorerContextItem.Move,
+                ExplorerContextItem.Copy,
+                ExplorerContextItem.Download,
+                ExplorerContextItem.Delete(state)
+            )
+
             else -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit,
                 ExplorerContextItem.Share,
                 ExplorerContextItem.ExternalLink,
-                ExplorerContextItem.Pin(state.pinned),
                 ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.favorite),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Location,
@@ -42,10 +64,9 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Upload,
                 ExplorerContextItem.Rename,
-                ExplorerContextItem.Archive,
-                ExplorerContextItem.Restore,
+                ExplorerContextItem.Restore(false),
                 ExplorerContextItem.ShareDelete,
-                ExplorerContextItem.Delete(state),
+                ExplorerContextItem.Delete(state)
             )
         }.mapNotNull { item -> item.get(state) }.sortedBy { item -> item.order }
     }
