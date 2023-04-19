@@ -31,6 +31,7 @@ import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
 import app.editors.manager.mvp.presenters.storages.OneDriveSingInPresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
+import app.editors.manager.ui.activities.main.AppLocaleHelper
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -87,6 +88,7 @@ interface AppComponent {
     val accountsDao: AccountDao
     val accountOnline: CloudAccount?
     val recentDao: RecentDao?
+    val appLocaleHelper: AppLocaleHelper
 
     /*
    * Login
