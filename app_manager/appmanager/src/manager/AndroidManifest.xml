@@ -4,21 +4,23 @@
     package="app.editors.manager"
     android:installLocation="internalOnly">
 
-   <application>
-       <activity
-           android:name=".ui.activities.main.OnBoardingActivity"
-           android:exported="true"
-           android:theme="@style/AppTheme.Launcher"
-           android:windowSoftInputMode="adjustPan|stateHidden">
-           <intent-filter>
-               <action android:name="android.intent.action.MAIN" />
+    <application>
+        <activity
+            android:name=".ui.activities.main.OnBoardingActivity"
+            android:exported="true"
+            android:taskAffinity=""
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.Launcher"
+            android:windowSoftInputMode="adjustPan|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-               <category android:name="android.intent.category.LAUNCHER" />
-           </intent-filter>
-           <meta-data
-               android:name="android.app.shortcuts"
-               android:resource="@xml/shortcut" />
-       </activity>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcut" />
+        </activity>
     </application>
 
 </manifest>
