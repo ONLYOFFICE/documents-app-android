@@ -68,9 +68,9 @@ abstract class BaseDownloadWork(
                         response = responseBody,
                         to = to,
                         context = applicationContext,
-                        progress = ::showProgress,
-                        finish = ::onFinish,
-                        error = ::onError
+                        onProgress = ::showProgress,
+                        onFinish = ::onFinish,
+                        onError = ::onError
                     )
                 }
             } else {

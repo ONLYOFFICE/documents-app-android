@@ -6,6 +6,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.util.List;
 
 import app.documents.core.network.manager.models.base.Entity;
@@ -15,7 +16,6 @@ import app.documents.core.network.manager.models.explorer.Explorer;
 import app.documents.core.network.manager.models.explorer.Item;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.views.base.BaseViewExt;
-import app.editors.manager.ui.dialogs.explorer.ExplorerContextState;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import moxy.viewstate.strategy.OneExecutionStateStrategy;
 import moxy.viewstate.strategy.StateStrategyType;
@@ -110,6 +110,8 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogWaiting(@Nullable String title, @Nullable String tag);
     @StateStrategyType(OneExecutionStateStrategy.class)
+    void onDialogDownloadWaiting();
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogQuestion(@Nullable String title, @Nullable String question, @Nullable String tag);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogDelete(int count, boolean toTrash, String tag);
@@ -147,4 +149,6 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onShowCamera(Uri photoUri);
 
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onSendCopy(@NonNull File file);
 }

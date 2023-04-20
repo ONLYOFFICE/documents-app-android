@@ -204,6 +204,12 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         super.openFolder(id, position)
     }
 
+    override fun sendCopy() {
+        itemClicked?.id?.let { path ->
+            viewState.onSendCopy(File(path))
+        }
+    }
+
     private fun uploadWebDav(id: String, uriList: List<Uri>) {
         var uploadId = id
         if (uploadId[uploadId.length - 1] != '/') {

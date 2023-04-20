@@ -583,10 +583,6 @@ object FileUtils {
         fun onError(error: Throwable)
     }
 
-    fun interface Progress {
-        fun onProgress(total: Long, progress: Long, isArchiving: Boolean): Boolean
-    }
-
     @Suppress("BlockingMethodInNonBlockingContext")
     @JvmStatic
     fun downloadFromUrl(
@@ -644,18 +640,18 @@ object FileUtils {
         response: ResponseBody,
         to: Uri,
         context: Context,
-        progress: Progress,
-        finish: Finish,
-        error: Error
+        onProgress: ((total: Long, progress: Long, isArchiving: Boolean) -> Boolean)? = null,
+        onFinish: (() -> Unit)? = null,
+        onError: ((Exception) -> Unit)? = null
     ) {
         writeFromResponseBody(
             stream = response.byteStream(),
             length = response.contentLength(),
             to = to,
             context = context,
-            progress = progress,
-            finish = finish,
-            error = error
+            onProgress = onProgress,
+            onFinish = onFinish,
+            onError = onError
         )
     }
 
@@ -664,9 +660,9 @@ object FileUtils {
         length: Long,
         to: Uri,
         context: Context,
-        progress: Progress?,
-        finish: Finish?,
-        error: Error?
+        onProgress: ((total: Long, progress: Long, isArchiving: Boolean) -> Boolean)? = null,
+        onFinish: (() -> Unit)? = null,
+        onError: ((Exception) -> Unit)? = null
     ) {
         var inputStream: InputStream? = null
         var outputStream: OutputStream? = null
@@ -681,14 +677,14 @@ object FileUtils {
                 totalBytes += countBytes.toLong()
                 outputStream.write(buffer, 0, countBytes)
 
-                if (progress?.onProgress(length, totalBytes, false) == true) {
+                if (onProgress != null && onProgress.invoke(length, totalBytes, false)) {
                     throw Exception()
                 }
             }
-            finish?.onFinish()
+            onFinish?.invoke()
             outputStream.flush()
         } catch (e: Exception) {
-            error?.onError(e)
+            onError?.invoke(e)
         } finally {
             inputStream?.close()
             outputStream?.close()

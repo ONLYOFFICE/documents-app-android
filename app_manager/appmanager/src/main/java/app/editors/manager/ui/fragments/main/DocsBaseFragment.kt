@@ -14,7 +14,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.FileProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
@@ -65,10 +67,25 @@ import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog.OnBottomDialogCloseList
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
+import lib.toolkit.base.ui.dialogs.common.holders.WaitingHolder
+import java.io.File
 
 abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnItemClickListener,
     OnItemContextListener, BaseAdapter.OnItemLongClickListener, ExplorerContextBottomDialog.OnClickListener,
     ActionBottomDialog.OnClickListener, SearchView.OnQueryTextListener, DialogButtonOnClick, LifecycleObserver {
+
+
+    companion object {
+        private const val CLICK_TIME_INTERVAL: Long = 350
+        const val REQUEST_OPEN_FILE = 10000
+        const val REQUEST_DOCS = 10001
+        const val REQUEST_PRESENTATION = 10002
+        const val REQUEST_SHEETS = 10003
+        const val REQUEST_PDF = 10004
+        const val REQUEST_DOWNLOAD = 10005
+        const val REQUEST_STORAGE_ACCESS = 10006
+
+    }
 
     /*
      * Toolbar menu
@@ -98,18 +115,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             contextBottomDialog?.onClickListener = this
             actionBottomDialog?.onClickListener = this
         }
-    }
-
-    companion object {
-        private const val CLICK_TIME_INTERVAL: Long = 350
-        const val REQUEST_OPEN_FILE = 10000
-        const val REQUEST_DOCS = 10001
-        const val REQUEST_PRESENTATION = 10002
-        const val REQUEST_SHEETS = 10003
-        const val REQUEST_PDF = 10004
-        const val REQUEST_DOWNLOAD = 10005
-        const val REQUEST_STORAGE_ACCESS = 10006
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -324,6 +329,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         when (contextItem) {
             ExplorerContextItem.Move -> presenter.moveCopyOperation(OperationsState.OperationType.MOVE)
             ExplorerContextItem.Copy -> presenter.moveCopyOperation(OperationsState.OperationType.COPY)
+            ExplorerContextItem.Send -> presenter.sendCopy()
             ExplorerContextItem.Download -> onFileDownloadPermission()
             ExplorerContextItem.Rename -> showEditDialogRename(
                 title = getString(R.string.dialogs_edit_rename_title),
@@ -736,6 +742,15 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onDialogWaiting(title: String?, tag: String?) {
         if (isActivePage) {
             showWaitingDialog(title, getString(R.string.dialogs_common_cancel_button), tag)
+        }
+    }
+
+    override fun onDialogDownloadWaiting() {
+        if (isActivePage) {
+            showWaitingDialog(
+                title = getString(R.string.download_manager_downloading),
+                progressType = WaitingHolder.ProgressType.CIRCLE
+            )
         }
     }
 
@@ -1174,6 +1189,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             dialog.onClickListener = this
             contextBottomDialog = dialog
             dialog.show(parentFragmentManager, ExplorerContextBottomDialog.TAG)
+        }
+    }
+
+    override fun onSendCopy(file: File) {
+        val uri  = FileProvider.getUriForFile(requireContext(), "${context?.packageName}.asc.provider", file)
+        with(Intent()) {
+            action = Intent.ACTION_SEND
+            type = "application/*"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            startActivity(this)
         }
     }
 }

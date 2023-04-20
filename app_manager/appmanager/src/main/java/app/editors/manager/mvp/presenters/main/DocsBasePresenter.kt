@@ -16,6 +16,7 @@ import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.BaseFileProvider
+import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
@@ -1577,6 +1578,26 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     fun getSectionType() = currentSectionType
+
+    open fun sendCopy() {
+        (itemClicked as? CloudFile)?.let { cloudFile ->
+            (fileProvider as? CloudFileProvider)?.let { fileProvider ->
+                context.accountOnline?.let { account ->
+                    disposable.add(
+                        fileProvider.cacheSendingFile(context, cloudFile, account.getAccountName())
+                            .doOnSubscribe { viewState.onDialogDownloadWaiting() }
+                            .doOnError { viewState.onError(context.getString(R.string.errors_create_local_file)) }
+                            .doOnSuccess { file ->
+                                viewState.onDialogClose()
+                                viewState.onSendCopy(file)
+                                fileProvider.removeSendingCachedFile()
+                            }
+                            .subscribe()
+                    )
+                }
+            }
+        }
+    }
 
     abstract fun getNextList()
 
