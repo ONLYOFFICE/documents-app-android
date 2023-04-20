@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import java.io.FileInputStream
 import java.io.FileWriter
@@ -62,7 +64,7 @@ android {
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
         versionCode = 441
-        versionName = "5.6.1"
+        versionName = "5.6.2"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
