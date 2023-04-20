@@ -22,7 +22,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.*
-import android.widget.ProgressBar
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -37,7 +36,6 @@ import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.models.explorer.CloudFile
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.views.webview.KeyboardWebView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.*
@@ -134,7 +132,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     }
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var webView: KeyboardWebView
+    private lateinit var webView: WebView
 
     private var cloudFile: CloudFile? = null
     private var uri: Uri? = null
