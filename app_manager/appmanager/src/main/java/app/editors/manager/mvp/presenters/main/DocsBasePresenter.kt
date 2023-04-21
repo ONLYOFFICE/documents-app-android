@@ -157,9 +157,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected var disposable = CompositeDisposable()
     protected var batchDisposable: Disposable? = null
     protected var uploadDisposable: Disposable? = null
+    protected var downloadDisposable: Disposable? = null
+    private var sendDisposable: Disposable? = null
     private var filterRun: Runnable? = null
     private var isTerminate = false
-    protected var downloadDisposable: Disposable? = null
     private var isAccessDenied = false
 
     /**
@@ -1583,20 +1584,22 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         (itemClicked as? CloudFile)?.let { cloudFile ->
             (fileProvider as? CloudFileProvider)?.let { fileProvider ->
                 context.accountOnline?.let { account ->
-                    disposable.add(
-                        fileProvider.cacheSendingFile(context, cloudFile, account.getAccountName())
-                            .doOnSubscribe { viewState.onDialogDownloadWaiting() }
-                            .doOnError { viewState.onError(context.getString(R.string.errors_create_local_file)) }
-                            .doOnSuccess { file ->
-                                viewState.onDialogClose()
-                                viewState.onSendCopy(file)
-                                fileProvider.removeSendingCachedFile()
-                            }
-                            .subscribe()
-                    )
+                    sendDisposable = fileProvider.cacheSendingFile(context, cloudFile, account.getAccountName())
+                        .doOnSubscribe { viewState.onDialogDownloadWaiting() }
+                        .doOnError { viewState.onError(context.getString(R.string.errors_create_local_file)) }
+                        .doFinally(fileProvider::removeSendingCachedFile)
+                        .doOnSuccess { file ->
+                            viewState.onDialogClose()
+                            viewState.onSendCopy(file)
+                        }
+                        .subscribe()
                 }
             }
         }
+    }
+
+    fun interruptFileSending() {
+        sendDisposable?.dispose()
     }
 
     abstract fun getNextList()

@@ -868,15 +868,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onActionDialogClose() {
-        if (requireActivity() is OnBottomDialogCloseListener) {
-            (requireActivity() as OnBottomDialogCloseListener?)!!.onBottomDialogClose()
-        }
+        (requireActivity() as? OnBottomDialogCloseListener)?.onBottomDialogClose()
+
     }
 
     override fun onCloseCommonDialog() {
-        if (requireActivity() is OnCommonDialogClose) {
-            (requireActivity() as OnCommonDialogClose?)!!.onCommonClose()
-        }
+        (requireActivity() as? OnCommonDialogClose)?.onCommonClose()
+        presenter.interruptFileSending()
     }
 
     /*
