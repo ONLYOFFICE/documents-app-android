@@ -48,7 +48,7 @@ sealed class ExplorerContextItem(
 
     object Send : ExplorerContextItem(
         icon = R.drawable.ic_list_context_send_copy,
-        title = R.string.list_context_send_copy
+        title = lib.toolkit.base.R.string.export_send_copy
     ), ExplorerContextBlockOrder.Operation
 
     class Pin(pinned: Boolean) : ExplorerContextItem(

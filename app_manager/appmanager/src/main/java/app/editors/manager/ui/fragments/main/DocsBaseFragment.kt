@@ -8,15 +8,14 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.FileProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
@@ -261,6 +260,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (!isFastClick || explorerAdapter?.isSelectMode == true) {
             presenter.onItemClick(explorerAdapter?.getItem(position) as Item, position)
         }
+    }
+
+    override fun onSendCopy(file: File) {
+        activity?.openSendFileActivity(lib.toolkit.base.R.string.export_send_copy, file)
     }
 
     private val isFastClick: Boolean
@@ -749,7 +752,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (isActivePage) {
             showWaitingDialog(
                 title = getString(R.string.download_manager_downloading),
-                progressType = WaitingHolder.ProgressType.CIRCLE
+                tag = null,
+                type = WaitingHolder.ProgressType.CIRCLE,
+                cancelButton = null,
+                gravity = Gravity.CENTER,
+                color = 0
             )
         }
     }
@@ -1189,16 +1196,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             dialog.onClickListener = this
             contextBottomDialog = dialog
             dialog.show(parentFragmentManager, ExplorerContextBottomDialog.TAG)
-        }
-    }
-
-    override fun onSendCopy(file: File) {
-        val uri  = FileProvider.getUriForFile(requireContext(), "${context?.packageName}.asc.provider", file)
-        with(Intent()) {
-            action = Intent.ACTION_SEND
-            type = "application/*"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            startActivity(this)
         }
     }
 }

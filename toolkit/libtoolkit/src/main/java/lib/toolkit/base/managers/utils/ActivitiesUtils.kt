@@ -21,9 +21,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.ActivitiesUtils.IMAGE_TYPE
+import java.io.File
 import java.io.Serializable
 
 
@@ -422,5 +425,15 @@ fun Bundle.contains(key: String): Boolean {
         this.containsKey(key)
     } catch (error: BadParcelableException) {
         false
+    }
+}
+
+fun FragmentActivity.openSendFileActivity(title: Int, file: File) {
+    val uri  = FileProvider.getUriForFile(this, "$packageName.asc.provider", file)
+    with(Intent()) {
+        action = Intent.ACTION_SEND
+        type = "application/*"
+        putExtra(Intent.EXTRA_STREAM, uri)
+        startActivity(Intent.createChooser(this, getString(title)))
     }
 }

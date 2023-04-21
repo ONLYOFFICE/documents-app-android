@@ -220,7 +220,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     protected fun showWaitingDialog(
         title: String?,
         tag: String?,
-        type: WaitingHolder.ProgressType,
+        type: WaitingHolder.ProgressType = WaitingHolder.ProgressType.HORIZONTAL,
         cancelButton: String?,
         gravity: Int,
         color: Int
