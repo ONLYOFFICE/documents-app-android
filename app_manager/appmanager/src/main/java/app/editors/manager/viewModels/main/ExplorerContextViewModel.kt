@@ -51,6 +51,17 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Delete(state)
             )
 
+            state.section is ApiContract.Section.Device -> listOf(
+                ExplorerContextItem.Header(state),
+                ExplorerContextItem.Edit,
+                ExplorerContextItem.Send,
+                ExplorerContextItem.Move,
+                ExplorerContextItem.Copy,
+                ExplorerContextItem.Upload,
+                ExplorerContextItem.Rename,
+                ExplorerContextItem.Delete(state)
+            )
+
             else -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit,

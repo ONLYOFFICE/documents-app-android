@@ -90,7 +90,7 @@ interface ExplorerContextItemVisible {
         get() = section == ApiContract.Section.Share
 
     private val ExplorerContextState.upload: Boolean
-        get() = section == ApiContract.Section.Device
+        get() = section == ApiContract.Section.Device && !isFolder
 
     private val ExplorerContextState.pin: Boolean
         get() = item.security.pin
