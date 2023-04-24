@@ -16,11 +16,10 @@ import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ListExplorerContextMenuBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.managers.utils.ManagerUiUtils.setItemIcon
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
@@ -103,11 +102,8 @@ class ContextBottomDialog : BaseBottomDialog() {
             dialog.setContentView(it.root)
             it.listExplorerContextHeaderTitleText.text = state.title
             it.listExplorerContextHeaderInfoText.text = state.info
-            it.listExplorerContextHeaderImage.setImageResource(state.iconResId)
             it.listExplorerContextHeaderImage.alpha = 1f
-            if (!state.isFolder) {
-                it.listExplorerContextHeaderImage.setFileIcon(StringUtils.getExtensionFromPath(state.title))
-            }
+            it.listExplorerContextHeaderImage.setItemIcon(state.item, state.isRoot)
         }
         setViewState()
 //        lifecycleScope.launch {
@@ -457,6 +453,7 @@ class ContextBottomDialog : BaseBottomDialog() {
         var isVisitor: Boolean = false,
         var isRoom: Boolean = false,
         var isPin: Boolean = false,
+        var isRoot: Boolean = false,
         //TODO Remove
         var item: Item? = null
     ) : Serializable

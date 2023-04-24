@@ -286,6 +286,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         state.isPdf = isPdf
         state.isRoom = item is CloudFolder && item.isRoom
         state.isPin = item is CloudFolder && item.pinned
+        state.isRoot = isRoot
         state.iconResId = when (item) {
             is CloudFolder -> ManagerUiUtils.getFolderIcon(item, isRoot)
             else -> getIconContext(StringUtils.getExtensionFromPath(itemClickedTitle))

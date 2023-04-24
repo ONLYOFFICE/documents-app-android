@@ -43,6 +43,10 @@ open class CloudFolder : Item() {
     @Expose
     var tags = arrayOfNulls<String>(0)
 
+    @SerializedName("logo")
+    @Expose
+    val logo: CloudFolderLogo? = null
+
     var etag: String? = ""
 
     fun setFolder(folder: CloudFolder) {
