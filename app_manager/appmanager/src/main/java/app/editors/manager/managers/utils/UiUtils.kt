@@ -2,22 +2,17 @@ package app.editors.manager.managers.utils
 
 import android.view.View
 import android.widget.ImageView
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavService
-import app.editors.manager.BuildConfig
-import app.editors.manager.R
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.webdav.WebDavService
+import app.documents.core.storage.account.CloudAccount
+import app.editors.manager.BuildConfig
+import app.editors.manager.R
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
@@ -85,9 +80,6 @@ object ManagerUiUtils {
         }
     }
 
-    @Suppress("KotlinConstantConditions")
-    fun ImageView.setFileIcon(ext: String) {
-        @DrawableRes val resId = when (StringUtils.getExtension(ext)) {
     fun getIcon(item: Item): Int {
         return if (item is CloudFolder) {
             getFolderIcon(item)

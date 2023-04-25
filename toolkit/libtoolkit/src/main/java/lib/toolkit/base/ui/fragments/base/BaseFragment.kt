@@ -16,7 +16,6 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.Lifecycle
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.activities.base.BaseActivity
