@@ -9,8 +9,8 @@ import lib.toolkit.base.ui.adapters.factory.HolderFactory
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 
 class RecentHolderFactory(
-    private val itemListener: ((recent: Recent, position: Int) -> Unit)?,
-    private val contextListener: ((recent: Recent, position: Int) -> Unit)?
+    private val itemListener: ((recent: Recent) -> Unit)?,
+    private val contextListener: ((recent: Recent) -> Unit)?
 ) : HolderFactory() {
 
     override fun createViewHolder(view: View, type: Int): BaseViewHolder<*> {

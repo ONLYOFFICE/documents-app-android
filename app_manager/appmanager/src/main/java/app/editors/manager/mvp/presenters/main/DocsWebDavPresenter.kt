@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.providers.WebDavFileProvider
 import app.documents.core.storage.recent.Recent
@@ -15,7 +13,6 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.mvp.views.main.DocsWebDavView
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -32,7 +29,6 @@ import lib.toolkit.base.managers.utils.FileUtils.asyncDeletePath
 import lib.toolkit.base.managers.utils.NetworkUtils.isWifiEnable
 import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils.formatDate
 import moxy.InjectViewState
 import java.util.*
 
@@ -174,34 +170,6 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             viewState.onStateAdapterRoot(true)
             viewState.onStateUpdateRoot(true)
         }
-    }
-
-    override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
-        onClickEvent(item, position)
-        isContextClick = true
-        val state = ContextBottomDialog.State()
-        state.title = itemClickedTitle
-        state.info = formatDate(itemClickedDate)
-        state.isFolder = item is CloudFolder
-        state.isWebDav = true
-        state.isOneDrive = false
-        state.isGoogleDrive = false
-        state.isDropBox = false
-        state.isTrash = isTrash
-        if (!isClickedItemFile) {
-            state.iconResId = R.drawable.ic_type_folder
-        } else {
-            state.iconResId = getIconContext(
-                StringUtils.getExtensionFromPath(
-                    itemClickedTitle
-                )
-            )
-        }
-        state.isPdf = isPdf
-        if (state.isShared && state.isFolder) {
-            state.iconResId = R.drawable.ic_type_folder_shared
-        }
-        viewState.onItemContext(state)
     }
 
     override fun onActionClick() {

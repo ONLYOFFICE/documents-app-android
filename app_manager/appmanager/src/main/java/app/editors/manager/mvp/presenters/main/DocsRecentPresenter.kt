@@ -21,7 +21,6 @@ import app.editors.manager.managers.providers.DropboxStorageHelper
 import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.providers.OneDriveStorageHelper
 import app.editors.manager.mvp.views.main.DocsRecentView
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -219,32 +218,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    fun contextClick(recent: Recent, position: Int) {
-        presenterScope.launch {
-            contextItem = recent
-            contextPosition = position
-            val state = ContextBottomDialog.State()
-            state.title = recent.name
-            if (!recent.isLocal) {
-                accountDao.getAccount(recent.ownerId ?: "")?.let {
-                    state.info =
-                        it.portal + context.getString(R.string.placeholder_point) + TimeUtils.formatDate(Date(recent.date))
-                }
-
-            } else {
-                state.info = TimeUtils.formatDate(Date(recent.date))
-            }
-            state.iconResId = getIconContext(StringUtils.getExtensionFromPath(recent.name))
-            state.isRecent = true
-            if (recent.isLocal) {
-                state.isLocal = true
-            }
-            withContext(Dispatchers.Main) {
-                viewState.onContextShow(state)
-            }
-        }
-    }
-
     override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         item?.let { item ->
             if (item.isWebDav) {
@@ -318,23 +291,29 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         return explorer
     }
 
-    fun fileClick(recent: Recent, position: Int) {
+    fun onContextClick(recent: Recent) {
         item = recent
-        if (recent.isLocal) {
-            recent.path?.let { path ->
-                Uri.parse(path)?.let {
-                    if (it.scheme != null) {
-                        openLocalFile(it)
-                    } else {
-                        openLocalFile(Uri.fromFile(File(path)))
+    }
+
+    fun fileClick(recent: Recent? = item) {
+        recent?.let { item = recent }
+        item?.let { recentItem ->
+            if (recentItem.isLocal) {
+                recentItem.path?.let { path ->
+                    Uri.parse(path)?.let { uri ->
+                        if (uri.scheme != null) {
+                            openLocalFile(uri)
+                        } else {
+                            openLocalFile(Uri.fromFile(File(path)))
+                        }
+                        addRecent(recentItem)
                     }
-                    addRecent(recent)
                 }
-            }
-        } else {
-            presenterScope.launch {
-                if (checkCloudFile(recent)) {
-                    addRecent(recent)
+            } else {
+                presenterScope.launch {
+                    if (checkCloudFile(recentItem)) {
+                        addRecent(recentItem)
+                    }
                 }
             }
         }
@@ -451,10 +430,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 recentDao.updateRecent(it.copy(date = Date().time))
             }
         }
-    }
-
-    override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
-        // stub
     }
 
     override fun getNextList() {

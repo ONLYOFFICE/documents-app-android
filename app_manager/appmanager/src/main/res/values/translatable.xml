@@ -509,6 +509,7 @@
     <string name="download_manager_cancel">Download canceled</string>
     <string name="download_manager_repeat">File is already being downloaded</string>
     <string name="download_manager_open">Open</string>
+    <string name="download_manager_downloading">Downloading…</string>
     <string name="download_manager_notification_cancel_download">Cancel download</string>
     <string name="download_manager_folders_download">Folders cannot be downloaded</string>
     <string name="download_manager_select_files">Select files</string>

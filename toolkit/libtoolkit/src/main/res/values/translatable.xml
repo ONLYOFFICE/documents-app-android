@@ -16,4 +16,6 @@
     <string name="about_email_subject">ONLYOFFICE Documents for Android feedback</string>
     <string name="about_feedback">Feedback and support</string>
 
+    <string name="export_send_copy">Send a copy</string>
+
 </resources>

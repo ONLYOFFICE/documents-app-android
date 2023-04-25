@@ -287,16 +287,15 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             binding.shareSettingsAddItem.hide()
             placeholderViews = PlaceholderViews(binding.placeholderLayout.root)
             placeholderViews?.setViewForHide(binding.shareMainListOfItems)
-            binding.shareSettingsListSwipeRefresh.setOnRefreshListener(this@SettingsFragment)
-            binding.shareSettingsListSwipeRefresh.setColorSchemeColors(
-                ContextCompat.getColor(requireContext(), lib.toolkit.base.R.color.colorSecondary)
-            )
-            shareSettingsAdapter = ShareAdapter(ShareHolderFactory { view, position ->
-                onItemContextClick(view, position)
-            })
+            shareSettingsAdapter = ShareAdapter(ShareHolderFactory(::onItemContextClick))
             binding.shareMainListOfItems.layoutManager = LinearLayoutManager(context)
             binding.shareMainListOfItems.adapter = shareSettingsAdapter
             ViewCompat.setNestedScrollingEnabled(binding.shareMainListOfItems, false)
+            with(binding.shareSettingsListSwipeRefresh) {
+                setColorSchemeResources(lib.toolkit.base.R.color.colorSecondary)
+                setProgressBackgroundColorSchemeResource(lib.toolkit.base.R.color.colorSurface)
+                setOnRefreshListener(this@SettingsFragment)
+            }
         }
     }
 

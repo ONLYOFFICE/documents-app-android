@@ -6,6 +6,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.util.List;
 
 import app.documents.core.network.manager.models.base.Entity;
@@ -15,7 +16,6 @@ import app.documents.core.network.manager.models.explorer.Explorer;
 import app.documents.core.network.manager.models.explorer.Item;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.views.base.BaseViewExt;
-import app.editors.manager.ui.dialogs.ContextBottomDialog;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import moxy.viewstate.strategy.OneExecutionStateStrategy;
 import moxy.viewstate.strategy.StateStrategyType;
@@ -35,8 +35,6 @@ public interface DocsBaseView extends BaseViewExt {
     void onDocsFilter(@Nullable List<Entity> list);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDocsNext(@Nullable List<Entity> list);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDocsAccess(boolean isAccess, @NonNull String message);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDocsBatchOperation();
 
@@ -88,8 +86,6 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemSelected(int position, String countSelected);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onItemContext(@NonNull ContextBottomDialog.State state);
-    @StateStrategyType(OneExecutionStateStrategy.class)
     void onActionDialog(boolean isThirdParty, boolean isShowDocs);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDownloadActivity(Uri uri);
@@ -113,6 +109,8 @@ public interface DocsBaseView extends BaseViewExt {
     void onDialogClose();
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogWaiting(@Nullable String title, @Nullable String tag);
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onDialogDownloadWaiting();
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogQuestion(@Nullable String title, @Nullable String question, @Nullable String tag);
     @StateStrategyType(OneExecutionStateStrategy.class)
@@ -151,4 +149,6 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onShowCamera(Uri photoUri);
 
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onSendCopy(@NonNull File file);
 }

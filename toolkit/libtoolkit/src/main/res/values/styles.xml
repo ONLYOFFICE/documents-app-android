@@ -408,7 +408,7 @@
     <style name="ContextListImage" parent="AlphaImageView">
         <item name="android:layout_width">@dimen/image_default_size</item>
         <item name="android:layout_height">@dimen/image_default_size</item>
-        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:tint">@color/colorOnSurface</item>
     </style>
 

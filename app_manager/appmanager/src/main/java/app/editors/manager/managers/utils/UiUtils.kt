@@ -17,6 +17,7 @@ import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
@@ -87,6 +88,16 @@ object ManagerUiUtils {
     @Suppress("KotlinConstantConditions")
     fun ImageView.setFileIcon(ext: String) {
         @DrawableRes val resId = when (StringUtils.getExtension(ext)) {
+    fun getIcon(item: Item): Int {
+        return if (item is CloudFolder) {
+            getFolderIcon(item)
+        } else {
+            getFileIcon(StringUtils.getExtensionFromPath(item.title))
+        }
+    }
+
+    fun getFileIcon(ext: String): Int {
+       return when (StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
             StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
             StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
@@ -108,7 +119,10 @@ object ManagerUiUtils {
             }
             else -> R.drawable.ic_type_file
         }
-        setImageResource(resId)
+    }
+
+    fun ImageView.setFileIcon(ext: String) {
+        setImageResource(getFileIcon(ext))
         alpha = 1.0f
     }
 
@@ -116,15 +130,11 @@ object ManagerUiUtils {
         setImageResource(getFolderIcon(folder, isRoot))
     }
 
-    fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
+    private fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
         return when {
             folder.shared && folder.providerKey.isEmpty() -> R.drawable.ic_type_folder_shared
-            isRoot && folder.providerItem && folder.providerKey.isNotEmpty() -> {
-                StorageUtils.getStorageIcon(folder.providerKey)
-            }
-            folder.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM.toString() -> {
-                R.drawable.ic_type_archive
-            }
+            isRoot && folder.providerItem -> StorageUtils.getStorageIcon(folder.providerKey)
+            ApiContract.SectionType.isArchive(folder.rootFolderType)-> R.drawable.ic_type_archive
             folder.isRoom -> getRoomIcon(folder)
             else -> R.drawable.ic_type_folder
         }
