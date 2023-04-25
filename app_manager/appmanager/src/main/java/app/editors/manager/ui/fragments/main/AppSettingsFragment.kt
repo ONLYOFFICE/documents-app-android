@@ -185,9 +185,13 @@ class AppSettingsFragment : BaseAppFragment(), View.OnClickListener {
     override fun onClick(view: View) {
         when (view.id) {
             R.id.clearCache -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    AppLocaleConfirmationActivity.show(requireContext())
-                }
+                showQuestionDialog(
+                    "",
+                    getString(R.string.dialog_clear_cache),
+                    getString(R.string.dialogs_common_ok_button),
+                    getString(R.string.dialogs_common_cancel_button),
+                    TAG_DIALOG_TRASH
+                )
             }
             R.id.appLocale -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
