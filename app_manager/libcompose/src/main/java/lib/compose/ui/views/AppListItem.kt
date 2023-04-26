@@ -2,6 +2,7 @@ package lib.compose.ui.views
 
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -32,7 +33,7 @@ internal fun AppListItem(
     subtitle: String? = null,
     background: Color? = null,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color = MaterialTheme.colors.primary,
+    startIconTint: Color? = MaterialTheme.colors.primary,
     endContent: @Composable () -> Unit = {},
     paddingEnd: Dp = 16.dp,
     dividerVisible: Boolean = true,
@@ -58,15 +59,26 @@ internal fun AppListItem(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                 startIcon?.let {
-                    Icon(
-                        modifier = Modifier
-                            .padding(end = 16.dp)
-                            .size(24.dp)
-                            .enabled(enabled),
-                        painter = painterResource(id = startIcon),
-                        tint = startIconTint,
-                        contentDescription = null
-                    )
+                    if (startIconTint != null) {
+                        Icon(
+                            modifier = Modifier
+                                .padding(end = 16.dp)
+                                .size(24.dp)
+                                .enabled(enabled),
+                            painter = painterResource(id = startIcon),
+                            tint = startIconTint,
+                            contentDescription = null
+                        )
+                    } else {
+                        Image(
+                            modifier = Modifier
+                                .padding(end = 16.dp)
+                                .size(24.dp)
+                                .enabled(enabled),
+                            painter = painterResource(id = startIcon),
+                            contentDescription = null
+                        )
+                    }
                 }
                 Column(modifier = Modifier.enabled(enabled)) {
                     Text(
@@ -105,7 +117,7 @@ fun AppListItemsInteractivePreview() {
 
     ManagerTheme {
         AppScaffold(topBar = {
-            TopAppBar(title = R.string.app_title, actions = {
+            AppTopBar(title = R.string.app_title, actions = {
                 TopAppBarAction(icon = R.drawable.drawable_ic_logo) { }
                 TopAppBarAction(icon = R.drawable.drawable_ic_logo, enabled = false) { }
             }) { }

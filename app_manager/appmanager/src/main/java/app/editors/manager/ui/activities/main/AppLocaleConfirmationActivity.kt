@@ -24,10 +24,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
-import app.editors.manager.compose.ui.theme.AppManagerTheme
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.fillMaxWidth
-import app.editors.manager.ui.compose.base.Spacer
+import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
 import java.util.*
@@ -72,7 +72,7 @@ class AppLocaleConfirmationActivity : AppCompatActivity() {
         localeHelper: AppLocaleHelper,
         onClick: () -> Unit = {}
     ) {
-        AppManagerTheme {
+        ManagerTheme {
             Scaffold { padding ->
                 Surface(
                     color = MaterialTheme.colors.background,
@@ -109,7 +109,7 @@ class AppLocaleConfirmationActivity : AppCompatActivity() {
                                     locale = localeHelper.systemLocale
                                 )
                             )
-                            Spacer(size = 48.dp)
+                            VerticalSpacer(height = 48.dp)
                             Button(
                                 onClick = {
                                     localeHelper.changeLocale(null, true)
@@ -126,7 +126,7 @@ class AppLocaleConfirmationActivity : AppCompatActivity() {
                                     )
                                 )
                             }
-                            Spacer(size = 16.dp)
+                            VerticalSpacer(height = 16.dp)
                             localeHelper.appLocale?.let { locale ->
                                 TextButton(onClick = {
                                     localeHelper.setPrefs(true)
@@ -140,7 +140,7 @@ class AppLocaleConfirmationActivity : AppCompatActivity() {
                                     )
                                 }
                             }
-                            Spacer(size = 24.dp)
+                            VerticalSpacer(height = 24.dp)
                         }
                     }
                 }

@@ -21,7 +21,7 @@ import androidx.navigation.NavController
 import app.editors.manager.managers.utils.BiometricsUtils
 import app.editors.manager.ui.compose.activities.main.PasscodeScreens
 import app.editors.manager.viewModels.main.SetPasscodeViewModel
-import lib.compose.ui.views.TopAppBar
+import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
 
@@ -36,7 +36,7 @@ fun PasscodeLock(
 
 
     Scaffold(topBar = {
-        TopAppBar(
+        AppTopBar(
             title = app.editors.manager.R.string.app_settings_passcode,
             backListener = backPressed
         )

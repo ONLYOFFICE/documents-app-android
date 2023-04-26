@@ -43,11 +43,6 @@ val Typography = Typography(
         lineHeight = 21.sp,
         letterSpacing = 0.1.sp
     ),
-    button = TextStyle(
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp,
-        letterSpacing = 0.25.sp
-    ),
     h1 = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Light,

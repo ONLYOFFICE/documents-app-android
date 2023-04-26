@@ -9,17 +9,13 @@ import android.webkit.WebView
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -36,16 +32,10 @@ import app.editors.manager.R
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.main.AppSettingsItem
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.views.TopAppBar
+import lib.compose.ui.views.AppScaffold
+import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.managers.utils.FileUtils
-
-private sealed class AboutClickedItem {
-    object Terms : AboutClickedItem()
-    object Policy : AboutClickedItem()
-    object License : AboutClickedItem()
-    object Web : AboutClickedItem()
-}
 
 enum class Screen(val screen: String) {
     About("about"), License("license")
@@ -68,22 +58,14 @@ class AboutActivity : BaseAppActivity() {
             NavHost(navController = navController, startDestination = Screen.About.screen) {
                 composable(Screen.About.screen) {
                     AboutScreen(
+                        navController = navController,
                         sdkVersion = FileUtils.readSdkVersion(this@AboutActivity, "sdk.version"),
                         backPressed = ::finish,
-                        itemClick = { itemClick ->
-                            when (itemClick) {
-                                is AboutClickedItem.Terms -> showUrlInBrowser(getString(R.string.app_url_terms))
-                                is AboutClickedItem.Policy -> showUrlInBrowser(getString(R.string.app_url_policy))
-                                is AboutClickedItem.License -> navController.navigate(Screen.License.screen)
-                                is AboutClickedItem.Web -> showUrlInBrowser(getString(R.string.app_url_main))
-                            }
-                        }
+                        onClick = { url -> showUrlInBrowser(getString(url)) }
                     )
                 }
                 composable(Screen.License.screen) {
-                    LicenseScreen {
-                        navController.popBackStack()
-                    }
+                    LicenseScreen(backListener = navController::popBackStack)
                 }
             }
         }
@@ -93,16 +75,17 @@ class AboutActivity : BaseAppActivity() {
 
 @Composable
 private fun AboutScreen(
+    navController: NavHostController,
     sdkVersion: String,
     backPressed: () -> Unit,
     onClick: (Int) -> Unit
 ) {
     ManagerTheme {
         AppScaffold(topBar = {
-            TopAppBar(title = R.string.about_title, backListener = backPressed)
+            AppTopBar(title = R.string.about_title, backListener = backPressed)
         }) {
             Column(
-                modifier = Modifier.verticalScroll(scrollState),
+                modifier = Modifier.verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 VerticalSpacer(height = 40.dp)
@@ -126,18 +109,10 @@ private fun AboutScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 VerticalSpacer(height = 48.dp)
-                AppSettingsItem(title = R.string.about_terms) {
-                    itemClick(AboutClickedItem.Terms)
-                }
-                AppSettingsItem(title = R.string.about_policy) {
-                    itemClick(AboutClickedItem.Policy)
-                }
-                AppSettingsItem(title = R.string.about_license) {
-                    itemClick(AboutClickedItem.License)
-                }
-                AppSettingsItem(title = R.string.about_website) {
-                    itemClick(AboutClickedItem.Web)
-                }
+                AppSettingsItem(title = R.string.about_terms) { onClick(R.string.app_url_terms) }
+                AppSettingsItem(title = R.string.about_policy) { onClick(R.string.app_url_policy) }
+                AppSettingsItem(title = R.string.about_license) { navController.navigate(Screen.License.screen) }
+                AppSettingsItem(title = R.string.about_website) { onClick(R.string.app_url_main) }
             }
         }
     }
@@ -147,9 +122,9 @@ private fun AboutScreen(
 private fun LicenseScreen(backListener: () -> Unit) {
     ManagerTheme {
         AppScaffold(topBar = {
-            TopAppBar(title = R.string.about_license, backListener = backListener)
+            AppTopBar(title = R.string.about_license, backListener = backListener)
         }) {
-            AndroidView(modifier = Modifier.padding(padding), factory = { context ->
+            AndroidView(factory = { context ->
                 WebView(context).apply {
                     layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -168,7 +143,6 @@ fun PreviewTablet() {
     AboutScreen(
         navController = rememberNavController(),
         sdkVersion = "5.4.21",
-        isTablet = true,
         backPressed = { },
         onClick = {})
 }
@@ -179,7 +153,6 @@ fun PreviewPhone() {
     AboutScreen(
         navController = rememberNavController(),
         sdkVersion = "5.4.21",
-        isTablet = false,
         backPressed = { },
         onClick = {})
 }
@@ -190,7 +163,6 @@ fun PreviewPhoneDarkMode() {
     AboutScreen(
         navController = rememberNavController(),
         sdkVersion = "5.4.21",
-        isTablet = false,
         backPressed = { },
         onClick = {})
 }

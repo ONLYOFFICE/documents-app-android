@@ -21,8 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
-import app.editors.manager.compose.ui.theme.AppManagerTheme
-import app.editors.manager.ui.compose.base.CustomAppBar
+import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.views.AppTopBar
 import lib.toolkit.base.managers.utils.capitalize
 import java.util.*
 
@@ -51,12 +51,11 @@ class AppLocalePickerActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
     private fun AppLocalePickerScreen(localeHelper: AppLocaleHelper, onBackListener: () -> Unit) {
-        AppManagerTheme {
+        ManagerTheme {
             Scaffold(topBar = {
-                CustomAppBar(
+                AppTopBar(
                     title = R.string.settings_language,
-                    icon = R.drawable.ic_toolbar_back,
-                    onClick = onBackListener
+                    backListener = onBackListener
                 )
             }) { padding ->
                 Surface(color = MaterialTheme.colors.background, modifier = Modifier.padding(padding)) {

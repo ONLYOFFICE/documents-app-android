@@ -3,6 +3,7 @@ package lib.compose.ui.views
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Icon
@@ -15,11 +16,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorGrey
 import lib.toolkit.base.R
+
+/**
+ * @param startIconTint pass null so as not to apply any tint
+ * @param endIconTint pass null so as not to apply any tint
+ **/
 
 @Composable
 fun AppArrowItem(
@@ -27,9 +34,9 @@ fun AppArrowItem(
     title: String,
     subtitle: String? = null,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color = MaterialTheme.colors.primary,
+    startIconTint: Color? = MaterialTheme.colors.primary,
     @DrawableRes endIcon: Int = R.drawable.ic_arrow_right,
-    endIconTint: Color = MaterialTheme.colors.colorGrey,
+    endIconTint: Color? = MaterialTheme.colors.colorGrey,
     optionTint: Color = MaterialTheme.colors.colorGrey,
     background: Color? = null,
     option: String? = null,
@@ -59,16 +66,28 @@ fun AppArrowItem(
                     )
                 }
                 if (arrowVisible) {
-                    Icon(
-                        painter = painterResource(id = endIcon),
-                        tint = endIconTint,
-                        contentDescription = null,
-                    )
+                    if (endIconTint != null) {
+                        Icon(
+                            painter = painterResource(id = endIcon),
+                            tint = endIconTint,
+                            contentDescription = null,
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = endIcon),
+                            contentDescription = null
+                        )
+                    }
                 }
             }
         }
     )
 }
+
+/**
+ * @param startIconTint pass null so as not to apply any tint
+ * @param endIconTint pass null so as not to apply any tint
+ **/
 
 @Composable
 fun AppArrowItem(
@@ -76,9 +95,9 @@ fun AppArrowItem(
     @StringRes title: Int,
     @StringRes subtitle: Int? = null,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color = MaterialTheme.colors.primary,
+    startIconTint: Color? = MaterialTheme.colors.primary,
     @DrawableRes endIcon: Int = R.drawable.ic_arrow_right,
-    endIconTint: Color = MaterialTheme.colors.colorGrey,
+    endIconTint: Color? = MaterialTheme.colors.colorGrey,
     optionTint: Color = MaterialTheme.colors.colorGrey,
     background: Color? = null,
     option: String? = null,

@@ -18,7 +18,7 @@ import lib.compose.ui.theme.colorTopAppBar
 import lib.toolkit.base.R
 
 @Composable
-fun TopAppBar(
+fun AppTopBar(
     title: String,
     isClose: Boolean = false,
     tint: Color? = null,
@@ -53,14 +53,14 @@ fun TopAppBar(
 }
 
 @Composable
-fun TopAppBar(
+fun AppTopBar(
     @StringRes title: Int,
     isClose: Boolean = false,
     tint: Color? = null,
     actions: @Composable (() -> Unit)? = null,
     backListener: () -> Unit
 ) {
-    TopAppBar(
+    AppTopBar(
         title = stringResource(id = title),
         isClose = isClose,
         tint = tint,
@@ -69,10 +69,11 @@ fun TopAppBar(
     )
 }
 
+@Preview
 @Composable
 private fun TopAppBarPreview() {
     ManagerTheme {
-        TopAppBar(
+        AppTopBar(
             title = R.string.app_title,
             actions = {
                 TopAppBarAction(icon = R.drawable.drawable_ic_visibility_off, enabled = false) { }
@@ -86,7 +87,7 @@ private fun TopAppBarPreview() {
 @Composable
 private fun TopAppBarPreviewDark() {
     ManagerTheme {
-        TopAppBar(
+        AppTopBar(
             title = R.string.app_title,
             isClose = true,
             actions = {
