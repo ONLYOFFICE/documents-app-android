@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/toolbar_item_open"
-        android:icon="@drawable/drawable_menu_open_file"
+        android:icon="@drawable/ic_toolbar_open"
         android:orderInCategory="1"
         android:title="@string/toolbar_menu_main_open"
         android:visible="false"

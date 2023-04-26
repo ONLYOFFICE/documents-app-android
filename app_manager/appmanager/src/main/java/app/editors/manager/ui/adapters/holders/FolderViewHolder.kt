@@ -25,7 +25,7 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
         }
 
         viewBinding.listExplorerFolderContext.setOnClickListener {
-            adapter.mOnItemContextListener?.onItemContextClick(view, layoutPosition)
+            adapter.mOnItemContextListener?.onItemContextClick(layoutPosition)
         }
     }
 

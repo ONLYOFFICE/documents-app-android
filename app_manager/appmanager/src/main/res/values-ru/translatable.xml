@@ -566,4 +566,9 @@
     <string name="room_delete_success">Комната удалена</string>
     <string name="switch_account_title">Сменить аккаунт?</string>
     <string name="switch_account_description">Войдите на портал %1$s, чтобы открыть документ.</string>
+
+    <string name="settings_language_confirmation_message">Приложение теперь на русском языке, потому что вы изменили язык всей системы</string>
+    <string name="settings_language_confirmation_accept">Хорошо</string>
+    <string name="settings_language_continue_using_app_language">Продолжить использовать %1$s</string>
+
 </resources>

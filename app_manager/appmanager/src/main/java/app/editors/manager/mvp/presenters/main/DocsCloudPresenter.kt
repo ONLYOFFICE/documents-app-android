@@ -16,6 +16,7 @@ import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.recent.Recent
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.*
 import app.editors.manager.managers.receivers.DownloadReceiver
@@ -23,13 +24,11 @@ import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListene
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.Observable
@@ -43,7 +42,6 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 import java.util.*
@@ -259,39 +257,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
-        onClickEvent(item, position)
-        isContextClick = true
-        val state = ContextBottomDialog.State()
-        state.item = itemClicked
-        state.title = itemClickedTitle
-        state.info = TimeUtils.formatDate(itemClickedDate)
-        state.isFolder = !isClickedItemFile
-        state.isShared = isClickedItemShared
-        state.isCanShare = isItemShareable
-        state.isCanRename = isItemReadWrite
-        state.isDocs = isClickedItemDocs
-        state.isContextEditable = isContextItemEditable
-        state.isItemEditable = isItemEditable
-        state.isStorage = isClickedItemStorage && isRoot
-        state.isDeleteShare = isShareSection
-        state.isWebDav = false
-        state.isOneDrive = false
-        state.isGoogleDrive = false
-        state.isDropBox = false
-        state.isTrash = isTrashSection
-        state.isFavorite = isClickedItemFavorite
-        state.isPersonalAccount = account.isPersonal()
-        state.isPdf = isPdf
-        state.isRoom = item is CloudFolder && item.isRoom
-        state.isPin = item is CloudFolder && item.pinned
-        state.iconResId = when (item) {
-            is CloudFolder -> ManagerUiUtils.getFolderIcon(item, isRoot)
-            else -> getIconContext(StringUtils.getExtensionFromPath(itemClickedTitle))
-        }
-        viewState.onItemContext(state)
-    }
-
     override fun onActionClick() {
         viewState.onActionDialog(
             isRoot && (isUserSection || isCommonSection && isAdmin),
@@ -446,9 +411,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
             presenterScope.launch {
-                val shareApi = context.shareApi
                 request(
-                    func = { shareApi.getShareFile(item.id) },
+                    func = { context.shareApi.getShareFile(item.id) },
                     map = { response ->
                         response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
                     },
@@ -456,7 +420,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         if (externalLink.isNotEmpty()) {
                             setDataToClipboard(externalLink)
                         } else {
-                            viewState.onDocsAccess(false, context.getString(R.string.share_access_denied))
+                            viewState.onSnackBar(context.getString(R.string.share_access_denied))
                         }
                     }, onError = ::fetchError
                 )
@@ -541,9 +505,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private fun setDataToClipboard(value: String) {
         KeyboardUtils.setDataToClipboard(
             context,
-            value, context.getString(R.string.share_clipboard_external_link_label)
+            value,
+            context.getString(R.string.share_clipboard_external_link_label)
         )
-        viewState.onDocsAccess(true, context.getString(R.string.share_clipboard_external_copied))
+        viewState.onSnackBar(context.getString(R.string.share_clipboard_external_copied))
     }
 
     private fun checkMoveCopyFiles(action: String) {
@@ -612,6 +577,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onStateUpdateFilterMenu()
     }
 
+    @Suppress("KotlinConstantConditions")
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
         if (model.file?.id == null && model.folder?.id != null) {
@@ -623,9 +589,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 id = model.file?.id.toString()
             }).subscribe({ file: CloudFile ->
                 itemClicked = file
-                when (StringUtils.getExtension(file.fileExst)) {
+                when (val ext = StringUtils.getExtension(file.fileExst)) {
                     StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
-                        viewState.onFileWebView(file)
+                        if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
+                            viewState.onError(context.getString(R.string.error_unsupported_format))
+                        } else {
+                            viewState.onFileWebView(file)
+                        }
                     }
 
                     StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {

@@ -178,15 +178,16 @@ class GoogleDriveFileProvider(
         return Observable.just(1)
             .map {
                 val title = body.title
-                val path = FileUtils.getTemplates(
-                    context, Locale.getDefault().language,
-                    StringUtils.getExtensionFromPath(PATH_TEMPLATES + body.title.lowercase())
+                val path = PATH_TEMPLATES + FileUtils.getTemplates(
+                    context = context,
+                    locale = Locale.getDefault().language,
+                    extension = StringUtils.getExtensionFromPath(body.title.lowercase())
                 )
                 val temp = FileUtils.createTempAssetsFile(
-                    context,
-                    path.orEmpty(),
-                    StringUtils.getNameWithoutExtension(title),
-                    StringUtils.getExtensionFromPath(title)
+                    context = context,
+                    from = path,
+                    name = StringUtils.getNameWithoutExtension(title),
+                    ext = StringUtils.getExtensionFromPath(title)
                 )
                 upload(folderId, mutableListOf(Uri.fromFile(temp))).subscribe()
                 val file = CloudFile()

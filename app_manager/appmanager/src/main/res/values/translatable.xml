@@ -509,6 +509,7 @@
     <string name="download_manager_cancel">Download canceled</string>
     <string name="download_manager_repeat">File is already being downloaded</string>
     <string name="download_manager_open">Open</string>
+    <string name="download_manager_downloading">Downloading…</string>
     <string name="download_manager_notification_cancel_download">Cancel download</string>
     <string name="download_manager_folders_download">Folders cannot be downloaded</string>
     <string name="download_manager_select_files">Select files</string>
@@ -730,5 +731,14 @@
     <string name="room_delete_success">Room deleted</string>
     <string name="switch_account_title">Switch account?</string>
     <string name="switch_account_description">Log in to the portal account %1$s to open the document.</string>
+
+    <string name="settings_language">Language</string>
+
+    <!--  TODO example  -->
+    <string name="settings_language_confirmation_message">
+        Now application is using english language because of the system language has changed
+    </string>
+    <string name="settings_language_confirmation_accept">Good</string>
+    <string name="settings_language_continue_using_app_language">Continue using %1$s</string>
 
 </resources>

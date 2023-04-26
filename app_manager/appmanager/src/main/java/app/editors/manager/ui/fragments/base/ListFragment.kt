@@ -12,7 +12,6 @@ import app.editors.manager.R
 import app.editors.manager.databinding.FragmentListBinding
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.recyclers.LoadingScroll
-import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.ui.recycler.WrapLinearLayoutManager
 
 abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -43,28 +42,21 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
     }
 
     private fun init() {
-        fragmentListBinding?.let {
-            val resourcesProvider = ResourcesProvider(requireContext())
-            placeholderViews = PlaceholderViews(it.placeholderLayout.root)
-            placeholderViews?.setViewForHide(it.listOfItems)
-            it.listOfItems.layoutAnimation = AnimationUtils.loadLayoutAnimation(
-                context, R.anim.recycler_view_animation_layout
-            )
-            linearLayoutManager = WrapLinearLayoutManager(requireContext())
-            it.listSwipeRefresh.setProgressBackgroundColorSchemeColor(resourcesProvider
-                .getColor(lib.toolkit.base.R.color.colorTransparent)
-            )
-            it.listSwipeRefresh.setColorSchemeColors(resourcesProvider
-                .getColor(lib.toolkit.base.R.color.colorSecondary))
-            it.listSwipeRefresh.setOnRefreshListener(this)
-            it.listOfItems.layoutManager = linearLayoutManager
-            it.listOfItems.addOnScrollListener(object : LoadingScroll() {
-                override fun onListEnd() {
-                    this@ListFragment.onListEnd()
-                }
-            })
-            recyclerView = it.listOfItems
-            swipeRefreshLayout = it.listSwipeRefresh
+        fragmentListBinding?.let { binding ->
+            placeholderViews = PlaceholderViews(binding.placeholderLayout.root)
+            placeholderViews?.setViewForHide(binding.listOfItems)
+            recyclerView = binding.listOfItems.apply {
+                layoutManager = WrapLinearLayoutManager(requireContext()).also { linearLayoutManager = it }
+                layoutAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.recycler_view_animation_layout)
+                addOnScrollListener(object : LoadingScroll() {
+                    override fun onListEnd() = this@ListFragment.onListEnd()
+                })
+            }
+            swipeRefreshLayout = binding.listSwipeRefresh.apply {
+                setColorSchemeResources(lib.toolkit.base.R.color.colorSecondary)
+                setProgressBackgroundColorSchemeResource(lib.toolkit.base.R.color.colorSurface)
+                setOnRefreshListener(this@ListFragment)
+            }
         }
     }
 

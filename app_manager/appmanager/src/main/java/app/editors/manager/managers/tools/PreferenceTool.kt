@@ -40,6 +40,8 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
         private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
         private const val KEY_FILTER = "KEY_FILTER"
+        private const val KEY_SYSTEM_LOCALE = "KEY_SYSTEM_LOCALE"
+        private const val KEY_SKIP_LOCALE_CONFIRMATION = "KEY_SKIP_LOCALE_CONFIRMATION"
 
         private val PERSONAL_ADDRESSES: Set<String> = object : TreeSet<String>() {
             init {
@@ -233,5 +235,17 @@ class PreferenceTool @Inject constructor(val context: Context) {
         get() = Filter.toObject(sharedPreferences.getString(KEY_FILTER, Filter.toJson(Filter())))
         set(filter) {
             sharedPreferences.edit().putString(KEY_FILTER, Filter.toJson(filter)).apply()
+        }
+
+    var systemLocale: String?
+        get() = sharedPreferences.getString(KEY_SYSTEM_LOCALE, "")
+        set(value) {
+            sharedPreferences.edit().putString(KEY_SYSTEM_LOCALE, value).apply()
+        }
+
+    var skipLocaleConfirmation: Boolean
+        get() = sharedPreferences.getBoolean(KEY_SKIP_LOCALE_CONFIRMATION, false)
+        set(value) {
+            sharedPreferences.edit().putBoolean(KEY_SKIP_LOCALE_CONFIRMATION, value).apply()
         }
 }

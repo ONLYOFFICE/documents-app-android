@@ -15,13 +15,18 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp,
+        letterSpacing = 0.15.sp,
     ),
     body2 = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 21.sp,
+        letterSpacing = 0.25.sp
+    ),
+    button = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
         letterSpacing = 0.25.sp
     ),
     subtitle1 = TextStyle(

@@ -23,7 +23,7 @@ abstract class StorageHelper<T : IStorageProvider>(
                 val data = Data.Builder()
                     .putString(BaseStorageUploadWork.TAG_FOLDER_ID, folderId)
                     .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, it.toString())
-                    .putString(BaseStorageUploadWork.KEY_TAG, BaseStorageDocsFragment.KEY_UPDATE)
+                    .putString(BaseStorageUploadWork.KEY_TAG, BaseStorageDocsFragment.KEY_CREATE)
                     .build()
 
                 val request = OneTimeWorkRequest.Builder(work)

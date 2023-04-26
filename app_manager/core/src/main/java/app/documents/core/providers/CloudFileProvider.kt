@@ -1,6 +1,9 @@
 package app.documents.core.providers
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
+import androidx.core.net.toUri
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.ManagerService
@@ -9,11 +12,16 @@ import app.documents.core.network.manager.models.request.*
 import app.documents.core.network.manager.models.response.*
 import app.documents.core.network.room.RoomService
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.FileUtils
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
+import java.io.File
+import java.io.FileNotFoundException
 import javax.inject.Inject
 
 class CloudFileProvider @Inject constructor(
@@ -27,6 +35,8 @@ class CloudFileProvider @Inject constructor(
     }
 
     var roomCallback: RoomCallback? = null
+
+    private var sendingCachedFile: File? = null
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return when {
@@ -339,4 +349,31 @@ class CloudFileProvider @Inject constructor(
                 }
             }
     }
+
+    @SuppressLint("MissingPermission")
+    fun cacheSendingFile(context: Context, cloudFile: CloudFile, account: String): Single<File> {
+        return managerService.downloadFile(
+            url = cloudFile.viewUrl,
+            cookie = ApiContract.COOKIE_HEADER + AccountUtils.getToken(context, account)
+        )
+            .subscribeOn(Schedulers.io())
+            .map { response ->
+                val responseBody = response.body()
+                if (response.isSuccessful && responseBody != null) {
+                    FileUtils.createCacheFile(context, cloudFile.title)?.also { file ->
+                        FileUtils.writeFromResponseBody(
+                            response = responseBody,
+                            to = file.toUri(),
+                            context = context
+                        )
+                    } ?: throw FileNotFoundException("Caching file error")
+                } else throw HttpException(response)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun removeSendingCachedFile() {
+        sendingCachedFile?.delete()
+    }
+
 }

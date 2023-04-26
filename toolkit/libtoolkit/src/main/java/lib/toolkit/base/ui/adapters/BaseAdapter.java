@@ -30,7 +30,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     }
 
     public interface OnItemContextListener {
-        void onItemContextClick(View view, int position);
+        void onItemContextClick(int position);
     }
 
     public OnItemClickListener mOnItemClickListener;

@@ -85,7 +85,3 @@
         app:layout_constraintStart_toStartOf="@id/list_explorer_folder_name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-

@@ -17,4 +17,6 @@
     <string name="about_feedback">Feedback and support</string>
     <string name="text_hint_required">Required</string>
 
+    <string name="export_send_copy">Send a copy</string>
+
 </resources>

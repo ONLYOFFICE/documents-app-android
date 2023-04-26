@@ -4,6 +4,7 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import app.editors.manager.BuildConfig
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
@@ -20,7 +21,6 @@ import app.editors.manager.managers.providers.DropboxStorageHelper
 import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.providers.OneDriveStorageHelper
 import app.editors.manager.mvp.views.main.DocsRecentView
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -193,11 +193,16 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
+    @Suppress("KotlinConstantConditions")
     private fun checkExt(file: CloudFile) {
         if (file.rootFolderType.toInt() != ApiContract.SectionType.CLOUD_TRASH) {
-            when (StringUtils.getExtension(file.fileExst)) {
+            when (val ext = StringUtils.getExtension(file.fileExst)) {
                 StringUtils.Extension.DOC, StringUtils.Extension.FORM, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                    viewState.openFile(file)
+                    if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
+
+                    } else {
+                        viewState.openFile(file)
+                    }
                 }
                 else -> viewState.onError(context.getString(R.string.error_unsupported_format))
             }
@@ -210,32 +215,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         presenterScope.launch {
             recentDao.updateRecent(recent.copy(date = Date().time))
             getRecentFiles()
-        }
-    }
-
-    fun contextClick(recent: Recent, position: Int) {
-        presenterScope.launch {
-            contextItem = recent
-            contextPosition = position
-            val state = ContextBottomDialog.State()
-            state.title = recent.name
-            if (!recent.isLocal) {
-                accountDao.getAccount(recent.ownerId ?: "")?.let {
-                    state.info =
-                        it.portal + context.getString(R.string.placeholder_point) + TimeUtils.formatDate(Date(recent.date))
-                }
-
-            } else {
-                state.info = TimeUtils.formatDate(Date(recent.date))
-            }
-            state.iconResId = getIconContext(StringUtils.getExtensionFromPath(recent.name))
-            state.isRecent = true
-            if (recent.isLocal) {
-                state.isLocal = true
-            }
-            withContext(Dispatchers.Main) {
-                viewState.onContextShow(state)
-            }
         }
     }
 
@@ -312,23 +291,29 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         return explorer
     }
 
-    fun fileClick(recent: Recent, position: Int) {
+    fun onContextClick(recent: Recent) {
         item = recent
-        if (recent.isLocal) {
-            recent.path?.let { path ->
-                Uri.parse(path)?.let {
-                    if (it.scheme != null) {
-                        openLocalFile(it)
-                    } else {
-                        openLocalFile(Uri.fromFile(File(path)))
+    }
+
+    fun fileClick(recent: Recent? = item) {
+        recent?.let { item = recent }
+        item?.let { recentItem ->
+            if (recentItem.isLocal) {
+                recentItem.path?.let { path ->
+                    Uri.parse(path)?.let { uri ->
+                        if (uri.scheme != null) {
+                            openLocalFile(uri)
+                        } else {
+                            openLocalFile(Uri.fromFile(File(path)))
+                        }
+                        addRecent(recentItem)
                     }
-                    addRecent(recent)
                 }
-            }
-        } else {
-            presenterScope.launch {
-                if (checkCloudFile(recent)) {
-                    addRecent(recent)
+            } else {
+                presenterScope.launch {
+                    if (checkCloudFile(recentItem)) {
+                        addRecent(recentItem)
+                    }
                 }
             }
         }
@@ -384,10 +369,17 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
+    @Suppress("KotlinConstantConditions")
     private fun openLocalFile(uri: Uri) {
         val name = getName(context, uri)
-        when (StringUtils.getExtension(StringUtils.getExtensionFromPath(name.lowercase(Locale.ROOT)))) {
-            StringUtils.Extension.DOC, StringUtils.Extension.FORM -> viewState.onOpenFile(OpenState.Docs(uri))
+        when (val ext = StringUtils.getExtension(StringUtils.getExtensionFromPath(name.lowercase(Locale.ROOT)))) {
+            StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
+                if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
+                    viewState.onError(context.getString(R.string.error_unsupported_format))
+                } else {
+                    viewState.onOpenFile(OpenState.Docs(uri))
+                }
+            }
             StringUtils.Extension.SHEET -> viewState.onOpenFile(OpenState.Cells(uri))
             StringUtils.Extension.PRESENTATION -> viewState.onOpenFile(OpenState.Slide(uri))
             StringUtils.Extension.PDF -> viewState.onOpenFile(OpenState.Pdf(uri))
@@ -438,10 +430,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 recentDao.updateRecent(it.copy(date = Date().time))
             }
         }
-    }
-
-    override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
-        // stub
     }
 
     override fun getNextList() {

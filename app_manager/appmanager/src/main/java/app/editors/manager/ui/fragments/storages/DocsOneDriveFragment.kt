@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
@@ -28,6 +29,8 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
 
     @InjectPresenter
     override lateinit var presenter: DocsOneDrivePresenter
+
+    override fun getSection(): ApiContract.Section = ApiContract.Section.Storage.OneDrive
 
     override fun getDocsPresenter() = presenter
 

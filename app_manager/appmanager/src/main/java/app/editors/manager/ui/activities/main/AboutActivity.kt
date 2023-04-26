@@ -2,6 +2,7 @@ package app.editors.manager.ui.activities.main
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import android.view.ViewGroup
 import android.webkit.WebView
@@ -18,11 +19,15 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -89,53 +94,49 @@ class AboutActivity : BaseAppActivity() {
 @Composable
 private fun AboutScreen(
     sdkVersion: String,
-    itemClick: (item: AboutClickedItem) -> Unit,
     backPressed: () -> Unit,
+    onClick: (Int) -> Unit
 ) {
-    val scrollState = rememberScrollState()
-
     ManagerTheme {
-        Scaffold(topBar = {
+        AppScaffold(topBar = {
             TopAppBar(title = R.string.about_title, backListener = backPressed)
-        }) { padding ->
-            Surface(modifier = Modifier.padding(padding), color = MaterialTheme.colors.background) {
-                Column(
-                    modifier = Modifier.verticalScroll(scrollState),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    VerticalSpacer(height = 40.dp)
-                    Image(
-                        painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text),
-                        contentDescription = null
-                    )
-                    VerticalSpacer(height = 16.dp)
-                    Text(
-                        text = stringResource(
-                            id = R.string.about_app_version,
-                            formatArgs = arrayOf(
-                                BuildConfig.VERSION_NAME,
-                                BuildConfig.VERSION_CODE.toString(),
-                                sdkVersion
-                            )
-                        ),
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                    VerticalSpacer(height = 48.dp)
-                    AppSettingsItem(title = R.string.about_terms) {
-                        itemClick(AboutClickedItem.Terms)
-                    }
-                    AppSettingsItem(title = R.string.about_policy) {
-                        itemClick(AboutClickedItem.Policy)
-                    }
-                    AppSettingsItem(title = R.string.about_license) {
-                        itemClick(AboutClickedItem.License)
-                    }
-                    AppSettingsItem(title = R.string.about_website) {
-                        itemClick(AboutClickedItem.Web)
-                    }
+        }) {
+            Column(
+                modifier = Modifier.verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                VerticalSpacer(height = 40.dp)
+                Image(
+                    painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text),
+                    contentDescription = null
+                )
+                VerticalSpacer(height = 16.dp)
+                Text(
+                    text = stringResource(
+                        id = R.string.about_app_version,
+                        formatArgs = arrayOf(
+                            BuildConfig.VERSION_NAME,
+                            BuildConfig.VERSION_CODE.toString(),
+                            sdkVersion
+                        )
+                    ),
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                VerticalSpacer(height = 48.dp)
+                AppSettingsItem(title = R.string.about_terms) {
+                    itemClick(AboutClickedItem.Terms)
+                }
+                AppSettingsItem(title = R.string.about_policy) {
+                    itemClick(AboutClickedItem.Policy)
+                }
+                AppSettingsItem(title = R.string.about_license) {
+                    itemClick(AboutClickedItem.License)
+                }
+                AppSettingsItem(title = R.string.about_website) {
+                    itemClick(AboutClickedItem.Web)
                 }
             }
         }
@@ -145,9 +146,9 @@ private fun AboutScreen(
 @Composable
 private fun LicenseScreen(backListener: () -> Unit) {
     ManagerTheme {
-        Scaffold(topBar = {
+        AppScaffold(topBar = {
             TopAppBar(title = R.string.about_license, backListener = backListener)
-        }) { padding ->
+        }) {
             AndroidView(modifier = Modifier.padding(padding), factory = { context ->
                 WebView(context).apply {
                     layoutParams = ViewGroup.LayoutParams(
@@ -159,4 +160,37 @@ private fun LicenseScreen(backListener: () -> Unit) {
             })
         }
     }
+}
+
+@Preview(device = Devices.TABLET)
+@Composable
+fun PreviewTablet() {
+    AboutScreen(
+        navController = rememberNavController(),
+        sdkVersion = "5.4.21",
+        isTablet = true,
+        backPressed = { },
+        onClick = {})
+}
+
+@Preview
+@Composable
+fun PreviewPhone() {
+    AboutScreen(
+        navController = rememberNavController(),
+        sdkVersion = "5.4.21",
+        isTablet = false,
+        backPressed = { },
+        onClick = {})
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewPhoneDarkMode() {
+    AboutScreen(
+        navController = rememberNavController(),
+        sdkVersion = "5.4.21",
+        isTablet = false,
+        backPressed = { },
+        onClick = {})
 }

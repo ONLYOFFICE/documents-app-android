@@ -16,6 +16,7 @@ import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.BaseFileProvider
+import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
@@ -156,9 +157,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected var disposable = CompositeDisposable()
     protected var batchDisposable: Disposable? = null
     protected var uploadDisposable: Disposable? = null
+    protected var downloadDisposable: Disposable? = null
+    private var sendDisposable: Disposable? = null
     private var filterRun: Runnable? = null
     private var isTerminate = false
-    protected var downloadDisposable: Disposable? = null
     private var isAccessDenied = false
 
     /**
@@ -169,6 +171,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     private var isMultipleDelete = false
 
     protected var currentSectionType = ApiContract.SectionType.UNKNOWN
+
+    val currentFolderAccess: ApiContract.Access
+        get() = ApiContract.Access.get(modelExplorerStack.currentFolderAccess)
 
     override fun onDestroy() {
         super.onDestroy()
@@ -1148,9 +1153,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * Get clicked item and do action with current state
      * */
 
-    protected fun onClickEvent(item: Item?, position: Int) {
+    fun onClickEvent(item: Item?, position: Int, isContext: Boolean = false) {
         itemClickedPosition = position
         itemClicked = modelExplorerStack.getItemById(item)
+        isContextClick = isContext
     }
 
     open fun onItemClick(item: Item, position: Int) {
@@ -1574,6 +1580,28 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun getSectionType() = currentSectionType
 
+    open fun sendCopy() {
+        (itemClicked as? CloudFile)?.let { cloudFile ->
+            (fileProvider as? CloudFileProvider)?.let { fileProvider ->
+                context.accountOnline?.let { account ->
+                    sendDisposable = fileProvider.cacheSendingFile(context, cloudFile, account.getAccountName())
+                        .doOnSubscribe { viewState.onDialogDownloadWaiting() }
+                        .doOnError { viewState.onError(context.getString(R.string.errors_create_local_file)) }
+                        .doFinally(fileProvider::removeSendingCachedFile)
+                        .doOnSuccess { file ->
+                            viewState.onDialogClose()
+                            viewState.onSendCopy(file)
+                        }
+                        .subscribe()
+                }
+            }
+        }
+    }
+
+    fun interruptFileSending() {
+        sendDisposable?.dispose()
+    }
+
     abstract fun getNextList()
 
     abstract fun getFileInfo()
@@ -1581,8 +1609,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     abstract fun createDocs(title: String)
 
     abstract fun addRecent(file: CloudFile)
-
-    abstract fun onContextClick(item: Item, position: Int, isTrash: Boolean)
 
     abstract fun onActionClick()
 

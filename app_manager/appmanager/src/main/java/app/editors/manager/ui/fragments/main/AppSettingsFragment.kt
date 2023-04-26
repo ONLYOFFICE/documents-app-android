@@ -1,6 +1,7 @@
 package app.editors.manager.ui.fragments.main
 
 import android.Manifest
+import android.app.LocaleManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.viewModels
 import app.editors.manager.R
+import app.editors.manager.app.appComponent
+import app.editors.manager.databinding.FragmentAppSettingsLayoutBinding
+import app.editors.manager.ui.activities.main.*
 import app.editors.manager.ui.activities.main.AboutActivity
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
@@ -39,6 +43,7 @@ import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.managers.utils.capitalize
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 
 private data class ClearCacheMessage(
@@ -124,84 +129,6 @@ class AppSettingsFragment : BaseAppFragment() {
             }
         }
         hideDialog()
-    }
-
-    private fun initToolbar() {
-        setActionBarTitle(getString(R.string.settings_item_title))
-        (activity as? IMainActivity)?.apply {
-            setAppBarStates(false)
-            showNavigationButton(false)
-            showActionButton(false)
-        }
-    }
-
-    @Composable
-    private fun SettingsScreen(
-        context: Context,
-        settingsState: AppSettingsState,
-        onWifiState: (Boolean) -> Unit,
-        onAnalytics: (Boolean) -> Unit
-    ) {
-        Surface(color = MaterialTheme.colors.background) {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                AppHeaderItem(title = R.string.app_settings_analytic_title)
-                AppSwitchItem(
-                    title = R.string.app_settings_analytic,
-                    checked = settingsState.analytics,
-                    onCheck = onAnalytics,
-                    dividerVisible = false
-                )
-                AppDivider()
-                AppHeaderItem(title = R.string.setting_title_wifi)
-                AppSwitchItem(
-                    title = R.string.setting_wifi,
-                    checked = settingsState.wifi,
-                    onCheck = onWifiState,
-                    dividerVisible = false
-                )
-                AppDivider()
-                AppHeaderItem(title = R.string.app_settings_security)
-                AppSettingsItem(
-                    title = R.string.app_settings_passcode,
-                    arrowVisible = true
-                ) {
-                    PasscodeActivity.show(context, bundle = null)
-                }
-                AppDivider()
-                AppHeaderItem(title = R.string.settings_title_common)
-                AppSettingsItem(
-                    title = R.string.settings_clear_cache,
-                    option = StringUtils.getFormattedSize(context, settingsState.cache),
-                ) {
-                    val message = clearCacheMessage
-                    showQuestionDialog(
-                        message.title.orEmpty(),
-                        message.message,
-                        getString(R.string.dialogs_common_ok_button),
-                        getString(R.string.dialogs_common_cancel_button),
-                        TAG_DIALOG_CLEAR_CACHE
-                    )
-                }
-                AppSettingsItem(
-                    title = R.string.app_settings_color_theme,
-                    option = getThemeString(settingsState.themeMode)?.let { stringResource(id = it) }
-                ) {
-                    showThemeDialog()
-                }
-                AppSettingsItem(
-                    title = R.string.about_title,
-                    arrowVisible = true
-                ) {
-                    AboutActivity.show(context)
-                }
-                AppSettingsItem(title = lib.editors.gbase.R.string.context_settings_main_help) {
-                    showUrlInBrowser(getString(R.string.app_url_help))
-                }
-                AppSettingsItem(title = lib.toolkit.base.R.string.about_feedback) {
-                    ActivitiesUtils.sendFeedbackEmail(context, "")
-                }
-            }
-        }
     }
 
     @Preview(widthDp = 360, heightDp = 640)

@@ -120,6 +120,41 @@ object ApiContract {
         }
     }
 
+    sealed class Access(val type: String, val code: Int) {
+        object None : Access(ShareType.NONE, ShareCode.NONE)
+        object ReadWrite : Access(ShareType.READ_WRITE, ShareCode.READ_WRITE)
+        object Read : Access(ShareType.READ, ShareCode.READ)
+        object Restrict : Access(ShareType.RESTRICT, ShareCode.RESTRICT)
+        object Varies : Access(ShareType.VARIES, ShareCode.VARIES)
+        object Review : Access(ShareType.REVIEW, ShareCode.REVIEW)
+        object Comment : Access(ShareType.COMMENT, ShareCode.COMMENT)
+        object FillForms : Access(ShareType.FILL_FORMS, ShareCode.FILL_FORMS)
+        object CustomFiller : Access(ShareType.CUSTOM_FILLER, ShareCode.CUSTOM_FILLER)
+        object Editor : Access(ShareType.EDITOR, ShareCode.EDITOR)
+        object RoomAdmin : Access(ShareType.ROOM_ADMIN, ShareCode.ROOM_ADMIN)
+
+        companion object {
+
+            fun get(code: Int): Access =
+                when (code) {
+                    ShareCode.READ_WRITE -> ReadWrite
+                    ShareCode.READ -> Read
+                    ShareCode.RESTRICT -> Restrict
+                    ShareCode.VARIES -> Varies
+                    ShareCode.REVIEW -> Review
+                    ShareCode.COMMENT -> Comment
+                    ShareCode.FILL_FORMS -> FillForms
+                    ShareCode.CUSTOM_FILLER -> CustomFiller
+                    ShareCode.ROOM_ADMIN -> Editor
+                    ShareCode.EDITOR -> RoomAdmin
+                    else -> None
+                }
+
+            fun get(type: String): Access = get(ShareType.getCode(type))
+
+        }
+    }
+
     object ShareCode {
 
         const val NONE = 0
@@ -221,9 +256,67 @@ object ApiContract {
         const val CLOUD_ARCHIVE_ROOM = 20
 
         const val WEB_DAV = 100
+        const val GOOGLE_DRIVE = 110
+        const val DROPBOX = 111
+        const val ONEDRIVE = 112
 
-        fun isRoom(type: Int): Boolean {
-            return type >= 14
+        fun isRoom(type: Int): Boolean = type >= 14
+        fun isArchive(type: String): Boolean = isArchive(type.toInt())
+        fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
+    }
+
+    sealed class Section(val type: Int) {
+        object Common : Section(SectionType.CLOUD_COMMON)
+        object Trash : Section(SectionType.CLOUD_TRASH)
+        object User : Section(SectionType.CLOUD_USER)
+        object Share : Section(SectionType.CLOUD_SHARE)
+        object Projects : Section(SectionType.CLOUD_PROJECTS)
+        object Device : Section(SectionType.DEVICE_DOCUMENTS)
+        object Favorites : Section(SectionType.CLOUD_FAVORITES)
+        object Recent : Section(SectionType.CLOUD_RECENT)
+
+        sealed class Room(type: Int) : Section(type) {
+            object Private : Room(SectionType.CLOUD_PRIVATE_ROOM)
+            object Virtual : Room(SectionType.CLOUD_VIRTUAL_ROOM)
+            object Archive : Room(SectionType.CLOUD_ARCHIVE_ROOM)
+            class FillingForms(val restrictionType: Int = RoomType.FILLING_FORM_ROOM) : Room(SectionType.CLOUD_FILLING_FORMS_ROOM)
+            class Editing(val restrictionType: Int = RoomType.EDITING_ROOM) : Room(SectionType.CLOUD_EDITING_ROOM)
+            class Review(val restrictionType: Int = RoomType.REVIEW_ROOM) : Room(SectionType.CLOUD_REVIEW_ROOM)
+            class ReadOnly(val restrictionType: Int = RoomType.READ_ONLY_ROOM) : Room(SectionType.CLOUD_READ_ONLY_ROOM)
+            class Custom(val restrictionType: Int = RoomType.CUSTOM_ROOM) : Room(SectionType.CLOUD_CUSTOM_ROOM)
+        }
+
+        sealed class Storage(type: Int) : Section(type) {
+            object GoogleDrive : Storage(SectionType.GOOGLE_DRIVE)
+            object Dropbox : Storage(SectionType.DROPBOX)
+            object OneDrive : Storage(SectionType.ONEDRIVE)
+        }
+
+        val isRoom: Boolean get() = this is Room
+        val isArchive: Boolean get() = this == Room.Archive
+        val isLocal: Boolean get() = this in listOf(Device, Recent)
+
+        companion object {
+
+            fun getSection(type: Int): Section =
+                when (type) {
+                    SectionType.CLOUD_TRASH -> Trash
+                    SectionType.CLOUD_USER -> User
+                    SectionType.CLOUD_SHARE -> Share
+                    SectionType.CLOUD_PROJECTS -> Projects
+                    SectionType.DEVICE_DOCUMENTS -> Device
+                    SectionType.CLOUD_FAVORITES -> Favorites
+                    SectionType.CLOUD_RECENT -> Recent
+                    SectionType.CLOUD_PRIVATE_ROOM -> Room.Private
+                    SectionType.CLOUD_VIRTUAL_ROOM -> Room.Virtual
+                    SectionType.CLOUD_ARCHIVE_ROOM -> Room.Archive
+                    SectionType.CLOUD_FILLING_FORMS_ROOM -> Room.FillingForms()
+                    SectionType.CLOUD_EDITING_ROOM -> Room.Editing()
+                    SectionType.CLOUD_REVIEW_ROOM -> Room.Review()
+                    SectionType.CLOUD_READ_ONLY_ROOM -> Room.ReadOnly()
+                    SectionType.CLOUD_CUSTOM_ROOM -> Room.Custom()
+                    else -> Common
+                }
         }
     }
 

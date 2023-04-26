@@ -3,24 +3,23 @@ package app.editors.manager.mvp.presenters.share
 import android.content.Intent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
-import app.documents.core.network.share.models.Share
-import app.editors.manager.R
-import app.editors.manager.app.App
-import app.editors.manager.managers.utils.GlideUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.share.ShareService
+import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.*
-import app.editors.manager.app.appComponent
+import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.app.shareApi
+import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.share.SettingsView
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import kotlinx.coroutines.*
+import kotlinx.coroutines.launch
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
 import moxy.presenterScope
@@ -297,7 +296,9 @@ class SettingsPresenter(
     }
 
     fun updateActionButtonState() {
-        viewState.onActionButtonState(!isAccessDenied)
+        viewState.onActionButtonState(
+            !isAccessDenied && if (networkSettings.isDocSpace) item.security.editAccess else true
+        )
     }
 
     fun updatePlaceholderState() {
@@ -415,14 +416,6 @@ class SettingsPresenter(
             return
         }
 
-        viewState.onActionButtonState(
-            if (context.appComponent.networkSettings.isDocSpace) {
-                item.isCanShare
-            } else {
-                true
-            }
-        )
-
         if (isShare && commonList.isNotEmpty()) {
             viewState.onGetShareItem(commonList[sharePosition], sharePosition, item.intAccess)
             isShare = false
@@ -436,6 +429,7 @@ class SettingsPresenter(
             viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
         }
 
+        updateActionButtonState()
         loadAvatars(commonList)
     }
 
