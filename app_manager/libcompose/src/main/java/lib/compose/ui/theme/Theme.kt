@@ -5,6 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 
 val ManagerNightColors by lazy {
@@ -38,7 +39,7 @@ val ManagerLightColors by lazy {
 }
 
 @Composable
-fun ManagerTheme(
+fun BaseAppTheme(
     primaryColor: Color? = null,
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
@@ -55,4 +56,17 @@ fun ManagerTheme(
         shapes = Shapes,
         content = content
     )
+}
+
+@Composable
+fun ManagerTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    CompositionLocalProvider(LocalUseTabletPadding provides true) {
+        BaseAppTheme(
+            darkTheme = darkTheme,
+            content = content
+        )
+    }
 }
