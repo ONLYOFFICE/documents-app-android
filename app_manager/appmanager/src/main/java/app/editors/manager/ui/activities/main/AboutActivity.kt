@@ -2,7 +2,6 @@ package app.editors.manager.ui.activities.main
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import android.view.ViewGroup
 import android.webkit.WebView
@@ -19,8 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
@@ -30,8 +27,9 @@ import androidx.navigation.compose.rememberNavController
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import app.editors.manager.ui.fragments.main.AppSettingsItem
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.Previews
+import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.VerticalSpacer
@@ -109,10 +107,13 @@ private fun AboutScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 VerticalSpacer(height = 48.dp)
-                AppSettingsItem(title = R.string.about_terms) { onClick(R.string.app_url_terms) }
-                AppSettingsItem(title = R.string.about_policy) { onClick(R.string.app_url_policy) }
-                AppSettingsItem(title = R.string.about_license) { navController.navigate(Screen.License.screen) }
-                AppSettingsItem(title = R.string.about_website) { onClick(R.string.app_url_main) }
+                AppArrowItem(title = R.string.about_terms, dividerVisible = false) { onClick(R.string.app_url_terms) }
+                AppArrowItem(title = R.string.about_policy, dividerVisible = false) { onClick(R.string.app_url_policy) }
+                AppArrowItem(
+                    title = R.string.about_license,
+                    dividerVisible = false
+                ) { navController.navigate(Screen.License.screen) }
+                AppArrowItem(title = R.string.about_website, dividerVisible = false) { onClick(R.string.app_url_main) }
             }
         }
     }
@@ -137,29 +138,9 @@ private fun LicenseScreen(backListener: () -> Unit) {
     }
 }
 
-@Preview(device = Devices.TABLET)
+@Previews.All
 @Composable
 fun PreviewTablet() {
-    AboutScreen(
-        navController = rememberNavController(),
-        sdkVersion = "5.4.21",
-        backPressed = { },
-        onClick = {})
-}
-
-@Preview
-@Composable
-fun PreviewPhone() {
-    AboutScreen(
-        navController = rememberNavController(),
-        sdkVersion = "5.4.21",
-        backPressed = { },
-        onClick = {})
-}
-
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun PreviewPhoneDarkMode() {
     AboutScreen(
         navController = rememberNavController(),
         sdkVersion = "5.4.21",

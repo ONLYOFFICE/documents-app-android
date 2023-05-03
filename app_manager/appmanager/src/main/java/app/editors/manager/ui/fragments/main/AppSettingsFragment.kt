@@ -15,21 +15,27 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.viewModels
 import app.editors.manager.R
-import app.editors.manager.ui.activities.main.*
+import app.editors.manager.ui.activities.main.AboutActivity
+import app.editors.manager.ui.activities.main.AppLocalePickerActivity
+import app.editors.manager.ui.activities.main.IMainActivity
+import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.dialogs.AppThemeDialog
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.AppSettingsState
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import kotlinx.coroutines.flow.collectLatest
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.Previews
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppHeaderItem
@@ -165,17 +171,19 @@ class AppSettingsFragment : BaseAppFragment() {
                 )
                 AppDivider()
                 AppHeaderItem(title = R.string.app_settings_security)
-                AppSettingsItem(
+                AppArrowItem(
                     title = R.string.app_settings_passcode,
-                    arrowVisible = true
+                    arrowVisible = true,
+                    dividerVisible = false
                 ) {
                     PasscodeActivity.show(context, bundle = null)
                 }
                 AppDivider()
                 AppHeaderItem(title = R.string.settings_title_common)
-                AppSettingsItem(
+                AppArrowItem(
                     title = R.string.settings_clear_cache,
                     option = StringUtils.getFormattedSize(context, settingsState.cache),
+                    dividerVisible = false
                 ) {
                     val message = clearCacheMessage
                     showQuestionDialog(
@@ -189,52 +197,36 @@ class AppSettingsFragment : BaseAppFragment() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     with(requireContext().getSystemService(LocaleManager::class.java)) {
                         val currentAppLocale = applicationLocales.get(0) ?: systemLocales.get(0)
-                        AppSettingsItem(
+                        AppArrowItem(
                             title = R.string.settings_language,
-                            option = currentAppLocale.displayLanguage.capitalize(currentAppLocale)
+                            option = currentAppLocale.displayLanguage.capitalize(currentAppLocale),
+                            dividerVisible = false
                         ) {
                             AppLocalePickerActivity.show(requireContext())
                         }
                     }
                 }
-                AppSettingsItem(
+                AppArrowItem(
                     title = R.string.app_settings_color_theme,
-                    option = getThemeString(settingsState.themeMode)?.let { stringResource(id = it) }
+                    option = getThemeString(settingsState.themeMode)?.let { stringResource(id = it) },
+                    dividerVisible = false
                 ) {
                     showThemeDialog()
                 }
-                AppSettingsItem(
+                AppArrowItem(
                     title = R.string.about_title,
-                    arrowVisible = true
+                    arrowVisible = true,
+                    dividerVisible = false
                 ) {
                     AboutActivity.show(context)
                 }
-                AppSettingsItem(title = lib.editors.gbase.R.string.context_settings_main_help) {
+                AppArrowItem(title = lib.editors.gbase.R.string.context_settings_main_help, dividerVisible = false) {
                     showUrlInBrowser(getString(R.string.app_url_help))
                 }
-                AppSettingsItem(title = lib.toolkit.base.R.string.about_feedback) {
+                AppArrowItem(title = lib.toolkit.base.R.string.about_feedback, dividerVisible = false) {
                     ActivitiesUtils.sendFeedbackEmail(context, "")
                 }
             }
-        }
-    }
-
-    @Preview(widthDp = 360, heightDp = 640)
-    @Composable
-    private fun Preview() {
-        ManagerTheme {
-            SettingsScreen(
-                context = LocalContext.current,
-                settingsState = AppSettingsState(
-                    cache = 100000L,
-                    themeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
-                    analytics = false,
-                    wifi = true,
-                    passcode = true
-                ),
-                onWifiState = {},
-                onAnalytics = {}
-            )
         }
     }
 
@@ -254,7 +246,7 @@ class AppSettingsFragment : BaseAppFragment() {
             view = ComposeView(requireContext()).apply {
                 setContent {
                     ManagerTheme {
-                        AppThemeDialog.MainScreen(themeMode = themePrefs.mode) { mode -> chosenMode = mode }
+                        AppThemeDialog(themeMode = themePrefs.mode) { mode -> chosenMode = mode }
                     }
                 }
             },
@@ -265,15 +257,23 @@ class AppSettingsFragment : BaseAppFragment() {
             }
         )?.show()
     }
-}
 
-@Composable
-fun AppSettingsItem(title: Int, arrowVisible: Boolean = false, option: String? = null, onClick: () -> Unit) {
-    AppArrowItem(
-        title = title,
-        option = option,
-        arrowVisible = arrowVisible,
-        dividerVisible = false,
-        onClick = onClick
-    )
+    @Previews.All
+    @Composable
+    private fun Preview() {
+        ManagerTheme {
+            SettingsScreen(
+                context = LocalContext.current,
+                settingsState = AppSettingsState(
+                    cache = 100000L,
+                    themeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
+                    analytics = false,
+                    wifi = true,
+                    passcode = true
+                ),
+                onWifiState = {},
+                onAnalytics = {}
+            )
+        }
+    }
 }

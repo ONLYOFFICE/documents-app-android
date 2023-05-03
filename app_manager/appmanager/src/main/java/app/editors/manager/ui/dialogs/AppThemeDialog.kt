@@ -18,58 +18,55 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import app.editors.manager.R
 
-object AppThemeDialog {
+@Composable
+fun AppThemeDialog(themeMode: Int, onClick: (Int) -> Unit) {
+    val mode = remember { mutableStateOf(themeMode) }
 
-    @Composable
-    fun MainScreen(themeMode: Int, onClick: (Int) -> Unit) {
-        val mode = remember { mutableStateOf(themeMode) }
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            RadioItem(
-                title = stringResource(id = R.string.app_settings_follow_the_system),
-                selected = mode.value == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
-                onClick = {
-                    mode.value = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    onClick(mode.value)
-                }
-            )
-            RadioItem(
-                title = stringResource(id = R.string.app_settings_light_theme),
-                selected = mode.value == AppCompatDelegate.MODE_NIGHT_NO,
-                onClick = {
-                    mode.value = AppCompatDelegate.MODE_NIGHT_NO
-                    onClick(mode.value)
-                }
-            )
-            RadioItem(
-                title = stringResource(id = R.string.app_settings_dark_theme),
-                selected = mode.value == AppCompatDelegate.MODE_NIGHT_YES,
-                onClick = {
-                    mode.value = AppCompatDelegate.MODE_NIGHT_YES
-                    onClick(mode.value)
-                }
-            )
-        }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        RadioItem(
+            title = stringResource(id = R.string.app_settings_follow_the_system),
+            selected = mode.value == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
+            onClick = {
+                mode.value = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                onClick(mode.value)
+            }
+        )
+        RadioItem(
+            title = stringResource(id = R.string.app_settings_light_theme),
+            selected = mode.value == AppCompatDelegate.MODE_NIGHT_NO,
+            onClick = {
+                mode.value = AppCompatDelegate.MODE_NIGHT_NO
+                onClick(mode.value)
+            }
+        )
+        RadioItem(
+            title = stringResource(id = R.string.app_settings_dark_theme),
+            selected = mode.value == AppCompatDelegate.MODE_NIGHT_YES,
+            onClick = {
+                mode.value = AppCompatDelegate.MODE_NIGHT_YES
+                onClick(mode.value)
+            }
+        )
     }
+}
 
-    @Composable
-    private fun RadioItem(title: String, selected: Boolean, onClick: () -> Unit) {
-        Row(
-            modifier = Modifier
-                .clickable { onClick() }
-                .fillMaxWidth()
-                .height(dimensionResource(id = lib.toolkit.base.R.dimen.item_one_line_height)),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(
-                selected = selected,
-                onClick = onClick,
-            )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.subtitle1,
-                color = MaterialTheme.colors.onSurface
-            )
-        }
+@Composable
+private fun RadioItem(title: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .clickable { onClick() }
+            .fillMaxWidth()
+            .height(dimensionResource(id = lib.toolkit.base.R.dimen.item_one_line_height)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = onClick,
+        )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.subtitle1,
+            color = MaterialTheme.colors.onSurface
+        )
     }
 }

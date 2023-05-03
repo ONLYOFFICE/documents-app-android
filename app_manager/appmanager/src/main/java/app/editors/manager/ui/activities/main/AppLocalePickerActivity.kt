@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.Previews
+import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar
 import lib.toolkit.base.managers.utils.capitalize
 import java.util.*
@@ -40,55 +42,75 @@ class AppLocalePickerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             setContent {
-                AppLocalePickerScreen(
-                    localeHelper = appComponent.appLocaleHelper,
-                    onBackListener = onBackPressedDispatcher::onBackPressed
-                )
+                with(appComponent.appLocaleHelper) {
+                    AppLocalePickerScreen(
+                        locales = locales,
+                        current = currentLocale,
+                        onBackListener = onBackPressedDispatcher::onBackPressed,
+                        onChangeLocale = ::changeLocale
+                    )
+                }
             }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
-    private fun AppLocalePickerScreen(localeHelper: AppLocaleHelper, onBackListener: () -> Unit) {
+    private fun AppLocalePickerScreen(
+        locales: List<Locale>,
+        current: Locale,
+        onChangeLocale: (Locale?, Boolean) -> Unit,
+        onBackListener: () -> Unit
+    ) {
         ManagerTheme {
-            Scaffold(topBar = {
+            AppScaffold(topBar = {
                 AppTopBar(
                     title = R.string.settings_language,
                     backListener = onBackListener
                 )
-            }) { padding ->
-                Surface(color = MaterialTheme.colors.background, modifier = Modifier.padding(padding)) {
-                    LazyColumn {
-                        items(localeHelper.locales) { locale ->
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
+            }) {
+                LazyColumn {
+                    items(locales) { locale ->
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onChangeLocale.invoke(locale, false)
+                                    onBackListener()
+                                }
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = locale.getDisplayName(locale).capitalize(),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        localeHelper.changeLocale(locale, false)
-                                        onBackListener()
-                                    }
-                                    .padding(16.dp)
-                            ) {
-                                Text(
-                                    text = locale.getDisplayName(locale).capitalize(),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(1f)
+                                    .weight(1f)
+                            )
+                            if (current.language == locale.language) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.drawable_ic_done),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.primary
                                 )
-                                if (localeHelper.currentLocale.language == locale.language) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.drawable_ic_done),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colors.primary
-                                    )
-                                }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    @Previews.All
+    @Composable
+    fun AppLocalePickerScreenPreview() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            AppLocalePickerScreen(
+                locales = listOf(Locale.ENGLISH, Locale.FRANCE, Locale.ITALY),
+                current = Locale.ENGLISH,
+                onChangeLocale = { _, _ -> },
+                onBackListener = {},
+            )
         }
     }
 }
