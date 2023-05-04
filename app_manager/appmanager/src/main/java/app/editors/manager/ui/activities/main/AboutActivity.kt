@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -82,38 +83,40 @@ private fun AboutScreen(
         AppScaffold(topBar = {
             AppTopBar(title = R.string.about_title, backListener = backPressed)
         }) {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                VerticalSpacer(height = 40.dp)
-                Image(
-                    painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text),
-                    contentDescription = null
-                )
-                VerticalSpacer(height = 16.dp)
-                Text(
-                    text = stringResource(
-                        id = R.string.about_app_version,
-                        formatArgs = arrayOf(
-                            BuildConfig.VERSION_NAME,
-                            BuildConfig.VERSION_CODE.toString(),
-                            sdkVersion
-                        )
-                    ),
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-                VerticalSpacer(height = 48.dp)
-                AppArrowItem(title = R.string.about_terms, dividerVisible = false) { onClick(R.string.app_url_terms) }
-                AppArrowItem(title = R.string.about_policy, dividerVisible = false) { onClick(R.string.app_url_policy) }
-                AppArrowItem(
-                    title = R.string.about_license,
-                    dividerVisible = false
-                ) { navController.navigate(Screen.License.screen) }
-                AppArrowItem(title = R.string.about_website, dividerVisible = false) { onClick(R.string.app_url_main) }
+            Surface(color = MaterialTheme.colors.background) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    VerticalSpacer(height = 40.dp)
+                    Image(
+                        painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text),
+                        contentDescription = null
+                    )
+                    VerticalSpacer(height = 16.dp)
+                    Text(
+                        text = stringResource(
+                            id = R.string.about_app_version,
+                            formatArgs = arrayOf(
+                                BuildConfig.VERSION_NAME,
+                                BuildConfig.VERSION_CODE.toString(),
+                                sdkVersion
+                            )
+                        ),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    VerticalSpacer(height = 48.dp)
+                    AppArrowItem(title = R.string.about_terms, dividerVisible = false) { onClick(R.string.app_url_terms) }
+                    AppArrowItem(title = R.string.about_policy, dividerVisible = false) { onClick(R.string.app_url_policy) }
+                    AppArrowItem(
+                        title = R.string.about_license,
+                        dividerVisible = false
+                    ) { navController.navigate(Screen.License.screen) }
+                    AppArrowItem(title = R.string.about_website, dividerVisible = false) { onClick(R.string.app_url_main) }
+                }
             }
         }
     }
