@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
-import app.editors.manager.compose.ui.theme.AppManagerTheme
+import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 
 class AddRoomBottomDialog : BaseBottomDialog() {
@@ -63,7 +63,7 @@ class AddRoomBottomDialog : BaseBottomDialog() {
     private fun init(dialog: Dialog) {
         dialog.setContentView(ComposeView(requireContext()).apply {
             setContent {
-                AppManagerTheme {
+                ManagerTheme {
                     Surface(shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)) {
                         AddRoomBottomDialogContent { type ->
                             onClickListener?.onActionButtonClick(type)

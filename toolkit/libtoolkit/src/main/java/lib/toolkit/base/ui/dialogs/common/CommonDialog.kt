@@ -52,28 +52,17 @@ class CommonDialog : BaseDialog() {
     }
 
     enum class Dialogs {
-        NONE, WAITING, PROGRESS, EDIT_LINE, EDIT_MULTILINE, QUESTION, INFO
+        NONE, WAITING, PROGRESS, EDIT_LINE, EDIT_MULTILINE, QUESTION, INFO, CUSTOM
     }
 
     private val viewHolders = hashMapOf<Dialogs, ViewHolder>(
-        Dialogs.WAITING to WaitingHolder(
-            this
-        ),
-        Dialogs.PROGRESS to ProgressHolder(
-            this
-        ),
-        Dialogs.EDIT_LINE to EditLineHolder(
-            this
-        ),
-        Dialogs.EDIT_MULTILINE to EditMultilineHolder(
-            this
-        ),
-        Dialogs.QUESTION to QuestionHolder(
-            this
-        ),
-        Dialogs.INFO to InfoHolder(
-            this
-        )
+        Dialogs.WAITING to WaitingHolder(this),
+        Dialogs.PROGRESS to ProgressHolder(this),
+        Dialogs.EDIT_LINE to EditLineHolder(this),
+        Dialogs.EDIT_MULTILINE to EditMultilineHolder(this),
+        Dialogs.QUESTION to QuestionHolder(this),
+        Dialogs.INFO to InfoHolder(this),
+        Dialogs.CUSTOM to CustomHolder(this)
     )
 
     private var frManager: FragmentManager? = null
@@ -200,6 +189,9 @@ class CommonDialog : BaseDialog() {
         return (viewHolders[Dialogs.INFO] as InfoHolder).Builder()
     }
 
+    fun custom(): CustomHolder.Builder {
+        return (viewHolders[Dialogs.CUSTOM] as CustomHolder).Builder()
+    }
 }
 
 

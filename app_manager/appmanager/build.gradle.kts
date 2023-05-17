@@ -234,6 +234,7 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":core"))
+    implementation(project(":libcompose"))
     implementation(project(":libtoolkit"))
     "managerImplementation"(project(":libx2t"))
     "managerImplementation"(project(":libeditors"))

@@ -3,14 +3,21 @@ package app.editors.manager.viewModels.main
 import android.annotation.SuppressLint
 import androidx.lifecycle.*
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.managers.utils.SingleLiveEvent
-import java.io.File
 import javax.inject.Inject
 
+data class AppSettingsState(
+    val cache: Long = 0,
+    val themeMode: Int = 0,
+    val analytics: Boolean = false,
+    val wifi: Boolean = false,
+    val passcode: Boolean = false
+)
 
 class AppSettingsViewModel : ViewModel() {
 
@@ -18,47 +25,54 @@ class AppSettingsViewModel : ViewModel() {
     lateinit var resourcesProvider: ResourcesProvider
 
     @Inject
-    lateinit var preferencesTool: PreferenceTool
+    lateinit var preferenceTool: PreferenceTool
 
-    private val _cacheLiveData: MutableLiveData<Long> = MutableLiveData()
-    val cacheLiveData: LiveData<Long> = _cacheLiveData
+    private val _settingsState: MutableStateFlow<AppSettingsState> = MutableStateFlow(AppSettingsState())
+    val settingsState: StateFlow<AppSettingsState> = _settingsState.asStateFlow()
 
-    private val _analyticState = MutableLiveData<Boolean>()
-    val analyticState: LiveData<Boolean> = _analyticState
-    private val _wifiState = MutableLiveData<Boolean>()
-    val wifiState: LiveData<Boolean> = _wifiState
-    private val _passcodeState = MutableLiveData<Boolean>()
-    val passcodeState: LiveData<Boolean> = _passcodeState
+    private val _message: MutableSharedFlow<String> = MutableSharedFlow(1)
+    val message: SharedFlow<String> = _message.asSharedFlow()
 
-    val message = SingleLiveEvent<String>()
+    private val cache: Long
+        get() = FileUtils.getSize(resourcesProvider.getCacheDir(true)) +
+                FileUtils.getSize(resourcesProvider.getCacheDir(false))
+
+    init {
+        App.getApp().appComponent.inject(this)
+    }
 
     fun getData() {
-        _analyticState.value = preferencesTool.isAnalyticEnable
-        _wifiState.value = preferencesTool.uploadWifiState
-        _cacheLiveData.value =
-            FileUtils.getSize(resourcesProvider.getCacheDir(true)) + FileUtils.getSize(
-                resourcesProvider.getCacheDir(false)
+        with(preferenceTool) {
+            _settingsState.value = AppSettingsState(
+                cache = cache,
+                analytics = isAnalyticEnable,
+                wifi = uploadWifiState,
+                passcode = isPasscodeLockEnable
             )
-        _passcodeState.value = preferencesTool.isPasscodeLockEnable
+        }
     }
 
     fun setAnalytic(isEnable: Boolean) {
-        preferencesTool.isAnalyticEnable = isEnable
-        _analyticState.value = preferencesTool.isAnalyticEnable
+        preferenceTool.isAnalyticEnable = isEnable
+        _settingsState.value = _settingsState.value.copy(analytics = isEnable)
     }
 
     fun setWifiState(isEnable: Boolean) {
-        preferencesTool.setWifiState(isEnable)
-        _wifiState.value = preferencesTool.uploadWifiState
+        preferenceTool.setWifiState(isEnable)
+        _settingsState.value = _settingsState.value.copy(wifi = isEnable)
+    }
+
+    fun setThemeMode(mode: Int) {
+        _settingsState.value = _settingsState.value.copy(themeMode = mode)
     }
 
     @SuppressLint("MissingPermission")
     fun clearCache() {
         viewModelScope.launch {
-            FileUtils.deletePath(resourcesProvider.getCacheDir(true) ?: File(""))
-            FileUtils.deletePath(resourcesProvider.getCacheDir(false) ?: File(""))
-            getData()
-            message.value = resourcesProvider.getString(R.string.setting_cache_cleared)
+            resourcesProvider.getCacheDir(true)?.let(FileUtils::deletePath)
+            resourcesProvider.getCacheDir(false)?.let(FileUtils::deletePath)
+            _message.emit(resourcesProvider.getString(R.string.setting_cache_cleared))
+            _settingsState.value = _settingsState.value.copy(cache = cache)
         }
     }
 

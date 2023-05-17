@@ -3,4 +3,5 @@
     <string name="chooser_email_client">ເລືອກລູກຄ້າທາງອີເມວ…</string>
     <string name="about_email_subject">ເອກະສານ ONLYOFFICE  ສຳລັບຄຳຕິຊົມຈາກ</string>
     <string name="about_feedback">ຄໍາຕິຊົມແລະສະຫນັບສະຫນູນ</string>
+    <string name="text_hint_required">ຕ້ອງການ</string>
 </resources>

@@ -10,5 +10,6 @@
   <string name="chooser_email_client">Выберите почтовый клиент…</string>
   <string name="about_email_subject">Обратная связь по приложению ONLYOFFICE Документы для Android</string>
   <string name="about_feedback">Обратная связь и поддержка</string>
+    <string name="text_hint_required">Обязательно</string>
 
 </resources>
