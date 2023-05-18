@@ -260,7 +260,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     private fun init() {
         presenter.checkBackStack()
         // Check shortcut
-        val bundle = requireActivity().intent.extras
+        val bundle = requireActivity().intent?.extras
         if (bundle != null && bundle.containsKey(KEY_SHORTCUT)) {
             when (bundle.getString(KEY_SHORTCUT)) {
                 LocalContentTools.DOCX_EXTENSION -> {
@@ -273,7 +273,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                     onActionButtonClick(ActionBottomDialog.Buttons.PRESENTATION)
                 }
             }
-            requireActivity().intent.extras?.clear()
+            requireActivity().intent?.extras?.clear()
+            requireActivity().intent = null
         }
     }
 
