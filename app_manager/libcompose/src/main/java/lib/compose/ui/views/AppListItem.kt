@@ -55,7 +55,7 @@ internal fun AppListItem(
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
-            .addIfNotNull(onClick) { clickable(onClick = it) }
+            .addIfNotNull(onClick) { clickable(enabled = enabled, onClick = it) }
             .addIfNotNull(background) { background(it) },
         verticalArrangement = Arrangement.SpaceBetween
     ) {
