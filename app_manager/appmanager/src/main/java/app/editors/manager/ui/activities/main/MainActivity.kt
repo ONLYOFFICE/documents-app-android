@@ -207,7 +207,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(AppLocaleReceiver)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            unregisterReceiver(AppLocaleReceiver)
+        }
     }
 
     private fun init(savedInstanceState: Bundle?) {

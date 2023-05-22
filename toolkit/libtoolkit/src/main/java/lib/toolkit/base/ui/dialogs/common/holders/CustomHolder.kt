@@ -1,30 +1,41 @@
 package lib.toolkit.base.ui.dialogs.common.holders
 
+import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import lib.toolkit.base.R
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
+import java.lang.ref.WeakReference
 
 class CustomHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
-    private var childView: View? = null
-    private var acceptClickListener: (() -> Unit)? = null
+    companion object {
+        private var weakView: WeakReference<View>? = null
+        private var weakListener: WeakReference<() -> Unit>? = null
+    }
 
     override fun show() {
         super.show()
-        val layout = frameLayout.findViewById<FrameLayout>(R.id.dialogCustomLayout)
-        layout.addView(childView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        layout.isVisible = true
+        weakView?.get()?.let { childView ->
+            val layout = frameLayout.findViewById<FrameLayout>(R.id.dialogCustomLayout)
+            layout.addView(childView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            layout.isVisible = true
+        }
     }
 
     override fun getType(): CommonDialog.Dialogs = CommonDialog.Dialogs.CUSTOM
 
+    override fun save(state: Bundle) {
+        super.save(state)
+        frameLayout.findViewById<FrameLayout>(R.id.dialogCustomLayout).removeAllViews()
+    }
+
     override fun onClick(v: View) {
         when (v.id) {
             R.id.dialogCommonAcceptButton -> {
-                acceptClickListener?.invoke()
+                weakListener?.get()?.invoke()
                 dialog.dismiss()
             }
             R.id.dialogCommonCancelButton -> {
@@ -51,12 +62,12 @@ class CustomHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         }
 
         fun setView(view: View): Builder {
-            childView = view
+            weakView = WeakReference<View>(view)
             return this
         }
 
         fun setAcceptClickListener(listener: () -> Unit): Builder {
-            acceptClickListener = listener
+            weakListener = WeakReference(listener)
             return this
         }
 

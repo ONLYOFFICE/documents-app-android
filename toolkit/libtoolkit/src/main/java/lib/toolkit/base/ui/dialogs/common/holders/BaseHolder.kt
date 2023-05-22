@@ -6,12 +6,12 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.graphics.ColorUtils
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
-import com.google.android.material.button.MaterialButton
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.capitalize
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -32,8 +32,8 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     protected lateinit var frameLayout: FrameLayout
     protected lateinit var topTitleView: AppCompatTextView
     protected lateinit var bottomTitleView: AppCompatTextView
-    protected lateinit var acceptView: MaterialButton
-    protected lateinit var cancelView: MaterialButton
+    protected lateinit var acceptView: Button
+    protected lateinit var cancelView: Button
 
     protected var holderTag: String? = null
     protected var topTitle: String? = null
@@ -148,7 +148,7 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
         val colorDisabled = dialog.requireContext().getColor(R.color.colorOnSurface)
 
         arrayOf(cancelView, acceptView).forEach { view ->
-            view.rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(colorPrimary, 60))
+//            view.rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(colorPrimary, 60))
             view.setTextColor(
                 ColorStateList(
                     arrayOf(

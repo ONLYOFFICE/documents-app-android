@@ -347,6 +347,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         }
     }
 
+    // TODO be careful to compose view
     fun getCustomDialog(
         view: View,
         acceptListener: () -> Unit,

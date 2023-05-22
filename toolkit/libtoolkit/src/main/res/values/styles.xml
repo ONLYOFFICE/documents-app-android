@@ -124,7 +124,7 @@
     <!-- ======================================================================================= -->
     <!-- Common views-->
     <style name="CommonTextView" parent="AppTheme">
-        <item name="android:textColor">@color/colorOnSurface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:focusable">false</item>
         <item name="android:clickable">false</item>
         <item name="android:lines">1</item>
@@ -452,7 +452,7 @@
 
     <style name="MainAppBar" parent="Widget.MaterialComponents.AppBarLayout.Surface" />
 
-    <style name="MainBottomBar" parent="Widget.MaterialComponents.BottomNavigationView.Colored" >
+    <style name="MainBottomBar" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
         <item name="android:background">@color/colorPrimaryDark</item>
     </style>
 
@@ -498,10 +498,10 @@
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">@color/colorOnSurface</item>
     </style>
-    
-    <style name="DialogButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
+
+    <style name="DialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textSize">16sp</item>
-        <item name="cornerRadius">6dp</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:textAppearance">@style/MediumTextView</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
