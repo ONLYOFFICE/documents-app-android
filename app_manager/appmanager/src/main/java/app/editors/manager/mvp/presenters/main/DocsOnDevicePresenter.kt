@@ -306,21 +306,21 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     }
 
-    private fun openFile(file: CloudFile, isNew: Boolean = false) {
+    private fun openFile(file: CloudFile, viewMode: Boolean = true) {
         val path = file.id
         val uri = Uri.fromFile(File(path))
         val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
-        openFile(uri, ext, isNew)
+        openFile(uri, ext, viewMode)
     }
 
     @Suppress("KotlinConstantConditions")
-    private fun openFile(uri: Uri, ext: String, isNew: Boolean = false) {
+    private fun openFile(uri: Uri, ext: String, viewMode: Boolean = true) {
         when (val enumExt = StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
                 if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && enumExt == StringUtils.Extension.FORM) {
                     viewState.onError(context.getString(R.string.error_unsupported_format))
                 } else {
-                    viewState.onShowDocs(uri, isNew)
+                    viewState.onShowDocs(uri, viewMode)
                 }
             }
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
@@ -435,5 +435,13 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         setSelection(false)
         setFiltering(false)
         updateViewsState()
+    }
+
+    fun getFileInfo(viewMode: Boolean) {
+        if (itemClicked != null && itemClicked is CloudFile) {
+            val file = itemClicked as CloudFile
+            addRecent(file)
+            openFile(file, viewMode)
+        }
     }
 }
