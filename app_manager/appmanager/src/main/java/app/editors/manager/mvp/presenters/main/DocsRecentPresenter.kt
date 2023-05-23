@@ -67,7 +67,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     private var contextPosition = 0
     private var item: Recent? = null
-    private var contextItem: Recent? = null
     private var temp: CloudFile? = null
     private val account: CloudAccount? = getAccount()
 
@@ -97,6 +96,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         super.onDestroy()
         disposable.clear()
     }
+
 
     fun getRecentFiles(checkFiles: Boolean = true) {
         presenterScope.launch {
@@ -248,8 +248,8 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun deleteRecent() {
         presenterScope.launch {
-            contextItem?.let {
-                recentDao.deleteRecent(it)
+            item?.let { recent ->
+                recentDao.deleteRecent(recent)
                 withContext(Dispatchers.Main) {
                     viewState.onDeleteItem(contextPosition)
                 }
@@ -291,8 +291,9 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         return explorer
     }
 
-    fun onContextClick(recent: Recent) {
+    fun onContextClick(recent: Recent, position: Int) {
         item = recent
+        contextPosition = position
     }
 
     fun fileClick(recent: Recent? = item) {

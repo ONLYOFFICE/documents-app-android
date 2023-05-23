@@ -16,7 +16,7 @@ import java.util.*
 class RecentViewHolder(
     view: View,
     private val itemListener: ((recent: Recent) -> Unit)? = null,
-    private val contextListener: ((recent: Recent) -> Unit)? = null
+    private val contextListener: ((recent: Recent, position: Int) -> Unit)? = null
 ) : BaseViewHolder<ViewType>(view) {
 
     private val viewBinding = ListExplorerFilesBinding.bind(view)
@@ -35,7 +35,7 @@ class RecentViewHolder(
                     itemListener?.invoke(item.toRecent())
                 }
                 listExplorerFileContext.setOnClickListener {
-                    contextListener?.invoke(item.toRecent())
+                    contextListener?.invoke(item.toRecent(), absoluteAdapterPosition)
                 }
                 viewIconSelectableLayout.viewIconSelectableImage
                     .setFileIcon(getExtensionFromPath(item.name.lowercase(Locale.ROOT)))

@@ -57,7 +57,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         Debounce.perform(1000L) { presenter.fileClick(recent) }
     }
 
-    private val contextListener: (recent: Recent) -> Unit = { recent ->
+    private val contextListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
         val state = ExplorerContextState(
             item = CloudFile().apply {
                 title = recent.name
@@ -69,7 +69,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                     getString(R.string.placeholder_point) +
                     TimeUtils.formatDate(Date(recent.date))
         )
-        presenter.onContextClick(recent)
+        presenter.onContextClick(recent, position)
         showExplorerContextBottomDialog(state)
     }
 
