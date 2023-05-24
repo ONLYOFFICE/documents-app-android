@@ -378,7 +378,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected val supportActionBar: ActionBar?
-        get() = (activity as AppCompatActivity).supportActionBar
+        get() = (activity as? AppCompatActivity)?.supportActionBar
 
 
     /*
