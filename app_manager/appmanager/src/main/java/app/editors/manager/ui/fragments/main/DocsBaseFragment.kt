@@ -1065,12 +1065,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun showEditors(uri: Uri?, type: EditorsType, isNew: Boolean = false) {
+    protected fun showEditors(uri: Uri?, type: EditorsType, viewMode: Boolean = true) {
         try {
             val intent = Intent().apply {
                 data = uri
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-                putExtra(EditorsContract.KEY_NEW_FILE, isNew)
+                putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
@@ -1098,11 +1098,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, isNew: Boolean = false): Intent {
+    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, viewMode: Boolean = false): Intent {
         val intent = Intent().apply {
             data = uri
             putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-            putExtra(EditorsContract.KEY_NEW_FILE, isNew)
+            putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
             action = Intent.ACTION_VIEW
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
