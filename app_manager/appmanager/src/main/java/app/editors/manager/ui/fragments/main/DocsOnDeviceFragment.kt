@@ -79,7 +79,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         super.onViewCreated(view, savedInstanceState)
         presenter.setSectionType(ApiContract.SectionType.DEVICE_DOCUMENTS)
         checkStorage()
-        init()
+        init(savedInstanceState)
     }
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
@@ -257,11 +257,11 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         activity?.showActionButton(isShow)
     }
 
-    private fun init() {
+    private fun init(savedInstanceState: Bundle?) {
         presenter.checkBackStack()
         // Check shortcut
         val bundle = requireActivity().intent?.extras
-        if (bundle != null && bundle.containsKey(KEY_SHORTCUT)) {
+        if (savedInstanceState == null && bundle != null && bundle.containsKey(KEY_SHORTCUT)) {
             when (bundle.getString(KEY_SHORTCUT)) {
                 LocalContentTools.DOCX_EXTENSION -> {
                     onActionButtonClick(ActionBottomDialog.Buttons.DOC)
@@ -273,8 +273,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                     onActionButtonClick(ActionBottomDialog.Buttons.PRESENTATION)
                 }
             }
-            requireActivity().intent?.extras?.clear()
-            requireActivity().intent = null
+            requireActivity().intent.removeExtra(KEY_SHORTCUT)
         }
     }
 
