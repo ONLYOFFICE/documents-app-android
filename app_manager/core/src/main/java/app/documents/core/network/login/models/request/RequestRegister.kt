@@ -10,7 +10,7 @@ data class RequestRegister(
     var portalName: String = "",
     var password: String = "",
     var language: String = "",
-    var phone: String = "",
+    var phone: String = "+15115555555",
     var timeZoneName: String = "",
     var recaptchaResponse: String = "",
     var recaptchaType: Int = 1

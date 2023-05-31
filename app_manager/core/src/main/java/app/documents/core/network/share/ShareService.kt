@@ -19,7 +19,7 @@ interface ShareService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/folder/{folder_id}/share" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/files/folder/{folder_id}/share")
     suspend fun getShareFolder(@Path(value = "folder_id") folderId: String): ResponseShare
 
     /*
@@ -39,7 +39,7 @@ interface ShareService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/{file_id}/sharedlink" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/{file_id}/sharedlink")
     suspend fun getExternalLink(
         @Path(value = "file_id") fileId: String,
         @Body body: RequestExternal
@@ -52,7 +52,7 @@ interface ShareService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/{file_id}/setacelink" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/{file_id}/setacelink")
     suspend fun setExternalLinkAccess(
         @Path(value = "file_id") fileId: String,
         @Body body: RequestExternalAccess
@@ -65,7 +65,7 @@ interface ShareService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{folder_id}/share" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{folder_id}/share")
     suspend fun setFolderAccess(
         @Path(value = "folder_id") fileId: String,
         @Body body: RequestShare
@@ -93,7 +93,7 @@ interface ShareService {
     )
     @HTTP(
         method = "DELETE",
-        path = "api/" + ApiContract.API_VERSION + "/files/share" + ApiContract.RESPONSE_FORMAT,
+        path = "api/" + ApiContract.API_VERSION + "/files/share",
         hasBody = true
     )
     suspend fun deleteShare(
@@ -108,7 +108,7 @@ interface ShareService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/group" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/group")
     suspend fun getGroups(
         @QueryMap options: Map<String, String> = mapOf()
     ): ResponseGroups
@@ -120,7 +120,7 @@ interface ShareService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/people" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/people")
     suspend fun getUsers(
         @QueryMap options: Map<String, String> = mapOf()
     ): ResponseUsers

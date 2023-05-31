@@ -97,6 +97,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
                         )
                     }
                     is LoginResponse.Error -> {
+                        networkSettings.setBaseUrl(portal)
                         fetchError(loginResponse.error)
                     }
                 }
@@ -107,3 +108,4 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
 
 }
 
+//{"type":"https://tools.ietf.org/html/rfc7231#section-6.5.1","title":"One or more validation errors occurred.","status":400,"traceId":"00-744e6bf582265a8fa9a56c7ad62fe286-efc458f6656ca616-00","errors":{"$":["'r' is an invalid start of a value. Path: $ | LineNumber: 0 | BytePositionInLine: 0."]}}
