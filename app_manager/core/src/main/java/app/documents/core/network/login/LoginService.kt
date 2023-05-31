@@ -18,28 +18,28 @@ interface LoginService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/authentication" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/authentication")
     fun signIn(@Body body: RequestSignIn): Single<Response<ResponseSignIn>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/capabilities" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/capabilities")
     fun capabilities(): Single<Response<ResponseCapabilities>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/settings/version/build" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/settings/version/build")
     fun getSettings(): Single<Response<ResponseSettings>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/settings" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/settings")
     fun getAllSettings(): Single<Response<ResponseAllSettings>>
 
     /*
@@ -49,7 +49,7 @@ interface LoginService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/authentication/{sms_code}" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/authentication/{sms_code}")
     fun smsSignIn(
         @Body body: RequestSignIn,
         @Path(value = "sms_code") smsCode: String
@@ -62,7 +62,7 @@ interface LoginService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/authentication/sendsms" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/authentication/sendsms")
     fun sendSms(@Body body: RequestSignIn): Single<Response<ResponseSignIn>>
 
     /*
@@ -72,46 +72,37 @@ interface LoginService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/authentication/setphone" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/authentication/setphone")
     fun changeNumber(@Body body: RequestNumber): Single<Response<ResponseSignIn>>
 
     /*
      * Validate portal
      * */
     @Headers(ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE)
-    @POST("/api/portal/validateportalname")
+    @POST("/apisystem/portal/validateportalname")
     fun validatePortal(@Body body: RequestValidatePortal): Single<Response<ResponseValidatePortal>>
 
     /*
      * Register portal
      * */
-    @Headers(
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT,
-    )
-    @FormUrlEncoded
-    @POST("/api/portal/register")
+
+    @POST("/apisystem/portal/register")
     fun registerPortal(
-        @Field("recaptchaType") recaptchaType: Int = 1,
-        @Field("recaptchaResponse") recaptchaResponse: String = "",
-        @Field("firstName") firstName: String = "",
-        @Field("email") email: String = "",
-        @Field("lastName") lastName: String = "",
-        @Field("portalName") portalName: String = "",
-        @Field("password") password: String = ""
+        @Body body: RequestRegister
     ): Single<Response<ResponseRegisterPortal>>
 
     /*
      * Register personal portal
      * */
     @Headers(ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE)
-    @POST("api/" + ApiContract.API_VERSION + "/authentication/register" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/authentication/register" )
     fun registerPersonalPortal(@Body body: RequestRegister): Single<Response<ResponseRegisterPersonalPortal>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/people/@self" + ApiContract.RESPONSE_FORMAT)
+    @GET("api/" + ApiContract.API_VERSION + "/people/@self" )
     fun getUserInfo(@Header(ApiContract.HEADER_AUTHORIZATION) token: String): Single<Response<ResponseUser>>
 
     /*
@@ -122,14 +113,14 @@ interface LoginService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/people/password" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/people/password" )
     fun forgotPassword(@Body body: RequestPassword?): Single<Response<ResponsePassword>>
 
     @Headers(
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/settings/push/docregisterdevice" + ApiContract.RESPONSE_FORMAT)
+    @POST("api/" + ApiContract.API_VERSION + "/settings/push/docregisterdevice" )
     fun registerDevice(
         @Header(ApiContract.HEADER_AUTHORIZATION) token: String,
         @Body body: RequestDeviceToken,
@@ -139,7 +130,7 @@ interface LoginService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/settings/push/docsubscribe" + ApiContract.RESPONSE_FORMAT)
+    @PUT("api/" + ApiContract.API_VERSION + "/settings/push/docsubscribe" )
     fun subscribe(
         @Header(ApiContract.HEADER_AUTHORIZATION) token: String,
         @Body body: RequestPushSubscribe
