@@ -1,15 +1,15 @@
 package app.editors.manager.viewModels.main
 
 import android.annotation.SuppressLint
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.*
 import app.editors.manager.R
-import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.tools.ResourcesProvider
+import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.FileUtils
-import javax.inject.Inject
 
 data class AppSettingsState(
     val cache: Long = 0,
@@ -19,15 +19,38 @@ data class AppSettingsState(
     val passcode: Boolean = false
 )
 
-class AppSettingsViewModel : ViewModel() {
+class AppSettingsViewModelFactory(
+    private val themePrefs: ThemePreferencesTools,
+    private val resourcesProvider: ResourcesProvider,
+    private val preferenceTool: PreferenceTool
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return if (modelClass.isAssignableFrom(AppSettingsViewModel::class.java)) {
+            AppSettingsViewModel(themePrefs, resourcesProvider, preferenceTool) as T
+        } else {
+            throw IllegalArgumentException("ViewModel Not Found")
+        }
+    }
+}
 
-    @Inject
-    lateinit var resourcesProvider: ResourcesProvider
+class AppSettingsViewModel(
+    private val themePrefs: ThemePreferencesTools,
+    private val resourcesProvider: ResourcesProvider,
+    private val preferenceTool: PreferenceTool
+) : ViewModel() {
 
-    @Inject
-    lateinit var preferenceTool: PreferenceTool
 
-    private val _settingsState: MutableStateFlow<AppSettingsState> = MutableStateFlow(AppSettingsState())
+    private val _settingsState: MutableStateFlow<AppSettingsState> = MutableStateFlow(
+        AppSettingsState(
+            cache = cache,
+            analytics = preferenceTool.isAnalyticEnable,
+            wifi = preferenceTool.uploadWifiState,
+            passcode = preferenceTool.isPasscodeLockEnable,
+            themeMode = themePrefs.mode
+        )
+    )
+
     val settingsState: StateFlow<AppSettingsState> = _settingsState.asStateFlow()
 
     private val _message: MutableSharedFlow<String> = MutableSharedFlow(1)
@@ -36,21 +59,6 @@ class AppSettingsViewModel : ViewModel() {
     private val cache: Long
         get() = FileUtils.getSize(resourcesProvider.getCacheDir(true)) +
                 FileUtils.getSize(resourcesProvider.getCacheDir(false))
-
-    init {
-        App.getApp().appComponent.inject(this)
-    }
-
-    fun getData() {
-        with(preferenceTool) {
-            _settingsState.value = AppSettingsState(
-                cache = cache,
-                analytics = isAnalyticEnable,
-                wifi = uploadWifiState,
-                passcode = isPasscodeLockEnable
-            )
-        }
-    }
 
     fun setAnalytic(isEnable: Boolean) {
         preferenceTool.isAnalyticEnable = isEnable
@@ -63,7 +71,9 @@ class AppSettingsViewModel : ViewModel() {
     }
 
     fun setThemeMode(mode: Int) {
+        themePrefs.mode = mode
         _settingsState.value = _settingsState.value.copy(themeMode = mode)
+        AppCompatDelegate.setDefaultNightMode(mode)
     }
 
     @SuppressLint("MissingPermission")

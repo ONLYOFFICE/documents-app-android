@@ -1,12 +1,14 @@
 package app.editors.manager.di.component
 
 import android.content.Context
+import app.documents.core.network.common.interceptors.WebDavInterceptor
+import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
+import app.documents.core.providers.OneDriveFileProvider
 import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.account.AccountsDataBase
 import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.recent.RecentDao
 import app.documents.core.storage.preference.NetworkSettings
-import app.documents.core.network.common.interceptors.WebDavInterceptor
+import app.documents.core.storage.recent.RecentDao
 import app.editors.manager.di.module.AppModule
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
@@ -14,19 +16,32 @@ import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.filter.BaseFilterPresenter
 import app.editors.manager.mvp.presenters.filter.FilterAuthorPresenter
-import app.editors.manager.mvp.presenters.login.*
-import app.editors.manager.mvp.presenters.main.*
+import app.editors.manager.mvp.presenters.login.EnterpriseAppAuthPresenter
+import app.editors.manager.mvp.presenters.login.EnterpriseCreateLoginPresenter
+import app.editors.manager.mvp.presenters.login.EnterpriseLoginPresenter
+import app.editors.manager.mvp.presenters.login.EnterpriseSSOPresenter
+import app.editors.manager.mvp.presenters.login.EnterpriseSmsPresenter
+import app.editors.manager.mvp.presenters.login.OnlyOfficeCloudPresenter
+import app.editors.manager.mvp.presenters.login.PasswordRecoveryPresenter
+import app.editors.manager.mvp.presenters.login.PersonalLoginPresenter
+import app.editors.manager.mvp.presenters.login.PersonalSignUpPresenter
+import app.editors.manager.mvp.presenters.login.WebDavSignInPresenter
+import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
+import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
+import app.editors.manager.mvp.presenters.main.DocsOnDevicePresenter
+import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
+import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
+import app.editors.manager.mvp.presenters.main.MainActivityPresenter
+import app.editors.manager.mvp.presenters.main.MainPagerPresenter
+import app.editors.manager.mvp.presenters.main.ProfilePresenter
 import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
-import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
-import app.documents.core.providers.OneDriveFileProvider
 import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
-import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
-import app.editors.manager.mvp.presenters.storages.GoogleDriveSignInPresenter
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
+import app.editors.manager.mvp.presenters.storages.GoogleDriveSignInPresenter
 import app.editors.manager.mvp.presenters.storages.OneDriveSingInPresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
@@ -35,8 +50,14 @@ import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
-import app.editors.manager.ui.dialogs.explorer.ExplorerContextBottomDialog
-import app.editors.manager.ui.fragments.login.*
+import app.editors.manager.ui.fragments.login.AuthPagerFragment
+import app.editors.manager.ui.fragments.login.CountriesCodesFragment
+import app.editors.manager.ui.fragments.login.EnterprisePhoneFragment
+import app.editors.manager.ui.fragments.login.EnterprisePortalFragment
+import app.editors.manager.ui.fragments.login.EnterpriseSignInFragment
+import app.editors.manager.ui.fragments.login.EnterpriseSmsFragment
+import app.editors.manager.ui.fragments.login.PersonalPortalFragment
+import app.editors.manager.ui.fragments.login.SplashFragment
 import app.editors.manager.ui.fragments.main.CloudsFragment
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.WebViewerFragment
@@ -48,11 +69,11 @@ import app.editors.manager.ui.fragments.storage.ConnectFragment
 import app.editors.manager.ui.fragments.storage.SelectFragment
 import app.editors.manager.ui.fragments.storage.WebDavStorageFragment
 import app.editors.manager.ui.fragments.storage.WebTokenFragment
+import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.viewModels.login.EnterpriseCreateValidateViewModel
 import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
-import app.editors.manager.viewModels.main.AppSettingsViewModel
 import app.editors.manager.viewModels.main.ExplorerContextViewModel
 import dagger.BindsInstance
 import dagger.Component
@@ -173,7 +194,6 @@ interface AppComponent {
     fun inject(selectPresenter: SelectPresenter?)
     fun inject(webDavSignInPresenter: WebDavSignInPresenter?)
 
-    fun inject(viewModel: AppSettingsViewModel)
     fun inject(viewModel: EnterprisePhoneViewModel)
     fun inject(viewModel: EnterprisePortalViewModel)
     fun inject(viewModel: EnterpriseCreateValidateViewModel)

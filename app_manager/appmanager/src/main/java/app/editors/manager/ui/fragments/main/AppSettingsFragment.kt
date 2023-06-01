@@ -10,7 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -24,15 +26,19 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import app.editors.manager.R
+import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.activities.main.AboutActivity
 import app.editors.manager.ui.activities.main.AppLocalePickerActivity
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
-import app.editors.manager.ui.dialogs.AppThemeDialog
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.AppSettingsState
 import app.editors.manager.viewModels.main.AppSettingsViewModel
+import app.editors.manager.viewModels.main.AppSettingsViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.Previews
@@ -40,18 +46,23 @@ import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppScaffold
+import lib.compose.ui.views.AppSelectItem
 import lib.compose.ui.views.AppSwitchItem
+import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.capitalize
-import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 
 private data class ClearCacheMessage(
     val title: String?,
     val message: String
 )
+
+private enum class SCREENS {
+    MAIN, THEME
+}
 
 class AppSettingsFragment : BaseAppFragment() {
 
@@ -65,8 +76,13 @@ class AppSettingsFragment : BaseAppFragment() {
     }
 
 
-    private val viewModel by viewModels<AppSettingsViewModel>()
-    private val themePrefs by lazy { ThemePreferencesTools(requireContext()) }
+    private val viewModel by viewModels<AppSettingsViewModel>() {
+        AppSettingsViewModelFactory(
+            themePrefs = ThemePreferencesTools(requireContext()),
+            resourcesProvider = ResourcesProvider(requireContext()),
+            preferenceTool = PreferenceTool(requireContext())
+        )
+    }
 
     private val getWritePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
         if (result) {
@@ -90,31 +106,39 @@ class AppSettingsFragment : BaseAppFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initToolbar()
         (view as ComposeView).setContent {
             val settingsState by viewModel.settingsState.collectAsState()
             LaunchedEffect(Unit) {
-                viewModel.getData()
-                viewModel.setThemeMode(themePrefs.mode)
                 viewModel.message.collectLatest { message ->
                     showSnackBar(message)
                 }
             }
 
+            val navController = rememberNavController()
+
             ManagerTheme {
                 AppScaffold {
-                    SettingsScreen(requireContext(), settingsState, viewModel::setWifiState, viewModel::setAnalytic)
+                    NavHost(navController = navController, startDestination = SCREENS.MAIN.name) {
+                        composable(SCREENS.MAIN.name) {
+                            initToolbar(SCREENS.MAIN)
+                            SettingsScreen(
+                                context = requireContext(),
+                                settingsState = settingsState,
+                                onThemeClick = { navController.navigate(SCREENS.THEME.name) },
+                                onWifiState = viewModel::setWifiState,
+                                onAnalytics = viewModel::setAnalytic
+                            )
+                        }
+                        composable(SCREENS.THEME.name) {
+                            initToolbar(SCREENS.THEME)
+                            ThemeScreen()
+                        }
+                    }
                 }
             }
+
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.getData()
-        viewModel.setThemeMode(themePrefs.mode)
-    }
-
 
     override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
         super.onAcceptClick(dialogs, value, tag)
@@ -136,23 +160,36 @@ class AppSettingsFragment : BaseAppFragment() {
         hideDialog()
     }
 
-    private fun initToolbar() {
-        setActionBarTitle(getString(R.string.settings_item_title))
-        (activity as? IMainActivity)?.apply {
-            setAppBarStates(false)
-            showNavigationButton(false)
-            showActionButton(false)
+    private fun initToolbar(theme: SCREENS) {
+        when (theme) {
+            SCREENS.MAIN -> {
+                setActionBarTitle(getString(R.string.settings_item_title))
+                (activity as? IMainActivity)?.apply {
+                    setAppBarStates(false)
+                    showNavigationButton(false)
+                    showActionButton(false)
+                }
+            }
+
+            SCREENS.THEME -> {
+                setActionBarTitle("Theme")
+                (activity as? IMainActivity)?.apply {
+                    showNavigationButton(true)
+                }
+            }
         }
+
     }
 
     @Composable
     private fun SettingsScreen(
         context: Context,
         settingsState: AppSettingsState,
+        onThemeClick: () -> Unit,
         onWifiState: (Boolean) -> Unit,
         onAnalytics: (Boolean) -> Unit
     ) {
-        Surface(color = MaterialTheme.colors.background) {
+        Surface(color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 AppHeaderItem(title = R.string.app_settings_analytic_title)
                 AppSwitchItem(
@@ -209,10 +246,9 @@ class AppSettingsFragment : BaseAppFragment() {
                 AppArrowItem(
                     title = R.string.app_settings_color_theme,
                     option = getThemeString(settingsState.themeMode)?.let { stringResource(id = it) },
-                    dividerVisible = false
-                ) {
-                    showThemeDialog()
-                }
+                    dividerVisible = false,
+                    onClick = onThemeClick
+                )
                 AppArrowItem(
                     title = R.string.about_title,
                     arrowVisible = true,
@@ -230,32 +266,49 @@ class AppSettingsFragment : BaseAppFragment() {
         }
     }
 
+    @Composable
+    fun ThemeScreen() {
+        val state by viewModel.settingsState.collectAsState()
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colors.background)
+        ) {
+            AppSelectItem(
+                title = stringResource(id = R.string.app_settings_follow_the_system),
+                selected = state.themeMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
+                dividerVisible = false,
+                onClick = {
+                    viewModel.setThemeMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                }
+            )
+            AppSelectItem(
+                title = stringResource(id = R.string.app_settings_light_theme),
+                selected = state.themeMode == AppCompatDelegate.MODE_NIGHT_NO,
+                dividerVisible = false,
+                onClick = {
+                    viewModel.setThemeMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+            )
+            AppSelectItem(
+                title = stringResource(id = R.string.app_settings_dark_theme),
+                selected = state.themeMode == AppCompatDelegate.MODE_NIGHT_YES,
+                dividerVisible = false,
+                onClick = {
+                    viewModel.setThemeMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
+            )
+        }
+
+
+    }
+
     private fun getThemeString(mode: Int) = when (mode) {
         AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> R.string.app_settings_follow_the_system
         AppCompatDelegate.MODE_NIGHT_NO -> R.string.app_settings_light_theme
         AppCompatDelegate.MODE_NIGHT_YES -> R.string.app_settings_dark_theme
         else -> null
-    }
-
-    private fun showThemeDialog() {
-        var chosenMode = 0
-        (requireActivity() as? BaseActivity)?.getCustomDialog(
-            title = getString(R.string.app_settings_color_theme),
-            acceptTitle = getString(R.string.dialogs_common_ok_button),
-            cancelTitle = getString(R.string.dialogs_common_cancel_button),
-            view = ComposeView(requireContext()).apply {
-                setContent {
-                    ManagerTheme {
-                        AppThemeDialog(themeMode = themePrefs.mode) { mode -> chosenMode = mode }
-                    }
-                }
-            },
-            acceptListener = {
-                themePrefs.mode = chosenMode
-                viewModel.setThemeMode(chosenMode)
-                AppCompatDelegate.setDefaultNightMode(chosenMode)
-            }
-        )?.show()
     }
 
     @Previews.All
@@ -271,6 +324,7 @@ class AppSettingsFragment : BaseAppFragment() {
                     wifi = true,
                     passcode = true
                 ),
+                onThemeClick = {},
                 onWifiState = {},
                 onAnalytics = {}
             )
