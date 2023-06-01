@@ -172,7 +172,7 @@ class AppSettingsFragment : BaseAppFragment() {
             }
 
             SCREENS.THEME -> {
-                setActionBarTitle("Theme")
+                setActionBarTitle(getString(R.string.app_settings_color_theme))
                 (activity as? IMainActivity)?.apply {
                     showNavigationButton(true)
                 }
