@@ -25,11 +25,11 @@ class ResourcesProvider @Inject constructor(val context: Context) {
 
     fun getDimen(@DimenRes res: Int) = context.resources.getDimension(res)
 
-    fun getCacheDir(isInternal: Boolean): File? {
-        return if (isInternal) {
-            context.cacheDir
-        } else {
+    fun getCacheDir(isExternal: Boolean): File? {
+        return if (isExternal) {
             context.externalCacheDir
+        } else {
+            context.cacheDir
         }
     }
 
