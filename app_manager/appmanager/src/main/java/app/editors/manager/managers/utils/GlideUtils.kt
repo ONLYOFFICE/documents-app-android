@@ -4,20 +4,23 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.webdav.WebDavService
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.Credentials
+
 
 object GlideUtils {
     private fun getWebDavLoad(url: String, account: CloudAccount, password: String): Any {
@@ -65,6 +68,7 @@ object GlideUtils {
                     Glide.with(context)
                         .asDrawable()
                         .load(getCorrectLoad(url, token))
+                        .apply(avatarOptions)
                         .submit()
                         .get()
                 }
@@ -102,10 +106,23 @@ object GlideUtils {
     fun ImageView.setAvatar(avatar: Drawable?) {
         Glide.with(context)
             .load(avatar)
-            .apply(
-                RequestOptions()
-                    .circleCrop()
-            )
+            .apply(RequestOptions().circleCrop())
             .into(this)
+    }
+
+    fun ImageView.setRoomLogo(logo: String, placeholder: Int) {
+        context.accountOnline?.let { account ->
+            val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
+            val url = getCorrectLoad(account.scheme + account.portal + logo, token)
+            Glide.with(context)
+                .load(url)
+                .apply(
+                    RequestOptions()
+                        .timeout(30 * 1000)
+                        .error(placeholder)
+                        .transform(CenterCrop(), RoundedCorners(16))
+                )
+                .into(this)
+        }
     }
 }
