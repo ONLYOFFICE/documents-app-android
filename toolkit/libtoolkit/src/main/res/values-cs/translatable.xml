@@ -10,4 +10,5 @@
     <string name="chooser_email_client">Zvolte e-mailového klienta…</string>
     <string name="about_email_subject">Zpětná vazba k aplikaci Dokumenty ONLYOFFICE pro Android</string>
     <string name="about_feedback">Zpětná vazba a podpora</string>
+    <string name="text_hint_required">Požadováno</string>
 </resources>

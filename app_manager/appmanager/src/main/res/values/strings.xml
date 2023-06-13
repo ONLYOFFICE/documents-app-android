@@ -21,4 +21,19 @@
     </string>
     <string name="app_url_help" translatable="true">https://helpcenter.onlyoffice.com/mobile-applications/documents/android/</string>
 
+    <string-array name="app_locales">
+        <item>cs</item>
+        <item>de</item>
+        <item>en_US</item>
+        <item>es_ES</item>
+        <item>fr</item>
+        <item>it</item>
+        <item>pl</item>
+        <item>pt_BR</item>
+        <item>bg</item>
+        <item>ru</item>
+        <item>lo</item>
+        <item>zh</item>
+    </string-array>
+
 </resources>

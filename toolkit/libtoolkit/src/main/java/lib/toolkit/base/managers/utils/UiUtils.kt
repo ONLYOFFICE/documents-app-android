@@ -1,5 +1,6 @@
 package lib.toolkit.base.managers.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
@@ -28,11 +29,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.R
 import java.lang.ref.WeakReference
 import java.nio.IntBuffer
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -723,6 +726,17 @@ object UiUtils {
             Configuration.UI_MODE_NIGHT_NO -> false
             Configuration.UI_MODE_NIGHT_UNDEFINED -> false
             else -> false
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun getDateDialog(listener: (time: String) -> Unit): MaterialDatePicker<Long> {
+        return MaterialDatePicker.Builder.datePicker().build().apply {
+            val dateFormat = SimpleDateFormat(("yyyy-MM-dd'T'HH:mm:ssZ")).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+
+            addOnPositiveButtonClickListener{ time -> listener.invoke(dateFormat.format(time))}
         }
     }
 

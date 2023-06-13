@@ -1,5 +1,5 @@
 object Dagger {
-    private const val version = "2.44"
+    private const val version = "2.46.1"
 
     const val dagger = "com.google.dagger:dagger:$version"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$version"
@@ -15,22 +15,22 @@ object Moxy {
 }
 
 object Koin {
-    private const val version = "3.3.2"
-    private const val versionCompose = "3.4.1"
+    private const val version = "3.4.1"
+    private const val versionCompose = "3.4.5"
 
     const val koinAndroid = "io.insert-koin:koin-android:$version"
     const val koinCompose = "io.insert-koin:koin-androidx-compose:$versionCompose"
 }
 
 object AndroidX {
-    private const val androidxVersion = "1.6.0"
-    private const val recyclerViewVersion = "1.2.1"
+    private const val androidxVersion = "1.6.1"
+    private const val recyclerViewVersion = "1.3.0"
     private const val recyclerViewSelectionVersion = "1.1.0"
-    private const val kotlinKtxVersion = "1.9.0"
+    private const val kotlinKtxVersion = "1.10.1"
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
-    const val composeActivity = "androidx.activity:activity-compose:1.6.1"
+    const val composeActivity = "androidx.activity:activity-compose:1.7.2"
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     const val recyclerViewSelection = "androidx.recyclerview:recyclerview-selection:$recyclerViewSelectionVersion"
     const val cardView = "androidx.cardview:cardview:1.0.0"
@@ -47,7 +47,7 @@ object Retrofit {
     const val retrofitGson = "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     const val retrofitXml = "com.squareup.retrofit2:converter-simplexml:$retrofitVersion"
     const val retrofitRx = "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
-    const val retrofitKotlinSerialization = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
+    const val retrofitKotlinSerialization = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0"
 
 }
 
@@ -64,9 +64,9 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "20.4.1"
+    private const val playServicesAuthVersion = "20.5.0"
     private const val playCoreVersion = "1.10.3"
-    private const val materialVersion = "1.8.0"
+    private const val materialVersion = "1.9.0"
     private const val gsonVersion = "2.9.1"
     private const val safetynetVersion = "18.0.1"
 
@@ -81,9 +81,9 @@ object Google {
 
 object Firebase {
     private const val firebaseCoreVersion = "21.1.1"
-    private const val firebaseConfigVersion = "21.2.1"
-    private const val firebaseMessagingVersion = "23.1.1"
-    private const val firebaseCrashlyticsVersion = "18.3.3"
+    private const val firebaseConfigVersion = "21.4.0"
+    private const val firebaseMessagingVersion = "23.1.2"
+    private const val firebaseCrashlyticsVersion = "18.3.7"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"
@@ -92,7 +92,7 @@ object Firebase {
 }
 
 object Room {
-    private const val roomVersion = "2.5.0"
+    private const val roomVersion = "2.5.1"
 
     const val roomRuntime = "androidx.room:room-runtime:$roomVersion"
     const val roomKtx = "androidx.room:room-ktx:$roomVersion"
@@ -107,7 +107,7 @@ object Rx {
 }
 
 object Lifecycle {
-    private const val version = "2.5.1"
+    private const val version = "2.6.1"
 
     const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
     const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
@@ -129,7 +129,7 @@ object Compose {
 }
 
 object Jackson {
-    private const val version = "2.10.1"
+    private const val version = "2.15.2"
     const val core = "com.fasterxml.jackson.core:jackson-core:$version"
     const val annotations = "com.fasterxml.jackson.core:jackson-annotations:$version"
     const val databind = "com.fasterxml.jackson.core:jackson-databind:$version"
@@ -139,9 +139,9 @@ object Libs {
     const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
     const val facebookLogin = "com.facebook.android:facebook-login:13.2.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
-    const val glide = "com.github.bumptech.glide:glide:4.14.2"
+    const val glide = "com.github.bumptech.glide:glide:4.15.1"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
-    const val androidWork = "androidx.work:work-runtime:2.7.1"
+    const val androidWork = "androidx.work:work-runtime:2.8.1"
     const val documentFile = "androidx.documentfile:documentfile:1.0.1"
     const val pdfView = "com.github.TalbotGooday:AndroidPdfViewer:3.1.0-beta.3"
     const val colorPicker = "com.github.skydoves:colorpickerview:2.2.4"

@@ -1,7 +1,5 @@
 package lib.toolkit.base.ui.dialogs.common.holders
 
-import android.content.res.ColorStateList
-import android.os.Build
 import android.view.View
 import lib.toolkit.base.R
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -21,7 +19,6 @@ class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             if (errorTint) {
                 val color = dialog.requireContext().getColor(R.color.colorLightRed)
                 acceptView.setTextColor(color)
-                acceptView.rippleColor = ColorStateList.valueOf(color).withAlpha(30)
             }
         }
     }

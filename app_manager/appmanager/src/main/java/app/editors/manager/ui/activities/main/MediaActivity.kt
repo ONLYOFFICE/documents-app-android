@@ -83,7 +83,7 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
     private fun initToolbar() {
         backDrawable = UiUtils
-            .getFilteredDrawable(this, R.drawable.ic_toolbar_back, lib.toolkit.base.R.color.colorWhite)
+            .getFilteredDrawable(this, lib.toolkit.base.R.drawable.ic_back, lib.toolkit.base.R.color.colorWhite)
         setSupportActionBar(viewBinding?.appBarToolbar)
         setStatusBarColor(lib.toolkit.base.R.color.colorBlack)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

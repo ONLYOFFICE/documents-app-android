@@ -63,12 +63,7 @@ class LoginServiceProvider(
 
     override fun registerPortal(request: RequestRegister): Single<LoginResponse> {
         return loginService.registerPortal(
-            recaptchaResponse = request.recaptchaResponse,
-            portalName = request.portalName,
-            firstName = request.firstName,
-            lastName = request.lastName,
-            email = request.email,
-            password = request.password
+            request
         ).map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

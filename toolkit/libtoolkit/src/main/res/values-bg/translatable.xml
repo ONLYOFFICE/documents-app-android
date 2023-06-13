@@ -11,5 +11,6 @@
     <string name="chooser_email_client">Изберете имейл клиент …</string>
     <string name="about_email_subject">ONLYOFFICE Документи Android Обратна връзка</string>
     <string name="about_feedback">Обратна връзка и поддръжка</string>
+    <string name="text_hint_required">Длъжен</string>
 
 </resources>

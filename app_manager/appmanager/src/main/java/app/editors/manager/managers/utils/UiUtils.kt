@@ -2,22 +2,19 @@ package app.editors.manager.managers.utils
 
 import android.view.View
 import android.widget.ImageView
-import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.webdav.WebDavService
-import app.editors.manager.BuildConfig
-import app.editors.manager.R
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
-import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
+import app.documents.core.network.webdav.WebDavService
+import app.documents.core.storage.account.CloudAccount
+import app.editors.manager.BuildConfig
+import app.editors.manager.R
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.UiUtils
 
 object ManagerUiUtils {
 
@@ -89,9 +86,16 @@ object ManagerUiUtils {
         }
     }
 
-    @Suppress("KotlinConstantConditions")
-    fun ImageView.setFileIcon(ext: String) {
-        @DrawableRes val resId = when (StringUtils.getExtension(ext)) {
+    fun getIcon(item: Item): Int {
+        return if (item is CloudFolder) {
+            getFolderIcon(item)
+        } else {
+            getFileIcon(StringUtils.getExtensionFromPath(item.title))
+        }
+    }
+
+    fun getFileIcon(ext: String): Int {
+       return when (StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
             StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
             StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
@@ -113,7 +117,10 @@ object ManagerUiUtils {
             }
             else -> R.drawable.ic_type_file
         }
-        setImageResource(resId)
+    }
+
+    fun ImageView.setFileIcon(ext: String) {
+        setImageResource(getFileIcon(ext))
         alpha = 1.0f
     }
 
@@ -127,15 +134,11 @@ object ManagerUiUtils {
         }
     }
 
-    fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
+    private fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
         return when {
             folder.shared && folder.providerKey.isEmpty() -> R.drawable.ic_type_folder_shared
-            isRoot && folder.providerItem && folder.providerKey.isNotEmpty() -> {
-                StorageUtils.getStorageIcon(folder.providerKey)
-            }
-            folder.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM.toString() -> {
-                R.drawable.ic_type_archive
-            }
+            isRoot && folder.providerItem -> StorageUtils.getStorageIcon(folder.providerKey)
+            ApiContract.SectionType.isArchive(folder.rootFolderType)-> R.drawable.ic_type_archive
             folder.isRoom -> getRoomIcon(folder)
             else -> R.drawable.ic_type_folder
         }
@@ -176,4 +179,8 @@ object ManagerUiUtils {
         layoutParams.bottomMargin = bottom
         this.layoutParams = layoutParams
     }
+}
+
+fun Modifier.fillMaxWidth(isTablet: Boolean): Modifier {
+    return if (isTablet) fillMaxWidth(0.3f) else fillMaxWidth()
 }

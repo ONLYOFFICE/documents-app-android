@@ -83,9 +83,9 @@ abstract class BaseDialogFragment : DialogFragment(), BaseActivity.OnBackPressFr
 
     override fun setToolbarNavigationIcon(isClose: Boolean) {
         if (isClose) {
-            viewBinding?.appToolbar?.setNavigationIcon(R.drawable.ic_toolbar_close)
+            viewBinding?.appToolbar?.setNavigationIcon(lib.toolkit.base.R.drawable.ic_close)
         } else {
-            viewBinding?.appToolbar?.setNavigationIcon(R.drawable.ic_toolbar_back)
+            viewBinding?.appToolbar?.setNavigationIcon(lib.toolkit.base.R.drawable.ic_back)
         }
     }
 
@@ -122,7 +122,7 @@ abstract class BaseDialogFragment : DialogFragment(), BaseActivity.OnBackPressFr
     protected fun initToolbar(menu: Int) {
         viewBinding?.appToolbar?.let { toolbar ->
             toolbar.inflateMenu(menu)
-            toolbar.setNavigationIcon(R.drawable.ic_toolbar_close)
+            toolbar.setNavigationIcon(lib.toolkit.base.R.drawable.ic_close)
             toolbar.setNavigationOnClickListener { onBackPressed() }
             toolbar.setNavigationIconTint(requireContext().getColor(lib.toolkit.base.R.color.colorPrimary))
         }

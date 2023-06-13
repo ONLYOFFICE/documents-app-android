@@ -3,6 +3,8 @@ package app.editors.manager.ui.activities.main
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -10,24 +12,25 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.webdav.WebDavService
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
+import app.editors.manager.managers.receivers.AppLocaleReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
-import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
-import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
-import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
 import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
+import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
+import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.viewModels.main.RecentViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
@@ -202,11 +205,19 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         init(savedInstanceState)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            unregisterReceiver(AppLocaleReceiver)
+        }
+    }
+
     private fun init(savedInstanceState: Bundle?) {
         initViews()
         initToolbar()
         setAppBarStates()
         checkState(savedInstanceState)
+        registerAppLocaleBroadcastReceiver()
 
         if (isNotification()) {
             intent.extras?.getString(URL_KEY)?.let {
@@ -274,6 +285,12 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
+    private fun registerAppLocaleBroadcastReceiver() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(AppLocaleReceiver, IntentFilter(Intent.ACTION_LOCALE_CHANGED))
+        }
+    }
+
     private fun onFloatingButtonClick() {
         supportFragmentManager.fragments.forEach {
             if (it is ActionButtonFragment && it.isVisible) {
@@ -315,6 +332,12 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             is MainActivityState.SettingsState -> {
                 showSettingsFragment()
             }
+        }
+    }
+
+    override fun onLocaleConfirmation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            AppLocaleConfirmationActivity.show(this)
         }
     }
 

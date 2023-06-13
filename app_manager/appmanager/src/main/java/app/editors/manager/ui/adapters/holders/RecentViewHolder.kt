@@ -15,7 +15,7 @@ import java.util.*
 
 class RecentViewHolder(
     view: View,
-    private val itemListener: ((recent: Recent, position: Int) -> Unit)? = null,
+    private val itemListener: ((recent: Recent) -> Unit)? = null,
     private val contextListener: ((recent: Recent, position: Int) -> Unit)? = null
 ) : BaseViewHolder<ViewType>(view) {
 
@@ -32,7 +32,7 @@ class RecentViewHolder(
                 listExplorerFileInfo.isVisible = !info.isNullOrEmpty()
                 listExplorerFileFavorite.isVisible = false
                 listExplorerFileLayout.setOnClickListener {
-                    itemListener?.invoke(item.toRecent(), absoluteAdapterPosition)
+                    itemListener?.invoke(item.toRecent())
                 }
                 listExplorerFileContext.setOnClickListener {
                     contextListener?.invoke(item.toRecent(), absoluteAdapterPosition)

@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:padding="@dimen/screen_margin_medium">
 
-        <com.google.android.material.textview.MaterialTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/dialogCommonTopTitleText"
             style="@style/DialogTitleStyle"
             android:layout_width="match_parent"
@@ -31,7 +31,7 @@
             tools:ignore="TouchTargetSizeCheck"
             tools:text="Top title" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/dialogCommonBottomTitleText"
             style="@style/SmallTextView"
             android:layout_width="match_parent"
@@ -71,6 +71,13 @@
             <include
                 layout="@layout/dialog_fragment_edit_multiline"
                 android:visibility="gone" />
+
+            <FrameLayout
+                android:id="@+id/dialogCustomLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
         </FrameLayout>
 
         <LinearLayout
@@ -82,19 +89,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/dialogCommonFrameLayout">
 
-            <com.google.android.material.button.MaterialButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/dialogCommonCancelButton"
                 style="@style/DialogButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="Cancel" />
 
-            <com.google.android.material.button.MaterialButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/dialogCommonAcceptButton"
                 style="@style/DialogButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:cornerRadius="6dp"
                 android:layout_marginEnd="@dimen/screen_margin_medium"
                 tools:text="Accept" />
         </LinearLayout>

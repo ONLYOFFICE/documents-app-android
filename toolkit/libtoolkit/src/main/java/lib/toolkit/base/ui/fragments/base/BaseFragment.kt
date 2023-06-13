@@ -16,7 +16,6 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.Lifecycle
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -190,25 +189,37 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         return baseActivity.getProgressDialog(title, cancelTitle, tag)
     }
 
-    protected fun showWaitingDialog(title: String) {
+    protected fun showWaitingDialog(
+        title: String,
+        progressType: WaitingHolder.ProgressType = WaitingHolder.ProgressType.HORIZONTAL
+    ) {
         baseActivity.addDialogListener(this)
-        baseActivity.showWaitingDialog(title, null, WaitingHolder.ProgressType.HORIZONTAL, null)
-    }
-
-    protected fun showWaitingDialog(title: String?, tag: String?) {
-        baseActivity.addDialogListener(this)
-        baseActivity.showWaitingDialog(title, null, WaitingHolder.ProgressType.HORIZONTAL, tag)
-    }
-
-    protected fun showWaitingDialog(title: String?, cancelButton: String?, tag: String?) {
-        baseActivity.addDialogListener(this)
-        baseActivity.showWaitingDialog(title, cancelButton, WaitingHolder.ProgressType.HORIZONTAL, tag)
+        baseActivity.showWaitingDialog(title, null, progressType, null)
     }
 
     protected fun showWaitingDialog(
         title: String?,
         tag: String?,
-        type: WaitingHolder.ProgressType,
+        progressType: WaitingHolder.ProgressType = WaitingHolder.ProgressType.HORIZONTAL
+    ) {
+        baseActivity.addDialogListener(this)
+        baseActivity.showWaitingDialog(title, null, progressType, tag)
+    }
+
+    protected fun showWaitingDialog(
+        title: String?,
+        cancelButton: String?,
+        tag: String?,
+        progressType: WaitingHolder.ProgressType = WaitingHolder.ProgressType.HORIZONTAL
+    ) {
+        baseActivity.addDialogListener(this)
+        baseActivity.showWaitingDialog(title, cancelButton, progressType, tag)
+    }
+
+    protected fun showWaitingDialog(
+        title: String?,
+        tag: String?,
+        type: WaitingHolder.ProgressType = WaitingHolder.ProgressType.HORIZONTAL,
         cancelButton: String?,
         gravity: Int,
         color: Int
@@ -367,7 +378,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected val supportActionBar: ActionBar?
-        get() = (activity as AppCompatActivity).supportActionBar
+        get() = (activity as? AppCompatActivity)?.supportActionBar
 
 
     /*

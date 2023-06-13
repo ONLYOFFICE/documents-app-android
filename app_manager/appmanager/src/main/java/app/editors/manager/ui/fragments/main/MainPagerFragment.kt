@@ -119,8 +119,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     @Suppress("JSON_FORMAT_REDUNDANT")
     private fun checkBundle() {
-        val bundle = requireActivity().intent.extras
-        var data = requireActivity().intent.data
+        val bundle = requireActivity().intent?.extras
+        var data = requireActivity().intent?.data
         if (bundle != null && bundle.containsKey("data")) {
             val model = bundle.getString("data")
             data = Uri.parse("${BuildConfig.PUSH_SCHEME}://openfile?data=${model}&push=true")

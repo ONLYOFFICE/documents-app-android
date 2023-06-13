@@ -14,7 +14,7 @@ import app.editors.manager.mvp.presenters.storages.BaseStorageDocsPresenter
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.popup.MainPopupItem
@@ -104,17 +104,13 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
     }
 
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
-        super.onContextButtonClick(buttons)
-        when(buttons) {
-            ContextBottomDialog.Buttons.EXTERNAL -> {
-                presenter.externalLink
-            }
-            ContextBottomDialog.Buttons.EDIT -> {
-                presenter.getFileInfo()
-            }
-            else -> { }
+    override fun onContextButtonClick(contextItem: ExplorerContextItem) {
+        when (contextItem) {
+            ExplorerContextItem.ExternalLink -> presenter.externalLink
+            ExplorerContextItem.Edit -> presenter.getFileInfo()
+            else -> super.onContextButtonClick(contextItem)
         }
+        contextBottomDialog?.dismiss()
     }
 
     override fun onOpenLocalFile(file: CloudFile) {

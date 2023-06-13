@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import java.io.FileInputStream
 import java.io.FileWriter
@@ -61,8 +63,8 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 441
-        versionName = "5.6.1"
+        versionCode = 452
+        versionName = "5.7.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
@@ -234,6 +236,7 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":core"))
+    implementation(project(":libcompose"))
     implementation(project(":libtoolkit"))
     "managerImplementation"(project(":libx2t"))
     "managerImplementation"(project(":libeditors"))
@@ -312,7 +315,7 @@ dependencies {
     implementation(Lifecycle.liveData)
     implementation(Lifecycle.runtime)
 
-    implementation("androidx.fragment:fragment-ktx:1.5.2")
+    implementation("androidx.fragment:fragment-ktx:1.5.7")
 
     //Compose
     implementation(Compose.ui)

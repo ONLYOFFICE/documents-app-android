@@ -19,7 +19,6 @@ import app.documents.core.network.manager.models.request.RequestCreate
 import app.editors.manager.app.localFileProvider
 import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -152,35 +151,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
-    override fun onContextClick(item: Item, position: Int, isTrash: Boolean) {
-        onClickEvent(item, position)
-        isContextClick = true
-        val state = ContextBottomDialog.State()
-        val onlineAccount = context.accountOnline
-        state.isDropBox = onlineAccount?.isDropbox == true
-        state.isOneDrive = onlineAccount?.isOneDrive == true
-        state.isGoogleDrive = onlineAccount?.isGoogleDrive == true
-        state.isVisitor = onlineAccount?.isVisitor == true
-        state.isLocal = true
-        state.title = item.title
-        state.info = TimeUtils.formatDate(itemClickedDate)
-        state.isFolder = item is CloudFolder
-        if (!isClickedItemFile) {
-            state.iconResId = R.drawable.ic_type_folder
-        } else {
-            state.iconResId = getIconContext(
-                StringUtils.getExtensionFromPath(
-                    itemClickedTitle
-                )
-            )
-        }
-        state.isPdf = isPdf
-        if (state.isShared && state.isFolder) {
-            state.iconResId = R.drawable.ic_type_folder_shared
-        }
-        viewState.onItemContext(state)
-    }
-
     override fun onActionClick() {
         viewState.onActionDialog()
     }
@@ -233,6 +203,12 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     override fun openFolder(id: String?, position: Int) {
         setFiltering(false)
         super.openFolder(id, position)
+    }
+
+    override fun sendCopy() {
+        itemClicked?.id?.let { path ->
+            viewState.onSendCopy(File(path))
+        }
     }
 
     private fun uploadWebDav(id: String, uriList: List<Uri>) {
@@ -330,21 +306,21 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     }
 
-    private fun openFile(file: CloudFile, isNew: Boolean = false) {
+    private fun openFile(file: CloudFile, viewMode: Boolean = true) {
         val path = file.id
         val uri = Uri.fromFile(File(path))
         val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
-        openFile(uri, ext, isNew)
+        openFile(uri, ext, viewMode)
     }
 
     @Suppress("KotlinConstantConditions")
-    private fun openFile(uri: Uri, ext: String, isNew: Boolean = false) {
+    private fun openFile(uri: Uri, ext: String, viewMode: Boolean = true) {
         when (val enumExt = StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
                 if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && enumExt == StringUtils.Extension.FORM) {
                     viewState.onError(context.getString(R.string.error_unsupported_format))
                 } else {
-                    viewState.onShowDocs(uri, isNew)
+                    viewState.onShowDocs(uri, viewMode)
                 }
             }
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
@@ -459,5 +435,13 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         setSelection(false)
         setFiltering(false)
         updateViewsState()
+    }
+
+    fun getFileInfo(viewMode: Boolean) {
+        if (itemClicked != null && itemClicked is CloudFile) {
+            val file = itemClicked as CloudFile
+            addRecent(file)
+            openFile(file, viewMode)
+        }
     }
 }

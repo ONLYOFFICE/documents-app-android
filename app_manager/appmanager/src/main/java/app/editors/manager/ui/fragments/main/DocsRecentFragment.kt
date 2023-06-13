@@ -14,13 +14,13 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import app.documents.core.storage.recent.Recent
-import app.documents.core.network.common.contracts.ApiContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import app.editors.manager.R
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.storage.recent.Recent
+import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.OpenState
@@ -30,19 +30,18 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.adapters.RecentAdapter
 import app.editors.manager.ui.adapters.holders.factory.RecentHolderFactory
-import app.editors.manager.ui.dialogs.ContextBottomDialog
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextState
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.utils.LaunchActivityForResult
-import lib.toolkit.base.managers.utils.RequestPermissions
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
+import java.util.*
 
 class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
@@ -54,12 +53,24 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private var filterValue: CharSequence? = null
     private var clearItem: MenuItem? = null
 
-    private val recentListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
-        Debounce.perform(1000L) { presenter.fileClick(recent, position) }
+    private val recentListener: (recent: Recent) -> Unit = { recent ->
+        Debounce.perform(1000L) { presenter.fileClick(recent) }
     }
 
     private val contextListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
-        presenter.contextClick(recent, position)
+        val state = ExplorerContextState(
+            item = CloudFile().apply {
+                title = recent.name
+                fileExst = recent.name.split(".").let { if (it.size > 1) it[it.size - 1] else "" }
+            },
+            section = ApiContract.Section.Recent,
+            folderAccess = ApiContract.Access.ReadWrite,
+            headerInfo = "${if (recent.isLocal) getString(R.string.this_device) else recent.source}" +
+                    getString(R.string.placeholder_point) +
+                    TimeUtils.formatDate(Date(recent.date))
+        )
+        presenter.onContextClick(recent, position)
+        showExplorerContextBottomDialog(state)
     }
 
     private val readStorage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -254,14 +265,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         return false
     }
 
-    override fun onContextShow(state: ContextBottomDialog.State) {
-        parentFragmentManager.let {
-            contextBottomDialog?.onClickListener = this
-            contextBottomDialog?.state = state
-            contextBottomDialog?.show(it, ContextBottomDialog.TAG)
-        }
-    }
-
     override fun onDeleteItem(position: Int) {
         adapter?.let { recentAdapter ->
             recentAdapter.removeItem(position)
@@ -269,9 +272,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
-        if (buttons == ContextBottomDialog.Buttons.DELETE) {
-            presenter.deleteRecent()
+    override fun onContextButtonClick(contextItem: ExplorerContextItem) {
+        when (contextItem) {
+            ExplorerContextItem.Edit -> presenter.fileClick()
+            is ExplorerContextItem.Delete -> presenter.deleteRecent()
+            else -> super.onContextButtonClick(contextItem)
         }
         contextBottomDialog?.dismiss()
     }

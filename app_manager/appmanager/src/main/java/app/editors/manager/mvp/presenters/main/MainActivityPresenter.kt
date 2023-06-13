@@ -1,12 +1,15 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.account.copyWithToken
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -92,6 +95,15 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                         viewState.onRender(MainActivityState.OnDeviceState)
                     }
                 }
+            }
+        }
+        checkAppLocale()
+    }
+
+    private fun checkAppLocale() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (context.appComponent.appLocaleHelper.checkAppLocale(true)) {
+                viewState.onLocaleConfirmation()
             }
         }
     }

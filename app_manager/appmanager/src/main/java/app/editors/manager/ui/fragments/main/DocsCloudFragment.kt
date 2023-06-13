@@ -9,12 +9,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.clearFragmentResultListener
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.R
-import app.editors.manager.app.App.Companion.getApp
-import app.editors.manager.app.accountOnline
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.editors.manager.R
+import app.editors.manager.app.App.Companion.getApp
+import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
@@ -27,8 +27,8 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
-import app.editors.manager.ui.dialogs.ContextBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
+import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
@@ -168,29 +168,25 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    override fun onContextButtonClick(buttons: ContextBottomDialog.Buttons?) {
-        super.onContextButtonClick(buttons)
-        when (buttons) {
-            ContextBottomDialog.Buttons.RESTORE -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
-            ContextBottomDialog.Buttons.EDIT -> cloudPresenter.onEditContextClick()
-            ContextBottomDialog.Buttons.SHARE -> showShareActivity(
-                cloudPresenter.itemClicked
+    override fun onContextButtonClick(contextItem: ExplorerContextItem) {
+        when (contextItem) {
+            ExplorerContextItem.Edit -> cloudPresenter.onEditContextClick()
+            ExplorerContextItem.Share -> showShareActivity(cloudPresenter.itemClicked)
+            ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
+            ExplorerContextItem.Location -> cloudPresenter.openLocation()
+            ExplorerContextItem.RoomInfo -> ShareActivity.show(this, cloudPresenter.itemClicked, true)
+            is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
+            is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
+            ExplorerContextItem.ShareDelete -> showQuestionDialog(
+                title = getString(R.string.dialogs_question_share_remove),
+                string = cloudPresenter.itemTitle,
+                acceptButton = getString(R.string.dialogs_question_share_remove),
+                cancelButton = getString(R.string.dialogs_common_cancel_button),
+                tag = DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE
             )
-            ContextBottomDialog.Buttons.EXTERNAL -> {
-                setContextDialogExternalLinkEnable(false)
-                cloudPresenter.saveExternalLinkToClipboard()
-            }
-            ContextBottomDialog.Buttons.SHARE_DELETE -> showQuestionDialog(
-                getString(R.string.dialogs_question_share_remove),
-                cloudPresenter.itemTitle,
-                getString(R.string.dialogs_question_share_remove),
-                getString(R.string.dialogs_common_cancel_button),
-                DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE
-            )
-            ContextBottomDialog.Buttons.FAVORITE -> cloudPresenter.addToFavorite()
-            ContextBottomDialog.Buttons.OPEN_LOCATION -> cloudPresenter.openLocation()
-            else -> {}
+            else -> super.onContextButtonClick(contextItem)
         }
+        contextBottomDialog?.dismiss()
     }
 
     override fun continueClick(tag: String?, action: String?) {
