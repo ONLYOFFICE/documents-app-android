@@ -4,8 +4,9 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-open class CloudFolder : Item() {
+open class CloudFolder : Item(), Serializable {
 
     @SerializedName("parentId")
     @Expose
