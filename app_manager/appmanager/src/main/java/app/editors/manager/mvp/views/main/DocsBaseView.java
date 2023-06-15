@@ -72,6 +72,8 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDeleteBatch(List<Entity> list);
     @StateStrategyType(OneExecutionStateStrategy.class)
+    void onDeleteMessage(int count);
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onRename(Item item, int position);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onBatchMoveCopy(@NonNull OperationsState.OperationType operation, @NonNull Explorer explorer);

@@ -205,20 +205,12 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }
     }
 
-    override fun onRemoveItem(item: Item) {
-        explorerAdapter?.let {
-            it.removeItem(item)
-            it.checkHeaders()
-            setPlaceholder(it.itemList?.size == 0)
-            onClearMenu()
-        }
-    }
-
-    override fun onRemoveItems(items: List<Item>) {
-        explorerAdapter?.let {
-            it.removeItems(ArrayList<Entity>(items))
-            it.checkHeaders()
-            setPlaceholder(it.itemList?.size == 0)
+    override fun onRemoveItems(vararg items: Item) {
+        onSnackBar(resources.getQuantityString(R.plurals.operation_delete_irretrievably, items.size))
+        explorerAdapter?.let { adapter ->
+            adapter.removeItems(items.toList())
+            adapter.checkHeaders()
+            setPlaceholder(adapter.itemList.isNullOrEmpty())
             onClearMenu()
         }
     }
