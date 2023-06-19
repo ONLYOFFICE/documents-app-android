@@ -22,11 +22,14 @@ import app.documents.core.network.storages.dropbox.api.DropboxProvider
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import okhttp3.ResponseBody
 import retrofit2.HttpException
+import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -35,7 +38,7 @@ import java.util.*
 class DropboxFileProvider(
     private val context: Context,
     private val helper: IStorageHelper<DropboxProvider>
-) : BaseFileProvider {
+) : BaseFileProvider, CacheFileHelper {
 
     companion object {
         private const val PATH_TEMPLATES = "templates/"
@@ -369,6 +372,11 @@ class DropboxFileProvider(
                 }
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
+        return api.download(cloudFile.id)
     }
 
     private fun sortExplorer(explorer: Explorer, filter: Map<String, String>?): Explorer {

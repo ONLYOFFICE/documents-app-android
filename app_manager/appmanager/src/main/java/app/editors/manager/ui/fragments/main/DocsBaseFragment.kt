@@ -15,6 +15,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -114,6 +115,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             contextBottomDialog?.onClickListener = this
             actionBottomDialog?.onClickListener = this
         }
+    }
+
+    private val sendActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        presenter.removeSendingFile()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -263,7 +268,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onSendCopy(file: File) {
-        activity?.openSendFileActivity(lib.toolkit.base.R.string.export_send_copy, file)
+        sendActivityResult.launch(activity?.getSendFileIntent(lib.toolkit.base.R.string.export_send_copy, file))
     }
 
     private val isFastClick: Boolean

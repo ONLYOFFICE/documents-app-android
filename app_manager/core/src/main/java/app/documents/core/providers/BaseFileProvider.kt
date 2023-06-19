@@ -8,7 +8,7 @@ import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import io.reactivex.Observable
 
-interface BaseFileProvider {
+interface BaseFileProvider : CacheFileHelper {
     fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer>
     fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile>
     fun search(query: String?): Observable<String>?

@@ -14,11 +14,15 @@ import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import io.reactivex.Observable
+import io.reactivex.Single
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
+import okhttp3.ResponseBody
+import retrofit2.Response
 import java.io.File
 import java.io.IOException
+import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
@@ -151,6 +155,10 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
     ): Observable<ResponseExternal>? = null
 
     override fun terminate(): Observable<List<Operation>>? = null
+
+    override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
+        return Single.error(RuntimeException("Stub"))
+    }
 
     override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
 

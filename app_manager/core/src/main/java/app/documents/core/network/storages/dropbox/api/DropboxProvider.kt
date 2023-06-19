@@ -11,7 +11,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
-import retrofit2.HttpException
 import retrofit2.Response
 
 class DropboxProvider(
@@ -34,9 +33,8 @@ class DropboxProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun download(request: String): Single<Response<ResponseBody>> {
-        return dropBoxContentService.download(request)
-            //.map { fetchResponse(it) }
+    fun download(itemId: String): Single<Response<ResponseBody>> {
+        return dropBoxContentService.download(getDownloadRequest(itemId))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -126,6 +124,10 @@ class DropboxProvider(
             .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    private fun getDownloadRequest(id: String): String {
+        return "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox(id)}\"}"
     }
 
     private fun <T> fetchResponse(response: Response<T>): DropboxResponse {

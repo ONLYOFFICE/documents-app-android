@@ -21,10 +21,9 @@ class DownloadWork(
 
     override fun download(): Response<ResponseBody> =
         with(applicationContext.dropboxProvider) {
-            val request = "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox(id.orEmpty())}\"}"
             when (DOWNLOADABLE_ITEM_FILE) {
-                data?.getString(DOWNLOADABLE_ITEM_KEY) -> download(request)
-                else -> downloadFolder(request)
+                data?.getString(DOWNLOADABLE_ITEM_KEY) -> download(id.orEmpty())
+                else -> downloadFolder(id.orEmpty())
             }
         }.blockingGet()
 }
