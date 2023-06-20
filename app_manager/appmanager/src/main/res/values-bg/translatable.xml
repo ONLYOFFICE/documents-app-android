@@ -548,4 +548,21 @@
     <string name="room_delete_success">Стаята е изтрита</string>
     <string name="switch_account_title">Превключване на профил?</string>
     <string name="switch_account_description">Влезте в порталния профил %1$s, за да отворите документа.</string>
+    <plurals name="dialogs_question_message_delete">
+        <item quantity="one">То ще бъде безвъзвратно изтрито.\nТова действие е необратимо.</item>
+        <item quantity="other">Те ще бъдат безвъзвратно изтрити.\nТова действие е необратимо.</item>
+    </plurals>
+    <plurals name="dialogs_question_message_to_trash">
+        <item quantity="one">Ще бъде преместен в кошчето.</item>
+        <item quantity="other">Ще бъдат преместени в кошчето.</item>
+    </plurals>
+
+    <string name="dialogs_question_delete_all_title">Изтриване на всички елементи?</string>
+    <plurals name="dialogs_question_delete_title">
+        <item quantity="one">Изтриване на този елемент?</item>
+        <item quantity="other">Изтриване на %1$d елемента?</item>
+    </plurals>
+    <string name="storage_dropbox_email_not_verified_error">Имейлът не е потвърден</string>
+    <string name="download_manager_downloading">Изтеглянето…</string>
+    <string name="settings_language">Език</string>
 </resources>

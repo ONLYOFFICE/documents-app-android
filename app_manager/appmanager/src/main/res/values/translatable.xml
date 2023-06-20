@@ -228,12 +228,6 @@
     <string name="dialogs_question_delete_all_title">Delete all items?</string>
     <plurals name="dialogs_question_delete_title">
         <item quantity="one">Delete this item?</item>
-        <!--        TODO sample for russian -->
-        <!--        <item quantity="one">1 элемент</item>-->
-        <!--        <item quantity="two">2 элемента</item>-->
-        <!--        <item quantity="few">3 элемента</item>-->
-        <!--        <item quantity="few">4 элемента</item>-->
-        <!--        <item quantity="many">5 элементов</item>-->
         <item quantity="other">Delete %1$d items?</item>
     </plurals>
 
