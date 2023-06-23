@@ -129,7 +129,7 @@ object Compose {
 }
 
 object Jackson {
-    private const val version = "2.14.4"
+    private const val version = "2.14.3"
     const val core = "com.fasterxml.jackson.core:jackson-core:$version"
     const val annotations = "com.fasterxml.jackson.core:jackson-annotations:$version"
     const val databind = "com.fasterxml.jackson.core:jackson-databind:$version"
