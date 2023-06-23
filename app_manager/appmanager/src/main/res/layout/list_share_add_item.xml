@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height"
     android:clickable="false"
-    android:focusable="false"
-    android:background="@color/colorSurface">
+    android:focusable="false">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/share_add_item_layout"
+        android:id="@+id/shareAddItemLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/selectableItemBackground"
@@ -18,67 +16,59 @@
         android:focusable="true">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/share_add_item_alpha_text"
+            android:id="@+id/shareAddItemLetter"
             style="@style/LargeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin_large"
             android:layout_marginVertical="@dimen/screen_margin_large"
             android:gravity="center"
             android:text="R"
             android:textColor="@color/colorPrimary"
             android:textSize="24sp"
-            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="HardcodedText" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/share_group_guideline" />
-
         <ImageView
+            android:id="@+id/shareAddItemAvatar"
             style="@style/CommonImageView"
-            android:id="@+id/share_add_item_avatar_image"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
-            android:layout_marginStart="25dp"
-            android:src="@drawable/drawable_list_share_image_item_user_placeholder"
+            android:layout_marginStart="@dimen/default_margin_large"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/guideline1"
+            app:layout_constraintStart_toEndOf="@id/shareAddItemLetter"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/drawable_list_share_image_item_user_placeholder" />
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/shareAddItemTitle"
             style="@style/ItemMediumBlackText"
-            android:id="@+id/share_add_item_main_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:text="Tittle"
-            app:layout_constraintBottom_toTopOf="@+id/share_add_item_info_title"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/shareAddItemInfo"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/share_add_item_avatar_image"
+            app:layout_constraintStart_toEndOf="@+id/shareAddItemAvatar"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Title" />
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/shareAddItemInfo"
             style="@style/ItemSmallGreyText"
-            android:id="@+id/share_add_item_info_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Info"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/share_add_item_main_title"
+            app:layout_constraintEnd_toEndOf="@+id/shareAddItemTitle"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/share_add_item_main_title"
-            app:layout_constraintTop_toBottomOf="@+id/share_add_item_main_title" />
+            app:layout_constraintStart_toStartOf="@+id/shareAddItemTitle"
+            app:layout_constraintTop_toBottomOf="@+id/shareAddItemTitle"
+            tools:text="Info" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -1,141 +1,93 @@
 package app.editors.manager.ui.adapters.holders
 
-import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.Drawable
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.Guideline
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
+import app.documents.core.network.manager.models.base.ItemProperties
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareAddItemBinding
 import app.editors.manager.managers.utils.GlideUtils.setAvatar
-import app.editors.manager.managers.utils.ManagerUiUtils.setMargins
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
 import app.editors.manager.ui.adapters.ShareAdapter
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.ui.adapters.BaseAdapter
+import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 import lib.toolkit.base.ui.adapters.holder.ViewType
-import java.util.*
 
 class ShareAddItemViewHolder(
     view: View,
-    private val listener: BaseAdapter.OnItemClickListener?)
-    : ShareViewHolder(view) {
+    private val listener: BaseAdapter.OnItemClickListener?
+) : BaseViewHolder<ViewType>(view) {
 
-    private val itemBinding = ListShareAddItemBinding.bind(view)
-    private var shareLayout: ConstraintLayout = itemBinding.shareAddItemLayout
-    private var alphaText: TextView = itemBinding.shareAddItemAlphaText
-    private var guideline: Guideline = itemBinding.guideline1
-    private var avatarImage: ImageView = itemBinding.shareAddItemAvatarImage
-    private var mainTitle: TextView = itemBinding.shareAddItemMainTitle
-    private var infoTitle: TextView = itemBinding.shareAddItemInfoTitle
-    private val resourcesProvider = ResourcesProvider(itemBinding.root.context)
-    private val guideLine = itemBinding.root.context.resources.getDimension(lib.toolkit.base.R.dimen.share_group_guideline).toInt()
-    private val leftMargin = itemBinding.root.context.resources.getDimension(lib.toolkit.base.R.dimen.screen_margin_large).toInt()
+    private val binding = ListShareAddItemBinding.bind(view)
 
     override fun bind(item: ViewType, payloads: List<Any>) {
         if (item is UserUi && ShareAdapter.PAYLOAD_AVATAR in payloads) {
-            if (item.isSelected) {
-                val mask = resourcesProvider.getDrawable(R.drawable.drawable_list_image_select_mask)
-                val layerDrawable = LayerDrawable(arrayOf(item.avatar, mask))
-                avatarImage.setAvatar(layerDrawable)
+            setAvatar(item.avatar)
+            setSelected(item)
+        }
+    }
+
+    private fun setAvatar(avatar: Drawable?) {
+        with(binding) {
+            if (avatar != null) {
+                shareAddItemAvatar.setAvatar(avatar)
             } else {
-                avatarImage.setAvatar(item.avatar ?: resourcesProvider
-                    .getDrawable(R.drawable.drawable_list_share_image_item_user_placeholder))
+                shareAddItemAvatar.setImageResource(R.drawable.drawable_list_share_image_item_user_placeholder)
             }
         }
     }
 
-    override fun bind(item: ViewType, mode: BaseAdapter.Mode, previousItem: ViewType?) {
-        listener?.let { listener ->
-            shareLayout.setOnClickListener { view ->
-                listener.onItemClick(view, absoluteAdapterPosition)
+    private fun setSelected(item: ViewType) {
+        with(binding) {
+            if (item is ItemProperties && item.isSelected) {
+                shareAddItemAvatar.foreground =
+                    AppCompatResources.getDrawable(root.context, R.drawable.drawable_list_image_select_mask)
+            } else {
+                shareAddItemAvatar.foreground = null
             }
         }
+    }
 
-        when (item) {
-            is UserUi -> {
-                if (mode.ordinal == BaseAdapter.Mode.USERS.ordinal) {
-                    guideline.layoutParams =
-                        (guideline.layoutParams as ConstraintLayout.LayoutParams).apply {
-                            guideBegin = guideLine
+    fun bind(item: ViewType, mode: BaseAdapter.Mode, previousItem: ViewType?) {
+        with(binding) {
+            when (item) {
+                is UserUi -> {
+                    if (mode != BaseAdapter.Mode.COMMON) {
+                        val letter = getLetter(item, previousItem as? UserUi)
+                        if (letter != null) {
+                            shareAddItemLetter.text = letter.toString()
+                        } else {
+                            shareAddItemLetter.isInvisible = true
                         }
-                    getLetter(item, previousItem as UserUi?)
-                    avatarImage.setMargins(0, 0, 0, 0)
+                    } else {
+                        shareAddItemLetter.isVisible = false
+                    }
+                    shareAddItemInfo.isVisible = item.department.isNotEmpty()
+                    shareAddItemInfo.text = item.department.trim()
+                    shareAddItemTitle.text = item.getDisplayNameHtml
+                    setAvatar(item.avatar)
                 }
-                else if (mode.ordinal == BaseAdapter.Mode.COMMON.ordinal){
-                    removeAlpha()
+                is GroupUi -> {
+                    shareAddItemAvatar.setImageResource(R.drawable.drawable_list_share_image_item_group_placeholder)
+                    shareAddItemTitle.text = item.name
+                    shareAddItemInfo.isVisible = false
+                    shareAddItemLetter.isVisible = false
                 }
-                mainTitle.text = item.getDisplayNameHtml
-
-                if (item.isSelected) {
-                    val mask = resourcesProvider.getDrawable(R.drawable.drawable_list_image_select_mask)
-                    val layerDrawable = LayerDrawable(arrayOf(item.avatar, mask))
-                    avatarImage.setAvatar(layerDrawable)
-                } else {
-                    avatarImage.setAvatar(item.avatar ?: resourcesProvider
-                        .getDrawable(R.drawable.drawable_list_share_image_item_user_placeholder))
-                }
-                setInfo(item)
             }
-            is GroupUi -> {
-                val groupPlaceholder = resourcesProvider.getDrawable(R.drawable.drawable_list_share_image_item_group_placeholder)
-                if (item.isSelected) {
-                    val mask = resourcesProvider.getDrawable(R.drawable.drawable_list_image_select_mask)
-                    val layerDrawable = LayerDrawable(arrayOf(groupPlaceholder, mask))
-                    avatarImage.setAvatar(layerDrawable)
-                } else {
-                    avatarImage.setAvatar(groupPlaceholder)
-                }
-                removeAlpha()
-                setAvatarMargins(item)
-            }
-            else -> {
-                if (mode.ordinal != BaseAdapter.Mode.USERS.ordinal)
-                    removeAlpha()
-            }
+            shareAddItemLayout.setOnClickListener { view -> listener?.onItemClick(view, absoluteAdapterPosition) }
         }
+        setSelected(item)
     }
 
-    private fun getLetter(user: UserUi, userBefore: UserUi?) {
-        userBefore?.let { previous ->
-            if (user.getDisplayNameHtml[0] != previous.getDisplayNameHtml[0]) {
-                alphaText.visibility = View.VISIBLE
-                alphaText.text = user.getDisplayNameHtml[0].toString()
-                    .uppercase(Locale.getDefault())
-            } else {
-                alphaText.visibility = View.GONE
-            }
-        } ?: run {
-            alphaText.visibility = View.VISIBLE
-            alphaText.text = user.getDisplayNameHtml[0].toString()
-                .uppercase(Locale.getDefault())
-        }
+    private fun getLetter(user: UserUi, userBefore: UserUi?): Char? {
+        return if (userBefore != null) {
+            if (user.getDisplayNameHtml[0].equals(userBefore.getDisplayNameHtml[0], true)) return null
+            user.getDisplayNameHtml[0].uppercaseChar()
+        } else user.getDisplayNameHtml[0].uppercaseChar()
     }
 
-    private fun setAvatarMargins(item: GroupUi) {
-        avatarImage.setMargins(leftMargin, 0, 0, 0)
-        mainTitle.text = item.name
-        infoTitle.visibility = View.GONE
-    }
-
-    private fun removeAlpha() {
-        alphaText.visibility = View.GONE
-        guideline.layoutParams =
-            (guideline.layoutParams as
-                    ConstraintLayout.LayoutParams).apply {
-                guideBegin = 0
-            }
-    }
-
-    private fun setInfo(item: UserUi) {
-        val info = item.department.trim { it <= ' ' }
-        if (info.isNotEmpty()) {
-            infoTitle.visibility = View.VISIBLE
-            infoTitle.text = info
-        } else {
-            infoTitle.visibility = View.GONE
-        }
-    }
 }
