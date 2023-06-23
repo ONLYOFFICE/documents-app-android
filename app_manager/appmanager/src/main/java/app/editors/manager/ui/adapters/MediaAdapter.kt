@@ -150,7 +150,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                setImageTint(imageView, R.drawable.ic_media_error, lib.toolkit.base.R.color.colorLightWhite)
+                setImageTint(imageView, R.drawable.ic_media_error, lib.toolkit.base.R.color.colorTextSecondary)
                 showImage()
                 return true
             }

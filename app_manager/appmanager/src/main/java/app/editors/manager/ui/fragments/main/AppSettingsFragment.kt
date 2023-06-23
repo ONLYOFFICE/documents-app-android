@@ -256,10 +256,18 @@ class AppSettingsFragment : BaseAppFragment() {
                 ) {
                     AboutActivity.show(context)
                 }
-                AppArrowItem(title = lib.editors.gbase.R.string.context_settings_main_help, dividerVisible = false) {
+                AppArrowItem(
+                    title = lib.editors.gbase.R.string.context_settings_main_help,
+                    dividerVisible = false,
+                    arrowVisible = false
+                ) {
                     showUrlInBrowser(getString(R.string.app_url_help))
                 }
-                AppArrowItem(title = lib.toolkit.base.R.string.about_feedback, dividerVisible = false) {
+                AppArrowItem(
+                    title = lib.toolkit.base.R.string.about_feedback,
+                    dividerVisible = false,
+                    arrowVisible = false
+                ) {
                     ActivitiesUtils.sendFeedbackEmail(context, "")
                 }
             }

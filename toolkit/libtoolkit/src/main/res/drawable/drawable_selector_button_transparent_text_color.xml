@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
-        android:color="@color/colorPrimaryLight"
+        android:color="@color/colorPrimary"
         android:state_active="true"/>
     <item
-        android:color="@color/colorPrimaryLight"
+        android:color="@color/colorPrimary"
         android:state_enabled="true"/>
     <item
-        android:color="@color/colorDarkLight"
+        android:color="@color/colorTextSecondary"
         android:state_enabled="false"/>
 </selector>

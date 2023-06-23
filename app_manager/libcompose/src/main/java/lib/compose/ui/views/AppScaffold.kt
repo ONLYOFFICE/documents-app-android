@@ -22,7 +22,7 @@ fun AppScaffold(modifier: Modifier = Modifier, topBar: @Composable () -> Unit = 
                     val tabletPadding = dimensionResource(id = lib.toolkit.base.R.dimen.screen_left_right_padding)
                     padding(horizontal = tabletPadding)
                 },
-            color = MaterialTheme.colors.surface,
+            color = MaterialTheme.colors.background,
             content = content
         )
     }

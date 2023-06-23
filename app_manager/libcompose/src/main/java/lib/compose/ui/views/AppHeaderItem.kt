@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import lib.compose.ui.theme.colorGrey
+import lib.compose.ui.theme.colorTextSecondary
 
 @Composable
 fun AppHeaderItem(@StringRes title: Int) {
@@ -21,7 +21,7 @@ fun AppHeaderItem(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.subtitle2,
-        color = MaterialTheme.colors.colorGrey,
+        color = MaterialTheme.colors.colorTextSecondary,
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp, 16.dp, 16.dp, 4.dp)

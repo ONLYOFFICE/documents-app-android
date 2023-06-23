@@ -38,7 +38,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/colorGrey"
+            app:tint="@color/colorTextSecondary"
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -72,7 +72,7 @@
             android:id="@+id/optionText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorGrey"
+            android:textColor="@color/colorTextSecondary"
             app:layout_constraintBottom_toBottomOf="@id/settingText"
             app:layout_constraintEnd_toStartOf="@id/settingIconArrow"
             app:layout_constraintHorizontal_bias="1"

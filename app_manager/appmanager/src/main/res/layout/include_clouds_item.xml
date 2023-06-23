@@ -5,7 +5,6 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height"
-    android:background="@color/colorSurface"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground">

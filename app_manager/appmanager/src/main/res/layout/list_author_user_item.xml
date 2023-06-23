@@ -48,7 +48,7 @@
             style="@style/CommonTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorGrey"
+            android:textColor="@color/colorTextSecondary"
             android:visibility="gone"
             tools:text="Lead Sales Manager" />
 

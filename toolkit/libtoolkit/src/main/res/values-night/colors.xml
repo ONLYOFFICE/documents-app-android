@@ -3,9 +3,9 @@
 
     <!-- Base -->
     <color name="colorPrimary">#3E9CF0</color>
-    <color name="colorOnPrimary">@color/colorBlack</color>
+    <color name="colorOnPrimary">@color/colorWhite</color>
     <color name="colorSecondary">#FFB05C</color>
-    <color name="colorOnSecondary">@color/colorBlack</color>
+    <color name="colorOnSecondary">@color/colorWhite</color>
     <color name="colorError">#EA5353</color>
     <color name="colorOnError">@color/colorBlack</color>
     <color name="colorBackground">#232323</color>
@@ -15,7 +15,7 @@
     <color name="colorBackdrop">#131313</color>
 
     <!-- Text -->
-    <color name="colorTextPrimary">@color/colorWhite</color>
+    <color name="colorTextPrimary">@color/colorWhite87</color>
     <color name="colorTextSecondary">@color/colorWhite60</color>
     <color name="colorTextTertiary">@color/colorWhite40</color>
 

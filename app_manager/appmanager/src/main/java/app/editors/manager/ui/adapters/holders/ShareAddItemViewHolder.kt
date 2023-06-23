@@ -12,7 +12,6 @@ import app.editors.manager.managers.utils.GlideUtils.setAvatar
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
 import app.editors.manager.ui.adapters.ShareAdapter
-import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 import lib.toolkit.base.ui.adapters.holder.ViewType

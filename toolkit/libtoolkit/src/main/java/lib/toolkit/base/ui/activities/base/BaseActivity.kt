@@ -404,7 +404,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         cancelTitle: String?,
         type: WaitingHolder.ProgressType,
         tag: String? = null,
-        progressColor: Int = R.color.colorPrimaryLight,
+        progressColor: Int = R.color.colorPrimary,
         textColor: Int = 0,
         textGravity: Int = 0
     ) {
@@ -484,7 +484,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
             if (!hideButton) {
                 setCancelTitle(cancelTitle)
             }
-            setProgressColor(R.color.colorPrimaryLight)
+            setProgressColor(R.color.colorPrimary)
             show()
         }
     }

@@ -565,20 +565,6 @@ object UiUtils {
         return ContextCompat.getColorStateList(context, color)
     }
 
-    fun getTabStateList(context: Context): ColorStateList {
-        val states = arrayOf(
-            intArrayOf(android.R.attr.state_selected),
-            intArrayOf(-android.R.attr.state_selected)
-        )
-
-        val colors = intArrayOf(
-            ContextCompat.getColor(context, R.color.colorWhite),
-            ContextCompat.getColor(context, R.color.colorLight),
-        )
-
-        return ColorStateList(states, colors)
-    }
-
     @JvmStatic
     fun getBoundCoordinate(size: Int, start: Int, end: Int, delta: Float): Float {
         val newStart = start + delta

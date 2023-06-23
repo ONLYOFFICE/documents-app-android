@@ -148,7 +148,7 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
     private fun onOnlineState(account: CloudAccount) {
         if (account.isOnline) {
             viewBinding?.logoutItem?.let { item ->
-                UiUtils.setImageTint(item.itemImage, lib.toolkit.base.R.color.colorLightRed)
+                UiUtils.setImageTint(item.itemImage, lib.toolkit.base.R.color.colorError)
                 item.root.visibility = View.VISIBLE
                 item.itemImage.setImageDrawable(
                     ContextCompat.getDrawable(
@@ -158,7 +158,7 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
                 )
                 item.itemText.text = getString(R.string.navigation_drawer_menu_logout)
                 item.itemText
-                    .setTextColor(item.root.context.getColor(lib.toolkit.base.R.color.colorLightRed))
+                    .setTextColor(item.root.context.getColor(lib.toolkit.base.R.color.colorError))
                 item.root.setOnClickListener {
                     showQuestionDialog(
                         getString(R.string.dialog_logout_account_title),

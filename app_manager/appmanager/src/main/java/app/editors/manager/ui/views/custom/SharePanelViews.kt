@@ -138,8 +138,9 @@ class SharePanelViews(
     }
 
     fun hideMessageView(): Boolean {
+        val isShow = isMessageShowed
         heightValueAnimator.animate(false)
-        return isMessageShowed
+        return isShow
     }
 
     val message: String?

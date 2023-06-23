@@ -82,9 +82,9 @@ class PlaceholderViews(val view: View?) {
             Type.LOAD_GROUPS -> setTitle(R.string.placeholder_loading_groups)
             Type.MEDIA -> {
                 setImage(R.drawable.ic_media_error)
-                setImageTint(lib.toolkit.base.R.color.colorLightWhite)
+                setImageTint(lib.toolkit.base.R.color.colorTextSecondary)
                 setTitle(R.string.placeholder_media_error)
-                setTitleColor(lib.toolkit.base.R.color.colorLightWhite)
+                setTitleColor(lib.toolkit.base.R.color.colorTextSecondary)
                 setRetryTint(lib.toolkit.base.R.color.colorSecondary)
             }
         }

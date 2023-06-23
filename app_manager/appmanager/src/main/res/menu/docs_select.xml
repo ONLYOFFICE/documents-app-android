@@ -6,7 +6,7 @@
     <!--<item-->
         <!--andrfolderIdd:idfolderId@+id/toolbar_selection_share"-->
         <!--android:image_onlyoffice="@drawable/ic_toolbar_share_add"-->
-        <!--android:iconTint="@color/colorGrey"-->
+        <!--android:iconTint="@color/colorTextSecondary"-->
         <!--android:orderInCategory="0"-->
         <!--app:showAsAction="always"-->
         <!--tools:ignore="MenuTitle" />-->

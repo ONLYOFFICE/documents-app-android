@@ -39,14 +39,6 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <include
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/inviteByEmail"
-        android:layout_height="1dp"
-        android:layout_width="0dp"
-        layout="@layout/view_line_separator"/>
-
     <app.editors.manager.ui.views.pager.PagingViewPager
         android:id="@+id/share_add_view_pager"
         android:layout_width="wrap_content"

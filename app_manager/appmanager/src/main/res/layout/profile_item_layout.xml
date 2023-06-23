@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
-        app:tint="@color/colorGrey" />
+        app:tint="@color/colorTextSecondary" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
