@@ -85,7 +85,7 @@ fun AppPasswordTextField(
     onDone: (() -> Unit)? = null,
     errorState: MutableState<Boolean> = mutableStateOf(false),
     errorMessage: String = "",
-    backgroundColor: Color = MaterialTheme.colors.surface,
+    backgroundColor: Color = MaterialTheme.colors.background,
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
