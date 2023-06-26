@@ -24,6 +24,7 @@
     <color name="colorBottomBar">#0F4071</color>
     <color name="colorOutline">@color/colorBlack12</color>
     <color name="colorCloudItem">#EDF9FF</color>
+    <color name="colorButtonBackground">@color/colorBackdrop</color>
 
     <!-- Editors -->
     <color name="colorDocTint">#446995</color>

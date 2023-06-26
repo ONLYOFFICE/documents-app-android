@@ -22,8 +22,9 @@
     <!-- Custom -->
     <color name="colorAppBar">@color/colorSurface</color>
     <color name="colorBottomBar">@color/colorSurface</color>
-    <color name="colorOutline">@color/colorWhite12</color>
+    <color name="colorOutline">#66545458</color>
     <color name="colorCloudItem">@color/colorWhite12</color>
+    <color name="colorButtonBackground">@color/colorSurface</color>
 
     <!-- Editors -->
     <color name="colorDocTint">#3B92F3</color>
