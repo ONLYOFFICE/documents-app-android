@@ -417,8 +417,9 @@
     </style>
 
     <style name="ContextListHeaderImage" parent="CommonImageView">
-        <item name="android:layout_width">@dimen/image_default_size</item>
-        <item name="android:layout_height">@dimen/image_default_size</item>
+        <item name="android:layout_width">@dimen/image_size</item>
+        <item name="android:layout_height">@dimen/image_size</item>
+        <item name="android:scaleType">center</item>
         <item name="android:layout_gravity">center_vertical</item>
     </style>
 

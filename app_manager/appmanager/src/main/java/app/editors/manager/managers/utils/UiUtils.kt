@@ -7,12 +7,14 @@ import androidx.compose.ui.Modifier
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
+import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
@@ -80,6 +82,13 @@ object ManagerUiUtils {
         }
     }
 
+    fun ImageView.setItemIcon(item: Item?, root: Boolean) {
+        when (item) {
+            is CloudFolder -> setFolderIcon(item, root)
+            is CloudFile -> setFileIcon(StringUtils.getExtensionFromPath(item.title))
+        }
+    }
+
     fun getIcon(item: Item): Int {
         return if (item is CloudFolder) {
             getFolderIcon(item)
@@ -119,7 +128,13 @@ object ManagerUiUtils {
     }
 
     fun ImageView.setFolderIcon(folder: CloudFolder, isRoot: Boolean) {
-        setImageResource(getFolderIcon(folder, isRoot))
+        val icon = getFolderIcon(folder, isRoot)
+        val logo = folder.logo?.large
+        if (!logo.isNullOrEmpty()) {
+            setRoomLogo(logo, icon)
+        } else {
+            setImageResource(icon)
+        }
     }
 
     private fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {

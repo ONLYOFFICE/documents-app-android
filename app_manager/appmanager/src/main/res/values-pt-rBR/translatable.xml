@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="about_app_version">Versão %1$s, build %2$s, SDK %3$s</string>
     <string name="about_license">Acordo de licença</string>
     <string name="about_policy">Política de privacidade</string>
@@ -548,4 +548,21 @@
     <string name="room_delete_success">Sala deletada</string>
     <string name="switch_account_title">Mudar de conta?</string>
     <string name="switch_account_description">Faça login na conta do portal %1$s para abrir o documento.</string>
+    <plurals name="dialogs_question_message_delete">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Ele será excluído de forma irrecuperável.\nEsta ação é irreversível.</item>
+        <item quantity="other">Eles serão excluídos irremediavelmente.\nEsta ação é irreversível.</item>
+    </plurals>
+    <plurals name="dialogs_question_message_to_trash">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Ele será movido para a Lixeira.</item>
+        <item quantity="other">Eles serão movidos para a Lixeira.</item>
+    </plurals>
+    <string name="dialogs_question_delete_all_title">Excluir todos os itens?</string>
+    <plurals name="dialogs_question_delete_title">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Excluir este item?</item>
+        <item quantity="other">Excluir %1$d itens?</item>
+    </plurals>
+    <string name="storage_dropbox_email_not_verified_error">E-mail não verificado</string>
+    <string name="download_manager_downloading">Baixando…</string>
+    <string name="settings_language">Idioma</string>
+
 </resources>

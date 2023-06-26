@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Documents</string>
     <string name="app_name_full">ONLYOFFICE Documents</string>
     <!-- ======================================================================================= -->
@@ -614,4 +614,20 @@
     <string name="room_delete_success">删除的房间</string>
     <string name="switch_account_title">是否要切换账户？</string>
     <string name="switch_account_description">登录到门户账户 %1$s 来打开文件。</string>
+    <plurals name="dialogs_question_message_delete" tools:ignore="UnusedQuantity">
+        <item quantity="one">它将被删除且不可恢复。\n此操作是无法撤销的。</item>
+        <item quantity="other">它们将被删除且不可恢复。\n此操作是无法撤销的。</item>
+    </plurals>
+    <plurals name="dialogs_question_message_to_trash" tools:ignore="UnusedQuantity">
+        <item quantity="one">它将被移至垃圾箱。</item>
+        <item quantity="other">他们将被移至垃圾箱。</item>
+    </plurals>
+    <string name="dialogs_question_delete_all_title">确认删除所有项目？</string>
+    <plurals name="dialogs_question_delete_title" tools:ignore="UnusedQuantity">
+        <item quantity="one">确认删除此项？</item>
+        <item quantity="other">确认删除 %1$d 这些项目？</item>
+    </plurals>
+    <string name="storage_dropbox_email_not_verified_error">电子邮箱未验证</string>
+    <string name="download_manager_downloading">下载中…</string>
+    <string name="settings_language">语言</string>
 </resources>

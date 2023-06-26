@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerContextHeaderBinding
 import app.editors.manager.databinding.ListExplorerContextItemBinding
+import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import lib.toolkit.base.managers.extensions.inflate
 
@@ -42,20 +43,24 @@ class ExplorerContextAdapter(
         else -> ITEM_VIEW_TYPE
     }
 
-    inner class ExplorerContextHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    private inner class ExplorerContextHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val viewBinding = ListExplorerContextHeaderBinding.bind(view)
 
         fun bind(header: ExplorerContextItem.Header) {
             with(viewBinding) {
-                icon.setImageResource(header.icon)
+                if (!header.logo.isNullOrEmpty()) {
+                    icon.setRoomLogo(header.logo, R.drawable.ic_type_folder)
+                } else {
+                    icon.setImageResource(header.icon)
+                }
                 title.text = header.fileName
                 subtitle.text = header.info
             }
         }
     }
 
-    inner class ExplorerContextItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    private inner class ExplorerContextItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val viewBinding = ListExplorerContextItemBinding.bind(view)
 

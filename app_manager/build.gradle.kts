@@ -14,7 +14,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:7.3.1")
+        classpath("com.android.tools.build:gradle:7.4.2")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Kotlin.version}")
         classpath("com.google.gms:google-services:4.3.14")
         classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
@@ -46,6 +46,24 @@ plugins {
 
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
+}
+
+tasks.register("clearAssets") {
+    childProjects.forEach { (projectKey, project) ->
+        if (projectKey == "libtoolkit"
+            || projectKey == "appmanager"
+            || projectKey == "core"
+            || projectKey == "libcompose"
+            || projectKey == "libgeditors") {
+            return@forEach
+        }
+
+        val assets = File("${project.projectDir.path}/src/main/assets")
+        println("Delete path: ${assets.path}")
+        if (assets.exists()) {
+            assets.deleteRecursively()
+        }
+    }
 }
 
 tasks.create("buildAar") {

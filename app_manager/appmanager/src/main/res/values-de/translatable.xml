@@ -557,4 +557,20 @@
     <string name="room_delete_success">Raum wurde entfernt</string>
     <string name="switch_account_title">Konto wechseln?</string>
     <string name="switch_account_description">Melden Sie sich bei dem Portalkonto %1$s an, um das Dokument zu öffnen.</string>
+    <plurals name="dialogs_question_message_delete">
+        <item quantity="one">Es wird endgültig gelöscht.\nDiese Aktion kann nicht rückgängig gemacht werden.</item>
+        <item quantity="other">Sie werden endgültig gelöscht.\nDiese Aktion kann nicht rückgängig gemacht werden.</item>
+    </plurals>
+    <plurals name="dialogs_question_message_to_trash">
+        <item quantity="one">Es wird in den Papierkorb verschoben.</item>
+        <item quantity="other">Sie werden in den Papierkorb verschoben.</item>
+    </plurals>
+    <string name="dialogs_question_delete_all_title">Alle Elemente löschen?</string>
+    <plurals name="dialogs_question_delete_title">
+        <item quantity="one">Dieses Element löschen?</item>
+        <item quantity="other">%1$d Elemente löschen?</item>
+    </plurals>
+    <string name="storage_dropbox_email_not_verified_error">E-Mail nicht verifiziert</string>
+    <string name="download_manager_downloading">Ladevorgang…</string>
+    <string name="settings_language">Sprache</string>
 </resources>
