@@ -13,7 +13,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_sms_code_title_text"
-            style="@style/MediumTextView"
+            style="@style/TextAppearance.Common.Description.Center"
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_top_bottom_padding"
@@ -62,9 +62,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_sms_code_send_again_button"
-            style="@style/AccentTextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/default_login_accent_button_height"
+            style="@style/CommonTextButton"
             android:layout_marginTop="16dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -76,10 +74,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_sms_code_change_number_button"
-            style="@style/AccentTextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/default_login_accent_button_height"
-            android:layout_marginTop="16dp"
+            style="@style/CommonTextButton"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:padding="10dp"

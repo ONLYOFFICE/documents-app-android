@@ -6,21 +6,19 @@
     android:fillViewport="true"
     android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="@dimen/default_screen_width"
         android:layout_height="match_parent"
-        android:padding="@dimen/screen_padding_medium_left_right">
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_enterprise_portal_email_layout"
             style="@style/CommonEditText"
-            android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/screen_top_bottom_padding"
-            android:hint="@string/login_enterprise_email_hint"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_marginTop="@dimen/default_margin_xlarge"
+            android:hint="@string/login_enterprise_email_hint">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_enterprise_portal_email_edit"
@@ -30,19 +28,16 @@
                 android:importantForAutofill="noExcludeDescendants"
                 android:inputType="textEmailAddress|text"
                 android:maxLines="1" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_enterprise_portal_password_layout"
             style="@style/CommonEditText"
-            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="@dimen/default_margin_medium"
+            android:layout_marginBottom="@dimen/default_margin_large"
             android:hint="@string/login_enterprise_password_hint"
-            app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_email_layout"
-            app:layout_constraintStart_toStartOf="@+id/login_enterprise_portal_email_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_portal_email_layout"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -53,58 +48,35 @@
                 android:importantForAutofill="noExcludeDescendants"
                 android:inputType="textPassword"
                 android:maxLines="1" />
+
         </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/login_enterprise_forgot_pwd_button"
+            style="@style/ClickableTextView"
+            android:text="@string/login_enterprise_forgot_password" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_enterprise_signin_button"
-            style="@style/AccentButton"
-            android:layout_width="0dp"
-            android:layout_marginTop="@dimen/default_margin_large"
-            android:text="@string/login_enterprise_signin_button"
-            app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_email_layout"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/login_enterprise_portal_email_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_forgot_pwd_button" />
+            style="@style/CommonButton"
+            android:layout_marginTop="@dimen/default_margin_xlarge"
+            android:text="@string/login_enterprise_signin_button" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_enterprise_signon_button"
-            style="@style/FixedAccentButtons"
-            android:layout_width="0dp"
-            android:layout_marginTop="24dp"
+            style="@style/CommonTextButton"
             android:text="@string/login_enterprise_single_sign_button"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_email_layout"
-            app:layout_constraintStart_toStartOf="@+id/login_enterprise_portal_email_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_signin_button" />
+            android:visibility="gone" />
 
         <include
             android:id="@+id/social_network_layout"
             layout="@layout/include_social_networks_layout"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_large"
             android:clickable="false"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_signon_button"
-            app:layout_constraintVertical_chainStyle="spread_inside" />
+            android:visibility="visible" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/login_enterprise_forgot_pwd_button"
-            style="@style/AccentTextButtonSmall"
-            android:layout_width="0dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="@dimen/default_margin_large"
-            android:gravity="center"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="@string/login_enterprise_forgot_password"
-            app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_password_layout"
-            app:layout_constraintStart_toStartOf="@+id/login_enterprise_portal_password_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_enterprise_portal_password_layout"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>
 

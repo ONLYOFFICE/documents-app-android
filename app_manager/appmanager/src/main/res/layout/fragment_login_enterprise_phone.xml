@@ -31,6 +31,7 @@
                 android:importantForAutofill="noExcludeDescendants"
                 android:inputType="none"
                 android:maxLines="1" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -38,7 +39,7 @@
             style="@style/CommonEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/screen_margin_medium"
             android:hint="@string/login_sms_phone_number_label"
             app:layout_constraintEnd_toEndOf="@+id/login_phone_country_layout"
             app:layout_constraintStart_toStartOf="@+id/login_phone_country_layout"
@@ -56,9 +57,9 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_phone_send_button"
-            style="@style/AccentButton"
+            style="@style/CommonButton"
             android:layout_width="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/default_margin_xlarge"
             android:text="@string/login_sms_phone_send_button"
             app:layout_constraintEnd_toEndOf="@+id/login_phone_country_layout"
             app:layout_constraintStart_toStartOf="@+id/login_phone_country_layout"
@@ -66,7 +67,8 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <com.google.android.material.textview.MaterialTextView
-            style="@style/SmallTextView"
+            style="@style/TextAppearance.Common.Description.Center"
+            android:textSize="14sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"

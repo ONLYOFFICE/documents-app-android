@@ -2,7 +2,7 @@
 
     <!-- Custom dialogs themes -->
     <style name="DialogStoreTheme" parent="DialogCommonTheme">
-        <item name="colorControlActivated">@color/colorPrimaryLight</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
     </style>
 
     <style name="DialogAccountsTheme" parent="DialogCommonTheme">

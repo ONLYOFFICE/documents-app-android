@@ -8,14 +8,13 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/screen_padding_medium_left_right">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/login_create_portal_address_edit_container"
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/screen_top_bottom_padding"
+            android:layout_marginTop="@dimen/default_margin_xlarge"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -61,7 +60,7 @@
             style="@style/CommonEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:hint="@string/login_create_portal_email_hint"
             app:layout_constraintEnd_toEndOf="@+id/login_create_portal_address_edit_container"
             app:layout_constraintStart_toStartOf="@+id/login_create_portal_address_edit_container"
@@ -83,7 +82,7 @@
             style="@style/CommonEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:hint="@string/login_create_signin_first_name_hint"
             app:layout_constraintEnd_toEndOf="@+id/login_create_portal_address_edit_container"
             app:layout_constraintStart_toStartOf="@+id/login_create_portal_address_edit_container"
@@ -105,7 +104,7 @@
             style="@style/CommonEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:hint="@string/login_create_signin_last_name_hint"
             app:layout_constraintEnd_toEndOf="@+id/login_create_portal_address_edit_container"
             app:layout_constraintStart_toStartOf="@+id/login_create_portal_address_edit_container"
@@ -124,9 +123,9 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_signin_create_portal_button"
-            style="@style/AccentButton"
+            style="@style/CommonButton"
             android:layout_width="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/default_margin_xlarge"
             android:text="@string/login_create_portal_next_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/login_create_portal_address_edit_container"

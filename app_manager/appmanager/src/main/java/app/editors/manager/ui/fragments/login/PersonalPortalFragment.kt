@@ -267,11 +267,11 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         restoreValues(savedInstanceState)
         urlsViewModel.remoteUrls.observe(viewLifecycleOwner) { text ->
             text?.let {
-                viewBinding?.termsTextView?.movementMethod = LinkMovementMethod.getInstance()
-                viewBinding?.termsTextView?.text = text
+                viewBinding?.terms?.termsTextView?.movementMethod = LinkMovementMethod.getInstance()
+                viewBinding?.terms?.termsTextView?.text = text
             }
         }
-        viewBinding?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
+        viewBinding?.terms?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
             viewBinding?.loginPersonalSigninButton?.isEnabled =
                 isChecked && viewBinding?.loginPersonalPortalEmailEdit?.text?.isNotEmpty() == true && viewBinding?.loginPersonalPortalPasswordEdit?.text?.isNotEmpty() == true
         }
@@ -310,7 +310,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
             viewBinding?.loginPersonalPortalEmailLayout?.isErrorEnabled = false
             val email = viewBinding?.loginPersonalPortalEmailEdit?.text.toString()
             val password = viewBinding?.loginPersonalPortalPasswordEdit?.text.toString()
-            viewBinding?.loginPersonalSigninButton?.isEnabled = "" != email && "" != password && viewBinding?.termsCheckbox?.isChecked == true
+            viewBinding?.loginPersonalSigninButton?.isEnabled = "" != email && "" != password && viewBinding?.terms?.termsCheckbox?.isChecked == true
         }
     }
 }
