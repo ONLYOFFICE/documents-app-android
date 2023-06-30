@@ -6,17 +6,13 @@
     android:fillViewport="true"
     android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/screen_padding_medium_left_right">
+    <LinearLayout style="@style/LoginTextInputContainer">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_phone_country_layout"
             style="@style/CommonEditText"
-            android:layout_width="@dimen/default_screen_width"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/screen_top_bottom_padding"
             android:hint="@string/login_sms_phone_country_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,13 +33,10 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_phone_number_layout"
             style="@style/CommonEditText"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_margin_medium"
-            android:hint="@string/login_sms_phone_number_label"
-            app:layout_constraintEnd_toEndOf="@+id/login_phone_country_layout"
-            app:layout_constraintStart_toStartOf="@+id/login_phone_country_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_phone_country_layout">
+            android:hint="@string/login_sms_phone_number_label">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_phone_number_edit"
@@ -58,27 +51,18 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_phone_send_button"
             style="@style/CommonButton"
-            android:layout_width="0dp"
             android:layout_marginTop="@dimen/default_margin_xlarge"
-            android:text="@string/login_sms_phone_send_button"
-            app:layout_constraintEnd_toEndOf="@+id/login_phone_country_layout"
-            app:layout_constraintStart_toStartOf="@+id/login_phone_country_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_phone_number_layout"
-            app:layout_constraintVertical_bias="0.0" />
+            android:text="@string/login_sms_phone_send_button" />
 
         <com.google.android.material.textview.MaterialTextView
             style="@style/TextAppearance.Common.Description.Center"
-            android:textSize="14sp"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:gravity="center"
-            android:text="@string/login_sms_phone_send_code"
-            app:layout_constraintEnd_toEndOf="@+id/login_phone_country_layout"
-            app:layout_constraintStart_toStartOf="@+id/login_phone_country_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_phone_send_button" />
+            android:layout_marginTop="@dimen/default_margin_xlarge"
+            android:text="@string/login_sms_phone_send_code" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
 </androidx.core.widget.NestedScrollView>
 
 

@@ -40,7 +40,6 @@ abstract class WebDavBaseFragment : BaseAppFragment(), BaseView {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        parentActivity?.showConnectButton(false)
         viewBinding = null
         parentActivity = null
     }
@@ -60,18 +59,18 @@ abstract class WebDavBaseFragment : BaseAppFragment(), BaseView {
     override fun onError(message: String?) {
         hideDialog()
         viewBinding?.let { binding ->
-            binding.storageWebDavLoginLayout.error()
+            binding.storageWebDavLoginLayout.setError()
             when (webDavProvider) {
                 WebDavService.Providers.NextCloud -> onServerError()
                 WebDavService.Providers.KDrive -> {
-                    binding.storageWebDavPasswordLayout.error(R.string.errors_webdav_username_password)
+                    binding.storageWebDavPasswordLayout.setError(R.string.errors_webdav_username_password)
                 }
                 else -> {
                     if (binding.storageWebDavServerLayout.isVisible) {
-                        binding.storageWebDavServerLayout.error()
-                        binding.storageWebDavPasswordLayout.error(R.string.errors_webdav_sign_in)
+                        binding.storageWebDavServerLayout.setError()
+                        binding.storageWebDavPasswordLayout.setError(R.string.errors_webdav_sign_in)
                     } else {
-                        binding.storageWebDavPasswordLayout.error(R.string.errors_webdav_username_password)
+                        binding.storageWebDavPasswordLayout.setError(R.string.errors_webdav_username_password)
                     }
                 }
             }
@@ -89,45 +88,48 @@ abstract class WebDavBaseFragment : BaseAppFragment(), BaseView {
         }
     }
 
-    private fun TextInputLayout?.error(resId: Int? = null) {
-        this?.error = resId?.let(requireContext()::getString) ?: " "
+    private fun TextInputLayout.setError(resId: Int? = null) {
+        error = if (resId != null) {
+            setErrorTextAppearance(lib.toolkit.base.R.style.TextInputErrorRed)
+            getString(resId)
+        } else {
+            setErrorTextAppearance(lib.toolkit.base.R.style.TextInputEmptyErrorMessage)
+            " "
+        }
     }
 
     fun onServerError() {
-        viewBinding?.storageWebDavServerLayout?.error(R.string.errors_webdav_server)
+        viewBinding?.storageWebDavServerLayout?.setError(R.string.errors_webdav_server)
     }
 
     open fun initViews(isNextCloud: Boolean = false) {
         textWatcher = FieldsWatcher(isNextCloud)
-        parentActivity?.showConnectButton(true)
-        parentActivity?.enableConnectButton(false)
         viewBinding?.let { binding ->
-            val errorTextAppearance = lib.toolkit.base.R.style.TextInputEmptyErrorMessage
-            binding.storageWebDavLoginEdit.addTextChangedListener(textWatcher)
-            binding.storageWebDavPasswordEdit.addTextChangedListener(textWatcher)
-            binding.storageWebDavServerEdit.addTextChangedListener(textWatcher)
-            binding.storageWebDavLoginLayout.setErrorTextAppearance(errorTextAppearance)
-            if (!isNextCloud) binding.storageWebDavServerLayout.setErrorTextAppearance(errorTextAppearance)
+            listOf(
+                binding.storageWebDavLoginEdit,
+                binding.storageWebDavPasswordEdit,
+                binding.storageWebDavServerEdit
+            ).forEach { editText -> editText.addTextChangedListener(textWatcher) }
         }
     }
 
     inner class FieldsWatcher(private val isNextCloud: Boolean) : BaseWatcher() {
         override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
-            viewBinding?.let {
-                it.storageWebDavServerLayout.error = null
-                it.storageWebDavLoginLayout.error = null
-                it.storageWebDavPasswordLayout.error = null
-                parentActivity?.enableConnectButton(it.checkFields())
+            viewBinding?.let { binding ->
+                listOf(
+                    binding.storageWebDavServerLayout,
+                    binding.storageWebDavLoginLayout,
+                    binding.storageWebDavPasswordLayout
+                ).forEach { layout -> layout.error = null }
+                binding.connectButton.isEnabled = binding.checkFields()
             }
         }
 
         private fun FragmentStorageWebDavBinding.checkFields(): Boolean {
-            return isNextCloud && storageWebDavServerEdit.isNotEmpty() ||
-                    storageWebDavLoginEdit.isNotEmpty() &&
-                    storageWebDavPasswordEdit.isNotEmpty() &&
-                    storageWebDavServerEdit.isNotEmpty()
+            return isNextCloud && !storageWebDavServerEdit.text.isNullOrBlank() ||
+                    !storageWebDavLoginEdit.text.isNullOrBlank() &&
+                    !storageWebDavPasswordEdit.text.isNullOrBlank() &&
+                    !storageWebDavServerEdit.text.isNullOrBlank()
         }
-
-        private fun TextInputEditText.isNotEmpty(): Boolean = text?.trim()?.isNotEmpty() == true
     }
 }

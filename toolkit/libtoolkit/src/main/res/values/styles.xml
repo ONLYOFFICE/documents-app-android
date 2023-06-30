@@ -21,7 +21,6 @@
 
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowLightStatusBar">true</item>
-        <item name="buttonStyle">@style/CommonButton</item>
     </style>
 
     <style name="CommonEditText" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
@@ -116,14 +115,22 @@
 
     <!--  Typography  -->
     <style name="TextAppearance.Common.Description" parent="AppTheme">
-        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Subtitle1</item>
-        <item name="android:textColor">@color/colorTextSecondary</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.BodyMedium</item>
+        <item name="android:textColor">@color/colorTextTertiary</item>
     </style>
 
-    <style name="TextAppearance.Common.Description.Center" parent="AppTheme">
-        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Subtitle1</item>
-        <item name="android:textColor">@color/colorTextSecondary</item>
+    <style name="TextAppearance.Common.Description.Center">
         <item name="android:gravity">center</item>
+    </style>
+
+    <!--  Layouts  -->
+    <style name="LoginTextInputContainer">
+        <item name="android:layout_width">@dimen/default_button_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginTop">@dimen/default_margin_xlarge</item>
     </style>
 
     <!-- ======================================================================================= -->
@@ -310,8 +317,8 @@
     </style>
 
     <style name="CommonButton" parent="Widget.Material3.Button.ElevatedButton">
-        <item name="android:layout_width">@dimen/default_screen_width</item>
-        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_width">@dimen/default_button_width</item>
+        <item name="android:layout_height">@dimen/default_button_height</item>
         <item name="android:layout_marginTop">@dimen/default_margin_large</item>
         <item name="android:textAppearance">@style/TextAppearance.Common.Button</item>
         <item name="android:insetTop">0dp</item>
@@ -337,7 +344,7 @@
 
     <style name="CommonTextButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textAppearance">@style/TextAppearance.Common.Button</item>
-        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
     </style>
 

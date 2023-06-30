@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.core.view.isVisible
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -59,18 +58,6 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
         super.onBackPressed()
         hideKeyboard()
         finish()
-    }
-
-    override fun showConnectButton(isShow: Boolean) {
-        viewBinding?.appBarToolbarConnectButton?.isVisible = isShow
-    }
-
-    override fun enableConnectButton(isEnable: Boolean) {
-        viewBinding?.appBarToolbarConnectButton?.isEnabled = isEnable
-    }
-
-    override fun setOnConnectButtonClickListener(onClick: () -> Unit) {
-        viewBinding?.appBarToolbarConnectButton?.setOnClickListener { onClick() }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

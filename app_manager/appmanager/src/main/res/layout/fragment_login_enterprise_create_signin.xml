@@ -6,20 +6,14 @@
     android:fillViewport="true"
     android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <LinearLayout style="@style/LoginTextInputContainer">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_signin_password_layout"
             style="@style/CommonEditText"
-            android:layout_width="@dimen/default_screen_width"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_margin_xlarge"
             android:hint="@string/login_create_signin_password"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -35,13 +29,10 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_signin_repeat_layout"
             style="@style/CommonEditText"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_medium"
             android:hint="@string/login_create_signin_repeat"
-            app:layout_constraintEnd_toEndOf="@+id/login_signin_password_layout"
-            app:layout_constraintStart_toStartOf="@+id/login_signin_password_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_signin_password_layout"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -57,13 +48,8 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_signin_create_portal_button"
             style="@style/CommonButton"
-            android:layout_width="0dp"
             android:layout_marginTop="@dimen/default_margin_xlarge"
-            android:text="@string/login_create_signin_create_button"
-            app:layout_constraintEnd_toEndOf="@+id/login_signin_password_layout"
-            app:layout_constraintStart_toStartOf="@+id/login_signin_password_layout"
-            app:layout_constraintTop_toBottomOf="@+id/login_signin_repeat_layout"
-            app:layout_constraintVertical_bias="0.0" />
+            android:text="@string/login_create_signin_create_button" />
 
         <TextView
             android:id="@+id/login_signin_terms_info_button"
@@ -71,12 +57,7 @@
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="@dimen/default_login_accent_button_height"
             android:layout_marginTop="@dimen/default_margin_xlarge"
-            android:gravity="center"
-            android:text="@string/login_create_signin_info"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/login_signin_create_portal_button" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:text="@string/login_create_signin_info" />
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>
 

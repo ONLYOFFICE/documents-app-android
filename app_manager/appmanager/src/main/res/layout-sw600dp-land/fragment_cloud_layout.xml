@@ -46,7 +46,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/startButton"
             style="@style/CommonButton"
-            android:layout_width="@dimen/default_screen_width"
+            android:layout_width="match_parent"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:text="@string/cloud_account_start_button"
             app:layout_constraintEnd_toEndOf="@id/descriptionTextView"

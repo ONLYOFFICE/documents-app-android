@@ -12,7 +12,6 @@
     <color name="colorOnBackground">@color/colorWhite87</color>
     <color name="colorSurface">#333333</color>
     <color name="colorOnSurface">@color/colorWhite</color>
-    <color name="colorBackdrop">#131313</color>
 
     <!-- Text -->
     <color name="colorTextPrimary">@color/colorWhite87</color>
@@ -20,6 +19,7 @@
     <color name="colorTextTertiary">@color/colorWhite40</color>
 
     <!-- Custom -->
+    <color name="colorBackdrop">#131313</color>
     <color name="colorAppBar">@color/colorSurface</color>
     <color name="colorBottomBar">@color/colorSurface</color>
     <color name="colorOutline">#66545458</color>

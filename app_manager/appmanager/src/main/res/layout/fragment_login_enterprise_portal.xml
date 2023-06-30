@@ -6,19 +6,13 @@
     android:fillViewport="true"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="@dimen/default_screen_width"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+    <LinearLayout style="@style/LoginTextInputContainer">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_enterprise_portal_layout"
             style="@style/CommonEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_margin_xlarge"
             android:hint="@string/login_enterprise_edit_hint"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +36,6 @@
             style="@style/CommonButton"
             android:layout_width="match_parent"
             android:layout_marginTop="@dimen/default_margin_xlarge"
-            android:layout_marginBottom="@dimen/default_margin_xlarge"
             android:enabled="false"
             android:text="@string/login_enterprise_button_next"
             app:layout_constraintEnd_toEndOf="@+id/login_enterprise_portal_layout"
@@ -51,16 +44,18 @@
 
         <include
             android:id="@+id/terms"
-            layout="@layout/include_login_terms" />
+            layout="@layout/include_login_terms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin_xlarge" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_enterprise_forgot_pwd_button"
             style="@style/TextAppearance.Common.Description"
-            android:layout_width="@dimen/default_screen_width"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_xlarge"
-            android:text="@string/login_enterprise_info"
-            android:textSize="@dimen/fonts_size_small" />
+            android:text="@string/login_enterprise_info" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_enterprise_create_button"

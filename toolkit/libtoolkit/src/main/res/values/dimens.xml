@@ -93,7 +93,8 @@
     <dimen name="default_login_transparent_button_height">48dp</dimen>
     <dimen name="default_notice_text_size">12sp</dimen>
     <dimen name="default_on_boarding_panel_height">48dp</dimen>
-
+    <dimen name="default_button_height">48dp</dimen>
+    <dimen name="default_button_width">312dp</dimen>
 
     <!-- Drawer values -->
     <dimen name="drawer_header_avatar_size">64dp</dimen>

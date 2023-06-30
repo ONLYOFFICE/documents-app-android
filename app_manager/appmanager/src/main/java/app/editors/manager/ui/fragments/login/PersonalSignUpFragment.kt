@@ -161,8 +161,11 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
 
     private fun setMessage(message: String?, isError: Boolean) {
         viewBinding?.loginPersonalPortalEmailLayout?.apply {
-            setErrorTextAppearance(if (isError) lib.toolkit.base.R.style.TextInputErrorRed else lib.toolkit.base.R.style.TextInputErrorGrey)
-            error = message
+            if (isError) {
+                error = message
+            } else {
+                helperText = message
+            }
         }
     }
 

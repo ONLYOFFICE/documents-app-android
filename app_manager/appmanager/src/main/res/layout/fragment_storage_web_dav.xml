@@ -1,122 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/storageInfoTitle"
-        style="@style/CloudStorageText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:visibility="gone"
-        tools:text="@string/kdrive_info_title" />
+    <LinearLayout style="@style/LoginTextInputContainer">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/storage_web_dav_server_layout"
-        style="@style/CommonEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_margin_large"
-        android:layout_marginTop="@dimen/default_margin_medium"
-        android:hint="@string/storage_web_dav_settings_server"
-        app:errorIconDrawable="@null"/>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/storage_web_dav_url_layout"
-                style="@style/CommonEditText"
-                android:layout_width="@dimen/default_screen_width"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:hint="@string/storage_web_dav_settings_hint">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/storage_web_dav_server_edit"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/storageInfoTitle"
+            style="@style/TextAppearance.Common.Description"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:focusable="true"
-            android:hint="@string/storage_web_dav_settings_hint"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="noExcludeDescendants"
-            android:inputType="textUri"
-            android:maxLines="1"
-            android:textColorHint="@drawable/drawable_selector_hint_color" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/default_margin_medium"
+            android:visibility="gone"
+            tools:text="@string/kdrive_info_title" />
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/storage_web_dav_login_layout"
-        style="@style/CommonEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_margin_large"
-        android:layout_marginTop="@dimen/default_margin_large"
-        android:hint="@string/storage_web_dav_settings_login"
-        app:errorIconDrawable="@null">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/storage_web_dav_login_edit"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/storage_web_dav_server_layout"
+            style="@style/CommonEditText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="@string/storage_web_dav_settings_required"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="noExcludeDescendants"
-            android:inputType="textWebEditText"
-            android:maxLines="1"
-            android:textColorHint="@drawable/drawable_selector_hint_color" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/default_margin_medium"
+            android:hint="@string/storage_web_dav_settings_server">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <requestFocus />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/storage_web_dav_password_layout"
-        style="@style/CommonEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_margin_large"
-        android:layout_marginTop="@dimen/default_margin_large"
-        android:hint="@string/storage_web_dav_settings_password"
-        app:errorIconDrawable="@null"
-        app:passwordToggleDrawable="@drawable/drawable_selector_password_visibility"
-        app:passwordToggleEnabled="true">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/storage_web_dav_server_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:hint="@string/storage_web_dav_settings_hint"
+                android:imeOptions="actionNext"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textUri"
+                android:maxLines="1"
+                android:textColorHint="@drawable/drawable_selector_hint_color" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/storage_web_dav_password_edit"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/storage_web_dav_login_layout"
+            style="@style/CommonEditText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="@string/storage_web_dav_settings_required"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="noExcludeDescendants"
-            android:inputType="textWebPassword"
-            android:maxLines="1"
-            android:textColorHint="@drawable/drawable_selector_hint_color" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/default_margin_medium"
+            android:hint="@string/storage_web_dav_settings_login">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/storage_web_dav_login_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/text_hint_required"
+                android:imeOptions="actionNext"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textWebEditText"
+                android:maxLines="1"
+                android:textColorHint="@drawable/drawable_selector_hint_color" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/storage_web_dav_title_layout"
-        style="@style/CommonEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_margin_large"
-        android:layout_marginTop="@dimen/default_margin_large"
-        android:hint="@string/storage_web_dav_settings_title">
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/storage_web_dav_title_edit"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/storage_web_dav_password_layout"
+            style="@style/CommonEditText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:imeOptions="actionDone"
-            android:importantForAutofill="noExcludeDescendants"
-            android:inputType="textWebEditText"
-            android:maxLines="1" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/default_margin_medium"
+            android:hint="@string/storage_web_dav_settings_password"
+            app:passwordToggleDrawable="@drawable/drawable_selector_password_visibility"
+            app:passwordToggleEnabled="true">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/storage_web_dav_password_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/text_hint_required"
+                android:imeOptions="actionNext"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textWebPassword"
+                android:maxLines="1"
+                android:textColorHint="@drawable/drawable_selector_hint_color" />
 
-</LinearLayout>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/storage_web_dav_title_layout"
+            style="@style/CommonEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/storage_web_dav_settings_title">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/storage_web_dav_title_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="noExcludeDescendants"
+                android:inputType="textWebEditText"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/storageInfoSecond"
+            style="@style/TextAppearance.Common.Description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin_medium"
+            android:visibility="gone"
+            tools:text="@string/kdrive_info_title" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/connectButton"
+            style="@style/CommonButton"
+            android:layout_marginTop="@dimen/default_margin_xlarge"
+            android:enabled="false"
+            android:text="@string/storage_connect_button" />
+    </LinearLayout>
+
+</FrameLayout>

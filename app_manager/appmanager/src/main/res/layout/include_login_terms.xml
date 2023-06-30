@@ -9,7 +9,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_gravity="top"
-        android:layout_margin="2dp"
+        android:layout_margin="@dimen/default_margin_micro"
         android:layout_marginEnd="@dimen/default_margin_medium"
         android:buttonTint="@color/colorPrimary" />
 
@@ -18,7 +18,7 @@
         style="@style/TextAppearance.Common.Description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="@dimen/default_margin_medium"
         android:linksClickable="true"
         android:textSize="@dimen/fonts_size_small"
         tools:text="By proceeding, you agree to the Privacy Policy and the Terms of Service." />

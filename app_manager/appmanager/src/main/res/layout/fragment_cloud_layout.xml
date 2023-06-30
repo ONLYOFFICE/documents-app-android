@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cloudLayout"
     android:layout_width="match_parent"
-    android:fillViewport="true"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -58,7 +58,6 @@
             app:layout_constraintEnd_toEndOf="@id/startButton"
             app:layout_constraintStart_toStartOf="@id/startButton"
             app:layout_constraintTop_toBottomOf="@id/startButton" />
-
 
     </LinearLayout>
 

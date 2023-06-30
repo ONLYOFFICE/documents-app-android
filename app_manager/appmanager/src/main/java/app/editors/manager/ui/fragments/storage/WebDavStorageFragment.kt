@@ -95,8 +95,8 @@ class WebDavStorageFragment : WebDavBaseFragment(), ConnectView {
     }
 
     override fun initViews(isNextCloud: Boolean) {
-        parentActivity?.setOnConnectButtonClickListener { onSaveClick() }
         viewBinding?.let { binding ->
+            binding.connectButton.setOnClickListener { onSaveClick() }
             binding.storageWebDavServerEdit.setText(url)
             binding.storageWebDavTitleEdit.setText(title)
             binding.storageWebDavTitleEdit.setActionDoneListener(this::onSaveClick)

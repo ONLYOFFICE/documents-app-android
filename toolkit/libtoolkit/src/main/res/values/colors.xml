@@ -12,7 +12,6 @@
     <color name="colorOnBackground">@color/colorBlack</color>
     <color name="colorSurface">@color/colorWhite</color>
     <color name="colorOnSurface">@color/colorBlack</color>
-    <color name="colorBackdrop">#EFF0F5</color>
 
     <!-- Text -->
     <color name="colorTextPrimary">@color/colorBlack</color>
@@ -20,6 +19,7 @@
     <color name="colorTextTertiary">@color/colorBlack40</color>
 
     <!-- Custom -->
+    <color name="colorBackdrop">#EFF0F5</color>
     <color name="colorAppBar">@color/colorWhite</color>
     <color name="colorBottomBar">#0F4071</color>
     <color name="colorOutline">@color/colorBlack12</color>

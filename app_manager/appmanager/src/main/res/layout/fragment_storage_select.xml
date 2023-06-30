@@ -14,10 +14,10 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:footerDividersEnabled="true"
-            android:paddingTop="@dimen/screen_margin_medium"
-            android:paddingBottom="@dimen/screen_top_bottom_padding"
             android:scrollbars="none"
             android:splitMotionEvents="false"
             android:visibility="visible" />
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </RelativeLayout>

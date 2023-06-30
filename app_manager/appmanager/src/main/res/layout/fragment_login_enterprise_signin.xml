@@ -6,18 +6,12 @@
     android:fillViewport="true"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="@dimen/default_screen_width"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+    <LinearLayout style="@style/LoginTextInputContainer">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_enterprise_portal_email_layout"
             style="@style/CommonEditText"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_margin_xlarge"
             android:hint="@string/login_enterprise_email_hint">
 
             <com.google.android.material.textfield.TextInputEditText

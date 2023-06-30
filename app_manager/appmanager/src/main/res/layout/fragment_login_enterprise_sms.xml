@@ -20,7 +20,7 @@
             android:gravity="center"
             android:lines="2"
             android:text="@string/login_sms_code_label"
-            android:textSize="18sp"
+            android:textSize="@dimen/fonts_size_medium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
