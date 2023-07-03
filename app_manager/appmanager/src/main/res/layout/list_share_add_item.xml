@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height"
     android:clickable="false"
-    android:focusable="false">
+    android:focusable="false"
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/shareAddItemLayout"
@@ -17,12 +18,11 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/shareAddItemLetter"
-            style="@style/LargeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/default_margin_large"
-            android:layout_marginVertical="@dimen/screen_margin_large"
+            android:layout_marginStart="@dimen/default_margin_large"
             android:gravity="center"
+            android:minWidth="24dp"
             android:text="R"
             android:textColor="@color/colorPrimary"
             android:textSize="24sp"
@@ -33,7 +33,6 @@
 
         <ImageView
             android:id="@+id/shareAddItemAvatar"
-            style="@style/CommonImageView"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
             android:layout_marginStart="@dimen/default_margin_large"
@@ -65,11 +64,10 @@
             android:layout_marginTop="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/shareAddItemTitle"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/shareAddItemTitle"
             app:layout_constraintTop_toBottomOf="@+id/shareAddItemTitle"
             tools:text="Info" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</FrameLayout>
+</LinearLayout>
 

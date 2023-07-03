@@ -22,17 +22,11 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/resetButton"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/CommonTextButton"
                 android:layout_gravity="end"
-                android:layout_marginEnd="8dp"
-                android:clickable="true"
-                android:focusable="true"
+                android:layout_marginEnd="@dimen/default_margin_medium"
                 android:minWidth="0dp"
-                android:text="@string/filter_button_reset"
-                android:textSize="16sp"
-                app:cornerRadius="8dp" />
+                android:text="@string/filter_button_reset" />
 
         </com.google.android.material.appbar.MaterialToolbar>
 

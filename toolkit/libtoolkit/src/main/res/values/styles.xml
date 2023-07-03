@@ -101,7 +101,7 @@
     </style>
 
     <!-- ======================================================================================= -->
-    <!-- Common views-->
+    <!-- Common widgets -->
     <style name="CommonTextView" parent="AppTheme">
         <item name="android:focusable">false</item>
         <item name="android:clickable">false</item>
@@ -113,7 +113,24 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <!--  Typography  -->
+    <style name="Widget.Common.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="tabTextAppearance">@style/TextAppearance.Common.TabItem</item>
+        <item name="tabSelectedTextColor">?attr/colorPrimary</item>
+        <item name="tabTextColor">@color/colorTextSecondary</item>
+        <item name="tabMode">auto</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/default_tab_layout_height</item>
+    </style>
+
+    <style name="Widget.Common.TabLayout.Fixed">
+        <item name="tabMode">fixed</item>
+    </style>
+
+    <style name="TextAppearance.Common.TabItem" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">@dimen/fonts_size_medium</item>
+    </style>
+
+    <!--  TextAppearance  -->
     <style name="TextAppearance.Common.Description" parent="AppTheme">
         <item name="android:textAppearance">@style/TextAppearance.Material3.BodyMedium</item>
         <item name="android:textColor">@color/colorTextTertiary</item>
@@ -323,7 +340,7 @@
         <item name="android:textAppearance">@style/TextAppearance.Common.Button</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
-        <item name="cornerRadius">6dp</item>
+        <item name="cornerRadius">@dimen/default_corner_radius_button</item>
         <item name="rippleColor">?colorControlHighlight</item>
         <item name="android:theme">@style/CommonButton.Overlay</item>
     </style>

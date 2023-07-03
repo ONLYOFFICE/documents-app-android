@@ -26,19 +26,11 @@
             android:theme="@style/MainToolbar"/>
 
         <com.google.android.material.tabs.TabLayout
-            style="@style/ViewPagerTabs"
+            style="@style/Widget.Common.TabLayout.Fixed"
             android:id="@+id/app_bar_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/default_tab_layout_height"
-            android:layout_gravity="center"
             android:visibility="gone"
-            android:background="@color/colorAppBar"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
-            app:tabMaxWidth="0dp"
-            app:tabTextAppearance="@style/ViewPagerTabsText"
-            app:tabSelectedTextColor="@color/colorPrimary"
-            app:tabIndicatorColor="@color/colorPrimary"/>
+            android:background="@color/colorAppBar"/>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

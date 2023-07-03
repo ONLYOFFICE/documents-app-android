@@ -46,6 +46,7 @@
     <dimen name="default_corner_radius_medium">8dp</dimen>
     <dimen name="default_corner_radius_small">4dp</dimen>
     <dimen name="default_corner_radius_micro">2dp</dimen>
+    <dimen name="default_corner_radius_button">6dp</dimen>
 
     <!-- Fragment animation time -->
     <integer name="fragment_replace_main_animation_duration">100</integer>

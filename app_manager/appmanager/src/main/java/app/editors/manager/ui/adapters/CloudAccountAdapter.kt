@@ -3,8 +3,8 @@ package app.editors.manager.ui.adapters
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider
@@ -49,7 +49,7 @@ class CloudAccountAdapter(
             1 -> CloudAccountViewHolder(parent.inflate(R.layout.account_list_item_layout))
             else -> AddViewHolder(
                 addClickListener,
-                parent.inflate(R.layout.add_account_item_layout)
+                parent.inflate(R.layout.add_item_layout)
             )
         }
     }
@@ -172,8 +172,8 @@ internal class AddViewHolder(
     view: View
 ) : RecyclerView.ViewHolder(view) {
 
-    private val addLayout: LinearLayoutCompat =
-        view.findViewById(R.id.fragment_accounts_add_account)
+    private val addLayout: LinearLayout =
+        view.findViewById(R.id.accountsAddLayout)
 
     private val height = addLayout.layoutParams.height
 
