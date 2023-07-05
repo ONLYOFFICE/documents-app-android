@@ -244,21 +244,16 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
 
         private val videoLayout: FrameLayout = view.findViewById(R.id.media_video_layout)
         private val videoView: ImageView= view.findViewById(R.id.media_video_view)
-        private val viewIconBackgroundLayout: FrameLayout= view.findViewById(R.id.view_icon_background_layout)
-        private val viewIconBackgroundImage: ImageView= view.findViewById(R.id.view_icon_background_image)
 
         init {
             setLayoutParams(videoLayout, cellSize, cellSize)
             videoView.isClickable = false
-            viewIconBackgroundLayout.isClickable = false
             view.setOnClickListener { v: View? ->
                 mOnItemClickListener?.onItemClick(v, layoutPosition)
             }
         }
 
         fun bind(file: CloudFile?) {
-            viewIconBackgroundLayout.setBackgroundResource(R.drawable.drawable_media_background_video_play_light)
-            setImageTint(viewIconBackgroundImage, R.drawable.ic_media_play, lib.toolkit.base.R.color.colorPrimary)
             if (file!!.id == "") {
                 cacheTool.getBitmap(file.webUrl) { bitmap: Bitmap? ->
                     if (bitmap == null) {
@@ -294,7 +289,6 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
         }
 
         private fun showVideo() {
-            viewIconBackgroundLayout.setBackgroundResource(R.drawable.drawable_media_background_video_play_grey)
             videoView.visibility = View.VISIBLE
             videoView.alpha = ALPHA_FROM
             videoView.animate()?.alpha(ALPHA_TO)?.setDuration(ALPHA_DELAY.toLong())?.start()

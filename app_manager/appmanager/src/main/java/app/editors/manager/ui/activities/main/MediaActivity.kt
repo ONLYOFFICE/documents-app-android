@@ -1,36 +1,30 @@
 package app.editors.manager.ui.activities.main
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewPropertyAnimator
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isInvisible
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
 import app.editors.manager.databinding.ActivityMediaBinding
-import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.media.MediaPagerFragment
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializable
 
 class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
     private var viewBinding: ActivityMediaBinding? = null
-    private var uncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
-    private var viewPropertyAnimator: ViewPropertyAnimator? = null
-    private var backDrawable: Drawable? = null
+    private var shareItem: MenuItem? = null
 
-    private val toolbarRunnableGone = Runnable {
-        viewBinding?.appBarToolbar?.visibility = View.GONE
-    }
+    private val explorer by lazy { intent.getSerializable(TAG_MEDIA, Explorer::class.java) }
+    private val isWebDav by lazy { intent.getBooleanExtra(TAG_WEB_DAV, false) }
+    private val clickedPosition by lazy { explorer.files.indexOfFirst { it.isClicked } }
 
-    private val toolbarRunnableVisible = Runnable {
-        viewBinding?.appBarToolbar?.visibility = View.VISIBLE
-    }
+    var shareButtonVisible: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,101 +35,70 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewBinding?.appBarToolbar?.removeCallbacks(toolbarRunnableGone)
         viewBinding = null
         killSelf()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            com.facebook.common.R.id.home -> {
-                finish()
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_media, menu)
+        shareItem = menu?.findItem(R.id.toolbarShare)
+        shareVisible = shareButtonVisible
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.app_bar_toolbar -> showToolbar()
+            R.id.app_bar_toolbar -> toggleToolbar()
         }
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        initException()
         initToolbar()
-        savedInstanceState ?: run {
-            val explorer = intent.getSerializable(TAG_MEDIA, Explorer::class.java)
-            val isWebDav = intent.getBooleanExtra(TAG_WEB_DAV, false)
-            showFragment(MediaPagerFragment.newInstance(explorer, isWebDav), null)
-        }
-    }
-
-    private fun initException() {
-        uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler { thread: Thread, throwable: Throwable? ->
-            Log.d(TAG, "ID: " + thread.id + "; NAME: " + thread.name)
-            setResult(Activity.RESULT_CANCELED, Intent())
-            uncaughtExceptionHandler?.uncaughtException(thread, throwable ?: Throwable())
+        if (savedInstanceState == null) {
+            showFragment(MediaPagerFragment.newInstance(explorer, isWebDav, clickedPosition), null)
         }
     }
 
     private fun initToolbar() {
-        backDrawable = UiUtils
-            .getFilteredDrawable(this, lib.toolkit.base.R.drawable.ic_back, lib.toolkit.base.R.color.colorWhite)
-        setSupportActionBar(viewBinding?.appBarToolbar)
-        setStatusBarColor(lib.toolkit.base.R.color.colorBlack)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(backDrawable)
-    }
-
-    private fun resetToolbarView(isVisible: Boolean) {
-        viewPropertyAnimator?.cancel()
-        viewBinding?.appBarToolbar?.run {
-            removeCallbacks(toolbarRunnableGone)
-            removeCallbacks(toolbarRunnableVisible)
-            visibility = View.VISIBLE
-            alpha = if (isVisible) ALPHA_TO else ALPHA_FROM
+        viewBinding?.mediaToolbar?.let { toolbar ->
+            setSupportActionBar(toolbar)
+            toolbar.setNavigationIcon(lib.toolkit.base.R.drawable.ic_close)
+            toolbar.setNavigationIconTint(getColor(lib.toolkit.base.R.color.colorWhite))
+            toolbar.setNavigationOnClickListener { finish() }
+            toolbar.setOnClickListener(this)
         }
     }
 
-    fun setToolbarView(view: View?) {
-        viewBinding?.appBarToolbarContainer?.run {
-            removeAllViews()
-            addView(view)
+    var shareVisible: Boolean
+        get() = shareItem?.isVisible == true
+        set(value) {
+            shareItem?.isVisible = value
         }
+
+    private val isToolbarVisible: Boolean
+        get() = viewBinding?.mediaToolbar?.isInvisible == false
+
+    fun setToolbarTitle(title: String?) {
+        supportActionBar?.title = title.orEmpty()
     }
 
-    fun setToolbarState(isAnimating: Boolean) {
-        viewBinding?.appBarToolbar?.setOnClickListener(if (isAnimating) this else null)
-        resetToolbarView(true)
+    fun setToolbarSubtitle(subtitle: String) {
+        supportActionBar?.subtitle = subtitle
     }
 
-    fun showToolbar(): Boolean {
-        val isVisible = viewBinding?.appBarToolbar?.visibility == View.VISIBLE
-        resetToolbarView(isVisible)
-        viewPropertyAnimator = viewBinding?.run {
-            appBarToolbar.animate()
-                .alpha(if (isVisible) ALPHA_FROM else ALPHA_TO)
-                .setDuration(ALPHA_DELAY.toLong())
-                .withEndAction(if (isVisible) toolbarRunnableGone else toolbarRunnableVisible)
-        }?.apply {
-            start()
-        }
-        return isVisible
+    fun toggleToolbar(): Boolean {
+        viewBinding?.mediaToolbar?.isInvisible = isToolbarVisible
+        return isToolbarVisible
     }
 
-    val isToolbarVisible: Boolean
-        get() = viewBinding?.appBarToolbar?.visibility == View.VISIBLE
+    fun setOnMenuItemClickListener(listener: Toolbar.OnMenuItemClickListener) {
+        viewBinding?.mediaToolbar?.setOnMenuItemClickListener(listener)
+    }
 
     companion object {
         val TAG: String = MediaActivity::class.java.simpleName
         const val TAG_MEDIA = "TAG_MEDIA"
         const val TAG_WEB_DAV = "TAG_WEB_DAV"
-        const val ALPHA_DELAY = 300
-        const val ALPHA_FROM = 0.0f
-        const val ALPHA_TO = 1.0f
 
         fun getIntent(context: Context, explorer: Explorer, isWebDav: Boolean): Intent {
             return Intent(context, MediaActivity::class.java).apply {
@@ -144,4 +107,5 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
             }
         }
     }
+
 }
