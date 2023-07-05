@@ -15,7 +15,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/titleItem"
-        style="@style/ItemMediumBlackText"
+        style="@style/Widget.Common.TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"

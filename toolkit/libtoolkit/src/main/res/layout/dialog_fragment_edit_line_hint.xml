@@ -21,7 +21,7 @@
             android:imeOptions="actionDone"
             android:importantForAutofill="noExcludeDescendants"
             android:inputType="textNoSuggestions"
-            android:textAppearance="@style/MediumTextView" />
+            android:textAppearance="@style/Widget.Common.TextView" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

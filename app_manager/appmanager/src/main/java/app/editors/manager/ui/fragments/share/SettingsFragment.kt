@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.*
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -366,7 +365,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 onButtonState(true)
             }
         }
-        popupBinding?.buttonPopupImage?.setImageResource(iconRes)
+        popupBinding?.buttonPopupImage?.setIconResource(iconRes)
         if (isMessage) {
             showSnackBar(messageRes)
         }

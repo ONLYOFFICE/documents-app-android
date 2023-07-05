@@ -1,21 +1,20 @@
 package app.editors.manager.ui.adapters.holders
 
 import android.view.View
-import app.editors.manager.R
-import app.editors.manager.databinding.ListExplorerHeaderBinding
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.ui.adapters.ExplorerAdapter
+import lib.toolkit.base.databinding.ListItemHeaderBinding
 
 class HeaderViewHolder(itemView: View, adapter: ExplorerAdapter) :
     BaseViewHolderExplorer<Header>(itemView, adapter) {
 
-    private val viewBinding = ListExplorerHeaderBinding.bind(itemView)
-
-    override fun bind(header: Header) {
-        viewBinding.listExplorerHeaderTitle.text = header.title
+    override fun bind(element: Header) {
+        with(ListItemHeaderBinding.bind(itemView)) {
+            title.text = element.title
+        }
     }
 
     companion object {
-        const val LAYOUT: Int = R.layout.list_explorer_header
+        var LAYOUT: Int = lib.toolkit.base.R.layout.list_item_header
     }
 }

@@ -21,7 +21,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/ItemMediumBlackText"
+        style="@style/Widget.Common.TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
@@ -34,7 +34,7 @@
 
     <TextView
         android:id="@+id/subtitle"
-        style="@style/ItemSmallGreyText"
+        style="@style/Widget.Common.TextView.Small.Secondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@id/icon"

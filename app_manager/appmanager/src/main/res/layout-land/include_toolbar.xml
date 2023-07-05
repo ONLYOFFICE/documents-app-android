@@ -18,7 +18,6 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/toolbarArrowIcon"
-            style="@style/CommonImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_margin_medium"
@@ -53,14 +52,14 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/toolbarTitle"
-                style="@style/MediumTextView"
+                style="@style/Widget.Common.TextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/toolbarSubTitle"
-                style="@style/ItemSmallLightText"
+                style="@style/Widget.Common.TextView.Small.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />

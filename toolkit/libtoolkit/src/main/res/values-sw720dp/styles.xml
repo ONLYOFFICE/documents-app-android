@@ -9,15 +9,6 @@
         <item name="android:windowCloseOnTouchOutside">false</item>
     </style>
 
-    <!-- Collapse toolbar text -->
-    <style name="ExpandedTextView" parent="CommonCollapseTextView">
-        <item name="android:textSize">32sp</item>
-    </style>
-
-    <style name="CollapsedTextView" parent="CommonCollapseTextView">
-        <item name="android:textSize">20sp</item>
-    </style>
-
     <style name="FabPopupAnimation">
         <item name="android:windowEnterAnimation">@anim/fab_popup_enter</item>
     </style>

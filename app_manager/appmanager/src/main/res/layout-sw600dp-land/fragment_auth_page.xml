@@ -14,13 +14,13 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/auth_page_step"
-            style="@style/AuthTextViewSecond"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/auth_step_title"
             android:textSize="@dimen/screen_on_boarding_header_text_size"
             app:layout_constraintBottom_toTopOf="@+id/auth_page_image"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Step" />
 
@@ -39,6 +39,7 @@
             android:id="@+id/auth_page_layout"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="@+id/auth_page_image"
             app:layout_constraintEnd_toEndOf="parent"
@@ -47,13 +48,13 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/auth_page_header"
-                style="@style/AuthTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
                 android:layout_marginTop="@dimen/default_margin_xlarge"
                 android:gravity="start"
                 android:text="@string/auth_header_screen_1"
+                android:textColor="@color/colorOnSurface"
                 android:textSize="@dimen/screen_on_boarding_header_text_size"
                 tools:text="Header" />
 
@@ -81,7 +82,6 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/auth_page_info"
-                style="@style/AuthTextViewSecond"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
@@ -98,9 +98,9 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/confirm_button"
-                style="@style/AuthAccentButton"
-                android:layout_width="match_parent"
+                style="@style/CommonButton"
                 android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
+                android:layout_marginTop="@dimen/default_margin_medium"
                 tools:text="Install" />
 
         </LinearLayout>

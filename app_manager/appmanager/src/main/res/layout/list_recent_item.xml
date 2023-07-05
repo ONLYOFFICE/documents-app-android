@@ -28,7 +28,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/list_recent_file_name"
-            style="@style/ItemMediumBlackText"
+            style="@style/Widget.Common.TextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -42,7 +42,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/list_recent_file_info"
-            style="@style/ItemSmallGreyText"
+            style="@style/Widget.Common.TextView.Small.Secondary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"

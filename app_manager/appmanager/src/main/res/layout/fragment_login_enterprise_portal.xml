@@ -51,7 +51,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_enterprise_forgot_pwd_button"
-            style="@style/TextAppearance.Common.Description"
+            style="@style/Widget.Common.TextView.Description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_xlarge"

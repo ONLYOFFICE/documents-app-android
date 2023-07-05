@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/share_settings_header_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingStart="@dimen/screen_margin_large"
     android:paddingTop="16dp"
     android:paddingEnd="@dimen/screen_margin_large"
@@ -12,10 +11,10 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/share_settings_external_access_title"
-        style="@style/MediumTextView"
+        style="@style/Widget.Common.TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
+        android:layout_marginEnd="@dimen/default_margin_large"
         android:text="@string/share_main_external_access"
         app:layout_constraintEnd_toStartOf="@+id/share_settings_access_button_layout"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,7 +23,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/share_settings_external_access_info_title"
-        style="@style/SmallTextView"
+        style="@style/Widget.Common.TextView.Small.Secondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -53,36 +52,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/share_settings_external_access_info_title">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/share_settings_external_access_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible">
+            android:layout_height="match_parent">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/share_settings_external_copy_link"
-                style="@style/AccentButton"
+                style="@style/SmallButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/share_main_external_copy_button"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/share_settings_external_send_link"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_marginEnd="@dimen/default_margin_medium"
+                android:text="@string/share_main_external_copy_button" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/share_settings_external_send_link"
-                style="@style/AccentButton"
+                style="@style/SmallButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/operation_share_send_link"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                android:text="@string/operation_share_send_link" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

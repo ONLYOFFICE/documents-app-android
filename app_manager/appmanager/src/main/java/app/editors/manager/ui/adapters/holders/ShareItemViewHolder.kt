@@ -11,6 +11,7 @@ import app.editors.manager.managers.utils.GlideUtils.setAvatar
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.ui.adapters.ShareAdapter
+import com.google.android.material.button.MaterialButton
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 import lib.toolkit.base.ui.adapters.holder.ViewType
 
@@ -22,7 +23,7 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
     private val itemName: TextView = itemBinding.listShareSettingsName
     private val itemInfo: TextView = itemBinding.listShareSettingsInfo
     private val contextLayoutButton: ConstraintLayout = itemBinding.listShareSettingsContextLayout.root
-    private val contextButton: ImageView = itemBinding.listShareSettingsContextLayout.buttonPopupImage
+    private val contextButton: MaterialButton = itemBinding.listShareSettingsContextLayout.buttonPopupImage
 
     init {
         contextLayoutButton.setOnClickListener {

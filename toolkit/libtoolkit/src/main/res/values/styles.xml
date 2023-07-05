@@ -53,64 +53,79 @@
     <style name="MediaTheme" parent="NoActionBarTheme">
         <item name="android:windowEnableSplitTouch">true</item>
         <item name="android:splitMotionEvents">true</item>
+        <item name="android:navigationBarColor">@color/colorMediaBackground</item>
+        <item name="android:statusBarColor">@color/colorMediaBackground</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <!-- ======================================================================================= -->
-    <!-- Search views -->
-    <style name="SearchViewEdit" parent="Widget.AppCompat.Light.SearchView">
-        <item name="queryBackground">@null</item>
-        <item name="submitBackground">@null</item>
-        <item name="searchHintIcon">@null</item>
-    </style>
+    <!-- TextAppearance -->
 
-    <style name="SearchViewEditHint" parent="SearchViewEdit">
-        <item name="defaultQueryHint">@string/toolbar_menu_search_hint</item>
-    </style>
-
-    <style name="SearchViewTextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+    <style name="TextAppearance.Common.SearchView" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textSize">20sp</item>
     </style>
 
-    <!-- ======================================================================================= -->
-    <!-- Filter views -->
-
-    <style name="FilterChip" parent="Widget.MaterialComponents.Chip.Choice">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/color_filter_chip_text_selector</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:padding">10dp</item>
-        <item name="android:clickable">true</item>
-        <item name="android:checkable">true</item>
-        <item name="chipMinTouchTargetSize">0dp</item>
-        <item name="chipBackgroundColor">@color/color_filter_chip_selector</item>
-        <item name="chipStrokeWidth">0.5dp</item>
-        <item name="chipStrokeColor">@color/color_filter_chip_border_selector</item>
-    </style>
-
-    <style name="FilterChip.Closable">
-        <item name="closeIconEnabled">true</item>
-        <item name="closeIconTint">@color/colorWhite</item>
-        <item name="closeIconVisible">false</item>
-        <item name="android:textColor">@color/color_filter_chip_text_author_selector</item>
-    </style>
-
-    <style name="FilterTitleTextAppearance" parent="TextAppearance.Material3.TitleMedium">
+    <style name="TextAppearance.Common.ChipGroupTitle" parent="TextAppearance.Material3.TitleMedium">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/colorOnSurface</item>
     </style>
 
-    <!-- ======================================================================================= -->
-    <!-- Common widgets -->
-    <style name="CommonTextView" parent="AppTheme">
-        <item name="android:focusable">false</item>
-        <item name="android:clickable">false</item>
-        <item name="android:lines">1</item>
-        <item name="android:ellipsize">end</item>
+    <style name="TextAppearance.Common.TabItem" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">@dimen/fonts_size_medium</item>
     </style>
 
-    <style name="CommonImageView" parent="AppTheme">
-        <item name="android:background">@android:color/transparent</item>
+    <style name="TextAppearance.Common.Button" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">@dimen/fonts_size_medium</item>
+    </style>
+
+    <!-- TextView -->
+    <!-- Medium -->
+    <style name="Widget.Common.TextView" parent="AppTheme">
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/fonts_size_medium</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Secondary">
+        <item name="android:textColor">@color/colorTextSecondary</item>
+    </style>
+
+    <!-- Small -->
+    <style name="Widget.Common.TextView.Small">
+        <item name="android:textSize">@dimen/fonts_size_small</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Small.Secondary">
+        <item name="android:textColor">@color/colorTextSecondary</item>
+    </style>
+
+    <!-- Micro -->
+    <style name="Widget.Common.TextView.Micro">
+        <item name="android:textSize">@dimen/fonts_size_micro</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Micro.Secondary">
+        <item name="android:textColor">@color/colorTextSecondary</item>
+    </style>
+
+    <!-- Large -->
+    <style name="Widget.Common.TextView.Large">
+        <item name="android:textSize">@dimen/fonts_size_large</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Header" parent="Widget.Common.TextView.Small.Secondary">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Description" parent="Widget.Common.TextView.Small.Secondary">
+        <item name="android:maxLines">20</item>
     </style>
 
     <style name="Widget.Common.TabLayout" parent="Widget.Material3.TabLayout">
@@ -126,18 +141,25 @@
         <item name="tabMode">fixed</item>
     </style>
 
-    <style name="TextAppearance.Common.TabItem" parent="TextAppearance.Material3.LabelLarge">
-        <item name="android:textSize">@dimen/fonts_size_medium</item>
+    <style name="Widget.Common.Chip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/color_filter_chip_text_selector</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:checkable">true</item>
+        <item name="chipMinTouchTargetSize">0dp</item>
+        <item name="chipBackgroundColor">@color/color_filter_chip_selector</item>
+        <item name="chipStrokeWidth">0.5dp</item>
+        <item name="chipStrokeColor">@color/color_filter_chip_border_selector</item>
     </style>
 
-    <!--  TextAppearance  -->
-    <style name="TextAppearance.Common.Description" parent="AppTheme">
-        <item name="android:textAppearance">@style/TextAppearance.Material3.BodyMedium</item>
-        <item name="android:textColor">@color/colorTextTertiary</item>
-    </style>
-
-    <style name="TextAppearance.Common.Description.Center">
-        <item name="android:gravity">center</item>
+    <style name="Widget.Common.Chip.Closable">
+        <item name="closeIconEnabled">true</item>
+        <item name="closeIconTint">@color/colorWhite</item>
+        <item name="closeIconVisible">false</item>
+        <item name="android:textColor">@color/color_filter_chip_text_author_selector</item>
     </style>
 
     <!--  Layouts  -->
@@ -148,142 +170,6 @@
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:orientation">vertical</item>
         <item name="android:layout_marginTop">@dimen/default_margin_xlarge</item>
-    </style>
-
-    <!-- ======================================================================================= -->
-    <!-- Selectable background -->
-    <style name="WhiteColorControlHighlight">
-        <!--        <item name="colorControlHighlight">@color/colorBackground</item>-->
-    </style>
-
-    <!-- ======================================================================================= -->
-    <!-- ImageButton\ImageView -->
-    <style name="AlphaImageView" parent="CommonImageView">
-        <item name="android:alpha">@dimen/alpha_medium</item>
-    </style>
-
-    <style name="AlphaImageButton" parent="AppTheme">
-        <item name="android:alpha">@dimen/alpha_medium</item>
-    </style>
-
-    <style name="FilterWhiteImageView" parent="CommonImageView">
-        <item name="android:tint">@color/colorWhite</item>
-        <item name="android:tintMode">src_atop</item>
-        <item name="android:theme">@style/WhiteColorControlHighlight</item>
-    </style>
-
-    <!-- ======================================================================================= -->
-    <!-- Text -->
-    <!-- Place holder -->
-    <style name="PlaceholderTextView" parent="CommonTextView">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <!-- ViewPager text -->
-    <style name="ViewPagerTabsText" parent="TextAppearance.Design.Tab">
-        <!--        <item name="android:textColor">@color/colorTextSecondary</item>-->
-        <item name="android:textStyle">normal</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textSize">@dimen/fonts_size_small</item>
-    </style>
-
-    <style name="PortalsViewPagerTabsText" parent="TextAppearance.Design.Tab">
-        <!--        <item name="android:textColor">@color/colorTextSecondary</item>-->
-        <item name="android:textStyle">normal</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textSize">@dimen/fonts_size_small</item>
-    </style>
-
-    <!-- ViewPager layout -->
-    <style name="ViewPagerTabs" parent="Widget.MaterialComponents.TabLayout">
-        <item name="tabGravity">fill</item>
-        <item name="tabMode">scrollable</item>
-        <item name="android:background">@color/colorSurface</item>
-        <item name="elevationOverlayEnabled">false</item>
-        <item name="android:windowIsFloating">false</item>
-    </style>
-
-    <!-- Collapse toolbar text -->
-    <style name="CommonCollapseTextView" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textColor">@color/colorOnBackground</item>
-    </style>
-
-    <style name="ExpandedTextView" parent="CommonCollapseTextView">
-        <item name="android:textSize">@dimen/fonts_size_small</item>
-    </style>
-
-    <style name="CollapsedTextView" parent="CommonCollapseTextView">
-        <item name="android:textSize">@dimen/fonts_size_micro</item>
-    </style>
-
-    <!-- Text sizes -->
-
-    <style name="LargeTextView" parent="CommonTextView">
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:textSize">@dimen/fonts_size_large</item>
-    </style>
-
-    <style name="MediumTextView" parent="CommonTextView">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textSize">@dimen/fonts_size_medium</item>
-    </style>
-
-    <style name="SmallTextView" parent="CommonTextView">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textSize">@dimen/fonts_size_small</item>
-    </style>
-
-    <!-- Text colors -->
-    <!-- Black -->
-
-    <style name="ItemLargeText" parent="LargeTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <style name="ItemMediumBlackText" parent="MediumTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <style name="ItemSmallBlackText" parent="SmallTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <!-- Grey -->
-    <style name="ItemMediumGreyText" parent="MediumTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:alpha">@dimen/alpha_medium</item>
-    </style>
-
-    <style name="ItemSmallGreyText" parent="SmallTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:alpha">@dimen/alpha_medium</item>
-    </style>
-
-    <!-- White -->
-    <style name="ItemMediumWhiteText" parent="MediumTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <style name="ItemSmallWhiteText" parent="SmallTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <!-- Light grey -->
-
-    <style name="ItemSmallLightText" parent="SmallTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:alpha">@dimen/alpha_medium</item>
-    </style>
-
-    <style name="CloudStorageText" parent="ItemMediumGreyText">
-        <item name="android:lines">3</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">5</item>
-        <item name="android:gravity">center</item>
     </style>
 
     <!-- TextInputLayout error color -->
@@ -301,48 +187,26 @@
         <item name="android:textSize">0sp</item>
     </style>
 
-    <!-- On boarding -->
-    <style name="OnBoardingTextView" parent="CommonTextView">
-        <item name="android:textColor">@color/colorOnBackground</item>
-        <item name="android:gravity">center</item>
-        <item name="android:lines">7</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">7</item>
-    </style>
-
-    <style name="AuthTextView" parent="CommonTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:gravity">center</item>
-        <item name="android:lines">5</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">5</item>
-    </style>
-
-    <style name="AuthTextViewSecond" parent="CommonTextView">
-        <item name="android:textColor">@color/colorTextSecondary</item>
-        <item name="android:gravity">center</item>
-        <item name="android:lines">5</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">5</item>
-    </style>
-
     <!-- ======================================================================================= -->
     <!-- Buttons -->
-
-    <style name="TextAppearance.Common.Button" parent="TextAppearance.Material3.LabelLarge">
-        <item name="android:textSize">@dimen/fonts_size_medium</item>
-    </style>
 
     <style name="CommonButton" parent="Widget.Material3.Button.ElevatedButton">
         <item name="android:layout_width">@dimen/default_button_width</item>
         <item name="android:layout_height">@dimen/default_button_height</item>
         <item name="android:layout_marginTop">@dimen/default_margin_large</item>
+        <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:textAppearance">@style/TextAppearance.Common.Button</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="cornerRadius">@dimen/default_corner_radius_button</item>
         <item name="rippleColor">?colorControlHighlight</item>
         <item name="android:theme">@style/CommonButton.Overlay</item>
+    </style>
+
+    <style name="SmallButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cornerRadius">@dimen/default_corner_radius_button</item>
     </style>
 
     <style name="CommonButton.Overlay" parent="ThemeOverlay.Material3.Button.ElevatedButton">
@@ -371,6 +235,10 @@
         <item name="iconGravity">textStart</item>
         <item name="iconSize">@dimen/image_default_size</item>
         <item name="rippleColor">?attr/colorControlHighlight</item>
+    </style>
+
+    <style name="CommonIconButton.Secondary">
+        <item name="iconTint">@color/colorTextSecondary</item>
     </style>
 
     <style name="ClickableTextView">
@@ -402,37 +270,24 @@
     <style name="ContextListLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/item_one_line_height</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:paddingStart">@dimen/screen_margin_large</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:paddingEnd">@dimen/screen_margin_large</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:clickable">true</item>
     </style>
 
-    <style name="ContextListImage" parent="AlphaImageView">
+    <style name="ContextListImage">
         <item name="android:layout_width">@dimen/image_default_size</item>
         <item name="android:layout_height">@dimen/image_default_size</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:tint">@color/colorOnSurface</item>
+        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin_large</item>
+        <item name="android:tint">@color/colorTextSecondary</item>
     </style>
 
     <style name="ContextListImage.Favorite" parent="ContextListImage">
         <item name="android:tint">@null</item>
-    </style>
-
-    <style name="ContextListHeaderImage" parent="CommonImageView">
-        <item name="android:layout_width">@dimen/image_default_size</item>
-        <item name="android:layout_height">@dimen/image_default_size</item>
-        <item name="android:layout_gravity">center_vertical</item>
-    </style>
-
-    <style name="ContextListMediumText" parent="ItemMediumBlackText">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginEnd">@dimen/default_margin_xxlarge</item>
-        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
-        <item name="android:layout_gravity">center_vertical</item>
     </style>
 
     <style name="ContextListAccountsLayout" parent="ContextListLayout">
@@ -448,11 +303,6 @@
     <!-- Popup menu -->
     <style name="PopupLayout" parent="ContextListLayout">
         <item name="android:layout_width">wrap_content</item>
-    </style>
-
-    <style name="PopupText" parent="ContextListMediumText">
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:textAllCaps">false</item>
     </style>
 
     <style name="MainAppBar" parent="Widget.MaterialComponents.AppBarLayout.Surface" />
@@ -507,7 +357,7 @@
     <style name="DialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textSize">16sp</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
-        <item name="android:textAppearance">@style/MediumTextView</item>
+        <item name="android:textAppearance">@style/Widget.Common.TextView</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 

@@ -28,8 +28,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:tint="@color/colorOnSurface"
-                    android:src="@drawable/ic_bottom_divider" />
+                    android:src="@drawable/ic_bottom_divider"
+                    android:tint="@color/colorOnSurface" />
 
             </FrameLayout>
 
@@ -45,7 +45,9 @@
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_doc" />
             </LinearLayout>
 
@@ -61,7 +63,9 @@
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_sheet" />
             </LinearLayout>
 
@@ -77,7 +81,9 @@
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_presentation" />
             </LinearLayout>
 
@@ -91,7 +97,9 @@
                     app:srcCompat="@drawable/ic_type_folder" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_folder" />
             </LinearLayout>
 
@@ -112,7 +120,9 @@
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_photo" />
             </LinearLayout>
 
@@ -126,7 +136,9 @@
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_upload" />
             </LinearLayout>
 
@@ -140,7 +152,9 @@
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_import" />
             </LinearLayout>
 
@@ -162,7 +176,9 @@
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_storage" />
             </LinearLayout>
 

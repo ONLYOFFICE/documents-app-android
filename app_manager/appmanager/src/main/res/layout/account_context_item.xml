@@ -23,7 +23,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/itemText"
-        style="@style/ItemMediumBlackText"
+        style="@style/Widget.Common.TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/default_margin_large"

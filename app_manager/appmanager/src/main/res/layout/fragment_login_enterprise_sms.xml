@@ -29,7 +29,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_sms_code_number_text"
-            style="@style/MediumTextView"
+            style="@style/Widget.Common.TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

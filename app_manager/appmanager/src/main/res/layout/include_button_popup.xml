@@ -4,21 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/button_popup_layout"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackgroundBorderless"
-    android:clickable="true"
-    android:focusable="true">
+    android:layout_height="wrap_content">
 
-    <ImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_popup_image"
-        style="@style/AlphaImageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_access_deny"
+        style="@style/CommonIconButton.Secondary"
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
+        android:paddingStart="0dp"
+        app:icon="@drawable/ic_access_deny"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/button_popup_arrow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/colorOnSurface"
         tools:ignore="ContentDescription" />
 
     <ImageView
@@ -28,8 +26,7 @@
         android:layout_height="@dimen/share_access_arrow_size"
         android:src="@drawable/ic_drawer_menu_header_arrow"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button_popup_image"
+        app:layout_constraintEnd_toEndOf="@id/button_popup_image"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/colorOnSurface"
         tools:ignore="ContentDescription" />

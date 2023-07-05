@@ -44,7 +44,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/shareAddItemTitle"
-            style="@style/ItemMediumBlackText"
+            style="@style/Widget.Common.TextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -58,7 +58,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/shareAddItemInfo"
-            style="@style/ItemSmallGreyText"
+            style="@style/Widget.Common.TextView.Small.Secondary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"

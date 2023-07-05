@@ -12,6 +12,8 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/itemText"
-        style="@style/PopupText"
+        style="@style/Widget.Common.TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         tools:text="@string/share_popup_access_full" />
 </LinearLayout>

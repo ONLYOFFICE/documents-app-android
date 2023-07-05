@@ -10,12 +10,12 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/countries_codes_alpha_text"
-        style="@style/LargeTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="R"
-        android:textColor="@color/colorSecondary"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline1"
@@ -31,7 +31,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/countries_codes_name_text"
-        style="@style/MediumTextView"
+        style="@style/Widget.Common.TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
@@ -51,7 +51,7 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/countries_codes_code_text"
-        style="@style/MediumTextView"
+        style="@style/Widget.Common.TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="left|center_vertical"

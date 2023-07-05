@@ -24,8 +24,8 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/storage_item_title"
-        style="@style/ItemLargeText"
-        android:layout_width="0dp"
+        style="@style/Widget.Common.TextView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/screen_margin_large"
         android:layout_marginEnd="@dimen/screen_margin_large"

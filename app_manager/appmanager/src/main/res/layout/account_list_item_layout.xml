@@ -43,7 +43,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/accountItemName"
-            style="@style/ItemMediumBlackText"
+            style="@style/Widget.Common.TextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/default_margin_medium"
@@ -57,7 +57,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/accountItemPortal"
-            style="@style/ItemSmallGreyText"
+            style="@style/Widget.Common.TextView.Small.Secondary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/default_margin_medium"
@@ -69,15 +69,13 @@
             app:layout_goneMarginEnd="@dimen/screen_margin_large"
             tools:text="Portal" />
 
-        <androidx.appcompat.widget.AppCompatImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/accountItemContext"
-            style="@style/AlphaImageButton"
+            style="@style/CommonIconButton.Secondary"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:padding="@dimen/screen_margin_large"
-            android:src="@drawable/ic_list_context_button"
-            android:tint="@color/colorOnSurface"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_list_context_button"
+            android:layout_marginEnd="@dimen/default_margin_medium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

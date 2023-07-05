@@ -9,7 +9,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/storageInfoTitle"
-            style="@style/TextAppearance.Common.Description"
+            style="@style/Widget.Common.TextView.Description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/default_margin_medium"
@@ -104,7 +104,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/storageInfoSecond"
-            style="@style/TextAppearance.Common.Description"
+            style="@style/Widget.Common.TextView.Description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_medium"
