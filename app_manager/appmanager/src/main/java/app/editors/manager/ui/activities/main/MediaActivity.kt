@@ -22,7 +22,6 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
     private val explorer by lazy { intent.getSerializable(TAG_MEDIA, Explorer::class.java) }
     private val isWebDav by lazy { intent.getBooleanExtra(TAG_WEB_DAV, false) }
-    private val clickedPosition by lazy { explorer.files.indexOfFirst { it.isClicked } }
 
     var shareButtonVisible: Boolean = false
 
@@ -41,6 +40,7 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_media, menu)
+        menu?.findItem(R.id.toolbarViewMode)?.isVisible = explorer.files.size > 1
         shareItem = menu?.findItem(R.id.toolbarShare)
         shareVisible = shareButtonVisible
         return super.onCreateOptionsMenu(menu)
@@ -55,7 +55,11 @@ class MediaActivity : BaseAppActivity(), View.OnClickListener {
     private fun init(savedInstanceState: Bundle?) {
         initToolbar()
         if (savedInstanceState == null) {
-            showFragment(MediaPagerFragment.newInstance(explorer, isWebDav, clickedPosition), null)
+            val position = explorer.files
+                .indexOfFirst { file -> file.isClicked }
+                .takeUnless { index -> index == -1 }
+
+            showFragment(MediaPagerFragment.newInstance(explorer, isWebDav, position ?: 0), null)
         }
     }
 
