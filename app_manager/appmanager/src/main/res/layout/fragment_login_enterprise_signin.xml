@@ -10,7 +10,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_enterprise_portal_email_layout"
-            style="@style/CommonEditText"
+            style="@style/Widget.Common.TextInputLayout"
             android:layout_height="wrap_content"
             android:hint="@string/login_enterprise_email_hint">
 
@@ -27,7 +27,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_enterprise_portal_password_layout"
-            style="@style/CommonEditText"
+            style="@style/Widget.Common.TextInputLayout"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_medium"
             android:layout_marginBottom="@dimen/default_margin_large"
@@ -47,7 +47,7 @@
 
         <TextView
             android:id="@+id/login_enterprise_forgot_pwd_button"
-            style="@style/ClickableTextView"
+            style="@style/Widget.Common.TextView.Clickable"
             android:text="@string/login_enterprise_forgot_password" />
 
         <com.google.android.material.button.MaterialButton

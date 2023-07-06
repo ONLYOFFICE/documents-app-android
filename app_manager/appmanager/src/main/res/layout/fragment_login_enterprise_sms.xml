@@ -13,7 +13,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_sms_code_title_text"
-            style="@style/TextAppearance.Common.Description.Center"
+            style="@style/Widget.Common.TextView.Description"
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_top_bottom_padding"
@@ -44,7 +44,6 @@
 
         <app.editors.manager.ui.views.edits.BaseEditText
             android:id="@+id/login_sms_code_edit"
-            style="@style/MediumEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -53,7 +52,8 @@
             android:inputType="number"
             android:letterSpacing="1"
             android:singleLine="true"
-            android:text="−−−−−−"
+            android:textSize="@dimen/fonts_size_medium"
+            android:text="123144"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

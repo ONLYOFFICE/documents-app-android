@@ -37,7 +37,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/descriptionTextView"
-            style="@style/TextAppearance.Common.Description.Center"
+            style="@style/Widget.Common.TextView.Description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_xlarge"

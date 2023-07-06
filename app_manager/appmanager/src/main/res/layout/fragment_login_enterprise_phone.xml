@@ -10,7 +10,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_phone_country_layout"
-            style="@style/CommonEditText"
+            style="@style/Widget.Common.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/login_sms_phone_country_label"
@@ -32,7 +32,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_phone_number_layout"
-            style="@style/CommonEditText"
+            style="@style/Widget.Common.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_margin_medium"
@@ -55,7 +55,7 @@
             android:text="@string/login_sms_phone_send_button" />
 
         <com.google.android.material.textview.MaterialTextView
-            style="@style/TextAppearance.Common.Description.Center"
+            style="@style/Widget.Common.TextView.Description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_xlarge"

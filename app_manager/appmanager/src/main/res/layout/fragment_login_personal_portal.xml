@@ -10,7 +10,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_personal_portal_email_layout"
-            style="@style/CommonEditText"
+            style="@style/Widget.Common.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/login_personal_edit_email_hint">
@@ -29,7 +29,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_personal_portal_password_layout"
-            style="@style/CommonEditText"
+            style="@style/Widget.Common.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_medium"
@@ -49,7 +49,7 @@
 
         <TextView
             android:id="@+id/login_enterprise_forgot_pwd_button"
-            style="@style/ClickableTextView"
+            style="@style/Widget.Common.TextView.Clickable"
             android:layout_marginVertical="@dimen/default_margin_large"
             android:text="@string/login_enterprise_forgot_password" />
 
@@ -75,7 +75,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_personal_info_text"
-            style="@style/TextAppearance.Common.Description.Center"
+            style="@style/Widget.Common.TextView.Description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/login_personal_info"

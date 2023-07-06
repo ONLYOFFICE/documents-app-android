@@ -23,13 +23,6 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="CommonEditText" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
-        <item name="android:maxLines">1</item>
-        <item name="android:lines">1</item>
-        <item name="android:layout_width">@dimen/default_screen_width</item>
-        <item name="boxBackgroundColor">@color/colorBackground</item>
-    </style>
-
     <!-- ======================================================================================= -->
     <!-- Local customizations -->
     <!-- Activities themes-->
@@ -61,14 +54,7 @@
     <!-- ======================================================================================= -->
     <!-- TextAppearance -->
 
-    <style name="TextAppearance.Common.SearchView" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textSize">20sp</item>
-    </style>
-
-    <style name="TextAppearance.Common.ChipGroupTitle" parent="TextAppearance.Material3.TitleMedium">
-        <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
+    <style name="TextAppearance.Common.Title" parent="TextAppearance.MaterialComponents.Headline6" />
 
     <style name="TextAppearance.Common.TabItem" parent="TextAppearance.Material3.LabelLarge">
         <item name="android:textSize">@dimen/fonts_size_medium</item>
@@ -78,8 +64,9 @@
         <item name="android:textSize">@dimen/fonts_size_medium</item>
     </style>
 
-    <!-- TextView -->
-    <!-- Medium -->
+    <!-- ======================================================================================= -->
+    <!-- Widgets -->
+
     <style name="Widget.Common.TextView" parent="AppTheme">
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
@@ -93,7 +80,15 @@
         <item name="android:textColor">@color/colorTextSecondary</item>
     </style>
 
-    <!-- Small -->
+    <style name="Widget.Common.TextView.Clickable">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textAppearance">@style/TextAppearance.Common.Button</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:maxLines">10</item>
+    </style>
+
     <style name="Widget.Common.TextView.Small">
         <item name="android:textSize">@dimen/fonts_size_small</item>
     </style>
@@ -102,7 +97,6 @@
         <item name="android:textColor">@color/colorTextSecondary</item>
     </style>
 
-    <!-- Micro -->
     <style name="Widget.Common.TextView.Micro">
         <item name="android:textSize">@dimen/fonts_size_micro</item>
     </style>
@@ -111,17 +105,21 @@
         <item name="android:textColor">@color/colorTextSecondary</item>
     </style>
 
-    <!-- Large -->
     <style name="Widget.Common.TextView.Large">
         <item name="android:textSize">@dimen/fonts_size_large</item>
     </style>
 
     <style name="Widget.Common.TextView.Header" parent="Widget.Common.TextView.Small.Secondary">
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:layout_marginTop">16dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin_large</item>
+        <item name="android:layout_marginTop">@dimen/default_margin_large</item>
+        <item name="android:layout_marginBottom">@dimen/default_margin_small</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Title">
+        <item name="android:textAppearance">@style/TextAppearance.Common.Title</item>
+        <item name="android:textSize">@dimen/fonts_size_xlarge</item>
     </style>
 
     <style name="Widget.Common.TextView.Description" parent="Widget.Common.TextView.Small.Secondary">
@@ -162,6 +160,17 @@
         <item name="android:textColor">@color/color_filter_chip_text_author_selector</item>
     </style>
 
+    <style name="Widget.Common.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:layout_width">@dimen/default_screen_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">1</item>
+        <item name="boxBackgroundColor">@color/colorBackground</item>
+    </style>
+
+    <style name="Widget.Common.TextInputLayout.Surface">
+        <item name="boxBackgroundColor">@color/colorSurface</item>
+    </style>
+
     <!--  Layouts  -->
     <style name="LoginTextInputContainer">
         <item name="android:layout_width">@dimen/default_button_width</item>
@@ -170,21 +179,6 @@
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:orientation">vertical</item>
         <item name="android:layout_marginTop">@dimen/default_margin_xlarge</item>
-    </style>
-
-    <!-- TextInputLayout error color -->
-    <style name="TextInputErrorGrey" parent="@android:style/TextAppearance">
-        <item name="android:textSize">@dimen/default_notice_text_size</item>
-        <item name="android:textColor">@color/colorTextSecondary</item>
-    </style>
-
-    <style name="TextInputErrorRed" parent="@android:style/TextAppearance">
-        <item name="android:textSize">@dimen/default_notice_text_size</item>
-        <item name="android:textColor">@color/colorError</item>
-    </style>
-
-    <style name="TextInputEmptyErrorMessage">
-        <item name="android:textSize">0sp</item>
     </style>
 
     <!-- ======================================================================================= -->
@@ -241,18 +235,9 @@
         <item name="iconTint">@color/colorTextSecondary</item>
     </style>
 
-    <style name="ClickableTextView">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:textAppearance">@style/TextAppearance.Common.Button</item>
-        <item name="android:textColor">@color/colorPrimary</item>
-        <item name="android:foreground">?attr/selectableItemBackground</item>
-    </style>
     <!-- ======================================================================================= -->
     <!-- EditTexts -->
-    <style name="MediumEditText" parent="CommonEditText">
+    <style name="MediumEditText" parent="Widget.Common.TextInputLayout">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">@dimen/fonts_size_medium</item>
@@ -341,24 +326,6 @@
     <style name="MainPopupAnimation" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/popup_in</item>
         <item name="android:windowExitAnimation">@anim/popup_out</item>
-    </style>
-
-    <!-- Dialog styles -->
-    <style name="DialogTextInputLayout">
-        <item name="boxBackgroundColor">@color/colorSurface</item>
-    </style>
-
-    <style name="DialogTitleStyle">
-        <item name="android:textSize">20sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <style name="DialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textSize">16sp</item>
-        <item name="android:foreground">?attr/selectableItemBackground</item>
-        <item name="android:textAppearance">@style/Widget.Common.TextView</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
 </resources>

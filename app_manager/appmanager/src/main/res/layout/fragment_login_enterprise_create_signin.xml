@@ -10,7 +10,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_signin_password_layout"
-            style="@style/CommonEditText"
+            style="@style/Widget.Common.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/login_create_signin_password"
@@ -28,7 +28,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_signin_repeat_layout"
-            style="@style/CommonEditText"
+            style="@style/Widget.Common.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_medium"
@@ -53,9 +53,7 @@
 
         <TextView
             android:id="@+id/login_signin_terms_info_button"
-            style="@style/ClickableTextView"
-            android:layout_width="@dimen/default_screen_width"
-            android:layout_height="@dimen/default_login_accent_button_height"
+            style="@style/Widget.Common.TextView.Clickable"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:text="@string/login_create_signin_info" />
     </LinearLayout>

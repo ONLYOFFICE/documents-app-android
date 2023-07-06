@@ -25,7 +25,7 @@ class CommonSearchView(
             setOnSearchClickListener { searchClickListener?.invoke() } // On search open
             findViewById<View>(androidx.appcompat.R.id.search_plate)?.background = null
             findViewById<EditText>(androidx.appcompat.R.id.search_src_text)?.apply {
-                setTextAppearance(lib.toolkit.base.R.style.`TextAppearance.Common.SearchView`)
+                setTextAppearance(lib.toolkit.base.R.style.TextAppearance_Common_Title)
                 hint = context.getString(R.string.toolbar_menu_search_view_hint)
             }
         } ?: throw NullPointerException("View can not be null")

@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.core.view.isVisible
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
@@ -89,12 +90,12 @@ abstract class WebDavBaseFragment : BaseAppFragment(), BaseView {
     }
 
     private fun TextInputLayout.setError(resId: Int? = null) {
-        error = if (resId != null) {
-            setErrorTextAppearance(lib.toolkit.base.R.style.TextInputErrorRed)
-            getString(resId)
+        error = resId?.let(requireContext()::getString) ?: " "
+        findViewById<TextView>(com.google.android.material.R.id.textinput_error)
+            .textSize = if (resId != null) {
+            12f
         } else {
-            setErrorTextAppearance(lib.toolkit.base.R.style.TextInputEmptyErrorMessage)
-            " "
+            0f
         }
     }
 
