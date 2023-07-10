@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout style="@style/LoginTextInputContainer">
+    <LinearLayout style="@style/LoginContainerLayout">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/storageInfoTitle"
@@ -113,7 +113,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/connectButton"
-            style="@style/CommonButton"
+            style="@style/Widget.Common.Button"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:enabled="false"
             android:text="@string/storage_connect_button" />

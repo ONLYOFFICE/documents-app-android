@@ -23,7 +23,7 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
     private val itemName: TextView = itemBinding.listShareSettingsName
     private val itemInfo: TextView = itemBinding.listShareSettingsInfo
     private val contextLayoutButton: ConstraintLayout = itemBinding.listShareSettingsContextLayout.root
-    private val contextButton: MaterialButton = itemBinding.listShareSettingsContextLayout.buttonPopupImage
+    private val contextButton: ImageView = itemBinding.listShareSettingsContextLayout.buttonPopupImage
 
     init {
         contextLayoutButton.setOnClickListener {

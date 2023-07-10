@@ -144,20 +144,20 @@ object ManagerUiUtils {
         }
     }
 
-    fun setAccessIcon(button: MaterialButton?, accessCode: Int) {
-        if (button == null) return
+    fun setAccessIcon(icon: ImageView?, accessCode: Int) {
+        if (icon == null) return
         when (accessCode) {
             ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> {
-                button.setIconResource(R.drawable.ic_access_deny)
+                icon.setImageResource(R.drawable.ic_access_deny)
                 return
             }
-            ApiContract.ShareCode.REVIEW -> button.setIconResource(R.drawable.ic_access_review)
-            ApiContract.ShareCode.READ -> button.setIconResource(R.drawable.ic_access_read)
-            ApiContract.ShareCode.ROOM_ADMIN -> button.setIconResource(R.drawable.ic_drawer_menu_my_docs)
-            ApiContract.ShareCode.READ_WRITE -> button.setIconResource(R.drawable.ic_access_full)
-            ApiContract.ShareCode.EDITOR -> button.setIconResource(R.drawable.ic_access_full)
-            ApiContract.ShareCode.COMMENT -> button.setIconResource(R.drawable.ic_access_comment)
-            ApiContract.ShareCode.FILL_FORMS -> button.setIconResource(R.drawable.ic_access_fill_form)
+            ApiContract.ShareCode.REVIEW -> icon.setImageResource(R.drawable.ic_access_review)
+            ApiContract.ShareCode.READ -> icon.setImageResource(R.drawable.ic_access_read)
+            ApiContract.ShareCode.ROOM_ADMIN -> icon.setImageResource(R.drawable.ic_drawer_menu_my_docs)
+            ApiContract.ShareCode.READ_WRITE -> icon.setImageResource(R.drawable.ic_access_full)
+            ApiContract.ShareCode.EDITOR -> icon.setImageResource(R.drawable.ic_access_full)
+            ApiContract.ShareCode.COMMENT -> icon.setImageResource(R.drawable.ic_access_comment)
+            ApiContract.ShareCode.FILL_FORMS -> icon.setImageResource(R.drawable.ic_access_fill_form)
         }
     }
 

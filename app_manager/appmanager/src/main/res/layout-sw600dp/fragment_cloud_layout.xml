@@ -45,14 +45,14 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/startButton"
-            style="@style/CommonButton"
+            style="@style/Widget.Common.Button"
             android:layout_width="match_parent"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:text="@string/cloud_account_start_button" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/otherStorageButton"
-            style="@style/CommonTextButton"
+            style="@style/Widget.Common.Button.TextButton"
             android:text="@string/cloud_account_other_storages_button"
             app:layout_constraintEnd_toEndOf="@id/startButton"
             app:layout_constraintStart_toStartOf="@id/startButton"

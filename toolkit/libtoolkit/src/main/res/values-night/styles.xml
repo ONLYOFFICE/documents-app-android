@@ -5,10 +5,9 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <style name="MainBottomBar" parent="Widget.MaterialComponents.BottomNavigationView" />
+    <!-- ======================================================================================= -->
+    <!-- Widgets -->
 
-    <style name="AlphaImageView" parent="AppTheme" />
-
-    <style name="CloudImageView" parent="AppTheme" />
+    <style name="Widget.Common.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView" />
 
 </resources>

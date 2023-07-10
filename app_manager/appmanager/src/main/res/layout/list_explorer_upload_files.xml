@@ -48,7 +48,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/list_explorer_upload_file_cancel"
-        style="@style/CommonIconButton.Secondary"
+        style="@style/Widget.Common.Button.IconButton.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/default_margin_medium"

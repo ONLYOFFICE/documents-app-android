@@ -7,7 +7,7 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
-        style="@style/MainAppBar"
+        style="@style/Widget.Common.AppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent">
@@ -18,11 +18,11 @@
             android:layout_height="@dimen/default_toolbar_height"
             app:navigationIconTint="@color/colorPrimary"
             app:titleTextColor="@color/colorOnSurface"
-            android:theme="@style/MainToolbar">
+            android:theme="@style/Widget.Common.Toolbar">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/resetButton"
-                style="@style/CommonTextButton"
+                style="@style/Widget.Common.Button.TextButton"
                 android:layout_gravity="end"
                 android:layout_marginEnd="@dimen/default_margin_medium"
                 android:minWidth="0dp"

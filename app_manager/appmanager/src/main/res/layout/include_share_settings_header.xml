@@ -59,7 +59,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/share_settings_external_copy_link"
-                style="@style/SmallButton"
+                style="@style/Widget.Common.Button.SmallButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/default_margin_medium"
@@ -67,7 +67,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/share_settings_external_send_link"
-                style="@style/SmallButton"
+                style="@style/Widget.Common.Button.SmallButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/operation_share_send_link" />

@@ -51,6 +51,21 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
+    <style name="Theme.Common.BottomSheetDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.Common.BottomSheetDialog</item>
+    </style>
+
+    <!-- ======================================================================================= -->
+    <!-- ShapeAppearance -->
+
+    <style name="ShapeAppearance.Common.BottomSheetDialog" parent="AppTheme">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+
     <!-- ======================================================================================= -->
     <!-- TextAppearance -->
 
@@ -171,20 +186,7 @@
         <item name="boxBackgroundColor">@color/colorSurface</item>
     </style>
 
-    <!--  Layouts  -->
-    <style name="LoginTextInputContainer">
-        <item name="android:layout_width">@dimen/default_button_width</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:layout_marginTop">@dimen/default_margin_xlarge</item>
-    </style>
-
-    <!-- ======================================================================================= -->
-    <!-- Buttons -->
-
-    <style name="CommonButton" parent="Widget.Material3.Button.ElevatedButton">
+    <style name="Widget.Common.Button" parent="Widget.Material3.Button.ElevatedButton">
         <item name="android:layout_width">@dimen/default_button_width</item>
         <item name="android:layout_height">@dimen/default_button_height</item>
         <item name="android:layout_marginTop">@dimen/default_margin_large</item>
@@ -194,36 +196,27 @@
         <item name="android:insetBottom">0dp</item>
         <item name="cornerRadius">@dimen/default_corner_radius_button</item>
         <item name="rippleColor">?colorControlHighlight</item>
-        <item name="android:theme">@style/CommonButton.Overlay</item>
+        <item name="android:theme">@style/ThemeOverlay.Common.Button</item>
     </style>
 
-    <style name="SmallButton" parent="Widget.MaterialComponents.Button">
+    <style name="Widget.Common.Button.SmallButton" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="cornerRadius">@dimen/default_corner_radius_button</item>
     </style>
 
-    <style name="CommonButton.Overlay" parent="ThemeOverlay.Material3.Button.ElevatedButton">
-        <item name="colorContainer">?attr/colorPrimary</item>
-        <item name="colorOnContainer">?attr/colorOnPrimary</item>
+    <style name="Widget.Common.Button.Error">
+        <item name="android:theme">@style/ThemeOverlay.Common.Button.Error</item>
     </style>
 
-    <style name="CommonButton.Error">
-        <item name="android:theme">@style/CommonButton.Error.Overlay</item>
-    </style>
-
-    <style name="CommonButton.Error.Overlay" parent="ThemeOverlay.Material3.Button.ElevatedButton">
-        <item name="colorContainer">?attr/colorError</item>
-        <item name="colorOnContainer">?attr/colorOnError</item>
-    </style>
-
-    <style name="CommonTextButton" parent="Widget.MaterialComponents.Button.TextButton">
+    <style name="Widget.Common.Button.TextButton" parent="Widget.Material3.Button.TextButton">
         <item name="android:textAppearance">@style/TextAppearance.Common.Button</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
+        <item name="cornerRadius">@dimen/default_corner_radius_button</item>
     </style>
 
-    <style name="CommonIconButton" parent="Widget.Material3.Button.IconButton">
+    <style name="Widget.Common.Button.IconButton" parent="Widget.Material3.Button.IconButton">
         <item name="android:layout_width">@dimen/item_one_line_height</item>
         <item name="android:layout_height">@dimen/item_one_line_height</item>
         <item name="iconGravity">textStart</item>
@@ -231,28 +224,58 @@
         <item name="rippleColor">?attr/colorControlHighlight</item>
     </style>
 
-    <style name="CommonIconButton.Secondary">
+    <style name="Widget.Common.Button.IconButton.Secondary">
         <item name="iconTint">@color/colorTextSecondary</item>
     </style>
 
-    <!-- ======================================================================================= -->
-    <!-- EditTexts -->
-    <style name="MediumEditText" parent="Widget.Common.TextInputLayout">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textSize">@dimen/fonts_size_medium</item>
+    <style name="Widget.Common.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface" />
+
+    <style name="Widget.Common.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="android:background">@color/colorBottomBar</item>
+    </style>
+
+    <style name="Widget.Common.Toolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+        <item name="colorOnPrimary">@color/colorPrimary</item>
+        <item name="elevationOverlayEnabled">false</item>
+    </style>
+
+    <style name="Widget.Common.ImageView" parent="AppTheme" />
+
+    <style name="Widget.Common.ImageView.Secondary">
+        <item name="android:tint">@color/colorTextSecondary</item>
+        <item name="android:tintMode">src_in</item>
+    </style>
+
+    <style name="Widget.Common.ImageView.Tertiary">
+        <item name="android:tint">@color/colorTextTertiary</item>
+        <item name="android:tintMode">src_in</item>
+    </style>
+
+    <style name="Widget.Common.ImageView.Context" parent="Widget.Common.ImageView.Secondary">
+        <item name="android:layout_width">@dimen/image_default_size</item>
+        <item name="android:layout_height">@dimen/image_default_size</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin_large</item>
+    </style>
+
+    <style name="Widget.Common.BottomSheetDialog" parent="AppTheme">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Common.BottomSheetDialog</item>
     </style>
 
     <!-- ======================================================================================= -->
-    <!-- Context common -->
-    <style name="ContextMenuDialog" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="android:colorBackground">@android:color/transparent</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorSecondary</item>
+    <!-- Layouts -->
+
+    <style name="LoginContainerLayout">
+        <item name="android:layout_width">@dimen/default_screen_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginTop">@dimen/default_margin_xlarge</item>
     </style>
 
-    <!-- Context dialog/popups-->
-    <style name="ContextListLayout">
+    <style name="ContextListItemLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/item_one_line_height</item>
         <item name="android:gravity">center_vertical</item>
@@ -262,66 +285,25 @@
         <item name="android:clickable">true</item>
     </style>
 
-    <style name="ContextListImage">
-        <item name="android:layout_width">@dimen/image_default_size</item>
-        <item name="android:layout_height">@dimen/image_default_size</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
-        <item name="android:layout_marginEnd">@dimen/default_margin_large</item>
-        <item name="android:tint">@color/colorTextSecondary</item>
-    </style>
-
-    <style name="ContextListImage.Favorite" parent="ContextListImage">
-        <item name="android:tint">@null</item>
-    </style>
-
-    <style name="ContextListAccountsLayout" parent="ContextListLayout">
-        <item name="android:layout_height">@dimen/item_two_line_height</item>
-    </style>
-
-    <style name="ContextListAccountImage" parent="ContextListImage">
-        <item name="android:layout_width">@dimen/image_size</item>
-        <item name="android:layout_height">@dimen/image_size</item>
-        <item name="android:padding">@dimen/image_padding_icon</item>
-    </style>
-
-    <!-- Popup menu -->
-    <style name="PopupLayout" parent="ContextListLayout">
+    <style name="PopupListItemLayout" parent="ContextListItemLayout">
         <item name="android:layout_width">wrap_content</item>
     </style>
 
-    <style name="MainAppBar" parent="Widget.MaterialComponents.AppBarLayout.Surface" />
+    <!-- ======================================================================================= -->
+    <!-- Overlay -->
 
-    <style name="MainBottomBar" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
-        <item name="android:background">@color/colorBottomBar</item>
+    <style name="ThemeOverlay.Common.Button" parent="ThemeOverlay.Material3.Button.ElevatedButton">
+        <item name="colorContainer">?attr/colorPrimary</item>
+        <item name="colorOnContainer">?attr/colorOnPrimary</item>
     </style>
 
-    <style name="MainToolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
-        <item name="colorOnPrimary">@color/colorPrimary</item>
-        <item name="elevationOverlayEnabled">false</item>
+    <style name="ThemeOverlay.Common.Button.Error" parent="ThemeOverlay.Material3.Button.ElevatedButton">
+        <item name="colorContainer">?attr/colorError</item>
+        <item name="colorOnContainer">?attr/colorOnError</item>
     </style>
 
-    <style name="AccentButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_height">@dimen/default_login_accent_button_height</item>
-    </style>
-
-    <style name="AuthAccentButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_height">@dimen/screen_auth_login_accent_button_height</item>
-        <item name="android:textSize">@dimen/screen_auth_accent_button_text_size</item>
-        <item name="android:textColor">@color/colorWhite</item>
-    </style>
-
-    <style name="AccentTextButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:layout_height">@dimen/default_login_accent_button_height</item>
-    </style>
-
-    <style name="AccentTextButtonSmall" parent="AccentTextButton">
-        <item name="android:textSize">@dimen/fonts_size_small</item>
-        <item name="textAllCaps">false</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:padding">0dp</item>
-    </style>
+    <!-- ======================================================================================= -->
+    <!-- Other -->
 
     <style name="MainPopupAnimation" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/popup_in</item>

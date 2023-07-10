@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Workaround for foreground < v23 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/view_icon_selectable_layout"
     android:layout_width="match_parent"

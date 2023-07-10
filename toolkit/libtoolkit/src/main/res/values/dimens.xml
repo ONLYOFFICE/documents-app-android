@@ -84,7 +84,7 @@
     <!-- Default common values-->
     <dimen name="default_elevation_height">4dp</dimen>
     <dimen name="default_tab_layout_height">48dp</dimen>
-    <dimen name="default_screen_width">300dp</dimen>
+    <dimen name="default_screen_width">312dp</dimen>
     <dimen name="default_action_button_margin">24dp</dimen>
     <dimen name="default_toolbar_height">56dp</dimen>
     <dimen name="default_bottom_panel_height">56dp</dimen>

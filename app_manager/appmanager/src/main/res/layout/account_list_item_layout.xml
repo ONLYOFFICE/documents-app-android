@@ -71,7 +71,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/accountItemContext"
-            style="@style/CommonIconButton.Secondary"
+            style="@style/Widget.Common.Button.IconButton.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_list_context_button"

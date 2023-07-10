@@ -365,7 +365,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 onButtonState(true)
             }
         }
-        popupBinding?.buttonPopupImage?.setIconResource(iconRes)
+        popupBinding?.buttonPopupImage?.setImageResource(iconRes)
         if (isMessage) {
             showSnackBar(messageRes)
         }

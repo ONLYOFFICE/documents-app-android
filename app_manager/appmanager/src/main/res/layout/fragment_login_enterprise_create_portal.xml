@@ -7,7 +7,7 @@
     android:fillViewport="true"
     android:orientation="vertical">
 
-    <LinearLayout style="@style/LoginTextInputContainer">
+    <LinearLayout style="@style/LoginContainerLayout">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_create_portal_address_edit_layout"
@@ -44,7 +44,6 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_create_portal_email_edit"
-                style="@style/MediumEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:imeOptions="actionNext"
@@ -64,7 +63,6 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_create_portal_first_name_edit"
-                style="@style/MediumEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:imeOptions="actionNext"
@@ -84,7 +82,6 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_create_portal_last_name_edit"
-                style="@style/MediumEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:imeOptions="actionDone"
@@ -95,7 +92,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_signin_create_portal_button"
-            style="@style/CommonButton"
+            style="@style/Widget.Common.Button"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:text="@string/login_create_portal_next_button" />
 

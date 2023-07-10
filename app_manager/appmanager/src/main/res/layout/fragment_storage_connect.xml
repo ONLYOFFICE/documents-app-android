@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <LinearLayout style="@style/LoginTextInputContainer">
+    <LinearLayout style="@style/LoginContainerLayout">
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -26,7 +26,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/storage_connect_save"
-            style="@style/CommonButton"
+            style="@style/Widget.Common.Button"
             android:layout_marginTop="16dp"
             android:text="@string/storage_connect_save_button" />
     </LinearLayout>

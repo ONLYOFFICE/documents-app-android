@@ -56,7 +56,7 @@ sealed class ExplorerContextItem(
         title = if (!pinned) R.string.list_context_pin_to_top else R.string.list_context_unpin
     ), ExplorerContextBlockOrder.Operation
 
-    class Favorites(val enabled: Boolean, favorite: Boolean) : ExplorerContextItem(
+    class Favorites(val enabled: Boolean, val favorite: Boolean) : ExplorerContextItem(
         icon = getIcon(favorite),
         title = getTitle(favorite)
     ), ExplorerContextBlockOrder.Operation {

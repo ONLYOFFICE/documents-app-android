@@ -7,13 +7,13 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/MainAppBar">
+        style="@style/Widget.Common.AppBarLayout">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/appToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:theme="@style/MainToolbar" />
+            android:theme="@style/Widget.Common.Toolbar" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/popupItemLayout"
-    style="@style/PopupLayout">
+    style="@style/PopupListItemLayout">
 
     <ImageView
         android:id="@+id/itemIcon"
-        style="@style/ContextListImage"
+        style="@style/Widget.Common.ImageView.Context"
         tools:ignore="ContentDescription"
         tools:srcCompat="@drawable/ic_access_full" />
 

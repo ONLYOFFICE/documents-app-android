@@ -54,7 +54,7 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/list_recent_device_image"
-            style="@style/AlphaImageView"
+            style="@style/Widget.Common.ImageView.Secondary"
             android:layout_width="@dimen/image_default_size"
             android:layout_height="match_parent"
             android:src="@drawable/ic_navigation_on_device"

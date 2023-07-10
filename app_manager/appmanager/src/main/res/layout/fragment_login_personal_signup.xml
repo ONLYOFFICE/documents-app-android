@@ -5,7 +5,7 @@
     android:fillViewport="true"
     android:orientation="vertical">
 
-    <LinearLayout style="@style/LoginTextInputContainer">
+    <LinearLayout style="@style/LoginContainerLayout">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_personal_portal_email_layout"
@@ -32,7 +32,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_personal_signup_button"
-            style="@style/CommonButton"
+            style="@style/Widget.Common.Button"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:text="@string/login_personal_signup_button" />
 

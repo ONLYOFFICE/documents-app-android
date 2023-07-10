@@ -62,7 +62,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_sms_code_send_again_button"
-            style="@style/CommonTextButton"
+            style="@style/Widget.Common.Button.TextButton"
             android:layout_marginTop="16dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -74,7 +74,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_sms_code_change_number_button"
-            style="@style/CommonTextButton"
+            style="@style/Widget.Common.Button.TextButton"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:padding="10dp"

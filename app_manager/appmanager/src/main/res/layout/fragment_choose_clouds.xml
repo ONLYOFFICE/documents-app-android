@@ -30,7 +30,6 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/onlyOfficeIcon"
-                    style="@style/CloudImageView"
                     android:layout_width="@dimen/image_size"
                     android:layout_height="@dimen/image_size"
                     android:layout_gravity="center"

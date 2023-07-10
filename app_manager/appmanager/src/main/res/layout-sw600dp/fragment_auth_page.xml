@@ -92,7 +92,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/confirm_button"
-                style="@style/CommonButton"
+                style="@style/Widget.Common.Button"
                 android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
                 android:layout_marginBottom="@dimen/screen_margin_large"
                 tools:text="Install" />

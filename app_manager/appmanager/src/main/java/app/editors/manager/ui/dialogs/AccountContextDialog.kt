@@ -46,7 +46,7 @@ class AccountContextDialog : BaseBottomDialog() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.Theme_Common_BottomSheetDialog)
         arguments?.containsKey(KEY_ACCOUNT)?.let {
             arguments?.getString(KEY_ACCOUNT)?.let { acc ->
                 account = Json.decodeFromString(acc)

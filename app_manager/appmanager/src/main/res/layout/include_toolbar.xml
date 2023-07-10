@@ -5,7 +5,7 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?actionBarSize"
-    android:theme="@style/MainToolbar"
+    android:theme="@style/Widget.Common.Toolbar"
     tools:menu="@menu/docs_main">
 
     <androidx.constraintlayout.widget.ConstraintLayout

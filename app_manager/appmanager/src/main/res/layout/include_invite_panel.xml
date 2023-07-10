@@ -15,7 +15,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/inviteResetButton"
-            style="@style/CommonIconButton.Secondary"
+            style="@style/Widget.Common.Button.IconButton.Secondary"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
             android:layout_marginStart="@dimen/screen_margin_large"
@@ -57,7 +57,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_panel_add_button"
-            style="@style/SmallButton"
+            style="@style/Widget.Common.Button.SmallButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_margin_medium"

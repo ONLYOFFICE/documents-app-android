@@ -10,7 +10,7 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
-        style="@style/MainAppBar"
+        style="@style/Widget.Common.AppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -37,7 +37,7 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
-        style="@style/MainBottomBar"
+        style="@style/Widget.Common.BottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom"

@@ -6,7 +6,7 @@
     android:fillViewport="true"
     android:orientation="vertical">
 
-    <LinearLayout style="@style/LoginTextInputContainer">
+    <LinearLayout style="@style/LoginContainerLayout">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_enterprise_portal_layout"
@@ -33,7 +33,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_enterprise_next_button"
-            style="@style/CommonButton"
+            style="@style/Widget.Common.Button"
             android:layout_width="match_parent"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:enabled="false"
@@ -59,7 +59,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_enterprise_create_button"
-            style="@style/CommonTextButton"
+            style="@style/Widget.Common.Button.TextButton"
             android:layout_marginTop="@dimen/default_margin_medium"
             android:text="@string/login_enterprise_button_create" />
 

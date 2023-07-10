@@ -15,7 +15,7 @@
 
         <ImageView
             android:id="@+id/icon"
-            style="@style/ContextListImage"
+            style="@style/Widget.Common.ImageView.Context"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_favorites_outline" />
 
