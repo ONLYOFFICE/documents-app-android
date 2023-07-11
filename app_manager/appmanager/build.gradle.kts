@@ -64,7 +64,7 @@ android {
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
         versionCode = 458
-        versionName = "5.7.0"
+        versionName = "5.7.1"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
