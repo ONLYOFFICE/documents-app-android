@@ -393,10 +393,13 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     private fun setStatusBarColor() {
         when (StringUtils.getExtension(cloudFile?.fileExst ?: "")) {
-            StringUtils.Extension.DOC, StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarDocTint)
-            StringUtils.Extension.PRESENTATION -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarPresentationTint)
-            StringUtils.Extension.SHEET -> setStatusBarColor(lib.toolkit.base.R.color.colorStatusBarSheetTint)
-            else -> setStatusBarColor(lib.toolkit.base.R.color.colorSecondary)
+            StringUtils.Extension.DOC,
+            StringUtils.Extension.DOCXF,
+            StringUtils.Extension.OFORM,
+            StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorDocTint)
+            StringUtils.Extension.PRESENTATION -> setStatusBarColor(lib.toolkit.base.R.color.colorPresentationTint)
+            StringUtils.Extension.SHEET -> setStatusBarColor(lib.toolkit.base.R.color.colorSheetTint)
+            else -> setStatusBarColor(lib.toolkit.base.R.color.colorPrimary)
         }
     }
 
