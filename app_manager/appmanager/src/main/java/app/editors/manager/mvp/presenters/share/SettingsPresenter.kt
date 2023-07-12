@@ -19,7 +19,9 @@ import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.share.SettingsView
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
 import moxy.presenterScope
@@ -134,7 +136,8 @@ class SettingsPresenter(
                             invitations = shareList.map { share ->
                                 Invitation(
                                     id = share?.sharedTo?.id,
-                                    access = if (share?.intAccess == 1) ApiContract.ShareCode.ROOM_ADMIN else share?.intAccess ?: 0
+                                    access = if (share?.intAccess == 1) ApiContract.ShareCode.ROOM_ADMIN else share?.intAccess
+                                        ?: 0
                                 )
                             },
                             notify = isNotify,
@@ -338,98 +341,87 @@ class SettingsPresenter(
      * Callbacks for response
      * */
 
-    private fun mapShareUi(share: Share, isGroup: Boolean): ShareUi {
-        return if (!isGroup) {
-            ShareUi(
-                access = share.intAccess,
-                sharedTo = share.sharedTo,
-                isLocked = share.isLocked,
-                isOwner = share.isOwner,
-                isGuest = share.sharedTo.isVisitor,
-                isRoom = item is CloudFolder && item.isRoom
-            )
-        } else {
-            ShareUi(
-                access = share.intAccess,
-                sharedTo = share.sharedTo,
-                isLocked = share.isLocked,
-                isOwner = share.isOwner,
-                isGuest = share.sharedTo.isVisitor,
-                isRoom = false
-            )
-        }
-    }
-
     private fun getShareList(shareList: List<Share>) {
-        isAccessDenied = false
-        val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() }
-            .map {
-                ShareUi(
-                    access = it.intAccess,
-                    sharedTo = it.sharedTo,
-                    isLocked = if (networkSettings.isDocSpace) {
-                        !item.security.editAccess
-                    } else {
-                        it.isLocked
-                    },
-                    isOwner = it.isOwner,
-                    isGuest = it.sharedTo.isVisitor,
-                    isRoom = item is CloudFolder && item.isRoom
-                )
+        presenterScope.launch(Dispatchers.IO) {
+            isAccessDenied = false
+            val userList = shareList.filter { it.sharedTo.userName.isNotEmpty() }
+                .map {
+                    ShareUi(
+                        access = it.intAccess,
+                        sharedTo = it.sharedTo,
+                        isLocked = if (networkSettings.isDocSpace) {
+                            !item.security.editAccess
+                        } else {
+                            it.isLocked
+                        },
+                        isOwner = it.isOwner,
+                        isGuest = it.sharedTo.isVisitor,
+                        isRoom = item is CloudFolder && item.isRoom
+                    )
+                }
+            val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }
+                .map {
+                    ShareUi(
+                        access = it.intAccess,
+                        sharedTo = it.sharedTo,
+                        isLocked = it.isLocked,
+                        isOwner = it.isOwner,
+                        isGuest = it.sharedTo.isVisitor,
+                        isRoom = false
+                    )
+                }
+                .sortedWith(groupComparator())
+
+            shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {
+                item.access = it.access
+                item.shared = isShared(it.intAccess)
+                externalLink = it.sharedTo.shareLink
             }
-        val groupList = shareList.filter { it.sharedTo.name.isNotEmpty() }
-            .map {
-                ShareUi(
-                    access = it.intAccess,
-                    sharedTo = it.sharedTo,
-                    isLocked = it.isLocked,
-                    isOwner = it.isOwner,
-                    isGuest = it.sharedTo.isVisitor,
-                    isRoom = false
-                )
+
+            commonList.clear()
+
+            if (userList.isNotEmpty()) {
+                checkUsers(userList)
             }
-            .sortedWith(groupComparator())
 
-        shareList.find { it.sharedTo.shareLink.isNotEmpty() }?.let {
-            item.access = it.access
-            item.shared = isShared(it.intAccess)
-            externalLink = it.sharedTo.shareLink
-        }
-
-        commonList.clear()
-
-        if (userList.isNotEmpty()) {
-            checkUsers(userList)
-        }
-
-        if (groupList.isNotEmpty()) {
-            commonList.add(ShareHeaderUi(context.getString(R.string.share_goal_group)))
-            commonList.addAll(groupList)
-        }
-
-        if (isRemove) {
-            if (commonList.isEmpty()) {
-                viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
+            if (groupList.isNotEmpty()) {
+                commonList.add(ShareHeaderUi(context.getString(R.string.share_goal_group)))
+                commonList.addAll(groupList)
             }
-            isRemove = false
-            isShare = false
-            return
-        }
 
-        if (isShare && commonList.isNotEmpty()) {
-            viewState.onGetShareItem(commonList[sharePosition], sharePosition, item.intAccess)
-            isShare = false
-        } else {
-            viewState.onGetShare(commonList, item.intAccess)
-        }
+            if (isRemove) {
+                if (commonList.isEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
+                    }
+                }
+                isRemove = false
+                isShare = false
+                return@launch
+            }
 
-        if (commonList.isEmpty()) {
-            viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
-        } else {
-            viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
-        }
+            if (isShare && commonList.isNotEmpty()) {
+                withContext(Dispatchers.Main) {
+                    viewState.onGetShareItem(commonList[sharePosition], sharePosition, item.intAccess)
+                    isShare = false
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    viewState.onGetShare(commonList, item.intAccess)
+                }
+            }
 
-        updateActionButtonState()
+            withContext(Dispatchers.Main) {
+                if (commonList.isEmpty()) {
+                    viewState.onPlaceholderState(PlaceholderViews.Type.SHARE)
+                } else {
+                    viewState.onPlaceholderState(PlaceholderViews.Type.NONE)
+                }
+
+                updateActionButtonState()
+            }
+
+        }
         loadAvatars(commonList)
     }
 
@@ -450,7 +442,7 @@ class SettingsPresenter(
         }
 
         if (pending.isNotEmpty()) {
-            commonList.add(ShareHeaderUi("Expect members"))
+            commonList.add(ShareHeaderUi(context.getString(R.string.share_expected_member)))
             commonList.addAll(pending)
         }
     }
@@ -493,6 +485,6 @@ class SettingsPresenter(
 
 fun CloudFolder.getAdminCode(code: Int): Int {
     return if (isRoom && code == ApiContract.ShareCode.ROOM_ADMIN) {
-         ApiContract.ShareCode.ROOM_ADMIN
+        ApiContract.ShareCode.ROOM_ADMIN
     } else code
 }

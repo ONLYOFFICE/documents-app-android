@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.view.*
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
@@ -290,11 +288,17 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             shareSettingsAdapter = ShareAdapter(ShareHolderFactory(::onItemContextClick))
             binding.shareMainListOfItems.layoutManager = LinearLayoutManager(context)
             binding.shareMainListOfItems.adapter = shareSettingsAdapter
-            ViewCompat.setNestedScrollingEnabled(binding.shareMainListOfItems, false)
+
             with(binding.shareSettingsListSwipeRefresh) {
                 setColorSchemeResources(lib.toolkit.base.R.color.colorSecondary)
                 setProgressBackgroundColorSchemeResource(lib.toolkit.base.R.color.colorSurface)
-                setOnRefreshListener(this@SettingsFragment)
+                binding.shareMainListOfItems.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        val topRowVerticalPosition =
+                            if (recyclerView.childCount == 0) 0 else recyclerView.getChildAt(0).top
+                        binding.shareSettingsListSwipeRefresh.isEnabled = topRowVerticalPosition >= 0
+                    }
+                })
             }
         }
     }

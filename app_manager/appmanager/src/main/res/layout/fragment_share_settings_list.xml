@@ -11,48 +11,42 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.core.widget.NestedScrollView
+        <LinearLayout
+            android:id="@+id/share_settings_list_content_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:orientation="vertical"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp">
 
-            <LinearLayout
-                android:id="@+id/share_settings_list_content_layout"
+            <include
+                android:id="@+id/share_settings_header"
+                layout="@layout/include_share_settings_header"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp">
+                android:layout_height="wrap_content" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/share_main_list_of_items"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingBottom="@dimen/share_settings_list_padding"
+                    android:scrollbars="none" />
 
                 <include
-                    android:id="@+id/share_settings_header"
-                    layout="@layout/include_share_settings_header"
+                    android:id="@+id/placeholder_layout"
+                    layout="@layout/include_placeholders_text"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" />
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/share_main_list_of_items"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:clipToPadding="false"
-                        android:nestedScrollingEnabled="false"
-                        android:paddingBottom="@dimen/share_settings_list_padding"
-                        android:scrollbars="none" />
-
-                    <include
-                        android:id="@+id/placeholder_layout"
-                        layout="@layout/include_placeholders_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center" />
-
-                </FrameLayout>
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+            </FrameLayout>
+        </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
