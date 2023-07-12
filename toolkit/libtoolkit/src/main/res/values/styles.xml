@@ -154,6 +154,11 @@
         <item name="tabMode">fixed</item>
     </style>
 
+    <style name="Widget.Common.TabLayout.Icon" parent="Widget.Common.TabLayout.Fixed">
+        <item name="tabGravity">fill</item>
+        <item name="tabIconTint">@color/color_tab_item_selector</item>
+    </style>
+
     <style name="Widget.Common.Chip" parent="Widget.MaterialComponents.Chip.Choice">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
