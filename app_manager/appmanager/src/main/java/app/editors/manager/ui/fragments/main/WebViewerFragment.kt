@@ -1,6 +1,5 @@
 package app.editors.manager.ui.fragments.main
 
-import android.Manifest
 import android.accounts.Account
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
@@ -27,13 +26,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import app.documents.core.storage.account.AccountDao
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import kotlinx.coroutines.Dispatchers
@@ -578,7 +577,8 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             uploadMsg: ValueCallback<Array<Uri>>,
             fileChooserParams: FileChooserParams
         ): Boolean {
-            readPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            imagePick.launch(null)
+//            readPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             valueCallback = uploadMsg
             return true
         }
