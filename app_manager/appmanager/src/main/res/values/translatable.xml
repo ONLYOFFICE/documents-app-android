@@ -735,5 +735,6 @@
     </string>
     <string name="settings_language_confirmation_accept">Good</string>
     <string name="settings_language_continue_using_app_language">Continue using %1$s</string>
+    <string name="clear_recents">"Clear recents?"</string>
 
 </resources>

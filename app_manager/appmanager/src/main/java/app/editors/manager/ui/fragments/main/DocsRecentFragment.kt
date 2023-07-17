@@ -357,7 +357,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     private fun showClearDialog() {
-        UiUtils.showQuestionDialog(requireContext(), "Clear recents?", acceptListener = {
+        UiUtils.showQuestionDialog(requireContext(), getString(R.string.clear_recents), acceptListener = {
             presenter.clearRecents()
         }, cancelListener = {
             // stub
