@@ -109,13 +109,26 @@ private fun AboutScreen(
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                     VerticalSpacer(height = 48.dp)
-                    AppArrowItem(title = R.string.about_terms, dividerVisible = false) { onClick(R.string.app_url_terms) }
-                    AppArrowItem(title = R.string.about_policy, dividerVisible = false) { onClick(R.string.app_url_policy) }
+                    AppArrowItem(
+                        title = R.string.about_terms,
+                        dividerVisible = false,
+                        arrowVisible = false
+                    ) { onClick(R.string.app_url_terms) }
+                    AppArrowItem(title = R.string.about_policy, dividerVisible = false, arrowVisible = false) {
+                        onClick(
+                            R.string.app_url_policy
+                        )
+                    }
                     AppArrowItem(
                         title = R.string.about_license,
-                        dividerVisible = false
+                        dividerVisible = false,
+                        arrowVisible = false
                     ) { navController.navigate(Screen.License.screen) }
-                    AppArrowItem(title = R.string.about_website, dividerVisible = false) { onClick(R.string.app_url_main) }
+                    AppArrowItem(
+                        title = R.string.about_website,
+                        dividerVisible = false,
+                        arrowVisible = false
+                    ) { onClick(R.string.app_url_main) }
                 }
             }
         }

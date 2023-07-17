@@ -2,6 +2,7 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
@@ -31,7 +32,10 @@ class ExplorerContextViewModel : ViewModel() {
             )
 
             state.section is ApiContract.Section.Room && state.isRoot -> listOf(
-                ExplorerContextItem.Header(state),
+                ExplorerContextItem.Header(
+                    state = state,
+                    logo = if (state.item is CloudFolder) state.item.logo?.large.takeIf { !it.isNullOrEmpty() } else null
+                ),
                 ExplorerContextItem.Share,
                 ExplorerContextItem.RoomInfo,
                 ExplorerContextItem.AddUsers,

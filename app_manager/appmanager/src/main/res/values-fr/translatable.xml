@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="about_app_version">Version %1$s, build %2$s, SDK %3$s</string>
     <string name="about_license">Accord de licence</string>
     <string name="about_policy">Politique de confidentialité</string>
@@ -548,4 +548,25 @@
     <string name="room_delete_success">La salle a été supprimée</string>
     <string name="switch_account_title">Changer de compte ?</string>
     <string name="switch_account_description">Connectez-vous au compte %1$s du portail pour ouvrir le document.</string>
+    <plurals name="dialogs_question_message_delete">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Il sera irrémédiablement supprimé. \nCette action est irréversible.</item>
+        <item quantity="other">Ils seront irrémédiablement supprimés. \nCette action est irréversible.</item>
+        <item quantity="many">Ils seront irrémédiablement supprimés. \nCette action est irréversible.</item>
+    </plurals>
+
+    <plurals name="dialogs_question_message_to_trash">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Il sera déplacé dans la corbeille.</item>
+        <item quantity="other">Ils seront déplacés dans la corbeille.</item>
+        <item quantity="many">Ils seront déplacés dans la corbeille.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_title">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Supprimer cet élément ?</item>
+        <item quantity="other">Supprimer %1$d éléments ?</item>
+        <item quantity="many">Supprimer %1$d éléments ?</item>
+
+    </plurals>
+    <string name="dialogs_question_delete_all_title">Supprimer tous les éléments ?</string>
+    <string name="storage_dropbox_email_not_verified_error">E-mail non vérifié</string>
+    <string name="download_manager_downloading">Téléchargement en cours…</string>
+    <string name="settings_language">Langue</string>
 </resources>

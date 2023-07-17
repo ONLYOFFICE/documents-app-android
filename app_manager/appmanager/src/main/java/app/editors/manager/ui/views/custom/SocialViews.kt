@@ -120,13 +120,18 @@ class SocialViews(private val activity: Activity, view: View?,
     * Facebook click. Get previous token or get new with button click.
     * */
     private fun onFacebookClick() {
-        val accessToken: AccessToken? = AccessToken.getCurrentAccessToken()
-        onSocialNetworkCallbacks?.let { callbacks ->
-            accessToken?.let { token ->
-                callbacks.onFacebookLogin(token.userId)
-            } ?: run {
-                loginPersonalSocialFacebookNativeButton?.performClick()
+        try {
+            val accessToken: AccessToken? = AccessToken.getCurrentAccessToken()
+            onSocialNetworkCallbacks?.let { callbacks ->
+                accessToken?.let { token ->
+                    callbacks.onFacebookLogin(token.userId)
+                } ?: run {
+                    loginPersonalSocialFacebookNativeButton?.performClick()
+                }
             }
+        } catch (error: FacebookSdkNotInitializedException) {
+            Log.e(TAG, "onFacebookClick: ", error)
+            onSocialNetworkCallbacks?.onFacebookFailed()
         }
     }
 

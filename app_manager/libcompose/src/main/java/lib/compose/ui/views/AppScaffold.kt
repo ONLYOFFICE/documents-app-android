@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -12,8 +14,13 @@ import lib.compose.ui.addIf
 import lib.compose.ui.theme.LocalUseTabletPadding
 
 @Composable
-fun AppScaffold(modifier: Modifier = Modifier, topBar: @Composable () -> Unit = {}, content: @Composable () -> Unit) {
-    Scaffold(modifier = modifier, topBar = topBar) { padding ->
+fun AppScaffold(
+    modifier: Modifier = Modifier,
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    topBar: @Composable () -> Unit = {},
+    content: @Composable () -> Unit
+) {
+    Scaffold(modifier = modifier, topBar = topBar, scaffoldState = scaffoldState) { padding ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()

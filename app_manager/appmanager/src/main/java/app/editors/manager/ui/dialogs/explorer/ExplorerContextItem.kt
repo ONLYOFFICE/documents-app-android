@@ -12,7 +12,7 @@ sealed class ExplorerContextItem(
 
     fun get(state: ExplorerContextState): ExplorerContextItem? = takeIf { state.visible(this) }
 
-    class Header(state: ExplorerContextState) : ExplorerContextItem(
+    class Header(state: ExplorerContextState, val logo: String? = null) : ExplorerContextItem(
         icon = ManagerUiUtils.getIcon(state.item),
         title = -1
     ), ExplorerContextBlockOrder.Header {
