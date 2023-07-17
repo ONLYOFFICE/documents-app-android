@@ -8,22 +8,23 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.colorTextSecondary
 
 @Composable
-fun AppHeaderItem(@StringRes title: Int) {
-    AppHeaderItem(title = stringResource(id = title))
+fun AppHeaderItem(@StringRes title: Int, startIndent: Dp = 16.dp) {
+    AppHeaderItem(title = stringResource(id = title), startIndent)
 }
 
 @Composable
-fun AppHeaderItem(title: String) {
+fun AppHeaderItem(title: String, startIndent: Dp = 16.dp) {
     Text(
         text = title,
         style = MaterialTheme.typography.subtitle2,
         color = MaterialTheme.colors.colorTextSecondary,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp, 16.dp, 16.dp, 4.dp)
+            .padding(startIndent, 16.dp, 16.dp, 4.dp)
     )
 }

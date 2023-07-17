@@ -1,11 +1,9 @@
 package lib.compose.ui.theme
 
 import androidx.compose.material.Colors
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import lib.compose.ui.R
 
 val ColorPrimary = Color(0xFF3880BE)
 val ColorOnPrimary = Color.White
@@ -31,15 +29,15 @@ val NightColorOnError = Color.Black
 
 val Colors.colorTextPrimary: Color
     @Composable
-    get() = MaterialTheme.colors.onSurface
+    get() = colorResource(id = lib.toolkit.base.R.color.colorTextPrimary)
 
 val Colors.colorTextSecondary: Color
     @Composable
-    get() = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+    get() = colorResource(id = lib.toolkit.base.R.color.colorTextSecondary)
 
 val Colors.colorTextTertiary: Color
     @Composable
-    get() = MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
+    get() = colorResource(id = lib.toolkit.base.R.color.colorTextTertiary)
 
 val Colors.colorButtonBackground: Color
     @Composable

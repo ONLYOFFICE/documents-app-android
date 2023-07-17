@@ -72,7 +72,7 @@
     <style name="TextAppearance.Common.Title" parent="TextAppearance.MaterialComponents.Headline6" />
 
     <style name="TextAppearance.Common.TabItem" parent="TextAppearance.Material3.LabelLarge">
-        <item name="android:textSize">@dimen/fonts_size_medium</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="TextAppearance.Common.Button" parent="TextAppearance.Material3.LabelLarge">

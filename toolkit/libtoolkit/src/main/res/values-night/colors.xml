@@ -11,7 +11,7 @@
     <color name="colorBackground">#232323</color>
     <color name="colorOnBackground">@color/colorWhite87</color>
     <color name="colorSurface">#333333</color>
-    <color name="colorOnSurface">@color/colorWhite</color>
+    <color name="colorOnSurface">@color/colorWhite87</color>
 
     <!-- Text -->
     <color name="colorTextPrimary">@color/colorWhite87</color>
