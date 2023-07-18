@@ -257,18 +257,31 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private fun getImages(clickedFile: File): Explorer {
+    private fun getImages(uri: Uri): Explorer {
         val explorer = Explorer()
-        val extension = StringUtils.getExtensionFromPath(clickedFile.name)
-        val explorerFile = CloudFile()
-        explorerFile.pureContentLength = clickedFile.length()
-        explorerFile.webUrl = clickedFile.absolutePath
-        explorerFile.fileExst = extension
-        explorerFile.title = clickedFile.name
-        explorerFile.isClicked = true
         val current = Current()
-        current.title = clickedFile.name
-        current.filesCount = "1"
+        val explorerFile = CloudFile()
+        if (uri.scheme == "content") {
+            val clickedFile = DocumentFile.fromSingleUri(context, uri)
+            val extension = StringUtils.getExtensionFromPath(clickedFile?.name ?: "")
+            explorerFile.pureContentLength = clickedFile?.length() ?: 0
+            explorerFile.webUrl = uri.toString()
+            explorerFile.fileExst = extension
+            explorerFile.title = clickedFile?.name ?: ""
+            explorerFile.isClicked = true
+            current.title = clickedFile?.name ?: ""
+            current.filesCount = "1"
+        } else {
+            val clickedFile = File(checkNotNull(uri.path))
+            val extension = StringUtils.getExtensionFromPath(clickedFile.name)
+            explorerFile.pureContentLength = clickedFile.length()
+            explorerFile.webUrl = clickedFile.absolutePath
+            explorerFile.fileExst = extension
+            explorerFile.title = clickedFile.name
+            explorerFile.isClicked = true
+            current.title = clickedFile.name
+            current.filesCount = "1"
+        }
         explorer.current = current
         explorer.files = mutableListOf(explorerFile)
         return explorer
@@ -385,7 +398,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             StringUtils.Extension.PRESENTATION -> viewState.onOpenFile(OpenState.Slide(uri))
             StringUtils.Extension.PDF -> viewState.onOpenFile(OpenState.Pdf(uri))
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                viewState.onOpenFile(OpenState.Media(getImages(File(checkNotNull(uri.path))), false))
+                viewState.onOpenFile(OpenState.Media(getImages(uri), false))
             }
             else -> viewState.onError(context.getString(R.string.error_unsupported_format))
         }
