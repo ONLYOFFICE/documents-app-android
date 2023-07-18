@@ -1,8 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
@@ -11,20 +9,11 @@ import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class DocsTrashFragment: DocsCloudFragment() {
 
-
-    private var emptyTrashItem: MenuItem? = null
-    private var isEmptyTrashVisible = false
-    
     private val isArchive: Boolean get() = section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        showMenu()
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,20 +43,12 @@ class DocsTrashFragment: DocsCloudFragment() {
 
     override fun setMenuMainEnabled(isEnabled: Boolean) {
         super.setMenuMainEnabled(isEnabled)
-        isEmptyTrashVisible = isEnabled
-        emptyTrashItem?.isVisible = isEmptyTrashVisible && section != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
         searchItem?.isVisible = isEnabled
     }
 
-    private fun showMenu() {
-        if (cloudPresenter.isSelectionMode) {
-            deleteItem?.isVisible = true
-        } else {
-            setActionBarTitle("")
-            emptyTrashItem?.let { item ->
-                UiUtils.setMenuItemTint(requireContext(), item, lib.toolkit.base.R.color.colorPrimary)
-            }
-        }
+    override fun onStateMenuSelection() {
+        super.onStateMenuSelection()
+        deleteItem?.isVisible = true
     }
 
     private fun initViews() {
