@@ -179,10 +179,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             ExplorerContextItem.ShareDelete -> showQuestionDialog(
                 title = getString(R.string.dialogs_question_share_remove),
-                string = cloudPresenter.itemTitle,
-                acceptButton = getString(R.string.dialogs_question_share_remove),
+                string = "${cloudPresenter.itemClicked?.title}",
+                acceptButton = getString(R.string.dialogs_question_accept_remove),
                 cancelButton = getString(R.string.dialogs_common_cancel_button),
-                tag = DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE
+                tag = DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE,
+                acceptErrorTint = true
             )
             else -> super.onContextButtonClick(contextItem)
         }
