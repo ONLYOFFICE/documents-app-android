@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.CryptUtils
 import org.json.JSONObject
 
 class AddAccountHelper(private val context: Application) {
