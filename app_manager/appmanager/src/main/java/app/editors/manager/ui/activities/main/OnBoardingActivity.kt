@@ -27,6 +27,7 @@ class OnBoardingActivity : BaseAppActivity() {
             }
         } else {
             MainActivity.show(this, null, intent.extras)
+            finishAndRemoveTask()
         }
 
     }

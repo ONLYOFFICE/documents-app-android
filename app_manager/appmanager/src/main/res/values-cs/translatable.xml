@@ -690,4 +690,26 @@
     <string name="room_delete_success">Místnost smazána</string>
     <string name="switch_account_title">Přepnout účet?</string>
     <string name="switch_account_description">Pro otevření dokumentu se přihlaste k účtu portálu %1$s.</string>
+    <plurals name="dialogs_question_message_delete">
+        <item quantity="one">Bude nenávratně odstraněn.\nTato akce je nevratná.</item>
+        <item quantity="few">Budou nenávratně odstraněny.\nTato akce je nevratná.</item>
+        <item quantity="many">Budou nenávratně odstraněny.\nTato akce je nevratná.</item>
+        <item quantity="other">Budou nenávratně odstraněny.\nTato akce je nevratná.</item>
+    </plurals>
+    <plurals name="dialogs_question_message_to_trash">
+        <item quantity="one">Bude přesunuta do koše.</item>
+        <item quantity="other">Budou přesunuty do koše.</item>
+        <item quantity="few">Budou přesunuty do koše.</item>
+        <item quantity="many">Budou přesunuty do koše.</item>
+    </plurals>
+    <string name="dialogs_question_delete_all_title">Odstranit všechny položky?</string>
+    <plurals name="dialogs_question_delete_title">
+        <item quantity="one">Odstranit tuto položku?</item>
+        <item quantity="other">Smazat %1$d položek?</item>
+        <item quantity="few">Smazat %1$d položek?</item>
+        <item quantity="many">Smazat %1$d položek?</item>
+    </plurals>
+    <string name="storage_dropbox_email_not_verified_error">E-mail není ověřen</string>
+    <string name="download_manager_downloading">Stahuji…</string>
+    <string name="settings_language">Jazyk</string>
 </resources>

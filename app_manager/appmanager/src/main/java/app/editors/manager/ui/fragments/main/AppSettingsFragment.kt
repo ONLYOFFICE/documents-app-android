@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.ui.activities.main.AboutActivity
 import app.editors.manager.ui.activities.main.AppLocalePickerActivity
@@ -145,6 +146,7 @@ class AppSettingsFragment : BaseAppFragment() {
         }
     }
 
+    @Suppress("KotlinConstantConditions")
     @Composable
     private fun SettingsScreen(
         context: Context,
@@ -194,7 +196,7 @@ class AppSettingsFragment : BaseAppFragment() {
                         TAG_DIALOG_CLEAR_CACHE
                     )
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
                     with(requireContext().getSystemService(LocaleManager::class.java)) {
                         val currentAppLocale = applicationLocales.get(0) ?: systemLocales.get(0)
                         AppArrowItem(

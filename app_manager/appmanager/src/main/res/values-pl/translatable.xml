@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="about_app_version">Wersja %1$s, zbudowana %2$s, SDK %3$s</string>
     <string name="about_license">Umowa Licencyjna</string>
     <string name="about_policy">Polityka Prywatności</string>
@@ -548,4 +548,21 @@
     <string name="room_delete_success">Pokój został usunięty</string>
     <string name="switch_account_title">Przełączyć konto?</string>
     <string name="switch_account_description">Zaloguj się na konto %1$s w portalu, aby otworzyć dokument.</string>
+    <plurals name="dialogs_question_message_delete" tools:ignore="MissingQuantity">
+        <item quantity="one">Zostanie on bezpowrotnie usunięty.\nDane działanie jest nieodwracalne.</item>
+        <item quantity="other">Zostaną one bezpowrotnie usunięte.\nDane działanie jest nieodwracalne.</item>
+    </plurals>
+
+    <plurals name="dialogs_question_message_to_trash" tools:ignore="MissingQuantity">
+        <item quantity="one">Zostanie on przeniesiony do Kosza.</item>
+        <item quantity="other">Zostaną one przeniesione do Kosza.</item>
+    </plurals>
+    <string name="dialogs_question_delete_all_title">Usunąć wszystkie pozycje?</string>
+    <plurals name="dialogs_question_delete_title" tools:ignore="MissingQuantity">
+        <item quantity="one">Usunąć tę pozycję?</item>
+        <item quantity="other">Usunąć %1$d pozycji?</item>
+    </plurals>
+    <string name="storage_dropbox_email_not_verified_error">E-mail nie został zweryfikowany</string>
+    <string name="download_manager_downloading">Pobieranie…</string>
+    <string name="settings_language">Język</string>
 </resources>

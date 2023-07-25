@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <app.editors.manager.ui.views.webview.KeyboardWebView
+        <WebView
             android:id="@+id/web_viewer_webview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

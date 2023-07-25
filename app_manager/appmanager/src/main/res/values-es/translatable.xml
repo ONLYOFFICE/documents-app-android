@@ -548,4 +548,20 @@
     <string name="room_delete_success">Sala eliminada</string>
     <string name="switch_account_title">¿Cambiar de cuenta?</string>
     <string name="switch_account_description">Inicie sesión en la cuenta del portal %1$s para abrir el documento.</string>
+    <plurals name="dialogs_question_message_delete">
+        <item quantity="one">Se eliminará irremediablemente.\nEsta acción es irreversible.</item>
+        <item quantity="other">Se eliminarán irremediablemente.\nEsta acción es irreversible.</item>
+    </plurals>
+    <plurals name="dialogs_question_message_to_trash">
+        <item quantity="one">Se moverá a la Papelera.</item>
+        <item quantity="other">Se moverán a la Papelera.</item>
+    </plurals>
+    <string name="dialogs_question_delete_all_title">¿Eliminar todos los elementos?</string>
+    <plurals name="dialogs_question_delete_title">
+        <item quantity="one">¿Eliminar este elemento?</item>
+        <item quantity="other">¿Eliminar %1$d elementos?</item>
+    </plurals>
+    <string name="storage_dropbox_email_not_verified_error">Correo electrónico no verificado</string>
+    <string name="download_manager_downloading">Descargando…</string>
+    <string name="settings_language">Idioma</string>
 </resources>

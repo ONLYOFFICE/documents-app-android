@@ -52,9 +52,9 @@ object Retrofit {
 }
 
 object Kotlin {
-    const val version = "1.7.10"
-    const val kspVersion = "1.7.10-1.0.6"
-    private const val coroutinesVersion = "1.6.0"
+    const val version = "1.8.10"
+    const val kspVersion = "1.8.10-1.0.9"
+    private const val coroutinesVersion = "1.7.2"
     private const val serializationVersion = "1.3.2"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
@@ -115,10 +115,10 @@ object Lifecycle {
 }
 
 object Compose {
-    const val version = "1.3.3"
-    const val versionMaterial = "1.3.1"
-    const val versionCompiler = "1.3.1"
-    private const val navigationVersion = "2.5.3"
+    const val version = "1.4.3"
+    const val versionMaterial = "1.4.3"
+    const val versionCompiler = "1.4.3"
+    private const val navigationVersion = "2.6.0"
 
     const val ui = "androidx.compose.ui:ui:$version"
     const val material = "androidx.compose.material:material:$versionMaterial"
@@ -129,7 +129,7 @@ object Compose {
 }
 
 object Jackson {
-    private const val version = "2.15.2"
+    private const val version = "2.14.3"
     const val core = "com.fasterxml.jackson.core:jackson-core:$version"
     const val annotations = "com.fasterxml.jackson.core:jackson-annotations:$version"
     const val databind = "com.fasterxml.jackson.core:jackson-databind:$version"
@@ -137,7 +137,7 @@ object Jackson {
 
 object Libs {
     const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
-    const val facebookLogin = "com.facebook.android:facebook-login:13.2.0"
+    const val facebookLogin = "com.facebook.android:facebook-login:16.0.1"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
     const val glide = "com.github.bumptech.glide:glide:4.15.1"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
