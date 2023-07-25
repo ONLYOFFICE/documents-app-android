@@ -16,7 +16,6 @@ import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.BaseFileProvider
-import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
@@ -105,6 +104,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected var operationStack: ExplorerStackMap? = null
     private var isSubmitted = false
     private var uploadUri: Uri? = null
+    private var sendingFile: File? = null
 
     /**
      * Modes
@@ -1582,13 +1582,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     open fun sendCopy() {
         (itemClicked as? CloudFile)?.let { cloudFile ->
-            (fileProvider as? CloudFileProvider)?.let { fileProvider ->
+            fileProvider?.let { fileProvider ->
                 context.accountOnline?.let { account ->
-                    sendDisposable = fileProvider.cacheSendingFile(context, cloudFile, account.getAccountName())
+                    sendDisposable = fileProvider.getCachedFile(context, cloudFile, account.getAccountName())
                         .doOnSubscribe { viewState.onDialogDownloadWaiting() }
                         .doOnError { viewState.onError(context.getString(R.string.errors_create_local_file)) }
-                        .doFinally(fileProvider::removeSendingCachedFile)
                         .doOnSuccess { file ->
+                            sendingFile = file
                             viewState.onDialogClose()
                             viewState.onSendCopy(file)
                         }
@@ -1596,6 +1596,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 }
             }
         }
+    }
+
+    fun removeSendingFile() {
+        sendingFile?.delete()
+        sendingFile = null
     }
 
     fun interruptFileSending() {

@@ -23,6 +23,7 @@ import app.documents.core.network.storages.googledrive.models.resonse.GoogleDriv
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import lib.toolkit.base.managers.tools.LocalContentTools
@@ -30,6 +31,7 @@ import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.ResponseBody
 import retrofit2.HttpException
+import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -461,6 +463,14 @@ class GoogleDriveFileProvider(
 
     override fun terminate(): Observable<List<Operation>>? {
         TODO("Not yet implemented")
+    }
+
+    override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
+        return if (cloudFile is GoogleDriveCloudFile && googleMimeTypes.contains(cloudFile.mimeType)) {
+            api.export(cloudFile.id, getCommonMimeType(cloudFile.mimeType))
+        } else {
+            api.download(cloudFile.id)
+        }
     }
 
 }

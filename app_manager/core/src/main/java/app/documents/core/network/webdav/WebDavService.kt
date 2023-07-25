@@ -3,6 +3,7 @@ package app.documents.core.network.webdav
 
 import app.documents.core.network.webdav.models.WebDavModel
 import io.reactivex.Observable
+import io.reactivex.Single
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -82,7 +83,6 @@ interface WebDavService {
     @ConverterFactory.Xml
     @Streaming
     @GET
-    fun download(@Url path: String): Call<ResponseBody>
-
+    fun download(@Url path: String): Single<Response<ResponseBody>>
 
 }
