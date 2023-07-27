@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">ເອກະສານ</string>
     <string name="app_name_full">ເອກະສານ ONLYOFFICE ເທົ່ານັ້ນ </string>
 
@@ -701,4 +701,23 @@
     <string name="room_delete_success">ລຶບຫ້ອງແລ້ວ</string>
     <string name="switch_account_title">ສະຫຼັບບັນຊີ?</string>
     <string name="switch_account_description">ກະລຸນາເຂົ້າສູ່ລະບົບ %1$s ເພື່ອເປີດເອກະສານ.</string>
+    <plurals name="dialogs_question_message_delete" tools:ignore="UnusedQuantity">
+        <item quantity="one">ມັນຈະຖືກລຶບຢ່າງບໍ່ສາມາດຖອນຄືນໄດ້.\ n ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</item>
+        <item quantity="other">ພວກມັນຈະຖືກລຶບຢ່າງບໍ່ສາມາດຖອນຄືນໄດ້.\ n ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</item>
+    </plurals>
+
+    <plurals name="dialogs_question_message_to_trash" tools:ignore="UnusedQuantity">
+        <item quantity="one">ມັນຈະຖືກຍ້າຍໄປຖັງຂີ້ເຫຍື້ອ.</item>
+        <item quantity="other">ພວກເຂົາຈະຖືກຍ້າຍໄປຖັງຂີ້ເຫຍື້ອ.</item>
+    </plurals>
+
+
+    <string name="dialogs_question_delete_all_title">ລຶບລາຍການທັງໝົດບໍ?</string>
+    <plurals name="dialogs_question_delete_title" tools:ignore="UnusedQuantity">
+        <item quantity="one">ລຶບລາຍການນີ້ອອກບໍ?</item>
+        <item quantity="other">ລຶບ %1$d ລາຍການອອກບໍ?</item>
+    </plurals>
+    <string name="storage_dropbox_email_not_verified_error">ອີເມວບໍ່ໄດ້ຖືກຢືນຢັນ</string>
+    <string name="download_manager_downloading">ກໍາລັງດາວໂຫລດ</string>
+    <string name="settings_language">ພາສາ</string>
 </resources>
