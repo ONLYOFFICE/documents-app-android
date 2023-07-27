@@ -661,6 +661,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
+    override fun onDeleteMessage(count: Int) {
+        onSnackBar(resources.getQuantityString(R.plurals.operation_moved_to_trash, count))
+    }
+
     override fun onRename(item: Item, position: Int) {
         explorerAdapter?.setItem(item, position)
     }
