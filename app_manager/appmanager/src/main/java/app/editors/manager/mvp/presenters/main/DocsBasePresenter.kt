@@ -369,7 +369,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                         onFileDeleteProtected()
                         isMultipleDelete = false
                     } else {
-                        onBatchOperations()
+                        viewState.onDialogClose()
+                        viewState.onDeleteMessage(items.size)
                     }
                 }
         }

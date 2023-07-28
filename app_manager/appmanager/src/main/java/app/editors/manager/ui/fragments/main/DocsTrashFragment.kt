@@ -1,11 +1,10 @@
 package app.editors.manager.ui.fragments.main
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
+import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
@@ -16,15 +15,7 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class DocsTrashFragment: DocsCloudFragment() {
 
-
-    private var emptyTrashItem: MenuItem? = null
-    private var isEmptyTrashVisible = false
-    
     private val isArchive: Boolean get() = section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        showMenu()
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,20 +45,12 @@ class DocsTrashFragment: DocsCloudFragment() {
 
     override fun setMenuMainEnabled(isEnabled: Boolean) {
         super.setMenuMainEnabled(isEnabled)
-        isEmptyTrashVisible = isEnabled
-        emptyTrashItem?.isVisible = isEmptyTrashVisible && section != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
         searchItem?.isVisible = isEnabled
     }
 
-    private fun showMenu() {
-        if (cloudPresenter.isSelectionMode) {
-            deleteItem?.isVisible = true
-        } else {
-            setActionBarTitle("")
-            emptyTrashItem?.let { item ->
-                UiUtils.setMenuItemTint(requireContext(), item, lib.toolkit.base.R.color.colorPrimary)
-            }
-        }
+    override fun onStateMenuSelection() {
+        super.onStateMenuSelection()
+        deleteItem?.isVisible = cloudPresenter.isSelectionMode
     }
 
     private fun initViews() {
@@ -100,6 +83,10 @@ class DocsTrashFragment: DocsCloudFragment() {
             setMenuMainEnabled(false)
         }
         super.onDeleteBatch(list)
+    }
+
+    override fun onDeleteMessage(count: Int) {
+        onSnackBar(resources.getQuantityString(R.plurals.operation_delete_irretrievably, count))
     }
 
     override fun showDeleteDialog(count: Int, toTrash: Boolean, tag: String) {

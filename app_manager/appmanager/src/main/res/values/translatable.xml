@@ -213,6 +213,7 @@
     <string name="dialogs_question_personal_confirm_accept">CONTINUE</string>
     <string name="dialogs_question_rate_first_info">Do you enjoy using ONLYOFFICE Documents?</string>
     <string name="dialogs_question_rate_second_info">Would you mind rating the app on Google Play?</string>
+    <string name="dialogs_question_delete_all_title">Delete all items?</string>
 
     <plurals name="dialogs_question_message_delete">
         <item quantity="one">It will be irretrievably deleted.\nThis action is irreversible.</item>
@@ -224,8 +225,6 @@
         <item quantity="other">They will be moved to the Trash.</item>
     </plurals>
 
-
-    <string name="dialogs_question_delete_all_title">Delete all items?</string>
     <plurals name="dialogs_question_delete_title">
         <item quantity="one">Delete this item?</item>
         <item quantity="other">Delete %1$d items?</item>
@@ -482,6 +481,16 @@
     <string name="operation_share_send_link">SEND</string>
     <string name="operation_add_to_favorites">Added to Favorites</string>
     <string name="operation_remove_from_favorites">Removed from Favorites</string>
+
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one">Item moved to the Trash</item>
+        <item quantity="other">Items moved to the Trash</item>
+    </plurals>
+
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one">Item irretrievably deleted</item>
+        <item quantity="other">Items irretrievably deleted</item>
+    </plurals>
 
     <!-- ======================================================================================= -->
     <!-- Trash -->
