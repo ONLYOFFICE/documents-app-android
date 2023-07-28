@@ -28,7 +28,6 @@ class IconTabLayout : TabLayout {
                     width = iconSize
                 }
                 view.requestLayout()
-//                view.setBackgroundResource(R.drawable.selector_tab_item_background)
                 break
             }
         }
