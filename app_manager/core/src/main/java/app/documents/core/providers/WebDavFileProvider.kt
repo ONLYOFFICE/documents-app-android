@@ -17,6 +17,7 @@ import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableSource
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import lib.toolkit.base.BuildConfig
@@ -308,7 +309,7 @@ class WebDavFileProvider @Inject constructor(
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile>, item: Item, outputFile: File) {
-        val response = webDavService.download(item.id).execute()
+        val response = webDavService.download(item.id).blockingGet()
         if (response.body() != null) {
             try {
                 response.body()!!.byteStream().use { inputStream ->
@@ -329,6 +330,10 @@ class WebDavFileProvider @Inject constructor(
         } else {
             emitter.onError(HttpException(response))
         }
+    }
+
+    override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
+        return webDavService.download(cloudFile.id)
     }
 
     @SuppressLint("MissingPermission")
@@ -375,7 +380,7 @@ class WebDavFileProvider @Inject constructor(
     @SuppressLint("MissingPermission")
     private fun startDownload(item: Item): Observable<Int> {
         return Observable.create { emitter: ObservableEmitter<Int> ->
-            val response = webDavService.download(item.id).execute()
+            val response = webDavService.download(item.id).blockingGet()
             val outputFile = File(PATH_DOWNLOAD, item.title)
             if (response.body() != null) {
                 try {

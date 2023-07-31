@@ -33,7 +33,9 @@ import lib.toolkit.base.managers.utils.FileUtils.createFile
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
+import okhttp3.ResponseBody
 import retrofit2.HttpException
+import retrofit2.Response
 import java.io.*
 import java.util.*
 
@@ -374,6 +376,10 @@ class OneDriveFileProvider(
                 emitter.onError(error)
             }
         }
+    }
+
+    override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
+        return api.download(cloudFile.id)
     }
 
     override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {

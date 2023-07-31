@@ -10,7 +10,6 @@ import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class DocsTrashFragment: DocsCloudFragment() {
@@ -50,7 +49,7 @@ class DocsTrashFragment: DocsCloudFragment() {
 
     override fun onStateMenuSelection() {
         super.onStateMenuSelection()
-        deleteItem?.isVisible = cloudPresenter.isSelectionMode
+        deleteItem?.isVisible = true
     }
 
     private fun initViews() {

@@ -49,6 +49,7 @@ class ExplorerContextViewModel : ViewModel() {
             state.section is ApiContract.Section.Storage -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit,
+                ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
                 ExplorerContextItem.Download,

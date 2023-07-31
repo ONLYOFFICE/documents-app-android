@@ -734,6 +734,7 @@
     <string name="room_delete_success">Room deleted</string>
     <string name="switch_account_title">Switch account?</string>
     <string name="switch_account_description">Log in to the portal account %1$s to open the document.</string>
+    <string name="share_expected_member">Expect members</string>
 
     <string name="settings_language">Language</string>
 
@@ -743,5 +744,6 @@
     </string>
     <string name="settings_language_confirmation_accept">Good</string>
     <string name="settings_language_continue_using_app_language">Continue using %1$s</string>
+    <string name="clear_recents">"Clear recents?"</string>
 
 </resources>

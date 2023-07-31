@@ -390,23 +390,42 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         viewState.onOpenMedia(OpenState.Media(getMediaFile(uri), false))
     }
 
-    private fun getMediaFile(uri: Uri): Explorer =
-        Explorer().apply {
-            val file = File(PathUtils.getPath(context, uri).toString())
-            val explorerFile = CloudFile().apply {
-                pureContentLength = file.length()
-                webUrl = file.absolutePath
-                fileExst = StringUtils.getExtensionFromPath(file.name)
-                title = file.name
-                isClicked = true
+    private fun getMediaFile(uri: Uri): Explorer {
+        return Explorer().apply {
+            val explorerFile = CloudFile()
+            if (uri.scheme == "content") {
+                val file = DocumentFile.fromSingleUri(context, uri)
+                explorerFile.apply {
+                    pureContentLength = file?.length() ?: 0
+                    webUrl = uri.toString()
+                    fileExst = StringUtils.getExtensionFromPath(file?.name ?: "")
+                    title = file?.name ?: ""
+                    isClicked = true
+                }
+                current = Current().apply {
+                    title = file?.name ?: ""
+                    filesCount = "1"
+                }
+                files = mutableListOf(explorerFile)
+            } else {
+                val file = File(PathUtils.getPath(context, uri).toString())
+                explorerFile.apply {
+                    pureContentLength = file.length()
+                    webUrl = file.absolutePath
+                    fileExst = StringUtils.getExtensionFromPath(file.name)
+                    title = file.name
+                    isClicked = true
+                }
+                current = Current().apply {
+                    title = file.name
+                    filesCount = "1"
+                }
+                files = mutableListOf(explorerFile)
             }
-            current = Current().apply {
-                title = file.name
-                filesCount = "1"
-            }
-            files = mutableListOf(explorerFile)
+
             addRecent(explorerFile)
         }
+    }
 
     override fun fetchError(throwable: Throwable) {
         if (throwable.message != null) {

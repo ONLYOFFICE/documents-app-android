@@ -81,7 +81,7 @@ interface ExplorerContextItemVisible {
         get() = section.isRoom
 
     private val ExplorerContextState.send: Boolean
-        get() = section !is ApiContract.Section.Storage && section != ApiContract.Section.Trash && !isFolder
+        get() = section != ApiContract.Section.Trash && !isFolder
 
     private val ExplorerContextState.share: Boolean
         get() = isShareVisible(access, section)

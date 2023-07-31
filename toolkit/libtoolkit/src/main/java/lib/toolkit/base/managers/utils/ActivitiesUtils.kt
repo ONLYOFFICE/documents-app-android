@@ -428,12 +428,14 @@ fun Bundle.contains(key: String): Boolean {
     }
 }
 
-fun FragmentActivity.openSendFileActivity(title: Int, file: File) {
-    val uri  = FileProvider.getUriForFile(this, "$packageName.asc.provider", file)
-    with(Intent()) {
+fun FragmentActivity.getSendFileIntent(title: Int, file: File): Intent =
+    Intent.createChooser(Intent().apply {
+        val uri = FileProvider.getUriForFile(this@getSendFileIntent, "$packageName.asc.provider", file)
         action = Intent.ACTION_SEND
         type = "application/*"
         putExtra(Intent.EXTRA_STREAM, uri)
-        startActivity(Intent.createChooser(this, getString(title)))
-    }
+    }, getString(title))
+
+fun FragmentActivity.openSendFileActivity(title: Int, file: File) {
+    startActivity(getSendFileIntent(title, file))
 }

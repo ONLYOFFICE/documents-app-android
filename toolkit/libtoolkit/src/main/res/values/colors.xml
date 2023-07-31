@@ -58,12 +58,6 @@
     <color name="colorPdfTint">#db4437</color>
     <color name="colorVideoTint">#00a9cd</color>
 
-    <!-- StatusBar for viewer-->
-    <color name="colorStatusBarDefault">#32000000</color>
-    <color name="colorStatusBarDocTint">#365477</color>
-    <color name="colorStatusBarSheetTint">#336B4A</color>
-    <color name="colorStatusBarPresentationTint">#884242</color>
-
     <!--    Clouds-->
     <color name="colorCloudItem">#EDF9FF</color>
 
