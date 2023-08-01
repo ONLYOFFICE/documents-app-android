@@ -35,11 +35,6 @@
     <color name="colorPdfTint">#DB4437</color>
     <color name="colorVideoTint">#00A9CD</color>
 
-    <!-- StatusBar for viewer-->
-    <color name="colorStatusBarDocTint">#365477</color>
-    <color name="colorStatusBarSheetTint">#336B4A</color>
-    <color name="colorStatusBarPresentationTint">#884242</color>
-
     <color name="shadow_end">@color/colorBlack12</color>
     <color name="shadow_start">@color/colorBlack32</color>
 </resources>

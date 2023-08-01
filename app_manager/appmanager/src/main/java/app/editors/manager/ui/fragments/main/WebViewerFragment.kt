@@ -330,8 +330,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     }
 
     private fun getArgs() {
-        val bundle = arguments
-        cloudFile = bundle!!.getSerializable(TAG_FILE) as CloudFile?
+        cloudFile = arguments?.getSerializableExt(TAG_FILE)
         if (cloudFile?.isReadOnly == true) {
             uri = Uri.parse(cloudFile?.webUrl)
             val im = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -391,14 +390,18 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
 
     private fun setStatusBarColor() {
-        when (StringUtils.getExtension(cloudFile?.fileExst ?: "")) {
-            StringUtils.Extension.DOC,
-            StringUtils.Extension.DOCXF,
-            StringUtils.Extension.OFORM,
-            StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorDocTint)
-            StringUtils.Extension.PRESENTATION -> setStatusBarColor(lib.toolkit.base.R.color.colorPresentationTint)
-            StringUtils.Extension.SHEET -> setStatusBarColor(lib.toolkit.base.R.color.colorSheetTint)
-            else -> setStatusBarColor(lib.toolkit.base.R.color.colorPrimary)
+        if (UiUtils.isDarkMode(requireContext())) {
+            setStatusBarColor(lib.toolkit.base.R.color.colorBackground)
+        } else {
+            when (StringUtils.getExtension(cloudFile?.fileExst ?: "")) {
+                StringUtils.Extension.DOC,
+                StringUtils.Extension.DOCXF,
+                StringUtils.Extension.OFORM,
+                StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorDocTint)
+                StringUtils.Extension.PRESENTATION -> setStatusBarColor(lib.toolkit.base.R.color.colorPresentationTint)
+                StringUtils.Extension.SHEET -> setStatusBarColor(lib.toolkit.base.R.color.colorSheetTint)
+                else -> setStatusBarColor(lib.toolkit.base.R.color.colorPrimary)
+            }
         }
     }
 
