@@ -1,60 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent">
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/inviteByEmail"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/item_one_line_height"
-        android:background="?attr/colorSurface"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            style="@style/CommonImageView"
-            android:layout_width="@dimen/image_default_size"
-            android:layout_height="@dimen/image_default_size"
-            android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="@dimen/default_margin_large"
-            android:src="@drawable/ic_action_button_docs_add"
-            app:tint="?attr/colorPrimary"
-            tools:ignore="ContentDescription" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/ItemLargeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/invite_by_email"
-            android:textColor="?attr/colorPrimary" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <include
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/inviteByEmail"
-        android:layout_height="1dp"
-        android:layout_width="0dp"
-        layout="@layout/view_line_separator"/>
 
     <app.editors.manager.ui.views.pager.PagingViewPager
         android:id="@+id/share_add_view_pager"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/share_panel_layout"
+        app:layout_constraintBottom_toTopOf="@id/share_panel_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/inviteByEmail" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <include
         android:id="@+id/share_panel_layout"

@@ -46,6 +46,7 @@
     <dimen name="default_corner_radius_medium">8dp</dimen>
     <dimen name="default_corner_radius_small">4dp</dimen>
     <dimen name="default_corner_radius_micro">2dp</dimen>
+    <dimen name="default_corner_radius_button">6dp</dimen>
 
     <!-- Fragment animation time -->
     <integer name="fragment_replace_main_animation_duration">100</integer>
@@ -83,7 +84,7 @@
     <!-- Default common values-->
     <dimen name="default_elevation_height">4dp</dimen>
     <dimen name="default_tab_layout_height">48dp</dimen>
-    <dimen name="default_screen_width">300dp</dimen>
+    <dimen name="default_screen_width">312dp</dimen>
     <dimen name="default_action_button_margin">24dp</dimen>
     <dimen name="default_toolbar_height">56dp</dimen>
     <dimen name="default_bottom_panel_height">56dp</dimen>
@@ -93,7 +94,8 @@
     <dimen name="default_login_transparent_button_height">48dp</dimen>
     <dimen name="default_notice_text_size">12sp</dimen>
     <dimen name="default_on_boarding_panel_height">48dp</dimen>
-
+    <dimen name="default_button_height">48dp</dimen>
+    <dimen name="default_button_width">312dp</dimen>
 
     <!-- Drawer values -->
     <dimen name="drawer_header_avatar_size">64dp</dimen>
@@ -106,6 +108,7 @@
     <dimen name="share_settings_list_padding">72dp</dimen>
 
     <!-- Fonts sizes-->
+    <dimen name="fonts_size_xlarge">20sp</dimen>
     <dimen name="fonts_size_large">18sp</dimen>
     <dimen name="fonts_size_medium">16sp</dimen>
     <dimen name="fonts_size_small">14sp</dimen>

@@ -15,12 +15,12 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/auth_page_step"
-                style="@style/AuthTextViewSecond"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/screen_margin_large"
                 android:text="@string/auth_step_title"
@@ -38,9 +38,10 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/auth_page_header"
-                style="@style/AuthTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/colorOnSurface"
+                android:gravity="center_horizontal"
                 android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
                 android:layout_marginTop="@dimen/screen_margin_large"
                 android:text="@string/auth_header_screen_1"
@@ -75,7 +76,6 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/auth_page_info"
-                style="@style/AuthTextViewSecond"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
@@ -92,8 +92,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/confirm_button"
-                style="@style/AuthAccentButton"
-                android:layout_width="match_parent"
+                style="@style/Widget.Common.Button"
                 android:layout_marginHorizontal="@dimen/screen_on_boarding_image_horizontal_margin"
                 android:layout_marginBottom="@dimen/screen_margin_large"
                 tools:text="Install" />

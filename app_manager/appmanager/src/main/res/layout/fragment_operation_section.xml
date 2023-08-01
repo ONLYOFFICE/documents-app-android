@@ -4,81 +4,83 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/default_margin_large"
+    android:fillViewport="true"
     android:paddingBottom="@dimen/default_margin_large">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/operation_sections_my"
-            style="@style/ContextListLayout"
-            android:layout_height="@dimen/item_two_line_height"
-            android:background="@color/colorSurface"
-            android:foreground="?attr/selectableItemBackground">
+            style="@style/ContextListItemLayout"
+            android:layout_height="@dimen/item_two_line_height">
 
             <ImageView
-                style="@style/ContextListImage"
+                style="@style/Widget.Common.ImageView.Context"
                 app:srcCompat="@drawable/ic_drawer_menu_my_docs"
                 tools:ignore="ContentDescription" />
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/ContextListMediumText"
+                style="@style/Widget.Common.TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/navigation_drawer_menu_my" />
+
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/operation_sections_share"
-            style="@style/ContextListLayout"
-            android:layout_height="@dimen/item_two_line_height"
-            android:background="@color/colorSurface"
-            android:foreground="?attr/selectableItemBackground">
+            style="@style/ContextListItemLayout"
+            android:layout_height="@dimen/item_two_line_height">
 
             <ImageView
-                style="@style/ContextListImage"
+                style="@style/Widget.Common.ImageView.Context"
                 app:srcCompat="@drawable/ic_share_docs"
                 tools:ignore="ContentDescription" />
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/ContextListMediumText"
+                style="@style/Widget.Common.TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/navigation_drawer_menu_shared" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/operation_sections_common"
-            style="@style/ContextListLayout"
-            android:layout_height="@dimen/item_two_line_height"
-            android:background="@color/colorSurface"
-            android:foreground="?attr/selectableItemBackground">
+            style="@style/ContextListItemLayout"
+            android:layout_height="@dimen/item_two_line_height">
 
             <ImageView
                 android:id="@+id/sectionIcon"
-                style="@style/ContextListImage"
+                style="@style/Widget.Common.ImageView.Context"
                 app:srcCompat="@drawable/ic_drawer_menu_common_docs"
                 tools:ignore="ContentDescription" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/sectionName"
-                style="@style/ContextListMediumText"
+                style="@style/Widget.Common.TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/navigation_drawer_menu_common" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/operation_sections_projects"
-            style="@style/ContextListLayout"
+            style="@style/ContextListItemLayout"
             android:layout_height="@dimen/item_two_line_height"
-            android:background="@color/colorSurface"
             android:foreground="?attr/selectableItemBackground">
 
             <ImageView
-                style="@style/ContextListImage"
+                style="@style/Widget.Common.ImageView.Context"
                 app:srcCompat="@drawable/ic_drawer_menu_projects"
                 tools:ignore="ContentDescription" />
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/ContextListMediumText"
+                style="@style/Widget.Common.TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/navigation_drawer_menu_projects" />
         </LinearLayout>
 

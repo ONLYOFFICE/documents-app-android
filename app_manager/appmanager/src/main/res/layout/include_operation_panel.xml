@@ -6,14 +6,13 @@
     android:layout_height="@dimen/default_bottom_panel_height"
     card_view:cardElevation="@dimen/default_bottom_panel_elevation">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/operation_cancel_button"
-            style="@style/AccentTextButton"
+            style="@style/Widget.Common.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -27,7 +26,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/operation_action_button"
-            style="@style/AccentTextButton"
+            style="@style/Widget.Common.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"

@@ -4,52 +4,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cloudLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/bannerImage"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_large"
             android:src="@drawable/image_account_cloud"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline4"
             tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/onlyOfficeLogoImage"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:src="@drawable/only_office_logo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bannerImage"
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/descriptionTextView"
-            style="@style/CloudStorageText"
-            android:layout_width="0dp"
+            style="@style/Widget.Common.TextView.Description"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_margin_xlarge"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:layout_marginEnd="@dimen/default_margin_xlarge"
-            android:text="@string/cloud_account_description"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/onlyOfficeLogoImage" />
+            android:text="@string/cloud_account_description" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/startButton"
-            style="@style/AccentButton"
-            android:layout_width="@dimen/default_screen_width"
-            android:layout_height="@dimen/default_login_accent_button_height"
+            style="@style/Widget.Common.Button"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:text="@string/cloud_account_start_button"
             app:layout_constraintEnd_toEndOf="@id/descriptionTextView"
@@ -58,22 +50,15 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/otherStorageButton"
-            style="@style/AccentTextButton"
-            android:layout_width="@dimen/default_screen_width"
-            android:layout_height="@dimen/default_login_accent_button_height"
+            style="@style/Widget.Common.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_medium"
             android:text="@string/cloud_account_other_storages_button"
             app:layout_constraintEnd_toEndOf="@id/startButton"
             app:layout_constraintStart_toStartOf="@id/startButton"
             app:layout_constraintTop_toBottomOf="@id/startButton" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.05" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

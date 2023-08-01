@@ -22,19 +22,19 @@ class PlaceholderViews(val view: View?) {
     }
 
     private val context: Context = view?.context ?: throw RuntimeException("View can not be null")
-    private var textBinding = IncludePlaceholdersTextBinding.bind(view!!)
+    private var binding = IncludePlaceholdersTextBinding.bind(view!!)
     private var viewForHide: View? = null
     private var onClickListener: OnClickListener? = null
 
     init {
-        textBinding.placeholderLayout.isVisible = false
+        binding.root.isVisible = false
 //        imageBinding.placeholderRetry.setOnClickListener {
 //            mOnClickListener?.onRetryClick()
 //        }
     }
 
     fun setVisibility(isVisible: Boolean) {
-        textBinding.placeholderLayout.isVisible = isVisible
+        binding.root.isVisible = isVisible
         viewForHide?.isVisible = !isVisible
     }
 
@@ -43,11 +43,11 @@ class PlaceholderViews(val view: View?) {
     }
 
     fun setTitle(@StringRes resId: Int) {
-        textBinding.placeholderText.setText(resId)
+        binding.placeholderText.setText(resId)
     }
 
     private fun setTitleColor(@ColorRes resId: Int) {
-        textBinding.placeholderText.setTextColor(ResourcesProvider(context).getColor(resId))
+        binding.placeholderText.setTextColor(ResourcesProvider(context).getColor(resId))
     }
 
     fun setImage(@DrawableRes resId: Int) {
@@ -82,9 +82,9 @@ class PlaceholderViews(val view: View?) {
             Type.LOAD_GROUPS -> setTitle(R.string.placeholder_loading_groups)
             Type.MEDIA -> {
                 setImage(R.drawable.ic_media_error)
-                setImageTint(lib.toolkit.base.R.color.colorLightWhite)
+                setImageTint(lib.toolkit.base.R.color.colorTextSecondary)
                 setTitle(R.string.placeholder_media_error)
-                setTitleColor(lib.toolkit.base.R.color.colorLightWhite)
+                setTitleColor(lib.toolkit.base.R.color.colorTextSecondary)
                 setRetryTint(lib.toolkit.base.R.color.colorSecondary)
             }
         }

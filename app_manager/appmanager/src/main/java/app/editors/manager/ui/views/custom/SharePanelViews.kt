@@ -8,6 +8,7 @@ import app.editors.manager.R
 import app.editors.manager.databinding.IncludeSharePanelBinding
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.ui.views.popup.SharePopup
@@ -88,23 +89,7 @@ class SharePanelViews(
         get() = viewBinding?.sharePanelMessageEditLayout?.isVisible == true
 
     fun setAccessIcon(accessCode: Int) {
-        viewBinding?.buttonPopupLayout?.let {
-            when (accessCode) {
-                ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_deny)
-                ApiContract.ShareCode.READ -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_read)
-                ApiContract.ShareCode.READ_WRITE -> {
-                    if (item is CloudFolder && item.isRoom) {
-                        it.buttonPopupImage.setImageResource(R.drawable.ic_drawer_menu_my_docs)
-                    } else {
-                        it.buttonPopupImage.setImageResource(R.drawable.ic_access_full)
-                    }
-                }
-                ApiContract.ShareCode.EDITOR -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_full)
-                ApiContract.ShareCode.REVIEW -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_review)
-                ApiContract.ShareCode.COMMENT -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_comment)
-                ApiContract.ShareCode.FILL_FORMS -> it.buttonPopupImage.setImageResource(R.drawable.ic_access_fill_form)
-            }
-        }
+        ManagerUiUtils.setAccessIcon(viewBinding?.buttonPopupLayout?.buttonPopupImage, accessCode)
     }
 
     fun popupDismiss(): Boolean {
@@ -138,8 +123,9 @@ class SharePanelViews(
     }
 
     fun hideMessageView(): Boolean {
+        val isShow = isMessageShowed
         heightValueAnimator.animate(false)
-        return isMessageShowed
+        return isShow
     }
 
     val message: String?

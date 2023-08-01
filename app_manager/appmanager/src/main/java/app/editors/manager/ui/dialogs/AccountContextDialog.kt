@@ -46,7 +46,7 @@ class AccountContextDialog : BaseBottomDialog() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.Theme_Common_BottomSheetDialog)
         arguments?.containsKey(KEY_ACCOUNT)?.let {
             arguments?.getString(KEY_ACCOUNT)?.let { acc ->
                 account = Json.decodeFromString(acc)
@@ -106,9 +106,9 @@ class AccountContextDialog : BaseBottomDialog() {
         viewBinding?.removeItem?.let {
             it.itemImage.setImageDrawable(ContextCompat
                 .getDrawable(requireContext(), R.drawable.ic_trash))
-            setImageTint(it.itemImage, lib.toolkit.base.R.color.colorLightRed)
+            setImageTint(it.itemImage, lib.toolkit.base.R.color.colorError)
             it.itemText.text = getString(R.string.dialog_remove_account_title)
-            it.itemText.setTextColor(ContextCompat.getColor(requireContext(), lib.toolkit.base.R.color.colorLightRed))
+            it.itemText.setTextColor(ContextCompat.getColor(requireContext(), lib.toolkit.base.R.color.colorError))
             it.itemLayout.setOnClickListener {
                 mClickListener?.onRemoveClick(account)
                 dismiss()

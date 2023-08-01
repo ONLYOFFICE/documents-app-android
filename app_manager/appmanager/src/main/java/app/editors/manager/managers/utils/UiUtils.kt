@@ -16,6 +16,7 @@ import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import com.bumptech.glide.Glide
+import com.google.android.material.button.MaterialButton
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
 
@@ -158,19 +159,20 @@ object ManagerUiUtils {
         }
     }
 
-    fun setAccessIcon(imageView: ImageView, accessCode: Int) {
+    fun setAccessIcon(icon: ImageView?, accessCode: Int) {
+        if (icon == null) return
         when (accessCode) {
             ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> {
-                imageView.setImageResource(R.drawable.ic_access_deny)
+                icon.setImageResource(R.drawable.ic_access_deny)
                 return
             }
-            ApiContract.ShareCode.REVIEW -> imageView.setImageResource(R.drawable.ic_access_review)
-            ApiContract.ShareCode.READ -> imageView.setImageResource(R.drawable.ic_access_read)
-            ApiContract.ShareCode.ROOM_ADMIN -> imageView.setImageResource(R.drawable.ic_drawer_menu_my_docs)
-            ApiContract.ShareCode.READ_WRITE -> imageView.setImageResource(R.drawable.ic_access_full)
-            ApiContract.ShareCode.EDITOR -> imageView.setImageResource(R.drawable.ic_access_full)
-            ApiContract.ShareCode.COMMENT -> imageView.setImageResource(R.drawable.ic_access_comment)
-            ApiContract.ShareCode.FILL_FORMS -> imageView.setImageResource(R.drawable.ic_access_fill_form)
+            ApiContract.ShareCode.REVIEW -> icon.setImageResource(R.drawable.ic_access_review)
+            ApiContract.ShareCode.READ -> icon.setImageResource(R.drawable.ic_access_read)
+            ApiContract.ShareCode.ROOM_ADMIN -> icon.setImageResource(R.drawable.ic_drawer_menu_my_docs)
+            ApiContract.ShareCode.READ_WRITE -> icon.setImageResource(R.drawable.ic_access_full)
+            ApiContract.ShareCode.EDITOR -> icon.setImageResource(R.drawable.ic_access_full)
+            ApiContract.ShareCode.COMMENT -> icon.setImageResource(R.drawable.ic_access_comment)
+            ApiContract.ShareCode.FILL_FORMS -> icon.setImageResource(R.drawable.ic_access_fill_form)
         }
     }
 

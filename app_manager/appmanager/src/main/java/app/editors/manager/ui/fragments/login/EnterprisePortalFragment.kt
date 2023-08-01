@@ -158,11 +158,11 @@ class EnterprisePortalFragment : BaseAppFragment(),
         }
         urlsViewModel.remoteUrls.observe(viewLifecycleOwner) { text: Spanned? ->
             text?.let {
-                viewBinding?.termsTextView?.movementMethod = LinkMovementMethod.getInstance()
-                viewBinding?.termsTextView?.text = text
+                viewBinding?.terms?.termsTextView?.movementMethod = LinkMovementMethod.getInstance()
+                viewBinding?.terms?.termsTextView?.text = text
             }
         }
-        viewBinding?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
+        viewBinding?.terms?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
             viewBinding?.loginEnterpriseNextButton?.isEnabled = isChecked && viewBinding?.loginEnterprisePortalEdit?.text?.isNotEmpty() == true
         }
     }
@@ -199,7 +199,7 @@ class EnterprisePortalFragment : BaseAppFragment(),
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             viewBinding?.loginEnterprisePortalLayout?.isErrorEnabled = false
             if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
-                viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty() && viewBinding?.termsCheckbox?.isChecked == true
+                viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty() && viewBinding?.terms?.termsCheckbox?.isChecked == true
             } else {
                 viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty()
             }

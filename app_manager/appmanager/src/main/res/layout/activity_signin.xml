@@ -6,7 +6,7 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
-        style="@style/MainAppBar"
+        style="@style/Widget.Common.AppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,7 +20,7 @@
             android:layout_gravity="center"
             android:contentInsetStart="0dp"
             android:contentInsetLeft="0dp"
-            android:theme="@style/MainToolbar"
+            android:theme="@style/Widget.Common.Toolbar"
             app:contentInsetLeft="0dp"
             app:contentInsetStart="0dp"
             app:contentInsetStartWithNavigation="0dp" />

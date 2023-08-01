@@ -1,7 +1,5 @@
 package app.editors.manager.mvp.models.ui
 
-import app.editors.manager.R
-
 data class ShareHeaderUi(val title: String) : ShareViewType {
 
     override val itemId: String
@@ -11,5 +9,5 @@ data class ShareHeaderUi(val title: String) : ShareViewType {
         get() = title
 
     override val viewType: Int
-        get() = R.layout.list_share_add_header
+        get() = lib.toolkit.base.R.layout.list_item_header
 }

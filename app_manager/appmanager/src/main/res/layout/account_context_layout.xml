@@ -6,20 +6,7 @@
     android:orientation="vertical"
     android:paddingBottom="@dimen/default_margin_medium">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:padding="@dimen/default_margin_medium">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:tint="@color/colorOnSurface"
-            android:src="@drawable/ic_bottom_divider" />
-
-    </FrameLayout>
+    <include layout="@layout/include_bottom_sheet_divider" />
 
     <include
         android:id="@+id/profileItem"

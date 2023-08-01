@@ -111,7 +111,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private fun init(savedInstanceState: Bundle?) {
         restoreStates(savedInstanceState)
-        placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.placeholderLayout)
+        placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root)
         placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
         checkBundle()
 //        presenter.getState(requireActivity().intent.data)

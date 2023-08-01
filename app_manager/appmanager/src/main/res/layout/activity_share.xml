@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="@dimen/default_elevation_height"
-        style="@style/MainAppBar">
+        style="@style/Widget.Common.AppBarLayout">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/app_bar_toolbar"
@@ -23,22 +23,14 @@
             app:contentInsetStart="0dp"
             android:contentInsetLeft="0dp"
             android:contentInsetStart="0dp"
-            android:theme="@style/MainToolbar"/>
+            android:theme="@style/Widget.Common.Toolbar"/>
 
         <com.google.android.material.tabs.TabLayout
-            style="@style/ViewPagerTabs"
+            style="@style/Widget.Common.TabLayout.Fixed"
             android:id="@+id/app_bar_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/default_tab_layout_height"
-            android:layout_gravity="center"
             android:visibility="gone"
-            android:background="@color/colorAppBar"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
-            app:tabMaxWidth="0dp"
-            app:tabTextAppearance="@style/ViewPagerTabsText"
-            app:tabSelectedTextColor="@color/colorPrimary"
-            app:tabIndicatorColor="@color/colorPrimary"/>
+            android:background="@color/colorAppBar"/>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

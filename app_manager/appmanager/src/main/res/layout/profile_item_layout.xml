@@ -14,11 +14,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
-        app:tint="@color/colorGrey" />
+        app:tint="@color/colorTextSecondary" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
-        style="@style/ItemMediumBlackText"
+        style="@style/Widget.Common.TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/default_margin_large"
@@ -31,7 +31,7 @@
 
     <TextView
         android:id="@+id/text"
-        style="@style/ItemSmallGreyText"
+        style="@style/Widget.Common.TextView.Small.Secondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

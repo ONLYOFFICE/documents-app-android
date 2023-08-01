@@ -1,60 +1,32 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
-    <!-- ======================================================================================= -->
-    <!-- Global customizations -->
-    <!-- Base application theme. -->
     <style name="AppBaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
-        <item name="colorPrimaryDark">@color/colorOnBackground</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorError">@color/colorError</item>
         <item name="colorOnError">@color/colorOnError</item>
         <item name="colorSurface">@color/colorSurface</item>
         <item name="colorOnSurface">@color/colorOnSurface</item>
-        <item name="android:colorBackground">@color/colorBackground</item>
         <item name="colorOnBackground">@color/colorOnBackground</item>
-        <item name="android:itemBackground">?attr/selectableItemBackground</item>
-        <item name="android:statusBarColor">@color/colorBackground</item>
-        <item name="android:textColorPrimary">@color/colorOnPrimary</item>
-        <item name="android:windowEnableSplitTouch">false</item>
-        <item name="android:splitMotionEvents">false</item>
-        <item name="android:windowBackground">@color/colorBackgroundSecond</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:textColorPrimary">@color/colorTextPrimary</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:statusBarColor">@color/colorAppBar</item>
+        <item name="android:navigationBarColor">@color/colorBackground</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+
+        <item name="elevationOverlayEnabled">false</item>
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme">
-        <item name="floatingActionButtonStyle">@style/Widget.Design.FloatingActionButton</item>
-        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.FilledBox</item>
-        <item name="textAppearanceLabelLarge">@style/TextAppearance.Material3.LabelLarge</item>
-    </style>
-
-    <style name="CommonEditText" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
-        <item name="android:maxLines">1</item>
-        <item name="android:lines">1</item>
-        <item name="boxBackgroundColor">@color/colorBackgroundSecond</item>
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark">
-        <item name="colorControlNormal">@color/colorWhite</item>
-        <item name="android:textColor">@color/colorOnBackground</item>
-    </style>
-
-    <style name="CloudsToolbarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="titleTextColor">@color/colorWhite</item>
-        <item name="colorControlNormal">@color/colorWhite</item>
-        <item name="android:textColor">@color/colorWhite</item>
-    </style>
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light">
-        <item name="android:textColor">@color/colorDark</item>
-        <item name="android:textSize">@dimen/fonts_size_medium</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <!-- ======================================================================================= -->
     <!-- Local customizations -->
     <!-- Activities themes-->
+
     <style name="NoActionBarTheme" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -74,28 +46,120 @@
     <style name="MediaTheme" parent="NoActionBarTheme">
         <item name="android:windowEnableSplitTouch">true</item>
         <item name="android:splitMotionEvents">true</item>
+        <item name="android:navigationBarColor">@color/colorMediaBackground</item>
+        <item name="android:statusBarColor">@color/colorMediaBackground</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="Theme.Common.BottomSheetDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.Common.BottomSheetDialog</item>
     </style>
 
     <!-- ======================================================================================= -->
-    <!-- Search views -->
-    <style name="SearchViewEdit" parent="Widget.AppCompat.Light.SearchView">
-        <item name="queryBackground">@null</item>
-        <item name="submitBackground">@null</item>
-        <item name="searchHintIcon">@null</item>
-    </style>
+    <!-- ShapeAppearance -->
 
-    <style name="SearchViewEditHint" parent="SearchViewEdit">
-        <item name="defaultQueryHint">@string/toolbar_menu_search_hint</item>
-    </style>
-
-    <style name="SearchViewTextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textSize">20sp</item>
+    <style name="ShapeAppearance.Common.BottomSheetDialog" parent="AppTheme">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
     </style>
 
     <!-- ======================================================================================= -->
-    <!-- Filter views -->
+    <!-- TextAppearance -->
 
-    <style name="FilterChip" parent="Widget.MaterialComponents.Chip.Choice">
+    <style name="TextAppearance.Common.Title" parent="TextAppearance.MaterialComponents.Headline6" />
+
+    <style name="TextAppearance.Common.TabItem" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="TextAppearance.Common.Button" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">@dimen/fonts_size_medium</item>
+    </style>
+
+    <!-- ======================================================================================= -->
+    <!-- Widgets -->
+
+    <style name="Widget.Common.TextView" parent="AppTheme">
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/fonts_size_medium</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Secondary">
+        <item name="android:textColor">@color/colorTextSecondary</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Clickable">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textAppearance">@style/TextAppearance.Common.Button</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:maxLines">10</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Small">
+        <item name="android:textSize">@dimen/fonts_size_small</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Small.Secondary">
+        <item name="android:textColor">@color/colorTextSecondary</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Micro">
+        <item name="android:textSize">@dimen/fonts_size_micro</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Micro.Secondary">
+        <item name="android:textColor">@color/colorTextSecondary</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Large">
+        <item name="android:textSize">@dimen/fonts_size_large</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Header" parent="Widget.Common.TextView.Small.Secondary">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin_large</item>
+        <item name="android:layout_marginTop">@dimen/default_margin_large</item>
+        <item name="android:layout_marginBottom">@dimen/default_margin_small</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Title">
+        <item name="android:textAppearance">@style/TextAppearance.Common.Title</item>
+        <item name="android:textSize">@dimen/fonts_size_xlarge</item>
+    </style>
+
+    <style name="Widget.Common.TextView.Description" parent="Widget.Common.TextView.Small.Secondary">
+        <item name="android:maxLines">20</item>
+    </style>
+
+    <style name="Widget.Common.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="tabTextAppearance">@style/TextAppearance.Common.TabItem</item>
+        <item name="tabSelectedTextColor">?attr/colorPrimary</item>
+        <item name="tabTextColor">@color/colorTextSecondary</item>
+        <item name="tabMode">auto</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/default_tab_layout_height</item>
+    </style>
+
+    <style name="Widget.Common.TabLayout.Fixed">
+        <item name="tabMode">fixed</item>
+    </style>
+
+    <style name="Widget.Common.TabLayout.Icon" parent="Widget.Common.TabLayout.Fixed">
+        <item name="tabGravity">fill</item>
+        <item name="tabIconTint">@color/color_tab_item_selector</item>
+    </style>
+
+    <style name="Widget.Common.Chip" parent="Widget.MaterialComponents.Chip.Choice">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/color_filter_chip_text_selector</item>
@@ -109,402 +173,146 @@
         <item name="chipStrokeColor">@color/color_filter_chip_border_selector</item>
     </style>
 
-    <style name="FilterChip.Closable">
+    <style name="Widget.Common.Chip.Closable">
         <item name="closeIconEnabled">true</item>
         <item name="closeIconTint">@color/colorWhite</item>
         <item name="closeIconVisible">false</item>
         <item name="android:textColor">@color/color_filter_chip_text_author_selector</item>
     </style>
 
-    <style name="FilterTitleTextAppearance" parent="TextAppearance.Material3.TitleMedium">
-        <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <!-- ======================================================================================= -->
-    <!-- Common views-->
-    <style name="CommonTextView" parent="AppTheme">
-        <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="android:focusable">false</item>
-        <item name="android:clickable">false</item>
-        <item name="android:lines">1</item>
-        <item name="android:ellipsize">end</item>
-    </style>
-
-    <!-- Switch button -->
-    <style name="CommonSwitchView" parent="AppTheme">
-        <item name="colorControlActivated">@color/colorSecondary</item>
-    </style>
-
-    <style name="CommonButton" parent="AppTheme">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="textAllCaps">true</item>
+    <style name="Widget.Common.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:layout_width">@dimen/default_screen_width</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
+        <item name="boxBackgroundColor">@color/colorBackground</item>
     </style>
 
-    <style name="CommonImageView" parent="AppTheme">
-        <item name="android:background">@android:color/transparent</item>
+    <style name="Widget.Common.TextInputLayout.Surface">
+        <item name="boxBackgroundColor">@color/colorSurface</item>
     </style>
 
-    <!-- ======================================================================================= -->
-    <!-- Selectable background -->
-    <style name="WhiteColorControlHighlight">
-        <item name="colorControlHighlight">@color/colorLightWhite</item>
+    <style name="Widget.Common.Button" parent="Widget.Material3.Button.ElevatedButton">
+        <item name="android:layout_width">@dimen/default_button_width</item>
+        <item name="android:layout_height">@dimen/default_button_height</item>
+        <item name="android:layout_marginTop">@dimen/default_margin_large</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textAppearance">@style/TextAppearance.Common.Button</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">@dimen/default_corner_radius_button</item>
+        <item name="rippleColor">?colorControlHighlight</item>
+        <item name="android:theme">@style/ThemeOverlay.Common.Button</item>
     </style>
 
-    <!-- ======================================================================================= -->
-    <!-- ImageButton\ImageView -->
-    <style name="AlphaImageView" parent="CommonImageView">
-        <item name="android:alpha">@dimen/alpha_medium</item>
+    <style name="Widget.Common.Button.SmallButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cornerRadius">@dimen/default_corner_radius_button</item>
     </style>
 
-    <style name="AlphaImageButton" parent="AppTheme">
-        <item name="android:alpha">@dimen/alpha_medium</item>
+    <style name="Widget.Common.Button.Error">
+        <item name="android:theme">@style/ThemeOverlay.Common.Button.Error</item>
     </style>
 
-    <style name="FilterWhiteImageView" parent="CommonImageView">
-        <item name="android:tint">@color/colorWhite</item>
-        <item name="android:tintMode">src_atop</item>
-        <item name="android:theme">@style/WhiteColorControlHighlight</item>
+    <style name="Widget.Common.Button.TextButton" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textAppearance">@style/TextAppearance.Common.Button</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="cornerRadius">@dimen/default_corner_radius_button</item>
     </style>
 
-    <!-- ======================================================================================= -->
-    <!-- Text -->
-    <!-- Place holder -->
-    <style name="PlaceholderTextView" parent="CommonTextView">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:gravity">center</item>
+    <style name="Widget.Common.Button.IconButton" parent="Widget.Material3.Button.IconButton">
+        <item name="android:layout_width">@dimen/item_one_line_height</item>
+        <item name="android:layout_height">@dimen/item_one_line_height</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconSize">@dimen/image_default_size</item>
+        <item name="rippleColor">?attr/colorControlHighlight</item>
     </style>
 
-    <!-- ViewPager text -->
-    <style name="ViewPagerTabsText" parent="TextAppearance.Design.Tab">
-        <item name="android:textColor">@color/colorLight</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textSize">@dimen/fonts_size_small</item>
+    <style name="Widget.Common.Button.IconButton.Secondary">
+        <item name="iconTint">@color/colorTextSecondary</item>
     </style>
 
-    <style name="PortalsViewPagerTabsText" parent="TextAppearance.Design.Tab">
-        <item name="android:textColor">@color/colorGrey</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textSize">@dimen/fonts_size_small</item>
+    <style name="Widget.Common.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface" />
+
+    <style name="Widget.Common.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="android:background">@color/colorBottomBar</item>
     </style>
 
-    <!-- ViewPager layout -->
-    <style name="ViewPagerTabs" parent="Widget.MaterialComponents.TabLayout">
-        <item name="tabGravity">fill</item>
-        <item name="tabMode">scrollable</item>
+    <style name="Widget.Common.Toolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+        <item name="colorOnPrimary">@color/colorPrimary</item>
+        <item name="elevationOverlayEnabled">false</item>
     </style>
 
-    <!-- Collapse toolbar text -->
-    <style name="CommonCollapseTextView" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textColor">@color/colorOnBackground</item>
+    <style name="Widget.Common.ImageView" parent="AppTheme" />
+
+    <style name="Widget.Common.ImageView.Secondary">
+        <item name="android:tint">@color/colorTextSecondary</item>
+        <item name="android:tintMode">src_in</item>
     </style>
 
-    <style name="ExpandedTextView" parent="CommonCollapseTextView">
-        <item name="android:textSize">@dimen/fonts_size_small</item>
+    <style name="Widget.Common.ImageView.Tertiary">
+        <item name="android:tint">@color/colorTextTertiary</item>
+        <item name="android:tintMode">src_in</item>
     </style>
 
-    <style name="CollapsedTextView" parent="CommonCollapseTextView">
-        <item name="android:textSize">@dimen/fonts_size_micro</item>
+    <style name="Widget.Common.ImageView.Context" parent="Widget.Common.ImageView.Secondary">
+        <item name="android:layout_width">@dimen/image_default_size</item>
+        <item name="android:layout_height">@dimen/image_default_size</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin_large</item>
     </style>
 
-    <!-- Text sizes -->
-
-    <style name="LargeTextView" parent="CommonTextView">
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:textSize">@dimen/fonts_size_large</item>
-    </style>
-
-    <style name="MediumTextView" parent="CommonTextView">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textSize">@dimen/fonts_size_medium</item>
-    </style>
-
-    <style name="SmallTextView" parent="CommonTextView">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textSize">@dimen/fonts_size_small</item>
-    </style>
-
-    <!-- Text colors -->
-    <!-- Black -->
-
-    <style name="ItemLargeText" parent="LargeTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <style name="ItemMediumBlackText" parent="MediumTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <style name="ItemSmallBlackText" parent="SmallTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <!-- Grey -->
-    <style name="ItemMediumGreyText" parent="MediumTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:alpha">@dimen/alpha_medium</item>
-    </style>
-
-    <style name="ItemSmallGreyText" parent="SmallTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:alpha">@dimen/alpha_medium</item>
-    </style>
-
-    <!-- White -->
-    <style name="ItemMediumWhiteText" parent="MediumTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <style name="ItemSmallWhiteText" parent="SmallTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <!-- Light grey -->
-
-    <style name="ItemSmallLightText" parent="SmallTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:alpha">@dimen/alpha_medium</item>
-    </style>
-
-    <style name="CloudStorageText" parent="ItemMediumGreyText">
-        <item name="android:lines">3</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">5</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <!-- TextInputLayout error color -->
-    <style name="TextInputErrorGrey" parent="@android:style/TextAppearance">
-        <item name="android:textSize">@dimen/default_notice_text_size</item>
-        <item name="android:textColor">@color/colorLightGrey</item>
-    </style>
-
-    <style name="TextInputErrorRed" parent="@android:style/TextAppearance">
-        <item name="android:textSize">@dimen/default_notice_text_size</item>
-        <item name="android:textColor">@color/colorLightRed</item>
-    </style>
-
-    <style name="TextInputEmptyErrorMessage">
-        <item name="android:textSize">0sp</item>
-    </style>
-
-    <!-- On boarding -->
-    <style name="OnBoardingTextView" parent="CommonTextView">
-        <item name="android:textColor">@color/colorOnBackground</item>
-        <item name="android:gravity">center</item>
-        <item name="android:lines">7</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">7</item>
-    </style>
-
-    <style name="AuthTextView" parent="CommonTextView">
-        <item name="android:textColor">@color/colorOnSurface</item>
-        <item name="android:gravity">center</item>
-        <item name="android:lines">5</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">5</item>
-    </style>
-
-    <style name="AuthTextViewSecond" parent="CommonTextView">
-        <item name="android:textColor">@color/colorOnSurfaceSecond</item>
-        <item name="android:gravity">center</item>
-        <item name="android:lines">5</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">5</item>
+    <style name="Widget.Common.BottomSheetDialog" parent="AppTheme">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Common.BottomSheetDialog</item>
     </style>
 
     <!-- ======================================================================================= -->
-    <!-- Buttons -->
-    <style name="ColorButtons" parent="CommonButton">
-        <item name="android:backgroundTint">
-            @drawable/drawable_selector_button_primary_background_tint
-        </item>
-        <item name="android:gravity">center</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/colorGrey</item>
+    <!-- Layouts -->
+
+    <style name="LoginContainerLayout">
+        <item name="android:layout_width">@dimen/default_screen_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginTop">@dimen/default_margin_xlarge</item>
     </style>
 
-    <style name="AccentButtons" parent="ColorButtons">
-        <item name="android:backgroundTint">
-            @drawable/drawable_selector_button_accent_background_tint
-        </item>
-        <item name="android:textColor">@drawable/drawable_selector_button_accent_text_color</item>
-    </style>
-
-    <style name="TransparentBlackButtons" parent="ColorButtons">
-        <item name="android:background">?android:attr/selectableItemBackground</item>
-        <item name="android:textColor">@drawable/drawable_selector_button_black_text_color</item>
-    </style>
-
-    <style name="TransparentWhiteButtons" parent="ColorButtons">
-        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
-        <item name="android:textColor">@color/colorWhite</item>
-        <item name="android:theme">@style/WhiteColorControlHighlight</item>
-    </style>
-
-    <style name="TransparentAccentButtons" parent="TransparentBlackButtons">
-        <item name="android:textColor">@drawable/drawable_selector_button_transparent_text_color
-        </item>
-    </style>
-
-    <!-- For login screens -->
-    <style name="FixedAccentButtons" parent="AccentButtons">
-        <item name="android:layout_height">@dimen/default_login_accent_button_height</item>
-    </style>
-
-    <style name="FixedTransparentButtons" parent="FixedAccentButtons">
-        <item name="android:background">?android:attr/selectableItemBackground</item>
-        <item name="android:layout_height">@dimen/default_login_transparent_button_height</item>
-        <item name="android:textColor">@drawable/drawable_selector_button_black_text_color</item>
-    </style>
-
-    <style name="FixedTransparentAccentButtons" parent="FixedTransparentButtons">
-        <item name="android:layout_height">@dimen/default_login_transparent_button_height</item>
-        <item name="android:textColor">@drawable/drawable_selector_button_transparent_text_color
-        </item>
-    </style>
-
-    <style name="FixedTransparentAccentButtonsNoCaps" parent="FixedTransparentAccentButtons">
-        <item name="android:textSize">@dimen/fonts_size_small</item>
-        <item name="textAllCaps">false</item>
-    </style>
-
-    <!-- ======================================================================================= -->
-    <!-- EditTexts -->
-    <style name="MediumEditText" parent="CommonEditText">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textSize">@dimen/fonts_size_medium</item>
-    </style>
-
-    <!-- ======================================================================================= -->
-    <!-- Context common -->
-    <style name="ContextMenuDialog" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="android:colorBackground">@android:color/transparent</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorSecondary</item>
-    </style>
-
-    <!-- Context dialog/popups-->
-    <style name="ContextListLayout">
+    <style name="ContextListItemLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/item_one_line_height</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:paddingStart">@dimen/screen_margin_large</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:paddingEnd">@dimen/screen_margin_large</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:clickable">true</item>
     </style>
 
-    <style name="ContextListImage" parent="AlphaImageView">
-        <item name="android:layout_width">@dimen/image_default_size</item>
-        <item name="android:layout_height">@dimen/image_default_size</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:tint">@color/colorOnSurface</item>
-    </style>
-
-    <style name="ContextListImage.Favorite" parent="ContextListImage">
-        <item name="android:tint">@null</item>
-    </style>
-
-    <style name="ContextListHeaderImage" parent="CommonImageView">
-        <item name="android:layout_width">@dimen/image_size</item>
-        <item name="android:layout_height">@dimen/image_size</item>
-        <item name="android:scaleType">center</item>
-        <item name="android:layout_gravity">center_vertical</item>
-    </style>
-
-    <style name="ContextListMediumText" parent="ItemMediumBlackText">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginEnd">@dimen/default_margin_xxlarge</item>
-        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
-        <item name="android:layout_gravity">center_vertical</item>
-    </style>
-
-    <style name="ContextListAccountsLayout" parent="ContextListLayout">
-        <item name="android:layout_height">@dimen/item_two_line_height</item>
-    </style>
-
-    <style name="ContextListAccountImage" parent="ContextListImage">
-        <item name="android:layout_width">@dimen/image_size</item>
-        <item name="android:layout_height">@dimen/image_size</item>
-        <item name="android:padding">@dimen/image_padding_icon</item>
-    </style>
-
-    <!-- Popup menu -->
-    <style name="PopupLayout" parent="ContextListLayout">
+    <style name="PopupListItemLayout" parent="ContextListItemLayout">
         <item name="android:layout_width">wrap_content</item>
     </style>
 
-    <style name="PopupText" parent="ContextListMediumText">
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:textAllCaps">false</item>
+    <!-- ======================================================================================= -->
+    <!-- Overlay -->
+
+    <style name="ThemeOverlay.Common.Button" parent="ThemeOverlay.Material3.Button.ElevatedButton">
+        <item name="colorContainer">?attr/colorPrimary</item>
+        <item name="colorOnContainer">?attr/colorOnPrimary</item>
     </style>
 
-    <style name="MainAppBar" parent="Widget.MaterialComponents.AppBarLayout.Surface" />
-
-    <style name="MainBottomBar" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
-        <item name="android:background">@color/colorPrimaryDark</item>
+    <style name="ThemeOverlay.Common.Button.Error" parent="ThemeOverlay.Material3.Button.ElevatedButton">
+        <item name="colorContainer">?attr/colorError</item>
+        <item name="colorOnContainer">?attr/colorOnError</item>
     </style>
 
-    <style name="MainToolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
-        <item name="colorOnPrimary">@color/colorPrimary</item>
-        <item name="elevationOverlayEnabled">false</item>
-    </style>
-
-    <style name="AccentButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_height">@dimen/default_login_accent_button_height</item>
-    </style>
-
-    <style name="AuthAccentButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_height">@dimen/screen_auth_login_accent_button_height</item>
-        <item name="android:textSize">@dimen/screen_auth_accent_button_text_size</item>
-        <item name="android:textColor">@color/colorWhite</item>
-    </style>
-
-    <style name="AccentTextButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:layout_height">@dimen/default_login_accent_button_height</item>
-    </style>
-
-    <style name="AccentTextButtonSmall" parent="AccentTextButton">
-        <item name="android:textSize">@dimen/fonts_size_small</item>
-        <item name="textAllCaps">false</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:padding">0dp</item>
-    </style>
+    <!-- ======================================================================================= -->
+    <!-- Other -->
 
     <style name="MainPopupAnimation" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/popup_in</item>
         <item name="android:windowExitAnimation">@anim/popup_out</item>
-    </style>
-
-    <!-- Dialog styles -->
-    <style name="DialogTextInputLayout">
-        <item name="boxBackgroundColor">@color/colorSurface</item>
-    </style>
-
-    <style name="DialogTitleStyle">
-        <item name="android:textSize">20sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textColor">@color/colorOnSurface</item>
-    </style>
-
-    <style name="DialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textSize">16sp</item>
-        <item name="android:foreground">?attr/selectableItemBackground</item>
-        <item name="android:textAppearance">@style/MediumTextView</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
 </resources>

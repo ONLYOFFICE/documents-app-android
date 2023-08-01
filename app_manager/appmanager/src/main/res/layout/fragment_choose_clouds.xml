@@ -30,7 +30,6 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/onlyOfficeIcon"
-                    style="@style/CloudImageView"
                     android:layout_width="@dimen/image_size"
                     android:layout_height="@dimen/image_size"
                     android:layout_gravity="center"
@@ -44,7 +43,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/onlyOfficeTitle"
-                    style="@style/ItemMediumBlackText"
+                    style="@style/Widget.Common.TextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/screen_margin_large"
@@ -57,7 +56,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/onlyOfficeDescription"
-                    style="@style/ItemSmallGreyText"
+                    style="@style/Widget.Common.TextView.Small.Secondary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"

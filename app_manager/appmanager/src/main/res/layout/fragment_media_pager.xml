@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:animateLayoutChanges="true"
     android:layout_height="match_parent">
 
     <androidx.viewpager2.widget.ViewPager2
@@ -16,7 +17,7 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/media_pager_position"
-        style="@style/ItemSmallWhiteText"
+        style="@style/Widget.Common.TextView.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

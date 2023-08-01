@@ -3,9 +3,11 @@ package app.editors.manager.ui.fragments.share
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
+import app.editors.manager.mvp.models.ui.AddEmailUi
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
 import app.editors.manager.mvp.presenters.share.AddPresenter
@@ -15,6 +17,7 @@ import app.editors.manager.ui.adapters.ShareAdapter
 import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
@@ -62,9 +65,16 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
             when (item) {
                 is UserUi -> item.isSelected = !item.isSelected
                 is GroupUi -> item.isSelected = !item.isSelected
+                else -> arguments?.getSerializableExt<Item>(TAG_ITEM)?.let { room ->
+                    showParentFragment(
+                        ShareInviteFragment.newInstance(room),
+                        ShareInviteFragment.TAG,
+                        false
+                    )
+                }
             }
         }
-        shareAdapter?.notifyItemChanged(position)
+        shareAdapter?.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
         setCountChecked()
     }
 
@@ -87,7 +97,11 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
         setPlaceholder(true, list.isNotEmpty())
         swipeRefreshLayout?.isRefreshing = false
         shareAdapter?.setMode(BaseAdapter.Mode.USERS)
-        shareAdapter?.setItems(list)
+        if ((arguments?.getSerializableExt<CloudFolder>(TAG_ITEM))?.isRoom == true) {
+            shareAdapter?.setItems(mutableListOf(AddEmailUi()) + list)
+        } else {
+            shareAdapter?.setItems(list)
+        }
     }
 
     override fun onGetGroups(list: List<ViewType>) {

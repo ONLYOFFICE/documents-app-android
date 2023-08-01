@@ -99,7 +99,7 @@ class WebDavSignInFragment : WebDavBaseFragment(), WebDavSignInView {
         }
 
         viewBinding?.storageWebDavTitleLayout?.isVisible = false
-        parentActivity?.setOnConnectButtonClickListener(this::connect)
+        viewBinding?.connectButton?.setOnClickListener { connect() }
         super.initViews(webDavProvider === WebDavService.Providers.NextCloud)
     }
 
@@ -111,17 +111,14 @@ class WebDavSignInFragment : WebDavBaseFragment(), WebDavSignInView {
 
     @SuppressLint("SetTextI18n")
     private fun initKDriveState() {
-        viewBinding?.storageWebDavServerEdit?.setText("https://connect.drive.infomaniak.com")
-        viewBinding?.storageWebDavServerLayout?.isVisible = false
         viewBinding?.storageWebDavPasswordEdit?.setActionDoneListener(this::connect)
         viewBinding?.storageWebDavServerEdit?.setText("https://connect.drive.infomaniak.com")
-        viewBinding?.storageWebDavUrlLayout?.visibility = View.GONE
-        viewBinding?.storageWebDavLoginLayout?.hint = getString(R.string.login_enterprise_email_hint)
-        viewBinding?.storageWebDavPasswordLayout?.helperText = getString(R.string.krdive_password_helper_text)
-        viewBinding?.storageInfoTitle?.apply {
-            isVisible = true
-            text = getString(R.string.kdrive_info_title)
-        }
+        viewBinding?.storageWebDavServerLayout?.isVisible = false
+        viewBinding?.storageWebDavLoginLayout?.setHint(R.string.login_enterprise_email_hint)
+        viewBinding?.storageInfoSecond?.setText(R.string.krdive_password_helper_text)
+        viewBinding?.storageInfoTitle?.setText(R.string.kdrive_info_title)
+        viewBinding?.storageInfoSecond?.isVisible = true
+        viewBinding?.storageInfoTitle?.isVisible = true
     }
 
     @SuppressLint("SetTextI18n")

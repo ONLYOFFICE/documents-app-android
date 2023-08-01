@@ -1,33 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/colorMediaBackground"
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/frame_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:background="@color/colorMediaBackground" />
 
-    <com.google.android.material.appbar.AppBarLayout
-        style="@style/MainAppBar"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/mediaToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/app_bar_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorBlack"
-            android:theme="@style/MainToolbar">
-
-            <FrameLayout
-                android:id="@+id/app_bar_toolbar_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </com.google.android.material.appbar.MaterialToolbar>
-
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="top"
+        android:background="@color/colorMediaBackground"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark"
+        app:menu="@menu/menu_media"
+        tools:subtitle="Subtitle"
+        tools:title="Title" />
 
 </FrameLayout>

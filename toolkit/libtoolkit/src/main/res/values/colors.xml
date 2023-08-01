@@ -1,67 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Primary -->
-    <color name="colorPrimary">#FF1565C0</color>
-    <color name="colorOnPrimary">@color/colorBlack</color>
-    <color name="colorPrimaryDark">#0F4071</color>
-    <color name="colorPrimaryLight">#3E73A3</color>
-    <color name="colorSecondary">#FFF77F00</color>
+    <!-- Base -->
+    <color name="colorPrimary">#3880BE</color>
+    <color name="colorOnPrimary">@color/colorWhite</color>
+    <color name="colorSecondary">#F77F00</color>
     <color name="colorOnSecondary">@color/colorWhite</color>
-    <color name="colorError">#FFED0A34</color>
-    <color name="colorOnError">@color/colorBlack</color>
-    <color name="colorSurface">@color/colorWhite</color>
-    <color name="colorOnSurface">@color/colorBlack</color>
-    <color name="colorOnSurfaceSecond">@color/colorGrey</color>
+    <color name="colorError">#ED0A34</color>
+    <color name="colorOnError">@color/colorWhite</color>
     <color name="colorBackground">@color/colorWhite</color>
     <color name="colorOnBackground">@color/colorBlack</color>
-    <color name="colorBackgroundSecond">#F4F4F4</color>
-    <color name="colorOutline">#D8D8D8</color>
-    <color name="colorBgDescription">#F1F3F8</color>
-    <color name="colorLink">#2388AA</color>
+    <color name="colorSurface">@color/colorWhite</color>
+    <color name="colorOnSurface">@color/colorBlack</color>
 
-    <!-- Common -->
-    <color name="colorBlack">#000000</color>
-    <color name="colorWhite">#ffffff</color>
+    <!-- Text -->
+    <color name="colorTextPrimary">@color/colorBlack</color>
+    <color name="colorTextSecondary">@color/colorBlack60</color>
+    <color name="colorTextTertiary">@color/colorBlack40</color>
 
+    <!-- Custom -->
+    <color name="colorBackdrop">#EFF0F5</color>
     <color name="colorAppBar">@color/colorWhite</color>
-    <color name="colorBottomBar">#FF0D3F6D</color>
-
-    <color name="colorPropertyToolbar">@color/colorWhite</color>
-    <color name="colorPropertyOnToolbar">#DE000000</color>
-    <color name="colorPropertyOnToolbarSecondary">#99000000</color>
-    <color name="colorPropertyOnToolbarActive">?attr/colorPrimary</color>
-
-    <color name="colorButtonBackground">#EFF0F5</color>
-
-    <color name="colorDark">#de000000</color>
-    <color name="colorDarkGrey">#b2000000</color>
-    <color name="colorGrey">#8a000000</color>
-    <color name="colorLightGrey">#61000000</color>
-    <color name="colorDarkLight">#1f000000</color>
-    <color name="colorLight">#8affffff</color>
-    <color name="colorLightWhite">#33ffffff</color>
-    <color name="colorWhiteLight">#F5F5F5</color>
-    <color name="colorLightRed">#deff1744</color>
-    <color name="colorPagerOnBoarding">#D4D4D4</color>
-    <color name="colorTransparent">#00000000</color>
-    <color name="colorSelectedBorder">#446995</color>
-
-    <!-- Ripple -->
-    <color name="colorRipple">#1f000000</color>
-
-    <!-- Items -->
-    <color name="colorDocTint">#446995</color>
-    <color name="colorSheetTint">#40865c</color>
-    <color name="colorPresentationTint">#aa5252</color>
-    <color name="colorPicTint">#a671d8</color>
-    <color name="colorPdfTint">#db4437</color>
-    <color name="colorVideoTint">#00a9cd</color>
-
-    <!--    Clouds-->
+    <color name="colorBottomBar">#0F4071</color>
+    <color name="colorOutline">@color/colorBlack12</color>
     <color name="colorCloudItem">#EDF9FF</color>
+    <color name="colorButtonBackground">@color/colorBackdrop</color>
+    <color name="colorMediaBackground">@color/colorBlack</color>
 
-    <color name="listItemColor">@color/colorSurface</color>
-    <color name="shadow_end">@color/colorLightWhite</color>
-    <color name="shadow_start">@color/colorWhiteLight</color>
+    <!-- Editors -->
+    <color name="colorDocTint">#446995</color>
+    <color name="colorSheetTint">#40865C</color>
+    <color name="colorPresentationTint">#AA5252</color>
+    <color name="colorPicTint">#A671d8</color>
+    <color name="colorPdfTint">#DB4437</color>
+    <color name="colorVideoTint">#00A9CD</color>
+
+    <!-- StatusBar for viewer-->
+    <color name="colorStatusBarDocTint">#365477</color>
+    <color name="colorStatusBarSheetTint">#336B4A</color>
+    <color name="colorStatusBarPresentationTint">#884242</color>
+
+    <color name="shadow_end">@color/colorBlack12</color>
+    <color name="shadow_start">@color/colorBlack32</color>
 </resources>

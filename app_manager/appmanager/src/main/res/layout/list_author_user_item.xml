@@ -37,18 +37,17 @@
 
         <TextView
             android:id="@+id/userName"
-            style="@style/CommonTextView"
+            style="@style/Widget.Common.TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
             tools:text="Abraham Acord" />
 
         <TextView
             android:id="@+id/department"
-            style="@style/CommonTextView"
+            style="@style/Widget.Common.TextView.Small.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorGrey"
+            android:textColor="@color/colorTextSecondary"
             android:visibility="gone"
             tools:text="Lead Sales Manager" />
 

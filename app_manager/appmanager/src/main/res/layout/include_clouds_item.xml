@@ -5,14 +5,12 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height"
-    android:background="@color/colorSurface"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/settingIcon"
-        style="@style/CloudImageView"
         android:layout_width="@dimen/image_default_size"
         android:layout_height="@dimen/image_default_size"
         android:layout_gravity="center"
@@ -25,7 +23,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settingText"
-        style="@style/ItemMediumBlackText"
+        style="@style/Widget.Common.TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/screen_margin_large"

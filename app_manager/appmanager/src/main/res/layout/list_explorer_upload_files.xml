@@ -23,7 +23,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_explorer_upload_file_name"
-        style="@style/ItemMediumBlackText"
+        style="@style/Widget.Common.TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -37,7 +37,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_explorer_upload_file_progress"
-        style="@style/ItemSmallGreyText"
+        style="@style/Widget.Common.TextView.Small.Secondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -46,18 +46,16 @@
         app:layout_constraintStart_toStartOf="@+id/list_explorer_upload_file_name"
         app:layout_constraintTop_toBottomOf="@+id/list_explorer_upload_file_name" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/list_explorer_upload_file_cancel"
-        style="@style/AlphaImageButton"
+        style="@style/Widget.Common.Button.IconButton.Secondary"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:padding="@dimen/screen_margin_large"
-        android:src="@drawable/drawable_ic_cancel_download_upload"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/default_margin_medium"
+        app:icon="@drawable/drawable_ic_cancel_download_upload"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/colorOnSurface"
         tools:ignore="ContentDescription" />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator

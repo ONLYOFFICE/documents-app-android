@@ -6,7 +6,7 @@
         android:id="@+id/menu_share_settings"
         android:enabled="true"
         android:icon="@drawable/drawable_menu_internal_link"
-        android:iconTint="@color/colorGrey"
+        android:iconTint="@color/colorTextSecondary"
         android:visible="true"
         app:showAsAction="always"
         tools:ignore="MenuTitle" />

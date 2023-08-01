@@ -9,7 +9,7 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarLayout"
-        style="@style/MainAppBar"
+        style="@style/Widget.Common.AppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorSurface"
-            android:theme="@style/MainToolbar" >
+            android:theme="@style/Widget.Common.Toolbar" >
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/toolbarButton"
