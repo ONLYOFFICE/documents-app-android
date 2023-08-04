@@ -1,9 +1,14 @@
 package lib.compose.ui.views
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LocalElevationOverlay
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -23,7 +28,7 @@ fun AppTopBar(
     isClose: Boolean = false,
     tint: Color? = null,
     actions: @Composable (() -> Unit)? = null,
-    backListener: () -> Unit
+    backListener: (() -> Unit)? = null
 ) {
     CompositionLocalProvider(LocalElevationOverlay provides null) { // For correct background color
         TopAppBar(
@@ -37,13 +42,15 @@ fun AppTopBar(
                 )
             },
             backgroundColor = MaterialTheme.colors.colorTopAppBar,
-            navigationIcon = {
-                IconButton(onClick = backListener) {
-                    Icon(
-                        painter = painterResource(id = if (isClose) R.drawable.ic_close else R.drawable.ic_back),
-                        tint = tint ?: MaterialTheme.colors.primary,
-                        contentDescription = null
-                    )
+            navigationIcon = backListener?.let {
+                {
+                    IconButton(onClick = backListener) {
+                        Icon(
+                            painter = painterResource(id = if (isClose) R.drawable.ic_close else R.drawable.ic_back),
+                            tint = tint ?: MaterialTheme.colors.primary,
+                            contentDescription = null
+                        )
+                    }
                 }
             }, actions = {
                 actions?.invoke()
@@ -58,7 +65,7 @@ fun AppTopBar(
     isClose: Boolean = false,
     tint: Color? = null,
     actions: @Composable (() -> Unit)? = null,
-    backListener: () -> Unit
+    backListener: (() -> Unit)? = null
 ) {
     AppTopBar(
         title = stringResource(id = title),
@@ -70,6 +77,7 @@ fun AppTopBar(
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TopAppBarPreview() {
     ManagerTheme {
@@ -83,9 +91,9 @@ private fun TopAppBarPreview() {
     }
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Preview
 @Composable
-private fun TopAppBarPreviewDark() {
+private fun TopAppBarPreviewNoNavigationButton() {
     ManagerTheme {
         AppTopBar(
             title = R.string.app_title,
@@ -94,6 +102,6 @@ private fun TopAppBarPreviewDark() {
                 TopAppBarAction(icon = R.drawable.drawable_ic_logo) { }
                 TopAppBarAction(icon = R.drawable.drawable_ic_visibility_off, enabled = false) { }
             }
-        ) { }
+        )
     }
 }
