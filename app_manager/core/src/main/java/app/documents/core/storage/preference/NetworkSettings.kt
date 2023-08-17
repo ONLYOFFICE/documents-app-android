@@ -17,6 +17,7 @@ class NetworkSettings(context: Context) {
         private const val KEY_SSO_LABEL = "KEY_SSO_LABEL"
         private const val KEY_LDAP = "KEY_LDAP"
         private const val KEY_VERSION = "KEY_VERSION"
+        private const val KEY_DOCUMENT_VERSION = "KEY_DOCUMENT_VERSION"
         private const val KEY_DOC_SPACE = "DOC_SPACE"
 
         private const val TAG_SUFFIX_INFO = "info"
@@ -50,6 +51,12 @@ class NetworkSettings(context: Context) {
         preferences.edit().putString(KEY_VERSION, value).apply()
     }
     get() = preferences.getString(KEY_VERSION, "") ?: ""
+
+    var documentServerVersion: String
+        set(value) {
+            preferences.edit().putString(KEY_DOCUMENT_VERSION, value).apply()
+        }
+        get() = preferences.getString(KEY_DOCUMENT_VERSION, "") ?: ""
 
     var isDocSpace: Boolean
         set(value) {
@@ -104,6 +111,7 @@ class NetworkSettings(context: Context) {
         ssoLabel = ""
         ssoUrl = ""
         ldap = false
+        documentServerVersion = ""
         setSslState(true)
         setCipher(false)
         setBaseUrl("")
