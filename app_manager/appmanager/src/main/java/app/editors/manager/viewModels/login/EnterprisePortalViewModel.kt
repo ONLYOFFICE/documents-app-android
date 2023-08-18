@@ -4,6 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.login.models.response.ResponseAllSettings
+import app.documents.core.network.login.models.response.ResponseCapabilities
+import app.documents.core.network.login.models.response.ResponseSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -18,10 +21,11 @@ sealed class EnterprisePortalState {
     class Error(val message: String? = null) : EnterprisePortalState()
 }
 
-class EnterprisePortalViewModel: BaseLoginViewModel() {
+class EnterprisePortalViewModel : BaseLoginViewModel() {
 
     companion object {
         val TAG: String = EnterprisePortalViewModel::class.java.simpleName
+        @Suppress("KotlinConstantConditions")
         private val BANNED_ADDRESSES: Set<String> = object : TreeSet<String>() {
             init {
                 if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
@@ -92,8 +96,9 @@ class EnterprisePortalViewModel: BaseLoginViewModel() {
         disposable = service.capabilities()
             .subscribe({ response ->
                 if (response is LoginResponse.Success) {
-                    if (response.response is app.documents.core.network.login.models.response.ResponseCapabilities) {
-                        val capability = (response.response as app.documents.core.network.login.models.response.ResponseCapabilities).response
+                    if (response.response is ResponseCapabilities) {
+                        val capability =
+                            (response.response as ResponseCapabilities).response
                         setSettings(capability)
                         if (networkSettings.getScheme() == ApiContract.SCHEME_HTTPS) {
                             _portalStateLiveData.value = EnterprisePortalState.Success(
@@ -108,11 +113,14 @@ class EnterprisePortalViewModel: BaseLoginViewModel() {
                                 true
                             )
                         }
-                    } else if (response.response is app.documents.core.network.login.models.response.ResponseSettings) {
+                    } else if (response.response is ResponseSettings) {
+                        networkSettings.documentServerVersion =
+                            (response.response as ResponseSettings).response.documentServer ?: ""
                         networkSettings.serverVersion =
-                            (response.response as app.documents.core.network.login.models.response.ResponseSettings).response.communityServer ?: ""
-                    } else if (response.response is app.documents.core.network.login.models.response.ResponseAllSettings) {
-                        networkSettings.isDocSpace = (response.response as app.documents.core.network.login.models.response.ResponseAllSettings).response.docSpace
+                            (response.response as ResponseSettings).response.communityServer ?: ""
+                    } else if (response.response is ResponseAllSettings) {
+                        networkSettings.isDocSpace =
+                            (response.response as ResponseAllSettings).response.docSpace
                     }
                 } else {
                     fetchError((response as LoginResponse.Error).error)
