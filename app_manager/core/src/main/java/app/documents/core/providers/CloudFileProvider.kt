@@ -68,6 +68,7 @@ class CloudFileProvider @Inject constructor(
         }
     }
 
+    //TODO Rework the creation for collaboration
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
         return managerService.createDocs(folderId, body)
             .subscribeOn(Schedulers.io())
