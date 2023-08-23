@@ -275,6 +275,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                                     }
 
                                     is ResponseSettings -> {
+                                        networkSettings.documentServerVersion =
+                                            (response.response as ResponseSettings).response.documentServer ?: ""
                                         networkSettings.serverVersion =
                                             (response.response as ResponseSettings).response.communityServer ?: ""
                                     }
@@ -334,6 +336,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             is LoginResponse.Success -> {
                 when (capabilityResponse.response) {
                     is ResponseSettings -> {
+                        networkSettings.documentServerVersion =
+                            (capabilityResponse.response as ResponseSettings).response.documentServer ?: ""
                         networkSettings.serverVersion =
                             (capabilityResponse.response as ResponseSettings).response.communityServer ?: ""
                     }

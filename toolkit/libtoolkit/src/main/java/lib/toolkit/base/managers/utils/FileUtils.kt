@@ -188,7 +188,7 @@ object FileUtils {
     }
 
     @JvmStatic
-    fun readSdkVersion(context: Context, path: String) = context.assets.open(path).use { input ->
+    fun readSdkVersion(context: Context, path: String = "sdk.version") = context.assets.open(path).use { input ->
         try {
             input.reader(Charsets.UTF_8).use { reader ->
                 reader.readText()

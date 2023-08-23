@@ -18,6 +18,8 @@ object FirebaseUtils {
     private const val KEY_CAPTCHA = "recaptcha_for_portal_registration"
     private const val KEY_TERMS_OF_SERVICE = "link_terms_of_service"
     private const val KEY_PRIVACY_POLICY = "link_privacy_policy"
+    private const val KEY_ALLOW_COAUTHORING = "allow_coauthoring"
+    private const val KEY_SDK_FULLY = "check_sdk_fully"
     private const val TIME_FETCH: Long = 3600
 
     private var firebaseAnalytics: FirebaseAnalytics? = null
@@ -89,6 +91,24 @@ object FirebaseUtils {
             }
         }
         return liveData
+    }
+
+    /**
+     * @param block First allow_coauthoring, second check_sdk_fully
+     */
+    fun getSdk(block: (config: Pair<Boolean, Boolean>) -> Unit)  {
+        getRemoteConfig()?.let { config ->
+            config.fetch(if (BuildConfig.DEBUG) 0 else TIME_FETCH).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    config.activate()
+                    block(Pair(first = config.getBoolean(KEY_ALLOW_COAUTHORING), second = config.getBoolean(KEY_SDK_FULLY)))
+                } else {
+                    block(Pair(true, false))
+                }
+            }
+        } ?: {
+            block(Pair(true, false))
+        }
     }
 
     fun getLocalServicesUrl(context: Context): Array<String> {

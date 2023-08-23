@@ -362,4 +362,21 @@ interface ManagerService {
         @Body body: app.documents.core.network.login.models.RequestPushSubscribe
     ): Single<Response<ResponseBody>>
 
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
+    fun openFile(
+        @Path(value = "id")id: String,
+        @Query("version") version: Int
+    ): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/docservice")
+    fun getDocService(): Single<Response<ResponseBody>>
+
 }

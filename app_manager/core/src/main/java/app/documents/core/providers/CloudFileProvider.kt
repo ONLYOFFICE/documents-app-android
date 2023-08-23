@@ -14,15 +14,21 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Response
-import java.io.File
 import javax.inject.Inject
 
 class CloudFileProvider @Inject constructor(
     private val managerService: ManagerService,
     private val roomService: RoomService
 ) : BaseFileProvider, CacheFileHelper {
+
+    companion object {
+        private const val KEY_RESPONSE = "response"
+        private const val KEY_URL = "url"
+        private const val STATIC_DOC_URL = "/web-apps/apps/api/documents/api.js"
+    }
 
     interface RoomCallback {
         fun isRoomRoot(id: String?): Boolean
@@ -62,6 +68,7 @@ class CloudFileProvider @Inject constructor(
         }
     }
 
+    //TODO Rework the creation for collaboration
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
         return managerService.createDocs(folderId, body)
             .subscribeOn(Schedulers.io())
@@ -349,6 +356,21 @@ class CloudFileProvider @Inject constructor(
             url = cloudFile.viewUrl,
             cookie = ApiContract.COOKIE_HEADER + token
         )
+    }
+
+    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+    fun opeEdit(cloudFile: CloudFile): Single<String?> {
+        return managerService.openFile(cloudFile.id, cloudFile.version)
+            .map { response ->
+                val docService =
+                    JSONObject(managerService.getDocService().blockingGet().body()?.string()).getString(KEY_RESPONSE)
+                        .replace(STATIC_DOC_URL, "")
+                return@map JSONObject(response.body()?.string()).getJSONObject(KEY_RESPONSE).put(KEY_URL, docService)
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).map { response ->
+                return@map response.toString()
+            }
     }
 
 }
