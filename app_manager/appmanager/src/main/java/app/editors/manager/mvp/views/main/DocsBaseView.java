@@ -153,4 +153,7 @@ public interface DocsBaseView extends BaseViewExt {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onSendCopy(@NonNull File file);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onOpenDocumentServer(@Nullable CloudFile file, @Nullable String info);
 }

@@ -18,6 +18,7 @@ import app.documents.core.network.storages.dropbox.login.DropboxLoginProvider
 import app.documents.core.network.storages.googledrive.api.GoogleDriveProvider
 import app.documents.core.network.storages.googledrive.login.GoogleDriveLoginProvider
 import app.documents.core.network.storages.onedrive.api.OneDriveProvider
+import app.documents.core.network.storages.onedrive.login.OneDriveLoginProvider
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
@@ -25,14 +26,22 @@ import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.BuildConfig
+import app.editors.manager.di.component.AppComponent
+import app.editors.manager.di.component.CoreComponent
+import app.editors.manager.di.component.DaggerAppComponent
+import app.editors.manager.di.component.DaggerCoreComponent
+import app.editors.manager.di.component.DaggerDropboxComponent
+import app.editors.manager.di.component.DaggerGoogleDriveComponent
+import app.editors.manager.di.component.DaggerOneDriveComponent
+import app.editors.manager.di.component.DropboxComponent
+import app.editors.manager.di.component.GoogleDriveComponent
+import app.editors.manager.di.component.OneDriveComponent
 import app.editors.manager.managers.utils.KeyStoreUtils
-import app.documents.core.network.storages.onedrive.login.OneDriveLoginProvider
-import app.editors.manager.di.component.*
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
-import java.util.*
+import java.util.Locale
 
 class App : Application() {
 
@@ -129,7 +138,7 @@ class App : Application() {
             .build()
     }
 
-    fun checkDeXEnabled(): Boolean {
+    private fun checkDeXEnabled(): Boolean {
         val enabled: Boolean
         val config: Configuration = resources.configuration
         try {

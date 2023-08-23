@@ -1074,10 +1074,34 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun showEditors(uri: Uri?, type: EditorsType, viewMode: Boolean = true) {
+    override fun onOpenDocumentServer(file: CloudFile?, info: String?) {
+        when (getExtension(file?.fileExst ?: "")) {
+            StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
+                showEditors(null, EditorsType.DOCS, info)
+            }
+
+            StringUtils.Extension.SHEET -> {
+                showEditors(null, EditorsType.CELLS, info)
+            }
+
+            StringUtils.Extension.PRESENTATION -> {
+                showEditors(null, EditorsType.PRESENTATION, info)
+            }
+
+            StringUtils.Extension.PDF -> {
+                showEditors(null, EditorsType.PDF, info)
+            }
+
+            else -> {
+            }
+        }
+    }
+
+    protected fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, viewMode: Boolean = true) {
         try {
             val intent = Intent().apply {
                 data = uri
+                info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
                 putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
                 action = Intent.ACTION_VIEW

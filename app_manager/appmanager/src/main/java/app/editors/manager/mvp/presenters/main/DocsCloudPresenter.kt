@@ -156,25 +156,35 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun createDocs(title: String) {
-        if (preferenceTool.portal != null) {
-            FirebaseUtils.addAnalyticsCreateEntity(
-                preferenceTool.portal!!,
-                true,
-                StringUtils.getExtensionFromPath(title)
-            )
-        }
-        val id = modelExplorerStack.currentId
-        if (id != null) {
+        FirebaseUtils.addAnalyticsCreateEntity(
+            networkSettings.getPortal(),
+            true,
+            StringUtils.getExtensionFromPath(title)
+        )
+
+        modelExplorerStack.currentId?.let { id ->
             val requestCreate = RequestCreate()
             requestCreate.title = title
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.createFile(id, requestCreate).subscribe({ file ->
-                        addFile(file)
-                        addRecent(file)
+                    provider.createFile(id, requestCreate).flatMap { cloudFile ->
+                        addFile(cloudFile)
+                        addRecent(cloudFile)
+                        (provider as CloudFileProvider).opeEdit(cloudFile)
+                            .toObservable()
+                            .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
+                                return@zipWith arrayOf(file, info)
+                            }
+                    }.subscribe({ info ->
                         setPlaceholderType(PlaceholderViews.Type.NONE)
                         viewState.onDialogClose()
-                        viewState.onCreateFile(file)
+                        checkSdkVersion { result ->
+                            if (result) {
+                                viewState.onOpenDocumentServer(info[0] as CloudFile, info[1] as String)
+                            } else {
+                                viewState.onCreateFile(info[0] as CloudFile)
+                            }
+                        }
                     }) { throwable: Throwable -> fetchError(throwable) })
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
@@ -185,7 +195,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (itemClicked != null) {
             fileProvider?.let { provider ->
                 disposable.add(provider.fileInfo(itemClicked!!)
-                    .subscribe({ onFileClickAction() }) { throwable: Throwable -> fetchError(throwable) })
+                    .subscribe({ onFileClickAction(it) }) { throwable: Throwable -> fetchError(throwable) })
             }
         }
     }
@@ -529,8 +539,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         it.isNotEmpty() -> {
                             showMoveCopyDialog(it, action, modelExplorerStack.currentTitle)
                         }
+
                         action == MoveCopyDialog.ACTION_COPY -> {
-                            transfer(ApiContract.Operation.DUPLICATE, false)}
+                            transfer(ApiContract.Operation.DUPLICATE, false)
+                        }
 
                         action == MoveCopyDialog.ACTION_MOVE -> {
                             transfer(ApiContract.Operation.DUPLICATE, true)
@@ -549,27 +561,39 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.showMoveCopyDialog(names, action, titleFolder)
     }
 
-    private fun onFileClickAction() {
-        if (itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            val extension = file.fileExst
-            when (StringUtils.getExtension(extension)) {
-                StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
-                    addRecent(itemClicked as CloudFile)
-                    //TODO open write mode
-//                    file.isReadOnly = true
-                    viewState.onFileWebView(file)
+    private fun onFileClickAction(cloudFile: CloudFile) {
+        val extension = cloudFile.fileExst
+        when (StringUtils.getExtension(extension)) {
+            StringUtils.Extension.DOC,
+            StringUtils.Extension.SHEET,
+            StringUtils.Extension.PRESENTATION,
+            StringUtils.Extension.FORM -> {
+                (fileProvider as CloudFileProvider).opeEdit(cloudFile).subscribe({ info ->
+                    checkSdkVersion { result ->
+                        if (result) {
+                            viewState.onOpenDocumentServer(cloudFile, info)
+                        } else {
+                            viewState.onFileWebView(cloudFile)
+                        }
+                    }
+                }) { error ->
+                    fetchError(error)
                 }
-
-                StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                    addRecent(itemClicked as CloudFile)
-                    viewState.onFileMedia(getListMedia(file.id), false)
-                }
-
-                else -> viewState.onFileDownloadPermission()
+                addRecent(itemClicked as CloudFile)
             }
-            FirebaseUtils.addAnalyticsOpenEntity(networkSettings.getPortal(), extension)
+
+            StringUtils.Extension.PDF -> {
+                viewState.onFileWebView(cloudFile)
+            }
+
+            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
+                addRecent(itemClicked as CloudFile)
+                viewState.onFileMedia(getListMedia(cloudFile.id), false)
+            }
+
+            else -> viewState.onFileDownloadPermission()
         }
+        FirebaseUtils.addAnalyticsOpenEntity(networkSettings.getPortal(), extension)
     }
 
     private fun resetFilters() {
@@ -587,27 +611,39 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         fileProvider?.let { provider ->
             disposable.add(provider.fileInfo(CloudFile().apply {
                 id = model.file?.id.toString()
-            }).subscribe({ file: CloudFile ->
-                itemClicked = file
-                when (val ext = StringUtils.getExtension(file.fileExst)) {
-                    StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.FORM -> {
-                        if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
-                            viewState.onError(context.getString(R.string.error_unsupported_format))
-                        } else {
+            })
+                .flatMap { cloudFile ->
+                    (provider as CloudFileProvider).opeEdit(cloudFile)
+                        .toObservable()
+                        .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
+                            return@zipWith arrayOf(file, info)
+                        }
+                }
+                .subscribe({ info ->
+                    val file = info[0] as CloudFile
+                    when (val ext = StringUtils.getExtension(file.fileExst)) {
+                        StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.FORM -> {
+                            if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
+                                viewState.onError(context.getString(R.string.error_unsupported_format))
+                            } else {
+                                viewState.onOpenDocumentServer(file, info[1] as String)
+                            }
+                        }
+
+                        StringUtils.Extension.PDF -> {
                             viewState.onFileWebView(file)
                         }
-                    }
 
-                    StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                        viewState.onFileMedia(getListMedia(file.id), false)
-                    }
+                        StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
+                            viewState.onFileMedia(getListMedia(file.id), false)
+                        }
 
-                    else -> viewState.onFileDownloadPermission()
+                        else -> viewState.onFileDownloadPermission()
+                    }
                 }
-            }
-            ) { throwable: Throwable ->
-                fetchError(throwable)
-            })
+                ) { throwable: Throwable ->
+                    fetchError(throwable)
+                })
         }
 
     }
