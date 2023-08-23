@@ -22,6 +22,7 @@ import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import lib.toolkit.base.R
@@ -428,14 +429,21 @@ fun Bundle.contains(key: String): Boolean {
     }
 }
 
-fun FragmentActivity.getSendFileIntent(title: Int, file: File): Intent =
+fun FragmentActivity.getSendFileIntent(title: Int, file: File? = null, uri: Uri? = null): Intent =
     Intent.createChooser(Intent().apply {
-        val uri = FileProvider.getUriForFile(this@getSendFileIntent, "$packageName.asc.provider", file)
+        val intentUri = if (file != null) {
+            FileProvider.getUriForFile(this@getSendFileIntent, "$packageName.asc.provider", file)
+        } else uri
         action = Intent.ACTION_SEND
         type = "application/*"
-        putExtra(Intent.EXTRA_STREAM, uri)
+        putExtra(Intent.EXTRA_STREAM, intentUri)
     }, getString(title))
 
-fun FragmentActivity.openSendFileActivity(title: Int, file: File) {
-    startActivity(getSendFileIntent(title, file))
+fun FragmentActivity.openSendFileActivity(title: Int, uri: Uri) {
+    if (uri.scheme == "content") {
+        startActivity(getSendFileIntent(title, uri = uri))
+    } else {
+        startActivity(getSendFileIntent(title, file = uri.toFile()))
+    }
+
 }
