@@ -28,6 +28,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 import app.editors.manager.managers.works.BaseDownloadWork
@@ -1606,6 +1607,38 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun interruptFileSending() {
         sendDisposable?.dispose()
+    }
+
+    protected fun checkSdkVersion(result: (isCoauthoring: Boolean) -> Unit) {
+        FirebaseUtils.getSdk { pair ->
+            if (!pair.first) {
+                result(false)
+                return@getSdk
+            }
+            val webSdk = networkSettings.documentServerVersion.replace(".", "")
+
+            if (webSdk.isEmpty()) {
+                result(false)
+                return@getSdk
+            }
+
+            val localSdk = FileUtils.readSdkVersion(context).replace(".", "")
+
+            var maxVersionIndex = 2
+
+            if (!pair.second) {
+                maxVersionIndex = 1
+            }
+
+            for (i in 0..maxVersionIndex) {
+                if (webSdk[i] != localSdk[i]) {
+                    result(false)
+                    return@getSdk
+                }
+            }
+
+            result(true)
+        }
     }
 
     abstract fun getNextList()
