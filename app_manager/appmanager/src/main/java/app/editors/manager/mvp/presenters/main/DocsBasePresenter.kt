@@ -1609,13 +1609,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         sendDisposable?.dispose()
     }
 
-    protected fun checkSdkVersion(result: (isCoauthoring: Boolean) -> Unit) {
+    protected fun checkSdkVersion(version: String? = null, result: (isCoauthoring: Boolean) -> Unit) {
         FirebaseUtils.getSdk { pair ->
             if (!pair.first) {
                 result(false)
                 return@getSdk
             }
-            val webSdk = networkSettings.documentServerVersion.replace(".", "")
+            val webSdk = version?.replace(".", "") ?: networkSettings.documentServerVersion.replace(".", "")
 
             if (webSdk.isEmpty()) {
                 result(false)
