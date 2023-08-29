@@ -1,7 +1,11 @@
 package lib.compose.ui.views
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -9,15 +13,19 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
@@ -29,6 +37,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.R
 
 @Composable
@@ -46,9 +57,18 @@ fun AppTextField(
     onValueChange: ((String) -> Unit)? = null,
     onDone: (() -> Unit)? = null
 ) {
-    Column {
+    val errorAnimation = remember { Animatable(0f) }
+
+    LaunchedEffect(errorState?.value) {
+        errorAnimation.animateTo(
+            targetValue = if (errorState?.value != null) 1f else 0f,
+            animationSpec = tween()
+        )
+    }
+
+    Column(modifier = modifier.fillMaxWidth()) {
         TextField(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             value = state.value,
             onValueChange = { value ->
                 onValueChange?.let {
@@ -83,7 +103,9 @@ fun AppTextField(
             ),
         )
         Text(
-            modifier = Modifier.alpha(if (errorState?.value.isNullOrEmpty()) 0f else 1f),
+            modifier = Modifier
+                .alpha(alpha = errorAnimation.value)
+                .padding(top = 4.dp, bottom = 8.dp),
             text = errorState?.value.orEmpty(),
             color = MaterialTheme.colors.error,
             style = MaterialTheme.typography.caption,
@@ -133,4 +155,39 @@ fun AppPasswordTextField(
         }
     )
 
+}
+
+@Preview
+@Composable
+private fun AppTextFieldPreview() {
+    ManagerTheme {
+        Surface(
+            modifier = Modifier
+                .background(MaterialTheme.colors.background)
+                .padding(16.dp)
+        ) {
+            val state = remember { mutableStateOf("") }
+            val errorState = remember { mutableStateOf<String?>(null) }
+            Column {
+                AppTextField(
+                    state = state,
+                    errorState = errorState,
+                    label = R.string.app_title,
+                    hint = stringResource(id = R.string.text_hint_required)
+                )
+                TextButton(
+                    modifier = Modifier.align(Alignment.End),
+                    onClick = {
+                        if (errorState.value == null) {
+                            errorState.value = "Some error"
+                        } else {
+                            errorState.value = null
+                        }
+                    }
+                ) {
+                    Text(text = "Toggle error")
+                }
+            }
+        }
+    }
 }
