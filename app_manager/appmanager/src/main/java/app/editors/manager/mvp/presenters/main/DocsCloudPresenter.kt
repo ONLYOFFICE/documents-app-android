@@ -332,7 +332,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?) {
-        viewState.onFileWebView(file)
+        viewState.onFileWebView(checkNotNull(file))
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
@@ -382,7 +382,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 file.webUrl = url
             }
             addRecent(file)
-            viewState.onFileWebView(file)
+            onFileClickAction(file, true)
         }
     }
 
@@ -553,7 +553,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    private fun showMoveCopyDialog(files: List<CloudFile>, action: String, titleFolder: String?) {
+    private fun showMoveCopyDialog(files: List<CloudFile>, action: String, titleFolder: String) {
         val names = ArrayList<String>()
         for (file in files) {
             names.add(file.title)
@@ -561,7 +561,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.showMoveCopyDialog(names, action, titleFolder)
     }
 
-    private fun onFileClickAction(cloudFile: CloudFile) {
+    private fun onFileClickAction(cloudFile: CloudFile, isEdit: Boolean = false) {
         val extension = cloudFile.fileExst
         when (StringUtils.getExtension(extension)) {
             StringUtils.Extension.DOC,
@@ -573,7 +573,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         if (result) {
                             viewState.onOpenDocumentServer(cloudFile, info)
                         } else {
-                            viewState.onFileWebView(cloudFile)
+                            viewState.onFileWebView(cloudFile, true)
                         }
                     }
                 }) { error ->
@@ -583,7 +583,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
 
             StringUtils.Extension.PDF -> {
-                viewState.onFileWebView(cloudFile)
+                viewState.onFileWebView(cloudFile, true)
             }
 
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {

@@ -377,7 +377,7 @@ class FontPicker(
     }
 
 }
-
+@Suppress("DEPRECATION", "UNCHECKED_CAST")
 fun <T : Serializable> Intent.getSerializable(key: String, clazz: Class<T>): T {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         this.getSerializableExtra(key, clazz)!!
@@ -385,6 +385,7 @@ fun <T : Serializable> Intent.getSerializable(key: String, clazz: Class<T>): T {
         this.getSerializableExtra(key) as T
 }
 
+@Suppress("DEPRECATION", "UNCHECKED_CAST")
 fun <T : Serializable> Bundle.getSerializableExt(key: String, clazz: Class<T>): T {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         this.getSerializable(key, clazz)!!
@@ -392,6 +393,7 @@ fun <T : Serializable> Bundle.getSerializableExt(key: String, clazz: Class<T>): 
         this.getSerializable(key) as T
 }
 
+@Suppress("DEPRECATION")
 inline fun <reified T : Serializable> Intent.getSerializableExt(key: String): T? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         getSerializableExtra(key, T::class.java)
@@ -399,6 +401,7 @@ inline fun <reified T : Serializable> Intent.getSerializableExt(key: String): T?
         getSerializableExtra(key) as? T
 }
 
+@Suppress("DEPRECATION")
 inline fun <reified T : Serializable> Bundle.getSerializableExt(key: String): T? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         getSerializable(key, T::class.java)
