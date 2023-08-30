@@ -38,7 +38,7 @@ import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.R
 
 @Composable
-internal fun AppListItem(
+fun AppListItem(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: String? = null,
@@ -141,7 +141,7 @@ fun AppListItemsInteractivePreview() {
                 )
                 AppArrowItem(
                     title = R.string.app_title,
-                    subtitle = R.string.app_title,
+                    subtitle = stringResource(id = R.string.app_title),
                     option = stringResource(id = R.string.app_title),
                     startIcon = R.drawable.drawable_ic_logo,
                     enabled = false
