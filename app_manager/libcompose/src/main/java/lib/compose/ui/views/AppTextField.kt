@@ -33,9 +33,12 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -155,6 +158,26 @@ fun AppPasswordTextField(
         }
     )
 
+}
+
+class SuffixTransformation(private val suffix: String) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+
+        val result = text + AnnotatedString(suffix)
+
+        val textWithSuffixMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                return offset
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                if (text.isEmpty()) return 0
+                return if (offset >=  text.length) text.length else offset
+            }
+        }
+
+        return TransformedText(result, textWithSuffixMapping )
+    }
 }
 
 @Preview
