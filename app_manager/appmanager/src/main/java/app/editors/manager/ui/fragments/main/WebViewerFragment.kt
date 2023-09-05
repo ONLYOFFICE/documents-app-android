@@ -670,7 +670,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     @JavascriptInterface
     fun editorsConfig(): String {
         return JSONObject().apply {
-            put("forceedit", arguments?.getBoolean(WebViewerActivity.TAG_IS_EDIT, false))
+            put("mobileForceView", arguments?.getBoolean(WebViewerActivity.TAG_IS_EDIT, false))
             put("theme", JSONObject().apply {
                 put("type", themeType)
                 put("select", false)
