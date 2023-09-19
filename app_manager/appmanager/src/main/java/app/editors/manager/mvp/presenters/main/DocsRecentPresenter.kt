@@ -200,7 +200,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     } else {
                         checkSdkVersion { isCheck ->
                             if (isCheck) {
-                                viewState.onOpenDocumentServer(file, info)
+                                viewState.onOpenDocumentServer(file, info, false)
                             } else {
                                 viewState.openFile(file)
                             }

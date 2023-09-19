@@ -647,9 +647,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     /*
      * Changes
      * */
-    override fun onCreateFolder(folder: CloudFolder) {
-        // Stub
-    }
 
     override fun onCreateFile(file: CloudFile) {
         if (requireActivity() is IMainActivity) {
@@ -1074,10 +1071,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onOpenDocumentServer(file: CloudFile?, info: String?) {
+    override fun onOpenDocumentServer(file: CloudFile?, info: String?, isEdit: Boolean) {
         when (getExtension(file?.fileExst ?: "")) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                showEditors(null, EditorsType.DOCS, info)
+                showEditors(null, EditorsType.DOCS, info, viewMode = !isEdit)
             }
 
             StringUtils.Extension.SHEET -> {

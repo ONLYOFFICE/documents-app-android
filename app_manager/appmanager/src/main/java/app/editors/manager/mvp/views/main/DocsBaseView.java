@@ -66,8 +66,6 @@ public interface DocsBaseView extends BaseViewExt {
      * Change docs
      * */
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onCreateFolder(CloudFolder folder);
-    @StateStrategyType(OneExecutionStateStrategy.class)
     void onCreateFile(CloudFile file);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDeleteBatch(List<Entity> list);
@@ -155,5 +153,5 @@ public interface DocsBaseView extends BaseViewExt {
     void onSendCopy(@NonNull File file);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onOpenDocumentServer(@Nullable CloudFile file, @Nullable String info);
+    void onOpenDocumentServer(@Nullable CloudFile file, @Nullable String info, @NonNull boolean isEdit);
 }
