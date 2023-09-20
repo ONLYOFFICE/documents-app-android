@@ -3,6 +3,7 @@ rootProject.name = "DocumentsAndroidWithoutEditors"
 include(
     ":appmanager",
     ":core",
+    ":libcompose",
     ":libtoolkit",
     ":libx2t",
     ":libeditors",
@@ -16,6 +17,7 @@ include(
 )
 
 project(":appmanager").projectDir = File(settingsDir, "../app_manager/appmanager")
+project(":libcompose").projectDir = File(settingsDir, "../app_manager/libcompose")
 project(":libtoolkit").projectDir = File(settingsDir, "../toolkit/libtoolkit")
-project(":core").projectDir = File(settingsDir, "../app_manager/appmanager/core")
+project(":core").projectDir = File(settingsDir, "../app_manager/core")
 
