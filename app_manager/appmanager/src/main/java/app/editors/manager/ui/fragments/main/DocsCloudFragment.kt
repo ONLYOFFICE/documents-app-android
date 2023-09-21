@@ -212,9 +212,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         } else super.showMainActionPopup(*excluded)
     }
 
-    override fun onFileWebView(file: CloudFile) {
+    override fun onFileWebView(file: CloudFile, isEditMode: Boolean) {
         if (requireActivity() is IMainActivity) {
-            (requireActivity() as IMainActivity).showWebViewer(file)
+            (requireActivity() as IMainActivity).showWebViewer(file, isEditMode)
         }
     }
 

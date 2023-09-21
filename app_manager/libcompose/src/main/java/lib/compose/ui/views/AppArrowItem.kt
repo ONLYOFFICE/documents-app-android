@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.theme.colorTextTertiary
 import lib.toolkit.base.R
 
@@ -93,7 +92,7 @@ fun AppArrowItem(
 fun AppArrowItem(
     modifier: Modifier = Modifier,
     @StringRes title: Int,
-    @StringRes subtitle: Int? = null,
+    subtitle: String? = null,
     @DrawableRes startIcon: Int? = null,
     startIconTint: Color? = MaterialTheme.colors.primary,
     @DrawableRes endIcon: Int = R.drawable.ic_arrow_right,
@@ -109,7 +108,7 @@ fun AppArrowItem(
     AppArrowItem(
         modifier = modifier,
         title = stringResource(id = title),
-        subtitle = subtitle?.let { stringResource(id = subtitle) },
+        subtitle = subtitle,
         startIcon = startIcon,
         startIconTint = startIconTint,
         endIcon = endIcon,

@@ -4,7 +4,9 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import java.io.FileInputStream
 import java.io.FileWriter
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -63,7 +65,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 467
+        versionCode = 472
         versionName = "7.5.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -330,6 +332,10 @@ dependencies {
     implementation (Jackson.core)
     implementation (Jackson.annotations)
     implementation (Jackson.databind)
+
+    // For compose preview
+    debugApi("androidx.customview:customview:1.2.0-alpha02")
+    debugApi("androidx.customview:customview-poolingcontainer:1.0.0")
 }
 
 apply(plugin = "com.google.gms.google-services")
