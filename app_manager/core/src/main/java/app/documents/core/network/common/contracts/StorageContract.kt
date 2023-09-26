@@ -22,6 +22,7 @@ object StorageContract {
     object DropBox {
         const val AUTH_URL = "https://www.dropbox.com/oauth2/authorize?"
         const val VALUE_RESPONSE_TYPE = "code"
+        const val VALUE_GRANT_TYPE = "authorization_code"
     }
 
     object Google {
