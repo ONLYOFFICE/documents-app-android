@@ -6,12 +6,15 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.WebDavFileProvider
 import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.webDavFileProvider
+import app.editors.manager.managers.works.BaseDownloadWork
+import app.editors.manager.managers.works.WebDavDownloadWork
 import app.editors.manager.mvp.views.main.DocsWebDavView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,7 +33,7 @@ import lib.toolkit.base.managers.utils.NetworkUtils.isWifiEnable
 import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
-import java.util.*
+import java.util.Date
 
 @InjectViewState
 class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
@@ -232,6 +235,16 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 }
             }
         }
+    }
+
+    override fun startDownloadWork(
+        to: Uri,
+        id: String?,
+        url: String?,
+        requestDownload: RequestDownload?,
+        worker: Class<out BaseDownloadWork>
+    ) {
+        super.startDownloadWork(to, id, url, requestDownload, WebDavDownloadWork::class.java)
     }
 
     @SuppressLint("MissingPermission")
