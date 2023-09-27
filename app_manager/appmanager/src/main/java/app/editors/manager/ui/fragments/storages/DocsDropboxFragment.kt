@@ -57,7 +57,7 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
 
     override fun getDocsPresenter() = presenter
 
-    override fun onRefreshToken() {
+    override fun onAuthorization() {
         showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG, false)
     }
 

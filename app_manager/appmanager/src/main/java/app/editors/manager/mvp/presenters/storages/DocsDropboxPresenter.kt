@@ -14,6 +14,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.dropboxLoginProvider
 import app.editors.manager.managers.providers.DropboxStorageHelper
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.dropbox.DownloadWork
@@ -185,7 +186,8 @@ class DocsDropboxPresenter : BaseStorageDocsPresenter<BaseStorageDocsView>() {
                         App.getApp().refreshDropboxInstance()
                         getItemsById(DropboxUtils.DROPBOX_ROOT)
                     } catch (e: HttpException) {
-                        viewState.onRefreshToken()
+                        FirebaseUtils.addCrash(e)
+                        viewState.onAuthorization()
                     }
                 }
             }
@@ -198,7 +200,7 @@ class DocsDropboxPresenter : BaseStorageDocsPresenter<BaseStorageDocsView>() {
                 viewState.onError(context.getString(R.string.storage_dropbox_email_not_verified_error))
             }
             DropboxUtils.DROPBOX_EXPIRED_ACCESS_TOKEN -> refreshToken()
-            DropboxUtils.DROPBOX_INVALID_ACCESS_TOKEN -> viewState.onRefreshToken()
+            DropboxUtils.DROPBOX_INVALID_ACCESS_TOKEN -> viewState.onAuthorization()
             else -> super.fetchError(throwable)
         }
     }
