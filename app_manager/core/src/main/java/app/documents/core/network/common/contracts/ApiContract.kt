@@ -274,6 +274,7 @@ object ApiContract {
         object Device : Section(SectionType.DEVICE_DOCUMENTS)
         object Favorites : Section(SectionType.CLOUD_FAVORITES)
         object Recent : Section(SectionType.CLOUD_RECENT)
+        object Webdav : Section(SectionType.WEB_DAV)
 
         sealed class Room(type: Int) : Section(type) {
             object Private : Room(SectionType.CLOUD_PRIVATE_ROOM)
@@ -307,6 +308,7 @@ object ApiContract {
                     SectionType.DEVICE_DOCUMENTS -> Device
                     SectionType.CLOUD_FAVORITES -> Favorites
                     SectionType.CLOUD_RECENT -> Recent
+                    SectionType.WEB_DAV -> Webdav
                     SectionType.CLOUD_PRIVATE_ROOM -> Room.Private
                     SectionType.CLOUD_VIRTUAL_ROOM -> Room.Virtual
                     SectionType.CLOUD_ARCHIVE_ROOM -> Room.Archive
