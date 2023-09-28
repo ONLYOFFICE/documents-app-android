@@ -1,5 +1,5 @@
 object Dagger {
-    private const val version = "2.46.1"
+    private const val version = "2.48"
 
     const val dagger = "com.google.dagger:dagger:$version"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$version"
@@ -15,18 +15,17 @@ object Moxy {
 }
 
 object Koin {
-    private const val version = "3.4.1"
-    private const val versionCompose = "3.4.5"
+    private const val version = "3.5.0"
 
     const val koinAndroid = "io.insert-koin:koin-android:$version"
-    const val koinCompose = "io.insert-koin:koin-androidx-compose:$versionCompose"
+    const val koinCompose = "io.insert-koin:koin-androidx-compose:$version"
 }
 
 object AndroidX {
     private const val androidxVersion = "1.6.1"
-    private const val recyclerViewVersion = "1.3.0"
+    private const val recyclerViewVersion = "1.3.1"
     private const val recyclerViewSelectionVersion = "1.1.0"
-    private const val kotlinKtxVersion = "1.10.1"
+    private const val kotlinKtxVersion = "1.12.0"
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
@@ -52,10 +51,10 @@ object Retrofit {
 }
 
 object Kotlin {
-    const val version = "1.8.10"
-    const val kspVersion = "1.8.10-1.0.9"
-    private const val coroutinesVersion = "1.7.2"
-    private const val serializationVersion = "1.3.2"
+    const val version = "1.9.10"
+    const val kspVersion = "1.9.10-1.0.13"
+    private const val coroutinesVersion = "1.7.3"
+    private const val serializationVersion = "1.5.1"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
     const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -115,10 +114,10 @@ object Lifecycle {
 }
 
 object Compose {
-    const val version = "1.4.3"
-    const val versionMaterial = "1.4.3"
-    const val versionCompiler = "1.4.3"
-    private const val navigationVersion = "2.6.0"
+    const val version = "1.5.2"
+    const val versionMaterial = "1.5.2"
+    const val versionCompiler = "1.5.3"
+    private const val navigationVersion = "2.7.3"
 
     const val ui = "androidx.compose.ui:ui:$version"
     const val material = "androidx.compose.material:material:$versionMaterial"
@@ -137,7 +136,7 @@ object Jackson {
 
 object Libs {
     const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
-    const val facebookLogin = "com.facebook.android:facebook-login:16.0.1"
+    const val facebookLogin = "com.facebook.android:facebook-login:16.2.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
     const val glide = "com.github.bumptech.glide:glide:4.15.1"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"

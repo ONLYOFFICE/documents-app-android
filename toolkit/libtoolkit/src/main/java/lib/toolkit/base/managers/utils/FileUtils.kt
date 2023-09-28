@@ -148,7 +148,7 @@ object FileUtils {
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
     @JvmOverloads
-    fun assetUnpack(context: Context, from: List<String>, isExternal: Boolean = true, delete: Boolean = !BuildConfig.DEBUG): String? {
+    fun assetUnpack(context: Context, from: List<String>, isExternal: Boolean = true, delete: Boolean = BuildConfig.DEBUG): String? {
         val path = "${getCachePath(context, isExternal)}/assets"
 
         val packVersion = readSdkVersion(context, "sdk.version")

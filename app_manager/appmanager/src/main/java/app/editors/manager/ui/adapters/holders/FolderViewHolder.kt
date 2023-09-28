@@ -73,6 +73,6 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
     }
 
     companion object {
-        const val LAYOUT: Int = R.layout.list_explorer_folder
+        val LAYOUT: Int = R.layout.list_explorer_folder
     }
 }

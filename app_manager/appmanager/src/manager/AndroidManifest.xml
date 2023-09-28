@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="app.editors.manager"
     android:installLocation="internalOnly">
 
     <application>
         <activity
-            android:name=".ui.activities.main.OnBoardingActivity"
+            android:name="app.editors.manager.ui.activities.main.OnBoardingActivity"
             android:exported="true"
             android:taskAffinity=""
             android:launchMode="singleInstance"

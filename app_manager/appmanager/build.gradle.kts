@@ -58,7 +58,7 @@ fun getKeystore(filePath: String): Properties {
 
 android {
 
-    buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
+    namespace = "app.editors.manager"
     compileSdk = AppDependency.COMPILE_SDK_VERSION
 
     defaultConfig {
@@ -162,7 +162,7 @@ android {
                     val buildCode = "_build-${output.versionCode}"
 
                     output.outputFileName = "${appName}-${versionName}-" +
-                            "${flavorName.toUpperCase()}-" +
+                            "${flavorName.uppercase()}-" +
                             "${buildAbi}-${buildType}${buildCode}${timeMark}.apk"
 
                 }
@@ -185,15 +185,16 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
+        buildConfig = true
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     bundle {
@@ -208,7 +209,7 @@ android {
         }
     }
 
-    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
@@ -274,7 +275,7 @@ dependencies {
 
     // Dagger
     implementation(Dagger.dagger)
-    kapt(Dagger.daggerCompiler)
+    ksp(Dagger.daggerCompiler)
 
     // Retrofit
     implementation(Retrofit.retrofit)
