@@ -409,7 +409,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             setStatusBarColor(lib.toolkit.base.R.color.colorBackground)
         } else {
             when (StringUtils.getExtension(cloudFile?.fileExst ?: "")) {
-                StringUtils.Extension.DOC,
+                StringUtils.Extension.FORM,
                 StringUtils.Extension.DOCXF,
                 StringUtils.Extension.OFORM,
                 StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorDocTint)
