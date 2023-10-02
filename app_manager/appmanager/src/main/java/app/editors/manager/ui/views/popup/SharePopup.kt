@@ -6,11 +6,11 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.PopupShareMenuBinding
-import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Item
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.popup.BasePopup
 
@@ -229,7 +229,7 @@ class SharePopup(
                     binding.commentItem.popupItemLayout.isVisible = false
                 }
                 ApiContract.RoomType.CUSTOM_ROOM -> {
-                    binding.viewItem.popupItemLayout.isVisible = false
+                    binding.viewItem.popupItemLayout.isVisible = true
                     binding.editorItem.popupItemLayout.isVisible = true
                     binding.editorItem.itemIcon.setImageResource(R.drawable.ic_access_full)
                     binding.editorItem.itemText.setText(R.string.share_access_room_editor)
