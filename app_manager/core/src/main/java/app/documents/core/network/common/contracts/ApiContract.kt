@@ -168,6 +168,7 @@ object ApiContract {
         const val CUSTOM_FILLER = 8
         const val ROOM_ADMIN = 9
         const val EDITOR = 10
+        const val POWER_USER = 11
 
         fun getType(code: Int): String {
             return when (code) {

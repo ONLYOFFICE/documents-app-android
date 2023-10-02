@@ -6,11 +6,11 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.databinding.PopupShareMenuBinding
-import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Item
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.popup.BasePopup
 
@@ -33,6 +33,7 @@ class SharePopup(
     override fun bind(view: View) {
         viewBinding = PopupShareMenuBinding.bind(view).apply {
             fullAccessItem.popupItemLayout.setOnClickListener()
+            powerUserItem.popupItemLayout.setOnClickListener()
             fillFormItem.popupItemLayout.setOnClickListener()
             commentItem.popupItemLayout.setOnClickListener()
             reviewItem.popupItemLayout.setOnClickListener()
@@ -182,8 +183,12 @@ class SharePopup(
     private fun setRoomState(cloudFolder: CloudFolder) {
         viewBinding?.let { binding ->
             binding.fullAccessItem.popupItemLayout.isVisible = true
-            binding.fullAccessItem.itemIcon.setImageResource(R.drawable.ic_drawer_menu_my_docs)
+            binding.fullAccessItem.itemIcon.setImageResource(R.drawable.ic_room_admin)
             binding.fullAccessItem.itemText.setText(R.string.share_access_room_admin)
+
+            binding.powerUserItem.popupItemLayout.isVisible = true
+            binding.powerUserItem.itemIcon.setImageResource(R.drawable.ic_room_power_user)
+            binding.powerUserItem.itemText.setText(R.string.share_access_room_power_user)
 
             binding.fillFormItem.popupItemLayout.isVisible = true
             binding.fillFormItem.itemIcon.setImageResource(R.drawable.ic_access_fill_form)
