@@ -156,7 +156,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 context,
                 Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
             )?.let {
-                val fileProvider = CloudFileProvider(context.api, context.roomApi)
+                val fileProvider = context.cloudFileProvider
                 disposable.add(
                     fileProvider.fileInfo(CloudFile().apply {
                         id = recent.idFile ?: ""
