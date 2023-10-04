@@ -4,10 +4,10 @@ import android.text.Editable
 import android.view.View
 import androidx.core.view.isVisible
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.R
-import app.editors.manager.databinding.IncludeSharePanelBinding
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.R
+import app.editors.manager.databinding.IncludeSharePanelBinding
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.edits.BaseWatcher
@@ -32,6 +32,8 @@ class SharePanelViews(
     private var sharePopup: SharePopup? = null
     private val popupAccessListener: PopupAccessListener
     private var viewBinding: IncludeSharePanelBinding? = null
+
+    private val isRoom: Boolean get() = (item as? CloudFolder)?.isRoom == true
 
     init {
         viewBinding = IncludeSharePanelBinding.bind(view)
@@ -152,7 +154,11 @@ class SharePanelViews(
         override fun onContextClick(v: View, sharePopup: SharePopup) {
             sharePopup.hide()
             when (v.id) {
-                R.id.fullAccessItem -> onPopupAccess(ApiContract.ShareCode.READ_WRITE)
+                R.id.fullAccessItem -> {
+                    val accessCode = if (isRoom) ApiContract.ShareCode.ROOM_ADMIN else ApiContract.ShareCode.READ_WRITE
+                    onPopupAccess(accessCode)
+                }
+                R.id.powerUserItem -> onPopupAccess(ApiContract.ShareCode.POWER_USER)
                 R.id.reviewItem -> onPopupAccess(ApiContract.ShareCode.REVIEW)
                 R.id.viewItem -> onPopupAccess(ApiContract.ShareCode.READ)
                 R.id.editorItem -> onPopupAccess(ApiContract.ShareCode.EDITOR)

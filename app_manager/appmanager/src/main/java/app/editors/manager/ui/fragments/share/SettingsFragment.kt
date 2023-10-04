@@ -4,7 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -434,6 +439,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
              sharePopup.hide()
             when (v.id) {
                 R.id.fullAccessItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ_WRITE)
+                R.id.powerUserItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.POWER_USER)
                 R.id.reviewItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.REVIEW)
                 R.id.viewItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.READ)
                 R.id.editorItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.EDITOR)
