@@ -66,7 +66,7 @@ object Google {
     private const val playServicesAuthVersion = "20.5.0"
     private const val playCoreVersion = "1.10.3"
     private const val materialVersion = "1.9.0"
-    private const val gsonVersion = "2.9.1"
+    private const val gsonVersion = "2.10.1"
     private const val safetynetVersion = "18.0.1"
 
 
