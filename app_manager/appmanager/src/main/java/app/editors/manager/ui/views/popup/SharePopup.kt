@@ -29,7 +29,6 @@ class SharePopup(
     val isShowing: Boolean
         get() = popupWindow.isShowing
 
-    @Suppress("KotlinConstantConditions")
     override fun bind(view: View) {
         viewBinding = PopupShareMenuBinding.bind(view).apply {
             fullAccessItem.popupItemLayout.setOnClickListener()
@@ -127,6 +126,7 @@ class SharePopup(
         setItemsForExtension(title)
     }
 
+    @Suppress("KotlinConstantConditions")
     private fun setItemsForExtension(title: String) {
         val ext = StringUtils.getExtensionFromPath(title)
         when (StringUtils.getExtension(ext).takeIf { it != StringUtils.Extension.FORM }
@@ -206,9 +206,8 @@ class SharePopup(
             binding.viewItem.itemIcon.setImageResource(R.drawable.ic_access_read)
             binding.viewItem.itemText.setText(R.string.share_access_room_viewer)
 
-            binding.popupShareAccessSeparatorDeny.root.isVisible = true
-
             if (isFullAccess) {
+                binding.popupShareAccessSeparatorDeny.root.isVisible = true
                 setDeleteItem()
             }
 
