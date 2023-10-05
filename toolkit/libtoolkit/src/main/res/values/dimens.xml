@@ -52,10 +52,12 @@
     <integer name="fragment_replace_main_animation_duration">100</integer>
 
     <!-- Items -->
+    <dimen name="default_one_line_height_large">56dp</dimen>
     <dimen name="item_one_line_height">48dp</dimen>
     <dimen name="item_onehalf_line_height">64dp</dimen>
     <dimen name="item_two_line_height">72dp</dimen>
     <dimen name="item_three_line_height">96dp</dimen>
+    <dimen name="default_button_editors_height">44dp</dimen>
 
     <!-- Popup -->
     <dimen name="popup_width_context">225dp</dimen>

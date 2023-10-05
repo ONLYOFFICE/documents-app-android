@@ -736,7 +736,7 @@
     <string name="switch_account_title">Switch account?</string>
     <string name="switch_account_description">Log in to the portal account %1$s to open the document.</string>
     <string name="share_expected_member">Expect members</string>
-
+    <string name="app_settings_main_help">Help</string>
     <string name="settings_language">Language</string>
 
     <!--  TODO example  -->
