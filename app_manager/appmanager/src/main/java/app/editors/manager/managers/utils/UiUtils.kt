@@ -16,7 +16,6 @@ import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import com.bumptech.glide.Glide
-import com.google.android.material.button.MaterialButton
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
 
@@ -168,7 +167,8 @@ object ManagerUiUtils {
             }
             ApiContract.ShareCode.REVIEW -> icon.setImageResource(R.drawable.ic_access_review)
             ApiContract.ShareCode.READ -> icon.setImageResource(R.drawable.ic_access_read)
-            ApiContract.ShareCode.ROOM_ADMIN -> icon.setImageResource(R.drawable.ic_drawer_menu_my_docs)
+            ApiContract.ShareCode.ROOM_ADMIN -> icon.setImageResource(R.drawable.ic_room_admin)
+            ApiContract.ShareCode.POWER_USER -> icon.setImageResource(R.drawable.ic_room_power_user)
             ApiContract.ShareCode.READ_WRITE -> icon.setImageResource(R.drawable.ic_access_full)
             ApiContract.ShareCode.EDITOR -> icon.setImageResource(R.drawable.ic_access_full)
             ApiContract.ShareCode.COMMENT -> icon.setImageResource(R.drawable.ic_access_comment)

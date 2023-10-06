@@ -6,6 +6,14 @@ Dotenv.load '.env.secret'
 default_platform(:android)
 skip_docs # Do not create fastlane/README.md
 
+def escape_markdown(str)
+  str.gsub(/([_*\[`])/, '\\\\\1')
+end
+
+def truncate(string, max)
+  string.length > max ? "#{string[0...max]}\n..." : string
+end
+
 platform :android do
   before_all do
     ensure_env_vars(
@@ -49,6 +57,8 @@ platform :android do
       changelog = File.read(change_log_file)
     end
 
+    telegram_changelog = truncate(escape_markdown(changelog), 3500)
+
     # Cleanup and build
     cleanup
 
@@ -75,7 +85,7 @@ platform :android do
         token: ENV['TELEGRAM_BOT_TOKEN'],
         chat_id: ENV['TELEGRAM_CHAT_ID'],
         parse_mode: 'Markdown',
-        text: ENV["TELEGRAM_DOCUMENTS_ANDROID_MESSAGE"] % [versionName: "#{versionName}", versionCode: "#{versionCode}", changelog: "#{changelog}"]
+        text: ENV["TELEGRAM_DOCUMENTS_ANDROID_MESSAGE"] % [versionName: "#{versionName}", versionCode: "#{versionCode}", changelog: "#{telegram_changelog}"]
         )
     rescue => ex
       UI.error(ex)
@@ -163,6 +173,8 @@ platform :android do
       changelog = File.read(change_log_file)
     end
 
+    telegram_changelog = truncate(escape_markdown(changelog), 3500)
+
     # Build
     gradle(
       task: 'bundle',
@@ -186,7 +198,7 @@ platform :android do
         token: ENV['TELEGRAM_BOT_TOKEN'],
         chat_id: ENV['TELEGRAM_CHAT_ID'],
         parse_mode: 'Markdown',
-        text: ENV["TELEGRAM_DOCUMENTS_ANDROID_MESSAGE"] % [versionName: "#{versionName}", versionCode: "#{versionCode}", changelog: "#{changelog}"]
+        text: ENV["TELEGRAM_DOCUMENTS_ANDROID_MESSAGE"] % [versionName: "#{versionName}", versionCode: "#{versionCode}", changelog: "#{telegram_changelog}"]
       )
     rescue => ex
       UI.error(ex)
@@ -199,29 +211,6 @@ platform :android do
 
   desc "Build the application as APK files for all platforms"
   lane :apk do |options|
-    versionCode = android_get_version_code(
-      gradle_file: "app_manager/appmanager/build.gradle.kts"
-    )
-
-    versionName = android_get_version_name(
-      gradle_file: "app_manager/appmanager/build.gradle.kts"
-    )
-
-    # get the last commit comments from Git history
-    # and creates our changelog
-#     changelog = changelog_from_git_commits(
-#       pretty: "- %s",
-#       date_format: "short",
-#       match_lightweight_tag: false,
-#       merge_commit_filtering: "exclude_merges"
-#     )
-
-    # Read changelog file
-#     change_log_file = options[:changelog_file]
-#     if(File.exist?(change_log_file))
-#       changelog = File.read(change_log_file)
-#     end
-
     # Build
     gradle(
       task: 'assemble',
@@ -229,20 +218,6 @@ platform :android do
       project_dir: 'app_manager/',
       flavor: 'manager'
     )
-
-    # Post message
-#     begin
-#       telegram(
-#         token: ENV['TELEGRAM_BOT_TOKEN'],
-#         chat_id: ENV['TELEGRAM_CHAT_ID'],
-#         parse_mode: 'Markdown',
-#         text: ENV["TELEGRAM_DOCUMENTS_ANDROID_APK_MESSAGE"] % [versionName: "#{versionName}", versionCode: "#{versionCode}", changelog: "#{changelog}"]
-#       )
-#     rescue => ex
-#       UI.error(ex)
-#     end
-
-    sleep(5)
 
   end
 

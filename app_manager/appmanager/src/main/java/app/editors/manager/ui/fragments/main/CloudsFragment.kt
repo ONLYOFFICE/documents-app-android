@@ -1,27 +1,20 @@
 package app.editors.manager.ui.fragments.main
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavService
-import app.editors.manager.BuildConfig
-import app.editors.manager.R
-import app.editors.manager.app.App
-import app.editors.manager.databinding.FragmentChooseCloudsBinding
-import app.documents.core.network.common.models.Storage
 import app.documents.core.network.common.utils.GoogleDriveUtils
-import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
-import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
 import app.documents.core.network.common.utils.OneDriveUtils
-import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
+import app.documents.core.network.webdav.WebDavService
+import app.editors.manager.R
+import app.editors.manager.databinding.FragmentChooseCloudsBinding
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
-import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import javax.inject.Inject
+import app.editors.manager.ui.fragments.storages.DropboxSignInFragment
+import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
+import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 
 class CloudsFragment : BaseAppFragment() {
 
@@ -39,16 +32,8 @@ class CloudsFragment : BaseAppFragment() {
         }
     }
 
-    @Inject
-    lateinit var dropboxLoginHelper: DropboxLoginHelper
-
     private var isBack = false
     private var viewBinding: FragmentChooseCloudsBinding? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        App.getApp().appComponent.inject(this)
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -111,11 +96,7 @@ class CloudsFragment : BaseAppFragment() {
             R.drawable.ic_storage_dropbox,
             R.string.storage_select_drop_box
         ) {
-            dropboxLoginHelper.startSignInActivity(this) {
-                App.getApp().refreshDropboxInstance()
-                MainActivity.show(requireContext())
-                requireActivity().finish()
-            }
+            showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG, false)
         }
 
         viewBinding?.cloudsItemGoogleDrive?.bind(

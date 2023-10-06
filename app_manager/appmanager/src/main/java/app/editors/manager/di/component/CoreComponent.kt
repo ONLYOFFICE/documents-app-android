@@ -1,6 +1,5 @@
 package app.editors.manager.di.component
 
-import android.content.Context
 import app.documents.core.di.dagger.CoreModule
 import app.documents.core.di.dagger.CoreScope
 import app.documents.core.network.login.ILoginServiceProvider

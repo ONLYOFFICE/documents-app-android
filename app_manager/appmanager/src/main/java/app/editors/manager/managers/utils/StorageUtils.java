@@ -80,6 +80,7 @@ public class StorageUtils {
         uriMap.put(ARG_RESPONSE_TYPE, DropBox.VALUE_RESPONSE_TYPE);
         uriMap.put(ARG_CLIENT_ID, clientId);
         uriMap.put(ARG_REDIRECT_URI, redirectUrl);
+        uriMap.put(ARG_TOKEN_ACCESS, DropBox.VALUE_ACCESS_TYPE);
         return new Storage(providerKey, DropBox.AUTH_URL, uriMap);
     }
 

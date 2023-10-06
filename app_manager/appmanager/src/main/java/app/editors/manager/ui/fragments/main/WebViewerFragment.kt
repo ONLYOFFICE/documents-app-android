@@ -409,7 +409,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             setStatusBarColor(lib.toolkit.base.R.color.colorBackground)
         } else {
             when (StringUtils.getExtension(cloudFile?.fileExst ?: "")) {
-                StringUtils.Extension.DOC,
+                StringUtils.Extension.FORM,
                 StringUtils.Extension.DOCXF,
                 StringUtils.Extension.OFORM,
                 StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorDocTint)
@@ -670,7 +670,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     @JavascriptInterface
     fun editorsConfig(): String {
         return JSONObject().apply {
-            put("forceedit", arguments?.getBoolean(WebViewerActivity.TAG_IS_EDIT, false))
+            put("mobileForceView", arguments?.getBoolean(WebViewerActivity.TAG_IS_EDIT, false))
             put("theme", JSONObject().apply {
                 put("type", themeType)
                 put("select", false)

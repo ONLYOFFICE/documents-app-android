@@ -29,10 +29,10 @@ class SharePopup(
     val isShowing: Boolean
         get() = popupWindow.isShowing
 
-    @Suppress("KotlinConstantConditions")
     override fun bind(view: View) {
         viewBinding = PopupShareMenuBinding.bind(view).apply {
             fullAccessItem.popupItemLayout.setOnClickListener()
+            powerUserItem.popupItemLayout.setOnClickListener()
             fillFormItem.popupItemLayout.setOnClickListener()
             commentItem.popupItemLayout.setOnClickListener()
             reviewItem.popupItemLayout.setOnClickListener()
@@ -126,6 +126,7 @@ class SharePopup(
         setItemsForExtension(title)
     }
 
+    @Suppress("KotlinConstantConditions")
     private fun setItemsForExtension(title: String) {
         val ext = StringUtils.getExtensionFromPath(title)
         when (StringUtils.getExtension(ext).takeIf { it != StringUtils.Extension.FORM }
@@ -182,8 +183,12 @@ class SharePopup(
     private fun setRoomState(cloudFolder: CloudFolder) {
         viewBinding?.let { binding ->
             binding.fullAccessItem.popupItemLayout.isVisible = true
-            binding.fullAccessItem.itemIcon.setImageResource(R.drawable.ic_drawer_menu_my_docs)
+            binding.fullAccessItem.itemIcon.setImageResource(R.drawable.ic_room_admin)
             binding.fullAccessItem.itemText.setText(R.string.share_access_room_admin)
+
+            binding.powerUserItem.popupItemLayout.isVisible = true
+            binding.powerUserItem.itemIcon.setImageResource(R.drawable.ic_room_power_user)
+            binding.powerUserItem.itemText.setText(R.string.share_access_room_power_user)
 
             binding.fillFormItem.popupItemLayout.isVisible = true
             binding.fillFormItem.itemIcon.setImageResource(R.drawable.ic_access_fill_form)
@@ -201,9 +206,8 @@ class SharePopup(
             binding.viewItem.itemIcon.setImageResource(R.drawable.ic_access_read)
             binding.viewItem.itemText.setText(R.string.share_access_room_viewer)
 
-            binding.popupShareAccessSeparatorDeny.root.isVisible = true
-
             if (isFullAccess) {
+                binding.popupShareAccessSeparatorDeny.root.isVisible = true
                 setDeleteItem()
             }
 

@@ -5,6 +5,7 @@ import app.documents.core.di.dagger.storages.DropboxModule
 import app.documents.core.di.dagger.storages.DropboxScope
 import app.documents.core.network.storages.dropbox.api.DropboxProvider
 import app.documents.core.network.storages.dropbox.login.DropboxLoginProvider
+import app.editors.manager.mvp.presenters.storages.DropboxSignInPresenter
 import dagger.Component
 
 
@@ -23,4 +24,7 @@ interface DropboxComponent {
 
     val dropboxLoginProvider: DropboxLoginProvider
     val dropboxProvider: DropboxProvider
+
+    fun inject(dropboxSignInPresenter: DropboxSignInPresenter)
+
 }

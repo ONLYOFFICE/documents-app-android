@@ -180,7 +180,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         viewState.onDialogClose()
                         checkSdkVersion { result ->
                             if (result) {
-                                viewState.onOpenDocumentServer(info[0] as CloudFile, info[1] as String)
+                                viewState.onOpenDocumentServer(info[0] as CloudFile, info[1] as String, true)
                             } else {
                                 viewState.onCreateFile(info[0] as CloudFile)
                             }
@@ -571,7 +571,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 (fileProvider as CloudFileProvider).opeEdit(cloudFile).subscribe({ info ->
                     checkSdkVersion { result ->
                         if (result) {
-                            viewState.onOpenDocumentServer(cloudFile, info)
+                            viewState.onOpenDocumentServer(cloudFile, info, isEdit)
                         } else {
                             viewState.onFileWebView(cloudFile, true)
                         }
@@ -626,7 +626,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
                                 viewState.onError(context.getString(R.string.error_unsupported_format))
                             } else {
-                                viewState.onOpenDocumentServer(file, info[1] as String)
+                                viewState.onOpenDocumentServer(file, info[1] as String, false)
                             }
                         }
 

@@ -14,13 +14,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.transition.TransitionManager
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
+import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.share.models.SharedTo
 import app.documents.core.network.share.models.request.Invitation
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ChooseAccessFragmentLayoutBinding
-import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.ui.ShareUi
 import app.editors.manager.ui.adapters.ShareAdapter
 import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
@@ -59,6 +59,7 @@ class ChooseAccessFragment : BaseAppFragment() {
                     sharePopup.hide()
                     when (v.id) {
                         R.id.fullAccessItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.READ_WRITE), position)
+                        R.id.powerUserItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.POWER_USER), position)
                         R.id.reviewItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.REVIEW), position)
                         R.id.viewItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.READ), position)
                         R.id.editorItem -> adapter.updateItem(item.copy(access = ApiContract.ShareCode.EDITOR), position)

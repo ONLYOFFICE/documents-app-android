@@ -14,10 +14,11 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.ExperimentalSerializationApi
 import lib.toolkit.base.managers.http.NetworkClient
 import lib.toolkit.base.managers.utils.AccountUtils
-import okhttp3.*
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.util.concurrent.TimeUnit
@@ -37,7 +38,6 @@ class DropboxModule {
 
     @Provides
     @DropboxScope
-    @OptIn(ExperimentalSerializationApi::class)
     fun provideDropboxService(okHttpClient: OkHttpClient): DropboxService =
         Retrofit.Builder()
             .client(okHttpClient)
@@ -49,7 +49,6 @@ class DropboxModule {
 
     @Provides
     @DropboxScope
-    @OptIn(ExperimentalSerializationApi::class)
     fun provideDropboxContentService(okHttpClient: OkHttpClient): DropboxContentService =
         Retrofit.Builder()
             .client(okHttpClient)

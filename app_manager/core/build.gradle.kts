@@ -11,7 +11,8 @@ plugins {
 
 android {
 
-    buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
+    namespace = "app.documents.core"
+
     compileSdk = AppDependency.COMPILE_SDK_VERSION
 
     defaultConfig {
@@ -89,12 +90,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_11)
-        targetCompatibility(JavaVersion.VERSION_11)
+        sourceCompatibility(JavaVersion.VERSION_17)
+        targetCompatibility(JavaVersion.VERSION_17)
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -117,7 +122,7 @@ dependencies {
 
     // Dagger
     implementation(Dagger.dagger)
-    kapt(Dagger.daggerCompiler)
+    ksp(Dagger.daggerCompiler)
 
     // Koin
     implementation(Koin.koinAndroid)

@@ -1,5 +1,6 @@
 package lib.toolkit.base.managers.utils
 
+import kotlin.math.pow
 import kotlin.math.round
 
 object MetricUtils {
@@ -10,17 +11,17 @@ object MetricUtils {
     }
 
     @JvmStatic
-    fun mmToPt(value: Double) : Double {
+    fun mmToPt(value: Double): Double {
         return value * 72 / 25.4
     }
 
     @JvmStatic
-    fun mmToCm(value: Double) : Double {
+    fun mmToCm(value: Double): Double {
         return value / 10
     }
 
     @JvmStatic
-    fun cmToMm(value: Double) : Double {
+    fun cmToMm(value: Double): Double {
         return value * 10
     }
 
@@ -32,4 +33,9 @@ object MetricUtils {
         return 0.0
     }
 
+}
+
+fun Double.round(decimals: Int): Double {
+    val multiplier = 10.0.pow(decimals.toDouble())
+    return round(this * multiplier) / multiplier
 }
