@@ -258,7 +258,7 @@ class AppSettingsFragment : BaseAppFragment() {
                     AboutActivity.show(context)
                 }
                 AppArrowItem(
-                    title = lib.editors.gbase.R.string.context_settings_main_help,
+                    title = R.string.app_settings_main_help,
                     dividerVisible = false,
                     arrowVisible = false
                 ) {

@@ -37,6 +37,7 @@
             android:layout_marginStart="@dimen/default_margin_xlarge"
             android:layout_marginTop="@dimen/default_margin_xlarge"
             android:layout_marginEnd="@dimen/default_margin_xlarge"
+            android:gravity="center"
             android:text="@string/cloud_account_description" />
 
         <com.google.android.material.button.MaterialButton

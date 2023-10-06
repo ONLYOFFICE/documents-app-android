@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
@@ -54,13 +53,20 @@ import app.editors.manager.ui.popup.SelectPopup
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.CommonSearchView
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.ActivitiesUtils.createFile
 import lib.toolkit.base.managers.utils.ActivitiesUtils.getExternalStoragePermission
+import lib.toolkit.base.managers.utils.CameraPicker
+import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.EditorsType
+import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
+import lib.toolkit.base.managers.utils.RequestPermissions
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
+import lib.toolkit.base.managers.utils.getSendFileIntent
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.BaseAdapter.OnItemContextListener
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog.OnBottomDialogCloseListener
@@ -335,6 +341,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.Edit -> presenter.getFileInfo()
             ExplorerContextItem.Move -> presenter.moveCopyOperation(OperationsState.OperationType.MOVE)
             ExplorerContextItem.Copy -> presenter.moveCopyOperation(OperationsState.OperationType.COPY)
             ExplorerContextItem.Send -> presenter.sendCopy()
@@ -647,9 +654,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     /*
      * Changes
      * */
-    override fun onCreateFolder(folder: CloudFolder) {
-        // Stub
-    }
 
     override fun onCreateFile(file: CloudFile) {
         if (requireActivity() is IMainActivity) {
@@ -1074,10 +1078,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onOpenDocumentServer(file: CloudFile?, info: String?) {
+    override fun onOpenDocumentServer(file: CloudFile?, info: String?, isEdit: Boolean) {
         when (getExtension(file?.fileExst ?: "")) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                showEditors(null, EditorsType.DOCS, info)
+                showEditors(null, EditorsType.DOCS, info, viewMode = !isEdit)
             }
 
             StringUtils.Extension.SHEET -> {

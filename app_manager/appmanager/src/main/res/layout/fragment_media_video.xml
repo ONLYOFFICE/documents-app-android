@@ -55,8 +55,8 @@
 
         <FrameLayout
             android:id="@+id/mediaPlayButton"
-            android:layout_width="@dimen/default_two_line_height"
-            android:layout_height="@dimen/default_two_line_height"
+            android:layout_width="@dimen/item_two_line_height"
+            android:layout_height="@dimen/item_two_line_height"
             android:background="@drawable/drawable_media_background_video_play_light"
             android:backgroundTint="@color/colorWhite40"
             android:foreground="?attr/selectableItemBackgroundBorderless"

@@ -11,6 +11,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import retrofit2.HttpException
 
 object FirebaseUtils {
 
@@ -35,6 +36,14 @@ object FirebaseUtils {
     fun addCrash(throwable: Throwable) {
         if (getApp().isAnalyticEnable) {
             FirebaseCrashlytics.getInstance().recordException(throwable)
+        }
+    }
+
+    @JvmStatic
+    fun addCrash(httpException: HttpException) {
+        if (getApp().isAnalyticEnable) {
+            val message = httpException.response()?.errorBody()?.string()
+            if (message != null) addCrash(message = message) else addCrash(throwable = httpException)
         }
     }
 

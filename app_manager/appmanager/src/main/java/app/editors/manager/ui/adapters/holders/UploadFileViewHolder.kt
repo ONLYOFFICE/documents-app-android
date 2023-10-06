@@ -55,6 +55,6 @@ class UploadFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
     }
 
     companion object {
-        const val LAYOUT: Int = R.layout.list_explorer_upload_files
+        val LAYOUT: Int = R.layout.list_explorer_upload_files
     }
 }

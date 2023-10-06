@@ -3,8 +3,6 @@ package app.editors.manager.mvp.presenters.main
 import android.accounts.Account
 import android.net.Uri
 import android.os.Bundle
-import androidx.lifecycle.LifecycleOwner
-import app.editors.manager.BuildConfig
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.login.models.Capabilities
@@ -12,11 +10,11 @@ import app.documents.core.network.login.models.response.ResponseAllSettings
 import app.documents.core.network.login.models.response.ResponseCapabilities
 import app.documents.core.network.login.models.response.ResponseSettings
 import app.documents.core.network.login.models.response.ResponseUser
-import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.account.copyWithToken
 import app.documents.core.storage.preference.NetworkSettings
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -40,7 +38,6 @@ import moxy.InjectViewState
 import moxy.presenterScope
 import okhttp3.Credentials
 import retrofit2.HttpException
-import javax.inject.Inject
 
 sealed class CloudAccountState {
     class AccountLoadedState(val account: List<CloudAccount>, val state: Bundle?) : CloudAccountState()
@@ -72,9 +69,6 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
         const val KEY_SWITCH = "switch"
     }
-
-    @Inject
-    lateinit var dropboxLoginHelper: DropboxLoginHelper
 
     init {
         App.getApp().appComponent.inject(this)
@@ -304,10 +298,6 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         } ?: run {
             viewState.onError("Error login")
         }
-    }
-
-    fun dropboxLogin(lifecycleOwner: LifecycleOwner, onLoginCallback: () -> Unit) {
-        dropboxLoginHelper.startSignInActivity(lifecycleOwner, onLoginCallback)
     }
 
     private fun login(account: CloudAccount, token: String) {

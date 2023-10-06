@@ -1,7 +1,10 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Handler
@@ -12,7 +15,11 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
-import app.documents.core.network.manager.models.explorer.*
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.UploadFile
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.BaseFileProvider
@@ -52,7 +59,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.FileUtils
+import lib.toolkit.base.managers.utils.NetworkUtils
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import okhttp3.ResponseBody
@@ -60,7 +71,8 @@ import org.json.JSONException
 import retrofit2.HttpException
 import java.io.File
 import java.net.UnknownHostException
-import java.util.*
+import java.util.Date
+import java.util.TreeMap
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
@@ -617,15 +629,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     private fun downloadSelected(downloadTo: Uri) {
-        val files = modelExplorerStack.selectedFiles
-        val folders = modelExplorerStack.selectedFolders
-
-        if (fileProvider is WebDavFileProvider && folders.isNotEmpty()) {
-            viewState.onError(context.getString(R.string.download_manager_folders_download))
-        } else {
-            bulkDownload(files, folders, downloadTo)
-            deselectAll()
-        }
+        bulkDownload(modelExplorerStack.selectedFiles, modelExplorerStack.selectedFolders, downloadTo)
+        deselectAll()
     }
 
     @SuppressLint("MissingPermission")
@@ -633,7 +638,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         val filesIds = files?.map { it.id } ?: listOf()
         val foldersIds = folders?.map { it.id } ?: listOf()
 
-        if (filesIds.size > 1 || foldersIds.isNotEmpty()) {
+        if (fileProvider is WebDavFileProvider) {
+            viewState.onError(context.getString(R.string.download_manager_folders_download))
+        } else if (filesIds.size > 1 || foldersIds.isNotEmpty()) {
             startDownloadWork(downloadTo, null, null, RequestDownload()
                 .also {
                     it.filesIds = filesIds
@@ -645,7 +652,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    private fun startDownloadWork(to: Uri, id: String?, url: String?, requestDownload: RequestDownload?) {
+    protected open fun startDownloadWork(
+        to: Uri,
+        id: String?,
+        url: String?,
+        requestDownload: RequestDownload?,
+        worker: Class<out BaseDownloadWork> = DownloadWork::class.java
+    ) {
         val workData = Data.Builder()
             .putString(BaseDownloadWork.FILE_ID_KEY, id)
             .putString(BaseDownloadWork.URL_KEY, url)
@@ -653,7 +666,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             .putString(BaseDownloadWork.REQUEST_DOWNLOAD, Gson().toJson(requestDownload))
             .build()
 
-        val request = OneTimeWorkRequest.Builder(DownloadWork::class.java)
+        val request = OneTimeWorkRequest.Builder(worker)
             .setInputData(workData)
             .build()
 
