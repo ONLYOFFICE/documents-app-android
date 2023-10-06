@@ -738,6 +738,7 @@
     <string name="share_expected_member">Expect members</string>
     <string name="app_settings_main_help">Help</string>
     <string name="settings_language">Language</string>
+    <string name="clear_recents">"Clear recents?"</string>
 
     <!--  TODO example  -->
     <string name="settings_language_confirmation_message">
@@ -745,6 +746,5 @@
     </string>
     <string name="settings_language_confirmation_accept">Good</string>
     <string name="settings_language_continue_using_app_language">Continue using %1$s</string>
-    <string name="clear_recents">"Clear recents?"</string>
 
 </resources>
