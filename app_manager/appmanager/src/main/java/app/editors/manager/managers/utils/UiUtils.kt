@@ -154,7 +154,7 @@ object ManagerUiUtils {
             ApiContract.RoomType.READ_ONLY_ROOM -> R.drawable.ic_room_view_only
             ApiContract.RoomType.REVIEW_ROOM -> R.drawable.ic_room_review
             ApiContract.RoomType.EDITING_ROOM -> R.drawable.ic_room_collaboration
-            else -> throw IllegalArgumentException("No this type of room")
+            else -> R.drawable.ic_type_folder
         }
     }
 
