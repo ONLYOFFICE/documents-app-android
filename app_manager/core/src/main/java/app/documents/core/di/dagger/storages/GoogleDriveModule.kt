@@ -66,7 +66,7 @@ class GoogleDriveModule {
     fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
         account?.let { cloudAccount ->
             return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
-                ?: throw RuntimeException("Token null")
-        } ?: throw RuntimeException("Account null")
+                ?: ""
+        } ?: ""
     }
 }
