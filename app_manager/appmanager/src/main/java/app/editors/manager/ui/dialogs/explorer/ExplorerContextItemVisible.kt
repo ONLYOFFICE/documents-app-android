@@ -75,7 +75,11 @@ interface ExplorerContextItemVisible {
         } else item.security.rename
 
     private val ExplorerContextState.restore: Boolean
-        get() = section in listOf(ApiContract.Section.Trash, ApiContract.Section.Room.Archive)
+        get() = when (section) {
+            ApiContract.Section.Trash -> true
+            ApiContract.Section.Room.Archive -> item.security.move
+            else -> false
+        }
 
     private val ExplorerContextState.roomInfo: Boolean
         get() = section.isRoom
