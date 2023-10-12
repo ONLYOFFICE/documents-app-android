@@ -295,6 +295,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             binding.shareMainListOfItems.adapter = shareSettingsAdapter
 
             with(binding.shareSettingsListSwipeRefresh) {
+                setOnRefreshListener(this@SettingsFragment)
                 setColorSchemeResources(lib.toolkit.base.R.color.colorSecondary)
                 setProgressBackgroundColorSchemeResource(lib.toolkit.base.R.color.colorSurface)
                 binding.shareMainListOfItems.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -374,6 +375,11 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 messageRes = R.string.share_access_success
                 onButtonState(true)
             }
+            ApiContract.ShareCode.CUSTOM_FILTER -> {
+                iconRes = R.drawable.ic_access_custom_filter
+                messageRes = R.string.share_access_success
+                onButtonState(true)
+            }
         }
         popupBinding?.buttonPopupImage?.setImageResource(iconRes)
         if (isMessage) {
@@ -447,6 +453,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 R.id.deleteItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.NONE)
                 R.id.commentItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.COMMENT)
                 R.id.fillFormItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.FILL_FORMS)
+                R.id.customFilterItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.CUSTOM_FILTER)
             }
         }
     }
@@ -461,6 +468,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 R.id.denyItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.NONE)
                 R.id.commentItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.COMMENT)
                 R.id.fillFormItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.FILL_FORMS)
+                R.id.customFilterItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.CUSTOM_FILTER)
             }
         }
     }
