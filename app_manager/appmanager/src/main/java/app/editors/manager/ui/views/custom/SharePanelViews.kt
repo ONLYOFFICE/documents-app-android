@@ -165,6 +165,7 @@ class SharePanelViews(
                 R.id.denyItem -> onPopupAccess(ApiContract.ShareCode.NONE)
                 R.id.commentItem -> onPopupAccess(ApiContract.ShareCode.COMMENT)
                 R.id.fillFormItem -> onPopupAccess(ApiContract.ShareCode.FILL_FORMS)
+                R.id.customFilterItem -> onPopupAccess(ApiContract.ShareCode.CUSTOM_FILTER)
             }
         }
     }
