@@ -8,16 +8,13 @@ import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
-import app.documents.core.network.storages.dropbox.login.DropboxResponse
-import app.documents.core.network.storages.dropbox.models.request.TokenRefreshRequest
-import app.documents.core.network.storages.dropbox.models.request.TokenRequest
-import app.documents.core.network.storages.dropbox.models.response.RefreshTokenResponse
 import app.documents.core.providers.DropboxFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.dropboxLoginProvider
 import app.editors.manager.managers.providers.DropboxStorageHelper
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.dropbox.DownloadWork
@@ -25,10 +22,13 @@ import app.editors.manager.managers.works.dropbox.UploadWork
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
+import moxy.presenterScope
+import retrofit2.HttpException
 
-class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
+class DocsDropboxPresenter : BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     private val dropboxFileProvider: DropboxFileProvider by lazy {
         DropboxFileProvider(
@@ -41,7 +41,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         App.getApp().appComponent.inject(this)
     }
 
-    override val externalLink : Unit
+    override val externalLink: Unit
         get() {
             itemClicked?.let { item ->
                 dropboxFileProvider.share(item.id)?.let { externalLinkResponse ->
@@ -111,7 +111,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             uploadUris.add(uri)
         } ?: run {
             uris?.let {
-                while(index != uris.size) {
+                while (index != uris.size) {
                     uploadUris.add(uris[index])
                     index++
                 }
@@ -136,11 +136,11 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun getArgs(filteringValue: String?): Map<String, String> {
         val args = mutableMapOf<String, String>()
-        if(modelExplorerStack.last()?.current?.providerItem == true) {
+        if (modelExplorerStack.last()?.current?.providerItem == true) {
             args[DropboxUtils.DROPBOX_CONTINUE_CURSOR] =
                 modelExplorerStack.last()?.current?.parentId!!
         }
-        if(modelExplorerStack.last()?.current?.providerItem == true && this.filteringValue.isNotEmpty()) {
+        if (modelExplorerStack.last()?.current?.providerItem == true && this.filteringValue.isNotEmpty()) {
             args[DropboxUtils.DROPBOX_SEARCH_CURSOR] =
                 modelExplorerStack.last()?.current?.parentId!!
         }
@@ -176,23 +176,20 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun refreshToken() {
-        context.accountOnline?.getAccountName()?.let { accountName ->
-            AccountUtils.getAccount(context, accountName)?.let { account ->
-                val refreshToken = AccountUtils.getAccountData(context, account).refreshToken.orEmpty()
-                val request = TokenRefreshRequest(refresh_token = refreshToken)
-                context.dropboxLoginProvider.updateRefreshToken(
-                    mapOf(
-                        TokenRefreshRequest::refresh_token.name to request.refresh_token,
-                        TokenRequest::grant_type.name to request.grant_type,
-                    )
-                ).subscribe({ responseRefresh ->
-                    if (responseRefresh is DropboxResponse.Success) {
-                        val response = responseRefresh.response as RefreshTokenResponse
-                        AccountUtils.setToken(context, accountName, response.accessToken)
+        presenterScope.launch {
+            context.accountOnline?.getAccountName()?.let { accountName ->
+                AccountUtils.getAccount(context, accountName)?.let { account ->
+                    try {
+                        val refreshToken = AccountUtils.getAccountData(context, account).refreshToken.orEmpty()
+                        val refreshResponse = context.dropboxLoginProvider.updateRefreshToken(refreshToken)
+                        AccountUtils.setToken(context, accountName, refreshResponse.accessToken)
                         App.getApp().refreshDropboxInstance()
                         getItemsById(DropboxUtils.DROPBOX_ROOT)
-                    } else viewState.onRefreshToken()
-                }) { viewState.onRefreshToken() }
+                    } catch (e: HttpException) {
+                        FirebaseUtils.addCrash(e)
+                        viewState.onAuthorization()
+                    }
+                }
             }
         }
     }
@@ -203,7 +200,7 @@ class DocsDropboxPresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                 viewState.onError(context.getString(R.string.storage_dropbox_email_not_verified_error))
             }
             DropboxUtils.DROPBOX_EXPIRED_ACCESS_TOKEN -> refreshToken()
-            DropboxUtils.DROPBOX_INVALID_ACCESS_TOKEN -> viewState.onRefreshToken()
+            DropboxUtils.DROPBOX_INVALID_ACCESS_TOKEN -> viewState.onAuthorization()
             else -> super.fetchError(throwable)
         }
     }

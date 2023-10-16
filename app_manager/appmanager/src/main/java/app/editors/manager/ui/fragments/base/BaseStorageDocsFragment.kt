@@ -107,7 +107,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
             ExplorerContextItem.ExternalLink -> presenter.externalLink
-            ExplorerContextItem.Edit -> presenter.getFileInfo()
             else -> super.onContextButtonClick(contextItem)
         }
         contextBottomDialog?.dismiss()

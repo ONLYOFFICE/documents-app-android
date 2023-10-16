@@ -3,10 +3,12 @@ plugins {
     id("kotlinx-serialization")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp") version Kotlin.kspVersion
 }
 
 android {
-    buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
+
+    namespace = "lib.toolkit.base"
     compileSdk = AppDependency.COMPILE_SDK_VERSION
 
     defaultConfig {
@@ -32,15 +34,16 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_11)
-        targetCompatibility(JavaVersion.VERSION_11)
+        sourceCompatibility(JavaVersion.VERSION_17)
+        targetCompatibility(JavaVersion.VERSION_17)
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -81,7 +84,7 @@ dependencies {
 
     // Dagger
     implementation(Dagger.dagger)
-    kapt(Dagger.daggerCompiler)
+    ksp(Dagger.daggerCompiler)
 
     // Other
     implementation(Libs.glide)

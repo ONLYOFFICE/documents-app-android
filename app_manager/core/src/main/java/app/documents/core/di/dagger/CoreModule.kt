@@ -1,7 +1,6 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
-import app.documents.core.di.dagger.storages.OneDriveScope
 import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.preference.NetworkSettings
@@ -17,7 +16,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Qualifier
 import javax.inject.Scope
 
@@ -65,8 +63,8 @@ object CoreModule {
     fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
         account?.let { cloudAccount ->
             return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
-                ?: throw RuntimeException("Token null")
-        } ?: throw RuntimeException("Account null")
+                ?: ""
+        } ?: ""
     }
 
 }

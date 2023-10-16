@@ -2,7 +2,6 @@ package app.editors.manager.di.component
 
 import android.content.Context
 import app.documents.core.network.common.interceptors.WebDavInterceptor
-import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
 import app.documents.core.providers.OneDriveFileProvider
 import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.account.AccountsDataBase
@@ -132,7 +131,6 @@ interface AppComponent {
     fun inject(splashFragment: SplashFragment?)
     fun inject(googleDriveSignInPresenter: GoogleDriveSignInPresenter?)
     fun inject(onlyOfficeCloudPresenter: OnlyOfficeCloudPresenter)
-    fun inject(dropboxLoginHelper: DropboxLoginHelper)
     fun inject(cloudsFragment: CloudsFragment)
     fun inject(webDavLoginActivity: WebDavLoginActivity)
     fun inject(DocsDropboxFragment: DocsDropboxFragment)

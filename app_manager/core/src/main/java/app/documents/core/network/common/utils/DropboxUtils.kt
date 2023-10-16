@@ -1,5 +1,8 @@
 package app.documents.core.network.common.utils
 
+import app.documents.core.BuildConfig
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.models.Storage
 import app.documents.core.network.storages.dropbox.login.DropboxResponse
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.SerializableString
@@ -27,6 +30,12 @@ object DropboxUtils {
     const val DROPBOX_ERROR_EMAIL_NOT_VERIFIED = "email_not_verified"
     const val DROPBOX_EXPIRED_ACCESS_TOKEN = "expired_access_token"
     const val DROPBOX_INVALID_ACCESS_TOKEN = "invalid_access_token"
+
+    val storage = Storage(
+        ApiContract.Storage.DROPBOX,
+        BuildConfig.DROP_BOX_COM_CLIENT_ID,
+        BuildConfig.DROP_BOX_COM_REDIRECT_URL
+    )
 
     @JvmStatic
     fun encodeUnicodeSymbolsDropbox(title: String): String {

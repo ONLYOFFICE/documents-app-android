@@ -8,6 +8,7 @@ object StorageContract {
     const val ARG_REDIRECT_URI = "redirect_uri"
     const val ARG_RESPONSE_TYPE = "response_type"
     const val ARG_REFRESH_TOKEN = "refresh_token"
+    const val ARG_TOKEN_ACCESS = "token_access_type"
     const val ARG_ACCESS_TYPE = "access_type"
     const val ARG_GRANT_TYPE = "grant_type"
     const val ARG_APPROVAL_PROMPT = "approval_prompt"
@@ -22,6 +23,8 @@ object StorageContract {
     object DropBox {
         const val AUTH_URL = "https://www.dropbox.com/oauth2/authorize?"
         const val VALUE_RESPONSE_TYPE = "code"
+        const val VALUE_GRANT_TYPE = "authorization_code"
+        const val VALUE_ACCESS_TYPE = "offline"
     }
 
     object Google {

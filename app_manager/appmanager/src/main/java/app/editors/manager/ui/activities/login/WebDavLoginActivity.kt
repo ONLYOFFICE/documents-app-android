@@ -7,18 +7,16 @@ import android.view.MenuItem
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityWebDavLoginBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.login.WebDavSignInFragment
+import app.editors.manager.ui.fragments.storages.DropboxSignInFragment
 import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
 import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.interfaces.WebDavInterface
 import lib.toolkit.base.managers.utils.getSerializable
-import javax.inject.Inject
 
 class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
@@ -43,8 +41,6 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     private var viewBinding: ActivityWebDavLoginBinding? = null
     override val isMySection: Boolean = false
-    @Inject
-    lateinit var dropboxLoginHelper: DropboxLoginHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,11 +99,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
     }
 
     private fun showDropboxSignInFragment() {
-        dropboxLoginHelper.startSignInActivity(this) {
-            App.getApp().refreshDropboxInstance()
-            MainActivity.show(this)
-            finish()
-        }
+        showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG)
     }
 
     private fun showGoogleDriveSignInFragment() {

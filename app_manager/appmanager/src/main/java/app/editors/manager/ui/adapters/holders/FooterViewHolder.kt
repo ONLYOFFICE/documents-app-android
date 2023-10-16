@@ -25,6 +25,6 @@ class FooterViewHolder(parent: View, adapter: ExplorerAdapter)
     }
 
     companion object {
-        const val LAYOUT: Int = R.layout.list_explorer_footer
+        val LAYOUT: Int = R.layout.list_explorer_footer
     }
 }

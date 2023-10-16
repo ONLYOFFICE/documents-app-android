@@ -5,13 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
-import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
-import app.documents.core.network.storages.dropbox.login.DropboxLoginHelper
 import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
-import app.editors.manager.ui.activities.main.MainActivity
+import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
-import javax.inject.Inject
 
 class DocsDropboxFragment: BaseStorageDocsFragment() {
 
@@ -30,9 +27,6 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
     override lateinit var presenter: DocsDropboxPresenter
 
     override fun getSection(): ApiContract.Section = ApiContract.Section.Storage.Dropbox
-
-    @Inject
-    lateinit var dropboxLoginHelper: DropboxLoginHelper
 
     init {
         App.getApp().appComponent.inject(this)
@@ -63,14 +57,8 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
 
     override fun getDocsPresenter() = presenter
 
-    override fun onRefreshToken() {
-        dropboxLoginHelper.startSignInActivity(this) {
-            App.getApp().refreshDropboxInstance()
-            MainActivity.show(requireContext())
-            requireActivity().finish()
-        }
+    override fun onAuthorization() {
+        showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG, false)
     }
-
-
 
 }

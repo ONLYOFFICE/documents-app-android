@@ -111,7 +111,7 @@ interface ExplorerContextItemVisible {
         get() = isSearching
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
-        enabled && !isFolder && section != ApiContract.Section.Trash
+        enabled && !isFolder && !listOf(ApiContract.Section.Trash, ApiContract.Section.Webdav).contains(section)
 
     private fun isExtensionEditable(ext: String): Boolean {
         return StringUtils.getExtension(ext) in listOf(
