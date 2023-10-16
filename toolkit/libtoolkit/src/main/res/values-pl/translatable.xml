@@ -1,15 +1,15 @@
 <resources>
-
-  <string name="dialogs_edit_forbidden_symbols">Nie używaj tych symboli\u0020</string>
-  <string name="sizes_bytes">Bajtów</string>
-  <string name="sizes_gigabytes">Gb</string>
-  <string name="sizes_kilobytes">Kb</string>
-  <string name="sizes_megabytes">Mb</string>
-  <string name="sizes_terabytes">Tb</string>
-
   <string name="chooser_email_client">Wybierz klienta poczty …</string>
   <string name="about_email_subject">Android Opinie ONLYOFFICE Documents</string>
   <string name="about_feedback">Opinie i wsparcie</string>
-    <string name="text_hint_required">Wymagany</string>
+  <string name="text_hint_required">Wymagany</string>
+  <string name="export_send_copy">Wyślij kop</string>
+  <string name="dialogs_edit_forbidden_symbols">Nie używaj tych znaków\u0020</string>
+  <string name="dialogs_edit_forbidden_name">Nieprawidłowa nazwa</string>
+  <string name="sizes_bytes">bitów</string>
+  <string name="sizes_kilobytes">kB</string>
+  <string name="sizes_megabytes">MB</string>
+  <string name="sizes_gigabytes">GB</string>
+  <string name="sizes_terabytes">TB</string>
 
 </resources>

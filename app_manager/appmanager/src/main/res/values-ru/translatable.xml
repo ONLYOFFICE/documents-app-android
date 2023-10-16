@@ -589,5 +589,21 @@
     <string name="storage_dropbox_email_not_verified_error">Электронная почта не подтверждена</string>
     <string name="download_manager_downloading">Скачивание…</string>
     <string name="settings_language">Язык</string>
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Элемент перемещен в Корзину</item>
+        <item quantity="other">Элементы перемещены в Корзину</item>
+        <item quantity="many">Элементы перемещены в Корзину</item>
+        <item quantity="few">Элементы перемещены в Корзину</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Элемент безвозвратно удален</item>
+        <item quantity="other">Элементы безвозвратно удалены</item>
+        <item quantity="many">Элементы безвозвратно удалены</item>
+        <item quantity="few">Элементы безвозвратно удалены</item>
+    </plurals>
+    <string name="share_access_room_power_user">Опытный пользователь</string>
+    <string name="share_expected_member">Ожидайте участников</string>
+    <string name="app_settings_main_help">Помощь</string>
+    <string name="clear_recents">"Очистить последние?"</string>
 
 </resources>

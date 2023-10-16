@@ -565,4 +565,16 @@
     <string name="storage_dropbox_email_not_verified_error">E-mail nie został zweryfikowany</string>
     <string name="download_manager_downloading">Pobieranie…</string>
     <string name="settings_language">Język</string>
+    <plurals name="operation_moved_to_trash" tools:ignore="MissingQuantity">
+        <item quantity="one">Pozycja została przeniesiona do Kosza</item>
+        <item quantity="other">Pozycje zostały przeniesione do Kosza</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably" tools:ignore="MissingQuantity">
+        <item quantity="one">Pozycja została nieodwracalnie usunięta</item>
+        <item quantity="other">Pozycje zostały nieodwracalnie usunięte</item>
+    </plurals>
+    <string name="share_access_room_power_user">Użytkownik z większą liczbą uprawnień</string>
+    <string name="share_expected_member">Oczekiwanie na członków</string>
+    <string name="app_settings_main_help">Pomoc</string>
+    <string name="clear_recents">"Wyczyścić ostatnie?"</string>
 </resources>

@@ -1,15 +1,14 @@
 <resources>
-
   <string name="dialogs_edit_forbidden_symbols">N\'utilisez pas ces symboles\u0020</string>
   <string name="sizes_bytes">Octets</string>
   <string name="sizes_gigabytes">Go</string>
   <string name="sizes_kilobytes">Ko</string>
   <string name="sizes_megabytes">Mo</string>
   <string name="sizes_terabytes">To</string>
-
   <string name="chooser_email_client">Choisissez un client de messagerie…</string>
   <string name="about_email_subject">ONLYOFFICE Documents Android Commentaire</string>
   <string name="about_feedback">Commentaires et assistance</string>
-    <string name="text_hint_required">Requis</string>
-
+  <string name="text_hint_required">Requis</string>
+  <string name="export_send_copy">Envoyer une copie</string>
+  <string name="dialogs_edit_forbidden_name">Nom incorrect</string>
 </resources>

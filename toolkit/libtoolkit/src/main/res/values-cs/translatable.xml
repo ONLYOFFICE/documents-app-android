@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
-    <string name="sizes_bytes">Bajty</string>
-    <string name="sizes_kilobytes">Kb</string>
-    <string name="sizes_megabytes">Mb</string>
-    <string name="sizes_gigabytes">Gb</string>
-    <string name="sizes_terabytes">Tb</string>
-
     <string name="chooser_email_client">Zvolte e-mailového klienta…</string>
     <string name="about_email_subject">Zpětná vazba k aplikaci Dokumenty ONLYOFFICE pro Android</string>
     <string name="about_feedback">Zpětná vazba a podpora</string>
     <string name="text_hint_required">Požadováno</string>
+    <string name="export_send_copy">Odeslat kopii</string>
+    <string name="dialogs_edit_forbidden_symbols">Nepoužívejte tyto symboly\u0020</string>
+    <string name="dialogs_edit_forbidden_name">Neplatný název</string>
+    <string name="sizes_bytes">byty</string>
+    <string name="sizes_kilobytes">KB</string>
+    <string name="sizes_megabytes">MB</string>
+    <string name="sizes_gigabytes">GB</string>
+    <string name="sizes_terabytes">TB</string>
 </resources>
