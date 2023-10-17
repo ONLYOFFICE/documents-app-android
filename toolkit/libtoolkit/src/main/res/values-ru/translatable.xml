@@ -1,15 +1,14 @@
 <resources>
-
-  <string name="dialogs_edit_forbidden_symbols">Не используйте эти символы\u0020</string>
-  <string name="sizes_bytes">байт</string>
-  <string name="sizes_gigabytes">Гб</string>
-  <string name="sizes_kilobytes">Кб</string>
-  <string name="sizes_megabytes">Мб</string>
-  <string name="sizes_terabytes">Тб</string>
-
   <string name="chooser_email_client">Выберите почтовый клиент…</string>
   <string name="about_email_subject">Обратная связь по приложению ONLYOFFICE Документы для Android</string>
   <string name="about_feedback">Обратная связь и поддержка</string>
-    <string name="text_hint_required">Обязательно</string>
-
+  <string name="text_hint_required">Обязательно</string>
+  <string name="export_send_copy">Отправить копию</string>
+  <string name="dialogs_edit_forbidden_symbols">Не используйте эти символы\u0020</string>
+  <string name="dialogs_edit_forbidden_name">Недопустимое имя</string>
+  <string name="sizes_bytes">Байт</string>
+  <string name="sizes_kilobytes">Кб</string>
+  <string name="sizes_megabytes">Мб</string>
+  <string name="sizes_gigabytes">Гб</string>
+  <string name="sizes_terabytes">Тб</string>
 </resources>

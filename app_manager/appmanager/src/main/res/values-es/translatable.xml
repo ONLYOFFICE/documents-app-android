@@ -564,4 +564,18 @@
     <string name="storage_dropbox_email_not_verified_error">Correo electrónico no verificado</string>
     <string name="download_manager_downloading">Descargando…</string>
     <string name="settings_language">Idioma</string>
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one">El elemento se ha movido a la papelera</item>
+        <item quantity="other">Los elementos se han movido a la papelera</item>
+        <item quantity="many">Los elementos se han movido a la papelera</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one">Se ha eliminado el elemento de forma irrecuperable</item>
+        <item quantity="other">Se han eliminado los elementos de forma irrecuperable</item>
+        <item quantity="many">Se han eliminado los elementos de forma irrecuperable</item>
+    </plurals>
+    <string name="share_access_room_power_user">Usuario avanzado</string>
+    <string name="share_expected_member">Esperar miembros</string>
+    <string name="app_settings_main_help">Ayuda</string>
+    <string name="clear_recents">"¿Limpiar recientes?"</string>
 </resources>
