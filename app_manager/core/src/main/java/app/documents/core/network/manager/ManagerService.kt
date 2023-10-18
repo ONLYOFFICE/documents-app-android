@@ -379,4 +379,18 @@ interface ManagerService {
     @GET("api/" + ApiContract.API_VERSION + "/files/docservice")
     fun getDocService(): Single<Response<ResponseBody>>
 
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/checkconversion")
+    fun startConversion(@Path(value = "fileId") id: String): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/checkconversion")
+    fun getConversionStatus(@Path(value = "fileId") id: String, @Query(value = "start") start: Boolean): Single<Response<ResponseBody>>
+
 }
