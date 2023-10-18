@@ -4,4 +4,12 @@
     <string name="about_email_subject">适用于安卓反馈的ONLYOFFICE文档</string>
     <string name="about_feedback">反馈和支持</string>
     <string name="text_hint_required">必填</string>
+    <string name="export_send_copy">发送副本</string>
+    <string name="dialogs_edit_forbidden_symbols">请勿使用这些符号\u0020</string>
+    <string name="dialogs_edit_forbidden_name">名称无效</string>
+    <string name="sizes_bytes">b</string>
+    <string name="sizes_kilobytes">KB</string>
+    <string name="sizes_megabytes">MB</string>
+    <string name="sizes_gigabytes">GB</string>
+    <string name="sizes_terabytes">TB</string>
 </resources>

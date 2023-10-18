@@ -720,4 +720,16 @@
     <string name="storage_dropbox_email_not_verified_error">ອີເມວບໍ່ໄດ້ຖືກຢືນຢັນ</string>
     <string name="download_manager_downloading">ກໍາລັງດາວໂຫລດ</string>
     <string name="settings_language">ພາສາ</string>
+    <plurals name="operation_moved_to_trash" tools:ignore="UnusedQuantity">
+        <item quantity="one">ຍ້າຍລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</item>
+        <item quantity="other">ຍ້າຍລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably" tools:ignore="UnusedQuantity">
+        <item quantity="one">ລາຍ​ການ​ຖືກ​ລົບ​ອອກ​ໂດຍ​ຖາວອນ​</item>
+        <item quantity="other">ລາຍ​ການ​ຖືກ​ລົບ​ອອກ​ໂດຍ​ຖາວອນ​</item>
+    </plurals>
+    <string name="share_access_room_power_user">ຜູ້ໃຊ້ທີ່ມູສິດສູງ</string>
+    <string name="share_expected_member">ຄາດໝາຍສະມາຊິກ</string>
+    <string name="app_settings_main_help">ຊ່ວຍເຫຼືອ</string>
+    <string name="clear_recents">"ລຶບເມື່ອບໍ່ດົນມານີ້?"</string>
 </resources>
