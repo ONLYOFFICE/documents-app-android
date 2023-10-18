@@ -98,7 +98,7 @@ object ApiContract {
         const val REVIEW = "Review"
         const val COMMENT = "Comment"
         const val FILL_FORMS = "FillForms"
-        const val CUSTOM_FILLER = "CustomFilter"
+        const val CUSTOM_FILTER = "CustomFilter"
         const val ROOM_ADMIN = "RoomAdmin"
         const val EDITOR = "Editor"
 
@@ -112,7 +112,7 @@ object ApiContract {
                 REVIEW -> ShareCode.REVIEW
                 COMMENT -> ShareCode.COMMENT
                 FILL_FORMS -> ShareCode.FILL_FORMS
-                CUSTOM_FILLER -> ShareCode.CUSTOM_FILLER
+                CUSTOM_FILTER -> ShareCode.CUSTOM_FILTER
                 EDITOR -> ShareCode.EDITOR
                 ROOM_ADMIN -> ShareCode.ROOM_ADMIN
                 else -> ShareCode.NONE
@@ -129,7 +129,7 @@ object ApiContract {
         object Review : Access(ShareType.REVIEW, ShareCode.REVIEW)
         object Comment : Access(ShareType.COMMENT, ShareCode.COMMENT)
         object FillForms : Access(ShareType.FILL_FORMS, ShareCode.FILL_FORMS)
-        object CustomFiller : Access(ShareType.CUSTOM_FILLER, ShareCode.CUSTOM_FILLER)
+        object CustomFiller : Access(ShareType.CUSTOM_FILTER, ShareCode.CUSTOM_FILTER)
         object Editor : Access(ShareType.EDITOR, ShareCode.EDITOR)
         object RoomAdmin : Access(ShareType.ROOM_ADMIN, ShareCode.ROOM_ADMIN)
 
@@ -144,7 +144,7 @@ object ApiContract {
                     ShareCode.REVIEW -> Review
                     ShareCode.COMMENT -> Comment
                     ShareCode.FILL_FORMS -> FillForms
-                    ShareCode.CUSTOM_FILLER -> CustomFiller
+                    ShareCode.CUSTOM_FILTER -> CustomFiller
                     ShareCode.ROOM_ADMIN -> Editor
                     ShareCode.EDITOR -> RoomAdmin
                     else -> None
@@ -165,7 +165,7 @@ object ApiContract {
         const val REVIEW = 5
         const val COMMENT = 6
         const val FILL_FORMS = 7
-        const val CUSTOM_FILLER = 8
+        const val CUSTOM_FILTER = 8
         const val ROOM_ADMIN = 9
         const val EDITOR = 10
         const val POWER_USER = 11
@@ -178,7 +178,7 @@ object ApiContract {
                 RESTRICT -> ShareType.RESTRICT
                 VARIES -> ShareType.VARIES
                 REVIEW -> ShareType.REVIEW
-                CUSTOM_FILLER -> ShareType.CUSTOM_FILLER
+                CUSTOM_FILTER -> ShareType.CUSTOM_FILTER
                 EDITOR -> ShareType.EDITOR
                 ROOM_ADMIN -> ShareType.ROOM_ADMIN
                 else -> ShareType.NONE

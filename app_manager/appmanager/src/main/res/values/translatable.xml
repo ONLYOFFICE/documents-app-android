@@ -400,6 +400,7 @@
     <string name="share_popup_access_deny_remove">Remove user</string>
     <string name="share_popup_access_fill_forms">Fill forms</string>
     <string name="share_popup_access_comment">Comment</string>
+    <string name="share_popup_access_custom_filter">Custom filter</string>
 
     <string name="share_snackbar_remove_user">User is removed</string>
 

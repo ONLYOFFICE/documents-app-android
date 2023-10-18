@@ -173,6 +173,7 @@ object ManagerUiUtils {
             ApiContract.ShareCode.EDITOR -> icon.setImageResource(R.drawable.ic_access_full)
             ApiContract.ShareCode.COMMENT -> icon.setImageResource(R.drawable.ic_access_comment)
             ApiContract.ShareCode.FILL_FORMS -> icon.setImageResource(R.drawable.ic_access_fill_form)
+            ApiContract.ShareCode.CUSTOM_FILTER -> icon.setImageResource(R.drawable.ic_access_custom_filter)
         }
     }
 
