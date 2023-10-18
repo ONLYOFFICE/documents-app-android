@@ -116,14 +116,24 @@ object PermissionUtils {
         )
     }
 
+}
 
-    @JvmStatic
-    fun requestCameraPermission(fragment: Fragment, requestCode: Int): Boolean {
-        return requestPermission(
-            fragment,
-            requestCode,
-            Manifest.permission.CAMERA
-        )
+/**
+ * @param callback callback to be called when permission granted
+ */
+class RequestPermission(
+    activityResultRegistry: ActivityResultRegistry,
+    private val callback: (permission: Boolean) -> Unit,
+    private val permission: String
+) {
+
+    private val requestPermissions: ActivityResultLauncher<String> =
+        activityResultRegistry.register("Permission", ActivityResultContracts.RequestPermission()) {
+            callback(it)
+        }
+
+    fun request() {
+        requestPermissions.launch(permission)
     }
 
 }
