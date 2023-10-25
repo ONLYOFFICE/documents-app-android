@@ -37,10 +37,6 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
     private var viewBinding: FragmentLoginEnterpriseCreatePortalBinding? = null
 
     private var fieldsWatcher: FieldsWatcher? = null
-    private var paddingTop = 0
-    private var paddingLeft = 0
-    private var paddingRight = 0
-    private var paddingBottom = 0
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -99,7 +95,6 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
     }
 
     private fun onPortalNameError(message: String) {
-        setEditHintVisibility(false)
         viewBinding?.loginCreatePortalAddressEditLayout?.error = message
     }
 
@@ -116,14 +111,7 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
     }
 
     private fun onRegionDomain(domain: String) {
-        val textWidth = measureTextSizes(
-            domain + "X", viewBinding?.loginCreatePortalAddressHintEnd?.textSize?.toInt() ?: -1
-        ).x
-        viewBinding?.loginCreatePortalAddressHintEnd?.apply {
-            layoutParams.width = textWidth
-            text = domain
-        }
-        paddingRight = textWidth
+        viewBinding?.loginCreatePortalAddressEditLayout?.suffixText = domain
     }
 
     private fun onShowWaitingDialog(@StringRes title: Int) {
@@ -140,7 +128,6 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
             requestFocus()
             filters = arrayOf<InputFilter>(FieldsFilter())
         }
-        setPadding()
         initViewModel()
     }
 
@@ -208,32 +195,6 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
         viewBinding?.loginCreatePortalLastNameEdit?.addTextChangedListener(fieldsWatcher)
     }
 
-    private fun setPadding() {
-        paddingTop = viewBinding?.loginCreatePortalAddressEdit?.paddingTop ?: 0
-        paddingLeft = viewBinding?.loginCreatePortalAddressEdit?.paddingLeft ?: 0
-        paddingRight = viewBinding?.loginCreatePortalAddressEdit?.paddingRight ?: 0
-        paddingBottom = viewBinding?.loginCreatePortalAddressEdit?.paddingBottom ?: 0
-    }
-
-    private fun setEditHintVisibility(isVisible: Boolean) {
-        if (isVisible) {
-            viewBinding?.loginCreatePortalAddressHintEnd?.apply {
-                visibility = View.VISIBLE
-                setPadding(
-                    paddingLeft,
-                    paddingTop,
-                    paddingRight,
-                    paddingBottom
-                )
-            }
-        } else {
-            viewBinding?.loginCreatePortalAddressHintEnd?.apply {
-                visibility = View.GONE
-                setPadding(paddingLeft, paddingTop, 0, paddingBottom)
-            }
-        }
-    }
-
     /*
      * Filtering inputs
      * */
@@ -285,7 +246,6 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
                 source
             } else {
                 viewBinding?.loginCreatePortalAddressEditLayout?.isErrorEnabled = false
-                setEditHintVisibility(true)
                 null
             }
         }

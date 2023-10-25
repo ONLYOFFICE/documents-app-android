@@ -24,4 +24,12 @@
         <key>link_privacy_policy</key>
         <value>https://help.onlyoffice.com/products/files/doceditor.aspx?fileid=5048502&amp;doc=SXhWMEVzSEYxNlVVaXJJeUVtS0kyYk14YWdXTEFUQmRWL250NllHNUFGbz0_IjUwNDg1MDIi0</value>
     </entry>
+    <entry>
+        <key>allow_coauthoring</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>check_sdk_fully</key>
+        <value>false</value>
+    </entry>
 </defaultsMap>

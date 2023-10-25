@@ -712,4 +712,20 @@
     <string name="storage_dropbox_email_not_verified_error">E-mail není ověřen</string>
     <string name="download_manager_downloading">Stahuji…</string>
     <string name="settings_language">Jazyk</string>
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one">Položka byla přesunuta do koše</item>
+        <item quantity="other">Položky byly přesunuty do koše</item>
+        <item quantity="few">Položky byly přesunuty do koše</item>
+        <item quantity="many">Položky byly přesunuty do koše</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one">Položka byla nenávratně odstraněna</item>
+        <item quantity="other">Nenávratně odstraněné položky</item>
+        <item quantity="few">Nenávratně odstraněné položky</item>
+        <item quantity="many">Nenávratně odstraněné položky</item>
+    </plurals>
+    <string name="share_access_room_power_user">Mocný uživatel</string>
+    <string name="share_expected_member">Očekávaní členové</string>
+    <string name="app_settings_main_help">Nápověda</string>
+    <string name="clear_recents">"Vymazat poslední?"</string>
 </resources>

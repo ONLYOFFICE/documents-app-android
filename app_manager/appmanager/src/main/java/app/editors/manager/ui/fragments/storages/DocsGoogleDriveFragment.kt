@@ -95,7 +95,7 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
         }
     }
 
-    override fun onRefreshToken() { }
+    override fun onAuthorization() { }
 
     override fun onSignIn() {
         showFragment(GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage), GoogleDriveSignInFragment.TAG, false)

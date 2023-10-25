@@ -7,7 +7,7 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
-        style="@style/MainAppBar"
+        style="@style/Widget.Common.AppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="@dimen/default_elevation_height"
@@ -22,7 +22,7 @@
             android:layout_gravity="center"
             android:contentInsetStart="@dimen/screen_padding_medium_left_right"
             android:contentInsetLeft="@dimen/screen_padding_medium_left_right"
-            android:theme="@style/MainToolbar"
+            android:theme="@style/Widget.Common.Toolbar"
             app:contentInsetLeft="@dimen/screen_padding_medium_left_right"
             app:contentInsetStart="@dimen/screen_padding_medium_left_right"
             app:contentInsetStartWithNavigation="0dp"
@@ -38,15 +38,9 @@
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_layout"
-                style="@style/Widget.MaterialComponents.TabLayout"
+                style="@style/Widget.Common.TabLayout.Fixed"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/default_tab_layout_height"
-                android:layout_gravity="center"
-                android:background="@color/colorTransparent"
-                android:theme="?attr/actionBarTheme"
-                app:tabGravity="fill"
-                app:tabMode="fixed"
-                app:tabTextAppearance="@style/ViewPagerTabsText" />
+                android:background="@color/colorTransparent" />
         </FrameLayout>
     </com.google.android.material.appbar.AppBarLayout>
 

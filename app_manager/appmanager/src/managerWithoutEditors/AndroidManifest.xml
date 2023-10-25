@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="app.editors.manager"
     android:installLocation="internalOnly">
 
     <!--    <permission android:name="com.onlyoffice.documents.ACCOUNTS" />-->
@@ -22,6 +21,7 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="${permissionId}.permission.WRITE" />
     <uses-permission android:name="${permissionId}.permission.READ" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 
@@ -64,13 +64,14 @@
         android:protectionLevel="signature" />
 
     <application
-        android:name=".app.App"
+        android:name="app.editors.manager.app.App"
         android:allowBackup="true"
         android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation"
         android:extractNativeLibs="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name_full"
         android:largeHeap="true"
+        android:localeConfig="@xml/locales_config"
         android:requestLegacyExternalStorage="true"
         android:resizeableActivity="true"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -78,14 +79,14 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.activities.login.PortalsActivity"
+            android:name="app.editors.manager.ui.activities.login.PortalsActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:launchMode="standard"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".ui.activities.login.SignInActivity"
+            android:name="app.editors.manager.ui.activities.login.SignInActivity"
             android:launchMode="singleTask"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateUnchanged">
@@ -94,12 +95,13 @@
                 android:value="app.editors.manager.ui.activities.login.PortalsActivity" />
         </activity>
         <activity
-            android:name=".ui.activities.main.MainActivity"
+            android:name="app.editors.manager.ui.activities.main.MainActivity"
             android:exported="true"
             android:filterTouchesWhenObscured="true"
             android:finishOnTaskLaunch="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
             android:clearTaskOnLaunch="true"
+            android:taskAffinity=""
             android:supportsPictureInPicture="true"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
@@ -142,7 +144,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.main.ShareActivity"
+            android:name="app.editors.manager.ui.activities.main.ShareActivity"
             android:configChanges="screenSize"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
@@ -153,7 +155,7 @@
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
         <activity
-            android:name=".ui.activities.main.StorageActivity"
+            android:name="app.editors.manager.ui.activities.main.StorageActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:theme="@style/NoActionBarTheme"
@@ -163,7 +165,7 @@
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
         <activity
-            android:name=".ui.activities.main.OperationActivity"
+            android:name="app.editors.manager.ui.activities.main.OperationActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:theme="@style/NoActionBarTheme"
@@ -173,7 +175,7 @@
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
         <activity
-            android:name=".ui.activities.main.WebViewerActivity"
+            android:name="app.editors.manager.ui.activities.main.WebViewerActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation|locale|layoutDirection"
             android:filterTouchesWhenObscured="true"
@@ -188,14 +190,14 @@
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
         <activity
-            android:name=".ui.activities.login.NextCloudLoginActivity"
+            android:name="app.editors.manager.ui.activities.login.NextCloudLoginActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation|locale|layoutDirection"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:theme="@style/NoActionBarTheme" />
         <activity
-            android:name=".ui.activities.main.MediaActivity"
+            android:name="app.editors.manager.ui.activities.main.MediaActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout"
             android:launchMode="singleTask"
@@ -207,7 +209,7 @@
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
         <activity
-            android:name=".ui.activities.main.AboutActivity"
+            android:name="app.editors.manager.ui.activities.main.AboutActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:theme="@style/NoActionBarTheme"
@@ -218,7 +220,7 @@
         </activity>
 
         <activity
-            android:name=".ui.activities.main.PasscodeActivity"
+            android:name="app.editors.manager.ui.activities.main.PasscodeActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -240,53 +242,47 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.login.AuthAppActivity"
+            android:name="app.editors.manager.ui.activities.login.AuthAppActivity"
             android:launchMode="singleTop"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activities.login.SignInActivity" />
+                android:value="app.editors.manager.ui.activities.login.SignInActivity" />
         </activity>
         <activity
-            android:name=".ui.activities.login.WebDavLoginActivity"
+            android:name="app.editors.manager.ui.activities.login.WebDavLoginActivity"
             android:launchMode="singleTop"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name=".ui.activities.main.CloudsActivity"
+            android:name="app.editors.manager.ui.activities.main.CloudsActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".ui.activities.main.AccountsActivity"
+            android:name="app.editors.manager.ui.activities.main.AccountsActivity"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".ui.activities.main.SettingsActivity"
+            android:name="app.editors.manager.ui.activities.main.SettingsActivity"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".ui.activities.main.FilterActivity"
+            android:name="app.editors.manager.ui.activities.main.FilterActivity"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name="com.dropbox.core.android.AuthActivity"
-            android:configChanges="orientation|keyboard"
-            android:exported="true"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <!-- Using a Manifest Placeholder to hide our app key -->
-                <data android:scheme="db-${dropboxKey}" />
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+            android:name="app.editors.manager.ui.activities.main.AppLocalePickerActivity"
+            android:theme="@style/NoActionBarTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name="app.editors.manager.ui.activities.main.AppLocaleConfirmationActivity"
+            android:theme="@style/NoActionBarTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <service
-            android:name=".managers.services.AuthenticatorService"
+            android:name="app.editors.manager.managers.services.AuthenticatorService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -297,7 +293,7 @@
         </service>
 
         <service
-            android:name=".managers.services.MessageService"
+            android:name="app.editors.manager.managers.services.MessageService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -322,14 +318,31 @@
         </provider>
 
         <provider
-            android:name=".managers.tools.AccountContentProvider"
+            android:name="app.editors.manager.managers.tools.AccountContentProvider"
             android:authorities="com.onlyoffice.accounts"
             android:enabled="true"
             android:exported="true" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="${facebookId}" />
+            android:value="@string/facebook_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_secret" />
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/facebook_id_sheme" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -337,9 +350,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorTransparent" />
-        <meta-data
-            android:name="com.facebook.sdk.ClientToken"
-            android:value="${facebookId}" />
     </application>
 
 </manifest>

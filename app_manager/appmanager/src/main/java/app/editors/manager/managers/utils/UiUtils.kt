@@ -154,23 +154,25 @@ object ManagerUiUtils {
             ApiContract.RoomType.READ_ONLY_ROOM -> R.drawable.ic_room_view_only
             ApiContract.RoomType.REVIEW_ROOM -> R.drawable.ic_room_review
             ApiContract.RoomType.EDITING_ROOM -> R.drawable.ic_room_collaboration
-            else -> throw IllegalArgumentException("No this type of room")
+            else -> R.drawable.ic_type_folder
         }
     }
 
-    fun setAccessIcon(imageView: ImageView, accessCode: Int) {
+    fun setAccessIcon(icon: ImageView?, accessCode: Int) {
+        if (icon == null) return
         when (accessCode) {
             ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> {
-                imageView.setImageResource(R.drawable.ic_access_deny)
+                icon.setImageResource(R.drawable.ic_access_deny)
                 return
             }
-            ApiContract.ShareCode.REVIEW -> imageView.setImageResource(R.drawable.ic_access_review)
-            ApiContract.ShareCode.READ -> imageView.setImageResource(R.drawable.ic_access_read)
-            ApiContract.ShareCode.ROOM_ADMIN -> imageView.setImageResource(R.drawable.ic_drawer_menu_my_docs)
-            ApiContract.ShareCode.READ_WRITE -> imageView.setImageResource(R.drawable.ic_access_full)
-            ApiContract.ShareCode.EDITOR -> imageView.setImageResource(R.drawable.ic_access_full)
-            ApiContract.ShareCode.COMMENT -> imageView.setImageResource(R.drawable.ic_access_comment)
-            ApiContract.ShareCode.FILL_FORMS -> imageView.setImageResource(R.drawable.ic_access_fill_form)
+            ApiContract.ShareCode.REVIEW -> icon.setImageResource(R.drawable.ic_access_review)
+            ApiContract.ShareCode.READ -> icon.setImageResource(R.drawable.ic_access_read)
+            ApiContract.ShareCode.ROOM_ADMIN -> icon.setImageResource(R.drawable.ic_room_admin)
+            ApiContract.ShareCode.POWER_USER -> icon.setImageResource(R.drawable.ic_room_power_user)
+            ApiContract.ShareCode.READ_WRITE -> icon.setImageResource(R.drawable.ic_access_full)
+            ApiContract.ShareCode.EDITOR -> icon.setImageResource(R.drawable.ic_access_full)
+            ApiContract.ShareCode.COMMENT -> icon.setImageResource(R.drawable.ic_access_comment)
+            ApiContract.ShareCode.FILL_FORMS -> icon.setImageResource(R.drawable.ic_access_fill_form)
         }
     }
 

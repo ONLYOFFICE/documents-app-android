@@ -15,6 +15,7 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.custom.SharePanelViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import lib.toolkit.base.managers.utils.capitalize
 
 class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
 
@@ -166,12 +167,6 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
                 setAccessIcon(modelShareStack?.accessCode!!)
             }
         }
-        if (isRoom) {
-            viewBinding?.inviteByEmail?.isVisible = true
-            viewBinding?.inviteByEmail?.setOnClickListener {
-                showFragment(ShareInviteFragment.newInstance(inputItem), ShareInviteFragment.TAG, false)
-            }
-        }
         setChecked()
     }
 
@@ -208,23 +203,22 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
                 return listOf(
                     ViewPagerAdapter.Container(
                         AddFragment.newInstance(inputItem, AddFragment.Type.USERS),
-                        getString(R.string.share_tab_users)
+                        getString(R.string.share_tab_users).capitalize()
                     )
                 )
             } else {
                 return listOf(
                     ViewPagerAdapter.Container(
                         AddFragment.newInstance(inputItem, AddFragment.Type.USERS),
-                        getString(R.string.share_tab_users)
+                        getString(R.string.share_tab_users).capitalize()
                     ),
 
                     ViewPagerAdapter.Container(
                         AddFragment.newInstance(inputItem, AddFragment.Type.GROUPS),
-                        getString(R.string.share_tab_groups)
+                        getString(R.string.share_tab_groups).capitalize()
                     )
                 )
             }
-
         }
 
     fun setChecked() {

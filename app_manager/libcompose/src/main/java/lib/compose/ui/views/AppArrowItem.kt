@@ -16,11 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.theme.colorGrey
+import lib.compose.ui.theme.colorTextTertiary
 import lib.toolkit.base.R
 
 /**
@@ -36,8 +35,8 @@ fun AppArrowItem(
     @DrawableRes startIcon: Int? = null,
     startIconTint: Color? = MaterialTheme.colors.primary,
     @DrawableRes endIcon: Int = R.drawable.ic_arrow_right,
-    endIconTint: Color? = MaterialTheme.colors.colorGrey,
-    optionTint: Color = MaterialTheme.colors.colorGrey,
+    endIconTint: Color? = MaterialTheme.colors.colorTextTertiary,
+    optionTint: Color = MaterialTheme.colors.colorTextTertiary,
     background: Color? = null,
     option: String? = null,
     arrowVisible: Boolean = true,
@@ -93,12 +92,12 @@ fun AppArrowItem(
 fun AppArrowItem(
     modifier: Modifier = Modifier,
     @StringRes title: Int,
-    @StringRes subtitle: Int? = null,
+    subtitle: String? = null,
     @DrawableRes startIcon: Int? = null,
     startIconTint: Color? = MaterialTheme.colors.primary,
     @DrawableRes endIcon: Int = R.drawable.ic_arrow_right,
-    endIconTint: Color? = MaterialTheme.colors.colorGrey,
-    optionTint: Color = MaterialTheme.colors.colorGrey,
+    endIconTint: Color? = MaterialTheme.colors.colorTextTertiary,
+    optionTint: Color = MaterialTheme.colors.colorTextTertiary,
     background: Color? = null,
     option: String? = null,
     arrowVisible: Boolean = true,
@@ -109,7 +108,7 @@ fun AppArrowItem(
     AppArrowItem(
         modifier = modifier,
         title = stringResource(id = title),
-        subtitle = subtitle?.let { stringResource(id = subtitle) },
+        subtitle = subtitle,
         startIcon = startIcon,
         startIconTint = startIconTint,
         endIcon = endIcon,

@@ -59,18 +59,6 @@ class StorageActivity : BaseAppActivity(), WebDavInterface {
         finish()
     }
 
-    override fun showConnectButton(isShow: Boolean) {
-        viewBinding?.appBarToolbarConnectButton?.isVisible = isShow
-    }
-
-    override fun enableConnectButton(isEnable: Boolean) {
-        viewBinding?.appBarToolbarConnectButton?.isEnabled = isEnable
-    }
-
-    override fun setOnConnectButtonClickListener(onClick: () -> Unit) {
-        viewBinding?.appBarToolbarConnectButton?.setOnClickListener { onClick() }
-    }
-
     override val isMySection: Boolean
         get() {
             return if (intent.hasExtra(TAG_SECTION)) {

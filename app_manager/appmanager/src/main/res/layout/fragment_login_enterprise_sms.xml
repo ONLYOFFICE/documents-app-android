@@ -13,14 +13,14 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_sms_code_title_text"
-            style="@style/MediumTextView"
+            style="@style/Widget.Common.TextView.Description"
             android:layout_width="@dimen/default_screen_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/screen_top_bottom_padding"
             android:gravity="center"
             android:lines="2"
             android:text="@string/login_sms_code_label"
-            android:textSize="18sp"
+            android:textSize="@dimen/fonts_size_medium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +29,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/login_sms_code_number_text"
-            style="@style/MediumTextView"
+            style="@style/Widget.Common.TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -44,7 +44,6 @@
 
         <app.editors.manager.ui.views.edits.BaseEditText
             android:id="@+id/login_sms_code_edit"
-            style="@style/MediumEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -53,7 +52,8 @@
             android:inputType="number"
             android:letterSpacing="1"
             android:singleLine="true"
-            android:text="−−−−−−"
+            android:textSize="@dimen/fonts_size_medium"
+            android:text="123144"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -62,9 +62,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_sms_code_send_again_button"
-            style="@style/AccentTextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/default_login_accent_button_height"
+            style="@style/Widget.Common.Button.TextButton"
             android:layout_marginTop="16dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -76,10 +74,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_sms_code_change_number_button"
-            style="@style/AccentTextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/default_login_accent_button_height"
-            android:layout_marginTop="16dp"
+            style="@style/Widget.Common.Button.TextButton"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:padding="10dp"

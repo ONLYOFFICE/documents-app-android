@@ -1,37 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppBaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
-        <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorError">@color/colorError</item>
-        <item name="colorOnError">@color/colorOnError</item>
-        <item name="colorSurface">@color/colorSurface</item>
-        <item name="colorOnSurface">@color/colorOnSurface</item>
-        <item name="android:colorBackground">@color/colorBackground</item>
-        <item name="colorOnBackground">@color/colorOnBackground</item>
-        <item name="android:itemBackground">?attr/selectableItemBackground</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
-        <item name="android:textColorPrimary">@color/colorOnPrimary</item>
-        <item name="android:windowEnableSplitTouch">false</item>
-        <item name="android:splitMotionEvents">false</item>
+    <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <style name="CommonImageView" parent="AppTheme">
-        <item name="android:alpha">@dimen/alpha_medium</item>
-    </style>
+    <!-- ======================================================================================= -->
+    <!-- Widgets -->
 
-    <style name="MainAppBar" parent="Widget.MaterialComponents.AppBarLayout.Surface">
-        <item name="android:background">@color/colorAppBar</item>
-    </style>
-
-    <style name="MainBottomBar" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="android:background">@color/colorBottomBar</item>
-    </style>
-
-    <style name="AlphaImageView" parent="AppTheme"/>
-
-    <style name="CloudImageView" parent="AppTheme"/>
+    <style name="Widget.Common.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView" />
 
 </resources>

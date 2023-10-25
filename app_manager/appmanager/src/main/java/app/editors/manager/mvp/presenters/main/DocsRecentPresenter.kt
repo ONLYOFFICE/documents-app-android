@@ -4,17 +4,17 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import app.editors.manager.BuildConfig
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.DropboxFileProvider
 import app.documents.core.providers.GoogleDriveFileProvider
 import app.documents.core.providers.OneDriveFileProvider
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.recent.Recent
+import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.*
 import app.editors.manager.managers.providers.DropboxStorageHelper
@@ -23,6 +23,7 @@ import app.editors.manager.managers.providers.OneDriveStorageHelper
 import app.editors.manager.mvp.views.main.DocsRecentView
 import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,6 @@ import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FileUtils.asyncDeletePath
 import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 import retrofit2.HttpException
@@ -156,36 +156,33 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 context,
                 Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
             )?.let {
+                val fileProvider = context.cloudFileProvider
                 disposable.add(
-                    context.api
-                        .getFileInfo(recent.idFile)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .map { response ->
-                            {
-                                if (response.isSuccessful && response.body() != null) {
-                                    response.body()?.response
-                                } else {
-                                    throw HttpException(response)
-                                }
+                    fileProvider.fileInfo(CloudFile().apply {
+                        id = recent.idFile ?: ""
+                    }).flatMap { cloudFile ->
+                        fileProvider.opeEdit(cloudFile).toObservable()
+                            .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
+                                return@zipWith arrayOf(file, info)
                             }
+                    }.subscribe({ response ->
+                        checkExt(response[0] as CloudFile, response[1] as String)
+                    }, { throwable ->
+                        if (throwable is HttpException) {
+                            when (throwable.code()) {
+                                ApiContract.HttpCodes.CLIENT_UNAUTHORIZED ->
+                                    viewState.onError(context.getString(R.string.errors_client_unauthorized))
+
+                                ApiContract.HttpCodes.CLIENT_FORBIDDEN ->
+                                    viewState.onError(context.getString(R.string.error_recent_account))
+
+                                else ->
+                                    onErrorHandle(throwable.response()?.errorBody(), throwable.code())
+                            }
+                        } else {
+                            viewState.onError(context.getString(R.string.error_recent_account))
                         }
-                        .subscribe({ response ->
-                            checkExt(checkNotNull(response.invoke()))
-                        }, { throwable ->
-                            if (throwable is HttpException) {
-                                when (throwable.code()) {
-                                    ApiContract.HttpCodes.CLIENT_UNAUTHORIZED ->
-                                        viewState.onError(context.getString(R.string.errors_client_unauthorized))
-                                    ApiContract.HttpCodes.CLIENT_FORBIDDEN ->
-                                        viewState.onError(context.getString(R.string.error_recent_account))
-                                    else ->
-                                        onErrorHandle(throwable.response()?.errorBody(), throwable.code())
-                                }
-                            } else {
-                                viewState.onError(context.getString(R.string.error_recent_account))
-                            }
-                        })
+                    })
                 )
             } ?: run {
                 viewState.onError(context.getString(R.string.error_recent_enter_account))
@@ -194,16 +191,27 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     @Suppress("KotlinConstantConditions")
-    private fun checkExt(file: CloudFile) {
+    private fun checkExt(file: CloudFile, info: String) {
         if (file.rootFolderType.toInt() != ApiContract.SectionType.CLOUD_TRASH) {
             when (val ext = StringUtils.getExtension(file.fileExst)) {
-                StringUtils.Extension.DOC, StringUtils.Extension.FORM, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.PDF, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
+                StringUtils.Extension.DOC, StringUtils.Extension.FORM, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                     if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
-
+                        viewState.onError(context.getString(R.string.error_unsupported_format))
                     } else {
-                        viewState.openFile(file)
+                        checkSdkVersion { isCheck ->
+                            if (isCheck) {
+                                viewState.onOpenDocumentServer(file, info, false)
+                            } else {
+                                viewState.openFile(file)
+                            }
+                        }
                     }
                 }
+
+                StringUtils.Extension.PDF -> {
+                    viewState.openFile(file)
+                }
+
                 else -> viewState.onError(context.getString(R.string.error_unsupported_format))
             }
         } else {
@@ -405,7 +413,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     private suspend fun openWebDavFile(recent: Recent) {
-        accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
+        accountDao.getAccount(recent.ownerId ?: "")?.let {
             val provider = context.webDavFileProvider
             val cloudFile = CloudFile().apply {
                 title = recent.name

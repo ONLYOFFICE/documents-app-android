@@ -4,7 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -13,7 +18,6 @@ import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
-import app.editors.manager.app.App
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
 import app.editors.manager.mvp.presenters.main.CloudAccountState
@@ -30,6 +34,7 @@ import app.editors.manager.ui.adapters.CloudAccountAdapter
 import app.editors.manager.ui.dialogs.AccountContextDialog
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.fragments.storages.DropboxSignInFragment
 import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
 import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
@@ -380,11 +385,7 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onDropboxLogin() {
         hideDialog(forceHide = true)
-        presenter.dropboxLogin(this) {
-            App.getApp().refreshDropboxInstance()
-            MainActivity.show(requireContext())
-            requireActivity().finish()
-        }
+        showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG, false)
     }
 
     override fun onOneDriveLogin() {

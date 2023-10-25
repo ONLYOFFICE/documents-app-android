@@ -12,12 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.MediaController
-import app.documents.core.storage.account.AccountDao
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.storage.account.AccountDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentMediaVideoBinding
-import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.media.MediaPagerFragment.OnMediaListener
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -25,7 +25,6 @@ import app.editors.manager.ui.views.media.MediaVideoView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 import java.io.File
 import javax.inject.Inject
@@ -73,11 +72,13 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
                 accountDao.getAccountOnline()?.let { account ->
                     AccountUtils.getToken(
                         App.getApp().applicationContext,
-                        Account(account.getAccountName(), App.getApp().applicationContext.getString(lib.toolkit.base.R.string.account_type))
-                    )
-                        ?.let {
-                            return@runBlocking it
-                        }
+                        Account(
+                            account.getAccountName(),
+                            App.getApp().applicationContext.getString(lib.toolkit.base.R.string.account_type)
+                        )
+                    )?.let {
+                        return@runBlocking it
+                    }
                 } ?: run {
                     throw Error("No account")
                 }
@@ -95,7 +96,7 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
             } else {
                 pageClicked(true)
             }
-            R.id.view_icon_background_layout -> if (isPrepared) {
+            R.id.mediaPlayButton -> if (isPrepared) {
                 if (viewBinding?.mediaVideoView?.isPlaying == true) {
                     mediaController?.show(TIME_MEDIA_DURATION)
                 } else {
@@ -135,8 +136,7 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
         isPrepared = true
         placeholderViews.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
         viewBinding?.mediaVideoProgress?.visibility = View.GONE
-        viewBinding?.viewIconBackgroundLayout?.root?.visibility = View.VISIBLE
-        viewBinding?.viewIconBackgroundLayout?.root?.setBackgroundResource(R.drawable.drawable_media_background_video_play_grey)
+        viewBinding?.mediaPlayButton?.visibility = View.VISIBLE
         viewBinding?.mediaVideoView?.seekTo(TIME_PREVIEW)
         viewBinding?.mediaVideoView?.pause()
         hidePosition()
@@ -145,7 +145,6 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
 
     override fun onCompletion(mp: MediaPlayer) {
         if (!isError) {
-            viewBinding?.viewIconBackgroundLayout?.root?.visibility = View.VISIBLE
             viewBinding?.mediaVideoView?.seekTo(TIME_START)
         }
     }
@@ -217,15 +216,9 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
         placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root)
         placeholderViews.setViewForHide(viewBinding?.mediaVideoContainer)
         placeholderViews.setOnClickListener(this)
-        viewBinding?.viewIconBackgroundLayout?.root?.setBackgroundResource(R.drawable.drawable_media_background_video_play_light)
-        UiUtils.setImageTint(
-            viewBinding?.viewIconBackgroundLayout?.viewIconBackgroundImage!!,
-            R.drawable.ic_media_play,
-            lib.toolkit.base.R.color.colorPrimary
-        )
         mediaController = MediaController(context)
-        mediaController!!.setMediaPlayer(viewBinding?.mediaVideoView)
-        mediaController!!.setAnchorView(viewBinding?.mediaVideoView)
+        mediaController?.setMediaPlayer(viewBinding?.mediaVideoView)
+        mediaController?.setAnchorView(viewBinding?.mediaVideoView)
         viewBinding?.mediaVideoView?.setOnErrorListener(this)
         viewBinding?.mediaVideoView?.setOnPreparedListener(this)
         viewBinding?.mediaVideoView?.setOnCompletionListener(this)
@@ -235,17 +228,16 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
     }
 
 
-
     private fun setListeners() {
         viewBinding?.mediaVideoContainer?.setOnClickListener { wrapperListener(it.id) }
         viewBinding?.mediaVideoWrapper?.setOnClickListener { wrapperListener(it.id) }
-        viewBinding?.viewIconBackgroundLayout?.root?.setOnClickListener { wrapperListener(it.id) }
+        viewBinding?.mediaPlayButton?.setOnClickListener { wrapperListener(it.id) }
     }
 
     private fun setVideoInitState() {
         placeholderViews.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
         viewBinding?.mediaVideoProgress?.visibility = View.VISIBLE
-        viewBinding?.viewIconBackgroundLayout?.root?.visibility = View.GONE
+        viewBinding?.mediaPlayButton?.visibility = View.GONE
     }
 
     private fun restoreViews() {
@@ -293,15 +285,14 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
         }
     }
 
-
     private fun setStatePause() {
         mediaController?.hide()
-        viewBinding?.viewIconBackgroundLayout?.root?.visibility = View.VISIBLE
+        viewBinding?.mediaPlayButton?.visibility = View.VISIBLE
     }
 
     private fun setStateStart() {
-        mediaController!!.show(TIME_MEDIA_DURATION)
-        viewBinding?.viewIconBackgroundLayout?.root?.visibility = View.GONE
+        mediaController?.show(TIME_MEDIA_DURATION)
+        viewBinding?.mediaPlayButton?.visibility = View.GONE
     }
 
     private val isActivePage: Boolean
@@ -313,17 +304,11 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
         }
 
     private fun pageClicked(isPosition: Boolean) {
-        val fragment = parentFragment
-        if (fragment is MediaPagerFragment) {
-            fragment.pageClicked(isPosition)
-        }
+        (parentFragment as? MediaPagerFragment)?.pageClicked(isPosition)
     }
 
     private fun hidePosition() {
-        val fragment = parentFragment
-        if (fragment is MediaPagerFragment) {
-            fragment.hidePosition()
-        }
+        (parentFragment as? MediaPagerFragment)?.hidePosition()
     }
 
 }

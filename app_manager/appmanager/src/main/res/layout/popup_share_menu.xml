@@ -18,12 +18,12 @@
             android:visibility="gone" />
 
         <include
-            android:id="@+id/editorItem"
+            android:id="@+id/powerUserItem"
             layout="@layout/include_popup_share_item"
             android:visibility="gone" />
 
         <include
-            android:id="@+id/viewItem"
+            android:id="@+id/editorItem"
             layout="@layout/include_popup_share_item"
             android:visibility="gone" />
 
@@ -39,6 +39,11 @@
 
         <include
             android:id="@+id/commentItem"
+            layout="@layout/include_popup_share_item"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/viewItem"
             layout="@layout/include_popup_share_item"
             android:visibility="gone" />
 

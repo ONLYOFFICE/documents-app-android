@@ -13,31 +13,29 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/inviteResetButton"
-            style="@style/AlphaImageButton"
+            style="@style/Widget.Common.Button.IconButton.Secondary"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
             android:layout_marginStart="@dimen/screen_margin_large"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="false"
             android:padding="@dimen/image_padding_icon"
-            android:src="@drawable/ic_access_panel_close"
+            app:icon="@drawable/ic_access_panel_close"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/colorOnSurface"
             tools:ignore="ContentDescription" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/share_panel_count_selected_text"
-            style="@style/ItemMediumGreyText"
+            style="@style/Widget.Common.TextView.Secondary"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
             android:layout_marginStart="@dimen/screen_margin_medium"
             android:gravity="center"
             android:text="0"
-            android:textColor="@color/colorOnSurface"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -59,13 +57,11 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_panel_add_button"
-            style="@style/AccentButton"
+            style="@style/Widget.Common.Button.SmallButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/default_margin_medium"
             android:layout_marginEnd="@dimen/screen_margin_large"
-            android:clickable="true"
-            android:focusable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"

@@ -8,13 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import lib.compose.ui.theme.colorGrey
+import lib.compose.ui.theme.colorTextSecondary
 
 @Composable
 fun AppDescriptionItem(modifier: Modifier = Modifier, text: String) {
     Text(
         style = MaterialTheme.typography.body2,
-        color = MaterialTheme.colors.colorGrey,
+        color = MaterialTheme.colors.colorTextSecondary,
         text = text,
         modifier = modifier
             .fillMaxWidth()

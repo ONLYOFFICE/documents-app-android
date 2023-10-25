@@ -36,6 +36,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
         const val HTML_EXTENSION = "html"
         const val EPUB_EXTENSION = "epub"
         const val PPTX_EXTENSION = "pptx"
+        const val PPSX_EXTENSION = "ppsx"
         const val POTX_EXTENSION = "potx"
         const val PPT_EXTENSION = "ppt"
         const val ODP_EXTENSION = "odp"

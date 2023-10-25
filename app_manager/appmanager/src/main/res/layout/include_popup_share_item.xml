@@ -2,16 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/popupItemLayout"
-    style="@style/PopupLayout">
+    style="@style/PopupListItemLayout">
 
     <ImageView
         android:id="@+id/itemIcon"
-        style="@style/ContextListImage"
+        style="@style/Widget.Common.ImageView.Context"
         tools:ignore="ContentDescription"
         tools:srcCompat="@drawable/ic_access_full" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/itemText"
-        style="@style/PopupText"
+        style="@style/Widget.Common.TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         tools:text="@string/share_popup_access_full" />
 </LinearLayout>

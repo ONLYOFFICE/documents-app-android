@@ -156,20 +156,18 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     override fun deleteItems() {
-        val items: MutableList<Item> = ArrayList()
-        val files = modelExplorerStack.selectedFiles
-        val folders = modelExplorerStack.selectedFolders
-        items.addAll(folders)
-        items.addAll(files)
+        val items = modelExplorerStack.selectedFiles + modelExplorerStack.selectedFolders
         fileProvider?.let { provider ->
-            disposable.add(provider.delete(items, null)
-                .subscribe({ }, { fetchError(it) }) {
-                    modelExplorerStack.removeSelected()
-                    getBackStack()
-                    setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                    viewState.onRemoveItems(items)
-                    viewState.onSnackBar(context.getString(R.string.operation_complete_message))
-                })
+            disposable.add(
+                provider.delete(items, null)
+                    .doOnComplete {
+                        modelExplorerStack.removeSelected()
+                        getBackStack()
+                        setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                        viewState.onRemoveItems(*items.toTypedArray())
+                    }
+                    .subscribe()
+            )
         }
     }
 
@@ -361,15 +359,15 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     fun deleteFile() {
         itemClicked?.let { item ->
-            val items: MutableList<Item> = ArrayList()
-            items.add(item)
             fileProvider?.let { provider ->
-                disposable.add(provider.delete(items, null)
-                    .subscribe({ }, { }) {
-                        modelExplorerStack.removeItemById(item.id)
-                        viewState.onRemoveItem(item)
-                        viewState.onSnackBar(context.getString(R.string.operation_complete_message))
-                    })
+                disposable.add(
+                    provider.delete(listOf(item), null)
+                        .doOnComplete {
+                            modelExplorerStack.removeItemById(item.id)
+                            viewState.onRemoveItems(item)
+                        }
+                        .subscribe()
+                )
             }
         }
     }

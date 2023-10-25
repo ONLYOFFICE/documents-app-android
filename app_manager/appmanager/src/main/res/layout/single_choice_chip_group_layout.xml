@@ -7,12 +7,12 @@
     android:orientation="vertical">
 
     <TextView
+        style="@style/Widget.Common.TextView.Title"
         android:id="@+id/chipGroupTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/default_margin_large"
         android:layout_marginVertical="@dimen/default_margin_medium"
-        android:textAppearance="@style/FilterTitleTextAppearance"
         tools:text="Chip group title" />
 
     <com.google.android.material.chip.ChipGroup
@@ -27,19 +27,19 @@
         app:singleSelection="true">
 
         <com.google.android.material.chip.Chip
-            style="@style/FilterChip"
+            style="@style/Widget.Common.Chip"
             tools:text="Sample chip" />
 
         <com.google.android.material.chip.Chip
-            style="@style/FilterChip"
+            style="@style/Widget.Common.Chip"
             tools:text="Sample chip" />
 
         <com.google.android.material.chip.Chip
-            style="@style/FilterChip"
+            style="@style/Widget.Common.Chip"
             tools:text="Sample chip" />
 
         <com.google.android.material.chip.Chip
-            style="@style/FilterChip"
+            style="@style/Widget.Common.Chip"
             tools:text="Sample chip" />
 
     </com.google.android.material.chip.ChipGroup>

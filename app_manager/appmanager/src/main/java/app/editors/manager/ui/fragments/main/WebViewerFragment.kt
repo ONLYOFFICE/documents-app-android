@@ -24,6 +24,7 @@ import android.webkit.*
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import app.documents.core.network.common.contracts.ApiContract
@@ -34,9 +35,11 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
+import app.editors.manager.ui.activities.main.WebViewerActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.managers.utils.FileUtils
 import org.json.JSONObject
@@ -111,10 +114,11 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         private var valueCallback: ValueCallback<Array<Uri>>? = null
 
         @JvmStatic
-        fun newInstance(file: CloudFile?): WebViewerFragment {
+        fun newInstance(file: CloudFile?, isEditMode: Boolean): WebViewerFragment {
             return WebViewerFragment().apply {
                 arguments = Bundle(1).apply {
-                    putSerializable(TAG_FILE, file)
+                    putSerializable(WebViewerActivity.TAG_FILE, file)
+                    putBoolean(WebViewerActivity.TAG_IS_EDIT, isEditMode)
                 }
             }
         }
@@ -125,6 +129,8 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     @Inject
     lateinit var networkSettings: NetworkSettings
+
+    private val themePrefs by lazy { ThemePreferencesTools(requireContext()) }
 
     init {
         App.getApp().appComponent.inject(this)
@@ -219,6 +225,15 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         }
     }
 
+    private val themeType: String
+        get() = when (themePrefs.mode) {
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> "system"
+            AppCompatDelegate.MODE_NIGHT_NO -> "light"
+            AppCompatDelegate.MODE_NIGHT_YES -> "dark"
+            else -> "system"
+        }
+
+    @SuppressLint("ChromeOsOnConfigurationChanged")
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         val currentMode = UiUtils.checkDeXEnabled(resources.configuration)
@@ -330,8 +345,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     }
 
     private fun getArgs() {
-        val bundle = arguments
-        cloudFile = bundle!!.getSerializable(TAG_FILE) as CloudFile?
+        cloudFile = arguments?.getSerializableExt(TAG_FILE)
         if (cloudFile?.isReadOnly == true) {
             uri = Uri.parse(cloudFile?.webUrl)
             val im = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -391,14 +405,18 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
 
     private fun setStatusBarColor() {
-        when (StringUtils.getExtension(cloudFile?.fileExst ?: "")) {
-            StringUtils.Extension.DOC,
-            StringUtils.Extension.DOCXF,
-            StringUtils.Extension.OFORM,
-            StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorDocTint)
-            StringUtils.Extension.PRESENTATION -> setStatusBarColor(lib.toolkit.base.R.color.colorPresentationTint)
-            StringUtils.Extension.SHEET -> setStatusBarColor(lib.toolkit.base.R.color.colorSheetTint)
-            else -> setStatusBarColor(lib.toolkit.base.R.color.colorPrimary)
+        if (UiUtils.isDarkMode(requireContext())) {
+            setStatusBarColor(lib.toolkit.base.R.color.colorBackground)
+        } else {
+            when (StringUtils.getExtension(cloudFile?.fileExst ?: "")) {
+                StringUtils.Extension.FORM,
+                StringUtils.Extension.DOCXF,
+                StringUtils.Extension.OFORM,
+                StringUtils.Extension.PDF -> setStatusBarColor(lib.toolkit.base.R.color.colorDocTint)
+                StringUtils.Extension.PRESENTATION -> setStatusBarColor(lib.toolkit.base.R.color.colorPresentationTint)
+                StringUtils.Extension.SHEET -> setStatusBarColor(lib.toolkit.base.R.color.colorSheetTint)
+                else -> setStatusBarColor(lib.toolkit.base.R.color.colorPrimary)
+            }
         }
     }
 
@@ -459,6 +477,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             isPageLoad = true
         }
 
+        @Deprecated("Deprecated in Java")
         override fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
             this@WebViewerFragment.errorCode = errorCode
             if (!NetworkUtils.isOnline(requireContext())) {
@@ -470,7 +489,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             }
         }
 
-        @TargetApi(Build.VERSION_CODES.M)
+        @Suppress("DEPRECATION")
         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
             super.onReceivedError(view, request, error)
             onReceivedError(view, error.errorCode, error.description.toString(), request.url.toString())
@@ -597,6 +616,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
      * */
     inner class WebViewEventsInterface {
 
+        @Suppress("unused")
         @JavascriptInterface
         fun events(json: String) {
             Log.d(TAG, "events(): $json")
@@ -647,6 +667,16 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         }
     }
 
+    @JavascriptInterface
+    fun editorsConfig(): String {
+        return JSONObject().apply {
+            put("mobileForceView", arguments?.getBoolean(WebViewerActivity.TAG_IS_EDIT, false))
+            put("theme", JSONObject().apply {
+                put("type", themeType)
+                put("select", false)
+            })
+        }.toString()
+    }
 
 }
 

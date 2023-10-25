@@ -3,18 +3,16 @@ package app.editors.manager.ui.adapters
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.LinearLayout
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isVisible
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
+import app.editors.manager.databinding.AccountListItemLayoutBinding
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.ManagerUiUtils.setDropboxImage
@@ -51,7 +49,7 @@ class CloudAccountAdapter(
             1 -> CloudAccountViewHolder(parent.inflate(R.layout.account_list_item_layout))
             else -> AddViewHolder(
                 addClickListener,
-                parent.inflate(R.layout.add_account_item_layout)
+                parent.inflate(R.layout.add_item_layout)
             )
         }
     }
@@ -65,8 +63,12 @@ class CloudAccountAdapter(
                     accountClickListener,
                     accountContextClickListener
                 )
-                holder.setSelection(tracker.isSelected(mList[position].id))
-                holder.setMode(tracker.hasSelection())
+                if (tracker.hasSelection()) {
+                    holder.setSelection(tracker.isSelected(mList[position].id))
+                    holder.setMode(true)
+                } else {
+                    holder.setMode(false)
+                }
             }
         } else {
             (holder as AddViewHolder).bind(selectedTracker?.hasSelection())
@@ -94,16 +96,8 @@ class CloudAccountAdapter(
 
 class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-    private val accountLayout: ConstraintLayout = view.findViewById(R.id.accountItemLayout)
-    private val iconSelectableImage: AppCompatImageView =
-        view.findViewById(R.id.view_icon_selectable_image)
-    private val checkImage: AppCompatImageView = view.findViewById(R.id.imageCheck)
-    private val iconSelectableMask: FrameLayout = view.findViewById(R.id.view_icon_selectable_mask)
-    private val iconSelectableLayout: FrameLayout = view.findViewById(R.id.selectableLayout)
-    private val accountName: AppCompatTextView = view.findViewById(R.id.accountItemName)
-    private val accountPortal: AppCompatTextView = view.findViewById(R.id.accountItemPortal)
-    private val accountContext: AppCompatImageButton = view.findViewById(R.id.accountItemContext)
-
+    private val binding: AccountListItemLayoutBinding = AccountListItemLayoutBinding.bind(view)
+    
     var itemDetailsLookup: ItemDetailsLookup.ItemDetails<String>? = null
 
     fun bind(
@@ -113,67 +107,63 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         accountContextClick: ((position: Int, view: View) -> Unit)? = null
     ) {
         itemDetailsLookup = AccountDetailsItemLookup(absoluteAdapterPosition, account)
+        with(binding) {
+            accountItemName.text = account.name
+            accountItemPortal.text = account.portal
+            accountItemContext.isVisible = true
+            imageCheck.isVisible = !isSelection && account.isOnline
 
-        accountName.text = account.name
-        accountPortal.text = account.portal
-        accountContext.visibility = View.VISIBLE
-        if (!isSelection) {
-            if (account.isOnline) {
-                checkImage.visibility = View.VISIBLE
-            } else {
-                checkImage.visibility = View.GONE
-            }
-        } else {
-            checkImage.visibility = View.GONE
-        }
-        if (account.isWebDav) {
-            accountName.text = account.login
-            ManagerUiUtils.setWebDavImage(account.webDavProvider, iconSelectableImage)
-        } else if(account.isOneDrive) {
-            iconSelectableImage.setOneDriveImage()
-        } else if(account.isDropbox) {
-            iconSelectableImage.setDropboxImage(account)
-        } else {
-            val url: String = if (account.avatarUrl?.contains("static") == true || account.isGoogleDrive) {
-                account.avatarUrl ?: ""
-            } else {
-                account.scheme + account.portal + account.avatarUrl
-            }
-            Glide.with(iconSelectableImage)
-                .load(GlideUtils.getCorrectLoad(url, account.getDecryptToken() ?: ""))
-                .apply(GlideUtils.avatarOptions)
-                .into(iconSelectableImage)
+            when {
+                account.isOneDrive -> accountAvatar.setOneDriveImage()
+                account.isDropbox -> accountAvatar.setDropboxImage(account)
+                account.isWebDav -> {
+                    accountItemName.text = account.login
+                    ManagerUiUtils.setWebDavImage(account.webDavProvider, accountAvatar)
+                }
+                else -> {
+                    val url: String = if (account.avatarUrl?.contains("static") == true || account.isGoogleDrive) {
+                        account.avatarUrl ?: ""
+                    } else {
+                        account.scheme + account.portal + account.avatarUrl
+                    }
+                    Glide.with(accountAvatar)
+                        .load(GlideUtils.getCorrectLoad(url, account.getDecryptToken() ?: ""))
+                        .apply(GlideUtils.avatarOptions)
+                        .into(accountAvatar)
 
+                }
+            }
+            accountAvatar.foreground = null
+            setListener(accountClick, accountContextClick)
         }
-        iconSelectableLayout.background = null
-        iconSelectableMask.background = null
-        setListener(accountClick, accountContextClick)
     }
 
     fun setSelection(isSelection: Boolean) {
         if (isSelection) {
-            iconSelectableMask.setBackgroundResource(R.drawable.drawable_list_image_select_mask)
+            binding.accountAvatar.foreground = getDrawable(R.drawable.drawable_list_image_select_mask)
         } else {
-            iconSelectableMask.setBackgroundResource(R.drawable.drawable_list_image_select_background)
+            binding.accountAvatar.foreground = getDrawable(R.drawable.drawable_list_image_select_background)
         }
     }
 
     fun setMode(hasSelection: Boolean) {
-        accountContext.visibility = if (hasSelection) View.GONE else View.VISIBLE
+        binding.accountItemContext.isVisible = !hasSelection
     }
 
     private fun setListener(
         accountClick: ((position: Int) -> Unit)?,
         accountContextClick: ((position: Int, view: View) -> Unit)?
     ) {
-        accountLayout.setOnClickListener {
+        binding.accountItemLayout.setOnClickListener {
             accountClick?.invoke(absoluteAdapterPosition)
         }
 
-        accountContext.setOnClickListener { view: View ->
+        binding.accountItemContext.setOnClickListener { view: View ->
             accountContextClick?.invoke(absoluteAdapterPosition, view)
         }
     }
+
+    private fun getDrawable(drawable: Int) = AppCompatResources.getDrawable(view.context, drawable)
 
 }
 
@@ -182,17 +172,14 @@ internal class AddViewHolder(
     view: View
 ) : RecyclerView.ViewHolder(view) {
 
-    private val addLayout: LinearLayoutCompat =
-        view.findViewById(R.id.fragment_accounts_add_account)
+    private val addLayout: LinearLayout =
+        view.findViewById(R.id.accountsAddLayout)
 
     private val height = addLayout.layoutParams.height
 
     fun bind(isSelection: Boolean?) {
-//        addLayout.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
         addLayout.layoutParams.height = if (isSelection == true) 0 else height
-        addLayout.setOnClickListener {
-            listener?.invoke()
-        }
+        addLayout.setOnClickListener { listener?.invoke() }
     }
 }
 

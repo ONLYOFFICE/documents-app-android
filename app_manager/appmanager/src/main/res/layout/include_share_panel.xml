@@ -3,7 +3,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/default_bottom_panel_height"
+    android:layout_height="wrap_content"
     card_view:cardBackgroundColor="@color/colorAppBar"
     card_view:cardElevation="@dimen/default_bottom_panel_elevation">
 
@@ -14,6 +14,7 @@
         android:paddingBottom="8dp">
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Common.TextInputLayout.Surface"
             android:id="@+id/share_panel_message_edit_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -21,14 +22,12 @@
             android:layout_marginRight="@dimen/screen_margin_large"
             android:hint="@string/share_panel_message_notification"
             android:visibility="gone"
-            app:boxBackgroundColor="@color/colorAppBar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/share_panel_message_edit"
-                style="@style/MediumEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clickable="true"
@@ -39,16 +38,16 @@
                 tools:ignore="KeyboardInaccessibleWidget" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/share_panel_reset_button"
-            style="@style/AlphaImageButton"
+            style="@style/Widget.Common.Button.IconButton.Secondary"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
-            android:layout_marginLeft="@dimen/screen_margin_large"
+            android:layout_marginStart="@dimen/screen_margin_large"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="false"
             android:padding="@dimen/image_padding_icon"
-            android:src="@drawable/ic_access_panel_close"
+            app:icon="@drawable/ic_access_panel_close"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout"
@@ -57,13 +56,12 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/share_panel_count_selected_text"
-            style="@style/ItemMediumGreyText"
+            style="@style/Widget.Common.TextView.Secondary"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
-            android:layout_marginLeft="@dimen/screen_margin_medium"
+            android:layout_marginStart="@dimen/screen_margin_medium"
             android:gravity="center"
             android:text="0"
-            android:textColor="@color/colorOnSurface"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -77,15 +75,14 @@
             layout="@layout/include_button_popup"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
-            android:layout_marginLeft="@dimen/screen_margin_medium"
-            android:padding="@dimen/image_padding_icon"
+            android:layout_marginStart="@dimen/screen_margin_medium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/share_panel_count_selected_text"
             app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout" />
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/share_panel_message_button"
-            style="@style/AlphaImageButton"
+            style="@style/Widget.Common.Button.IconButton.Secondary"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
             android:layout_marginStart="8dp"
@@ -93,7 +90,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="@dimen/image_padding_icon"
-            android:src="@drawable/ic_access_comment"
+            app:icon="@drawable/ic_access_comment"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/button_popup_layout"
             app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout"
@@ -102,13 +99,11 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_panel_add_button"
-            style="@style/AccentButton"
+            style="@style/Widget.Common.Button.SmallButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/default_margin_medium"
             android:layout_marginEnd="@dimen/screen_margin_large"
-            android:clickable="true"
-            android:focusable="true"
             android:text="@string/share_panel_button_add"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

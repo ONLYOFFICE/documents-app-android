@@ -565,4 +565,16 @@
     <string name="storage_dropbox_email_not_verified_error">Имейлът не е потвърден</string>
     <string name="download_manager_downloading">Изтеглянето…</string>
     <string name="settings_language">Език</string>
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one">Елементът е преместен в Кошчето</item>
+        <item quantity="other">Елементите са преместени в Кошчето</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one">Елементът е безвъзвратно изтрит</item>
+        <item quantity="other">Елементите са безвъзвратно изтрити</item>
+    </plurals>
+    <string name="share_access_room_power_user">Опитен потребител</string>
+    <string name="share_expected_member">Очаквайте членове</string>
+    <string name="app_settings_main_help">Помощ</string>
+    <string name="clear_recents">"Изчисти скорошни?"</string>
 </resources>

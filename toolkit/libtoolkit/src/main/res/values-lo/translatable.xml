@@ -4,4 +4,12 @@
     <string name="about_email_subject">ເອກະສານ ONLYOFFICE  ສຳລັບຄຳຕິຊົມຈາກ</string>
     <string name="about_feedback">ຄໍາຕິຊົມແລະສະຫນັບສະຫນູນ</string>
     <string name="text_hint_required">ຕ້ອງການ</string>
+    <string name="export_send_copy">ສົ່ງສຳເນົາ</string>
+    <string name="dialogs_edit_forbidden_symbols">ຢ່າໃຊ້ສັນຍາລັກເຫຼົ່ານີ້\u0020</string>
+    <string name="dialogs_edit_forbidden_name">ຊື່ບໍ່ຖືກຕ້ອງ</string>
+    <string name="sizes_bytes">ໄບຕ໌</string>
+    <string name="sizes_kilobytes">ກິໂລໄບຕ໌</string>
+    <string name="sizes_megabytes">ເມກະໄບຕ໌</string>
+    <string name="sizes_gigabytes">ກິກກະໄບຕ໌</string>
+    <string name="sizes_terabytes">ເຕລາໄບຕ໌</string>
 </resources>

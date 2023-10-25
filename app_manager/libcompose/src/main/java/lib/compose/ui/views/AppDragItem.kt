@@ -19,7 +19,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import lib.compose.ui.theme.colorGrey
+import lib.compose.ui.theme.colorTextSecondary
+import lib.compose.ui.theme.colorTextTertiary
 
 
 @Composable
@@ -48,7 +49,7 @@ fun AppDragItem(
             ) {
                 Icon(
                     painter = painterResource(id = lib.toolkit.base.R.drawable.ic_drag_handle),
-                    tint = MaterialTheme.colors.colorGrey,
+                    tint = MaterialTheme.colors.colorTextTertiary,
                     contentDescription = null,
                     modifier = Modifier
                 )

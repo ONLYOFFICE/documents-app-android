@@ -2,20 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/default_one_line_height"
+    android:layout_height="@dimen/item_one_line_height"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="horizontal">
 
     <FrameLayout
-        android:layout_width="@dimen/default_one_line_height"
+        android:layout_width="@dimen/item_one_line_height"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="12dp">
 
         <ImageView
             android:id="@+id/icon"
-            style="@style/ContextListImage"
+            style="@style/Widget.Common.ImageView.Context"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_favorites_outline" />
 
@@ -28,7 +28,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/ItemMediumBlackText"
+            style="@style/Widget.Common.TextView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginEnd="12dp"

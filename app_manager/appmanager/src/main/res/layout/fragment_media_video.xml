@@ -4,7 +4,6 @@
     android:id="@+id/media_video_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorDark"
     android:keepScreenOn="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -53,17 +52,27 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <include
-            android:id="@+id/view_icon_background_layout"
-            layout="@layout/view_icon_background"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:clickable="true"
+
+        <FrameLayout
+            android:id="@+id/mediaPlayButton"
+            android:layout_width="@dimen/item_two_line_height"
+            android:layout_height="@dimen/item_two_line_height"
+            android:background="@drawable/drawable_media_background_video_play_light"
+            android:backgroundTint="@color/colorWhite40"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_media_play" />
+
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

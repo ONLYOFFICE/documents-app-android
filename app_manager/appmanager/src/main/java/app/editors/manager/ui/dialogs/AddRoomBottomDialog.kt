@@ -41,7 +41,7 @@ class AddRoomBottomDialog : BaseBottomDialog() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.ContextMenuDialog)
+        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.Theme_Common_BottomSheetDialog)
     }
 
     override fun onDestroyView() {
@@ -86,7 +86,7 @@ private fun AddRoomBottomDialogContent(itemClick: (type: Int) -> Unit) {
         .background(color = MaterialTheme.colors.surface)
         .padding(bottom = 8.dp)) {
         Image(
-            painter = painterResource(id = R.drawable.ic_bottom_divider),
+            painter = painterResource(id = lib.toolkit.base.R.drawable.ic_bottom_divider),
             contentDescription = null,
             alignment = Alignment.TopCenter,
             colorFilter = ColorFilter.tint(color = MaterialTheme.colors.onSurface),

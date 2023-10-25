@@ -4,7 +4,9 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import java.io.FileInputStream
 import java.io.FileWriter
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -56,15 +58,15 @@ fun getKeystore(filePath: String): Properties {
 
 android {
 
-    buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
+    namespace = "app.editors.manager"
     compileSdk = AppDependency.COMPILE_SDK_VERSION
 
     defaultConfig {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 466
-        versionName = "5.7.1"
+        versionCode = 490
+        versionName = "7.5.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
@@ -160,7 +162,7 @@ android {
                     val buildCode = "_build-${output.versionCode}"
 
                     output.outputFileName = "${appName}-${versionName}-" +
-                            "${flavorName.toUpperCase()}-" +
+                            "${flavorName.uppercase()}-" +
                             "${buildAbi}-${buildType}${buildCode}${timeMark}.apk"
 
                 }
@@ -183,15 +185,16 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
+        buildConfig = true
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     bundle {
@@ -206,7 +209,7 @@ android {
         }
     }
 
-    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
@@ -272,7 +275,7 @@ dependencies {
 
     // Dagger
     implementation(Dagger.dagger)
-    kapt(Dagger.daggerCompiler)
+    ksp(Dagger.daggerCompiler)
 
     // Retrofit
     implementation(Retrofit.retrofit)
@@ -330,6 +333,10 @@ dependencies {
     implementation (Jackson.core)
     implementation (Jackson.annotations)
     implementation (Jackson.databind)
+
+    // For compose preview
+    debugApi("androidx.customview:customview:1.2.0-alpha02")
+    debugApi("androidx.customview:customview-poolingcontainer:1.0.0")
 }
 
 apply(plugin = "com.google.gms.google-services")

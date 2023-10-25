@@ -7,55 +7,48 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentMediaPagerBinding
-import app.editors.manager.databinding.IncludeMediaHeaderPagerBinding
-import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.pager.PagingViewPager
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
-import lib.toolkit.base.managers.utils.StringUtils.isImageGif
 import lib.toolkit.base.managers.utils.getSerializableExt
 
-class MediaPagerFragment : BaseAppFragment() {
+class MediaPagerFragment : BaseAppFragment(), Toolbar.OnMenuItemClickListener {
 
     interface OnMediaListener : PagingViewPager.OnPagerListener {
         fun onShareClick()
     }
 
-    private var toolbarView: View? = null
     private var mediaActivity: MediaActivity? = null
-    private var toolbarViewHolder: ToolbarViewHolder? = null
     private var pagerAdapter: PagerAdapter2? = null
-    private var selectedPosition = 0
-    private var mediaExplorer: Explorer? = null
-    private var isWebDav = false
     private var viewBinding: FragmentMediaPagerBinding? = null
+
+    private val position: Int by lazy { requireArguments().getInt(TAG_POSITION) }
+    private val isWebDav: Boolean by lazy { requireArguments().getBoolean(TAG_WEB_DAV) }
+    private val mediaExplorer: Explorer by lazy {
+        requireArguments().getSerializableExt(TAG_MEDIA, Explorer::class.java)
+    }
 
     private val writePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if (isGranted) {
-            shareFile()
+            (activeFragment as? OnMediaListener)?.onShareClick()
         } else {
             showSnackBar("Not permission")
         }
-    }
-
-    private val pagerPositionRunnableGone = Runnable {
-        viewBinding?.mediaPagerPosition?.isVisible = false
-    }
-
-    private val pagerPositionRunnableVisible = Runnable {
-        viewBinding?.mediaPagerPosition?.isVisible = true
     }
 
     override fun onAttach(context: Context) {
@@ -81,75 +74,61 @@ class MediaPagerFragment : BaseAppFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        init()
+        initViews()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewBinding?.mediaPagerPosition?.removeCallbacks(pagerPositionRunnableGone)
         viewBinding = null
     }
 
-    private fun init() {
-        getArgs()
-        initViews()
-    }
-
-    private fun getArgs() {
-        arguments?.let { bundle ->
-            mediaExplorer = bundle.getSerializableExt(TAG_MEDIA, Explorer::class.java)
-            isWebDav = bundle.getBoolean(TAG_WEB_DAV)
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.toolbarViewMode -> {
+                showFragment(MediaListFragment.newInstance(mediaExplorer, isWebDav, position), null, false)
+            }
+            R.id.toolbarShare -> shareFile()
         }
+        return true
     }
 
     @SuppressLint("InflateParams")
     private fun initViews() {
-        mediaActivity?.setToolbarState(true)
-        toolbarView = layoutInflater.inflate(R.layout.include_media_header_pager, null)
-        toolbarViewHolder = ToolbarViewHolder(toolbarView)
-        mediaActivity?.setToolbarView(toolbarView)
-        pagerAdapter = PagerAdapter2(this, checkNotNull(mediaExplorer))
-        viewBinding?.let {
-            it.mediaPager.adapter = pagerAdapter
-            it.mediaPager.registerOnPageChangeCallback(PagerListener(checkNotNull(mediaExplorer)))
-            it.mediaPager.currentItem = clickedPosition
+        pagerAdapter = PagerAdapter2(this, mediaExplorer)
+        mediaActivity?.setOnMenuItemClickListener(this)
+        viewBinding?.mediaPager?.let { pager ->
+            pager.adapter = pagerAdapter
+            pager.registerOnPageChangeCallback(PagerListener(mediaExplorer))
+            pager.setCurrentItem(position, false)
+            setPagerPosition(position)
+            hideShareForVideo(position)
         }
     }
 
-    private val clickedPosition: Int
-        get() {
-            mediaExplorer?.files?.forEachIndexed { index, file ->
-                if (file.isClicked) {
-                    return index
-                }
-            }
-            return 0
-        }
-
     @SuppressLint("MissingPermission")
     private fun shareFile() {
-        (activeFragment as OnMediaListener).onShareClick()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            (activeFragment as? OnMediaListener)?.onShareClick()
+        } else {
+            writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
     }
 
     @SuppressLint("SetTextI18n")
     private fun setPagerPosition(position: Int) {
-        viewBinding?.mediaPagerPosition?.text = "${position + 1}/${mediaExplorer?.files?.size}"
+        viewBinding?.mediaPagerPosition?.text = "${position + 1}/${mediaExplorer.files.size}"
     }
 
     @SuppressLint("SetTextI18n")
     private fun showPagerPosition(isVisible: Boolean) {
-        viewBinding?.mediaPagerPosition?.let {
-            it.removeCallbacks(pagerPositionRunnableGone)
-            it.removeCallbacks(pagerPositionRunnableVisible)
-            it.text = "${selectedPosition + 1}/${mediaExplorer?.files?.size}"
-            it.isVisible = true
-            it.alpha = if (isVisible) MediaActivity.ALPHA_TO else MediaActivity.ALPHA_FROM
-            it.animate()
-                .alpha(if (isVisible) MediaActivity.ALPHA_FROM else MediaActivity.ALPHA_TO)
-                .setDuration(MediaActivity.ALPHA_DELAY.toLong())
-                .withEndAction(if (isVisible) pagerPositionRunnableGone else pagerPositionRunnableVisible)
-                .start()
-        }
+        viewBinding?.mediaPagerPosition?.isVisible = isVisible
+    }
+
+    private fun hideShareForVideo(position: Int) {
+        val ext = getExtension(mediaExplorer.files[position].fileExst)
+        val shareVisible = ext == StringUtils.Extension.IMAGE
+        mediaActivity?.shareButtonVisible = shareVisible
+        mediaActivity?.shareVisible = shareVisible
     }
 
     val activeFragment: Fragment?
@@ -160,7 +139,7 @@ class MediaPagerFragment : BaseAppFragment() {
     }
 
     fun pageClicked(isPosition: Boolean) {
-        val isVisible = mediaActivity?.showToolbar() == true
+        val isVisible = mediaActivity?.toggleToolbar() == true
         if (isPosition) {
             showPagerPosition(isVisible)
         }
@@ -172,18 +151,12 @@ class MediaPagerFragment : BaseAppFragment() {
         }
     }
 
-    fun showPosition() {
-        if (viewBinding?.mediaPagerPosition?.isVisible == false) {
-            showPagerPosition(false)
-        }
-    }
+    private inner class PagerAdapter2(fragment: Fragment, val explorer: Explorer) : FragmentStateAdapter(fragment) {
 
-    private inner class PagerAdapter2(fragment: Fragment, val explorer: Explorer): FragmentStateAdapter(fragment) {
-
-        override fun getItemCount(): Int = explorer.files.let { if (it?.isNotEmpty() == true) it.size else 0 }
+        override fun getItemCount(): Int = explorer.files.size
 
         override fun createFragment(position: Int): Fragment {
-            explorer.files?.let { files ->
+            explorer.files.let { files ->
                 if (files.size > 0) {
                     val file = files[position]
                     return when (getExtension(file.fileExst)) {
@@ -207,36 +180,24 @@ class MediaPagerFragment : BaseAppFragment() {
     private inner class PagerListener(private val explorer: Explorer) : ViewPager2.OnPageChangeCallback() {
 
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-            Log.d(TAG, "Position: $position; Offset: $positionOffset; " +
-                    "Position offset: $positionOffsetPixels")
+            Log.d(
+                TAG, "Position: $position; Offset: $positionOffset; " +
+                        "Position offset: $positionOffsetPixels"
+            )
         }
 
         override fun onPageSelected(position: Int) {
-            if (mediaExplorer?.files?.isNotEmpty() == true) {
-                selectedPosition = position
-                toolbarViewHolder?.headerNameText?.text =
-                    mediaExplorer?.files?.let { it[position].title }
+            if (mediaExplorer.files.isNotEmpty()) {
+                mediaActivity?.setToolbarTitle(mediaExplorer.files[position].title)
                 setPagerPosition(position)
-                hideShareForVideo()
-                notifyFragmentsScroll(selectedPosition)
+                hideShareForVideo(position)
+                notifyFragmentsScroll(position)
             }
         }
 
         override fun onPageScrollStateChanged(state: Int) {
             if (state == ViewPager.SCROLL_STATE_DRAGGING) {
                 activeFragment?.let { notifyFragmentState(it) }
-            }
-        }
-
-        private fun hideShareForVideo() {
-            val ext = mediaExplorer?.files?.let { it[selectedPosition].fileExst }.toString()
-            if (activeFragment is MediaVideoFragment || isImageGif(ext)) {
-                toolbarViewHolder?.shareImageButton?.isVisible = false
-            } else {
-                toolbarViewHolder?.shareImageButton?.isVisible = true
-                if (mediaActivity?.isToolbarVisible == true) {
-                    showPosition()
-                }
             }
         }
 
@@ -257,49 +218,42 @@ class MediaPagerFragment : BaseAppFragment() {
 
             // Notify previous fragment
             if (explorer.count > 0 && position - 1 >= 0) {
-                notifyFragmentScroll(childFragmentManager.findFragmentByTag("f" + (viewBinding?.mediaPager?.currentItem?.minus(1)))!!, false)
+                notifyFragmentScroll(
+                    childFragmentManager.findFragmentByTag(
+                        "f" + (viewBinding?.mediaPager?.currentItem?.minus(
+                            1
+                        ))
+                    )!!, false
+                )
             }
 
             // Notify next fragment
             if (position + 1 < explorer.count) {
-                notifyFragmentScroll(childFragmentManager.findFragmentByTag("f" + (viewBinding?.mediaPager?.currentItem?.plus(1)))!!, false)
+                notifyFragmentScroll(
+                    childFragmentManager.findFragmentByTag(
+                        "f" + (viewBinding?.mediaPager?.currentItem?.plus(
+                            1
+                        ))
+                    )!!, false
+                )
 
             }
         }
 
-    }
-
-    /*
-     * Custom view for toolbar
-     * */
-    private inner class ToolbarViewHolder(view: View?) {
-        private var viewBinding = IncludeMediaHeaderPagerBinding.bind(checkNotNull(view)).apply {
-            mediaPagerHeaderShare.setOnClickListener {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    shareFile()
-                } else {
-                    writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-            }
-            mediaPagerHeaderViewMode.setOnClickListener {
-                showFragment(MediaListFragment.newInstance(mediaExplorer, isWebDav), null, false)
-            }
-        }
-
-        var headerNameText = viewBinding.mediaPagerHeaderName
-        var shareImageButton = viewBinding.mediaPagerHeaderShare
     }
 
     companion object {
         val TAG: String = MediaPagerFragment::class.java.simpleName
+        private const val TAG_POSITION = "TAG_POSITION"
         private const val TAG_MEDIA = "TAG_MEDIA"
         private const val TAG_WEB_DAV = "TAG_WEB_DAV"
 
-        fun newInstance(explorer: Explorer?, mIsWebDAv: Boolean): MediaPagerFragment =
+        fun newInstance(explorer: Explorer?, isWebDAv: Boolean, position: Int): MediaPagerFragment =
             MediaPagerFragment().apply {
-                arguments = Bundle(2).apply {
+                arguments = Bundle(3).apply {
+                    putInt(TAG_POSITION, position)
                     putSerializable(TAG_MEDIA, explorer)
-                    putSerializable(TAG_WEB_DAV, mIsWebDAv)
+                    putSerializable(TAG_WEB_DAV, isWebDAv)
                 }
             }
 

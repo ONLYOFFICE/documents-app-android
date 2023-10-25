@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
-
-    <string name="sizes_bytes">Bytes</string>
-    <string name="sizes_gigabytes">Gb</string>
-    <string name="sizes_kilobytes">KB</string>
-    <string name="sizes_megabytes">MB</string>
-    <string name="sizes_terabytes">TB</string>
-
     <string name="chooser_email_client">Изберете имейл клиент …</string>
     <string name="about_email_subject">ONLYOFFICE Документи Android Обратна връзка</string>
     <string name="about_feedback">Обратна връзка и поддръжка</string>
     <string name="text_hint_required">Длъжен</string>
-
+    <string name="export_send_copy">Изпрати копие</string>
+    <string name="dialogs_edit_forbidden_symbols">Не използвайте тези символи\u0020</string>
+    <string name="dialogs_edit_forbidden_name">Невалидно име</string>
+    <string name="sizes_bytes">Байта</string>
+    <string name="sizes_kilobytes">KB</string>
+    <string name="sizes_megabytes">MB</string>
+    <string name="sizes_gigabytes">GB</string>
+    <string name="sizes_terabytes">TB</string>
 </resources>

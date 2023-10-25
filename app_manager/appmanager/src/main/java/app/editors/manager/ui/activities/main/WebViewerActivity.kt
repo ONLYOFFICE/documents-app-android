@@ -31,8 +31,10 @@ class WebViewerActivity : BaseAppActivity() {
     private fun init(savedInstanceState: Bundle?) {
         initException()
         savedInstanceState ?: run {
-            val file = intent.getSerializable(TAG_FILE, CloudFile::class.java)
-            showFragment(WebViewerFragment.newInstance(file), null)
+            showFragment(WebViewerFragment.newInstance(
+                file = intent.getSerializable(TAG_FILE, CloudFile::class.java),
+                isEditMode = intent.getBooleanExtra(TAG_IS_EDIT, false)
+            ), null)
         }
     }
 
@@ -49,11 +51,13 @@ class WebViewerActivity : BaseAppActivity() {
 
         val TAG: String = WebViewerActivity::class.java.simpleName
         const val TAG_VIEWER_FAIL = "TAG_VIEWER_FAIL"
-        private const val TAG_FILE = "TAG_FILE"
+        const val TAG_FILE = "TAG_FILE"
+        const val TAG_IS_EDIT = "TAG_IS_EDIT"
 
-        fun getActivityIntent(context: Context, file: CloudFile) =
+        fun getActivityIntent(context: Context, file: CloudFile, isEditMode: Boolean) =
             Intent(context, WebViewerActivity::class.java).apply {
                 putExtra(TAG_FILE, file)
+                putExtra(TAG_IS_EDIT, isEditMode)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
                 addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
             }

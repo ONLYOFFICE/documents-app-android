@@ -17,7 +17,7 @@ class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             acceptView.isEnabled = true
             cancelView.isEnabled = true
             if (errorTint) {
-                val color = dialog.requireContext().getColor(R.color.colorLightRed)
+                val color = dialog.requireContext().getColor(R.color.colorError)
                 acceptView.setTextColor(color)
             }
         }

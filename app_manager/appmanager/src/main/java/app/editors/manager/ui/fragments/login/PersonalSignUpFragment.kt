@@ -137,8 +137,8 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
         setMessage(R.string.login_personal_signup_edit_info, false)
         urlsViewModel.remoteUrls.observe(viewLifecycleOwner) { text: Spanned? ->
             text?.let {
-                viewBinding?.termsTextView?.movementMethod = LinkMovementMethod.getInstance()
-                viewBinding?.termsTextView?.text = text
+                viewBinding?.terms?.termsTextView?.movementMethod = LinkMovementMethod.getInstance()
+                viewBinding?.terms?.termsTextView?.text = text
             }
         }
     }
@@ -152,7 +152,7 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
             actionKeyPress(actionId)
         }
 
-        viewBinding?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
+        viewBinding?.terms?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
             viewBinding?.loginPersonalSignupButton?.isEnabled = isChecked && viewBinding?.loginPersonalPortalEmailEdit?.text?.isNotEmpty() == true
         }
 
@@ -161,8 +161,11 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
 
     private fun setMessage(message: String?, isError: Boolean) {
         viewBinding?.loginPersonalPortalEmailLayout?.apply {
-            setErrorTextAppearance(if (isError) lib.toolkit.base.R.style.TextInputErrorRed else lib.toolkit.base.R.style.TextInputErrorGrey)
-            error = message
+            if (isError) {
+                error = message
+            } else {
+                helperText = message
+            }
         }
     }
 
@@ -174,7 +177,7 @@ class PersonalSignUpFragment : BaseAppFragment(), PersonalRegisterView {
         override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
             setMessage(R.string.login_personal_signup_edit_info, false)
             val email = viewBinding?.loginPersonalPortalEmailEdit?.text.toString()
-            viewBinding?.loginPersonalSignupButton?.isEnabled = "" != email && viewBinding?.termsCheckbox?.isChecked == true
+            viewBinding?.loginPersonalSignupButton?.isEnabled = "" != email && viewBinding?.terms?.termsCheckbox?.isChecked == true
         }
     }
 }

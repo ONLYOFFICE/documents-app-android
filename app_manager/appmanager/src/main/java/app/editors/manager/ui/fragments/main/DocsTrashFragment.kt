@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
+import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
@@ -81,6 +82,10 @@ class DocsTrashFragment: DocsCloudFragment() {
             setMenuMainEnabled(false)
         }
         super.onDeleteBatch(list)
+    }
+
+    override fun onDeleteMessage(count: Int) {
+        onSnackBar(resources.getQuantityString(R.plurals.operation_delete_irretrievably, count))
     }
 
     override fun showDeleteDialog(count: Int, toTrash: Boolean, tag: String) {

@@ -5,7 +5,7 @@
         android:id="@+id/menu_countries_search"
         android:enabled="true"
         android:icon="@drawable/ic_list_context_rename"
-        android:iconTint="@color/colorGrey"
+        android:iconTint="@color/colorTextSecondary"
         android:title="@string/toolbar_menu_search_hint"
         android:visible="true"
         app:actionViewClass="androidx.appcompat.widget.SearchView"

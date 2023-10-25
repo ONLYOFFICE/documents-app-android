@@ -569,4 +569,18 @@
     <string name="storage_dropbox_email_not_verified_error">E-mail non vérifié</string>
     <string name="download_manager_downloading">Téléchargement en cours…</string>
     <string name="settings_language">Langue</string>
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Élément déplacé à la poubelle</item>
+        <item quantity="other">Éléments déplacés à la poubelle</item>
+        <item quantity="many">Éléments déplacés à la poubelle</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Élément définitivement supprimé</item>
+        <item quantity="other">Éléments définitivement supprimés</item>
+        <item quantity="many">Éléments définitivement supprimés</item>
+    </plurals>
+    <string name="share_access_room_power_user">Utilisateur avancé</string>
+    <string name="share_expected_member">Membres attendus</string>
+    <string name="app_settings_main_help">Aide</string>
+    <string name="clear_recents">"Supprimer les récents ?"</string>
 </resources>

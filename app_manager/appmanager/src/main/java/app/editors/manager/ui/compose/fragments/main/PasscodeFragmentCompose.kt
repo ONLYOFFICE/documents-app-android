@@ -94,7 +94,7 @@ fun PasscodeLock(
                                 .align(Alignment.CenterVertically)
                                 .padding(start = dimensionResource(id = R.dimen.default_margin_medium)),
                             style = TextStyle(
-                                color = colorResource(id = R.color.colorLink)
+                                color = colorResource(id = R.color.colorPrimary)
 
                             )
                         )

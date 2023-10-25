@@ -1,50 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Primary -->
-    <color name="colorPrimary">#FF3E9CF0</color>
+    <!-- Base -->
+    <color name="colorPrimary">#3E9CF0</color>
     <color name="colorOnPrimary">@color/colorWhite</color>
-    <color name="colorPrimaryDark">#151515</color>
-    <color name="colorPrimaryLight">#191919</color>
-    <color name="colorSecondary">#FFFFB05C</color>
-    <color name="colorError">#FFEA5353</color>
-    <color name="colorSurface">#252525</color>
-    <color name="colorBackground">#121212</color>
-    <color name="colorOnBackground">#FFFFFFDE</color>
-    <color name="colorOnSurface">#DEFFFFFF</color>
-    <color name="colorOnSurfaceSecond">#FFFFFFDE</color>
-    <color name="colorOnSecondary">@color/colorBlack</color>
+    <color name="colorSecondary">#FFB05C</color>
+    <color name="colorOnSecondary">@color/colorWhite</color>
+    <color name="colorError">#EA5353</color>
     <color name="colorOnError">@color/colorBlack</color>
-    <color name="colorBackgroundSecond">@null</color>
-    <color name="colorOutline">#3F3F3F</color>
-    <color name="colorBgDescription">#80363636</color>
+    <color name="colorBackground">#232323</color>
+    <color name="colorOnBackground">@color/colorWhite87</color>
+    <color name="colorSurface">#333333</color>
+    <color name="colorOnSurface">@color/colorWhite87</color>
 
-    <color name="colorGrey">#8AFFFFFF</color>
-    <color name="colorLightRed">#FF5F52</color>
+    <!-- Text -->
+    <color name="colorTextPrimary">@color/colorWhite87</color>
+    <color name="colorTextSecondary">@color/colorWhite60</color>
+    <color name="colorTextTertiary">@color/colorWhite40</color>
 
-    <color name="colorAppBar">@color/colorPrimaryDark</color>
-    <color name="colorBottomBar">#191919</color>
+    <!-- Custom -->
+    <color name="colorBackdrop">#131313</color>
+    <color name="colorAppBar">@color/colorSurface</color>
+    <color name="colorBottomBar">@color/colorSurface</color>
+    <color name="colorOutline">#66545458</color>
+    <color name="colorCloudItem">@color/colorWhite12</color>
+    <color name="colorButtonBackground">@color/colorSurface</color>
 
-    <color name="colorPropertyToolbar">#333333</color>
-    <color name="colorPropertyOnToolbar">#DEFFFFFF</color>
-    <color name="colorPropertyOnToolbarSecondary">#99FFFFFF</color>
-    <color name="colorPropertyOnToolbarActive">?attr/colorPrimary</color>
-
-    <color name="colorButtonBackground">#333333</color>
-    <color name="colorButtonText">#3E9CF0</color>
-
-    <!--    Clouds-->
-    <color name="colorCloudItem">@color/colorOutline</color>
-
+    <!-- Editors -->
     <color name="colorDocTint">#3B92F3</color>
     <color name="colorSheetTint">#1DBC62</color>
     <color name="colorPresentationTint">#FE8C33</color>
     <color name="colorPicTint">#BA86FC</color>
     <color name="colorPdfTint">#FA4B3C</color>
-    <color name="colorVideoTint">#00a9cd</color>
-
-    <color name="listItemColor">@color/colorBackground</color>
-    <color name="shadow_end">@color/colorBackground</color>
-    <color name="shadow_start">@color/colorBackground</color>
+    <color name="colorVideoTint">#00A9CD</color>
 
 </resources>

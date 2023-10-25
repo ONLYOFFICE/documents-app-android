@@ -4,25 +4,35 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.login.LoginService
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.*
 import app.documents.core.network.manager.models.response.*
 import app.documents.core.network.room.RoomService
+import app.documents.core.storage.preference.NetworkSettings
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Response
-import java.io.File
 import javax.inject.Inject
 
 class CloudFileProvider @Inject constructor(
     private val managerService: ManagerService,
-    private val roomService: RoomService
+    private val roomService: RoomService,
+    private val loginService: LoginService,
+    private val networkSettings: NetworkSettings
 ) : BaseFileProvider, CacheFileHelper {
+
+    companion object {
+        private const val KEY_RESPONSE = "response"
+        private const val KEY_URL = "url"
+        private const val STATIC_DOC_URL = "/web-apps/apps/api/documents/api.js"
+    }
 
     interface RoomCallback {
         fun isRoomRoot(id: String?): Boolean
@@ -62,6 +72,7 @@ class CloudFileProvider @Inject constructor(
         }
     }
 
+    //TODO Rework the creation for collaboration
     override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
         return managerService.createDocs(folderId, body)
             .subscribeOn(Schedulers.io())
@@ -349,6 +360,26 @@ class CloudFileProvider @Inject constructor(
             url = cloudFile.viewUrl,
             cookie = ApiContract.COOKIE_HEADER + token
         )
+    }
+
+    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+    fun opeEdit(cloudFile: CloudFile): Single<String?> {
+        return loginService.getSettings().map {
+            if (it.isSuccessful) {
+                networkSettings.documentServerVersion = it.body()?.response?.documentServer ?: networkSettings.documentServerVersion
+            }
+        }
+            .flatMap { managerService.openFile(cloudFile.id, cloudFile.version) }
+            .map { response ->
+                val docService =
+                    JSONObject(managerService.getDocService().blockingGet().body()?.string()).getString(KEY_RESPONSE)
+                        .replace(STATIC_DOC_URL, "")
+                return@map JSONObject(response.body()?.string()).getJSONObject(KEY_RESPONSE).put(KEY_URL, docService)
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).map { response ->
+                return@map response.toString()
+            }
     }
 
 }

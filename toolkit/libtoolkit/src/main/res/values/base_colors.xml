@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base colors. Don't use them in layouts -->
+    <color name="colorBlack">#000000</color>
+    <color name="colorBlack60">#99000000</color>
+    <color name="colorBlack40">#66000000</color>
+    <color name="colorBlack32">#52000000</color>
+    <color name="colorBlack12">#1F000000</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhite87">#DEFFFFFF</color>
+    <color name="colorWhite60">#99FFFFFF</color>
+    <color name="colorWhite40">#66FFFFFF</color>
+    <color name="colorWhite32">#52FFFFFF</color>
+    <color name="colorWhite12">#1FFFFFFF</color>
+
+    <color name="colorTransparent">#00000000</color>
+</resources>

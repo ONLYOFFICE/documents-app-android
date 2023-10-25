@@ -11,11 +11,11 @@ import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import app.documents.core.network.common.models.Storage
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentStorageWebBinding
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.StorageUtils
-import app.documents.core.network.common.models.Storage
 import app.editors.manager.mvp.views.base.BaseStorageSignInView
 import app.editors.manager.ui.activities.main.MainActivity
 
@@ -149,8 +149,8 @@ abstract class BaseStorageSignInFragment: BaseAppFragment(), SwipeRefreshLayout.
         url?.let { viewBinding?.webStorageWebview?.loadUrl(it) }
     }
 
-
     override fun onLogin() {
+        viewBinding?.webStorageSwipe?.isRefreshing = false
         MainActivity.show(requireContext())
         requireActivity().finish()
     }

@@ -1,18 +1,18 @@
 package app.editors.manager.ui.fragments.media
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentMediaListBinding
-import app.editors.manager.databinding.IncludeMediaHeaderListBinding
-import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.ui.activities.main.MediaActivity
 import app.editors.manager.ui.adapters.MediaAdapter
 import app.editors.manager.ui.fragments.base.ListFragment
@@ -21,28 +21,17 @@ import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import java.util.*
 
-class MediaListFragment : ListFragment(), BaseAdapter.OnItemClickListener {
+class MediaListFragment : ListFragment(), BaseAdapter.OnItemClickListener, Toolbar.OnMenuItemClickListener {
 
-    private var mediaActivity: MediaActivity? = null
-    private var toolbarView: View? = null
-    private var toolbarViewHolder: ToolbarViewHolder? = null
     private var mediaExplorer: Explorer? = null
-    private var gridLayoutManager: GridLayoutManager? = null
     private var mediaAdapter: MediaAdapter? = null
     private var columnsCount = 0
     private var isWebDav = false
     private var viewBinding: FragmentMediaListBinding? = null
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mediaActivity = try {
-            context as MediaActivity
-        } catch (e: ClassCastException) {
-            throw RuntimeException(
-                MediaListFragment::class.java.simpleName + " - must implement - " +
-                        MediaActivity::class.java.simpleName
-            )
-        }
+    private val position: Int by lazy { requireArguments().getInt(TAG_POSITION) }
+    private val mediaActivity by lazy {
+        checkNotNull(requireActivity() as? MediaActivity) { "$TAG must implement ${MediaActivity.TAG}" }
     }
 
     override fun onCreateView(
@@ -70,14 +59,22 @@ class MediaListFragment : ListFragment(), BaseAdapter.OnItemClickListener {
     }
 
     override fun onItemClick(view: View, position: Int) {
-        setClickedItem(position)
-        showFragment(MediaPagerFragment.newInstance(mediaExplorer, isWebDav), null, false)
+        showFragment(MediaPagerFragment.newInstance(mediaExplorer, isWebDav, position), null, false)
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.toolbarViewMode -> {
+                showFragment(MediaPagerFragment.newInstance(mediaExplorer, isWebDav, position), null, false)
+            }
+        }
+        return true
     }
 
     private fun init() {
         getArgs()
         initViews()
-        setHeader()
+        initToolbar()
     }
 
     private fun getArgs() {
@@ -90,66 +87,47 @@ class MediaListFragment : ListFragment(), BaseAdapter.OnItemClickListener {
 
     @SuppressLint("InflateParams")
     private fun initViews() {
-        viewBinding?.fragmentList?.let {
-            mediaActivity?.setToolbarState(false)
-            toolbarView = layoutInflater.inflate(R.layout.include_media_header_list, null)
-            toolbarViewHolder = ToolbarViewHolder(toolbarView)
-            mediaActivity?.setToolbarView(toolbarView)
-            columnsCount = resources.getInteger(lib.toolkit.base.R.integer.screen_media_grid_columns)
-            mediaAdapter = MediaAdapter(getCellSize(columnsCount), lifecycleScope).apply {
+        mediaActivity.shareButtonVisible = false
+        columnsCount = resources.getInteger(lib.toolkit.base.R.integer.screen_media_grid_columns)
+        viewBinding?.fragmentList?.let { binding ->
+            binding.listSwipeRefresh.isEnabled = false
+            binding.listOfItems.layoutManager = GridLayoutManager(requireContext(), columnsCount)
+            binding.listOfItems.setItemViewCacheSize(RECYCLER_CACHE_SIZE)
+            binding.listOfItems.adapter = MediaAdapter(getCellSize(columnsCount), lifecycleScope).apply {
                 setOnItemClickListener(this@MediaListFragment)
                 setItems(mediaExplorer?.files.orEmpty())
-            }
-            gridLayoutManager = GridLayoutManager(requireContext(), columnsCount)
-            it.listSwipeRefresh.isEnabled = false
-            it.listOfItems.layoutManager = gridLayoutManager
-            it.listOfItems.adapter = mediaAdapter
-            it.listOfItems.setItemViewCacheSize(RECYCLER_CACHE_SIZE)
+            }.also { mediaAdapter = it }
         }
     }
 
-    private fun setHeader() {
-        toolbarViewHolder?.mediaListHeaderName?.text = mediaExplorer?.current?.title
-        toolbarViewHolder?.mediaListHeaderInfo?.text =
-            getString(R.string.media_image_list_info, mediaExplorer!!.files.size.toString())
+    private fun initToolbar() {
+        val sizeText = getString(R.string.media_image_list_info, mediaExplorer?.files?.size.toString())
+        //        mediaActivity.shareVisible = false
+        mediaActivity.setOnMenuItemClickListener(this)
+        if (!mediaExplorer?.current?.title.isNullOrBlank()) {
+            mediaActivity.setToolbarTitle(mediaExplorer?.current?.title)
+            mediaActivity.setToolbarSubtitle(sizeText)
+        } else {
+            mediaActivity.setToolbarTitle(sizeText)
+        }
     }
 
     private fun getCellSize(columns: Int): Int {
         return getScreenSize(requireContext()).x / columns
     }
 
-    private fun setClickedItem(position: Int) {
-        mediaExplorer?.files?.let { files ->
-            for (i in files.indices) {
-                files[i].isClicked = i == position
-            }
-        }
-    }
-
-    /*
-    * Custom view for toolbar
-    * */
-    inner class ToolbarViewHolder(view: View?) {
-        private val viewBinding = IncludeMediaHeaderListBinding.bind(view!!).apply {
-            mediaListHeaderViewMode.setOnClickListener {
-                showFragment(MediaPagerFragment
-                    .newInstance(mediaExplorer, isWebDav), null, false)
-            }
-        }
-        val mediaListHeaderName = viewBinding.mediaListHeaderName
-        val mediaListHeaderInfo = viewBinding.mediaListHeaderInfo
-    }
-
     companion object {
         val TAG: String = MediaListFragment::class.java.simpleName
+        private const val TAG_POSITION = "TAG_POSITION"
         private const val TAG_MEDIA = "TAG_MEDIA"
         private const val TAG_WEB_DAV = "TAG_WEB_DAV"
         private const val RECYCLER_CACHE_SIZE = 30
 
         @JvmStatic
-        fun newInstance(explorer: Explorer?, isWebDav: Boolean): MediaListFragment {
+        fun newInstance(explorer: Explorer?, isWebDav: Boolean, position: Int): MediaListFragment {
             return MediaListFragment().apply {
-                arguments = Bundle(2).apply {
+                arguments = Bundle(3).apply {
+                    putInt(TAG_POSITION, position)
                     putSerializable(TAG_MEDIA, explorer)
                     putBoolean(TAG_WEB_DAV, isWebDav)
                 }

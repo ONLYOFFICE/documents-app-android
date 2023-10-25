@@ -63,7 +63,7 @@ interface IMainActivity {
     fun onSwitchAccount()
     fun showOnCloudFragment(account: CloudAccount? = null)
     fun showAccountsActivity(isSwitch: Boolean = false)
-    fun showWebViewer(file: CloudFile, callback: (() -> Unit)? = null)
+    fun showWebViewer(file: CloudFile, isEditMode: Boolean = false, callback: (() -> Unit)? = null)
     fun onLogOut()
 }
 
@@ -418,7 +418,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         )
     }
 
-    override fun showWebViewer(file: CloudFile, callback: (() -> Unit)?) {
+    override fun showWebViewer(file: CloudFile, isEditMode: Boolean, callback: (() -> Unit)?) {
         LaunchActivityForResult(
             activityResultRegistry = activityResultRegistry,
             callback = { result ->
@@ -428,7 +428,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 }
                 callback?.invoke()
             },
-            intent = WebViewerActivity.getActivityIntent(this, file)
+            intent = WebViewerActivity.getActivityIntent(this, file, isEditMode)
         ).show()
     }
 

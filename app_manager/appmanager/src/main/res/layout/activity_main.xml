@@ -5,11 +5,12 @@
     android:id="@+id/app_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/AppTheme">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
-        style="@style/MainAppBar"
+        style="@style/Widget.Common.AppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -21,17 +22,9 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/app_bar_tabs"
-            style="@style/ViewPagerTabs"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/default_tab_layout_height"
-            android:layout_gravity="center"
-            android:background="@color/colorTransparent"
-            android:theme="?attr/actionBarTheme"
-            android:visibility="gone"
-            app:tabMaxWidth="0dp"
-            app:tabTextAppearance="@style/ViewPagerTabsText">
+            style="@style/Widget.Common.TabLayout"
+            android:visibility="gone" />
 
-        </com.google.android.material.tabs.TabLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
@@ -44,7 +37,7 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
-        style="@style/MainBottomBar"
+        style="@style/Widget.Common.BottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom"

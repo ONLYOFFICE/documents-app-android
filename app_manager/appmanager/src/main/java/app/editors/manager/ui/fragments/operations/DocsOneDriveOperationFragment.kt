@@ -1,8 +1,8 @@
 package app.editors.manager.ui.fragments.operations
 
 import app.editors.manager.app.App
-import app.editors.manager.ui.fragments.base.BaseStorageOperationsFragment
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
+import app.editors.manager.ui.fragments.base.BaseStorageOperationsFragment
 import moxy.presenter.InjectPresenter
 
 class DocsOneDriveOperationFragment: BaseStorageOperationsFragment() {
@@ -20,7 +20,7 @@ class DocsOneDriveOperationFragment: BaseStorageOperationsFragment() {
 
     override fun getOperationsPresenter() = presenter
 
-    override fun onRefreshToken() {
+    override fun onAuthorization() {
         //stub
     }
 

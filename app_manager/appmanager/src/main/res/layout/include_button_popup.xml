@@ -3,35 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/button_popup_layout"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackgroundBorderless"
+    android:layout_width="@dimen/image_size"
+    android:layout_height="@dimen/image_size"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackgroundBorderless">
 
     <ImageView
         android:id="@+id/button_popup_image"
-        style="@style/AlphaImageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/Widget.Common.ImageView.Secondary"
+        android:layout_width="@dimen/image_default_size"
+        android:layout_height="@dimen/image_default_size"
         android:src="@drawable/ic_access_deny"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/colorOnSurface"
         tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/button_popup_arrow"
-        style="@style/AlphaImageView"
+        style="@style/Widget.Common.ImageView.Secondary"
         android:layout_width="@dimen/share_access_arrow_size"
         android:layout_height="@dimen/share_access_arrow_size"
         android:src="@drawable/ic_drawer_menu_header_arrow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button_popup_image"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@id/button_popup_image"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/colorOnSurface"
         tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

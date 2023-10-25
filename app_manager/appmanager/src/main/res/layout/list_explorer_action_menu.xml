@@ -18,80 +18,75 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/popup_margins_top_bottom">
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:padding="@dimen/default_margin_medium">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:tint="@color/colorOnSurface"
-                    android:src="@drawable/ic_bottom_divider" />
-
-            </FrameLayout>
+            <include layout="@layout/include_bottom_sheet_divider" />
 
             <LinearLayout
                 android:id="@+id/list_explorer_action_docs"
-                style="@style/ContextListLayout">
+                style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/ContextListImage"
+                    style="@style/Widget.Common.ImageView.Context"
                     android:alpha="1.0"
                     app:srcCompat="@drawable/ic_type_text_document"
                     app:tint="@color/colorDocTint"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_doc" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/list_explorer_action_sheet"
-                style="@style/ContextListLayout">
+                style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/ContextListImage"
+                    style="@style/Widget.Common.ImageView.Context"
                     android:alpha="1.0"
                     app:srcCompat="@drawable/ic_type_spreadsheet"
                     app:tint="@color/colorSheetTint"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_sheet" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/list_explorer_action_presentation"
-                style="@style/ContextListLayout">
+                style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/ContextListImage"
+                    style="@style/Widget.Common.ImageView.Context"
                     android:alpha="1.0"
                     app:srcCompat="@drawable/ic_type_presentation"
                     app:tint="@color/colorPresentationTint"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_presentation" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/list_explorer_action_folder"
-                style="@style/ContextListLayout">
+                style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/ContextListImage"
-                    android:alpha="1"
+                    style="@style/Widget.Common.ImageView.Context"
+                    android:tint="@color/colorOnSurface"
                     app:srcCompat="@drawable/ic_type_folder" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_folder" />
             </LinearLayout>
 
@@ -104,43 +99,49 @@
 
             <LinearLayout
                 android:id="@+id/list_explorer_action_photo"
-                style="@style/ContextListLayout">
+                style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/ContextListImage"
+                    style="@style/Widget.Common.ImageView.Context"
                     app:srcCompat="@drawable/ic_list_action_photo"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_photo" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/list_explorer_action_upload"
-                style="@style/ContextListLayout">
+                style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/ContextListImage"
+                    style="@style/Widget.Common.ImageView.Context"
                     app:srcCompat="@drawable/ic_list_action_upload"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_upload" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/list_explorer_action_import"
-                style="@style/ContextListLayout">
+                style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/ContextListImage"
+                    style="@style/Widget.Common.ImageView.Context"
                     app:srcCompat="@drawable/ic_list_action_import"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_import" />
             </LinearLayout>
 
@@ -154,15 +155,17 @@
 
             <LinearLayout
                 android:id="@+id/list_explorer_action_storage"
-                style="@style/ContextListLayout">
+                style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/ContextListImage"
+                    style="@style/Widget.Common.ImageView.Context"
                     app:srcCompat="@drawable/ic_list_action_storage"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/ContextListMediumText"
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/list_action_storage" />
             </LinearLayout>
 

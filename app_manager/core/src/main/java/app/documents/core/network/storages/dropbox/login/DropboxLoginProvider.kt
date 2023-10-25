@@ -1,11 +1,12 @@
 package app.documents.core.network.storages.dropbox.login
 
 import app.documents.core.BuildConfig
-import app.documents.core.network.storages.dropbox.models.request.AccountRequest
-import com.jakewharton.rxrelay2.BehaviorRelay
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import app.documents.core.network.common.contracts.StorageContract
+import app.documents.core.network.storages.dropbox.models.response.RefreshTokenResponse
+import app.documents.core.network.storages.dropbox.models.response.TokenResponse
+import app.documents.core.network.storages.dropbox.models.response.UserResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Credentials
 import retrofit2.HttpException
 import retrofit2.Response
@@ -15,40 +16,36 @@ sealed class DropboxResponse {
     class Error(val error: Throwable) : DropboxResponse()
 }
 
-class DropboxLoginProvider(
-    private val dropBoxLoginService: DropboxLoginService,
-    private val dropboxErrorHandler: BehaviorRelay<DropboxResponse.Error>? = null
-) {
+class DropboxLoginProvider(private val dropBoxLoginService: DropboxLoginService) {
 
-    fun getUserInfo(token: String, request: AccountRequest): Single<DropboxResponse> {
-        return dropBoxLoginService.getUserInfo(token, request)
-            .map { fetchResponse(it) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    suspend fun getAccessToken(code: String): TokenResponse = withContext(Dispatchers.IO) {
+        val params = mapOf(
+            StorageContract.ARG_CODE to code,
+            StorageContract.ARG_GRANT_TYPE to StorageContract.DropBox.VALUE_GRANT_TYPE,
+            StorageContract.ARG_REDIRECT_URI to BuildConfig.DROP_BOX_COM_REDIRECT_URL,
+            StorageContract.ARG_CLIENT_ID to BuildConfig.DROP_BOX_COM_CLIENT_ID,
+            StorageContract.ARG_CLIENT_SECRET to BuildConfig.DROP_BOX_COM_CLIENT_SECRET
+        )
+        fetchResponse(dropBoxLoginService.getAccessToken(params))
     }
 
-    fun getRefreshToken(auth: String, map: Map<String, String>): Single<DropboxResponse> {
-        return dropBoxLoginService.getRefreshToken(auth, map)
-            .map { fetchResponse(it) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    suspend fun getUserInfo(token: String): UserResponse = withContext(Dispatchers.IO) {
+        fetchResponse(dropBoxLoginService.getUserInfo("Bearer $token"))
     }
 
-    fun updateRefreshToken(map: Map<String, String>): Single<DropboxResponse> {
+    suspend fun updateRefreshToken(refreshToken: String): RefreshTokenResponse = withContext(Dispatchers.IO) {
         val credentials = Credentials.basic(BuildConfig.DROP_BOX_COM_CLIENT_ID, BuildConfig.DROP_BOX_COM_CLIENT_SECRET)
-        return dropBoxLoginService.updateRefreshToken(credentials, map)
-            .map { fetchResponse(it) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        val params = mapOf(
+            StorageContract.ARG_GRANT_TYPE to StorageContract.ARG_REFRESH_TOKEN,
+            StorageContract.ARG_REFRESH_TOKEN to refreshToken
+        )
+        fetchResponse(dropBoxLoginService.updateRefreshToken(credentials, params))
     }
 
-    private fun <T> fetchResponse(response: Response<T>): DropboxResponse {
-        return if (response.isSuccessful && response.body() != null) {
-            DropboxResponse.Success(response.body()!!)
-        } else {
-            val error = DropboxResponse.Error(HttpException(response))
-            dropboxErrorHandler?.accept(error)
-            return error
-        }
+    private fun <T> fetchResponse(response: Response<T>): T {
+        val body = response.body()
+        return if (response.isSuccessful && body != null) body
+        else throw HttpException(response)
     }
+
 }

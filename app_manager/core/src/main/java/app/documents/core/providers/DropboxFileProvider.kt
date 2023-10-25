@@ -461,8 +461,7 @@ class DropboxFileProvider(
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
-        val request = "{\"path\":\"${DropboxUtils.encodeUnicodeSymbolsDropbox((item as CloudFile).id)}\"}"
-        val result = api.download(request).blockingGet()
+        val result = api.download((item as CloudFile).id).blockingGet()
         result.body()?.let { file ->
             try {
                 file.byteStream().use { inputStream ->

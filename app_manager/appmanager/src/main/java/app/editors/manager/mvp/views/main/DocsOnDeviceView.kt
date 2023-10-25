@@ -9,8 +9,7 @@ import moxy.viewstate.strategy.StateStrategyType
 @StateStrategyType(OneExecutionStateStrategy::class)
 interface DocsOnDeviceView : DocsBaseView {
     fun onActionDialog()
-    fun onRemoveItem(item: Item)
-    fun onRemoveItems(items: List<Item>)
+    fun onRemoveItems(vararg items: Item)
     fun onShowPortals()
     fun onOpenMedia(state: OpenState.Media)
 

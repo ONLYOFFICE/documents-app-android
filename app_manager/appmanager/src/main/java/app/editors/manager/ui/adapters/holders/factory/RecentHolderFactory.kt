@@ -17,7 +17,7 @@ class RecentHolderFactory(
 
         return when (type) {
             R.layout.list_explorer_files -> RecentViewHolder(view, itemListener, contextListener)
-            R.layout.list_explorer_header -> RecentHeaderViewHolder(view)
+            lib.toolkit.base.R.layout.list_item_header -> RecentHeaderViewHolder(view)
             else -> throw RuntimeException("Need holder")
         }
     }

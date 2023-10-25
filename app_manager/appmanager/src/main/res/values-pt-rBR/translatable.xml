@@ -551,18 +551,35 @@
     <plurals name="dialogs_question_message_delete">
         <item quantity="one" tools:ignore="ImpliedQuantity">Ele será excluído de forma irrecuperável.\nEsta ação é irreversível.</item>
         <item quantity="other">Eles serão excluídos irremediavelmente.\nEsta ação é irreversível.</item>
+        <item quantity="many">Eles serão excluídos irremediavelmente.\nEsta ação é irreversível.</item>
     </plurals>
     <plurals name="dialogs_question_message_to_trash">
         <item quantity="one" tools:ignore="ImpliedQuantity">Ele será movido para a Lixeira.</item>
         <item quantity="other">Eles serão movidos para a Lixeira.</item>
+        <item quantity="many">Eles serão movidos para a Lixeira.</item>
     </plurals>
     <string name="dialogs_question_delete_all_title">Excluir todos os itens?</string>
     <plurals name="dialogs_question_delete_title">
         <item quantity="one" tools:ignore="ImpliedQuantity">Excluir este item?</item>
         <item quantity="other">Excluir %1$d itens?</item>
+        <item quantity="many">Excluir %1$d itens?</item>
     </plurals>
     <string name="storage_dropbox_email_not_verified_error">E-mail não verificado</string>
     <string name="download_manager_downloading">Baixando…</string>
     <string name="settings_language">Idioma</string>
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Item movido para a Lixeira</item>
+        <item quantity="other">Itens movidos para a Lixeira</item>
+        <item quantity="many">Itens movidos para a Lixeira</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Item excluído irremediavelmente</item>
+        <item quantity="other">Itens excluídos irremediavelmente</item>
+        <item quantity="many">Itens excluídos irremediavelmente</item>
+    </plurals>
+    <string name="share_access_room_power_user">Usuário avançado</string>
+    <string name="share_expected_member">Espere membros</string>
+    <string name="app_settings_main_help">Ajuda</string>
+    <string name="clear_recents">"Limpar recente?"</string>
 
 </resources>

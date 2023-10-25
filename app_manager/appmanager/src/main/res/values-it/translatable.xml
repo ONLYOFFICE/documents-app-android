@@ -551,6 +551,7 @@
     <plurals name="dialogs_question_message_delete">
         <item quantity="one">Sarà definitivamente eliminato.\nQuesta azione è irreversibile.</item>
         <item quantity="other">Saranno definitivamente eliminati.\nQuesta azione è irreversibile.</item>
+        <item quantity="many">Saranno definitivamente eliminati.\nQuesta azione è irreversibile.</item>
     </plurals>
     <plurals name="dialogs_question_message_to_trash">
         <item quantity="one">Verrà spostato nel Cestino.</item>
@@ -564,4 +565,18 @@
     <string name="storage_dropbox_email_not_verified_error">Email non verificata</string>
     <string name="download_manager_downloading">Scaricamento…</string>
     <string name="settings_language">Lingua</string>
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one">Elemento spostato nel Cestino</item>
+        <item quantity="other">Elementi spostati nel Cestino</item>
+        <item quantity="many">Elementi spostati nel Cestino</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one">Elemento irrimediabilmente eliminato</item>
+        <item quantity="other">Elementi irrimediabilmente eliminati</item>
+        <item quantity="many">Elementi irrimediabilmente eliminati</item>
+    </plurals>
+    <string name="share_access_room_power_user">Utente esperto</string>
+    <string name="share_expected_member">Aspetta i membri</string>
+    <string name="app_settings_main_help">Aiuto</string>
+    <string name="clear_recents">"Cancella recenti?"</string>
 </resources>

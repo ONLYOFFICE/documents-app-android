@@ -14,6 +14,7 @@ import android.os.Environment
 import android.os.StatFs
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
+import lib.toolkit.base.BuildConfig
 import okhttp3.ResponseBody
 import java.io.*
 import java.net.URL
@@ -147,7 +148,7 @@ object FileUtils {
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
     @JvmOverloads
-    fun assetUnpack(context: Context, from: List<String>, isExternal: Boolean = true, delete: Boolean = false): String? {
+    fun assetUnpack(context: Context, from: List<String>, isExternal: Boolean = true, delete: Boolean = BuildConfig.DEBUG): String? {
         val path = "${getCachePath(context, isExternal)}/assets"
 
         val packVersion = readSdkVersion(context, "sdk.version")
@@ -188,7 +189,7 @@ object FileUtils {
     }
 
     @JvmStatic
-    fun readSdkVersion(context: Context, path: String) = context.assets.open(path).use { input ->
+    fun readSdkVersion(context: Context, path: String = "sdk.version") = context.assets.open(path).use { input ->
         try {
             input.reader(Charsets.UTF_8).use { reader ->
                 reader.readText()

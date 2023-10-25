@@ -1,72 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cloudLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <ImageView
-        android:id="@+id/bannerImage"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:src="@drawable/image_account_cloud"
-        app:layout_constraintEnd_toStartOf="@+id/horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/descriptionTextView"
-        tools:ignore="ContentDescription" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/onlyOfficeLogoImage"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/default_margin_medium"
-        android:src="@drawable/only_office_logo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/descriptionTextView"
-        style="@style/CloudStorageText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_margin_xlarge"
-        android:layout_marginTop="@dimen/default_margin_xlarge"
-        android:layout_marginEnd="@dimen/default_margin_xlarge"
-        android:text="@string/cloud_account_description"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/horizontal"
-        app:layout_constraintTop_toBottomOf="@id/onlyOfficeLogoImage" />
+            <ImageView
+                android:id="@+id/bannerImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/image_account_cloud"
+                app:layout_constraintEnd_toStartOf="@+id/horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/descriptionTextView"
+                tools:ignore="ContentDescription" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/startButton"
-        style="@style/AccentButton"
-        android:layout_width="0dp"
-        android:layout_marginTop="@dimen/default_margin_xlarge"
-        android:text="@string/cloud_account_start_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/horizontal"
-        app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
+        </FrameLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/otherStorageButton"
-        style="@style/AccentTextButtonSmall"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/default_login_accent_button_height"
-        android:layout_marginTop="@dimen/default_margin_medium"
-        android:text="@string/cloud_account_other_storages_button"
-        app:layout_constraintBottom_toBottomOf="@+id/bannerImage"
-        app:layout_constraintEnd_toEndOf="@id/startButton"
-        app:layout_constraintStart_toStartOf="@id/startButton"
-        app:layout_constraintTop_toBottomOf="@id/startButton" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+            <ImageView
+                android:id="@+id/onlyOfficeLogoImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/only_office_logo"
+                tools:ignore="ContentDescription" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/descriptionTextView"
+                style="@style/Widget.Common.TextView.Description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_margin_xlarge"
+                android:layout_marginTop="@dimen/default_margin_xlarge"
+                android:layout_marginEnd="@dimen/default_margin_xlarge"
+                android:text="@string/cloud_account_description" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/startButton"
+                style="@style/Widget.Common.Button"
+                android:layout_marginTop="@dimen/default_margin_xlarge"
+                android:text="@string/cloud_account_start_button" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/otherStorageButton"
+                style="@style/Widget.Common.Button.TextButton"
+                android:layout_marginTop="@dimen/default_margin_medium"
+                android:text="@string/cloud_account_other_storages_button" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

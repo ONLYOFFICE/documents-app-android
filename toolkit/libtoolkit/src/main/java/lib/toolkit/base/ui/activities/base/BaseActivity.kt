@@ -20,9 +20,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -214,9 +216,11 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     fun hideDialog(forceHide: Boolean = false) {
-        lifecycleScope.launchWhenResumed {
-            if (commonDialog?.isAdded == true || forceHide) {
-                commonDialog?.dismiss()
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                if (commonDialog?.isAdded == true || forceHide) {
+                    commonDialog?.dismiss()
+                }
             }
         }
     }
@@ -404,7 +408,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         cancelTitle: String?,
         type: WaitingHolder.ProgressType,
         tag: String? = null,
-        progressColor: Int = R.color.colorPrimaryLight,
+        progressColor: Int = R.color.colorPrimary,
         textColor: Int = 0,
         textGravity: Int = 0
     ) {
@@ -484,7 +488,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
             if (!hideButton) {
                 setCancelTitle(cancelTitle)
             }
-            setProgressColor(R.color.colorPrimaryLight)
+            setProgressColor(R.color.colorPrimary)
             show()
         }
     }
@@ -579,16 +583,6 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     /*
     * Keyboard
     * */
-    protected fun copyToClipboard(value: String) {
-        copyToClipboard(null, value, null)
-    }
-
-    protected fun copyToClipboard(label: String?, value: String, message: String?) {
-        KeyboardUtils.setDataToClipboard(applicationContext, value, label ?: "Copied text")
-        if (message != null) {
-            showSnackBar(message)
-        }
-    }
 
     protected open fun showKeyboard(view: View) {
         KeyboardUtils.showKeyboard(view, true)
