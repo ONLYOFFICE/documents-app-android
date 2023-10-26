@@ -56,7 +56,7 @@ interface ShareService {
     suspend fun setExternalLinkAccess(
         @Path(value = "file_id") fileId: String,
         @Body body: RequestExternalAccess
-    ): BaseResponse
+    ): ResponseExternal
 
     /*
      * Set access for folder
