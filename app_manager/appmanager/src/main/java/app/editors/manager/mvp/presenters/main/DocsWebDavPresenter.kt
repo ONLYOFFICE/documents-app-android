@@ -1,7 +1,9 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
+import android.os.Build
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -24,7 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.receivers.ExportReceiver
-import lib.toolkit.base.managers.receivers.ExportReceiver.Companion.getFilters
 import lib.toolkit.base.managers.receivers.ExportReceiver.OnExportFile
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getSize
 import lib.toolkit.base.managers.utils.FileUtils
@@ -34,6 +35,7 @@ import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 import java.util.Date
+
 
 @InjectViewState
 class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
@@ -61,6 +63,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         exportReceiver.onExportReceiver = object : OnExportFile {
@@ -68,7 +71,13 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 upload(uri, null)
             }
         }
-        context.registerReceiver(exportReceiver, getFilters())
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(exportReceiver, ExportReceiver.getFilters(), Context.RECEIVER_EXPORTED)
+        } else {
+            context.registerReceiver(exportReceiver, ExportReceiver.getFilters())
+        }
+
     }
 
     override fun onDestroy() {
