@@ -12,7 +12,6 @@ import android.util.Patterns
 import android.webkit.MimeTypeMap
 import android.webkit.URLUtil
 import androidx.annotation.NonNull
-import androidx.annotation.Nullable
 import androidx.annotation.StringRes
 import lib.toolkit.base.R
 import org.json.JSONObject
@@ -36,8 +35,6 @@ object StringUtils {
     val PATTERN_ALPHA_NUMERIC = "^[a-zA-Z0-9-]*$"
     val PATTERN_R7_CLOUDS = ".*(\\.r7-).*"
     val PATTERN_CREATE_PORTAL = "^[\\p{L}\\p{M}' \\.\\-]+$"
-    @JvmField
-    val RU_LANG = "ru"
 
     private val EXT_VIDEO_SUPPORT = "3gp|mp4|ts|webm|mkv"
     private val EXT_VIDEO = "$EXT_VIDEO_SUPPORT|3g2|3gpp|asf|avi|divx|f4v|flv|h264|ifo|m2ts|m4v|mod|mov|mpeg|mpg|mswmm|mts|mxf|ogv|rm|swf|ts|vep|vob|wlmp|wmv"
@@ -56,9 +53,6 @@ object StringUtils {
     private val PATTERN_EXT_EBOOK = "^(epub|mobi|djvu)$"
     private val PATTERN_EXT_PDF = "^(pdf)$"
     private val PATTERN_EXT_ARCH = "^(zip|zz|zipx|rar|7z|s7z|ace|ice|tar|gz|tgz|tbz2|txz|iso)$"
-
-    private val COUNT_SEPARATOR = 4
-    private val PATH_SEPARATOR = '/'
 
     enum class Extension {
         UNKNOWN,
@@ -166,7 +160,7 @@ object StringUtils {
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
         }
 
-        return if (mimeType == null || mimeType.isEmpty()) COMMON_MIME_TYPE else mimeType
+        return if (mimeType.isNullOrEmpty()) COMMON_MIME_TYPE else mimeType
     }
 
     @JvmStatic
@@ -231,7 +225,6 @@ object StringUtils {
     }
 
     @JvmStatic
-    @Nullable
     fun getAllowedString(source: String, symbols: String = DIALOG_FORBIDDEN_SYMBOLS): String? {
         val position =
             getSymbolPosition(source, symbols)
@@ -248,7 +241,7 @@ object StringUtils {
 
     @JvmStatic
     fun getSymbolPosition(source: String, symbols: String): Int {
-        for (i in 0 until source.length) {
+        for (i in source.indices) {
             val charAt = source[i].toString()
             if (symbols.contains(charAt)) {
                 return i
@@ -346,27 +339,10 @@ object StringUtils {
     }
 
     @JvmStatic
-    fun correctUrl(baseUrl: String, destUrl: String): String {
-        if (!URLUtil.isNetworkUrl(destUrl)) {
-            if (!destUrl.startsWith(baseUrl)) {
-                return baseUrl + destUrl
-            }
-        }
-
-        return destUrl
-    }
-
-    @JvmStatic
-    fun isRequireAuth(portal: String?, url: String): Boolean {
-        val host = Uri.parse(url).host
-        return portal.equals(host!!, ignoreCase = true)
-    }
-
-    @JvmStatic
-    fun getMd5(@NonNull value: String): String? {
+    fun getMd5(value: String?): String? {
         return try {
             val digest = MessageDigest.getInstance(MD5)
-            val md5Data = BigInteger(1, digest.digest(value.toByteArray()))
+            val md5Data = BigInteger(1, digest.digest(value?.toByteArray() ?: byteArrayOf()))
             String.format("%032X", md5Data).lowercase(Locale.getDefault())
         } catch (e: NoSuchAlgorithmException) {
             null
@@ -383,48 +359,19 @@ object StringUtils {
         val g = m / kb
         val t = g / kb
 
-        val resultSize: String
-        if (t > 1) {
-            resultSize = String.format("%.2f", t) + " " + context.getString(R.string.sizes_terabytes)
+        val resultSize: String = if (t > 1) {
+            String.format("%.2f", t) + " " + context.getString(R.string.sizes_terabytes)
         } else if (g > 1) {
-            resultSize = String.format("%.2f", g) + " " + context.getString(R.string.sizes_gigabytes)
+            String.format("%.2f", g) + " " + context.getString(R.string.sizes_gigabytes)
         } else if (m > 1) {
-            resultSize = String.format("%.2f", m) + " " + context.getString(R.string.sizes_megabytes)
+            String.format("%.2f", m) + " " + context.getString(R.string.sizes_megabytes)
         } else if (k > 1) {
-            resultSize = String.format("%.2f", k) + " " + context.getString(R.string.sizes_kilobytes)
+            String.format("%.2f", k) + " " + context.getString(R.string.sizes_kilobytes)
         } else {
-            resultSize = String.format("%.2f", b) + " " + context.getString(R.string.sizes_bytes)
+            String.format("%.2f", b) + " " + context.getString(R.string.sizes_bytes)
         }
 
         return resultSize
-    }
-
-    @JvmStatic
-    fun getShortPath(path: String): String {
-        var countSeparator = 0
-        for (i in 0 until path.length) {
-            if (path[i] == PATH_SEPARATOR) {
-                countSeparator++
-                if (countSeparator == COUNT_SEPARATOR) {
-                    return path.substring(i + 1, path.length)
-                }
-            }
-        }
-        return path
-    }
-
-
-    @JvmStatic
-    fun convertServerVersion(version: String): Int {
-        if (version.isEmpty()) {
-            return 0
-        }
-        val shortVersion = version.substring(0, version.indexOf('.'))
-        try {
-            return Integer.parseInt(shortVersion)
-        } catch (exception: NumberFormatException) {
-            return 0
-        }
     }
 
     @JvmStatic
@@ -449,18 +396,6 @@ object StringUtils {
             StringBuilder(name)
                     .append("(${counter})")
                     .toString()
-        }
-    }
-
-    @JvmStatic
-    fun getLang() : String {
-        return when (val locale = Locale.getDefault().language) {
-            Locale.ENGLISH.language -> locale
-            Locale.FRANCE.language -> locale
-            Locale.ITALIAN.language -> locale
-            Locale.GERMAN.language -> locale
-            RU_LANG -> locale
-            else -> Locale.ENGLISH.language
         }
     }
 
