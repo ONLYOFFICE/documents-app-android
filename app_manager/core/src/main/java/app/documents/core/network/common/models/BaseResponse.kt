@@ -2,9 +2,9 @@ package app.documents.core.network.common.models
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.lang.Error
-import java.util.Comparator
+import kotlinx.serialization.Serializable
 
+@Serializable
 open class BaseResponse {
 
     @SerializedName(KEY_COUNT)
@@ -19,9 +19,9 @@ open class BaseResponse {
     @Expose
     var statusCode = ""
 
-    @SerializedName(KEY_ERROR)
-    @Expose
-    var error = Error()
+//    @SerializedName(KEY_ERROR)
+//    @Expose
+//    var error = Error()
 
     abstract class AbstractSort<Type>(isSortAsc: Boolean) : Comparator<Type> {
         protected var mSortOrder = SORT_ORDER_ASC
