@@ -460,6 +460,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             when (it) {
                 DocsBasePresenter.TAG_DIALOG_CANCEL_DOWNLOAD -> presenter.cancelDownload()
                 DocsBasePresenter.TAG_DIALOG_CANCEL_UPLOAD -> presenter.cancelUpload()
+                DocsBasePresenter.TAG_DIALOG_CLEAR_DISPOSABLE -> presenter.clearDisposable()
                 DocsBasePresenter.TAG_DIALOG_CANCEL_SINGLE_OPERATIONS -> presenter.cancelSingleOperationsRequests()
                 DocsBasePresenter.TAG_DIALOG_CANCEL_BATCH_OPERATIONS -> {
                     presenter.terminate()

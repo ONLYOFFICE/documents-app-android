@@ -748,4 +748,19 @@
     <string name="settings_language_confirmation_accept">Good</string>
     <string name="settings_language_continue_using_app_language">Continue using %1$s</string>
 
+    // TODO: show question dialog
+    // Convert and open document
+    //
+    // The document you open is not OOXML (Office Open XML) file.
+    // Convert it to OOXML format for faster viewing and editing.
+    //
+    // Open in view mode / Convert to $ext
+    showQuestionDialog()
+
+    <!-- For example  -->
+    <string name="converting_dialog_title">Convert and open document</string>
+    <string name="converting_dialog_message">The document you open is not OOXML (Office Open XML) file. Convert it to OOXML format for faster viewing and editing.</string>
+    <string name="converting_dialog_open_in_view_mode">Open in view mode</string>
+    <string name="converting_dialog_convert_to_ooxml">Convert to %1s</string>
+
 </resources>

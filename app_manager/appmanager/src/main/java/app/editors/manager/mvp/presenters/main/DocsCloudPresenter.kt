@@ -18,7 +18,11 @@ import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.recent.Recent
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
-import app.editors.manager.app.*
+import app.editors.manager.app.App
+import app.editors.manager.app.api
+import app.editors.manager.app.cloudFileProvider
+import app.editors.manager.app.roomProvider
+import app.editors.manager.app.shareApi
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
 import app.editors.manager.managers.receivers.UploadReceiver
@@ -37,14 +41,14 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 import moxy.presenterScope
-import java.util.*
+import java.util.Date
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
@@ -95,28 +99,33 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun onItemClick(item: Item, position: Int) {
         onClickEvent(item, position)
-        isContextClick = false
-        if (isSelectionMode) {
-            val isChecked = !itemClicked!!.isSelected
-            modelExplorerStack.setSelectById(item, isChecked)
-            if (!isSelectedItemsEmpty) {
-                viewState.onStateUpdateSelection(true)
-                viewState.onItemSelected(
-                    position,
-                    modelExplorerStack.countSelectedItems.toString()
-                )
+        itemClicked?.let { itemClicked ->
+            if (isSelectionMode) {
+                val isChecked = !itemClicked.isSelected
+                modelExplorerStack.setSelectById(item, isChecked)
+                if (!isSelectedItemsEmpty) {
+                    viewState.onStateUpdateSelection(true)
+                    viewState.onItemSelected(
+                        position,
+                        modelExplorerStack.countSelectedItems.toString()
+                    )
+                }
+            } else if (!isTrashMode) {
+                if (itemClicked is CloudFolder) {
+                    openFolder(itemClicked.id, position)
+                } else if (itemClicked is CloudFile) {
+                    if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
+                        viewState.onConvertingQuestion()
+                    } else {
+                        getFileInfo()
+                    }
+                }
+            } else {
+                viewState.onSnackBarWithAction(
+                    context.getString(R.string.trash_snackbar_move_text),
+                    context.getString(R.string.trash_snackbar_move_button)
+                ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
             }
-        } else if (!isTrashMode) {
-            if (itemClicked is CloudFolder) {
-                openFolder((itemClicked as CloudFolder).id, position)
-            } else if (itemClicked is CloudFile) {
-                getFileInfo()
-            }
-        } else {
-            viewState.onSnackBarWithAction(
-                context.getString(R.string.trash_snackbar_move_text),
-                context.getString(R.string.trash_snackbar_move_button)
-            ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
         }
     }
 
@@ -192,10 +201,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun getFileInfo() {
-        if (itemClicked != null) {
+        val item = itemClicked
+        if (item != null) {
             fileProvider?.let { provider ->
-                disposable.add(provider.fileInfo(itemClicked!!)
-                    .subscribe({ onFileClickAction(it) }) { throwable: Throwable -> fetchError(throwable) })
+                disposable.add(
+                    provider.fileInfo(item)
+                        .doOnSubscribe { showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE) }
+                        .doOnError(::fetchError)
+                        .subscribe(::onFileClickAction)
+                )
             }
         }
     }
@@ -568,17 +582,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             StringUtils.Extension.SHEET,
             StringUtils.Extension.PRESENTATION,
             StringUtils.Extension.FORM -> {
-                (fileProvider as CloudFileProvider).opeEdit(cloudFile).subscribe({ info ->
-                    checkSdkVersion { result ->
-                        if (result) {
-                            viewState.onOpenDocumentServer(cloudFile, info, isEdit)
-                        } else {
-                            viewState.onFileWebView(cloudFile, true)
+                disposable.add(
+                    (fileProvider as CloudFileProvider).opeEdit(cloudFile).subscribe({ info ->
+                        checkSdkVersion { result ->
+                            viewState.onDialogClose()
+                            if (result) {
+                                viewState.onOpenDocumentServer(cloudFile, info, isEdit)
+                            } else {
+                                viewState.onFileWebView(cloudFile, true)
+                            }
                         }
+                    }) { error ->
+                        fetchError(error)
                     }
-                }) { error ->
-                    fetchError(error)
-                }
+                )
                 addRecent(itemClicked as CloudFile)
             }
 
@@ -853,5 +870,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
 
         }
+    }
+
+    fun convertToOOXML() {
+        // TODO:
     }
 }
