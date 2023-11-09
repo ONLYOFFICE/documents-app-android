@@ -2,15 +2,53 @@ package app.documents.core.network.manager
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
-import app.documents.core.network.manager.models.request.*
-import app.documents.core.network.manager.models.response.*
+import app.documents.core.network.manager.models.request.RequestBatchBase
+import app.documents.core.network.manager.models.request.RequestBatchOperation
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDeleteShare
+import app.documents.core.network.manager.models.request.RequestDownload
+import app.documents.core.network.manager.models.request.RequestExternal
+import app.documents.core.network.manager.models.request.RequestFavorites
+import app.documents.core.network.manager.models.request.RequestRenameFile
+import app.documents.core.network.manager.models.request.RequestStorage
+import app.documents.core.network.manager.models.request.RequestTitle
+import app.documents.core.network.manager.models.request.RequestUser
+import app.documents.core.network.manager.models.response.ResponseCloudTree
+import app.documents.core.network.manager.models.response.ResponseConversionStatus
+import app.documents.core.network.manager.models.response.ResponseCount
+import app.documents.core.network.manager.models.response.ResponseCreateFile
+import app.documents.core.network.manager.models.response.ResponseCreateFolder
+import app.documents.core.network.manager.models.response.ResponseDownload
+import app.documents.core.network.manager.models.response.ResponseExplorer
+import app.documents.core.network.manager.models.response.ResponseExternal
+import app.documents.core.network.manager.models.response.ResponseFile
+import app.documents.core.network.manager.models.response.ResponseFiles
+import app.documents.core.network.manager.models.response.ResponseFolder
+import app.documents.core.network.manager.models.response.ResponseModules
+import app.documents.core.network.manager.models.response.ResponseOperation
+import app.documents.core.network.manager.models.response.ResponsePortal
+import app.documents.core.network.manager.models.response.ResponseThirdparty
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.HTTP
+import retrofit2.http.Header
+import retrofit2.http.Headers
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
+import retrofit2.http.Path
+import retrofit2.http.Query
+import retrofit2.http.QueryMap
+import retrofit2.http.Streaming
+import retrofit2.http.Url
 
 interface ManagerService {
 
@@ -383,14 +421,17 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/checkconversion")
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/checkconversion")
     fun startConversion(@Path(value = "fileId") id: String): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/checkconversion")
-    fun getConversionStatus(@Path(value = "fileId") id: String, @Query(value = "start") start: Boolean): Single<Response<ResponseBody>>
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/checkconversion")
+    suspend fun getConversionStatus(
+        @Path(value = "fileId") id: String,
+        @Query(value = "start") start: Boolean
+    ): ResponseConversionStatus
 
 }

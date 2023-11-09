@@ -758,9 +758,10 @@
     showQuestionDialog()
 
     <!-- For example  -->
-    <string name="converting_dialog_title">Convert and open document</string>
-    <string name="converting_dialog_message">The document you open is not OOXML (Office Open XML) file. Convert it to OOXML format for faster viewing and editing.</string>
-    <string name="converting_dialog_open_in_view_mode">Open in view mode</string>
-    <string name="converting_dialog_convert_to_ooxml">Convert to %1s</string>
+    <string name="conversion_dialog_title">Convert and open document</string>
+    <string name="conversion_dialog_message">The document you open is not OOXML (Office Open XML) file. Convert it to OOXML format for faster viewing and editing.</string>
+    <string name="conversion_dialog_open_in_view_mode">Open in view mode</string>
+    <string name="conversion_dialog_convert_to">Convert to %1s</string>
+    <string name="conversion_dialog_converting_to">Converting to %1s</string>
 
 </resources>

@@ -40,7 +40,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.FileUtils
@@ -61,6 +65,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private var api: ManagerService? = null
     private var roomProvider: RoomProvider? = null
 
+    private var conversionJob: Job? = null
 
     init {
         App.getApp().appComponent.inject(this)
@@ -91,6 +96,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun onDestroy() {
         super.onDestroy()
+        interruptConversion()
         downloadReceiver.setOnDownloadListener(null)
         uploadReceiver.setOnUploadListener(null)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
@@ -115,7 +121,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     openFolder(itemClicked.id, position)
                 } else if (itemClicked is CloudFile) {
                     if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
-                        viewState.onConvertingQuestion()
+                        viewState.onConversionQuestion()
                     } else {
                         getFileInfo()
                     }
@@ -387,8 +393,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun onEditContextClick() {
-        if (itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
+        val file = itemClicked
+        if (file is CloudFile) {
+            if (LocalContentTools.isOpenFormat(file.clearExt)) {
+                viewState.onConversionQuestion()
+                return
+            }
             file.isReadOnly = false
             var url = file.webUrl
             if (url.contains(ApiContract.Parameters.ARG_ACTION) && url.contains(ApiContract.Parameters.VAL_ACTION_VIEW)) {
@@ -872,7 +882,30 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun interruptConversion(): Boolean {
+        val cancelled = conversionJob?.isCancelled == true // conversionJob == null || isCancelled
+        conversionJob?.cancel()
+        return cancelled
+    }
+
     fun convertToOOXML() {
-        // TODO:
+        val extension = LocalContentTools.toOOXML((itemClicked as? CloudFile)?.clearExt.orEmpty())
+        viewState.onConversionProgress(0, extension)
+        (fileProvider as? CloudFileProvider)?.let { fileProvider ->
+            conversionJob = presenterScope.launch {
+                fileProvider.convertToOOXML(itemClicked?.id.orEmpty()).collectLatest {
+                    withContext(Dispatchers.Main) {
+                        viewState.onConversionProgress(it, extension)
+                        if (it == 100) {
+                            delay(300L)
+                            viewState.onDialogClose()
+                            refresh()
+                            viewState.onScrollToPosition(0)
+                            conversionJob?.cancel()
+                        }
+                    }
+                }
+            }
+        }
     }
 }

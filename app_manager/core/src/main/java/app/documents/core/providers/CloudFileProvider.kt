@@ -6,15 +6,36 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.login.LoginService
 import app.documents.core.network.manager.ManagerService
-import app.documents.core.network.manager.models.explorer.*
-import app.documents.core.network.manager.models.request.*
-import app.documents.core.network.manager.models.response.*
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Operation
+import app.documents.core.network.manager.models.request.RequestBatchBase
+import app.documents.core.network.manager.models.request.RequestBatchOperation
+import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestExternal
+import app.documents.core.network.manager.models.request.RequestFavorites
+import app.documents.core.network.manager.models.request.RequestRenameFile
+import app.documents.core.network.manager.models.request.RequestTitle
+import app.documents.core.network.manager.models.response.ResponseCreateFile
+import app.documents.core.network.manager.models.response.ResponseCreateFolder
+import app.documents.core.network.manager.models.response.ResponseExplorer
+import app.documents.core.network.manager.models.response.ResponseExternal
+import app.documents.core.network.manager.models.response.ResponseFile
+import app.documents.core.network.manager.models.response.ResponseFolder
+import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.room.RoomService
 import app.documents.core.storage.preference.NetworkSettings
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -366,7 +387,8 @@ class CloudFileProvider @Inject constructor(
     fun opeEdit(cloudFile: CloudFile): Single<String?> {
         return loginService.getSettings().map {
             if (it.isSuccessful) {
-                networkSettings.documentServerVersion = it.body()?.response?.documentServer ?: networkSettings.documentServerVersion
+                networkSettings.documentServerVersion = it.body()?.response?.documentServer
+                    ?: networkSettings.documentServerVersion
             }
         }
             .flatMap { managerService.openFile(cloudFile.id, cloudFile.version) }
@@ -380,6 +402,22 @@ class CloudFileProvider @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread()).map { response ->
                 return@map response.toString()
             }
+    }
+
+    suspend fun convertToOOXML(id: String): Flow<Int> = withContext(Dispatchers.IO) {
+        managerService.getConversionStatus(id, true)
+        return@withContext flow {
+            var progress = 0
+            while (progress != 100) {
+                val response = managerService.getConversionStatus(id, false).response
+                if (response.isNotEmpty()) {
+                    val status = response[0]
+                    progress = status.progress
+                    emit(status.progress)
+                    delay(100L)
+                }
+            }
+        }
     }
 
 }

@@ -116,6 +116,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun onBackPressed(): Boolean {
+        return if (cloudPresenter.interruptConversion()) super.onBackPressed() else true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.toolbar_item_filter -> showFilter()
@@ -169,6 +173,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY -> cloudPresenter.emptyTrash()
                 DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE -> cloudPresenter.removeShareContext()
             }
+        }
+    }
+
+    override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
+        when (tag) {
+            DocsBasePresenter.TAG_DIALOG_CANCEL_CONVERSION -> cloudPresenter.interruptConversion()
+            else -> super.onCancelClick(dialogs, tag)
         }
     }
 
@@ -343,21 +354,22 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         else super.onUpdateFavoriteItem()
     }
 
-    override fun onConvertingQuestion() {
+    override fun onConversionQuestion() {
+        contextBottomDialog?.dismiss()
         (presenter.itemClicked as? CloudFile)?.let { file ->
             AlertDialog.Builder(requireContext())
-                .setTitle(R.string.converting_dialog_title)
-                .setMessage(R.string.converting_dialog_message)
+                .setTitle(R.string.conversion_dialog_title)
+                .setMessage(R.string.conversion_dialog_message)
                 .setPositiveButton(
                     getString(
-                        R.string.converting_dialog_convert_to_ooxml,
+                        R.string.conversion_dialog_convert_to,
                         LocalContentTools.toOOXML(file.clearExt)
                     )
                 ) { dialog, _ ->
                     dialog.dismiss()
                     cloudPresenter.convertToOOXML()
                 }
-                .setNegativeButton(R.string.converting_dialog_open_in_view_mode) { dialog, _ ->
+                .setNegativeButton(R.string.conversion_dialog_open_in_view_mode) { dialog, _ ->
                     dialog.dismiss()
                     cloudPresenter.getFileInfo()
                 }
@@ -369,6 +381,20 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     )
                 }
                 .show()
+        }
+    }
+
+    override fun onConversionProgress(progress: Int, extension: String?) {
+        if (progress > 0) {
+            updateProgressDialog(100, progress)
+        } else {
+            showProgressDialog(
+                title = getString(R.string.conversion_dialog_converting_to, extension),
+                isHideButton = false,
+                cancelTitle = getString(R.string.dialogs_common_cancel_button),
+                tag = DocsBasePresenter.TAG_DIALOG_CANCEL_CONVERSION
+            )
+            updateProgressDialog(100, 0)
         }
     }
 
