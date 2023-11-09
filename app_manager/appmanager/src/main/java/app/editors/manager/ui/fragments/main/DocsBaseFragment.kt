@@ -257,8 +257,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (item != null && !isFastClick) {
             val state = ExplorerContextState(
                 item = item,
-                section = getSection(),
-                folderAccess = presenter.currentFolderAccess,
+                sectionType = getSection().type,
                 isSearching = presenter.isFilteringMode,
                 isRoot = presenter.isRoot
             )
