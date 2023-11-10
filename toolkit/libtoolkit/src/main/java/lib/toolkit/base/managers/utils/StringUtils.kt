@@ -469,12 +469,20 @@ object StringUtils {
     }
 
     fun getAvatarName(name: String): String {
-        return name.split(" ").run {
-            if (size >= 2) {
-                return@run "${get(0)[0]}${get(1)[0]}".uppercase()
-            } else {
-                return@run "${get(0)[0]}${get(0)[1]}".uppercase()
+        try {
+            return name.split(" ").run {
+                if (size >= 2) {
+                    return@run "${get(0)[0]}${get(1)[0]}".uppercase()
+                } else {
+                    if (get(0).length >= 2) {
+                        return@run "${get(0)[0]}${get(0)[1]}".uppercase()
+                    } else {
+                        return@run "${get(0)[0]}".uppercase()
+                    }
+                }
             }
+        } catch (error: IndexOutOfBoundsException) {
+            return "U"
         }
     }
 
