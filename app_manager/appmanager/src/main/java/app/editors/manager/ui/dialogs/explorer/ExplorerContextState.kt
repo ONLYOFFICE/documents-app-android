@@ -7,12 +7,14 @@ import java.io.Serializable
 
 data class ExplorerContextState(
     val item: Item,
-    val section: ApiContract.Section,
-    val folderAccess: ApiContract.Access,
+    val sectionType: Int,
     val isSearching: Boolean = false,
     val isRoot: Boolean = false,
     val headerInfo: String? = null
 ) : Serializable {
+
+    val section: ApiContract.Section
+        get() = ApiContract.Section.getSection(sectionType)
 
     val access: ApiContract.Access
         get() = ApiContract.Access.get(item.intAccess)
