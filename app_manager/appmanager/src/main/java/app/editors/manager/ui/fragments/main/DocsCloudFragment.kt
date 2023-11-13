@@ -37,6 +37,7 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.R
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import lib.editors.gbase.managers.utils.DialogUtils
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
@@ -117,7 +118,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onBackPressed(): Boolean {
-        return if (cloudPresenter.interruptConversion()) super.onBackPressed() else true
+        return if (cloudPresenter.interruptConversion()) true else super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -357,7 +358,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onConversionQuestion() {
         contextBottomDialog?.dismiss()
         (presenter.itemClicked as? CloudFile)?.let { file ->
-            AlertDialog.Builder(requireContext())
+            MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.conversion_dialog_title)
                 .setMessage(R.string.conversion_dialog_message)
                 .setPositiveButton(
