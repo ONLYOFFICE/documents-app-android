@@ -3,6 +3,7 @@ package app.documents.core.providers
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import androidx.documentfile.provider.DocumentFile
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.*
@@ -235,13 +236,21 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
         val files: MutableList<File?> = mutableListOf()
         val resultExplorer = Explorer()
         var tempExplorer: Explorer?
-        Files.walk(Paths.get(id)).use { walkStream ->
-            walkStream.filter { item -> item.name.contains(value.toString(), true) }
-                .forEach { item ->
-                    files.add(item.toFile())
-                    tempExplorer = getExplorer(files, File(id))
-                    resultExplorer.add(tempExplorer!!)
-                }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Files.walk(Paths.get(id)).use { walkStream ->
+                walkStream.filter { item -> item.name.contains(value.toString(), true) }
+                    .forEach { item ->
+                        files.add(item.toFile())
+                        tempExplorer = getExplorer(files, File(id))
+                        resultExplorer.add(tempExplorer!!)
+                    }
+            }
+        } else {
+            File(id).listFiles()?.filter { file -> file.name.contains(value.toString(), true) }?.forEach { file ->
+                files.add(file)
+                tempExplorer = getExplorer(files, file)
+                resultExplorer.add(tempExplorer!!)
+            }
         }
 
         if (resultExplorer.count == 0) {
