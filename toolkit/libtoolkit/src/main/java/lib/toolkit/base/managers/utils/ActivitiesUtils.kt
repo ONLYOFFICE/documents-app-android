@@ -25,6 +25,10 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.ActivitiesUtils.IMAGE_TYPE
 import java.io.File
@@ -354,7 +358,10 @@ class LaunchActivityForResult(
 ) {
 
     private val launchActivity: ActivityResultLauncher<Intent> =
-        activityResultRegistry.register("EditorsForResult", ActivityResultContracts.StartActivityForResult()) { result ->
+        activityResultRegistry.register(
+            "EditorsForResult",
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
             callback.invoke(result)
         }
 
@@ -377,6 +384,7 @@ class FontPicker(
     }
 
 }
+
 @Suppress("DEPRECATION", "UNCHECKED_CAST")
 fun <T : Serializable> Intent.getSerializable(key: String, clazz: Class<T>): T {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -449,4 +457,12 @@ fun FragmentActivity.openSendFileActivity(title: Int, uri: Uri) {
         startActivity(getSendFileIntent(title, file = uri.toFile()))
     }
 
+}
+
+fun Fragment.launchAfterResume(block: () -> Unit) {
+    lifecycleScope.launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            block()
+        }
+    }
 }
