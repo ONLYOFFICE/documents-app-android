@@ -66,6 +66,10 @@ open class CloudFile : Item() {
     @Expose
     var isDenySharing = false
 
+    @SerializedName("encrypted")
+    @Expose
+    var encrypted = false
+
     val nextVersion: Int
         get() = ++version
 
