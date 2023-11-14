@@ -6,7 +6,6 @@ import app.documents.core.storage.preference.NetworkSettings
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
-import kotlinx.serialization.ExperimentalSerializationApi
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -15,7 +14,6 @@ import retrofit2.Retrofit
 object ShareModule {
 
     @Provides
-    @OptIn(ExperimentalSerializationApi::class)
     fun provideShareService(okHttpClient: OkHttpClient, settings: NetworkSettings): ShareService = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(settings.getBaseUrl())

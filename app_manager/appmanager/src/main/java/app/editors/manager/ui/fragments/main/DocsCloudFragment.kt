@@ -1,10 +1,12 @@
 package app.editors.manager.ui.fragments.main
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.clearFragmentResultListener
@@ -35,6 +37,9 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.R
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import lib.editors.gbase.managers.utils.DialogUtils
+import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializable
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -112,6 +117,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun onBackPressed(): Boolean {
+        return if (cloudPresenter.interruptConversion()) true else super.onBackPressed()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.toolbar_item_filter -> showFilter()
@@ -165,6 +174,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY -> cloudPresenter.emptyTrash()
                 DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE -> cloudPresenter.removeShareContext()
             }
+        }
+    }
+
+    override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
+        when (tag) {
+            DocsBasePresenter.TAG_DIALOG_CANCEL_CONVERSION -> cloudPresenter.interruptConversion()
+            else -> super.onCancelClick(dialogs, tag)
         }
     }
 
@@ -337,6 +353,50 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onUpdateFavoriteItem() {
         if (section == ApiContract.SectionType.CLOUD_FAVORITES) explorerAdapter?.removeItem(presenter.itemClicked)
         else super.onUpdateFavoriteItem()
+    }
+
+    override fun onConversionQuestion() {
+        contextBottomDialog?.dismiss()
+        (presenter.itemClicked as? CloudFile)?.let { file ->
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.conversion_dialog_title)
+                .setMessage(R.string.conversion_dialog_message)
+                .setPositiveButton(
+                    getString(
+                        R.string.conversion_dialog_convert_to,
+                        LocalContentTools.toOOXML(file.clearExt)
+                    )
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                    cloudPresenter.convertToOOXML()
+                }
+                .setNegativeButton(R.string.conversion_dialog_open_in_view_mode) { dialog, _ ->
+                    dialog.dismiss()
+                    cloudPresenter.getFileInfo()
+                }
+                .create()
+                .apply {
+                    window?.setLayout(
+                        DialogUtils.getWidth(requireContext()),
+                        WindowManager.LayoutParams.WRAP_CONTENT
+                    )
+                }
+                .show()
+        }
+    }
+
+    override fun onConversionProgress(progress: Int, extension: String?) {
+        if (progress > 0) {
+            updateProgressDialog(100, progress)
+        } else {
+            showProgressDialog(
+                title = getString(R.string.conversion_dialog_converting_to, extension),
+                isHideButton = false,
+                cancelTitle = getString(R.string.dialogs_common_cancel_button),
+                tag = DocsBasePresenter.TAG_DIALOG_CANCEL_CONVERSION
+            )
+            updateProgressDialog(100, 0)
+        }
     }
 
     protected open fun getFilters(): Boolean {

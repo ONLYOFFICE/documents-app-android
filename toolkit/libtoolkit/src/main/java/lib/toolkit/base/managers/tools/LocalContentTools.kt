@@ -85,16 +85,16 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         fun toOOXML(ext: String): String {
             return when (ext) {
-                ODT_EXTENSION, OTT_EXTENSION -> DOCX_EXTENSION
-                ODS_EXTENSION, OTS_EXTENSION -> XLSX_EXTENSION
-                ODP_EXTENSION, OTP_EXTENSION -> PPTX_EXTENSION
+                ODT_EXTENSION, OTT_EXTENSION, DOC_EXTENSION -> DOCX_EXTENSION
+                ODS_EXTENSION, OTS_EXTENSION, XLS_EXTENSION -> XLSX_EXTENSION
+                ODP_EXTENSION, OTP_EXTENSION, PPT_EXTENSION -> PPTX_EXTENSION
                 else -> throw IllegalArgumentException(".$ext can not be converted to OOXML extension")
             }
         }
 
         fun isOpenFormat(ext: String): Boolean {
             return when (ext) {
-                ODT_EXTENSION, OTT_EXTENSION, ODS_EXTENSION, OTS_EXTENSION, ODP_EXTENSION, OTP_EXTENSION -> true
+                ODT_EXTENSION, OTT_EXTENSION, ODS_EXTENSION, OTS_EXTENSION, ODP_EXTENSION, OTP_EXTENSION, DOC_EXTENSION, XLS_EXTENSION, PPT_EXTENSION -> true
                 else -> false
             }
         }

@@ -8,7 +8,14 @@ import app.documents.core.network.share.models.response.ResponseExternal
 import app.documents.core.network.share.models.response.ResponseGroups
 import app.documents.core.network.share.models.response.ResponseShare
 import app.documents.core.network.share.models.response.ResponseUsers
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.HTTP
+import retrofit2.http.Header
+import retrofit2.http.Headers
+import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.QueryMap
 
 interface ShareService {
 
@@ -56,7 +63,7 @@ interface ShareService {
     suspend fun setExternalLinkAccess(
         @Path(value = "file_id") fileId: String,
         @Body body: RequestExternalAccess
-    ): BaseResponse
+    ): ResponseExternal
 
     /*
      * Set access for folder

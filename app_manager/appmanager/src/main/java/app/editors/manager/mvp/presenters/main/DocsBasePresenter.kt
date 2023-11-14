@@ -1622,6 +1622,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         sendDisposable?.dispose()
     }
 
+    fun clearDisposable() {
+        disposable.clear()
+    }
+
     protected fun checkSdkVersion(version: String? = null, result: (isCoauthoring: Boolean) -> Unit) {
         FirebaseUtils.getSdk { pair ->
             if (!pair.first) {
@@ -1694,6 +1698,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         const val TAG_DIALOG_CANCEL_UPLOAD = "TAG_DIALOG_CANCEL_UPLOAD"
         const val TAG_DIALOG_CANCEL_SINGLE_OPERATIONS = "TAG_DIALOG_CANCEL_SINGLE_OPERATIONS"
         const val TAG_DIALOG_CANCEL_BATCH_OPERATIONS = "TAG_DIALOG_CANCEL_BATCH_OPERATIONS"
+        const val TAG_DIALOG_CANCEL_CONVERSION = "TAG_DIALOG_CANCEL_CONVERSION"
+        const val TAG_DIALOG_CLEAR_DISPOSABLE = "TAG_DIALOG_CLEAR_DISPOSABLE"
 
         /**
          * Requests values

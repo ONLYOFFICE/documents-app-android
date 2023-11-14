@@ -20,4 +20,10 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onArchiveSelectedRooms(rooms: List<Entity>)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onConversionQuestion()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onConversionProgress(progress: Int, extension: String? = null)
 }
