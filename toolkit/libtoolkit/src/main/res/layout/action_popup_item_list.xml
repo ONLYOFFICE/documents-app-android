@@ -18,12 +18,11 @@
 
         <TextView
             android:id="@+id/title"
+            style="@style/Widget.Common.TextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Date"
-            android:textColor="@color/colorOnSurface"
-            android:textSize="16sp" />
+            tools:text="Date" />
 
         <ImageView
             android:id="@+id/order"
