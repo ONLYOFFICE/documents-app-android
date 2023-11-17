@@ -5,12 +5,12 @@ import com.google.gson.annotations.SerializedName
 
 class PathParts {
 
-    @SerializedName("key")
+    @SerializedName("id")
     @Expose
-    var key = ""
+    var id = ""
 
-    @SerializedName("path")
+    @SerializedName("title")
     @Expose
-    var path = ""
+    var title = ""
 
 }
