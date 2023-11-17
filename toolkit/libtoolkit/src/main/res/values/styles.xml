@@ -83,6 +83,7 @@
     <!-- Widgets -->
 
     <style name="Widget.Common.TextView" parent="AppTheme">
+        <item name="android:textDirection">locale</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/fonts_size_medium</item>
