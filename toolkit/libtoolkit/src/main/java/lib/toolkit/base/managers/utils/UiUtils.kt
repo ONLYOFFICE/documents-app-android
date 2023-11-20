@@ -77,7 +77,7 @@ object UiUtils {
     }
 
     fun isRTL(): Boolean {
-        return TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_LTR
+        return TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL
     }
 
     @JvmStatic

@@ -63,7 +63,7 @@ abstract class ActionBarPopup<T : BasePopupItem>(
     }
 
     fun show(view: View) {
-        val horizontalGravity = if (!UiUtils.isRTL()) Gravity.START else Gravity.END
+        val horizontalGravity = if (UiUtils.isRTL()) Gravity.START else Gravity.END
         val insets = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
             view.rootWindowInsets.displayCutout?.safeInsetTop else 0
         viewBinding?.popupView?.adapter = popupAdapter.also { it.items = items }
