@@ -217,7 +217,9 @@ public class ExplorerStackMap implements ExplorerStack {
     @Nullable
     @Override
     public List<String> getPath() {
-        return mExplorer.getPathParts();
+        ArrayList<String> path = new ArrayList<>(1);
+        path.add(mExplorer.getCurrent().getParentId());
+        return path;
     }
 
     @Nullable
