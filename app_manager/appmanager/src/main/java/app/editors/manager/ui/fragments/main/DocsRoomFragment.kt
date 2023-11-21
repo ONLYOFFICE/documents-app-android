@@ -7,6 +7,7 @@ import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
+import app.editors.manager.ui.dialogs.AddRoomFragment
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
@@ -22,15 +23,13 @@ class DocsRoomFragment : DocsCloudFragment() {
             AddRoomBottomDialog().apply {
                 onClickListener = object : AddRoomBottomDialog.OnClickListener {
                     override fun onActionButtonClick(roomType: Int) {
-                        UiUtils.showEditDialog(
-                            context = requireContext(),
-                            title = getString(R.string.dialog_create_room),
-                            value = getString(R.string.dialog_create_room_value),
-                            acceptListener = { title ->
-                                cloudPresenter.createRoom(title, roomType)
-                            },
-                            requireValue = true
-                        )
+                        requireActivity().supportFragmentManager.setFragmentResultListener(
+                            AddRoomFragment.TAG_RESULT,
+                            this@DocsRoomFragment
+                        ) { _, _ ->
+                            onRefresh()
+                        }
+                        AddRoomFragment.show(requireActivity().supportFragmentManager, roomType)
                     }
 
                     override fun onActionDialogClose() {
@@ -85,6 +84,9 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.Edit -> {
+                //TODO edit room
+            }
             ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
             ExplorerContextItem.AddUsers -> ShareActivity.show(this, cloudPresenter.itemClicked, false)
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()

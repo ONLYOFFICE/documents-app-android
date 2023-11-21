@@ -274,7 +274,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 else -> {
                     viewState.onActionBarTitle("")
                     if (isRoom) {
-                        viewState.onStateActionButton(false)
+                        viewState.onStateActionButton(true)
                     } else {
                         viewState.onStateActionButton(isContextEditable)
                     }
