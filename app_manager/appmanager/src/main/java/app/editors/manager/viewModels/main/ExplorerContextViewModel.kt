@@ -42,6 +42,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Rename,
                 ExplorerContextItem.Pin(state.pinned),
                 ExplorerContextItem.Archive,
+                ExplorerContextItem.Download,
                 ExplorerContextItem.Restore(true),
                 ExplorerContextItem.Delete(state)
             )
