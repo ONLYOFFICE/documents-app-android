@@ -34,6 +34,7 @@ import lib.toolkit.base.R
 fun AppArrowItem(
     modifier: Modifier = Modifier,
     title: String,
+    titleColor: Color = MaterialTheme.colors.onSurface,
     subtitle: String? = null,
     @DrawableRes startIcon: Int? = null,
     startIconTint: Color? = MaterialTheme.colors.primary,
@@ -56,6 +57,7 @@ fun AppArrowItem(
         enabled = enabled,
         onClick = onClick,
         title = title,
+        titleColor = titleColor,
         subtitle = subtitle,
         endContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -130,6 +132,7 @@ fun AppArrowItem(
 fun AppArrowItem(
     modifier: Modifier = Modifier,
     @StringRes title: Int,
+    titleColor: Color = MaterialTheme.colors.onSurface,
     optionImage: Int,
     subtitle: String? = null,
     @DrawableRes startIcon: Int? = null,
@@ -152,6 +155,7 @@ fun AppArrowItem(
         enabled = enabled,
         onClick = onClick,
         title = stringResource(id = title),
+        titleColor = titleColor,
         subtitle = subtitle,
         endContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {

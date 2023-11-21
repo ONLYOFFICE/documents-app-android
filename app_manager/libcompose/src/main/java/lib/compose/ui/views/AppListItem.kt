@@ -41,6 +41,7 @@ import lib.toolkit.base.R
 fun AppListItem(
     modifier: Modifier = Modifier,
     title: String,
+    titleColor: Color = MaterialTheme.colors.onSurface,
     subtitle: String? = null,
     background: Color? = null,
     @DrawableRes startIcon: Int? = null,
@@ -94,7 +95,7 @@ fun AppListItem(
                 Column(modifier = Modifier.enabled(enabled)) {
                     Text(
                         text = title,
-                        color = MaterialTheme.colors.onSurface,
+                        color = titleColor,
                         style = MaterialTheme.typography.body1,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

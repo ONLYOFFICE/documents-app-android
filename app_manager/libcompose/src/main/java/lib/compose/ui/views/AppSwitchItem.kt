@@ -18,6 +18,7 @@ import lib.compose.ui.theme.ManagerTheme
 fun AppSwitchItem(
     modifier: Modifier = Modifier,
     title: String,
+    titleColor: Color = MaterialTheme.colors.onSurface,
     checked: Boolean,
     subtitle: String? = null,
     enabled: Boolean = true,
@@ -35,6 +36,7 @@ fun AppSwitchItem(
     AppListItem(
         modifier = modifier,
         title = title,
+        titleColor = titleColor,
         subtitle = subtitle,
         startIcon = startIcon,
         startIconTint = startIconTint,
