@@ -20,8 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
-        android:paddingHorizontal="@dimen/default_margin_large"
-        android:paddingVertical="@dimen/default_margin_medium"
+        android:layout_marginHorizontal="@dimen/default_margin_large"
+        android:layout_marginVertical="@dimen/default_margin_medium"
         app:chipSpacingHorizontal="@dimen/default_margin_large"
         app:chipSpacingVertical="@dimen/default_margin_large"
         app:singleSelection="true">
