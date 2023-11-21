@@ -24,8 +24,8 @@ class ShareAddItemViewHolder(
     private val binding = ListShareAddItemBinding.bind(view)
 
     override fun bind(item: ViewType, payloads: List<Any>) {
-        if (item is UserUi && ShareAdapter.PAYLOAD_AVATAR in payloads) {
-            setAvatar(item.avatar)
+        if (ShareAdapter.PAYLOAD_AVATAR in payloads) {
+            if (item is UserUi) setAvatar(item.avatar)
             setSelected(item)
         }
     }

@@ -158,23 +158,25 @@ object ManagerUiUtils {
         }
     }
 
-    fun setAccessIcon(icon: ImageView?, accessCode: Int) {
-        if (icon == null) return
-        when (accessCode) {
-            ApiContract.ShareCode.NONE, ApiContract.ShareCode.RESTRICT -> {
-                icon.setImageResource(R.drawable.ic_access_deny)
-                return
-            }
-            ApiContract.ShareCode.REVIEW -> icon.setImageResource(R.drawable.ic_access_review)
-            ApiContract.ShareCode.READ -> icon.setImageResource(R.drawable.ic_access_read)
-            ApiContract.ShareCode.ROOM_ADMIN -> icon.setImageResource(R.drawable.ic_room_admin)
-            ApiContract.ShareCode.POWER_USER -> icon.setImageResource(R.drawable.ic_room_power_user)
-            ApiContract.ShareCode.READ_WRITE -> icon.setImageResource(R.drawable.ic_access_full)
-            ApiContract.ShareCode.EDITOR -> icon.setImageResource(R.drawable.ic_access_full)
-            ApiContract.ShareCode.COMMENT -> icon.setImageResource(R.drawable.ic_access_comment)
-            ApiContract.ShareCode.FILL_FORMS -> icon.setImageResource(R.drawable.ic_access_fill_form)
-            ApiContract.ShareCode.CUSTOM_FILTER -> icon.setImageResource(R.drawable.ic_access_custom_filter)
+    fun getAccessIcon(accessCode: Int): Int {
+        return when (accessCode) {
+            ApiContract.ShareCode.NONE,
+            ApiContract.ShareCode.RESTRICT -> R.drawable.ic_access_deny
+            ApiContract.ShareCode.REVIEW -> R.drawable.ic_access_review
+            ApiContract.ShareCode.READ -> R.drawable.ic_access_read
+            ApiContract.ShareCode.ROOM_ADMIN -> R.drawable.ic_room_admin
+            ApiContract.ShareCode.POWER_USER -> R.drawable.ic_room_power_user
+            ApiContract.ShareCode.READ_WRITE -> R.drawable.ic_access_full
+            ApiContract.ShareCode.EDITOR -> R.drawable.ic_access_full
+            ApiContract.ShareCode.COMMENT -> R.drawable.ic_access_comment
+            ApiContract.ShareCode.FILL_FORMS -> R.drawable.ic_access_fill_form
+            ApiContract.ShareCode.CUSTOM_FILTER -> R.drawable.ic_access_custom_filter
+            else -> R.drawable.ic_access_deny
         }
+    }
+
+    fun setAccessIcon(icon: ImageView?, accessCode: Int) {
+        icon?.setImageResource(getAccessIcon(accessCode))
     }
 
     fun View.setMargins(left: Int, top: Int, right: Int, bottom: Int) {
