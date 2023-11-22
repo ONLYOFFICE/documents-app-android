@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Environment
 import android.os.StatFs
+import android.util.Base64
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
 import lib.toolkit.base.BuildConfig
@@ -705,6 +706,12 @@ object FileUtils {
     fun isEnoughFreeSpace(itemSize: Long): Boolean {
         val availableBytes = StatFs(Environment.getExternalStorageDirectory().path).availableBytes
         return itemSize < availableBytes
+    }
+
+    fun Bitmap.toByteArray(): ByteArray {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        this.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        return byteArrayOutputStream.toByteArray()
     }
 
 }
