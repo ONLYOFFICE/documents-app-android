@@ -17,6 +17,8 @@
         <item name="android:windowBackground">@color/colorBackground</item>
 
         <item name="elevationOverlayEnabled">false</item>
+        <item name="android:textDirection">locale</item>
+        <item name="android:supportsRtl">true</item>
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme">
