@@ -40,7 +40,7 @@ object ApiContract {
     const val VALUE_ACCEPT = "application/json"
     const val VALUE_CACHE = "no-cache"
 
-    const val DOWNLOAD_ZIP_NAME = "download.tgz"
+    const val DOWNLOAD_ZIP_NAME = "download.zip"
 
     object Social {
         const val TWITTER = "twitter"

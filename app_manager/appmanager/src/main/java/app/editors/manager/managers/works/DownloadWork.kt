@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.work.WorkerParameters
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
+import app.documents.core.network.manager.models.base.Download
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.editors.manager.R
@@ -59,36 +60,8 @@ class DownloadWork(
                 .downloadFiles(requestDownload)
                 .blockingGet()
 
-            for (download in response.response) {
-                while (!isStopped) {
-                    val operations: List<Operation> = api.status().blockingGet().response
-                    if (operations.isNotEmpty()) {
-                        if (operations[0].error == null) {
-                            showProgress(
-                                FileUtils.LOAD_MAX_PROGRESS.toLong(), operations[0].progress
-                                    .toLong(), true
-                            )
-                            if (operations[0].finished && operations[0].id == download.id) {
-                                id = operations[0].id
-                                notificationUtils.removeNotification(0)
-                                return operations[0].url
-                            }
-                        } else {
-                            notificationUtils.showErrorNotification(
-                                id.hashCode(),
-                                file?.name.orEmpty()
-                            )
-                            onError(getExceedFileException(operations[0].error.orEmpty()))
-                            file?.delete()
-                            break
-                        }
-                    }
-                }
-                if (isStopped) {
-                    notificationUtils.showCanceledNotification(id.hashCode(), file?.name.orEmpty())
-                    file?.delete()
-                }
-            }
+            return getStatus(response.response[0])
+
         } catch (e: Exception) {
             if (e is HttpException) {
                 onHttpError(e)
@@ -97,10 +70,30 @@ class DownloadWork(
         return null
     }
 
+    private fun getStatus(download: Download): String? {
+        if (isStopped) {
+            return null
+        }
+        val operations: Operation = api.status().blockingGet().response.find { download.id == it.id }
+            ?: throw getExceedFileException(download.error ?: "")
+        showProgress(
+            FileUtils.LOAD_MAX_PROGRESS.toLong(), operations.progress
+                .toLong(), true
+        )
+        Thread.sleep(500)
+        return if (operations.finished && operations.id == download.id) {
+            id = operations.id
+            notificationUtils.removeNotification(0)
+            operations.url
+        } else {
+            getStatus(download)
+        }
+    }
+
     private fun onHttpError(error: HttpException) {
         try {
             val errorMessage = error.response()?.errorBody()?.string()?.let { response ->
-                StringUtils.getJsonObject(response)?.let json@ { jsonObject ->
+                StringUtils.getJsonObject(response)?.let json@{ jsonObject ->
                     return@json jsonObject
                         .getJSONObject(KEY_ERROR_INFO)
                         .getString(KEY_ERROR_INFO_MESSAGE)

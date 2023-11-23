@@ -1,14 +1,14 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
-import app.documents.core.storage.account.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.ManagerService
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
-import app.documents.core.network.manager.ManagerService
 import app.editors.manager.app.App
 import app.editors.manager.app.api
-import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -19,7 +19,6 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.CryptUtils

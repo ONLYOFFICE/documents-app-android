@@ -26,6 +26,7 @@ import lib.compose.ui.theme.colorTextTertiary
 @Composable
 fun AppDragItem(
     title: String,
+    titleColor: Color = MaterialTheme.colors.onSurface,
     subtitle: String? = null,
     @DrawableRes startIcon: Int? = null,
     startIconTint: Color = MaterialTheme.colors.primary,
@@ -34,6 +35,7 @@ fun AppDragItem(
 ) {
     AppListItem(
         title = title,
+        titleColor = titleColor,
         subtitle = subtitle,
         startIcon = startIcon,
         startIconTint = startIconTint,
