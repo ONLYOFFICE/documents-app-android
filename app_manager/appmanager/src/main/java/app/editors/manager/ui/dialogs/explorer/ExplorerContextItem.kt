@@ -20,46 +20,69 @@ sealed class ExplorerContextItem(
         var info = state.headerInfo ?: TimeUtils.formatDate(state.item.updated)
     }
 
-    object Edit : ExplorerContextItem(
+    class Edit(state: ExplorerContextState) : ExplorerContextItem(
         icon = R.drawable.ic_list_context_edit,
-        title = R.string.list_context_edit
-    ), ExplorerContextBlockOrder.Edit
+        title = getTitle(state)
+    ), ExplorerContextBlockOrder.Common {
+
+        companion object {
+
+            fun getTitle(state: ExplorerContextState) = when {
+                state.section.isRoom && state.isRoot -> R.string.list_context_edit_room
+                else -> R.string.list_context_edit
+            }
+        }
+    }
 
     object Share : ExplorerContextItem(
         icon = R.drawable.ic_list_context_share,
         title = R.string.list_context_share
-    ), ExplorerContextBlockOrder.Share
+    ), ExplorerContextBlockOrder.Common
 
-    object ExternalLink : ExplorerContextItem(
+    class ExternalLink(state: ExplorerContextState) : ExplorerContextItem(
         icon = R.drawable.ic_list_context_external_link,
-        title = R.string.list_context_get_external_link
-    ), ExplorerContextBlockOrder.Share
+        title = getTitle(state)
+    ), ExplorerContextBlockOrder.Common {
+
+        companion object {
+
+            fun getTitle(state: ExplorerContextState) = when {
+                state.section.isRoom && state.isRoot -> R.string.list_context_copy_general_link
+                else -> R.string.list_context_get_external_link
+            }
+        }
+    }
 
     object RoomInfo : ExplorerContextItem(
         icon = R.drawable.ic_drawer_menu_about,
         title = R.string.list_context_info
-    ), ExplorerContextBlockOrder.Share
+    ), ExplorerContextBlockOrder.Common
 
     object AddUsers : ExplorerContextItem(
         icon = R.drawable.ic_add_users,
         title = R.string.list_context_add_users
-    ), ExplorerContextBlockOrder.Share
+    ), ExplorerContextBlockOrder.Common
 
 
     object Send : ExplorerContextItem(
         icon = R.drawable.ic_list_context_send_copy,
         title = lib.toolkit.base.R.string.export_send_copy
-    ), ExplorerContextBlockOrder.Operation
+    ), ExplorerContextBlockOrder.Common
 
     class Pin(pinned: Boolean) : ExplorerContextItem(
         icon = if (!pinned) R.drawable.ic_pin_to_top else R.drawable.ic_unpin,
         title = if (!pinned) R.string.list_context_pin_to_top else R.string.list_context_unpin
-    ), ExplorerContextBlockOrder.Operation
+    ), ExplorerContextBlockOrder.Common
+
+    object Download : ExplorerContextItem(
+        icon = R.drawable.ic_list_context_download,
+        title = R.string.list_context_create_download
+    ), ExplorerContextBlockOrder.Common
 
     class Favorites(val enabled: Boolean, val favorite: Boolean) : ExplorerContextItem(
         icon = getIcon(favorite),
         title = getTitle(favorite)
-    ), ExplorerContextBlockOrder.Operation {
+    ), ExplorerContextBlockOrder.Common {
 
         companion object {
             private fun getIcon(favorite: Boolean) = if (!favorite)
@@ -75,7 +98,7 @@ sealed class ExplorerContextItem(
     object Location : ExplorerContextItem(
         icon = R.drawable.ic_list_context_location,
         title = R.string.list_context_open_location
-    ), ExplorerContextBlockOrder.Operation
+    ), ExplorerContextBlockOrder.Common
 
     object Move : ExplorerContextItem(
         icon = R.drawable.ic_list_context_move,
@@ -87,20 +110,15 @@ sealed class ExplorerContextItem(
         title = R.string.list_context_create_copy
     ), ExplorerContextBlockOrder.Operation
 
-    object Download : ExplorerContextItem(
-        icon = R.drawable.ic_list_context_download,
-        title = R.string.list_context_create_download
-    ), ExplorerContextBlockOrder.Operation
-
     object Upload : ExplorerContextItem(
         icon = R.drawable.ic_list_action_upload,
         title = R.string.list_context_upload_to_portal
-    ), ExplorerContextBlockOrder.Operation
+    ), ExplorerContextBlockOrder.Common
 
     object Rename : ExplorerContextItem(
         icon = R.drawable.ic_list_context_rename,
         title = R.string.list_context_rename
-    ), ExplorerContextBlockOrder.Operation
+    ), ExplorerContextBlockOrder.Common
 
     object Archive : ExplorerContextItem(
         icon = R.drawable.ic_room_archive,
@@ -110,7 +128,7 @@ sealed class ExplorerContextItem(
     class Restore(isRoom: Boolean) : ExplorerContextItem(
         icon = R.drawable.ic_trash_restore,
         title = if (!isRoom) R.string.device_trash_files_restore else R.string.context_room_unarchive
-    ), ExplorerContextBlockOrder.Operation
+    ), ExplorerContextBlockOrder.Remove
 
     object ShareDelete : ExplorerContextItem(
         icon = R.drawable.drawable_ic_visibility_off,
@@ -118,17 +136,27 @@ sealed class ExplorerContextItem(
     ), ExplorerContextBlockOrder.Remove
 
     class Delete(state: ExplorerContextState) : ExplorerContextItem(
-        icon = R.drawable.ic_list_context_delete,
+        icon = getIcon(state),
         title = getTitle(state)
     ), ExplorerContextBlockOrder.Remove {
 
         companion object {
-            private fun getTitle(state: ExplorerContextState): Int =
+
+            private fun getIcon(state: ExplorerContextState): Int = with(state) {
                 when {
-                    state.isStorageFolder -> R.string.list_context_delete_storage
-                    state.section == ApiContract.Section.Recent -> R.string.list_context_delete_recent
+                    section.isRoom && !section.isArchive && isRoot -> R.drawable.ic_leave
+                    else -> R.drawable.ic_list_context_delete
+                }
+            }
+
+            private fun getTitle(state: ExplorerContextState): Int = with(state) {
+                when {
+                    isStorageFolder -> R.string.list_context_delete_storage
+                    section == ApiContract.Section.Recent -> R.string.list_context_delete_recent
+                    section.isRoom && !section.isArchive && isRoot -> R.string.list_context_leave_room
                     else -> R.string.list_context_delete
                 }
+            }
         }
     }
 

@@ -795,6 +795,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun editRoom() {
+
+    }
+
+    fun copyGeneralLink() {
+
+    }
+
     fun archiveSelectedRooms() {
         roomProvider?.let { provider ->
             disposable.add(

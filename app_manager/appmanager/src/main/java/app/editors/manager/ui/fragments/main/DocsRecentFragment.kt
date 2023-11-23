@@ -277,7 +277,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Edit -> presenter.fileClick()
+            is ExplorerContextItem.Edit -> presenter.fileClick()
             is ExplorerContextItem.Delete -> presenter.deleteRecent()
             else -> super.onContextButtonClick(contextItem)
         }

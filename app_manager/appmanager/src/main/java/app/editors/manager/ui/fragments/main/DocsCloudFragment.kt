@@ -1,7 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -186,13 +185,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Edit -> cloudPresenter.onEditContextClick()
             ExplorerContextItem.Share -> showShareActivity(cloudPresenter.itemClicked)
-            ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
             ExplorerContextItem.RoomInfo -> ShareActivity.show(this, cloudPresenter.itemClicked, true)
-            is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
-            is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             ExplorerContextItem.ShareDelete -> showQuestionDialog(
                 title = getString(R.string.dialogs_question_share_remove),
                 string = "${cloudPresenter.itemClicked?.title}",
@@ -201,6 +196,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 tag = DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE,
                 acceptErrorTint = true
             )
+            is ExplorerContextItem.Edit -> cloudPresenter.onEditContextClick()
+            is ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
+            is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
+            is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             else -> super.onContextButtonClick(contextItem)
         }
         contextBottomDialog?.dismiss()

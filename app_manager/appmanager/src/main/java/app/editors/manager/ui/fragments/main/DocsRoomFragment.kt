@@ -84,11 +84,10 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Edit -> {
-                //TODO edit room
-            }
             ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
             ExplorerContextItem.AddUsers -> ShareActivity.show(this, cloudPresenter.itemClicked, false)
+            is ExplorerContextItem.Edit -> cloudPresenter.editRoom()
+            is ExplorerContextItem.ExternalLink -> cloudPresenter.copyGeneralLink()
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
             else -> super.onContextButtonClick(contextItem)
         }
