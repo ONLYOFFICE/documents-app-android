@@ -120,6 +120,11 @@ sealed class ExplorerContextItem(
         title = R.string.list_context_rename
     ), ExplorerContextBlockOrder.Common
 
+    object CreateRoom : ExplorerContextItem(
+        icon = R.drawable.ic_create_room,
+        title = R.string.dialog_create_room
+    ), ExplorerContextBlockOrder.Common
+
     object Archive : ExplorerContextItem(
         icon = R.drawable.ic_room_archive,
         title = R.string.context_room_archive

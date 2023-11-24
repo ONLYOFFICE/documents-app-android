@@ -72,6 +72,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Share,
+                ExplorerContextItem.CreateRoom,
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.favorite),
                 ExplorerContextItem.Send,

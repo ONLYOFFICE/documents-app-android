@@ -187,6 +187,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         when (contextItem) {
             ExplorerContextItem.Share -> showShareActivity(cloudPresenter.itemClicked)
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
+            ExplorerContextItem.CreateRoom -> cloudPresenter.createRoomFromFolder()
             ExplorerContextItem.RoomInfo -> ShareActivity.show(this, cloudPresenter.itemClicked, true)
             ExplorerContextItem.ShareDelete -> showQuestionDialog(
                 title = getString(R.string.dialogs_question_share_remove),

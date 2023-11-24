@@ -2,6 +2,7 @@ package app.editors.manager.ui.dialogs.explorer
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import lib.toolkit.base.managers.utils.StringUtils
 
 
@@ -21,6 +22,7 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.Share -> share
             ExplorerContextItem.ShareDelete -> shareDelete
             ExplorerContextItem.Upload -> upload
+            ExplorerContextItem.CreateRoom -> createRoom
             is ExplorerContextItem.Edit -> edit
             is ExplorerContextItem.ExternalLink -> externalLink
             is ExplorerContextItem.Restore -> restore
@@ -112,6 +114,9 @@ interface ExplorerContextItemVisible {
             is ApiContract.Section.Room -> isRoot || item.security.delete
             else -> true
         }
+
+    private val ExplorerContextState.createRoom: Boolean
+        get() = item is CloudFolder && item.security.create
 
     private val ExplorerContextState.location: Boolean
         get() = isSearching

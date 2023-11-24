@@ -863,6 +863,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun createRoomFromFolder() {
+
+    }
+
     fun deleteRoom() {
         if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
             val ids = modelExplorerStack.selectedFolders.map {
