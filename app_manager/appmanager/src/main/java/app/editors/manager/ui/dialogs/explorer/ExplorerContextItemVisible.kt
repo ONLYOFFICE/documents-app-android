@@ -56,7 +56,7 @@ interface ExplorerContextItemVisible {
                 ApiContract.Section.Room.Archive -> false
                 else -> access != ApiContract.Access.Read || item.security.editAccess
             }
-        } else item.security.editRoom
+        } else section.isRoom && isRoot && item.security.editRoom
 
     private val ExplorerContextState.move: Boolean
         get() = if (!section.isRoom) {
