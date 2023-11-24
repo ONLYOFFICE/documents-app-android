@@ -48,8 +48,6 @@ open class CloudFolder : Item(), Serializable {
     @Expose
     val logo: CloudFolderLogo? = null
 
-    var etag: String? = ""
-
     fun setFolder(folder: CloudFolder) {
         setItem(folder)
         parentId = folder.parentId

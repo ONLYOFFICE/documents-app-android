@@ -67,6 +67,11 @@ open class Item : ItemProperties(), Serializable {
     @SerializedName("canEdit")
     @Expose
     var isCanEdit = false
+
+    @SerializedName("etag")
+    @Expose
+    var etag = ""
+
     val intAccess: Int
         get() {
             val access = access

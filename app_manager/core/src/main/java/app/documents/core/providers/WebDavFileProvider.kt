@@ -497,6 +497,7 @@ class WebDavFileProvider @Inject constructor(
                 file.fileExst = getExtensionFromPath(file.title.lowercase())
                 file.created = bean.lastModifiedDate
                 file.updated = bean.lastModifiedDate
+                file.etag = bean.etag
                 if (filteringValue != null) {
                     if (file.title.contains(filteringValue, true)) {
                         files.add(file)
