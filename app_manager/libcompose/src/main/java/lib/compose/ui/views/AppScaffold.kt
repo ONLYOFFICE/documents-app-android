@@ -21,15 +21,20 @@ import lib.compose.ui.theme.LocalUseTabletPadding
 fun AppScaffold(
     modifier: Modifier = Modifier,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
+    useTablePaddings: Boolean = true,
     topBar: @Composable () -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ) {
-    Scaffold(modifier = modifier, topBar = topBar, scaffoldState = scaffoldState, snackbarHost = { scaffoldState.snackbarHostState }) { padding ->
+    Scaffold(
+        modifier = modifier,
+        topBar = topBar,
+        scaffoldState = scaffoldState,
+        snackbarHost = { scaffoldState.snackbarHostState }) { padding ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .addIf(LocalUseTabletPadding.current) {
+                .addIf(LocalUseTabletPadding.current && useTablePaddings) {
                     val tabletPadding = dimensionResource(id = lib.toolkit.base.R.dimen.screen_left_right_padding)
                     padding(horizontal = tabletPadding)
                 },
