@@ -110,6 +110,13 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @DELETE("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/tags")
+    suspend fun deleteTagsFromRoom(@Path("id") id: String, @Body body: RequestAddTags): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @DELETE("api/" + ApiContract.API_VERSION + "/files/tags")
     suspend fun deleteTags(@Body body: RequestAddTags): Response<BaseResponse>
 
