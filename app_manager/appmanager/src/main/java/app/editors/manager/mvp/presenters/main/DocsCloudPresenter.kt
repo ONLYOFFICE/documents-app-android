@@ -278,8 +278,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     } else {
                         viewState.onStateActionButton(isContextEditable)
                     }
-//                    TODO from room
-//                    viewState.onStateActionButton(isContextEditable || modelExplorerStack.last()?.current?.security?.create == true)
                 }
             }
             viewState.onStateAdapterRoot(true)
@@ -843,19 +841,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 it.renameRoom(itemClicked?.id ?: "", newTitle).subscribe({
                     viewState.onSnackBar("Done")
 //                    refresh()
-                }) { throwable: Throwable ->
-                    fetchError(throwable)
-                }
-            )
-        }
-    }
-
-    fun createRoom(title: String, roomType: Int) {
-        roomProvider?.let {
-            disposable.add(
-                it.createRoom(title, roomType).subscribe({ cloudFolder ->
-                    viewState.onDialogClose()
-                    addFolder(cloudFolder)
                 }) { throwable: Throwable ->
                     fetchError(throwable)
                 }
