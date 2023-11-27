@@ -393,9 +393,14 @@ class CloudFileProvider @Inject constructor(
         }
             .flatMap { managerService.openFile(cloudFile.id, cloudFile.version) }
             .map { response ->
-                val docService =
-                    JSONObject(managerService.getDocService().blockingGet().body()?.string()).getString(KEY_RESPONSE)
+                val json = JSONObject(managerService.getDocService().blockingGet().body()?.string())
+                val docService = if (json.optJSONObject(KEY_RESPONSE) != null) {
+                    json.getJSONObject(KEY_RESPONSE).getString("docServiceUrlApi")
                         .replace(STATIC_DOC_URL, "")
+                } else {
+                    json.getString(KEY_RESPONSE)
+                        .replace(STATIC_DOC_URL, "")
+                }
                 return@map JSONObject(response.body()?.string()).getJSONObject(KEY_RESPONSE).put(KEY_URL, docService)
             }
             .subscribeOn(Schedulers.io())
