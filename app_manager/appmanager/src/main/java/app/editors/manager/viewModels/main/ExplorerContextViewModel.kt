@@ -27,30 +27,29 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section == ApiContract.Section.Recent -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Edit,
+                ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Delete(state)
             )
 
-            state.section is ApiContract.Section.Room && state.isRoot -> listOf(
+            state.section.isRoom && state.isRoot -> listOf(
                 ExplorerContextItem.Header(
                     state = state,
                     logo = if (state.item is CloudFolder) state.item.logo?.large.takeIf { !it.isNullOrEmpty() } else null
                 ),
                 ExplorerContextItem.RoomInfo,
                 ExplorerContextItem.Pin(state.pinned),
-                ExplorerContextItem.Edit,
-                ExplorerContextItem.Share,
+                ExplorerContextItem.Edit(state),
                 ExplorerContextItem.AddUsers,
-                ExplorerContextItem.Rename,
-                ExplorerContextItem.Archive,
+                ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Download,
+                ExplorerContextItem.Archive,
                 ExplorerContextItem.Restore(true),
                 ExplorerContextItem.Delete(state)
             )
 
             state.section is ApiContract.Section.Storage -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Edit,
+                ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
@@ -60,7 +59,7 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section is ApiContract.Section.Device -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Edit,
+                ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
@@ -71,9 +70,10 @@ class ExplorerContextViewModel : ViewModel() {
 
             else -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Edit,
+                ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Share,
-                ExplorerContextItem.ExternalLink,
+                ExplorerContextItem.CreateRoom,
+                ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.favorite),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Location,
