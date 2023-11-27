@@ -5,6 +5,7 @@ data class ExternalLinkSharedTo(
     val title: String,
     val shareLink: String,
     val linkType: Int,
+    val password: String?,
     val denyDownload: Boolean,
     val isExpired: Boolean,
     val primary: Boolean,

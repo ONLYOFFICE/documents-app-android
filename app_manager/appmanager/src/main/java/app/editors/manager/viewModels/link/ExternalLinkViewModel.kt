@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.Share
 import app.documents.core.providers.RoomProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,8 +13,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class ExternalLinkState(
+    val roomTitle: String = "",
+    val roomType: String = "",
     val generalLink: ExternalLink? = null,
-    val additionalLinks: List<ExternalLink> = listOf()
+    val additionalLinks: List<ExternalLink> = emptyList(),
+    val shareList: List<Share> = emptyList()
 )
 
 class ExternalLinkViewModelFactory(private val roomProvider: RoomProvider) : ViewModelProvider.Factory {

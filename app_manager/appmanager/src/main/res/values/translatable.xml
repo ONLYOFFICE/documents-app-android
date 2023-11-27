@@ -711,6 +711,14 @@
     <string name="room_name_hint">Enter room name</string>
     <string name="rooms_error_name">Room name cannot be empty</string>
 
+    <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
+    <string name="rooms_info_general_link">General link</string>
+    <string name="rooms_info_additional_links">Additional links (%1d/%2d)</string>
+    <string name="rooms_info_create_link">Create and copy</string>
+    <string name="rooms_info_admin_title">Administration (%1d)</string>
+    <string name="rooms_info_users_title">Users (%1d)</string>
+    <string name="rooms_info_expected_title">Expected users (%1d)</string>
+
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>
     <string name="rooms_filter_type_review">Review</string>
@@ -722,6 +730,7 @@
     <string name="dialog_create_room">Create room</string>
     <string name="dialog_create_room_value">New room</string>
     <string name="invite_by_email">Invite users by email</string>
+    <string name="share_access_room_owner">Owner</string>
     <string name="share_access_room_admin">Room admin</string>
     <string name="share_access_room_power_user">Power user</string>
     <string name="share_access_room_editor">Editor</string>
