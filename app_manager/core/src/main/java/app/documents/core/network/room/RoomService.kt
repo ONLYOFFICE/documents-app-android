@@ -3,8 +3,9 @@ package app.documents.core.network.room
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
-import app.documents.core.network.room.models.*
 import app.documents.core.network.manager.models.response.ResponseExplorer
+import app.documents.core.network.room.models.*
+import app.documents.core.network.share.models.response.ResponseExternalLink
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.http.*
@@ -77,5 +78,14 @@ interface RoomService {
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links/send")
     fun sendLink(@Path("id") id: String, @Body body: RequestSendLinks): Observable<Response<BaseResponse>>
+
+
+    //https://testtestdocpace1.onlyoffice.io/api/2.0/files/rooms/21500/share?filterType=2
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id]/share?filterType=2")
+    suspend fun getExternalLinks(@Path("id") id: String): Response<ResponseExternalLink>
 
 }

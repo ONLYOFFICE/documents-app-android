@@ -2,14 +2,16 @@ package app.documents.core.providers
 
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.room.RoomService
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestRenameRoom
-import app.documents.core.network.room.RoomService
+import app.documents.core.network.share.models.ExternalLink
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class RoomProvider @Inject constructor(private val roomService: RoomService) {
@@ -82,6 +84,12 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             Observable.empty()
         }
 
+    }
+
+    suspend fun getExternalLinks(id: String): List<ExternalLink> {
+        val response = roomService.getExternalLinks(id)
+        val body = response.body()
+        return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
     }
 
 }
