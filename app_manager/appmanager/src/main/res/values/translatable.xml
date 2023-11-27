@@ -713,6 +713,7 @@
     <string name="rooms_choose_room">Choose room type</string>
     <string name="room_name_hint">Enter room name</string>
     <string name="rooms_error_name">Room name cannot be empty</string>
+    <string name="rooms_error_create">Error create room</string>
 
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>

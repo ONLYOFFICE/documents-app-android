@@ -9,10 +9,12 @@ import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.AddRoomFragment
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
+import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.setFragmentResultListener
 
 class DocsRoomFragment : DocsCloudFragment() {
 
@@ -20,26 +22,13 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
         if (isRoom) {
-            AddRoomBottomDialog().apply {
-                onClickListener = object : AddRoomBottomDialog.OnClickListener {
-                    override fun onActionButtonClick(roomType: Int) {
-                        requireActivity().supportFragmentManager.setFragmentResultListener(
-                            AddRoomFragment.TAG_RESULT,
-                            this@DocsRoomFragment
-                        ) { _, _ ->
-                            onRefresh()
-                        }
-                        AddRoomFragment.show(requireActivity().supportFragmentManager, roomType)
-                    }
-
-                    override fun onActionDialogClose() {
-                        this@DocsRoomFragment.onActionDialogClose()
-                    }
-
+            setFragmentResultListener { bundle ->
+                if (bundle?.getInt("type") != -1) {
+                    showAddRoomFragment(bundle?.getInt("type") ?: 2)
                 }
-            }.show(parentFragmentManager, AddRoomBottomDialog.TAG)
-        } else {
-            super.onActionDialog(isThirdParty, isDocs)
+                onActionDialogClose()
+            }
+            AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
         }
     }
 
@@ -99,6 +88,21 @@ class DocsRoomFragment : DocsCloudFragment() {
             val filter = presenter.preferenceTool.filter
             filter.roomType != RoomFilterType.None || filter.author.id.isNotEmpty()
         } else super.getFilters()
+    }
+
+    private fun showAddRoomFragment(type: Int) {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            AddRoomFragment.TAG_RESULT,
+            this@DocsRoomFragment
+        ) { _, args ->
+            cloudPresenter.getItemsById(args.getString("id"))
+        }
+        if (isTablet) {
+            AddRoomDialog.newInstance(type)
+                .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
+        } else {
+            AddRoomFragment.show(requireActivity().supportFragmentManager, type)
+        }
     }
 
     companion object {
