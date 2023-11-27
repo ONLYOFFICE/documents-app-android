@@ -1,5 +1,6 @@
 package lib.toolkit.base.managers.utils
 
+import android.os.Bundle
 import androidx.annotation.AnimRes
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
@@ -96,6 +97,13 @@ object FragmentUtils {
         }.remove(fragment).commit()
     }
 
+}
+
+fun Fragment.setFragmentResultListener(block: (args: Bundle?) -> Unit) {
+    parentFragmentManager.setFragmentResultListener("result", this) { _, bundle ->
+        block(bundle)
+        parentFragmentManager.clearFragmentResultListener("result")
+    }
 }
 
 fun <T : Fragment> T.putArgs(vararg pairs: Pair<String, Any?>): T {

@@ -10,5 +10,10 @@ data class RequestBatchOperation(
 
     @SerializedName("conflictResolveType")
     @Expose
-    var conflictResolveType: Int = 0
+    var conflictResolveType: Int = 2,
+
+    @SerializedName("content")
+    @Expose
+    var content: Boolean = true,
+
 ) : RequestBatchBase()
