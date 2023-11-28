@@ -17,9 +17,9 @@ data class Explorer(
     @Expose
     var current: Current = Current(),
 
-    @SerializedName("pathParts")
-    @Expose
-    var pathParts: List<String> = ArrayList(),
+//    @SerializedName("pathParts")
+//    @Expose
+//    var pathParts: List<String> = ArrayList(),
 
     @SerializedName("startIndex")
     @Expose
