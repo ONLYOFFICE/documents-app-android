@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.runtime.Immutable
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -79,7 +81,7 @@ class AddRoomViewModel(
                     name = roomInfo.title,
                     tags = roomInfo.tags.map { ChipData(it ?: "") }.toMutableList(),
                     roomImage = loadImage(),
-                    imageUri = Uri.parse(roomInfo.logo?.medium)
+                    imageUri = roomInfo.logo?.medium?.let { Uri.parse(it) }
                 )
             )
         } else {
@@ -157,7 +159,7 @@ class AddRoomViewModel(
                 }
             }.await()
         } catch (error: Throwable) {
-            return BitmapFactory.decodeResource(context.resources, R.drawable.ic_empty_image)
+            return checkNotNull(ContextCompat.getDrawable(context, R.drawable.ic_empty_image)).toBitmap()
         }
     }
 
@@ -176,7 +178,7 @@ class AddRoomViewModel(
                     val id = roomProvider.createRoom(
                         title = name,
                         type = roomType,
-                        logo = if (image != null) loadImage(image) else null,
+                        logo = if (image != null && image.toString().isNotEmpty()) loadImage(image) else null,
                         tags = tags.map { it.text })
 
                     while (checkCopy(id)) {
@@ -209,9 +211,7 @@ class AddRoomViewModel(
         }).blockingFirst().body()?.response?.get(0)
         while (true) {
             val op = context.api.status().blockingGet().response.find { it.id == operation?.id } ?: break
-            if (op.progress == 100 || op.finished) {
-                break
-            }
+            if (op.progress == 100 || op.finished) break
             delay(100)
         }
         return false
@@ -250,6 +250,37 @@ class AddRoomViewModel(
                     // Need delay to short snackbar
                     delay(4000)
                     _viewState.value = ViewState.None
+                }
+            }
+        }
+    }
+
+    fun edit(name: String, tags: List<ChipData>) {
+        viewModelScope.launch {
+            if (name.isEmpty()) {
+                _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_name))
+                delay(4000)
+                _viewState.value = ViewState.None
+                return@launch
+            }
+            _viewState.value = ViewState.Loading
+            withContext(Dispatchers.IO) {
+                try {
+                    val isSuccess = roomProvider.renameRoom(roomInfo?.id ?: "", name)
+
+                    withContext(Dispatchers.Main) {
+                        if (isSuccess) {
+                            _viewState.value = ViewState.Success(roomInfo?.id ?: "")
+                        } else {
+                            _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_edit))
+                        }
+                    }
+                } catch (error: Throwable) {
+                    withContext(Dispatchers.Main) {
+                        _viewState.value = ViewState.Error(error.message.toString())
+                        delay(4000)
+                        _viewState.value = ViewState.None
+                    }
                 }
             }
         }

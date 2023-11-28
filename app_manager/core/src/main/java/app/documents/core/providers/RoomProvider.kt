@@ -51,11 +51,8 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     }
 
-    fun renameRoom(id: String, newTitle: String): Observable<BaseResponse> {
-        return roomService.renameRoom(id, RequestRenameRoom(newTitle))
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { it.body() }
+    suspend fun renameRoom(id: String, newTitle: String): Boolean {
+        return roomService.renameRoom(id, RequestRenameRoom(title = newTitle)).isSuccessful
     }
 
     suspend fun createRoom(title: String, type: Int, tags: List<String>?, logo: Bitmap?): String {

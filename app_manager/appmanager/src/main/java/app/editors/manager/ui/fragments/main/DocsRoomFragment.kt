@@ -7,9 +7,7 @@ import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
-import app.editors.manager.ui.dialogs.AddRoomFragment
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
-import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
@@ -90,20 +88,6 @@ class DocsRoomFragment : DocsCloudFragment() {
         } else super.getFilters()
     }
 
-    private fun showAddRoomFragment(type: Int) {
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            AddRoomFragment.TAG_RESULT,
-            this@DocsRoomFragment
-        ) { _, args ->
-            cloudPresenter.getItemsById(args.getString("id"))
-        }
-        if (isTablet) {
-            AddRoomDialog.newInstance(type)
-                .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
-        } else {
-            AddRoomFragment.show(requireActivity().supportFragmentManager, type)
-        }
-    }
 
     companion object {
 

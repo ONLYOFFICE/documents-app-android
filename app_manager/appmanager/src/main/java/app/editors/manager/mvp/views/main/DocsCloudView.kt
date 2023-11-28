@@ -2,6 +2,7 @@ package app.editors.manager.mvp.views.main
 
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
@@ -26,4 +27,7 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onConversionProgress(progress: Int, extension: String? = null)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onCreateRoom(type: Int = 2, cloudFolder: CloudFolder, isCopy: Boolean = false)
 }

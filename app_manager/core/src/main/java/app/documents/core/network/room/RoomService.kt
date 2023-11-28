@@ -65,7 +65,7 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}")
-    fun renameRoom(@Path(value = "id") id: String, @Body body: RequestRenameRoom): Observable<Response<BaseResponse>>
+    suspend fun renameRoom(@Path(value = "id") id: String, @Body body: RequestRenameRoom): Response<BaseResponse>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

@@ -794,7 +794,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun editRoom() {
-
+        if (itemClicked is CloudFolder && (itemClicked as CloudFolder).isRoom) {
+            viewState.onCreateRoom((itemClicked as CloudFolder).roomType, itemClicked as CloudFolder)
+        }
     }
 
     fun copyGeneralLink() {
@@ -835,21 +837,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun renameRoom(newTitle: String) {
-        roomProvider?.let {
-            disposable.add(
-                it.renameRoom(itemClicked?.id ?: "", newTitle).subscribe({
-                    viewState.onSnackBar("Done")
-//                    refresh()
-                }) { throwable: Throwable ->
-                    fetchError(throwable)
-                }
-            )
-        }
-    }
-
     fun createRoomFromFolder() {
-
+        if (itemClicked is CloudFolder) {
+            viewState.onCreateRoom(cloudFolder = itemClicked as CloudFolder, isCopy = true)
+        }
     }
 
     fun deleteRoom() {

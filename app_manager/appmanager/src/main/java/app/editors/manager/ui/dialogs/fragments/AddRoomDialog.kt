@@ -5,7 +5,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.editors.manager.ui.dialogs.AddRoomFragment
+import app.editors.manager.ui.fragments.main.AddRoomFragment
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 

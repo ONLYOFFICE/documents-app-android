@@ -1,4 +1,4 @@
-package app.editors.manager.ui.dialogs
+package app.editors.manager.ui.fragments.main
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -77,6 +77,7 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.ui.dialogs.AddRoomItem
 import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.viewModels.main.AddRoomData
 import app.editors.manager.viewModels.main.AddRoomViewModel
@@ -138,7 +139,7 @@ class AddRoomFragment : BaseFragment() {
     private lateinit var navController: NavHostController
 
     private val isEdit: Boolean
-        get() = arguments?.getSerializableExt<CloudFolder>(TAG_ROOM_INFO) != null
+        get() = arguments?.getSerializableExt<CloudFolder>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
 
     private val createFromFolder: Boolean
         get() = arguments?.getBoolean(TAG_COPY) ?: false
@@ -203,7 +204,11 @@ class AddRoomFragment : BaseFragment() {
                                 viewModel.saveData(name, tags)
                             },
                             create = { type1, name, image, tags ->
-                                viewModel.createRoom(type1, name, image, tags)
+                                if (isEdit) {
+                                    viewModel.edit(name, tags)
+                                } else {
+                                    viewModel.createRoom(type1, name, image, tags)
+                                }
                             },
                             imageCallBack = { imageUri ->
                                 viewModel.setImageUri(imageUri)
@@ -299,7 +304,7 @@ private fun MainScreen(
         AppScaffold(topBar = {
             AppTopBar(
                 backListener = onBackPressed,
-                title = if (isEdit) "Edit room" else stringResource(id = R.string.dialog_create_room),
+                title = if (isEdit) stringResource(id = R.string.list_context_edit_room) else stringResource(id = R.string.dialog_create_room),
                 isClose = true,
                 actions = {
                     TextButton(onClick = { onBackPressed() }) {
