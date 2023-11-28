@@ -7,6 +7,9 @@ import app.documents.core.network.manager.models.response.ResponseExplorer
 import app.documents.core.network.room.models.*
 import app.documents.core.network.share.models.response.ResponseExternalLink
 import io.reactivex.Observable
+import io.reactivex.Single
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -34,7 +37,7 @@ interface RoomService {
     fun unarchive(@Path(value = "id") id: String, @Body body: RequestArchive): Observable<Response<BaseResponse>>
 
     @Headers(
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @HTTP(
@@ -70,7 +73,7 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/files/rooms")
-    fun createRoom(@Body body: RequestCreateRoom): Observable<ResponseCreateFolder>
+    suspend fun createRoom(@Body body: RequestCreateRoom): Response<ResponseCreateFolder>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -79,8 +82,65 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links/send")
     fun sendLink(@Path("id") id: String, @Body body: RequestSendLinks): Observable<Response<BaseResponse>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/tags")
+    suspend fun getTags(@QueryMap options: Map<String, String>? = mapOf(
+        "filterValue" to "",
+        "startIndex" to "",
+        "count" to ""
+    )): ResponseTags
 
-    //https://testtestdocpace1.onlyoffice.io/api/2.0/files/rooms/21500/share?filterType=2
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/files/tags")
+    suspend fun createTag(@Body body: RequestCreateTag): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/tags")
+    suspend fun addTags(@Path("id") id: String, @Body body: RequestAddTags): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @DELETE("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/tags")
+    suspend fun deleteTagsFromRoom(@Path("id") id: String, @Body body: RequestAddTags): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @DELETE("api/" + ApiContract.API_VERSION + "/files/tags")
+    suspend fun deleteTags(@Body body: RequestAddTags): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/logo")
+    fun setLogo(@Path("id") id: String, @Body body: RequestSetLogo): Single<Response<BaseResponse>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @DELETE("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/logo")
+    suspend fun deleteLogo(@Path("id") id: String): Response<ResponseBody>
+
+    @Multipart
+    @POST("api/" + ApiContract.API_VERSION + "/files/logos")
+    suspend fun uploadLogo(
+        @Part part: MultipartBody.Part
+    ): Response<ResponseUploadLogo>
+
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT

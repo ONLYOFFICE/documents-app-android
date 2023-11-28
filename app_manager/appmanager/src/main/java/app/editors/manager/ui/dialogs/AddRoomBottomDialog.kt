@@ -24,37 +24,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.setFragmentResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
+import lib.compose.ui.addIf
 import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 
 class AddRoomBottomDialog : BaseBottomDialog() {
 
-    interface OnClickListener {
-        fun onActionButtonClick(roomType: Int)
-        fun onActionDialogClose()
-    }
-
     companion object {
         val TAG: String = AddRoomBottomDialog::class.java.simpleName
     }
 
-    var onClickListener: OnClickListener? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.Theme_Common_BottomSheetDialog)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        onClickListener = null
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-        onClickListener?.onActionDialogClose()
     }
 
     @SuppressLint("RestrictedApi")
@@ -63,18 +48,22 @@ class AddRoomBottomDialog : BaseBottomDialog() {
         init(dialog)
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        setFragmentResult("result", Bundle(1).apply { putInt("type", -1) })
+    }
+
     private fun init(dialog: Dialog) {
         dialog.setContentView(ComposeView(requireContext()).apply {
             setContent {
                 ManagerTheme {
                     Surface(shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)) {
                         AddRoomBottomDialogContent { type ->
-                            onClickListener?.onActionButtonClick(type)
+                            setFragmentResult("result", Bundle(1).apply { putInt("type", type) })
                             dismiss()
                         }
                     }
                 }
-
             }
         })
         dialog.setCanceledOnTouchOutside(true)
@@ -130,12 +119,15 @@ fun AddRoomItem(
     @StringRes title: Int,
     @StringRes description: Int,
     isSelect: Boolean? = null,
+    isClickable: Boolean = true,
     itemClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .wrapContentHeight()
-            .clickable { itemClick() }
+            .addIf(isClickable) {
+                clickable { itemClick() }
+            }
     ) {
         Row(
             Modifier
@@ -175,17 +167,21 @@ fun AddRoomItem(
                             .weight(0.1f)
                     )
                 } else {
-                    Spacer(modifier = Modifier.align(Alignment.CenterVertically).weight(0.1f))
+                    Spacer(modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(0.1f))
                 }
             } else {
-                Icon(
-                    imageVector =
-                    ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_arrow_right),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .weight(0.1f)
-                )
+                if (isClickable) {
+                    Icon(
+                        imageVector =
+                        ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_arrow_right),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .weight(0.1f)
+                    )
+                }
             }
         }
 

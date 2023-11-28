@@ -8,6 +8,7 @@ import app.editors.manager.R
 
 
 data class RoomInfo(@DrawableRes val icon: Int, @StringRes val title: Int, @StringRes val description: Int)
+
 object RoomUtils {
 
     fun getRoomInfo(type: Int): RoomInfo {
@@ -16,7 +17,7 @@ object RoomUtils {
             6 -> R.drawable.ic_public_room
             5 -> R.drawable.ic_custom_room
             else -> {
-                -1
+                R.drawable.ic_collaboration_room
             }
         }
         val title = when (type) {
@@ -24,7 +25,7 @@ object RoomUtils {
             6 -> R.string.rooms_add_public_room
             5 -> R.string.rooms_add_custom
             else -> {
-                -1
+                R.string.rooms_add_collaboration
             }
         }
         val des = when (type) {
@@ -32,7 +33,7 @@ object RoomUtils {
             6 -> R.string.rooms_add_public_room_des
             5 -> R.string.rooms_add_custom_des
             else -> {
-                -1
+                R.string.rooms_add_collaboration_des
             }
         }
         return RoomInfo(icon, title, des)

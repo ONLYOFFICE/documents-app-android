@@ -340,7 +340,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Edit -> presenter.getFileInfo()
             ExplorerContextItem.Move -> presenter.moveCopyOperation(OperationsState.OperationType.MOVE)
             ExplorerContextItem.Copy -> presenter.moveCopyOperation(OperationsState.OperationType.COPY)
             ExplorerContextItem.Send -> presenter.sendCopy()
@@ -354,6 +353,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 cancelButton = getString(R.string.dialogs_common_cancel_button),
                 suffix = presenter.itemExtension
             )
+            is ExplorerContextItem.Edit -> presenter.getFileInfo()
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             else -> {}
         }

@@ -2,6 +2,7 @@ package app.editors.manager.ui.dialogs.explorer
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import lib.toolkit.base.managers.utils.StringUtils
 
 
@@ -13,8 +14,6 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.Archive -> archive
             ExplorerContextItem.Copy -> copy
             ExplorerContextItem.Download -> download
-            ExplorerContextItem.Edit -> edit
-            ExplorerContextItem.ExternalLink -> externalLink
             ExplorerContextItem.Location -> location
             ExplorerContextItem.Move -> move
             ExplorerContextItem.Rename -> rename
@@ -23,6 +22,9 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.Share -> share
             ExplorerContextItem.ShareDelete -> shareDelete
             ExplorerContextItem.Upload -> upload
+            ExplorerContextItem.CreateRoom -> createRoom
+            is ExplorerContextItem.Edit -> edit
+            is ExplorerContextItem.ExternalLink -> externalLink
             is ExplorerContextItem.Restore -> restore
             is ExplorerContextItem.Header -> true
             is ExplorerContextItem.Pin -> pin
@@ -50,10 +52,11 @@ interface ExplorerContextItemVisible {
                 ApiContract.Section.User,
                 ApiContract.Section.Device -> true
 
-                ApiContract.Section.Trash -> false
+                ApiContract.Section.Trash,
+                ApiContract.Section.Room.Archive -> false
                 else -> access != ApiContract.Access.Read || item.security.editAccess
             }
-        } else false
+        } else section.isRoom && isRoot && item.security.editRoom
 
     private val ExplorerContextState.move: Boolean
         get() = if (!section.isRoom) {
@@ -64,7 +67,10 @@ interface ExplorerContextItemVisible {
         } else item.security.move
 
     private val ExplorerContextState.externalLink: Boolean
-        get() = isShareVisible(access, section) && !isFolder
+        get() = when (section) {
+            is ApiContract.Section.Room -> true
+            else -> isShareVisible(access, section) && !isFolder
+        }
 
     private val ExplorerContextState.rename: Boolean
         get() = if (!section.isRoom) {
@@ -100,16 +106,17 @@ interface ExplorerContextItemVisible {
         get() = item.security.pin
 
     private val ExplorerContextState.delete: Boolean
-        get() = if (!section.isRoom) {
-            when (section) {
-                ApiContract.Section.Share,
-                ApiContract.Section.Favorites,
-                ApiContract.Section.Projects -> false
+        get() = when (section) {
+            ApiContract.Section.Share,
+            ApiContract.Section.Favorites,
+            ApiContract.Section.Projects -> false
 
-                is ApiContract.Section.Room -> section == ApiContract.Section.Room.Archive
-                else -> true
-            }
-        } else item.security.delete
+            is ApiContract.Section.Room -> isRoot || item.security.delete
+            else -> true
+        }
+
+    private val ExplorerContextState.createRoom: Boolean
+        get() = item is CloudFolder && item.security.create
 
     private val ExplorerContextState.location: Boolean
         get() = isSearching

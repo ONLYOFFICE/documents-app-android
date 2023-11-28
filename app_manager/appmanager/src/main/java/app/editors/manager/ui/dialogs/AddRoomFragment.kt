@@ -51,8 +51,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -72,9 +73,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.viewModels.main.AddRoomData
 import app.editors.manager.viewModels.main.AddRoomViewModel
 import app.editors.manager.viewModels.main.AddRoomViewModelFactory
@@ -82,7 +85,6 @@ import app.editors.manager.viewModels.main.ViewState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.theme.colorTopAppBar
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextField
@@ -94,6 +96,7 @@ import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 import lib.toolkit.base.ui.fragments.base.BaseFragment
 import java.io.File
@@ -106,28 +109,47 @@ class AddRoomFragment : BaseFragment() {
 
     companion object {
 
-        private const val TAG_ROOM_INFO = "room_info"
+        const val TAG_ROOM_TYPE = "room_type"
+        const val TAG_ROOM_INFO = "room_info"
+        const val TAG_COPY = "files_copy"
         const val TAG_RESULT = "add_room_result"
 
         val TAG: String = AddRoomFragment::class.java.simpleName
-        fun newInstance(roomType: Int) = AddRoomFragment().putArgs(TAG_ROOM_INFO to roomType)
 
-        fun show(fragmentManager: FragmentManager, roomType: Int) {
+        fun newInstance(roomType: Int, room: CloudFolder?, isCopy: Boolean = false) =
+            AddRoomFragment().putArgs(TAG_ROOM_TYPE to roomType, TAG_ROOM_INFO to room, TAG_COPY to isCopy)
+
+        fun show(
+            fragmentManager: FragmentManager,
+            roomType: Int,
+            roomInfo: CloudFolder? = null,
+            isCopy: Boolean = false
+        ) {
             FragmentUtils.showFragment(
                 fragmentManager = fragmentManager,
-                fragment = newInstance(roomType),
+                fragment = newInstance(roomType, roomInfo, isCopy),
                 frameId = android.R.id.content,
-                tag = TAG, isAdd = true
+                tag = TAG,
+                isAdd = true
             )
         }
     }
 
     private lateinit var navController: NavHostController
 
+    private val isEdit: Boolean
+        get() = arguments?.getSerializableExt<CloudFolder>(TAG_ROOM_INFO) != null
+
+    private val createFromFolder: Boolean
+        get() = arguments?.getBoolean(TAG_COPY) ?: false
+
     override fun onBackPressed(): Boolean {
         if (!navController.popBackStack()) {
-            setFragmentResult(TAG_RESULT, Bundle())
-            FragmentUtils.removeFragment(parentFragmentManager, this)
+            if (parentFragment is AddRoomDialog) {
+                (parentFragment as AddRoomDialog).dismiss()
+            } else {
+                FragmentUtils.removeFragment(parentFragmentManager, this)
+            }
         }
         return true
     }
@@ -149,14 +171,16 @@ class AddRoomFragment : BaseFragment() {
             navController = rememberNavController()
 
             val roomType = remember {
-                arguments?.getInt(TAG_ROOM_INFO)
+                arguments?.getInt(TAG_ROOM_TYPE)
             }
 
             val viewModel =
                 viewModel<AddRoomViewModel>(
                     factory = AddRoomViewModelFactory(
                         application = requireActivity().application,
-                        roomProvider = requireContext().roomProvider
+                        roomProvider = requireContext().roomProvider,
+                        roomInfo = arguments?.getSerializableExt(TAG_ROOM_INFO),
+                        isCopy = arguments?.getBoolean(TAG_COPY) ?: false
                     )
                 )
             val roomState = viewModel.roomState.collectAsState()
@@ -170,13 +194,31 @@ class AddRoomFragment : BaseFragment() {
                     ) {
                         val type = it.arguments?.getInt("roomType", roomType ?: -1) ?: -1
                         viewModel.setType(type)
-                        MainScreen(navController, viewState.value, roomState.value, { name, tags ->
-                            viewModel.saveData(name, tags)
-                        }, { type1, name, image, tags ->
-                            viewModel.createRoom(type1, name, image, tags)
-                        }, { imageUri ->
-                            viewModel.setImageUri(imageUri)
-                        }, ::onBackPressed)
+                        MainScreen(
+                            isEdit = isEdit,
+                            navController = navController,
+                            viewState = viewState.value,
+                            roomState = roomState.value,
+                            saveData = { name, tags ->
+                                viewModel.saveData(name, tags)
+                            },
+                            create = { type1, name, image, tags ->
+                                viewModel.createRoom(type1, name, image, tags)
+                            },
+                            imageCallBack = { imageUri ->
+                                viewModel.setImageUri(imageUri)
+                            },
+                            onBackPressed = ::onBackPressed,
+                            created = { id ->
+                                setFragmentResult(TAG_RESULT, Bundle(1).apply { putString("id", id) })
+                                onBackPressed()
+                            },
+                            createTag = { tag ->
+                                viewModel.createTag(tag)
+                            },
+                            deleteTag = { tag ->
+                                viewModel.deleteTag(tag)
+                            })
                     }
                     composable(
                         "${Navigation.Select.route}/{roomType}",
@@ -190,21 +232,25 @@ class AddRoomFragment : BaseFragment() {
             }
         }
     }
-
-
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MainScreen(
+    isEdit: Boolean,
     navController: NavHostController,
     viewState: ViewState,
     roomState: AddRoomData,
-    saveData: (String, List<ChipData>) -> Unit = {  _, _ -> },
+    saveData: (String, List<ChipData>) -> Unit = { _, _ -> },
     create: (Int, String, Uri?, List<ChipData>) -> Unit = { _, _, _, _ -> },
     imageCallBack: (uri: Uri?) -> Unit = {},
-    onBackPressed: () -> Unit = {}
+    onBackPressed: () -> Unit = {},
+    created: (String) -> Unit = {},
+    createTag: (ChipData) -> Unit = {},
+    deleteTag: (ChipData) -> Unit = {}
 ) {
+    val keyboardController = LocalFocusManager.current
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -220,7 +266,21 @@ private fun MainScreen(
     val roomInfo = RoomUtils.getRoomInfo(roomState.type)
 
     if (viewState is ViewState.Success) {
-        onBackPressed()
+        if (viewState.id != null) {
+            // Need to dialog
+            scope.launch {
+                created(viewState.id)
+            }
+        }
+        if (viewState.tagState != null) {
+            if (viewState.tagState.isDelete) {
+                chipDataSnapshotStateList.find { it.id == viewState.tagState.tag.id }?.let {
+                    chipDataSnapshotStateList.remove(it)
+                }
+            } else {
+                chipDataSnapshotStateList.add(viewState.tagState.tag)
+            }
+        }
     }
 
     ModalBottomSheetLayout(
@@ -239,24 +299,26 @@ private fun MainScreen(
         AppScaffold(topBar = {
             AppTopBar(
                 backListener = onBackPressed,
-                title = stringResource(id = R.string.dialog_create_room),
+                title = if (isEdit) "Edit room" else stringResource(id = R.string.dialog_create_room),
                 isClose = true,
                 actions = {
                     TextButton(onClick = { onBackPressed() }) {
                         Text(
-                            text = stringResource(id = R.string.login_create_signin_create_button),
+                            text = if (isEdit) "Edit" else stringResource(id = R.string.login_create_signin_create_button),
                             modifier = Modifier.clickable {
                                 create(roomState.type, name.value, roomState.imageUri, chipDataSnapshotStateList)
                             })
                     }
                 })
-        }) {
+        }, useTablePaddings = false) {
             Column {
                 if (viewState is ViewState.Loading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                } else {
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                AddRoomItem(icon = roomInfo.icon, title = roomInfo.title, description = roomInfo.description) {
+                AddRoomItem(isClickable = !isEdit, icon = roomInfo.icon, title = roomInfo.title, description = roomInfo.description) {
                     saveData(name.value, chipDataSnapshotStateList)
                     navController.navigate("${Navigation.Select.route}/${roomState.type}")
                 }
@@ -267,7 +329,7 @@ private fun MainScreen(
                 ) {
                     if (roomState.roomImage != null) {
                         Image(
-                            bitmap = roomState.roomImage,
+                            bitmap = roomState.roomImage.asImageBitmap(),
                             contentDescription = null,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
@@ -298,15 +360,16 @@ private fun MainScreen(
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
-                TextFieldWithChips(list = chipDataSnapshotStateList, onChipCreated = {
-                    chipDataSnapshotStateList.add(it)
-                }, chip = { data: ChipData, index: Int ->
+                TextFieldWithChips(focusManger = keyboardController, list = chipDataSnapshotStateList, onChipCreated = {
+                    createTag(it)
+                }, chip = { data: ChipData, _: Int ->
                     RoomChip(data) {
-                        chipDataSnapshotStateList.removeAt(index)
+                        deleteTag(data)
                     }
                 })
             }
             if (viewState is ViewState.Error) {
+                keyboardController.clearFocus(true)
                 SnackbarHost(
                     hostState = snackbarHostState,
                     modifier = Modifier.align(Alignment.BottomCenter)
@@ -320,7 +383,6 @@ private fun MainScreen(
             }
         }
     }
-
 }
 
 @Composable
@@ -329,7 +391,7 @@ private fun SelectRoomScreen(type: Int, navController: NavHostController) {
         AppTopBar(backListener = {
             navController.popBackStack()
         }, title = stringResource(id = R.string.rooms_choose_room), isClose = false)
-    }) {
+    }, useTablePaddings = false) {
         Column {
             AddRoomItem(
                 icon = R.drawable.ic_collaboration_room,
@@ -461,6 +523,7 @@ private fun ChooseImageBottomView(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TextFieldWithChips(
+    focusManger: FocusManager,
     list: List<ChipData> = emptyList(),
     onChipCreated: (ChipData) -> Unit,
     chip: @Composable (data: ChipData, index: Int) -> Unit
@@ -473,10 +536,7 @@ private fun TextFieldWithChips(
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .drawWithContent {
-                drawContent()
-            },
+            .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         list.forEachIndexed { index, item ->
@@ -487,10 +547,7 @@ private fun TextFieldWithChips(
         Box(
             modifier = Modifier
                 .height(54.dp)
-                // This minimum width that TextField can have
-                // if remaining space in same row is smaller it's moved to next line
                 .widthIn(min = 80.dp)
-                // TextField can grow as big as Composable width
                 .weight(1f),
             contentAlignment = Alignment.CenterStart
         ) {
@@ -499,11 +556,9 @@ private fun TextFieldWithChips(
                     onChipCreated(ChipData(text.value))
                     text.value = ""
                 }
-            }, focusManager = LocalFocusManager.current)
+            }, focusManager = focusManger)
         }
-
     }
-
 }
 
 @Preview
@@ -511,16 +566,14 @@ private fun TextFieldWithChips(
 private fun TextFieldPreview() {
     val chipDataSnapshotStateList = remember {
         mutableStateListOf(
-            ChipData("Hello"),
-            ChipData("Hello"),
-            ChipData("Hello"),
-            ChipData("Hello"),
+            ChipData("Hello")
         )
     }
     ManagerTheme {
-        TextFieldWithChips(list = chipDataSnapshotStateList, onChipCreated = {}) { _: ChipData, _: Int ->
-
-        }
+        TextFieldWithChips(
+            focusManger = LocalFocusManager.current,
+            list = chipDataSnapshotStateList,
+            onChipCreated = {}) { _, _ -> }
     }
 }
 
@@ -528,7 +581,12 @@ private fun TextFieldPreview() {
 @Composable
 private fun MainScreen() {
     ManagerTheme {
-        MainScreen(navController = rememberNavController(), viewState = ViewState.None, roomState = AddRoomData(2))
+        MainScreen(
+            isEdit = false,
+            navController = rememberNavController(),
+            viewState = ViewState.None,
+            roomState = AddRoomData(2)
+        )
     }
 }
 

@@ -31,7 +31,7 @@ interface IBaseDialogFragment {
 abstract class BaseDialogFragment : DialogFragment(), BaseActivity.OnBackPressFragment,
     IBaseDialogFragment {
 
-    private var viewBinding: FragmentDialogBaseLayoutBinding? = null
+    protected var viewBinding: FragmentDialogBaseLayoutBinding? = null
 
     override fun onStart() {
         super.onStart()

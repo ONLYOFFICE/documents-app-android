@@ -330,6 +330,9 @@
     <string name="list_context_upload_to_portal">Upload to portal</string>
     <string name="list_context_add_to_favorite">Add to Favorites</string>
     <string name="list_context_delete_from_favorite">Delete from Favorites</string>
+    <string name="list_context_leave_room">Leave the room</string>
+    <string name="list_context_copy_general_link">Copy general link</string>
+    <string name="list_context_edit_room">Edit room</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
@@ -710,6 +713,7 @@
     <string name="rooms_choose_room">Choose room type</string>
     <string name="room_name_hint">Enter room name</string>
     <string name="rooms_error_name">Room name cannot be empty</string>
+    <string name="rooms_error_create">Error create room</string>
 
     <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
     <string name="rooms_info_general_link">General link</string>

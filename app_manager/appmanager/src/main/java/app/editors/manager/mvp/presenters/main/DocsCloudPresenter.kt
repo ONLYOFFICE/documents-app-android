@@ -278,8 +278,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     } else {
                         viewState.onStateActionButton(isContextEditable)
                     }
-//                    TODO from room
-//                    viewState.onStateActionButton(isContextEditable || modelExplorerStack.last()?.current?.security?.create == true)
                 }
             }
             viewState.onStateAdapterRoot(true)
@@ -795,6 +793,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun editRoom() {
+
+    }
+
+    fun copyGeneralLink() {
+
+    }
+
     fun archiveSelectedRooms() {
         roomProvider?.let { provider ->
             disposable.add(
@@ -842,17 +848,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun createRoom(title: String, roomType: Int) {
-        roomProvider?.let {
-            disposable.add(
-                it.createRoom(title, roomType).subscribe({ cloudFolder ->
-                    viewState.onDialogClose()
-                    addFolder(cloudFolder)
-                }) { throwable: Throwable ->
-                    fetchError(throwable)
-                }
-            )
-        }
+    fun createRoomFromFolder() {
+
     }
 
     fun deleteRoom() {
