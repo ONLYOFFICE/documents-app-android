@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.databinding.ShareInviteFragmentLayoutBinding
-import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.popup.SharePopup
@@ -62,8 +62,8 @@ class ShareInviteFragment : BaseAppFragment() {
     private fun initViews() {
         viewBinding?.sharePanelLayout?.sharePanelAddButton?.setText(R.string.on_boarding_next_button)
         viewBinding?.sharePanelLayout?.sharePanelAddButton?.isEnabled = false
-        viewBinding?.sharePanelLayout?.buttonPopupLayout?.root?.isVisible = false
-        viewBinding?.sharePanelLayout?.buttonPopupLayout?.root?.setOnClickListener { popupLayout ->
+        viewBinding?.sharePanelLayout?.buttonPopupLayout?.isVisible = false
+        viewBinding?.sharePanelLayout?.buttonPopupLayout?.setOnClickListener { popupLayout ->
             SharePopup(requireContext(), R.layout.popup_share_menu).apply {
                 setContextListener(popupContextListener)
                 setItem(item)

@@ -17,6 +17,8 @@
         <item name="android:windowBackground">@color/colorBackground</item>
 
         <item name="elevationOverlayEnabled">false</item>
+        <item name="android:textDirection">locale</item>
+        <item name="android:supportsRtl">true</item>
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme">
@@ -83,6 +85,7 @@
     <!-- Widgets -->
 
     <style name="Widget.Common.TextView" parent="AppTheme">
+        <item name="android:textDirection">locale</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/fonts_size_medium</item>

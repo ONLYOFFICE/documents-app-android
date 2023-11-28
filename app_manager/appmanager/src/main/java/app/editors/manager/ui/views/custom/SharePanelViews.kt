@@ -46,7 +46,7 @@ class SharePanelViews(
 
     private fun initListeners() {
         viewBinding?.let { binding ->
-            binding.buttonPopupLayout.buttonPopupLayout.setOnClickListener {
+            binding.buttonPopupLayout.setOnClickListener {
                 sharePopup = SharePopup(
                         context = view.context,
                         layoutId = R.layout.popup_share_menu,
@@ -91,7 +91,7 @@ class SharePanelViews(
         get() = viewBinding?.sharePanelMessageEditLayout?.isVisible == true
 
     fun setAccessIcon(accessCode: Int) {
-        ManagerUiUtils.setAccessIcon(viewBinding?.buttonPopupLayout?.buttonPopupImage, accessCode)
+        viewBinding?.buttonPopupLayout?.setIconResource(ManagerUiUtils.getAccessIcon(accessCode))
     }
 
     fun popupDismiss(): Boolean {
@@ -133,7 +133,7 @@ class SharePanelViews(
     val message: String?
         get() {
             viewBinding?.let {
-                if (it.buttonPopupLayout.buttonPopupLayout.isVisible) {
+                if (it.buttonPopupLayout.isVisible) {
                     val message: String = it.sharePanelMessageEdit.text.toString().trim()
                     if (message.isNotEmpty()) {
                         return message

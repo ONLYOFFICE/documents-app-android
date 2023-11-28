@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
@@ -21,7 +22,6 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareSettingsListBinding
-import app.editors.manager.databinding.IncludeButtonPopupBinding
 import app.editors.manager.databinding.IncludeShareSettingsHeaderBinding
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
@@ -57,7 +57,6 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     private var viewBinding: FragmentShareSettingsListBinding? = null
     private var headerBinding: IncludeShareSettingsHeaderBinding? = null
-    private var popupBinding: IncludeButtonPopupBinding? = null
 
     private val item: Item
         get() = arguments?.getSerializableExt(TAG_ITEM, Item::class.java) as Item
@@ -96,7 +95,6 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     ): View? {
         viewBinding = FragmentShareSettingsListBinding.inflate(inflater, container, false)
         headerBinding = viewBinding?.shareSettingsHeader
-        popupBinding = headerBinding?.shareSettingsAccessButtonLayout
         return viewBinding?.root
     }
 
@@ -113,7 +111,6 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         }
         shareActivity = null
         viewBinding = null
-        popupBinding = null
         headerBinding = null
     }
 
@@ -140,7 +137,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     private fun initClickListeners() {
         viewBinding?.shareSettingsAddItem?.setOnClickListener { settingsPresenter.addShareItems() }
         headerBinding?.let { binding ->
-            binding.shareSettingsAccessButtonLayout.root.setOnClickListener { showAccessPopup() }
+            binding.shareSettingsAccessButtonLayout.setOnClickListener { showAccessPopup() }
             binding.shareSettingsExternalCopyLink.setOnClickListener {
                 copySharedLinkToClipboard(
                     settingsPresenter.externalLink,
@@ -381,7 +378,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 onButtonState(true)
             }
         }
-        popupBinding?.buttonPopupImage?.setImageResource(iconRes)
+        headerBinding?.shareSettingsAccessButtonLayout?.setIconResource(iconRes)
         if (isMessage) {
             showSnackBar(messageRes)
         }
@@ -395,17 +392,14 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     }
 
     override fun onPopupState(state: Boolean) {
-        popupBinding?.let { binding ->
-            binding.buttonPopupImage.visibility = View.GONE
-            binding.buttonPopupArrow.visibility = View.GONE
-        }
+        headerBinding?.shareSettingsAccessButtonLayout?.isVisible = false
     }
 
     override fun onShowPopup(sharePosition: Int, isVisitor: Boolean) {
         viewBinding?.shareMainListOfItems.let { recyclerView: RecyclerView? ->
             recyclerView?.post {
                 if (sharePosition != 0) {
-                    setPopup(recyclerView.layoutManager?.findViewByPosition(sharePosition)?.findViewById(R.id.button_popup_arrow), isVisitor)
+//                 TODO   setPopup(recyclerView.layoutManager?.findViewByPosition(sharePosition)?.findViewById(R.id.button_popup_arrow), isVisitor)
                 } else {
                     showAccessPopup()
                 }
@@ -430,7 +424,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             setFullAccess(false)
             setItem(item)
             showDropAt(
-                checkNotNull(headerBinding?.shareSettingsAccessButtonLayout?.root),
+                checkNotNull(headerBinding?.shareSettingsAccessButtonLayout),
                 requireActivity()
             )
         }

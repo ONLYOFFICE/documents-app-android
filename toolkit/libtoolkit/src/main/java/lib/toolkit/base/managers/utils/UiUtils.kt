@@ -11,6 +11,7 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.hardware.display.DisplayManager
 import android.os.Build
+import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.*
@@ -73,6 +74,10 @@ object UiUtils {
     @JvmStatic
     fun isTablet(context: Context): Boolean {
         return context.resources.getInteger(R.integer.screen_size) > 0
+    }
+
+    fun isRTL(): Boolean {
+        return TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL
     }
 
     @JvmStatic
