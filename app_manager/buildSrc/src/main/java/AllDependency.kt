@@ -139,6 +139,7 @@ object Libs {
     const val facebookLogin = "com.facebook.android:facebook-login:16.2.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
     const val glide = "com.github.bumptech.glide:glide:4.15.1"
+    const val glideCompose = "com.github.bumptech.glide:compose:1.0.0-beta01"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
     const val androidWork = "androidx.work:work-runtime:2.8.1"
     const val documentFile = "androidx.documentfile:documentfile:1.0.1"

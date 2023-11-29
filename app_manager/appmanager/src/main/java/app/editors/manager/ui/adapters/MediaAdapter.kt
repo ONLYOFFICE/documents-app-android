@@ -13,20 +13,24 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.account.CloudAccount
-import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.utils.GlideUtils
-import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.tools.GlideTool
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
@@ -141,7 +145,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
         private val requestListener: RequestListener<Bitmap> = object : RequestListener<Bitmap> {
             override fun onLoadFailed(
                 e: GlideException?,
-                model: Any,
+                model: Any?,
                 target: Target<Bitmap?>,
                 isFirstResource: Boolean
             ): Boolean {
@@ -156,7 +160,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
             }
 
             override fun onResourceReady(
-                resource: Bitmap?,
+                resource: Bitmap,
                 model: Any,
                 target: Target<Bitmap?>,
                 dataSource: DataSource,

@@ -13,12 +13,12 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresPermission
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.storage.account.AccountDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentMediaImageBinding
 import app.editors.manager.managers.utils.GlideUtils
-import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.media.MediaPagerFragment.OnMediaListener
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -289,7 +289,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     private val gifRequestListener: RequestListener<GifDrawable> = object : RequestListener<GifDrawable> {
         override fun onLoadFailed(
             e: GlideException?,
-            model: Any,
+            model: Any?,
             target: Target<GifDrawable>,
             isFirstResource: Boolean
         ): Boolean {
@@ -324,7 +324,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     private val bitmapRequestListener: RequestListener<Bitmap> = object : RequestListener<Bitmap> {
         override fun onLoadFailed(
             e: GlideException?,
-            model: Any,
+            model: Any?,
             target: Target<Bitmap?>,
             isFirstResource: Boolean
         ): Boolean {
@@ -333,7 +333,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
         }
 
         override fun onResourceReady(
-            resource: Bitmap?,
+            resource: Bitmap,
             model: Any,
             target: Target<Bitmap?>,
             dataSource: DataSource,

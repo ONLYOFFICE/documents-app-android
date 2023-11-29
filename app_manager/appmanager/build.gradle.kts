@@ -310,6 +310,7 @@ dependencies {
     implementation(Libs.facebookLogin)
     implementation(Libs.pageIndicator)
     implementation(Libs.glide)
+    implementation(Libs.glideCompose)
     implementation(Libs.photoView)
     implementation(Libs.androidWork)
 
@@ -327,12 +328,12 @@ dependencies {
     debugImplementation(Compose.tooling)
     implementation(Compose.navigation)
     implementation(AndroidX.composeActivity)
-    implementation( Compose.liveData)
+    implementation(Compose.liveData)
 
     //Jackson
-    implementation (Jackson.core)
-    implementation (Jackson.annotations)
-    implementation (Jackson.databind)
+    implementation(Jackson.core)
+    implementation(Jackson.annotations)
+    implementation(Jackson.databind)
 
     // For compose preview
     debugApi("androidx.customview:customview:1.2.0-alpha02")
