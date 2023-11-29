@@ -21,10 +21,10 @@ class DocsRoomFragment : DocsCloudFragment() {
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
         if (isRoom) {
             setFragmentResultListener { bundle ->
+                onActionDialogClose()
                 if (bundle?.getInt("type") != -1) {
                     showAddRoomFragment(bundle?.getInt("type") ?: 2)
                 }
-                onActionDialogClose()
             }
             AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
         }

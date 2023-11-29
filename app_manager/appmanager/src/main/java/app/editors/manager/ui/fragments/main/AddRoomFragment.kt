@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalGlideComposeApi::class)
+
 package app.editors.manager.ui.fragments.main
 
 import android.annotation.SuppressLint
@@ -26,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LinearProgressIndicator
@@ -51,21 +54,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -83,6 +83,9 @@ import app.editors.manager.viewModels.main.AddRoomData
 import app.editors.manager.viewModels.main.AddRoomViewModel
 import app.editors.manager.viewModels.main.AddRoomViewModelFactory
 import app.editors.manager.viewModels.main.ViewState
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import lib.compose.ui.theme.ManagerTheme
@@ -141,15 +144,10 @@ class AddRoomFragment : BaseFragment() {
     private val isEdit: Boolean
         get() = arguments?.getSerializableExt<CloudFolder>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
 
-    private val createFromFolder: Boolean
-        get() = arguments?.getBoolean(TAG_COPY) ?: false
-
     override fun onBackPressed(): Boolean {
         if (!navController.popBackStack()) {
             if (parentFragment is AddRoomDialog) {
                 (parentFragment as AddRoomDialog).dismiss()
-            } else {
-                FragmentUtils.removeFragment(parentFragmentManager, this)
             }
         }
         return true
@@ -203,11 +201,11 @@ class AddRoomFragment : BaseFragment() {
                             saveData = { name, tags ->
                                 viewModel.saveData(name, tags)
                             },
-                            create = { type1, name, image, tags ->
+                            create = { type1, name, image ->
                                 if (isEdit) {
-                                    viewModel.edit(name, tags)
+                                    viewModel.edit(name)
                                 } else {
-                                    viewModel.createRoom(type1, name, image, tags)
+                                    viewModel.createRoom(type1, name, image)
                                 }
                             },
                             imageCallBack = { imageUri ->
@@ -215,7 +213,9 @@ class AddRoomFragment : BaseFragment() {
                             },
                             onBackPressed = ::onBackPressed,
                             created = { id ->
-                                setFragmentResult(TAG_RESULT, Bundle(1).apply { putString("id", id) })
+                                requireActivity().supportFragmentManager.setFragmentResult(
+                                    TAG_RESULT,
+                                    Bundle(1).apply { putString("id", id) })
                                 onBackPressed()
                             },
                             createTag = { tag ->
@@ -248,7 +248,7 @@ private fun MainScreen(
     viewState: ViewState,
     roomState: AddRoomData,
     saveData: (String, List<ChipData>) -> Unit = { _, _ -> },
-    create: (Int, String, Uri?, List<ChipData>) -> Unit = { _, _, _, _ -> },
+    create: (Int, String, Any?) -> Unit = { _, _, _ -> },
     imageCallBack: (uri: Uri?) -> Unit = {},
     onBackPressed: () -> Unit = {},
     created: (String) -> Unit = {},
@@ -311,7 +311,7 @@ private fun MainScreen(
                         Text(
                             text = if (isEdit) "Edit" else stringResource(id = R.string.login_create_signin_create_button),
                             modifier = Modifier.clickable {
-                                create(roomState.type, name.value, roomState.imageUri, chipDataSnapshotStateList)
+                                create(roomState.type, name.value, roomState.imageUri)
                             })
                     }
                 })
@@ -323,7 +323,12 @@ private fun MainScreen(
                     Spacer(modifier = Modifier.height(4.dp))
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                AddRoomItem(isClickable = !isEdit, icon = roomInfo.icon, title = roomInfo.title, description = roomInfo.description) {
+                AddRoomItem(
+                    isClickable = !isEdit,
+                    icon = roomInfo.icon,
+                    title = roomInfo.title,
+                    description = roomInfo.description
+                ) {
                     saveData(name.value, chipDataSnapshotStateList)
                     navController.navigate("${Navigation.Select.route}/${roomState.type}")
                 }
@@ -332,46 +337,40 @@ private fun MainScreen(
                         .height(dimensionResource(id = lib.toolkit.base.R.dimen.item_two_line_height))
                         .padding(horizontal = 16.dp)
                 ) {
-                    if (roomState.roomImage != null) {
-                        Image(
-                            bitmap = roomState.roomImage.asImageBitmap(),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .size(40.dp)
-                                .clickable(noRipple = false, onClick = {
-                                    scope.launch {
-                                        modalBottomSheetState.show()
-                                    }
-                                })
-                        )
-                    } else {
-                        Image(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_empty_image),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .size(40.dp)
-                                .clickable(noRipple = false, onClick = {
-                                    scope.launch {
-                                        modalBottomSheetState.show()
-                                    }
-                                })
-                        )
-                    }
+                    GlideImage(
+                        model = roomState.imageUri,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .clip(CircleShape)
+                            .size(40.dp)
+                            .clickable(noRipple = false, onClick = {
+                                keyboardController.clearFocus()
+                                scope.launch {
+                                    modalBottomSheetState.show()
+                                }
+                            }),
+                        loading = placeholder(R.drawable.ic_empty_image),
+                        failure = placeholder(R.drawable.ic_empty_image)
+                    )
                     AppTextField(
                         state = name,
-                        hint = stringResource(id = R.string.room_name_hint),
+                        label = R.string.room_name_hint,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
-                TextFieldWithChips(focusManger = keyboardController, list = chipDataSnapshotStateList, onChipCreated = {
-                    createTag(it)
-                }, chip = { data: ChipData, _: Int ->
-                    RoomChip(data) {
-                        deleteTag(data)
-                    }
-                })
+                TextFieldWithChips(
+                    label = R.string.room_add_tag_hint,
+                    focusManger = keyboardController,
+                    list = chipDataSnapshotStateList,
+                    onChipCreated = {
+                        createTag(it)
+                    },
+                    chip = { data: ChipData, _: Int ->
+                        RoomChip(data) {
+                            deleteTag(data)
+                        }
+                    })
             }
             if (viewState is ViewState.Error) {
                 keyboardController.clearFocus(true)
@@ -444,7 +443,7 @@ private fun SelectRoomScreen(type: Int, navController: NavHostController) {
 private fun ChooseImageBottomView(
     scope: CoroutineScope,
     state: ModalBottomSheetState,
-    imageUri: Uri? = null,
+    imageUri: Any? = null,
     uriCallback: (Uri?) -> Unit
 ) {
     val context = LocalContext.current
@@ -530,6 +529,7 @@ private fun ChooseImageBottomView(
 private fun TextFieldWithChips(
     focusManger: FocusManager,
     list: List<ChipData> = emptyList(),
+    label: Int,
     onChipCreated: (ChipData) -> Unit,
     chip: @Composable (data: ChipData, index: Int) -> Unit
 ) {
@@ -561,7 +561,7 @@ private fun TextFieldWithChips(
                     onChipCreated(ChipData(text.value))
                     text.value = ""
                 }
-            }, focusManager = focusManger)
+            }, focusManager = focusManger, label = label)
         }
     }
 }
@@ -578,6 +578,7 @@ private fun TextFieldPreview() {
         TextFieldWithChips(
             focusManger = LocalFocusManager.current,
             list = chipDataSnapshotStateList,
+            label = R.string.room_name_hint,
             onChipCreated = {}) { _, _ -> }
     }
 }

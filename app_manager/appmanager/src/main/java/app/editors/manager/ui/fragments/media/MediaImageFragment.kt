@@ -289,7 +289,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     private val gifRequestListener: RequestListener<GifDrawable> = object : RequestListener<GifDrawable> {
         override fun onLoadFailed(
             e: GlideException?,
-            model: Any,
+            model: Any?,
             target: Target<GifDrawable>,
             isFirstResource: Boolean
         ): Boolean {
@@ -324,7 +324,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     private val bitmapRequestListener: RequestListener<Bitmap> = object : RequestListener<Bitmap> {
         override fun onLoadFailed(
             e: GlideException?,
-            model: Any,
+            model: Any?,
             target: Target<Bitmap?>,
             isFirstResource: Boolean
         ): Boolean {
@@ -333,7 +333,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
         }
 
         override fun onResourceReady(
-            resource: Bitmap?,
+            resource: Bitmap,
             model: Any,
             target: Target<Bitmap?>,
             dataSource: DataSource,

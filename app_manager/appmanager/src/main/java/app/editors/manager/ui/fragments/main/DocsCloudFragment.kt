@@ -416,16 +416,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 onRefresh()
             } else {
                 cloudPresenter.getItemsById(args.getString("id"))
-
             }
         }
-        requireActivity().supportFragmentManager.clearFragmentResultListener("result")
-        if (isTablet) {
-            AddRoomDialog.newInstance(type, cloudFolder, isCopy)
-                .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
-        } else {
-            AddRoomFragment.show(requireActivity().supportFragmentManager, type, cloudFolder, isCopy)
-        }
+        AddRoomDialog.newInstance(type, cloudFolder, isCopy)
+            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
     }
 
     protected open fun getFilters(): Boolean {

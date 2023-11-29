@@ -711,7 +711,8 @@
     <string name="rooms_add_custom">Custom room</string>
     <string name="rooms_add_custom_des">Apply your own settings to use this room for any custom purpose</string>
     <string name="rooms_choose_room">Choose room type</string>
-    <string name="room_name_hint">Enter room name</string>
+    <string name="room_name_hint">Room name</string>
+    <string name="room_add_tag_hint">Add tags</string>
     <string name="rooms_error_name">Room name cannot be empty</string>
     <string name="rooms_error_create">Error create room</string>
     <string name="rooms_error_edit">Error edit room</string>

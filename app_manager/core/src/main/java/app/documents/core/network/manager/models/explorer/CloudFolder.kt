@@ -42,7 +42,7 @@ open class CloudFolder : Item(), Serializable {
 
     @SerializedName("tags")
     @Expose
-    var tags = arrayOfNulls<String>(0)
+    var tags = emptyArray<String>()
 
     @SerializedName("logo")
     @Expose

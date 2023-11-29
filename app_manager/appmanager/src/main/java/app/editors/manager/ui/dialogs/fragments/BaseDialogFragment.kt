@@ -35,7 +35,9 @@ abstract class BaseDialogFragment : DialogFragment(), BaseActivity.OnBackPressFr
 
     override fun onStart() {
         super.onStart()
-        setDialogSize()
+        if (UiUtils.isTablet(requireContext())) {
+            setDialogSize()
+        }
     }
 
     override fun onCreateView(

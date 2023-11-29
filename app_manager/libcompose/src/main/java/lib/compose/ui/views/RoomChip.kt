@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Chip
+import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -37,12 +38,18 @@ data class ChipData(
 @Composable
 fun RoomChip(
     data: ChipData,
+    selected: Boolean? = null,
     onDeleteClick: () -> Unit
 ) {
     Chip(
         modifier = Modifier,
         shape = RoundedCornerShape(50),
         enabled = true,
+        colors = if (selected == true) {
+            ChipDefaults.chipColors(backgroundColor = MaterialTheme.colors.primary)
+        } else {
+            ChipDefaults.chipColors()
+        },
         onClick = {}
     ) {
         Text(
@@ -53,19 +60,25 @@ fun RoomChip(
             style = MaterialTheme.typography.body2
         )
         Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-        Icon(
-            modifier = Modifier
-                .clip(CircleShape)
-                .clickable {
-                    onDeleteClick()
-                }
-                .background(Color.Black.copy(alpha = .4f))
-                .size(16.dp)
-                .padding(2.dp),
-            imageVector = Icons.Filled.Close,
-            tint = Color(0xFFE0E0E0),
-            contentDescription = null
-        )
+        val iconVisible: Boolean = when {
+            selected != null -> selected
+            else -> true
+        }
+        if (iconVisible) {
+            Icon(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable {
+                        onDeleteClick()
+                    }
+                    .background(Color.Black.copy(alpha = .4f))
+                    .size(16.dp)
+                    .padding(2.dp),
+                imageVector = Icons.Filled.Close,
+                tint = Color(0xFFE0E0E0),
+                contentDescription = null
+            )
+        }
     }
 }
 
@@ -74,5 +87,13 @@ fun RoomChip(
 private fun ChipPreview() {
     ManagerTheme {
         RoomChip(data = ChipData("Hello")) {}
+    }
+}
+
+@Preview
+@Composable
+private fun SelectedChipPreview() {
+    ManagerTheme {
+        RoomChip(data = ChipData("Hello"), selected = true) {}
     }
 }

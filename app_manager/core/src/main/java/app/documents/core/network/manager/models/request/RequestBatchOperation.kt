@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 data class RequestBatchOperation(
     @SerializedName("destFolderId")
     @Expose
-    var destFolderId: String? = null,
+    var destFolderId: String = "",
 
     @SerializedName("conflictResolveType")
     @Expose
