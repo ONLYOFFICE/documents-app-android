@@ -139,21 +139,19 @@ object ManagerUiUtils {
 
     private fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
         return when {
+            folder.isRoom -> getRoomIcon(folder)
             folder.shared && folder.providerKey.isEmpty() -> R.drawable.ic_type_folder_shared
             isRoot && folder.providerItem -> StorageUtils.getStorageIcon(folder.providerKey)
             ApiContract.SectionType.isArchive(folder.rootFolderType)-> R.drawable.ic_type_archive
-            folder.isRoom -> getRoomIcon(folder)
             else -> R.drawable.ic_type_folder
         }
     }
 
     private fun getRoomIcon(folder: CloudFolder): Int {
         return when (folder.roomType) {
-            ApiContract.RoomType.FILLING_FORM_ROOM -> R.drawable.ic_room_fill_forms
-            ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_room_custom
-            ApiContract.RoomType.READ_ONLY_ROOM -> R.drawable.ic_room_view_only
-            ApiContract.RoomType.REVIEW_ROOM -> R.drawable.ic_room_review
-            ApiContract.RoomType.EDITING_ROOM -> R.drawable.ic_room_collaboration
+            ApiContract.RoomType.COLLABORATION_ROOM -> R.drawable.ic_collaboration_room
+            ApiContract.RoomType.PUBLIC_ROOM -> R.drawable.ic_public_room
+            ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_custom_room
             else -> R.drawable.ic_type_folder
         }
     }

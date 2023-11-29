@@ -719,6 +719,7 @@
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>
     <string name="rooms_filter_type_review">Review</string>
+    <string name="rooms_filter_type_public">Public</string>
     <string name="rooms_filter_type_view_only">View-only</string>
     <string name="rooms_filter_type_custom">Custom</string>
     <string name="rooms_filter_author_other_users">Other users…</string>

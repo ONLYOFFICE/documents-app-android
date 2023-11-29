@@ -223,22 +223,22 @@ class SharePopup(
             }
 
             when (cloudFolder.roomType) {
-                ApiContract.RoomType.FILLING_FORM_ROOM -> {
-                    binding.commentItem.popupItemLayout.isVisible = false
-                    binding.reviewItem.popupItemLayout.isVisible = false
-                }
-                ApiContract.RoomType.EDITING_ROOM -> {
+
+                ApiContract.RoomType.PUBLIC_ROOM -> {
                     binding.editorItem.popupItemLayout.isVisible = true
                     binding.editorItem.itemIcon.setImageResource(R.drawable.ic_access_full)
                     binding.editorItem.itemText.setText(R.string.share_access_room_editor)
                     binding.fillFormItem.popupItemLayout.isVisible = false
                     binding.reviewItem.popupItemLayout.isVisible = false
                     binding.commentItem.popupItemLayout.isVisible = false
+                    binding.editorItem.popupItemLayout.isVisible = false
+                    binding.viewItem.popupItemLayout.isVisible = false
                 }
-                ApiContract.RoomType.REVIEW_ROOM -> {
-                    binding.fillFormItem.popupItemLayout.isVisible = false
-                }
-                ApiContract.RoomType.READ_ONLY_ROOM -> {
+                ApiContract.RoomType.COLLABORATION_ROOM -> {
+                    binding.editorItem.popupItemLayout.isVisible = true
+                    binding.editorItem.itemIcon.setImageResource(R.drawable.ic_access_full)
+                    binding.editorItem.itemText.setText(R.string.share_access_room_editor)
+                    binding.viewItem.popupItemLayout.isVisible = true
                     binding.fillFormItem.popupItemLayout.isVisible = false
                     binding.reviewItem.popupItemLayout.isVisible = false
                     binding.commentItem.popupItemLayout.isVisible = false
