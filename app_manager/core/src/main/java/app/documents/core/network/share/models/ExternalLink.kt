@@ -10,7 +10,7 @@ data class ExternalLink(
     val isOwner: Boolean,
     val canEditAccess: Boolean,
     val denyDownload: Boolean,
-    val sharedTo: List<ExternalLinkSharedTo>,
+    val sharedTo: ExternalLinkSharedTo,
     val expirationDate: String? // "2023-12-08T00:00:00.0000000+03:00"
 ) {
 

@@ -6,6 +6,7 @@ import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
 import app.documents.core.network.room.models.*
 import app.documents.core.network.share.models.response.ResponseExternalLink
+import app.documents.core.network.share.models.response.ResponseShare
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.MultipartBody
@@ -145,7 +146,14 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id]/share?filterType=2")
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share?filterType=2")
     suspend fun getExternalLinks(@Path("id") id: String): Response<ResponseExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share?filterType=0")
+    suspend fun getRoomUsers(@Path("id") id: String): Response<ResponseShare>
 
 }

@@ -9,16 +9,17 @@ import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestRenameRoom
-import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.room.models.RequestSetLogo
+import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.Share
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import retrofit2.HttpException
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class RoomProvider @Inject constructor(private val roomService: RoomService) {
@@ -141,4 +142,9 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
     }
 
+    suspend fun getRoomUsers(id: String): List<Share> {
+        val response = roomService.getRoomUsers(id)
+        val body = response.body()
+        return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
+    }
 }

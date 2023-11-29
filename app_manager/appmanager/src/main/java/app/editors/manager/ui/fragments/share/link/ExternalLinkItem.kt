@@ -31,7 +31,7 @@ import lib.toolkit.base.R
 
 
 @Composable
-fun ExternalLinkItem(linkTitle: String, accessCode: Int) {
+fun ExternalLinkItem(linkTitle: String, accessCode: Int, hasPassword: Boolean, expiring: Boolean) {
     Row(
         modifier = Modifier
             .height(dimensionResource(id = R.dimen.item_onehalf_line_height))
@@ -60,8 +60,8 @@ fun ExternalLinkItem(linkTitle: String, accessCode: Int) {
         ) {
             Text(text = linkTitle)
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                AttributeIcon(icon = app.editors.manager.R.drawable.ic_small_lock)
-                AttributeIcon(icon = app.editors.manager.R.drawable.ic_small_clock)
+                AttributeIcon(icon = app.editors.manager.R.drawable.ic_small_lock, activate = hasPassword)
+                AttributeIcon(icon = app.editors.manager.R.drawable.ic_small_clock, activate = expiring)
             }
         }
         Icon(
@@ -80,18 +80,28 @@ fun ExternalLinkItem(linkTitle: String, accessCode: Int) {
 }
 
 @Composable
-private fun AttributeIcon(icon: Int) {
+private fun AttributeIcon(icon: Int, activate: Boolean = true) {
     Box(
         modifier = Modifier
             .clip(CircleShape)
             .size(20.dp)
-            .background(colorResource(id = R.color.colorBackdrop)),
+            .background(
+                if (!activate) {
+                    colorResource(id = R.color.colorBackdrop)
+                } else {
+                    MaterialTheme.colors.primary
+                }
+            ),
         contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(icon),
             contentDescription = null,
-            tint = MaterialTheme.colors.colorTextTertiary
+            tint = if (!activate) {
+                MaterialTheme.colors.colorTextTertiary
+            } else {
+                MaterialTheme.colors.onPrimary
+            }
         )
     }
 }
@@ -101,7 +111,7 @@ private fun AttributeIcon(icon: Int) {
 private fun Preview() {
     ManagerTheme {
         AppScaffold {
-            ExternalLinkItem(linkTitle = "Shared link", accessCode = 2)
+            ExternalLinkItem(linkTitle = "Shared link", accessCode = 2, true, false)
         }
     }
 }
