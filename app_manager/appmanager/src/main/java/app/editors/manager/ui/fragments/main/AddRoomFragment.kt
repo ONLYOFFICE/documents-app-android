@@ -75,7 +75,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
+import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
+import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.dialogs.AddRoomItem
 import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
@@ -145,6 +147,7 @@ class AddRoomFragment : BaseFragment() {
         get() = arguments?.getSerializableExt<CloudFolder>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
 
     override fun onBackPressed(): Boolean {
+        requireContext().appComponent.accountOnline?.token
         if (!navController.popBackStack()) {
             if (parentFragment is AddRoomDialog) {
                 (parentFragment as AddRoomDialog).dismiss()
@@ -338,7 +341,12 @@ private fun MainScreen(
                         .padding(horizontal = 16.dp)
                 ) {
                     GlideImage(
-                        model = roomState.imageUri,
+                        model = if (roomState.imageUri is String && roomState.imageUri.isNotEmpty()) {
+                            // TODO need interceptor
+                            GlideUtils.getCorrectLoad(roomState.imageUri, LocalContext.current.appComponent.accountOnline?.token ?: "")
+                        } else {
+                            roomState.imageUri
+                        },
                         contentDescription = null,
                         modifier = Modifier
                             .align(Alignment.CenterVertically)

@@ -73,7 +73,7 @@ class AddRoomViewModel(
                 type = if (roomInfo.roomType == -1) 2 else roomInfo.roomType,
                 name = roomInfo.title,
                 tags = roomInfo.tags.map { ChipData(it) }.toMutableList(),
-                imageUri = if (roomInfo.logo?.medium != null) {
+                imageUri = if (roomInfo.logo?.medium?.isNotEmpty() == true) {
                     ApiContract.SCHEME_HTTPS + context.appComponent.networkSettings.getPortal() + roomInfo.logo!!.medium
                 } else {
                     null
@@ -91,6 +91,7 @@ class AddRoomViewModel(
 
     private val addTags: MutableList<String> = mutableListOf()
     private val deleteTags: MutableList<String> = mutableListOf()
+    private var isDeleteLogo: Boolean = false
 
     fun setType(roomType: Int) {
         _roomState.value = _roomState.value.copy(type = roomType)
@@ -100,16 +101,14 @@ class AddRoomViewModel(
         viewModelScope.launch {
             _viewState.value = ViewState.Loading
             if (imageUri == null) {
-                if (roomInfo != null) {
-                    roomProvider.deleteLogo(roomInfo.id)
-                }
+                isDeleteLogo = true
                 _viewState.value = ViewState.None
                 _roomState.value = _roomState.value.copy(imageUri = null)
             } else {
-                withContext(Dispatchers.IO) {
-                    _viewState.value = ViewState.None
-                    _roomState.value = _roomState.value.copy(imageUri = imageUri)
-                }
+                isDeleteLogo = false
+                _viewState.value = ViewState.None
+                _roomState.value = _roomState.value.copy(imageUri = imageUri)
+
             }
         }
     }
@@ -151,6 +150,10 @@ class AddRoomViewModel(
 
                     if (id.isNotEmpty() && image != null) {
                         roomProvider.setLogo(id, loadImage(image, false))
+                    }
+
+                    if (isDeleteLogo) {
+                        roomProvider.deleteLogo(id)
                     }
 
                     while (checkCopy(id)) {
@@ -195,8 +198,14 @@ class AddRoomViewModel(
                         roomProvider.deleteTags(id, deleteTags)
                     }
 
-                    if (roomState.value.imageUri is Uri) {
-                        roomProvider.setLogo(id, loadImage(roomState.value.imageUri!!, false))
+                    when {
+                        isDeleteLogo -> {
+                            roomProvider.deleteLogo(id)
+                        }
+                        roomState.value.imageUri is Uri -> {
+                            roomProvider.setLogo(id, loadImage(roomState.value.imageUri!!, false))
+
+                        }
                     }
 
                     if (isSuccess) {

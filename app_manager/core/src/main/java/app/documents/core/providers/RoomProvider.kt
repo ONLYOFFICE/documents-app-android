@@ -17,6 +17,7 @@ import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import org.json.JSONObject
 import java.util.UUID
 import javax.inject.Inject
 
@@ -87,7 +88,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     suspend fun addTags(id: String, tags: List<String>): Boolean {
         val existTags = roomService.getTags().tags
-        tags.forEach {newTag ->
+        tags.forEach { newTag ->
             if (!existTags.contains(newTag)) {
                 roomService.createTag(RequestCreateTag(newTag))
             }
@@ -115,7 +116,12 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         if (uploadResponse.isSuccessful) {
             roomService.setLogo(
                 id,
-                RequestSetLogo(uploadResponse.body()?.data ?: "", width = logo.width, height = logo.height)
+                RequestSetLogo(
+                    tmpFile = JSONObject(uploadResponse.body()?.string() ?: "").optJSONObject("response")?.optString("data")
+                        ?: "",
+                    width = logo.width,
+                    height = logo.height
+                )
             )
         }
     }
