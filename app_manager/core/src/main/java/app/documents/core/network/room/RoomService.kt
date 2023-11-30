@@ -148,4 +148,11 @@ interface RoomService {
         @Part part: MultipartBody.Part
     ): Response<ResponseBody>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/files/owner")
+    suspend fun setOwner(@Body body: RequestRoomOwner): Response<ResponseBody>
+
 }
