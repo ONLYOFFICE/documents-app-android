@@ -1,8 +1,15 @@
 package app.editors.manager.ui.compose.fragments.main
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -13,14 +20,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.editors.manager.managers.utils.BiometricsUtils
 import app.editors.manager.ui.compose.activities.main.PasscodeScreens
 import app.editors.manager.viewModels.main.SetPasscodeViewModel
+import lib.compose.ui.theme.colorTextSecondary
+import lib.compose.ui.views.AppDivider
+import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
@@ -51,11 +61,11 @@ fun PasscodeLock(
                     )
                     .fillMaxSize()
             ) {
-                VerticalSpacer(height = R.dimen.default_margin_large)
-                PasscodeSwitchItem(
-                    isEnable = isEnablePasscode,
-                    text = stringResource(id = app.editors.manager.R.string.app_Settings_passcode_enable),
-                    onCheckedChange = { state ->
+                AppSwitchItem(
+                    title = app.editors.manager.R.string.app_Settings_passcode_enable,
+                    checked = isEnablePasscode,
+                    dividerVisible = isEnablePasscode,
+                    onCheck = { state ->
                         if (state) {
                             navController.navigate(PasscodeScreens.SetPasscode.screen) {
                                 navController.graph.startDestinationRoute?.let {
@@ -77,29 +87,26 @@ fun PasscodeLock(
                         }
                     }
                 )
-
                 if (isEnablePasscode) {
                     Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .height(dimensionResource(id = R.dimen.item_one_line_height))
                             .clickable(onClick = {
                                 navController.navigate(PasscodeScreens.ChangePasscode.screen)
                             })
+                            .padding(horizontal = 16.dp)
                             .fillMaxSize()
                     ) {
                         Text(
                             text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_change),
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .padding(start = dimensionResource(id = R.dimen.default_margin_medium)),
-                            style = TextStyle(
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            style = MaterialTheme.typography.body1.copy(
                                 color = colorResource(id = R.color.colorPrimary)
-
                             )
                         )
                     }
                 }
+                AppDivider()
                 VerticalSpacer(height = R.dimen.default_margin_large)
                 Text(
                     text = buildAnnotatedString {
@@ -109,18 +116,19 @@ fun PasscodeLock(
                         append(stringResource(id = app.editors.manager.R.string.app_settings_passcode_description))
                     },
                     modifier = Modifier.padding(
-                        start = dimensionResource(id = R.dimen.default_margin_medium),
-                        end = dimensionResource(id = R.dimen.default_margin_medium)
+                        start = dimensionResource(id = R.dimen.default_margin_large),
+                        end = dimensionResource(id = R.dimen.default_margin_large)
                     ),
-                    style = MaterialTheme.typography.subtitle2,
-                    color = MaterialTheme.colors.onBackground
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.colorTextSecondary
                 )
                 if (isEnablePasscode && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
                     VerticalSpacer(R.dimen.default_margin_large)
-                    PasscodeSwitchItem(
-                        isEnable = isEnableFingerprint,
-                        text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_fingerprint),
-                        onCheckedChange = {
+                    AppDivider()
+                    AppSwitchItem(
+                        title = app.editors.manager.R.string.app_settings_passcode_fingerprint,
+                        checked = isEnableFingerprint,
+                        onCheck = {
                             viewModel.setFingerprintState(!isEnableFingerprint)
                         }
                     )
@@ -129,33 +137,3 @@ fun PasscodeLock(
         }
     }
 }
-
-@Composable
-fun PasscodeSwitchItem(isEnable: Boolean, text: String, onCheckedChange: (Boolean) -> Unit) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .height(dimensionResource(id = R.dimen.item_onehalf_line_height))
-            .fillMaxSize()
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .padding(start = dimensionResource(id = R.dimen.default_margin_medium))
-                .fillMaxWidth(0.75f),
-            color = MaterialTheme.colors.onSurface
-        )
-        Switch(
-            checked = isEnable,
-            onCheckedChange = onCheckedChange,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .padding(end = dimensionResource(id = R.dimen.default_margin_medium)),
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = colorResource(id = R.color.colorSecondary)
-            )
-        )
-    }
-}
-

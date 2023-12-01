@@ -24,7 +24,7 @@ import app.editors.manager.viewModels.main.PasscodeLockState
 import app.editors.manager.viewModels.main.SetPasscodeViewModel
 
 
-enum class PasscodeScreens(val screen: String){
+enum class PasscodeScreens(val screen: String) {
     Common("common"),
     SetPasscode("set"),
     ConfirmPasscode("confirm"),
@@ -44,16 +44,17 @@ fun PasscodeActivity(
     val activity = LocalContext.current as PasscodeActivity
     val isEnterPasscode = activity.isEnterPasscode
 
-    val viewModel: SetPasscodeViewModel = viewModel( factory = SetPasscodeViewModelFactory(preferenceTool = preferenceTool) )
+    val viewModel: SetPasscodeViewModel =
+        viewModel(factory = SetPasscodeViewModelFactory(preferenceTool = preferenceTool))
 
     viewModel.getData()
 
     NavHost(
         navController = navController,
-        startDestination = if(!isEnterPasscode) PasscodeScreens.Common.screen else PasscodeScreens.EnterPasscode.screen,
+        startDestination = if (!isEnterPasscode) PasscodeScreens.Common.screen else PasscodeScreens.EnterPasscode.screen,
     ) {
         composable(PasscodeScreens.EnterPasscode.screen) {
-            EnterPasscode(navController = navController, viewModel,data)
+            EnterPasscode(navController = navController, viewModel, data)
         }
         composable(PasscodeScreens.Common.screen) {
             CommonPasscode(navController = navController, viewModel, backPressed)
@@ -88,12 +89,12 @@ private fun EnterPasscode(
     viewModel.biometric.observe(context) { isBiometric ->
         if (isBiometric) {
             BiometricsUtils.biometricAuthenticate(
-                BiometricsUtils.initBiometricDialog(
+                promtInfo = BiometricsUtils.initBiometricDialog(
                     title = fingerprintTitle,
                     negative = fingerprintCancelButton
                 ),
-                context,
-                {
+                fragment = context,
+                onSuccess = {
                     MainActivity.show(context = context, isCode = true, bundle = data)
                     context.finish()
                 }) { errorMessage ->
@@ -120,7 +121,7 @@ private fun EnterPasscode(
             )
         })
     { state ->
-        when(state) {
+        when (state) {
             is PasscodeLockState.ConfirmPasscode -> {
                 viewModel.setNullState()
                 MainActivity.show(context, true, data)
@@ -214,7 +215,7 @@ private fun ConfirmPasscode(
         onEnterCode = { codeDigit ->
             viewModel.checkConfirmPasscode(codeDigit.toString(), errorMessage)
         }) { state ->
-        when(state) {
+        when (state) {
             is PasscodeLockState.ConfirmPasscode -> {
                 viewModel.setPasscodeLockState(true)
                 viewModel.setPasscode()
@@ -229,7 +230,7 @@ private fun ConfirmPasscode(
                 }
             }
             is PasscodeLockState.Error -> {
-                Handler(Looper.getMainLooper()).postDelayed( {
+                Handler(Looper.getMainLooper()).postDelayed({
                     viewModel.resetErrorState()
                     navController.navigate(PasscodeScreens.SetPasscode.screen) {
                         navController.graph.startDestinationRoute?.let {
@@ -262,7 +263,7 @@ private fun ChangePasscode(
         onEnterCode = { codeDigit ->
             viewModel.checkConfirmPasscode(codeDigit.toString(), errorMessage)
         }) { state ->
-        when(state) {
+        when (state) {
             is PasscodeLockState.ConfirmPasscode -> {
                 viewModel.setNullState()
                 navController.navigate(PasscodeScreens.SetPasscode.screen) {
@@ -275,7 +276,7 @@ private fun ChangePasscode(
                 }
             }
             is PasscodeLockState.Error -> {
-                Handler(Looper.getMainLooper()).postDelayed( {
+                Handler(Looper.getMainLooper()).postDelayed({
                     viewModel.resetErrorState()
                     navController.navigate(PasscodeScreens.ChangePasscode.screen) {
                         navController.graph.startDestinationRoute?.let {
@@ -308,7 +309,7 @@ private fun DisablePasscode(
         onEnterCode = { codeDigit ->
             viewModel.checkConfirmPasscode(codeDigit.toString(), errorMessage)
         }) { state ->
-        when(state) {
+        when (state) {
             is PasscodeLockState.ConfirmPasscode -> {
                 viewModel.setPasscodeLockState(false)
                 viewModel.setFingerprintState(false)
@@ -325,7 +326,7 @@ private fun DisablePasscode(
                 }
             }
             is PasscodeLockState.Error -> {
-                Handler(Looper.getMainLooper()).postDelayed( {
+                Handler(Looper.getMainLooper()).postDelayed({
                     viewModel.resetErrorState()
                     navController.navigate(PasscodeScreens.DisablePasscode.screen) {
                         navController.graph.startDestinationRoute?.let {

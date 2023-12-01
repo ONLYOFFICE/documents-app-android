@@ -3,7 +3,6 @@ package app.editors.manager.ui.adapters.holders
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareSettingsItemBinding
@@ -22,12 +21,11 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
     private val shareImage: ImageView = itemBinding.listShareSettingsImage
     private val itemName: TextView = itemBinding.listShareSettingsName
     private val itemInfo: TextView = itemBinding.listShareSettingsInfo
-    private val contextLayoutButton: ConstraintLayout = itemBinding.listShareSettingsContextLayout.root
-    private val contextButton: ImageView = itemBinding.listShareSettingsContextLayout.buttonPopupImage
+    private val contextButton: MaterialButton = itemBinding.listShareSettingsContextLayout
 
     init {
-        contextLayoutButton.setOnClickListener {
-            listener(contextLayoutButton, absoluteAdapterPosition)
+        contextButton.setOnClickListener {
+            listener(contextButton, absoluteAdapterPosition)
         }
     }
 
@@ -61,10 +59,10 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
             }
 
             // Access icons
-            contextLayoutButton.isVisible = !item.isOwner
+            contextButton.isVisible = !item.isOwner
             itemBinding.listShareSettingsOwner.isVisible = item.isOwner
             if (!item.isOwner) {
-                ManagerUiUtils.setAccessIcon(contextButton, item.access)
+                contextButton.setIconResource(ManagerUiUtils.getAccessIcon(item.access))
             }
         }
     }

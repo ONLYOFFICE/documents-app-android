@@ -249,11 +249,6 @@ object ApiContract {
         const val CLOUD_RECENT = 11
         const val CLOUD_PRIVATE_ROOM = 13
         const val CLOUD_VIRTUAL_ROOM = 14
-        const val CLOUD_FILLING_FORMS_ROOM = 15
-        const val CLOUD_EDITING_ROOM = 16
-        const val CLOUD_REVIEW_ROOM = 17
-        const val CLOUD_READ_ONLY_ROOM = 18
-        const val CLOUD_CUSTOM_ROOM = 19
         const val CLOUD_ARCHIVE_ROOM = 20
 
         const val WEB_DAV = 100
@@ -261,7 +256,7 @@ object ApiContract {
         const val DROPBOX = 111
         const val ONEDRIVE = 112
 
-        fun isRoom(type: Int): Boolean = type >= 14
+        fun isRoom(type: Int): Boolean = type == 14
         fun isArchive(type: String): Boolean = isArchive(type.toInt())
         fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
     }
@@ -281,11 +276,7 @@ object ApiContract {
             object Private : Room(SectionType.CLOUD_PRIVATE_ROOM)
             object Virtual : Room(SectionType.CLOUD_VIRTUAL_ROOM)
             object Archive : Room(SectionType.CLOUD_ARCHIVE_ROOM)
-            class FillingForms(val restrictionType: Int = RoomType.FILLING_FORM_ROOM) : Room(SectionType.CLOUD_FILLING_FORMS_ROOM)
-            class Editing(val restrictionType: Int = RoomType.EDITING_ROOM) : Room(SectionType.CLOUD_EDITING_ROOM)
-            class Review(val restrictionType: Int = RoomType.REVIEW_ROOM) : Room(SectionType.CLOUD_REVIEW_ROOM)
-            class ReadOnly(val restrictionType: Int = RoomType.READ_ONLY_ROOM) : Room(SectionType.CLOUD_READ_ONLY_ROOM)
-            class Custom(val restrictionType: Int = RoomType.CUSTOM_ROOM) : Room(SectionType.CLOUD_CUSTOM_ROOM)
+
         }
 
         sealed class Storage(type: Int) : Section(type) {
@@ -313,21 +304,13 @@ object ApiContract {
                     SectionType.CLOUD_PRIVATE_ROOM -> Room.Private
                     SectionType.CLOUD_VIRTUAL_ROOM -> Room.Virtual
                     SectionType.CLOUD_ARCHIVE_ROOM -> Room.Archive
-                    SectionType.CLOUD_FILLING_FORMS_ROOM -> Room.FillingForms()
-                    SectionType.CLOUD_EDITING_ROOM -> Room.Editing()
-                    SectionType.CLOUD_REVIEW_ROOM -> Room.Review()
-                    SectionType.CLOUD_READ_ONLY_ROOM -> Room.ReadOnly()
-                    SectionType.CLOUD_CUSTOM_ROOM -> Room.Custom()
                     else -> Common
                 }
         }
     }
 
     object RoomType {
-        const val FILLING_FORM_ROOM = 1
-        const val EDITING_ROOM = 2
-        const val REVIEW_ROOM = 3
-        const val READ_ONLY_ROOM = 4
+        const val COLLABORATION_ROOM = 2
         const val CUSTOM_ROOM = 5
         const val PUBLIC_ROOM = 6
 

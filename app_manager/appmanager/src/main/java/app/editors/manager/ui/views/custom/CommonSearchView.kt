@@ -3,6 +3,7 @@ package app.editors.manager.ui.views.custom
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import app.editors.manager.R
 
@@ -18,6 +19,7 @@ class CommonSearchView(
 
     fun build(): SearchView {
         return searchView?.apply {
+            textDirection = TextView.TEXT_DIRECTION_LOCALE
             maxWidth = Int.MAX_VALUE
             isIconified = this@CommonSearchView.isIconified
             closeButton?.setOnClickListener { closeClickListener?.invoke() }

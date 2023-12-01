@@ -27,17 +27,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:maxLines="2"
         android:text="@string/share_main_external_access_info"
         app:layout_constraintEnd_toEndOf="@+id/share_settings_external_access_title"
         app:layout_constraintStart_toStartOf="@+id/share_settings_external_access_title"
         app:layout_constraintTop_toBottomOf="@+id/share_settings_external_access_title" />
 
-    <include
+    <app.editors.manager.ui.views.custom.AccessIconButton
         android:id="@+id/share_settings_access_button_layout"
-        layout="@layout/include_button_popup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        style="@style/Widget.Common.Button.IconButton.Secondary"
+        app:icon="@drawable/ic_access_deny"
         app:layout_constraintBottom_toBottomOf="@+id/share_settings_external_access_info_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/share_settings_external_access_title" />

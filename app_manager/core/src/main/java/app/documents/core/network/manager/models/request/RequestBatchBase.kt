@@ -6,11 +6,11 @@ import com.google.gson.annotations.SerializedName
 open class RequestBatchBase {
     @SerializedName("folderIds")
     @Expose
-    var folderIds: List<String>? = null
+    var folderIds: List<String> = emptyList()
 
     @SerializedName("fileIds")
     @Expose
-    var fileIds: List<String>? = null
+    var fileIds: List<String> = emptyList()
 
     @SerializedName("deleteAfter")
     @Expose

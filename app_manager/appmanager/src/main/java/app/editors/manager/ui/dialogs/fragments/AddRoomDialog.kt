@@ -5,9 +5,12 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.editors.manager.ui.dialogs.AddRoomFragment
+import app.editors.manager.R
+import app.editors.manager.ui.fragments.main.AddRoomFragment
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
+
 
 class AddRoomDialog : BaseDialogFragment() {
 
@@ -20,6 +23,16 @@ class AddRoomDialog : BaseDialogFragment() {
                 AddRoomFragment.TAG_ROOM_TYPE to roomType,
                 AddRoomFragment.TAG_ROOM_INFO to room,
                 AddRoomFragment.TAG_COPY to isCopy
+            )
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!UiUtils.isTablet(requireContext())) {
+            setStyle(
+                STYLE_NORMAL,
+                R.style.FullScreenDialog
             )
         }
     }

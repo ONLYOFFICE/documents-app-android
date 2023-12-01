@@ -3,32 +3,29 @@ package app.editors.manager.viewModels.main
 import android.annotation.SuppressLint
 import android.app.Application
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
-import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
-import app.editors.manager.managers.utils.GlideUtils
+import app.editors.manager.app.appComponent
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.compose.ui.views.ChipData
-import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.mutableStateIn
+
 
 @Suppress("UNCHECKED_CAST")
 class AddRoomViewModelFactory(
@@ -47,8 +44,7 @@ data class AddRoomData(
     val type: Int,
     val name: String = "",
     val tags: MutableList<ChipData> = mutableListOf(),
-    val roomImage: Bitmap? = null,
-    val imageUri: Uri? = null
+    val imageUri: Any? = null
 )
 
 sealed class ViewState {
@@ -71,26 +67,31 @@ class AddRoomViewModel(
     private val isCopy: Boolean = false
 ) : AndroidViewModel(application = context) {
 
-    private val _roomState: MutableStateFlow<AddRoomData> = flow {
+    private val _roomState: MutableStateFlow<AddRoomData> = MutableStateFlow(
         if (roomInfo != null) {
-            emit(
-                AddRoomData(
-                    type = if (roomInfo.roomType == -1) 2 else roomInfo.roomType,
-                    name = roomInfo.title,
-                    tags = roomInfo.tags.map { ChipData(it ?: "") }.toMutableList(),
-                    roomImage = loadImage(),
-                    imageUri = Uri.parse(roomInfo.logo?.medium)
-                )
+            AddRoomData(
+                type = if (roomInfo.roomType == -1) 2 else roomInfo.roomType,
+                name = roomInfo.title,
+                tags = roomInfo.tags.map { ChipData(it) }.toMutableList(),
+                imageUri = if (roomInfo.logo?.medium?.isNotEmpty() == true) {
+                    ApiContract.SCHEME_HTTPS + context.appComponent.networkSettings.getPortal() + roomInfo.logo!!.medium
+                } else {
+                    null
+                }
             )
         } else {
-            emit(AddRoomData(2))
+            AddRoomData(2)
         }
-    }.mutableStateIn(viewModelScope, AddRoomData(2))
+    )
     val roomState: StateFlow<AddRoomData> = _roomState
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.None)
     val viewState: StateFlow<ViewState> = _viewState
 
+
+    private val addTags: MutableList<String> = mutableListOf()
+    private val deleteTags: MutableList<String> = mutableListOf()
+    private var isDeleteLogo: Boolean = false
 
     fun setType(roomType: Int) {
         _roomState.value = _roomState.value.copy(type = roomType)
@@ -100,31 +101,24 @@ class AddRoomViewModel(
         viewModelScope.launch {
             _viewState.value = ViewState.Loading
             if (imageUri == null) {
-                if (roomInfo != null) {
-                    roomProvider.deleteLogo(roomInfo.id)
-                }
+                isDeleteLogo = true
                 _viewState.value = ViewState.None
-                _roomState.value = _roomState.value.copy(imageUri = null, roomImage = null)
+                _roomState.value = _roomState.value.copy(imageUri = null)
             } else {
-                withContext(Dispatchers.IO) {
-                    val image = loadImage(imageUri)
-                    _viewState.value = ViewState.None
-                    _roomState.value = _roomState.value.copy(imageUri = imageUri, roomImage = image)
-                }
+                isDeleteLogo = false
+                _viewState.value = ViewState.None
+                _roomState.value = _roomState.value.copy(imageUri = imageUri)
+
             }
         }
     }
 
     @SuppressLint("CheckResult")
-    private suspend fun loadImage(imageUri: Uri?, url: String? = null, isCrop: Boolean = true): Bitmap {
+    private suspend fun loadImage(imageUri: Any?, isCrop: Boolean = true): Bitmap {
         return viewModelScope.async(Dispatchers.IO) {
             val request = Glide.with(context).asBitmap()
             request.apply {
-                if (url != null) {
-                    load(url)
-                } else {
-                    load(imageUri)
-                }
+                load(imageUri)
                 if (isCrop) {
                     request.circleCrop()
                 }
@@ -134,35 +128,7 @@ class AddRoomViewModel(
         }.await()
     }
 
-    private suspend fun loadImage(): Bitmap {
-        try {
-            return viewModelScope.async(Dispatchers.IO) {
-                val cloudAccount = context.accountOnline
-                AccountUtils.getToken(
-                    context,
-                    context.accountOnline?.getAccountName() ?: ""
-                )?.let {
-                    val url = cloudAccount?.scheme + cloudAccount?.portal + roomInfo?.logo?.medium
-
-                    return@async Glide.with(context)
-                        .asBitmap()
-                        .load(GlideUtils.getCorrectLoad(url, it))
-                        .apply(GlideUtils.avatarOptions)
-                        .submit()
-                        .get()
-                } ?: run {
-                    return@async Glide.with(context).asBitmap().load(R.drawable.ic_empty_image)
-                        .submit()
-                        .get()
-                }
-            }.await()
-        } catch (error: Throwable) {
-            return BitmapFactory.decodeResource(context.resources, R.drawable.ic_empty_image)
-        }
-    }
-
-    @SuppressLint("CheckResult")
-    fun createRoom(roomType: Int, name: String, image: Uri?, tags: List<ChipData>) {
+    fun createRoom(roomType: Int, name: String, image: Any?) {
         viewModelScope.launch {
             if (name.isEmpty()) {
                 _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_name))
@@ -175,9 +141,20 @@ class AddRoomViewModel(
                 try {
                     val id = roomProvider.createRoom(
                         title = name,
-                        type = roomType,
-                        logo = if (image != null) loadImage(image) else null,
-                        tags = tags.map { it.text })
+                        type = roomType
+                    )
+
+                    if (addTags.isNotEmpty()) {
+                        roomProvider.addTags(id, addTags)
+                    }
+
+                    if (id.isNotEmpty() && image != null) {
+                        roomProvider.setLogo(id, loadImage(image, false))
+                    }
+
+                    if (isDeleteLogo) {
+                        roomProvider.deleteLogo(id)
+                    }
 
                     while (checkCopy(id)) {
                         delay(100)
@@ -191,11 +168,55 @@ class AddRoomViewModel(
                         }
                     }
                 } catch (error: Throwable) {
-                    withContext(Dispatchers.Main) {
-                        _viewState.value = ViewState.Error(error.message.toString())
-                        delay(4000)
-                        _viewState.value = ViewState.None
+                    _viewState.value = ViewState.Error(error.message.toString())
+                    delay(4000)
+                    _viewState.value = ViewState.None
+                }
+            }
+        }
+    }
+
+    fun edit(name: String) {
+        viewModelScope.launch {
+            if (name.isEmpty()) {
+                _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_name))
+                delay(4000)
+                _viewState.value = ViewState.None
+                return@launch
+            }
+            _viewState.value = ViewState.Loading
+            withContext(Dispatchers.IO) {
+                try {
+                    val id = roomInfo?.id ?: ""
+                    val isSuccess = roomProvider.renameRoom(id, name)
+
+                    if (addTags.isNotEmpty()) {
+                        roomProvider.addTags(id, addTags)
                     }
+
+                    if (deleteTags.isNotEmpty()) {
+                        roomProvider.deleteTags(id, deleteTags)
+                    }
+
+                    when {
+                        isDeleteLogo -> {
+                            roomProvider.deleteLogo(id)
+                        }
+                        roomState.value.imageUri is Uri -> {
+                            roomProvider.setLogo(id, loadImage(roomState.value.imageUri!!, false))
+
+                        }
+                    }
+
+                    if (isSuccess) {
+                        _viewState.value = ViewState.Success(roomInfo?.id ?: "")
+                    } else {
+                        _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_edit))
+                    }
+                } catch (error: Throwable) {
+                    _viewState.value = ViewState.Error(error.message.toString())
+                    delay(4000)
+                    _viewState.value = ViewState.None
                 }
             }
         }
@@ -204,16 +225,18 @@ class AddRoomViewModel(
     private suspend fun checkCopy(id: String): Boolean {
         if (roomInfo == null) return false
         if (!isCopy) return false
-        val operation = context.api.copy(RequestBatchOperation(destFolderId = id).apply {
+        //TODO check only the first operation???
+        context.api.copyCoroutines(RequestBatchOperation(destFolderId = id).apply {
             folderIds = listOf(roomInfo.id)
-        }).blockingFirst().body()?.response?.get(0)
-        while (true) {
-            val op = context.api.status().blockingGet().response.find { it.id == operation?.id } ?: break
-            if (op.progress == 100 || op.finished) {
-                break
+        }).response.forEach { operation ->
+            if (operation.finished) return false
+            while (true) {
+                val op = context.api.statusCoroutines().response.find { it.id == operation.id } ?: break
+                if (op.progress == 100 || op.finished) break
+                delay(100)
             }
-            delay(100)
         }
+
         return false
     }
 
@@ -222,36 +245,16 @@ class AddRoomViewModel(
     }
 
     fun createTag(tag: ChipData) {
-        viewModelScope.launch {
-            _viewState.value = ViewState.Loading
-            withContext(Dispatchers.IO) {
-                try {
-                    roomProvider.createTag(tag.text)
-                    _viewState.value = ViewState.Success(null, ChipViewState(tag, false))
-                } catch (error: Throwable) {
-                    _viewState.value = ViewState.Error(error.message.toString())
-                    // Need delay to short snackbar
-                    delay(4000)
-                    _viewState.value = ViewState.None
-                }
-            }
+        if (!addTags.contains(tag.text)) {
+            addTags.add(tag.text)
         }
+        _viewState.value = ViewState.Success(null, ChipViewState(tag, false))
     }
 
     fun deleteTag(tag: ChipData) {
-        viewModelScope.launch {
-            _viewState.value = ViewState.Loading
-            withContext(Dispatchers.IO) {
-                try {
-                    roomProvider.deleteTag(tag = tag.text)
-                    _viewState.value = ViewState.Success(null, ChipViewState(tag, true))
-                } catch (error: Throwable) {
-                    _viewState.value = ViewState.Error(error.message.toString())
-                    // Need delay to short snackbar
-                    delay(4000)
-                    _viewState.value = ViewState.None
-                }
-            }
+        if (!deleteTags.contains(tag.text)) {
+            deleteTags.add(tag.text)
         }
+        _viewState.value = ViewState.Success(null, ChipViewState(tag, true))
     }
 }

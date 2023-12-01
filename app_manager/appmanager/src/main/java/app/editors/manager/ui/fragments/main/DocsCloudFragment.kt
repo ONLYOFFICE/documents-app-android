@@ -30,6 +30,7 @@ import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
+import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
@@ -73,16 +74,19 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     val folder = data?.getSerializable(StorageActivity.TAG_RESULT, CloudFolder::class.java)
                     cloudPresenter.addFolderAndOpen(folder, linearLayoutManager?.findFirstVisibleItemPosition() ?: -1)
                 }
+
                 BaseActivity.REQUEST_ACTIVITY_SHARE -> {
                     if (data?.hasExtra(ShareActivity.TAG_RESULT) == true) {
                         cloudPresenter.setItemsShared(data.getBooleanExtra(ShareActivity.TAG_RESULT, false))
                     }
                 }
+
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
                     cameraUri?.let { uri ->
                         cloudPresenter.upload(uri, null)
                     }
                 }
+
                 FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED -> {
                     onRefresh()
                 }
@@ -198,6 +202,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 tag = DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE,
                 acceptErrorTint = true
             )
+
             is ExplorerContextItem.Edit -> cloudPresenter.onEditContextClick()
             is ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
@@ -387,6 +392,24 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             )
             updateProgressDialog(100, 0)
         }
+    }
+
+    override fun onCreateRoom(type: Int, cloudFolder: CloudFolder, isCopy: Boolean) {
+        showAddRoomFragment(type, cloudFolder, isCopy)
+    }
+
+    protected fun showAddRoomFragment(type: Int, cloudFolder: CloudFolder? = null, isCopy: Boolean = false) {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            AddRoomFragment.TAG_RESULT, this
+        ) { _, args ->
+            if (cloudFolder != null && !isCopy) {
+                onRefresh()
+            } else {
+                cloudPresenter.getItemsById(args.getString("id"))
+            }
+        }
+        AddRoomDialog.newInstance(type, cloudFolder, isCopy)
+            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
     }
 
     protected open fun getFilters(): Boolean {

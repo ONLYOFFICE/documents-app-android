@@ -20,6 +20,8 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
+import org.json.JSONObject
+import java.util.UUID
 import javax.inject.Inject
 
 class RoomProvider @Inject constructor(private val roomService: RoomService) {
@@ -54,44 +56,17 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     }
 
-    fun renameRoom(id: String, newTitle: String): Observable<BaseResponse> {
-        return roomService.renameRoom(id, RequestRenameRoom(newTitle))
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { it.body() }
+    suspend fun renameRoom(id: String, newTitle: String): Boolean {
+        return roomService.renameRoom(id, RequestRenameRoom(title = newTitle)).isSuccessful
     }
 
-    suspend fun createRoom(title: String, type: Int, tags: List<String>?, logo: Bitmap?): String {
+    suspend fun createRoom(title: String, type: Int): String {
         val response = roomService.createRoom(
             RequestCreateRoom(
                 title = title,
                 roomType = type
             )
         )
-        if (response.isSuccessful) {
-            if (!tags.isNullOrEmpty()) {
-                response.body()?.response?.id?.let {
-                    roomService.addTags(it, RequestAddTags(tags.toTypedArray()))
-                }
-            }
-            if (logo != null) {
-                val uploadResponse = roomService.uploadLogo(
-                    MultipartBody.Part.createFormData(
-                        "logo",
-                        "logo.png",
-                        RequestBody.create(MediaType.get("image/*"), logo.toByteArray())
-                    )
-                )
-                if (uploadResponse.isSuccessful) {
-                    response.body()?.response?.id?.let {
-                        roomService.setLogo(
-                            it,
-                            RequestSetLogo(uploadResponse.body()?.data ?: "", width = logo.width, height = logo.height)
-                        )
-                    }
-                }
-            }
-        }
         return response.body()?.response?.id ?: ""
     }
 
@@ -114,22 +89,18 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         }
     }
 
-    suspend fun createTag(tag: String): Boolean {
-        val allTags = roomService.getTags().tags
-        if (allTags.contains(tag)) return false
-        return roomService.createTag(RequestCreateTag(name = tag)).isSuccessful
+    suspend fun addTags(id: String, tags: List<String>): Boolean {
+        val existTags = roomService.getTags().tags
+        tags.forEach { newTag ->
+            if (!existTags.contains(newTag)) {
+                roomService.createTag(RequestCreateTag(newTag))
+            }
+        }
+        return roomService.addTags(id, RequestAddTags(tags.toTypedArray())).isSuccessful
     }
 
-    suspend fun deleteTag(id: String? = null, tag: String): Boolean {
-        return if (roomService.getTags().tags.contains(tag)) {
-            if (id != null) {
-                roomService.deleteTagsFromRoom(id, RequestAddTags(arrayOf(tag))).isSuccessful
-            } else {
-                roomService.deleteTags(RequestAddTags(arrayOf(tag))).isSuccessful
-            }
-        } else {
-            true
-        }
+    suspend fun deleteTags(id: String, tag: List<String>): Boolean {
+        return roomService.deleteTagsFromRoom(id, RequestAddTags(tag.toTypedArray())).isSuccessful
     }
 
     suspend fun deleteLogo(id: String): Boolean {
@@ -147,4 +118,27 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         val body = response.body()
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
     }
+
+    suspend fun setLogo(id: String, logo: Bitmap) {
+        val logId = UUID.randomUUID().toString()
+        val uploadResponse = roomService.uploadLogo(
+            MultipartBody.Part.createFormData(
+                logId,
+                "$logId.png",
+                RequestBody.create(MediaType.get("image/*"), logo.toByteArray())
+            )
+        )
+        if (uploadResponse.isSuccessful) {
+            roomService.setLogo(
+                id,
+                RequestSetLogo(
+                    tmpFile = JSONObject(uploadResponse.body()?.string() ?: "").optJSONObject("response")?.optString("data")
+                        ?: "",
+                    width = logo.width,
+                    height = logo.height
+                )
+            )
+        }
+    }
+
 }
