@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -39,7 +42,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
@@ -54,12 +62,10 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.link.ExternalLinkEffect
 import app.editors.manager.viewModels.link.ExternalLinkState
 import app.editors.manager.viewModels.link.ExternalLinkViewModel
-import app.editors.manager.viewModels.link.ExternalLinkViewModelFactory
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import lib.compose.ui.addIf
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.theme.colorTextTertiary
@@ -72,13 +78,10 @@ import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
 import lib.toolkit.base.managers.utils.FragmentUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.putArgs
 
 class ExternalLinkFragment : BaseAppFragment() {
-
-    private val viewModel by viewModels<ExternalLinkViewModel> {
-        ExternalLinkViewModelFactory(requireContext().roomProvider)
-    }
 
     companion object {
 
@@ -104,6 +107,10 @@ class ExternalLinkFragment : BaseAppFragment() {
         }
     }
 
+    enum class RoomInfoScreens {
+        RoomInfo, UserAccess
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext())
     }
@@ -111,41 +118,83 @@ class ExternalLinkFragment : BaseAppFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as? ComposeView)?.setContent {
             ManagerTheme {
+                val scaffoldState = rememberScaffoldState()
+                val navController = rememberNavController()
+                val viewModel = viewModel { ExternalLinkViewModel(requireContext().roomProvider) }
                 val state by viewModel.state.collectAsState()
+                val roomId = remember { arguments?.getString(KEY_ROOM_ID) }
+                val roomType = remember { arguments?.getInt(KEY_ROOM_TYPE) }
+                val roomTitle = remember { arguments?.getString(KEY_ROOM_TITLE) }
 
                 LaunchedEffect(Unit) {
-                    viewModel.fetchRoomInfo(arguments?.getString(KEY_ROOM_ID).orEmpty())
+                    viewModel.effect.collect { effect ->
+                        when (effect) {
+                            is ExternalLinkEffect.Error -> {
+                                UiUtils.getShortSnackBar(requireView())
+                                    .setText(effect.message)
+                                    .show()
+                            }
+                        }
+                    }
                 }
 
-                ExternalLinkScreen(
-                    state = state,
-                    effect = viewModel.effect,
-                    roomType = arguments?.getInt(KEY_ROOM_TYPE),
-                    roomTitle = arguments?.getString(KEY_ROOM_TITLE),
-                    onBackClick = parentFragmentManager::popBackStack
-                )
+                LaunchedEffect(Unit) {
+                    viewModel.fetchRoomInfo(roomId.orEmpty())
+                }
+
+                BackHandler {
+                    parentFragmentManager.popBackStack()
+                }
+
+                Surface(color = MaterialTheme.colors.background) {
+                    NavHost(navController = navController, startDestination = RoomInfoScreens.RoomInfo.name) {
+                        composable(route = RoomInfoScreens.RoomInfo.name) {
+                            RoomInfoScreen(
+                                scaffoldState = scaffoldState,
+                                state = state,
+                                roomType = roomType,
+                                roomTitle = roomTitle,
+                                onBackClick = parentFragmentManager::popBackStack,
+                                onSetUserAccess = { userId, access ->
+                                    navController.navigate(
+                                        RoomInfoScreens.UserAccess.name +
+                                                "?=userId=$userId" +
+                                                "&access=$access"
+                                    )
+                                }
+                            )
+                        }
+                        composable(
+                            route = "${RoomInfoScreens.UserAccess.name}?=userId={userId}&access={access}",
+                            arguments = listOf(
+                                navArgument("userId") { type = NavType.StringType },
+                                navArgument("access") { type = NavType.IntType }
+                            )
+                        ) { backStackEntry ->
+                            UserAccessScreen(
+                                scaffoldState = scaffoldState,
+                                viewModel = viewModel,
+                                navController = navController,
+                                roomId = roomId.orEmpty(),
+                                userId = backStackEntry.arguments?.getString("userId").orEmpty(),
+                                currentAccess = backStackEntry.arguments?.getInt("access")
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 
     @Composable
-    private fun ExternalLinkScreen(
+    private fun RoomInfoScreen(
+        scaffoldState: ScaffoldState,
         state: ExternalLinkState,
-        effect: Flow<ExternalLinkEffect>,
         roomType: Int?,
         roomTitle: String?,
+        onSetUserAccess: (userId: String, access: Int) -> Unit,
         onBackClick: () -> Unit
     ) {
-        val scaffoldState = rememberScaffoldState()
-
-        LaunchedEffect(Unit) {
-            effect.collect { effect ->
-                when (effect) {
-                    is ExternalLinkEffect.Error -> scaffoldState.snackbarHostState.showSnackbar(effect.message)
-                }
-            }
-        }
-
         AppScaffold(
             scaffoldState = scaffoldState,
             topBar = {
@@ -175,9 +224,21 @@ class ExternalLinkFragment : BaseAppFragment() {
                 if (ApiContract.RoomType.hasExternalLink(roomType)) {
                     ExternalLinkBlock(state.generalLink, state.additionalLinks)
                 }
-                ShareUsersList(R.string.rooms_info_admin_title, groupedShareList[ShareGroup.Admin])
-                ShareUsersList(R.string.rooms_info_users_title, groupedShareList[ShareGroup.User])
-                ShareUsersList(R.string.rooms_info_expected_title, groupedShareList[ShareGroup.Expected])
+                ShareUsersList(
+                    title = R.string.rooms_info_admin_title,
+                    shareList = groupedShareList[ShareGroup.Admin],
+                    onClick = onSetUserAccess
+                )
+                ShareUsersList(
+                    title = R.string.rooms_info_users_title,
+                    shareList = groupedShareList[ShareGroup.User],
+                    onClick = onSetUserAccess
+                )
+                ShareUsersList(
+                    title = R.string.rooms_info_expected_title,
+                    shareList = groupedShareList[ShareGroup.Expected],
+                    onClick = onSetUserAccess
+                )
             }
         }
     }
@@ -212,11 +273,10 @@ class ExternalLinkFragment : BaseAppFragment() {
         ) {}
     }
 
-    @OptIn(ExperimentalGlideComposeApi::class)
     @Composable
-    fun ShareUsersList(title: Int, shareList: List<Share>?) {
-        var visible by remember { mutableStateOf(true) }
+    fun ShareUsersList(title: Int, shareList: List<Share>?, onClick: (String, Int) -> Unit) {
         val context = LocalContext.current
+        var visible by remember { mutableStateOf(true) }
         val portal = remember { context.accountOnline?.portal }
 
         if (!shareList.isNullOrEmpty()) {
@@ -245,36 +305,8 @@ class ExternalLinkFragment : BaseAppFragment() {
                 AnimatedVisibilityVerticalFade(visible = visible) {
                     Column {
                         shareList.forEach { share ->
-                            Column(modifier = Modifier.clickable { }) {
-                                Row(
-                                    modifier = Modifier
-                                        .padding(horizontal = 16.dp)
-                                        .fillMaxWidth()
-                                        .height(56.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    GlideImage(
-                                        modifier = Modifier
-                                            .padding(end = 16.dp)
-                                            .clip(CircleShape)
-                                            .size(40.dp)
-                                            .background(MaterialTheme.colors.colorTextTertiary),
-                                        model = "${ApiContract.SCHEME_HTTPS}$portal${share.sharedTo.avatarMedium}",
-                                        loading = placeholder(R.drawable.ic_account_placeholder),
-                                        contentDescription = null
-                                    )
-                                    Text(modifier = Modifier.weight(1f), text = share.sharedTo.displayName)
-                                    Text(
-                                        text = stringResource(id = RoomUtils.getAccessTitle(share)),
-                                        color = MaterialTheme.colors.colorTextSecondary
-                                    )
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_arrow_right),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colors.colorTextTertiary
-                                    )
-                                }
-                                AppDivider(startIndent = 16.dp + 40.dp + 16.dp)
+                            ShareUserItem(share = share, portal = portal) {
+                                onClick.invoke(share.sharedTo.id, share.intAccess)
                             }
                         }
                     }
@@ -283,9 +315,54 @@ class ExternalLinkFragment : BaseAppFragment() {
         }
     }
 
+    @OptIn(ExperimentalGlideComposeApi::class)
+    @Composable
+    private fun ShareUserItem(share: Share, portal: String?, onClick: () -> Unit) {
+        Column(modifier = Modifier.addIf(share.canEditAccess) { clickable(onClick = onClick) }) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .height(56.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                GlideImage(
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .clip(CircleShape)
+                        .size(40.dp)
+                        .background(MaterialTheme.colors.colorTextTertiary),
+                    model = "${ApiContract.SCHEME_HTTPS}$portal${share.sharedTo.avatarMedium}",
+                    loading = placeholder(R.drawable.ic_account_placeholder),
+                    contentDescription = null
+                )
+                Text(
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.body1,
+                    text = share.sharedTo.displayName
+                )
+                Text(
+                    text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share)),
+                    style = MaterialTheme.typography.body2,
+                    color = if (share.canEditAccess)
+                        MaterialTheme.colors.colorTextSecondary else
+                        MaterialTheme.colors.colorTextTertiary
+                )
+                if (share.canEditAccess) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_arrow_right),
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.colorTextTertiary
+                    )
+                }
+            }
+            AppDivider(startIndent = 16.dp + 40.dp + 16.dp)
+        }
+    }
+
     @Preview
     @Composable
-    fun ExternalLinkScreenPreview() {
+    private fun ExternalLinkScreenPreview() {
         val link = ExternalLink(
             accessCode = 2,
             isLocked = false,
@@ -307,7 +384,8 @@ class ExternalLinkFragment : BaseAppFragment() {
         )
 
         ManagerTheme {
-            ExternalLinkScreen(
+            RoomInfoScreen(
+                scaffoldState = rememberScaffoldState(),
                 roomTitle = "Room title",
                 roomType = 1,
                 state = ExternalLinkState(
@@ -322,7 +400,7 @@ class ExternalLinkFragment : BaseAppFragment() {
                     )
                 ),
                 onBackClick = {},
-                effect = flow { }
+                onSetUserAccess = { _, _ -> }
             )
         }
     }

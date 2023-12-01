@@ -15,7 +15,8 @@ data class Share(
     val access: String = ApiContract.ShareType.NONE,
     val sharedTo: SharedTo = SharedTo(),
     val isLocked: Boolean = false,
-    val isOwner: Boolean = false
+    val isOwner: Boolean = false,
+    val canEditAccess: Boolean = false
 ) {
     val intAccess: Int
         get() {

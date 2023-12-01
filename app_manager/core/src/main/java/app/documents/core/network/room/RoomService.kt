@@ -4,7 +4,9 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
+import app.documents.core.network.models.share.response.ResponseRoomShare
 import app.documents.core.network.room.models.*
+import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.response.ResponseExternalLink
 import app.documents.core.network.share.models.response.ResponseShare
 import io.reactivex.Observable
@@ -171,4 +173,10 @@ interface RoomService {
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share?filterType=0")
     suspend fun getRoomUsers(@Path("id") id: String): Response<ResponseShare>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share")
+    suspend fun setRoomUserAccess(@Path("id") id: String, @Body body: RequestRoomShare): Response<ResponseRoomShare>
 }

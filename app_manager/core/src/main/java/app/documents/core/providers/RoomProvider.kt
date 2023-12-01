@@ -12,6 +12,8 @@ import app.documents.core.network.room.models.RequestRenameRoom
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
+import app.documents.core.network.share.models.request.Invitation
+import app.documents.core.network.share.models.request.RequestRoomShare
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -117,6 +119,13 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         val response = roomService.getRoomUsers(id)
         val body = response.body()
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
+    }
+
+    suspend fun setRoomUserAccess(roomId: String, userId: String, access: Int): Share? {
+        val body = RequestRoomShare(listOf(Invitation(id = userId, access = access)))
+        val response = roomService.setRoomUserAccess(roomId, body)
+        return if (response.isSuccessful)
+            response.body()?.response?.members?.getOrNull(0) else throw HttpException(response)
     }
 
     suspend fun setLogo(id: String, logo: Bitmap) {
