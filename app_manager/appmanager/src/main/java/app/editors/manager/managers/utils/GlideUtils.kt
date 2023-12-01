@@ -34,7 +34,7 @@ object GlideUtils {
         )
     }
 
-    fun getCorrectLoad(url: String, token: String): Any {
+    fun getCorrectLoad(url: String?, token: String): Any {
         return GlideUrl(
             url, LazyHeaders.Builder()
                 .addHeader(ApiContract.HEADER_AUTHORIZATION, token)

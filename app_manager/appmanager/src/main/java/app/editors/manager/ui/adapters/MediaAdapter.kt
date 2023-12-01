@@ -141,7 +141,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
         private val requestListener: RequestListener<Bitmap> = object : RequestListener<Bitmap> {
             override fun onLoadFailed(
                 e: GlideException?,
-                model: Any,
+                model: Any?,
                 target: Target<Bitmap?>,
                 isFirstResource: Boolean
             ): Boolean {
@@ -156,7 +156,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
             }
 
             override fun onResourceReady(
-                resource: Bitmap?,
+                resource: Bitmap,
                 model: Any,
                 target: Target<Bitmap?>,
                 dataSource: DataSource,

@@ -11,6 +11,7 @@ import app.documents.core.storage.recent.RecentDao
 import app.editors.manager.di.module.AppModule
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
+import app.editors.manager.managers.tools.ErrorHandler
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.filter.BaseFilterPresenter
@@ -78,6 +79,7 @@ import dagger.BindsInstance
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
 import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.tools.ResourcesProvider
 import javax.inject.Singleton
 
 @Component(modules = [AppModule::class])
@@ -109,6 +111,8 @@ interface AppComponent {
     val accountOnline: CloudAccount?
     val recentDao: RecentDao?
     val appLocaleHelper: AppLocaleHelper
+    val resourcesProvider: ResourcesProvider
+    val errorHandler: ErrorHandler
 
     /*
    * Login

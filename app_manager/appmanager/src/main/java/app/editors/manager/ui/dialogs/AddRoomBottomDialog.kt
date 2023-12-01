@@ -29,6 +29,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import lib.compose.ui.addIf
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.views.AppDivider
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 
 class AddRoomBottomDialog : BaseBottomDialog() {
@@ -122,7 +123,7 @@ fun AddRoomItem(
     isClickable: Boolean = true,
     itemClick: () -> Unit
 ) {
-    Row(
+    Box(
         modifier = Modifier
             .wrapContentHeight()
             .addIf(isClickable) {
@@ -184,7 +185,7 @@ fun AddRoomItem(
                 }
             }
         }
-
+        AppDivider(startIndent = 64.dp, modifier = Modifier.align(Alignment.BottomStart))
     }
 
 }

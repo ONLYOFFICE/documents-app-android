@@ -110,14 +110,22 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @DELETE("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/tags")
-    suspend fun deleteTagsFromRoom(@Path("id") id: String, @Body body: RequestAddTags): Response<BaseResponse>
+    @HTTP(
+        method = "DELETE",
+        path = "api/" + ApiContract.API_VERSION + "/files/rooms/{id}/tags",
+        hasBody = true
+    )
+    suspend fun deleteTagsFromRoom(@Path("id") id: String, @Body body: RequestAddTags): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @DELETE("api/" + ApiContract.API_VERSION + "/files/tags")
+    @HTTP(
+        method = "DELETE",
+        path = "api/" + ApiContract.API_VERSION + "/files/tags",
+        hasBody = true
+    )
     suspend fun deleteTags(@Body body: RequestAddTags): Response<BaseResponse>
 
     @Headers(
@@ -125,7 +133,7 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/logo")
-    fun setLogo(@Path("id") id: String, @Body body: RequestSetLogo): Single<Response<BaseResponse>>
+    suspend fun setLogo(@Path("id") id: String, @Body body: RequestSetLogo): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -138,6 +146,13 @@ interface RoomService {
     @POST("api/" + ApiContract.API_VERSION + "/files/logos")
     suspend fun uploadLogo(
         @Part part: MultipartBody.Part
-    ): Response<ResponseUploadLogo>
+    ): Response<ResponseBody>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/files/owner")
+    suspend fun setOwner(@Body body: RequestRoomOwner): Response<ResponseBody>
 
 }

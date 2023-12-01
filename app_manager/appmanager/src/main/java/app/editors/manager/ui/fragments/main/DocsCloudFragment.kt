@@ -416,16 +416,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 onRefresh()
             } else {
                 cloudPresenter.getItemsById(args.getString("id"))
-
             }
         }
-        requireActivity().supportFragmentManager.clearFragmentResultListener("result")
-        if (isTablet) {
-            AddRoomDialog.newInstance(type, cloudFolder, isCopy)
-                .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
-        } else {
-            AddRoomFragment.show(requireActivity().supportFragmentManager, type, cloudFolder, isCopy)
-        }
+        AddRoomDialog.newInstance(type, cloudFolder, isCopy)
+            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
     }
 
     protected open fun getFilters(): Boolean {
@@ -448,6 +442,21 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         } else {
             filterActivity.launch(FilterActivity.getIntent(this, presenter.folderId, section, presenter.isRoot))
         }
+    }
+
+    override fun onLeaveRoomDialog(title: Int, question: Int, tag: String, isOwner: Boolean) {
+        showQuestionDialog(
+            title = getString(title),
+            string = getString(question),
+            acceptButton = if (isOwner) getString(R.string.leave_room_assign) else getString(R.string.dialogs_question_accept_yes),
+            cancelButton = getString(R.string.dialogs_common_cancel_button),
+            tag = tag
+        )
+    }
+
+    override fun showSetOwnerFragment(cloudFolder: CloudFolder) {
+        hideDialog()
+        ShareActivity.show(fragment = this, item = cloudFolder, isInfo = false, leave = true)
     }
 
     val isRoot: Boolean

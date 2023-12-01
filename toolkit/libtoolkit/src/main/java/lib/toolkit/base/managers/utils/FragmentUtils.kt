@@ -86,23 +86,11 @@ object FragmentUtils {
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
-    fun removeFragment(fragmentManager: FragmentManager, fragment:Fragment) {
-        fragmentManager.beginTransaction().apply {
-            setCustomAnimations(
-                R.anim.fragment_fade_in,
-                R.anim.fragment_fade_out,
-                R.anim.fragment_fade_in,
-                R.anim.fragment_fade_out
-            )
-        }.remove(fragment).commit()
-    }
-
 }
 
 fun Fragment.setFragmentResultListener(block: (args: Bundle?) -> Unit) {
     parentFragmentManager.setFragmentResultListener("result", this) { _, bundle ->
         block(bundle)
-        parentFragmentManager.clearFragmentResultListener("result")
     }
 }
 

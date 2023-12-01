@@ -310,6 +310,7 @@ dependencies {
     implementation(Libs.facebookLogin)
     implementation(Libs.pageIndicator)
     implementation(Libs.glide)
+    implementation(Libs.glideCompose)
     implementation(Libs.photoView)
     implementation(Libs.androidWork)
 
