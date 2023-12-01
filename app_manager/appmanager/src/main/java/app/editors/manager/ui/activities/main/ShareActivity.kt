@@ -5,13 +5,16 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import app.editors.manager.databinding.ActivityShareBinding
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.share.AddPagerFragment
 import app.editors.manager.ui.fragments.share.SettingsFragment
+import app.editors.manager.ui.fragments.share.UsersFragment
 import app.editors.manager.ui.views.animation.HeightValueAnimator
+import lib.toolkit.base.managers.utils.getSerializableExt
 
 class ShareActivity : BaseAppActivity() {
 
@@ -20,14 +23,16 @@ class ShareActivity : BaseAppActivity() {
 
         const val TAG_SHARE_ITEM = "TAG_SHARE_ITEM"
         const val TAG_INFO = "TAG_INFO"
+        const val TAG_LEAVE = "TAG_LEAVE"
         const val TAG_RESULT = "TAG_RESULT"
         private const val PIXEL_C = "Pixel C"
 
         @JvmStatic
-        fun show(fragment: Fragment, item: Item?, isInfo: Boolean = true) {
+        fun show(fragment: Fragment, item: Item?, isInfo: Boolean = true, leave: Boolean = false) {
             fragment.startActivityForResult(Intent(fragment.context, ShareActivity::class.java).apply {
                 putExtra(TAG_SHARE_ITEM, item)
                 putExtra(TAG_INFO, isInfo)
+                putExtra(TAG_LEAVE, leave)
             }, REQUEST_ACTIVITY_SHARE)
         }
     }
@@ -77,12 +82,21 @@ class ShareActivity : BaseAppActivity() {
     private fun init(savedInstanceState: Bundle?) {
         valueAnimator = HeightValueAnimator(viewBinding?.appBarToolbar)
         setSupportActionBar(viewBinding?.appBarToolbar)
+
         if (savedInstanceState == null) {
-            val isInfo = intent.getBooleanExtra(TAG_INFO, true)
-            if (isInfo) {
-                showFragment(SettingsFragment.newInstance(intent.getSerializableExtra(TAG_SHARE_ITEM) as Item), null)
-            } else {
-                showFragment(AddPagerFragment.newInstance(intent.getSerializableExtra(TAG_SHARE_ITEM) as Item), null)
+            when  {
+                intent.getBooleanExtra(TAG_INFO, false) -> {
+                    showFragment(SettingsFragment.newInstance(intent.getSerializableExt(TAG_SHARE_ITEM)), null)
+
+                }
+                intent.getBooleanExtra(TAG_LEAVE, false) -> {
+                    viewBinding?.appBarLayout?.isVisible = false
+                    showFragment(UsersFragment.newInstance(intent.getSerializableExt(TAG_SHARE_ITEM)), null)
+                }
+                else ->  {
+                    showFragment(AddPagerFragment.newInstance(intent.getSerializableExt(TAG_SHARE_ITEM)), null)
+
+                }
             }
         }
     }

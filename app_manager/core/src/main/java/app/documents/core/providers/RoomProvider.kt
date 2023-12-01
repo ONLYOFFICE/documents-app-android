@@ -9,6 +9,7 @@ import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestRenameRoom
+import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -18,6 +19,7 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.json.JSONObject
+import retrofit2.HttpException
 import java.util.UUID
 import javax.inject.Inject
 
@@ -124,6 +126,11 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 )
             )
         }
+    }
+
+    suspend fun setRoomOwner(id: String, userId: String) {
+        val result = roomService.setOwner(RequestRoomOwner(userId, listOf(id)))
+        if (!result.isSuccessful) throw HttpException(result)
     }
 
 }

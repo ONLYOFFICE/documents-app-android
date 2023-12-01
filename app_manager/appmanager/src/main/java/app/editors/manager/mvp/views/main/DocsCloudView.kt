@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.views.main
 
+import androidx.annotation.StringRes
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -30,4 +31,11 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onCreateRoom(type: Int = 2, cloudFolder: CloudFolder, isCopy: Boolean = false)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onLeaveRoomDialog(@StringRes title: Int, @StringRes question: Int, tag: String, isOwner: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showSetOwnerFragment(cloudFolder: CloudFolder)
+
 }
