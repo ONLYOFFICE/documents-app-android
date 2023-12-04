@@ -28,7 +28,7 @@ sealed class ExternalLinkEffect {
     data class Error(val message: Int) : ExternalLinkEffect()
 }
 
-class ExternalLinkViewModel(private val roomProvider: RoomProvider) : BaseViewModel() {
+class ExternalLinkViewModel(private val roomProvider: RoomProvider, private val roomId: String) : BaseViewModel() {
 
     private val _state: MutableStateFlow<ExternalLinkState> = MutableStateFlow(ExternalLinkState())
     val state: StateFlow<ExternalLinkState> = _state.asStateFlow()
@@ -36,7 +36,7 @@ class ExternalLinkViewModel(private val roomProvider: RoomProvider) : BaseViewMo
     private val _effect: MutableSharedFlow<ExternalLinkEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<ExternalLinkEffect> = _effect.asSharedFlow()
 
-    fun fetchRoomInfo(roomId: String) {
+    fun fetchRoomInfo() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 var generalLink: ExternalLink? = null
@@ -75,7 +75,7 @@ class ExternalLinkViewModel(private val roomProvider: RoomProvider) : BaseViewMo
                     }
                     _state.value = _state.value.copy(shareList = modifiedList)
                 } else {
-                    fetchRoomInfo(roomId)
+                    fetchRoomInfo()
                 }
             } catch (httpException: HttpException) {
                 onError(httpException)

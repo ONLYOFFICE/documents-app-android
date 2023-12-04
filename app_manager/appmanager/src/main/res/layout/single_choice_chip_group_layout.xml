@@ -27,7 +27,7 @@
         app:singleSelection="true">
 
         <com.google.android.material.chip.Chip
-            style="@style/Widget.Common.Chip"
+            style="@style/Widget.Common.Chip.Closable"
             tools:text="Sample chip" />
 
         <com.google.android.material.chip.Chip

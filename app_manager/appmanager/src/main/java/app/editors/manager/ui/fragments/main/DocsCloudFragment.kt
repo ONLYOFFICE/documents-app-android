@@ -430,12 +430,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private fun showRoomInfoFragment() {
         (presenter.itemClicked as? CloudFolder)?.let { room ->
-            ExternalLinkFragment.show(
-                fragmentManager = requireActivity().supportFragmentManager,
-                id = room.id,
-                type = room.roomType,
-                title = room.title
-            )
+            ExternalLinkFragment.newInstance(room)
+                .show(requireActivity().supportFragmentManager, ExternalLinkFragment.TAG)
         }
     }
 

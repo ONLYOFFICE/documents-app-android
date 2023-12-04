@@ -26,6 +26,7 @@
     <color name="colorCloudItem">#EDF9FF</color>
     <color name="colorButtonBackground">@color/colorBackdrop</color>
     <color name="colorMediaBackground">@color/colorBlack</color>
+    <color name="colorChipBackground">@color/colorBackdrop</color>
 
     <!-- Editors -->
     <color name="colorDocTint">#446995</color>

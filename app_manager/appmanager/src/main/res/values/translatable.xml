@@ -372,6 +372,7 @@
     <string name="placeholder_loading_files">Loading files…</string>
     <string name="placeholder_loading_users">Loading users…</string>
     <string name="placeholder_loading_groups">Loading groups…</string>
+    <string name="placeholder_other_accounts">No other accounts here yet</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>

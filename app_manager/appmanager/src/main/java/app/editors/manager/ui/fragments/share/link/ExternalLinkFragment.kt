@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -41,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -49,6 +50,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.network.share.models.Share
@@ -58,7 +60,8 @@ import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.activities.main.ShareActivity
+import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.viewModels.link.ExternalLinkEffect
 import app.editors.manager.viewModels.link.ExternalLinkState
 import app.editors.manager.viewModels.link.ExternalLinkViewModel
@@ -77,38 +80,34 @@ import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
-import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 
-class ExternalLinkFragment : BaseAppFragment() {
+class ExternalLinkFragment : BaseDialogFragment() {
 
     companion object {
 
-        private const val KEY_ROOM_ID = "key_room_id"
-        private const val KEY_ROOM_TITLE = "key_room_type"
-        private const val KEY_ROOM_TYPE = "key_room_title"
+        private const val KEY_ROOM = "key_room"
+        val TAG = ExternalLinkFragment::class.java.simpleName
 
-        private fun newInstance(id: String, type: Int, title: String): ExternalLinkFragment =
-            ExternalLinkFragment().putArgs(
-                KEY_ROOM_ID to id,
-                KEY_ROOM_TYPE to type,
-                KEY_ROOM_TITLE to title,
-            )
+        fun newInstance(room: CloudFolder): ExternalLinkFragment =
+            ExternalLinkFragment().putArgs(KEY_ROOM to room)
 
-        fun show(fragmentManager: FragmentManager, id: String, type: Int, title: String) {
-            FragmentUtils.showFragment(
-                fragmentManager = fragmentManager,
-                fragment = newInstance(id, type, title),
-                frameId = android.R.id.content,
-                tag = TAG,
-                isAdd = true
-            )
-        }
     }
 
     enum class RoomInfoScreens {
         RoomInfo, UserAccess
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!UiUtils.isTablet(requireContext())) {
+            setStyle(
+                STYLE_NORMAL,
+                R.style.FullScreenDialog
+            )
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -118,13 +117,16 @@ class ExternalLinkFragment : BaseAppFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as? ComposeView)?.setContent {
             ManagerTheme {
+                val room = remember { arguments?.getSerializableExt<CloudFolder>(KEY_ROOM) }
                 val scaffoldState = rememberScaffoldState()
                 val navController = rememberNavController()
-                val viewModel = viewModel { ExternalLinkViewModel(requireContext().roomProvider) }
+                val viewModel = viewModel { ExternalLinkViewModel(requireContext().roomProvider, room?.id.orEmpty()) }
                 val state by viewModel.state.collectAsState()
-                val roomId = remember { arguments?.getString(KEY_ROOM_ID) }
-                val roomType = remember { arguments?.getInt(KEY_ROOM_TYPE) }
-                val roomTitle = remember { arguments?.getString(KEY_ROOM_TITLE) }
+                val shareActivityResult = rememberLauncherForActivityResult(
+                    ActivityResultContracts.StartActivityForResult()
+                ) {
+                    viewModel.fetchRoomInfo()
+                }
 
                 LaunchedEffect(Unit) {
                     viewModel.effect.collect { effect ->
@@ -139,11 +141,7 @@ class ExternalLinkFragment : BaseAppFragment() {
                 }
 
                 LaunchedEffect(Unit) {
-                    viewModel.fetchRoomInfo(roomId.orEmpty())
-                }
-
-                BackHandler {
-                    parentFragmentManager.popBackStack()
+                    viewModel.fetchRoomInfo()
                 }
 
                 Surface(color = MaterialTheme.colors.background) {
@@ -152,9 +150,17 @@ class ExternalLinkFragment : BaseAppFragment() {
                             RoomInfoScreen(
                                 scaffoldState = scaffoldState,
                                 state = state,
-                                roomType = roomType,
-                                roomTitle = roomTitle,
-                                onBackClick = parentFragmentManager::popBackStack,
+                                roomType = room?.roomType,
+                                roomTitle = room?.title,
+                                onBackClick = this@ExternalLinkFragment::onBackPressed,
+                                onAddUsers = {
+                                    ShareActivity.launchForResult(
+                                        launcher = shareActivityResult,
+                                        fragment = this@ExternalLinkFragment,
+                                        item = room,
+                                        isInfo = false
+                                    )
+                                },
                                 onSetUserAccess = { userId, access ->
                                     navController.navigate(
                                         RoomInfoScreens.UserAccess.name +
@@ -175,7 +181,7 @@ class ExternalLinkFragment : BaseAppFragment() {
                                 scaffoldState = scaffoldState,
                                 viewModel = viewModel,
                                 navController = navController,
-                                roomId = roomId.orEmpty(),
+                                roomId = room?.id.orEmpty(),
                                 userId = backStackEntry.arguments?.getString("userId").orEmpty(),
                                 currentAccess = backStackEntry.arguments?.getInt("access")
                             )
@@ -193,6 +199,7 @@ class ExternalLinkFragment : BaseAppFragment() {
         roomType: Int?,
         roomTitle: String?,
         onSetUserAccess: (userId: String, access: Int) -> Unit,
+        onAddUsers: () -> Unit,
         onBackClick: () -> Unit
     ) {
         AppScaffold(
@@ -211,9 +218,7 @@ class ExternalLinkFragment : BaseAppFragment() {
                         }
                     },
                     actions = {
-                        TopAppBarAction(icon = R.drawable.ic_add_users) {
-
-                        }
+                        TopAppBarAction(icon = R.drawable.ic_add_users, onClick = onAddUsers)
                     },
                     backListener = onBackClick
                 )
@@ -400,6 +405,7 @@ class ExternalLinkFragment : BaseAppFragment() {
                     )
                 ),
                 onBackClick = {},
+                onAddUsers = {},
                 onSetUserAccess = { _, _ -> }
             )
         }

@@ -5,9 +5,11 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
 import androidx.fragment.app.Fragment
-import app.editors.manager.databinding.ActivityShareBinding
 import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.databinding.ActivityShareBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.share.AddPagerFragment
 import app.editors.manager.ui.fragments.share.SettingsFragment
@@ -29,6 +31,19 @@ class ShareActivity : BaseAppActivity() {
                 putExtra(TAG_SHARE_ITEM, item)
                 putExtra(TAG_INFO, isInfo)
             }, REQUEST_ACTIVITY_SHARE)
+        }
+
+        fun launchForResult(
+            launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+            fragment: Fragment,
+            item: Item?,
+            isInfo: Boolean = true
+        ) {
+            val intent = Intent(fragment.context, ShareActivity::class.java).apply {
+                putExtra(TAG_SHARE_ITEM, item)
+                putExtra(TAG_INFO, isInfo)
+            }
+            launcher.launch(intent)
         }
     }
 

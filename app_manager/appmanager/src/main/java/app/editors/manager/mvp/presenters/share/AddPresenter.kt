@@ -13,6 +13,7 @@ import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
+import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.models.ModelShareStack
@@ -22,7 +23,9 @@ import app.editors.manager.mvp.models.ui.UserUi
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.share.AddView
 import app.editors.manager.ui.fragments.share.AddFragment
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
 import moxy.presenterScope
@@ -58,18 +61,35 @@ class AddPresenter(
 
     private suspend fun getUsers() {
         isCommon = false
+
+        val invitedUsersId = if ((item as? CloudFolder)?.isRoom == true) {
+            context.roomProvider.getRoomUsers(item.id).map { it.sharedTo.id }
+        } else {
+            emptyList()
+        }
+
         request(
             func = shareApi::getUsers,
             map = { response ->
-                response.response.filter { it.id != account.id && it.id != item.createdBy.id }.map { user ->
-                    UserUi(
-                        id = user.id,
-                        department = user.department,
-                        displayName = user.displayName.takeIf { name -> name.isNotEmpty() } ?: user.email ?: "",
-                        avatarUrl = user.avatar,
-                        status = user.activationStatus)
-                }.sortedBy { it.status } },
+                response.response
+                    .filter { user ->
+                        user.id != account.id
+                                && user.id != item.createdBy.id
+                                && user.displayName.isNotEmpty()
+                                && !invitedUsersId.contains(user.id)
+                    }
+                    .map { user ->
+                        UserUi(
+                            id = user.id,
+                            department = user.department,
+                            displayName = user.displayName,
+                            avatarUrl = user.avatar,
+                            status = user.activationStatus
+                        )
+                    }.sortedBy { it.status }
+            },
             onSuccess = { users ->
+                shareStack.clearModel()
                 shareStack.addUsers(users)
                 viewState.onGetUsers(userListItems)
                 loadAvatars()
@@ -240,16 +260,15 @@ class AddPresenter(
         }
     }
 
-    val shared: Unit
-        get() {
-            presenterScope.launch {
-                if (type == AddFragment.Type.USERS) {
-                    getUsers()
-                } else {
-                    getGroups()
-                }
+    fun fetchSharedList() {
+        presenterScope.launch {
+            if (type == AddFragment.Type.USERS) {
+                getUsers()
+            } else {
+                getGroups()
             }
         }
+    }
 
     fun shareItem() {
         presenterScope.launch {
