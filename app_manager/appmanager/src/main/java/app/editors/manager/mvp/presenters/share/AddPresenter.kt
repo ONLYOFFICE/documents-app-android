@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.share
 
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.ApiContract.Access
 import app.documents.core.network.common.extensions.checkStatusCode
 import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -108,7 +109,6 @@ class AddPresenter(
                         && user.id != item.createdBy.id
                         && user.displayName.isNotEmpty()
                         && !invitedUsersId.contains(user.id)
-                        && user.activationStatus == 1
             }
             .map { user ->
                 UserUi(
@@ -116,7 +116,8 @@ class AddPresenter(
                     department = user.department,
                     displayName = user.displayName,
                     avatarUrl = user.avatar,
-                    status = user.activationStatus
+                    status = user.activationStatus,
+                    isAdmin = user.isAdmin
                 )
             }.sortedBy { it.status }
     }
@@ -168,32 +169,33 @@ class AddPresenter(
     private val requestShare: RequestShare?
         get() {
             val shareItems: MutableList<RequestShareItem> = ArrayList()
+            val isRoom = (item as? CloudFolder)?.isRoom == true
 
             // Get users access list
-            for (item in shareStack.userSet) {
-                if (item.isSelected) {
-                    val idItem = item.id
-                    val accessCode = shareStack.accessCode
-                    shareItems.add(RequestShareItem(shareTo = idItem, access = accessCode.toString()))
+            for (user in shareStack.userSet) {
+                if (user.isSelected) {
+                    val accessCode = if (isRoom && user.isAdmin) Access.RoomAdmin.code else shareStack.accessCode
+                    shareItems.add(RequestShareItem(shareTo = user.id, access = accessCode.toString()))
                 }
             }
 
             // Get groups access list
-            for (item in shareStack.groupSet) {
-                if (item.isSelected) {
-                    val idItem = item.id
+            for (group in shareStack.groupSet) {
+                if (group.isSelected) {
                     val accessCode = shareStack.accessCode
-                    shareItems.add(RequestShareItem(shareTo = idItem, access = accessCode.toString()))
+                    shareItems.add(RequestShareItem(shareTo = group.id, access = accessCode.toString()))
                 }
             }
+
             if (shareItems.isNotEmpty()) {
                 val message = shareStack.message
                 return RequestShare(
                     share = shareItems,
                     isNotify = !message.isNullOrEmpty(),
-                    sharingMessage = message ?: ""
+                    sharingMessage = message.orEmpty()
                 )
             }
+
             return null
         }
 
@@ -218,7 +220,9 @@ class AddPresenter(
     private fun getOptions(value: String, isGroup: Boolean = false): Map<String, String> =
         mapOf(
             ApiContract.Parameters.ARG_FILTER_VALUE to value,
-            ApiContract.Parameters.ARG_FILTER_BY to if (isGroup) ApiContract.Parameters.VAL_SORT_BY_NAME else ApiContract.Parameters.VAL_SORT_BY_DISPLAY_NAME,
+            ApiContract.Parameters.ARG_FILTER_BY to if (isGroup)
+                ApiContract.Parameters.VAL_SORT_BY_NAME else
+                ApiContract.Parameters.VAL_SORT_BY_DISPLAY_NAME,
             ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS
         )
 
