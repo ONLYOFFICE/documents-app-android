@@ -407,13 +407,6 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         }
     }
 
-    override fun onUpdateAvatar(share: ShareUi) {
-        shareSettingsAdapter?.let { adapter ->
-            val position = adapter.updateItem(share)
-            adapter.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
-        }
-    }
-
     private fun showAccessPopup() {
         sharePopup = SharePopup(
             context = requireContext(),

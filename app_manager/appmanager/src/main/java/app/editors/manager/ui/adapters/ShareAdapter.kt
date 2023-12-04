@@ -8,14 +8,17 @@ import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 import lib.toolkit.base.ui.adapters.holder.ViewType
 
-class ShareAdapter(factory: ShareHolderFactory) : BaseViewTypeAdapter<ViewType>(factory) {
+class ShareAdapter(
+    factory: ShareHolderFactory,
+    private val firstLetterVisible: Boolean = true
+) : BaseViewTypeAdapter<ViewType>(factory) {
 
     private var mode: BaseAdapter.Mode = BaseAdapter.Mode.USERS
 
     override fun onBindViewHolder(holder: BaseViewHolder<ViewType>, position: Int) {
         if (holder is ShareAddItemViewHolder) {
             getItem(position)?.let { item ->
-                holder.bind(item, mode, getItem(position - 1))
+                holder.bind(item, mode, getItem(position - 1), firstLetterVisible)
             }
         }
         super.onBindViewHolder(holder, position)
@@ -30,6 +33,6 @@ class ShareAdapter(factory: ShareHolderFactory) : BaseViewTypeAdapter<ViewType>(
     }
 
     companion object {
-        const val PAYLOAD_AVATAR = "PAYLOAD_AVATAR"
+        const val PAYLOAD_SET_SELECT = "payload_set_select"
     }
 }

@@ -8,9 +8,10 @@ import android.view.*
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DiffUtil
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareAddListSearchBinding
-import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
@@ -24,6 +25,7 @@ import app.editors.manager.ui.adapters.holders.factory.ShareHolderFactory
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.custom.SharePanelViews
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.presenter.InjectPresenter
@@ -37,7 +39,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
 
     @ProvidePresenter
     fun providePresenter(): AddPresenter {
-        return AddPresenter(inputItem, AddFragment.Type.NONE)
+        return AddPresenter(inputItem, if (isRoom) AddPresenter.Type.Users else AddPresenter.Type.Common)
     }
 
     private var shareActivity: ShareActivity? = null
@@ -46,8 +48,8 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     private var toolbarMenu: Menu? = null
     private var searchItem: MenuItem? = null
     private var searchView: SearchView? = null
-    private val inputItem: Item
-        get() = arguments?.getSerializable(TAG_ITEM) as Item
+    private val inputItem: Item by lazy { checkNotNull(arguments?.getSerializableExt(AddFragment.TAG_ITEM)) }
+    private val isRoom: Boolean by lazy { (inputItem as? CloudFolder)?.isRoom == true }
     private var viewBinding: FragmentShareAddListSearchBinding? = null
 
     override fun onAttach(context: Context) {
@@ -137,7 +139,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
 
     override fun onRefresh() {
         searchView?.setQuery("", false)
-        addPresenter.getCommons()
+        addPresenter.fetchSharedList()
     }
 
     override fun onQueryTextSubmit(query: String) = false
@@ -146,12 +148,6 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         addPresenter.setSearchValue(newText)
         resetChecked()
         return false
-    }
-
-    override fun onUpdateSearch(list: MutableList<ViewType>?) {
-        if (list == null) {
-            setPlaceholder(true)
-        }
     }
 
     override fun onItemClick(view: View, position: Int) {
@@ -201,8 +197,11 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         show(requireContext())
     }
 
-    override fun onGetUsers(list: MutableList<ViewType>?) {
-        // Stub
+    override fun onGetUsers(list: MutableList<ViewType>) {
+        setPlaceholder(list.isEmpty())
+        swipeRefreshLayout?.isRefreshing = false
+        shareAdapter?.setMode(BaseAdapter.Mode.USERS)
+        updateDiffUtils(list)
     }
 
     override fun onGetGroups(list: List<ViewType>) {
@@ -210,7 +209,7 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     }
 
     override fun onGetCommon(list: List<ViewType>) {
-        setPlaceholder(list.isNotEmpty())
+        setPlaceholder(list.isEmpty())
         swipeRefreshLayout?.isRefreshing = false
         shareAdapter?.setMode(BaseAdapter.Mode.COMMON)
         updateDiffUtils(list)
@@ -233,21 +232,13 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
         shareAdapter?.set(list, result)
     }
 
-    override fun onUpdateAvatar(user: UserUi) {
-        shareAdapter?.let { adapter ->
-            val position = adapter.updateItem(user)
-            adapter.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
-        }
-    }
-
     private fun init(savedInstanceState: Bundle?) {
         setActionBarTitle(getString(R.string.share_title_search))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
         shareActivity?.expandAppBar()
         resetChecked()
-        restoreViews(savedInstanceState)
-        initViews()
+        if (savedInstanceState == null) initViews()
     }
 
     private fun initViews() {
@@ -257,20 +248,11 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
                 setAccessIcon(addPresenter.accessCode)
             }
         }
-        shareAdapter = ShareAdapter(ShareHolderFactory { view, position ->
-            onItemClick(view, position)
-        })
-        shareAdapter?.setMode(BaseAdapter.Mode.COMMON)
+        shareAdapter = ShareAdapter(ShareHolderFactory { view, position -> onItemClick(view, position) }, false)
+        shareAdapter?.setMode(if (isRoom) BaseAdapter.Mode.USERS else BaseAdapter.Mode.COMMON)
         recyclerView?.adapter = shareAdapter
+        addPresenter.fetchSharedList()
         setCountChecked()
-    }
-
-    private fun restoreViews(savedInstanceState: Bundle?) {
-        savedInstanceState?.let {
-            addPresenter.updateCommonSharedListState()
-        } ?: run {
-            addPresenter.getFilter("")
-        }
     }
 
     private fun setCountChecked() {
@@ -281,9 +263,13 @@ class AddSearchFragment : ListFragment(), AddView, SearchView.OnQueryTextListene
     private fun setPlaceholder(isEmpty: Boolean) {
         placeholderViews?.setTemplatePlaceholder(
             if (isEmpty) {
-                PlaceholderViews.Type.NONE
+                if (isRoom) {
+                    PlaceholderViews.Type.USERS
+                } else {
+                    PlaceholderViews.Type.COMMON
+                }
             } else {
-                PlaceholderViews.Type.COMMON
+                PlaceholderViews.Type.NONE
             }
         )
     }

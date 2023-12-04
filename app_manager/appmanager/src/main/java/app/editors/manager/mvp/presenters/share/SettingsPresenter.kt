@@ -18,7 +18,6 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.shareApi
-import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.ShareUi
@@ -293,7 +292,6 @@ class SettingsPresenter(
      * */
     fun updateSharedListState() {
         viewState.onGetShare(commonList, item.intAccess)
-        loadAvatars(commonList)
         if (isPopupShow) {
             isPopupShow = false
             shareItem?.isGuest?.let { viewState.onShowPopup(sharePosition, it) }
@@ -430,7 +428,6 @@ class SettingsPresenter(
             }
 
         }
-        loadAvatars(commonList)
     }
 
     private fun checkUsers(userList: List<ShareUi>) {
@@ -452,17 +449,6 @@ class SettingsPresenter(
         if (pending.isNotEmpty()) {
             commonList.add(ShareHeaderUi(context.getString(R.string.share_expected_member)))
             commonList.addAll(pending)
-        }
-    }
-
-    private fun loadAvatars(commonList: ArrayList<ViewType>) {
-        val users = commonList.filterIsInstance<ShareUi>().filter { it.sharedTo.avatarSmall.isNotEmpty() }
-        presenterScope.launch {
-            users.request(
-                func = { user -> GlideUtils.getAvatarFromUrl(context, user.sharedTo.avatarSmall) },
-                map = { user, avatar -> user.also { user.avatar = avatar } },
-                onEach = viewState::onUpdateAvatar
-            )
         }
     }
 

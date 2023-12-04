@@ -25,15 +25,11 @@ import moxy.presenter.ProvidePresenter
 
 class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
-    enum class Type {
-        USERS, GROUPS, NONE
-    }
-
     @InjectPresenter
     lateinit var addPresenter: AddPresenter
 
     private val item: Item by lazy { checkNotNull(arguments?.getSerializableExt(TAG_ITEM)) }
-    private val type: Type by lazy { checkNotNull(arguments?.getSerializableExt(TAG_TYPE)) }
+    private val type: AddPresenter.Type by lazy { checkNotNull(arguments?.getSerializableExt(TAG_TYPE)) }
     private val isRoom: Boolean by lazy { (item as? CloudFolder)?.isRoom == true }
 
     private var shareAdapter: ShareAdapter? = null
@@ -64,7 +60,7 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
                 }
             }
         }
-        shareAdapter?.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
+        shareAdapter?.notifyItemChanged(position, ShareAdapter.PAYLOAD_SET_SELECT)
         setCountChecked()
     }
 
@@ -123,17 +119,6 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
     override fun onSearchValue(value: String?) {
         // Stub
-    }
-
-    override fun onUpdateSearch(users: MutableList<ViewType>?) {
-        // Stub
-    }
-
-    override fun onUpdateAvatar(user: UserUi) {
-        shareAdapter?.let { adapter ->
-            val position = adapter.updateItem(user)
-            adapter.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
-        }
     }
 
     override fun onResume() {
@@ -200,18 +185,18 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
     private fun updateSelectionMenu() {
         (parentFragment as AddPagerFragment).selectionMenu?.let { menu ->
-            menu.findItem(R.id.menu_share_deselect)?.isVisible = addPresenter.isSelected(type)
-            menu.findItem(R.id.menu_share_select_all)?.isVisible = !addPresenter.isSelectedAll(type)
+            menu.findItem(R.id.menu_share_deselect)?.isVisible = addPresenter.isSelected
+            menu.findItem(R.id.menu_share_select_all)?.isVisible = !addPresenter.isSelectedAll
         }
     }
 
     fun setSelectedAll(isSelected: Boolean) {
         shareAdapter?.let { adapter ->
             when (type) {
-                Type.USERS -> adapter.setItems(adapter.itemsList
+                AddPresenter.Type.Users -> adapter.setItems(adapter.itemsList
                     .filterIsInstance(UserUi::class.java)
                     .map { it.apply { this.isSelected = isSelected } })
-                Type.GROUPS -> adapter.setItems(adapter.itemsList
+                AddPresenter.Type.Groups -> adapter.setItems(adapter.itemsList
                     .filterIsInstance(GroupUi::class.java)
                     .map { it.apply { this.isSelected = isSelected } })
                 else -> {}
@@ -238,7 +223,7 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
         const val TAG_TYPE = "TAG_TYPE"
 
         @JvmStatic
-        fun newInstance(item: Item?, type: Type?): AddFragment {
+        fun newInstance(item: Item?, type: AddPresenter.Type?): AddFragment {
             return AddFragment().apply {
                 arguments = Bundle(2).apply {
                     putSerializable(TAG_ITEM, checkNotNull(item))

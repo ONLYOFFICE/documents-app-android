@@ -6,10 +6,8 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareSettingsItemBinding
-import app.editors.manager.managers.utils.GlideUtils.setAvatar
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.mvp.models.ui.ShareUi
-import app.editors.manager.ui.adapters.ShareAdapter
 import com.google.android.material.button.MaterialButton
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 import lib.toolkit.base.ui.adapters.holder.ViewType
@@ -26,13 +24,6 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
     init {
         contextButton.setOnClickListener {
             listener(contextButton, absoluteAdapterPosition)
-        }
-    }
-
-    override fun bind(item: ViewType, payloads: List<Any>) {
-        if (item is ShareUi && ShareAdapter.PAYLOAD_AVATAR in payloads
-            && item.sharedTo.userName.isNotEmpty()) {
-            shareImage.setAvatar(item.avatar)
         }
     }
 

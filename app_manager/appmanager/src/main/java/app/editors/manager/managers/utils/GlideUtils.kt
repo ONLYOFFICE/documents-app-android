@@ -55,7 +55,7 @@ object GlideUtils {
             .placeholder(R.drawable.ic_account_placeholder)
             .circleCrop()
 
-    suspend fun getAvatarFromUrl(context: Context, avatarUrl: String): Drawable? =
+    suspend fun setAvatarFromUrl(context: Context, avatarUrl: String): Drawable? =
         withContext(Dispatchers.IO) {
             return@withContext try {
                 context.accountOnline?.let { account ->
@@ -76,28 +76,6 @@ object GlideUtils {
                 null
             }
         }
-
-    /**
-     * Load avatar into ImageView
-     * */
-    fun ImageView.getAvatarFromUrl(avatar: String) {
-        val placeholderDrawable = R.drawable.drawable_list_share_image_item_user_placeholder
-        context.accountOnline?.let { account ->
-            val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
-            val url = getCorrectLoad(account.scheme + account.portal + avatar, token)
-            Glide.with(context)
-                .load(url)
-                .apply(
-                    RequestOptions().skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .timeout(30 * 1000)
-                        .circleCrop()
-                        .error(placeholderDrawable)
-                        .placeholder(placeholderDrawable)
-                )
-                .into(this)
-        }
-    }
 
     /**
      * Set Drawable avatar into ImageView
@@ -124,5 +102,27 @@ object GlideUtils {
                 )
                 .into(this)
         }
+    }
+}
+
+/**
+ * Load avatar into ImageView
+ * */
+fun ImageView.setAvatarFromUrl(avatar: String) {
+    val placeholderDrawable = R.drawable.drawable_list_share_image_item_user_placeholder
+    context.accountOnline?.let { account ->
+        val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
+        val url = GlideUtils.getCorrectLoad(account.scheme + account.portal + avatar, token)
+        Glide.with(context)
+            .load(url)
+            .apply(
+                RequestOptions().skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .timeout(30 * 1000)
+                    .circleCrop()
+                    .error(placeholderDrawable)
+                    .placeholder(placeholderDrawable)
+            )
+            .into(this)
     }
 }
