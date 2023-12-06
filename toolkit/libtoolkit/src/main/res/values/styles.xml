@@ -310,6 +310,10 @@
         <item name="colorOnContainer">?attr/colorOnError</item>
     </style>
 
+    <style name="ThemeOverlay.Common.DateTimePicker" parent="android:ThemeOverlay.Material.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
     <!-- ======================================================================================= -->
     <!-- Other -->
 

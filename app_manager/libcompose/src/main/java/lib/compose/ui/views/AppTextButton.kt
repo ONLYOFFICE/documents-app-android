@@ -1,32 +1,30 @@
 package lib.compose.ui.views
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.ManagerTheme
 
 @Composable
 fun AppTextButton(
     modifier: Modifier = Modifier,
     title: String,
+    textColor: Color = MaterialTheme.colors.primary,
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
-    Button(
+    TextButton(
         modifier = modifier,
-        onClick = onClick,
         enabled = enabled,
-        contentPadding = ButtonDefaults.TextButtonContentPadding,
-        colors = ButtonDefaults.textButtonColors(),
-        shape = MaterialTheme.shapes.large,
-        elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp)
+        onClick = onClick,
+        colors = ButtonDefaults.textButtonColors(contentColor = textColor),
     ) {
         Text(text = title)
     }
@@ -36,12 +34,14 @@ fun AppTextButton(
 fun AppTextButton(
     modifier: Modifier = Modifier,
     title: Int,
+    textColor: Color = MaterialTheme.colors.primary,
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     AppTextButton(
         modifier = modifier,
         title = stringResource(id = title),
+        textColor = textColor,
         enabled = enabled,
         onClick = onClick
     )

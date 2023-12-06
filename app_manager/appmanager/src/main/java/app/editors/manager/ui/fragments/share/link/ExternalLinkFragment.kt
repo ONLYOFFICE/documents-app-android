@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -44,6 +43,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -68,6 +68,8 @@ import app.editors.manager.viewModels.link.ExternalLinkViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import lib.compose.ui.addIf
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
@@ -97,8 +99,10 @@ class ExternalLinkFragment : BaseDialogFragment() {
     }
 
     enum class RoomInfoScreens {
-        RoomInfo, UserAccess
+        RoomInfo, UserAccess, LinkSettings
     }
+
+    private var navController: NavController? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,7 +123,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
             ManagerTheme {
                 val room = remember { arguments?.getSerializableExt<CloudFolder>(KEY_ROOM) }
                 val scaffoldState = rememberScaffoldState()
-                val navController = rememberNavController()
+                val navController = rememberNavController().also { this.navController = it }
                 val viewModel = viewModel { ExternalLinkViewModel(requireContext().roomProvider, room?.id.orEmpty()) }
                 val state by viewModel.state.collectAsState()
                 val shareActivityResult = rememberLauncherForActivityResult(
@@ -164,14 +168,30 @@ class ExternalLinkFragment : BaseDialogFragment() {
                                 onSetUserAccess = { userId, access ->
                                     navController.navigate(
                                         RoomInfoScreens.UserAccess.name +
-                                                "?=userId=$userId" +
+                                                "?userId=$userId" +
                                                 "&access=$access"
                                     )
+                                },
+                                onLinkClick = { link ->
+                                    val json = Json.encodeToString(link)
+                                    navController.navigate("${RoomInfoScreens.LinkSettings.name}?link=$json")
                                 }
                             )
                         }
                         composable(
-                            route = "${RoomInfoScreens.UserAccess.name}?=userId={userId}&access={access}",
+                            route = "${RoomInfoScreens.LinkSettings.name}?link={link}",
+                            arguments = listOf(navArgument("link") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            LinkSettingsScreen(
+                                link = backStackEntry.arguments?.getString("link")?.let(Json::decodeFromString),
+                                onBackListener = navController::popBackStack,
+                                onShareClick = {},
+                                onCopyLink = {},
+                                onDeleteLink = {}
+                            )
+                        }
+                        composable(
+                            route = "${RoomInfoScreens.UserAccess.name}?userId={userId}&access={access}",
                             arguments = listOf(
                                 navArgument("userId") { type = NavType.StringType },
                                 navArgument("access") { type = NavType.IntType }
@@ -192,6 +212,11 @@ class ExternalLinkFragment : BaseDialogFragment() {
         }
     }
 
+    override fun onBackPressed(): Boolean {
+        if (navController?.popBackStack() == false) super.onBackPressed()
+        return true
+    }
+
     @Composable
     private fun RoomInfoScreen(
         scaffoldState: ScaffoldState,
@@ -200,7 +225,8 @@ class ExternalLinkFragment : BaseDialogFragment() {
         roomTitle: String?,
         onSetUserAccess: (userId: String, access: Int) -> Unit,
         onAddUsers: () -> Unit,
-        onBackClick: () -> Unit
+        onBackClick: () -> Unit,
+        onLinkClick: (ExternalLink) -> Unit
     ) {
         AppScaffold(
             scaffoldState = scaffoldState,
@@ -227,7 +253,11 @@ class ExternalLinkFragment : BaseDialogFragment() {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 val groupedShareList = Share.groupByAccess(state.shareList)
                 if (ApiContract.RoomType.hasExternalLink(roomType)) {
-                    ExternalLinkBlock(state.generalLink, state.additionalLinks)
+                    ExternalLinkBlock(
+                        generalLink = state.generalLink,
+                        additionalLinks = state.additionalLinks,
+                        onLinkClick = onLinkClick
+                    )
                 }
                 ShareUsersList(
                     title = R.string.rooms_info_admin_title,
@@ -249,7 +279,11 @@ class ExternalLinkFragment : BaseDialogFragment() {
     }
 
     @Composable
-    private fun ExternalLinkBlock(generalLink: ExternalLink?, additionalLinks: List<ExternalLink>) {
+    private fun ExternalLinkBlock(
+        generalLink: ExternalLink?,
+        additionalLinks: List<ExternalLink>,
+        onLinkClick: (ExternalLink) -> Unit
+    ) {
         AppDescriptionItem(
             modifier = Modifier.padding(top = 8.dp),
             text = R.string.rooms_info_access_desc
@@ -260,8 +294,11 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 linkTitle = generalLink.sharedTo.title,
                 accessCode = generalLink.accessCode,
                 hasPassword = !generalLink.sharedTo.password.isNullOrEmpty(),
-                expiring = true
-            )
+                expiring = false,
+                isExpired = generalLink.sharedTo.isExpired
+            ) {
+                onLinkClick.invoke(generalLink)
+            }
         }
         AppHeaderItem(title = stringResource(id = R.string.rooms_info_additional_links, 0, 5))
         additionalLinks.forEach { link ->
@@ -269,8 +306,11 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 linkTitle = link.sharedTo.title,
                 accessCode = link.accessCode,
                 hasPassword = !link.sharedTo.password.isNullOrEmpty(),
-                expiring = !link.expirationDate.isNullOrEmpty()
-            )
+                expiring = !link.sharedTo.expirationDate.isNullOrEmpty(),
+                isExpired = link.sharedTo.isExpired
+            ) {
+                onLinkClick.invoke(link)
+            }
         }
         AppTextButton(
             modifier = Modifier.padding(start = 8.dp),
@@ -383,9 +423,9 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 isExpired = false,
                 primary = true,
                 requestToken = "",
-                password = ""
-            ),
-            expirationDate = ""
+                password = "",
+                expirationDate = ""
+            )
         )
 
         ManagerTheme {
@@ -406,7 +446,8 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 ),
                 onBackClick = {},
                 onAddUsers = {},
-                onSetUserAccess = { _, _ -> }
+                onSetUserAccess = { _, _ -> },
+                onLinkClick = {}
             )
         }
     }

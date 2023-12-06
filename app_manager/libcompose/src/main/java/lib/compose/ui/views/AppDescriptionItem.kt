@@ -6,15 +6,20 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.colorTextSecondary
 
 @Composable
-fun AppDescriptionItem(modifier: Modifier = Modifier, text: String) {
+fun AppDescriptionItem(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = MaterialTheme.colors.colorTextSecondary
+) {
     Text(
         style = MaterialTheme.typography.body2,
-        color = MaterialTheme.colors.colorTextSecondary,
+        color = color,
         text = text,
         modifier = modifier
             .fillMaxWidth()
@@ -23,6 +28,15 @@ fun AppDescriptionItem(modifier: Modifier = Modifier, text: String) {
 }
 
 @Composable
-fun AppDescriptionItem(modifier: Modifier = Modifier, text: Int, vararg formatArgs: Any) {
-    AppDescriptionItem(modifier = modifier, text = stringResource(id = text, formatArgs = formatArgs))
+fun AppDescriptionItem(
+    modifier: Modifier = Modifier,
+    text: Int,
+    color: Color = MaterialTheme.colors.colorTextSecondary,
+    vararg formatArgs: Any
+) {
+    AppDescriptionItem(
+        modifier = modifier,
+        text = stringResource(id = text, formatArgs = formatArgs),
+        color = color
+    )
 }

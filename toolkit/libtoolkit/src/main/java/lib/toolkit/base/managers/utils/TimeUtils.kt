@@ -1,9 +1,17 @@
 package lib.toolkit.base.managers.utils
 
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.content.Context
+import android.os.Build
+import android.text.format.DateFormat
+import lib.toolkit.base.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 object TimeUtils {
 
@@ -19,7 +27,7 @@ object TimeUtils {
     /*
     * Patterns
     * */
-    val OUTPUT_PATTERN_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZ"
+    val OUTPUT_PATTERN_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss"
     private val OUTPUT_PATTERN_DATE = "dd MMM yyyy"
     private val OUTPUT_PATTERN_TIME = "dd MMM yyyy HH:mm"
     private val OUTPUT_PATTERN_FILE = "yyyyMMdd_HHmmssSSS"
@@ -119,6 +127,51 @@ object TimeUtils {
     @JvmStatic
     fun isJustCreated(ms: Long): Boolean {
         return Calendar.getInstance().timeInMillis - ms <= ONE_MINUT_MS
+    }
+
+    fun parseDate(string: String?): Date? {
+        val time = DEFAULT_FORMAT.parse(string ?: return null)?.time
+        return if (time != null) Date(time) else null
+    }
+
+    fun showDateTimePickerDialog(context: Context, date: Date?, onDateTimeSet: (Date) -> Unit) {
+        val tmp = Calendar.getInstance()
+        val today = Calendar.getInstance().also { if (date != null) it.time = date }
+
+        val timePickerDialog = TimePickerDialog(
+            context,
+            R.style.ThemeOverlay_Common_DateTimePicker,
+            { _, hour, minute ->
+                tmp.set(Calendar.HOUR, hour)
+                tmp.set(Calendar.MINUTE, minute)
+                tmp.set(Calendar.SECOND, 0)
+                onDateTimeSet.invoke(tmp.time)
+            },
+            today.get(Calendar.HOUR),
+            today.get(Calendar.MINUTE),
+            DateFormat.is24HourFormat(context)
+        )
+
+        DatePickerDialog(
+            context,
+            R.style.ThemeOverlay_Common_DateTimePicker,
+            { _, year, month, day ->
+                tmp.set(year, month, day)
+                timePickerDialog.show()
+            },
+            today.get(Calendar.YEAR),
+            today.get(Calendar.MONTH),
+            today.get(Calendar.DAY_OF_MONTH)
+        ).apply { datePicker.minDate = Calendar.getInstance().also { it.add(Calendar.DATE, 1) }.timeInMillis }.show()
+
+    }
+
+    fun getCurrentLocale(context: Context): Locale? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            context.resources.configuration.locales.get(0);
+        } else {
+            context.resources.configuration.locale;
+        }
     }
 
 }

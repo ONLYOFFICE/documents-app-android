@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import lib.compose.ui.addIf
 import lib.compose.ui.addIfNotNull
 import lib.compose.ui.enabled
 import lib.compose.ui.theme.ManagerTheme
@@ -54,12 +56,17 @@ fun AppListItem(
     paddingEnd: Dp = 16.dp,
     dividerVisible: Boolean = true,
     enabled: Boolean = true,
+    singleLine: Boolean = true,
     onClick: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .then(
+                if (singleLine)
+                    Modifier.height(48.dp) else
+                    Modifier.height(IntrinsicSize.Max)
+            )
             .addIfNotNull(onClick) { clickable(enabled = enabled, onClick = it) }
             .addIfNotNull(background) { background(it) },
         verticalArrangement = Arrangement.SpaceBetween
@@ -69,6 +76,7 @@ fun AppListItem(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding(start = 16.dp, end = paddingEnd)
+                .addIf(!singleLine) { padding(vertical = 8.dp) }
                 .weight(1f),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -101,7 +109,7 @@ fun AppListItem(
                         text = title,
                         color = titleColor,
                         style = MaterialTheme.typography.body1,
-                        maxLines = 1,
+                        maxLines = if (singleLine) 1 else 2,
                         overflow = TextOverflow.Ellipsis
                     )
                     subtitle?.let {
@@ -142,6 +150,11 @@ fun AppListItemsInteractivePreview() {
                 AppHeaderItem(title = "Arrow item")
                 AppArrowItem(
                     title = R.string.app_title,
+                    startIcon = R.drawable.drawable_ic_logo,
+                )
+                AppArrowItem(
+                    title = "Restrict file content copy, file download and printing",
+                    singleLine = false,
                     startIcon = R.drawable.drawable_ic_logo,
                 )
                 AppArrowItem(

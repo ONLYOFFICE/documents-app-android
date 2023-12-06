@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,12 +33,19 @@ import lib.toolkit.base.R
 
 
 @Composable
-fun ExternalLinkItem(linkTitle: String, accessCode: Int, hasPassword: Boolean, expiring: Boolean) {
+fun ExternalLinkItem(
+    linkTitle: String,
+    accessCode: Int,
+    hasPassword: Boolean,
+    expiring: Boolean,
+    isExpired: Boolean,
+    onClick: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .height(dimensionResource(id = R.dimen.item_onehalf_line_height))
             .fillMaxWidth()
-            .clickable { },
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -59,17 +68,26 @@ fun ExternalLinkItem(linkTitle: String, accessCode: Int, hasPassword: Boolean, e
                 .padding(start = 16.dp),
         ) {
             Text(text = linkTitle)
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                AttributeIcon(icon = app.editors.manager.R.drawable.ic_small_lock, activate = hasPassword)
-                AttributeIcon(icon = app.editors.manager.R.drawable.ic_small_clock, activate = expiring)
+            if (isExpired) {
+                Text(
+                    text = stringResource(id = app.editors.manager.R.string.rooms_info_link_expired),
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.error
+                )
+            } else {
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    AttributeIcon(icon = app.editors.manager.R.drawable.ic_small_lock, activate = hasPassword)
+                    AttributeIcon(icon = app.editors.manager.R.drawable.ic_small_clock, activate = expiring)
+                }
             }
         }
-        Icon(
-            modifier = Modifier.padding(end = 24.dp),
-            imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_list_context_share),
-            tint = MaterialTheme.colors.primary,
-            contentDescription = null
-        )
+        IconButton(modifier = Modifier.padding(end = 24.dp), onClick = { }) {
+            Icon(
+                imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_list_context_share),
+                tint = MaterialTheme.colors.primary,
+                contentDescription = null
+            )
+        }
         Icon(
             modifier = Modifier.padding(end = 12.dp),
             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
@@ -111,7 +129,20 @@ private fun AttributeIcon(icon: Int, activate: Boolean = true) {
 private fun Preview() {
     ManagerTheme {
         AppScaffold {
-            ExternalLinkItem(linkTitle = "Shared link", accessCode = 2, true, false)
+            Column {
+                ExternalLinkItem(
+                    linkTitle = "Shared link", accessCode = 2,
+                    hasPassword = true,
+                    expiring = false,
+                    isExpired = false
+                ) {}
+                ExternalLinkItem(
+                    linkTitle = "Shared link", accessCode = 2,
+                    hasPassword = true,
+                    expiring = false,
+                    isExpired = true
+                ) {}
+            }
         }
     }
 }

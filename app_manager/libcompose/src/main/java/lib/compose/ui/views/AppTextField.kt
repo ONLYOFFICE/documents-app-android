@@ -5,7 +5,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -31,6 +33,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -160,6 +163,20 @@ fun AppPasswordTextField(
 
 }
 
+@Composable
+fun AppTextFieldListItem(state: MutableState<String>) {
+    BasicTextField(
+        modifier = Modifier
+            .height(dimensionResource(id = R.dimen.item_one_line_height))
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        value = state.value,
+        onValueChange = { state.value = it },
+        textStyle = MaterialTheme.typography.body1
+    )
+    AppDivider(startIndent = 16.dp)
+}
+
 class SuffixTransformation(private val suffix: String) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
 
@@ -172,11 +189,11 @@ class SuffixTransformation(private val suffix: String) : VisualTransformation {
 
             override fun transformedToOriginal(offset: Int): Int {
                 if (text.isEmpty()) return 0
-                return if (offset >=  text.length) text.length else offset
+                return if (offset >= text.length) text.length else offset
             }
         }
 
-        return TransformedText(result, textWithSuffixMapping )
+        return TransformedText(result, textWithSuffixMapping)
     }
 }
 
