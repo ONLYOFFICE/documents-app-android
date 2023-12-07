@@ -182,12 +182,14 @@ class ExternalLinkFragment : BaseDialogFragment() {
                             route = "${RoomInfoScreens.LinkSettings.name}?link={link}",
                             arguments = listOf(navArgument("link") { type = NavType.StringType })
                         ) { backStackEntry ->
-                            LinkSettingsScreen(
+                            ExternalLinkSettingsScreen(
                                 link = backStackEntry.arguments?.getString("link")?.let(Json::decodeFromString),
-                                onBackListener = navController::popBackStack,
-                                onShareClick = {},
-                                onCopyLink = {},
-                                onDeleteLink = {}
+                                roomId = room?.id,
+                                roomType = room?.roomType,
+                                onBackListener = {
+                                    navController.popBackStack()
+                                    viewModel.fetchRoomInfo()
+                                },
                             )
                         }
                         composable(
@@ -292,7 +294,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
             AppHeaderItem(title = R.string.rooms_info_general_link)
             ExternalLinkItem(
                 linkTitle = generalLink.sharedTo.title,
-                accessCode = generalLink.accessCode,
+                access = generalLink.access,
                 hasPassword = !generalLink.sharedTo.password.isNullOrEmpty(),
                 expiring = false,
                 isExpired = generalLink.sharedTo.isExpired
@@ -304,7 +306,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
         additionalLinks.forEach { link ->
             ExternalLinkItem(
                 linkTitle = link.sharedTo.title,
-                accessCode = link.accessCode,
+                access = link.access,
                 hasPassword = !link.sharedTo.password.isNullOrEmpty(),
                 expiring = !link.sharedTo.expirationDate.isNullOrEmpty(),
                 isExpired = link.sharedTo.isExpired
@@ -409,7 +411,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
     @Composable
     private fun ExternalLinkScreenPreview() {
         val link = ExternalLink(
-            accessCode = 2,
+            access = 2,
             isLocked = false,
             isOwner = false,
             canEditAccess = false,
@@ -435,7 +437,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 roomType = 1,
                 state = ExternalLinkState(
                     generalLink = link,
-                    additionalLinks = listOf(link, link.copy(accessCode = 1)),
+                    additionalLinks = listOf(link, link.copy(access = 1)),
                     shareList = listOf(
                         Share(access = "1", sharedTo = SharedTo(displayName = "User 1"), isOwner = true),
                         Share(access = "9", sharedTo = SharedTo(displayName = "User 2")),

@@ -10,6 +10,7 @@ import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestRenameRoom
 import app.documents.core.network.room.models.RequestSetLogo
+import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.Invitation
@@ -21,8 +22,8 @@ import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.HttpException
 import org.json.JSONObject
+import retrofit2.HttpException
 import java.util.UUID
 import javax.inject.Inject
 
@@ -115,6 +116,30 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
     }
 
+    suspend fun updateExternalLink(
+        roomId: String,
+        access: Int,
+        linkId: String,
+        linkType: Int,
+        denyDownload: Boolean,
+        expirationDate: String?,
+        password: String?,
+        title: String
+    ): ExternalLink {
+        val request = RequestUpdateExternalLink(
+            access = access,
+            denyDownload = denyDownload,
+            expirationDate = expirationDate,
+            linkId = linkId,
+            linkType = linkType,
+            password = password,
+            title = title
+        )
+        val response = roomService.updateExternalLink(roomId, request)
+        val body = response.body()
+        return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
+    }
+
     suspend fun getRoomUsers(id: String): List<Share> {
         val response = roomService.getRoomUsers(id)
         val body = response.body()
@@ -141,7 +166,8 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             roomService.setLogo(
                 id,
                 RequestSetLogo(
-                    tmpFile = JSONObject(uploadResponse.body()?.string() ?: "").optJSONObject("response")?.optString("data")
+                    tmpFile = JSONObject(uploadResponse.body()?.string() ?: "").optJSONObject("response")
+                        ?.optString("data")
                         ?: "",
                     width = logo.width,
                     height = logo.height

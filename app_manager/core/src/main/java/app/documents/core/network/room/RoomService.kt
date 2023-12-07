@@ -10,7 +10,6 @@ import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.response.ResponseExternalLink
 import app.documents.core.network.share.models.response.ResponseShare
 import io.reactivex.Observable
-import io.reactivex.Single
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -90,11 +89,13 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/tags")
-    suspend fun getTags(@QueryMap options: Map<String, String>? = mapOf(
-        "filterValue" to "",
-        "startIndex" to "",
-        "count" to ""
-    )): ResponseTags
+    suspend fun getTags(
+        @QueryMap options: Map<String, String>? = mapOf(
+            "filterValue" to "",
+            "startIndex" to "",
+            "count" to ""
+        )
+    ): ResponseTags
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -165,6 +166,16 @@ interface RoomService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share?filterType=2")
     suspend fun getExternalLinks(@Path("id") id: String): Response<ResponseExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
+    suspend fun updateExternalLink(
+        @Path("id") id: String,
+        @Body request: RequestUpdateExternalLink
+    ): Response<ResponseUpdateExternalLink>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

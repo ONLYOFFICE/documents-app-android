@@ -35,7 +35,7 @@ import lib.toolkit.base.R
 @Composable
 fun ExternalLinkItem(
     linkTitle: String,
-    accessCode: Int,
+    access: Int,
     hasPassword: Boolean,
     expiring: Boolean,
     isExpired: Boolean,
@@ -131,13 +131,13 @@ private fun Preview() {
         AppScaffold {
             Column {
                 ExternalLinkItem(
-                    linkTitle = "Shared link", accessCode = 2,
+                    linkTitle = "Shared link", access = 2,
                     hasPassword = true,
                     expiring = false,
                     isExpired = false
                 ) {}
                 ExternalLinkItem(
-                    linkTitle = "Shared link", accessCode = 2,
+                    linkTitle = "Shared link", access = 2,
                     hasPassword = true,
                     expiring = false,
                     isExpired = true

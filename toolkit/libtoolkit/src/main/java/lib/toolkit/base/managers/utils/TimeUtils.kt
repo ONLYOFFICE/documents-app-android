@@ -90,6 +90,11 @@ object TimeUtils {
     }
 
     @JvmStatic
+    fun formatDateOrNull(date: Date?): String? {
+        return if (date != null) OUTPUT_TIME_FORMAT.format(date) else null
+    }
+
+    @JvmStatic
     fun getWeekDate(date: Date?): String {
         return if (date != null) {
             if (date.time <= weekMs) {
