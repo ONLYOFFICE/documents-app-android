@@ -123,8 +123,15 @@ class ExternalLinkFragment : BaseDialogFragment() {
             ManagerTheme {
                 val room = remember { arguments?.getSerializableExt<CloudFolder>(KEY_ROOM) }
                 val scaffoldState = rememberScaffoldState()
-                val navController = rememberNavController().also { this.navController = it }
                 val viewModel = viewModel { ExternalLinkViewModel(requireContext().roomProvider, room?.id.orEmpty()) }
+                val navController = rememberNavController().also {
+                    it.addOnDestinationChangedListener { _, destination, _ ->
+                        if (destination.route == RoomInfoScreens.RoomInfo.name) {
+                            viewModel.fetchRoomInfo()
+                        }
+                    }
+                    this.navController = it
+                }
                 val state by viewModel.state.collectAsState()
                 val shareActivityResult = rememberLauncherForActivityResult(
                     ActivityResultContracts.StartActivityForResult()
@@ -142,10 +149,6 @@ class ExternalLinkFragment : BaseDialogFragment() {
                             }
                         }
                     }
-                }
-
-                LaunchedEffect(Unit) {
-                    viewModel.fetchRoomInfo()
                 }
 
                 Surface(color = MaterialTheme.colors.background) {
@@ -186,10 +189,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
                                 link = backStackEntry.arguments?.getString("link")?.let(Json::decodeFromString),
                                 roomId = room?.id,
                                 roomType = room?.roomType,
-                                onBackListener = {
-                                    navController.popBackStack()
-                                    viewModel.fetchRoomInfo()
-                                },
+                                onBackListener = navController::popBackStack
                             )
                         }
                         composable(

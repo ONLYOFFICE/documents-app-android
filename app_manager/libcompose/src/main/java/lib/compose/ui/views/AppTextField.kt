@@ -4,9 +4,11 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -32,10 +34,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,6 +52,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.colorTextPrimary
+import lib.compose.ui.theme.colorTextSecondary
 import lib.toolkit.base.R
 
 @Composable
@@ -164,17 +172,61 @@ fun AppPasswordTextField(
 }
 
 @Composable
-fun AppTextFieldListItem(state: MutableState<String>) {
-    BasicTextField(
-        modifier = Modifier
-            .height(dimensionResource(id = R.dimen.item_one_line_height))
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        value = state.value,
-        onValueChange = { state.value = it },
-        textStyle = MaterialTheme.typography.body1
-    )
-    AppDivider(startIndent = 16.dp)
+fun AppTextFieldListItem(state: MutableState<String?>, hint: String = "", isPassword: Boolean = false) {
+    Column {
+        Row(
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.item_one_line_height))
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            var visible by remember { mutableStateOf(false) }
+            var focused by remember { mutableStateOf(false) }
+            BasicTextField(
+                modifier = Modifier
+                    .onFocusChanged { focused = it.isFocused }
+                    .weight(1f)
+                    .padding(vertical = 12.dp),
+                value = state.value.orEmpty(),
+                onValueChange = { state.value = it },
+                singleLine = true,
+                cursorBrush = SolidColor(MaterialTheme.colors.primary),
+                textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.colorTextPrimary),
+                visualTransformation = if (!visible && isPassword)
+                    PasswordVisualTransformation() else
+                    VisualTransformation.None
+            ) { textField ->
+                if (state.value?.isEmpty() == true && !focused) {
+                    Text(
+                        text = hint,
+                        color = MaterialTheme.colors.colorTextSecondary
+                    )
+                } else {
+                    textField()
+                }
+            }
+            if (isPassword) {
+                IconButton(
+                    modifier = Modifier.size(40.dp),
+                    onClick = { visible = !visible }
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(
+                            if (!visible) {
+                                R.drawable.drawable_ic_visibility
+                            } else {
+                                R.drawable.drawable_ic_visibility_off
+                            }
+                        ),
+                        tint = MaterialTheme.colors.primary,
+                        contentDescription = null
+                    )
+                }
+            }
+        }
+        AppDivider(startIndent = 16.dp)
+    }
 }
 
 class SuffixTransformation(private val suffix: String) : VisualTransformation {

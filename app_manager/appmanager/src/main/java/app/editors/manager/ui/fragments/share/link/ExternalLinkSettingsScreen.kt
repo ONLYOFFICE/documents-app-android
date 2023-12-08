@@ -1,19 +1,13 @@
 package app.editors.manager.ui.fragments.share.link
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -24,16 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -46,16 +34,15 @@ import app.editors.manager.viewModels.link.ExternalLinkSettingsEffect
 import app.editors.manager.viewModels.link.ExternalLinkSettingsViewModel
 import kotlinx.coroutines.delay
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDescriptionItem
-import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTextButton
+import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
@@ -63,6 +50,7 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+// TODO: back handler for ask to save
 @Composable
 fun ExternalLinkSettingsScreen(
     link: ExternalLink?,
@@ -212,8 +200,8 @@ private fun MainScreen(
         ) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 val context = LocalContext.current
-                var title by remember { mutableStateOf(link.sharedTo.title) }
-                var password by remember { mutableStateOf(link.sharedTo.password) }
+                val title = remember { mutableStateOf<String?>(link.sharedTo.title) }
+                val password = remember { mutableStateOf(link.sharedTo.password) }
                 var denyDownload by remember { mutableStateOf(link.sharedTo.denyDownload) }
                 var expirationString by remember { mutableStateOf(link.sharedTo.expirationDate) }
                 var expirationDate by remember { mutableStateOf(TimeUtils.parseDate(expirationString)) }
@@ -238,85 +226,30 @@ private fun MainScreen(
                     )
                 }
 
-                LaunchedEffect(title) {
+                LaunchedEffect(title.value) {
                     delay(500)
-                    updateViewState.invoke(link.copy(sharedTo = link.sharedTo.copy(title = title)))
+                    updateViewState.invoke(link.copy(sharedTo = link.sharedTo.copy(title = title.value.orEmpty())))
                 }
 
-                LaunchedEffect(password) {
+                LaunchedEffect(password.value) {
                     delay(500)
-                    updateViewState.invoke(link.copy(sharedTo = link.sharedTo.copy(password = password)))
+                    updateViewState.invoke(link.copy(sharedTo = link.sharedTo.copy(password = password.value)))
                 }
 
                 AppHeaderItem(title = R.string.rooms_info_link_name)
-                BasicTextField(
-                    modifier = Modifier
-                        .height(48.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    value = title,
-                    onValueChange = { title = it },
-                    textStyle = MaterialTheme.typography.body1
-                )
-                AppDivider(startIndent = 16.dp)
-
+                AppTextFieldListItem(state = title)
                 AppHeaderItem(title = lib.editors.gbase.R.string.context_protection_title)
                 AppSwitchItem(
                     title = R.string.rooms_info_password_access,
-                    checked = password != null,
-                    onCheck = { checked -> password = if (checked) "" else null }
+                    checked = password.value != null,
+                    onCheck = { checked -> password.value = if (checked) "" else null }
                 )
-                AnimatedVisibilityVerticalFade(visible = password != null) {
-                    Column {
-                        Row(
-                            modifier = Modifier
-                                .height(48.dp)
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            var visible by remember { mutableStateOf(false) }
-                            var focused by remember { mutableStateOf(false) }
-                            BasicTextField(
-                                modifier = Modifier
-                                    .onFocusChanged { focused = it.isFocused }
-                                    .weight(1f)
-                                    .padding(vertical = 12.dp),
-                                value = password.orEmpty(),
-                                onValueChange = { password = it },
-                                singleLine = true,
-                                textStyle = MaterialTheme.typography.body1,
-                                visualTransformation = if (!visible)
-                                    PasswordVisualTransformation() else
-                                    VisualTransformation.None
-                            ) {
-                                if (password?.isEmpty() == true && !focused) {
-                                    Text(
-                                        text = stringResource(id = R.string.login_enterprise_password_hint),
-                                        color = MaterialTheme.colors.colorTextSecondary
-                                    )
-                                } else {
-                                    it()
-                                }
-                            }
-                            IconButton(
-                                modifier = Modifier.size(40.dp),
-                                onClick = { visible = !visible }) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(
-                                        if (!visible) {
-                                            R.drawable.drawable_ic_visibility
-                                        } else {
-                                            R.drawable.drawable_ic_visibility_off
-                                        }
-                                    ),
-                                    tint = MaterialTheme.colors.primary,
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                        AppDivider(startIndent = 16.dp)
-                    }
+                AnimatedVisibilityVerticalFade(visible = password.value != null) {
+                    AppTextFieldListItem(
+                        state = password,
+                        hint = stringResource(id = R.string.login_enterprise_password_hint),
+                        isPassword = true
+                    )
                 }
                 AppSwitchItem(
                     title = R.string.rooms_info_file_rectrict,
@@ -369,11 +302,11 @@ private fun MainScreen(
                         }
                     }
                 }
-                AnimatedContent(targetState = password, label = "passwordState") {
+                AnimatedContent(targetState = password.value == null, label = "passwordState") {
                     AppTextButton(
                         modifier = Modifier.padding(start = 8.dp, top = 8.dp),
                         enabled = !(link.sharedTo.isExpired && !linkDateChanged),
-                        title = if (it != null)
+                        title = if (it)
                             R.string.rooms_info_copy_link_and_password else
                             R.string.rooms_info_copy_link,
                         onClick = onCopyLink
@@ -392,7 +325,7 @@ private fun MainScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview(apiLevel = 33, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun Preview() {
     val link = ExternalLink(
