@@ -42,6 +42,7 @@ import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.openSendTextActivity
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -87,7 +88,7 @@ fun ExternalLinkSettingsScreen(
                 }
                 is ExternalLinkSettingsEffect.Share -> {
                     waitingDialog.dismiss()
-                    UiUtils.getSnackBar(localView).setText("Share").show()
+                    context.openSendTextActivity(context.getString(R.string.toolbar_menu_main_share), it.url)
                 }
                 is ExternalLinkSettingsEffect.Error -> {
                     waitingDialog.dismiss()
