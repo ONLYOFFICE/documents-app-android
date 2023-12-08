@@ -611,8 +611,8 @@ object UiUtils {
 
         val progress = ProgressBar(context, null, if (isCircle) android.R.attr.progressBarStyle else android.R.attr.progressBarStyleHorizontal)
             .apply {
+                if (!isCircle) layoutParams = params
                 isIndeterminate = true
-                layoutParams = params
 
                 val color = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorPrimary)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -630,7 +630,7 @@ object UiUtils {
                 dialog.dismiss()
             }
             .setView(container)
-            .show()
+            .create()
     }
 
     fun getProgressDialog(
@@ -711,6 +711,39 @@ object UiUtils {
             .show()
     }
 
+    fun showQuestionDialog(
+        context: Context,
+        title: String,
+        description: String? = null,
+        acceptListener: () -> Unit,
+        neutralListener: (() -> Unit)? = null,
+        cancelListener: (() -> Unit)? = null,
+        acceptTitle: String? = context.getString(android.R.string.ok),
+        neutralTitle: String? = null,
+        cancelTitle: String? = context.getString(android.R.string.cancel)
+    ) {
+        AlertDialog.Builder(context)
+            .setTitle(title)
+            .setMessage(description)
+            .setPositiveButton(acceptTitle) { dialog, _ ->
+                acceptListener.invoke()
+                dialog.dismiss()
+            }
+            .apply {
+                if (neutralListener != null && neutralTitle != null) {
+                    setNeutralButton(neutralTitle) { dialog, _ ->
+                        neutralListener.invoke()
+                        dialog.dismiss()
+                    }
+                }
+            }
+            .setNegativeButton(cancelTitle) { dialog, _ ->
+                cancelListener?.invoke()
+                dialog.dismiss()
+            }
+            .show()
+    }
+
     fun isDarkMode(context: Context): Boolean {
         return when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> true
@@ -727,7 +760,7 @@ object UiUtils {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
 
-            addOnPositiveButtonClickListener{ time -> listener.invoke(dateFormat.format(time))}
+            addOnPositiveButtonClickListener { time -> listener.invoke(dateFormat.format(time)) }
         }
     }
 

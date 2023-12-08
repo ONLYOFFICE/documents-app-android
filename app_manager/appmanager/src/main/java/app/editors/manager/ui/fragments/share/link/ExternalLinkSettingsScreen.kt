@@ -6,11 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -63,93 +59,42 @@ fun ExternalLinkSettingsScreen(
     val localView = LocalView.current
     val viewModel = viewModel { ExternalLinkSettingsViewModel(link, roomId, context.roomProvider) }
     val state by viewModel.state.collectAsState()
-    var saveConfirmationDialogState by remember { mutableStateOf(false) }
-    var deleteConfirmationDialogState by remember { mutableStateOf(false) }
-    var waitingDialogState by remember { mutableStateOf(false) }
+    val waitingDialog = remember {
+        UiUtils.getWaitingDialog(
+            context = context,
+            isCircle = true,
+            title = context.getString(R.string.dialogs_wait_title),
+            cancelListener = {}
+        )
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect {
             when (it) {
                 ExternalLinkSettingsEffect.Loading -> {
-                    waitingDialogState = true
+                    waitingDialog.show()
                     delay(500)
                 }
                 ExternalLinkSettingsEffect.Save -> {
-                    if (waitingDialogState) {
-                        waitingDialogState = false
+                    if (waitingDialog.isShowing) {
+                        waitingDialog.dismiss()
                         onBackListener.invoke()
                     }
                 }
                 is ExternalLinkSettingsEffect.Copy -> {
-                    waitingDialogState = false
+                    waitingDialog.dismiss()
                     UiUtils.getSnackBar(localView).setText("Copied").show()
                 }
                 is ExternalLinkSettingsEffect.Share -> {
-                    waitingDialogState = false
+                    waitingDialog.dismiss()
                     UiUtils.getSnackBar(localView).setText("Share").show()
                 }
                 is ExternalLinkSettingsEffect.Error -> {
-                    waitingDialogState = false
+                    waitingDialog.dismiss()
                     UiUtils.getSnackBar(localView).setText(it.message).show()
                 }
             }
         }
-    }
-
-    if (waitingDialogState) {
-        AlertDialog(
-            title = { Text(text = stringResource(id = R.string.dialogs_wait_title)) },
-            text = { CircularProgressIndicator() },
-            onDismissRequest = { },
-            confirmButton = {
-                TextButton(onClick = { waitingDialogState = false }) {
-                    Text(text = stringResource(id = R.string.operation_panel_cancel_button))
-                }
-            }
-        )
-    }
-
-    if (saveConfirmationDialogState) {
-        AlertDialog(
-            title = { Text(text = "Save link") },
-            text = { Text(text = "Are you sure you want to save and exit?") },
-            onDismissRequest = { saveConfirmationDialogState = false },
-            buttons = {
-                TextButton(onClick = { saveConfirmationDialogState = false }) {
-                    Text(text = stringResource(id = R.string.operation_panel_cancel_button))
-                }
-                TextButton(onClick = {
-                    saveConfirmationDialogState = false
-                    onBackListener.invoke()
-                }) {
-                    Text(text = "Don't save")
-                }
-                TextButton(onClick = {
-                    saveConfirmationDialogState = false
-                    viewModel.save()
-                }) {
-                    Text(text = stringResource(id = R.string.storage_connect_save_button))
-                }
-            }
-        )
-    }
-
-    if (deleteConfirmationDialogState) {
-        AlertDialog(
-            title = { Text(text = stringResource(id = R.string.rooms_info_delete_link)) },
-            text = { Text(text = stringResource(id = R.string.rooms_info_delete_link_message)) },
-            onDismissRequest = { deleteConfirmationDialogState = false },
-            buttons = {
-                TextButton(onClick = {
-                    deleteConfirmationDialogState = false
-                }) {
-                    Text(text = stringResource(id = R.string.operation_panel_cancel_button))
-                }
-                TextButton(onClick = viewModel::delete) {
-                    Text(text = stringResource(id = R.string.list_context_delete))
-                }
-            }
-        )
     }
 
     MainScreen(
@@ -157,14 +102,30 @@ fun ExternalLinkSettingsScreen(
         roomType = roomType,
         onBackListener = {
             if (state.viewStateChanged) {
-                saveConfirmationDialogState = true
+                UiUtils.showQuestionDialog(
+                    context = context,
+                    title = context.getString(R.string.rooms_info_save_link_title),
+                    description = context.getString(R.string.rooms_info_save_link_question),
+                    acceptTitle = context.getString(R.string.rooms_info_save_button),
+                    acceptListener = viewModel::save,
+                    neutralTitle = context.getString(R.string.rooms_info_dont_save_button),
+                    neutralListener = onBackListener
+                )
             } else {
                 onBackListener.invoke()
             }
         },
         onShareClick = viewModel::share,
         onCopyLink = viewModel::copy,
-        onDeleteLink = { deleteConfirmationDialogState = true },
+        onDeleteLink = {
+            UiUtils.showQuestionDialog(
+                context = context,
+                title = context.getString(R.string.rooms_info_delete_link),
+                description = context.getString(R.string.rooms_info_delete_link_message),
+                acceptTitle = context.getString(R.string.list_context_delete),
+                acceptListener = viewModel::delete
+            )
+        },
         updateViewState = viewModel::updateViewState
     )
 }

@@ -745,6 +745,10 @@
     <string name="rooms_info_time_limit_title">Time limit</string>
     <string name="rooms_info_time_limit">Enable time limit</string>
     <string name="rooms_info_valid_through">Valid through</string>
+    <string name="rooms_info_save_link_title">Save link</string>
+    <string name="rooms_info_save_link_question">Are you sure you want to save and exit?</string>
+    <string name="rooms_info_save_button">Save</string>
+    <string name="rooms_info_dont_save_button">Don\'t save</string>
 
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>
