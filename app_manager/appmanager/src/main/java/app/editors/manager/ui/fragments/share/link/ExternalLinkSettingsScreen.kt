@@ -1,7 +1,6 @@
 package app.editors.manager.ui.fragments.share.link
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -40,6 +39,7 @@ import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
+import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.openSendTextActivity
@@ -65,13 +65,13 @@ fun ExternalLinkSettingsScreen(
             context = context,
             isCircle = true,
             title = context.getString(R.string.dialogs_wait_title),
-            cancelListener = {}
+            cancelListener = viewModel::cancelJob
         )
     }
 
     LaunchedEffect(Unit) {
-        viewModel.effect.collect {
-            when (it) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
                 ExternalLinkSettingsEffect.Loading -> {
                     waitingDialog.show()
                     delay(500)
@@ -84,15 +84,16 @@ fun ExternalLinkSettingsScreen(
                 }
                 is ExternalLinkSettingsEffect.Copy -> {
                     waitingDialog.dismiss()
-                    UiUtils.getSnackBar(localView).setText("Copied").show()
+                    KeyboardUtils.setDataToClipboard(context, effect.url)
+                    UiUtils.getSnackBar(localView).setText(R.string.rooms_info_copy_link_to_clipboard).show()
                 }
                 is ExternalLinkSettingsEffect.Share -> {
                     waitingDialog.dismiss()
-                    context.openSendTextActivity(context.getString(R.string.toolbar_menu_main_share), it.url)
+                    context.openSendTextActivity(context.getString(R.string.toolbar_menu_main_share), effect.url)
                 }
                 is ExternalLinkSettingsEffect.Error -> {
                     waitingDialog.dismiss()
-                    UiUtils.getSnackBar(localView).setText(it.message).show()
+                    UiUtils.getSnackBar(localView).setText(effect.message).show()
                 }
             }
         }
@@ -264,16 +265,12 @@ private fun MainScreen(
                         }
                     }
                 }
-                AnimatedContent(targetState = password.value == null, label = "passwordState") {
-                    AppTextButton(
-                        modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-                        enabled = !(link.sharedTo.isExpired && !linkDateChanged),
-                        title = if (it)
-                            R.string.rooms_info_copy_link_and_password else
-                            R.string.rooms_info_copy_link,
-                        onClick = onCopyLink
-                    )
-                }
+                AppTextButton(
+                    modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+                    enabled = !(link.sharedTo.isExpired && !linkDateChanged),
+                    title = R.string.rooms_info_copy_link,
+                    onClick = onCopyLink
+                )
                 AppTextButton(
                     modifier = Modifier.padding(start = 8.dp),
                     title = if (link.sharedTo.primary && roomType == ApiContract.RoomType.PUBLIC_ROOM)

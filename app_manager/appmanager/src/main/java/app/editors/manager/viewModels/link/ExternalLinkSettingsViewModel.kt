@@ -6,6 +6,7 @@ import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.viewModels.base.BaseViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -38,19 +39,21 @@ class ExternalLinkSettingsViewModel(
     private val _effect: MutableSharedFlow<ExternalLinkSettingsEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<ExternalLinkSettingsEffect> = _effect.asSharedFlow()
 
+    private var operationJob: Job? = null
+
     fun delete() {
 
     }
 
     fun save() {
-        viewModelScope.launch {
+        operationJob = viewModelScope.launch {
             updateExternalLink()
             _effect.tryEmit(ExternalLinkSettingsEffect.Save)
         }
     }
 
     fun share() {
-        viewModelScope.launch {
+        operationJob = viewModelScope.launch {
             val url = updateExternalLink()?.sharedTo?.shareLink
             if (url != null) {
                 _effect.tryEmit(ExternalLinkSettingsEffect.Share(url))
@@ -62,7 +65,7 @@ class ExternalLinkSettingsViewModel(
     }
 
     fun copy() {
-        viewModelScope.launch {
+        operationJob = viewModelScope.launch {
             val url = updateExternalLink()?.sharedTo?.shareLink
             if (url != null) {
                 _effect.tryEmit(ExternalLinkSettingsEffect.Copy(url))
@@ -71,6 +74,10 @@ class ExternalLinkSettingsViewModel(
                 onError(null)
             }
         }
+    }
+
+    fun cancelJob() {
+        operationJob?.cancel()
     }
 
     fun updateViewState(externalLink: ExternalLink) {
