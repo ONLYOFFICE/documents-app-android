@@ -80,9 +80,11 @@ class ExternalLinkSettingsViewModel(
         operationJob?.cancel()
     }
 
-    fun updateViewState(externalLink: ExternalLink) {
-        if (externalLink.sharedTo != state.value.link.sharedTo) {
-            _state.value = ExternalLinkSettingsState(externalLink, true)
+    fun updateViewState(body: ExternalLink.() -> ExternalLink) {
+        val initial = state.value.link
+        val updated = body.invoke(state.value.link)
+        if (updated.sharedTo != initial.sharedTo) {
+            _state.value = ExternalLinkSettingsState(initial.copy(sharedTo = updated.sharedTo), true)
         }
     }
 

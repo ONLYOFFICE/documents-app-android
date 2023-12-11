@@ -128,7 +128,11 @@ fun ExternalLinkSettingsScreen(
                 acceptListener = viewModel::delete
             )
         },
-        updateViewState = viewModel::updateViewState
+        updateViewState = { updated ->
+            viewModel.updateViewState {
+                copy(sharedTo = updated.invoke(sharedTo))
+            }
+        }
     )
 }
 
@@ -140,7 +144,7 @@ private fun MainScreen(
     onShareClick: () -> Unit,
     onCopyLink: () -> Unit,
     onDeleteLink: () -> Unit,
-    updateViewState: (ExternalLink) -> Unit
+    updateViewState: (ExternalLinkSharedTo.() -> ExternalLinkSharedTo) -> Unit
 ) {
     ManagerTheme {
         var linkDateChanged by remember { mutableStateOf(false) }
@@ -170,33 +174,21 @@ private fun MainScreen(
                 var expirationDate by remember { mutableStateOf(TimeUtils.parseDate(expirationString)) }
 
                 LaunchedEffect(denyDownload) {
-                    updateViewState.invoke(
-                        link.copy(
-                            sharedTo = link.sharedTo.copy(
-                                denyDownload = denyDownload
-                            )
-                        )
-                    )
+                    updateViewState { copy(denyDownload = denyDownload) }
                 }
 
                 LaunchedEffect(expirationDate) {
-                    updateViewState.invoke(
-                        link.copy(
-                            sharedTo = link.sharedTo.copy(
-                                expirationDate = TimeUtils.formatDateOrNull(expirationDate),
-                            )
-                        )
-                    )
+                    updateViewState { copy(expirationDate = expirationDate?.let(TimeUtils.DEFAULT_FORMAT::format)) }
                 }
 
                 LaunchedEffect(title.value) {
                     delay(500)
-                    updateViewState.invoke(link.copy(sharedTo = link.sharedTo.copy(title = title.value.orEmpty())))
+                    updateViewState { copy(title = title.value.orEmpty()) }
                 }
 
                 LaunchedEffect(password.value) {
                     delay(500)
-                    updateViewState.invoke(link.copy(sharedTo = link.sharedTo.copy(password = password.value)))
+                    updateViewState { copy(password = password.value) }
                 }
 
                 AppHeaderItem(title = R.string.rooms_info_link_name)
@@ -229,7 +221,14 @@ private fun MainScreen(
                     AppSwitchItem(
                         title = R.string.rooms_info_time_limit,
                         checked = expirationString != null,
-                        onCheck = { expirationString = if (it) "" else null }
+                        onCheck = { checked ->
+                            expirationString = if (checked) {
+                                ""
+                            } else {
+                                updateViewState { copy(expirationDate = null) }
+                                null
+                            }
+                        }
                     )
                     AnimatedVisibilityVerticalFade(visible = expirationString != null) {
                         if (expirationDate != null || expirationString == "") {

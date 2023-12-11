@@ -35,7 +35,7 @@ object TimeUtils {
     /*
     * Objects
     * */
-    private val DEFAULT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT)
+    val DEFAULT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT)
     private val OUTPUT_TIME_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_TIME)
     private val OUTPUT_DATE_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE)
 
@@ -87,11 +87,6 @@ object TimeUtils {
     @JvmStatic
     fun formatDate(date: Date?): String {
         return if (date != null) OUTPUT_TIME_FORMAT.format(date) else "-"
-    }
-
-    @JvmStatic
-    fun formatDateOrNull(date: Date?): String? {
-        return if (date != null) OUTPUT_TIME_FORMAT.format(date) else null
     }
 
     @JvmStatic
