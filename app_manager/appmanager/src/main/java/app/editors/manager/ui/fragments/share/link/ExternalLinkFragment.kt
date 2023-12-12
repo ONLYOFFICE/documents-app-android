@@ -175,6 +175,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
                                                 "&access=$access"
                                     )
                                 },
+                                onGeneralLinkCreate = viewModel::createGeneralLink,
                                 onLinkClick = { link ->
                                     val json = Json.encodeToString(link)
                                     navController.navigate("${RoomInfoScreens.LinkSettings.name}?link=$json")
@@ -228,7 +229,8 @@ class ExternalLinkFragment : BaseDialogFragment() {
         onSetUserAccess: (userId: String, access: Int) -> Unit,
         onAddUsers: () -> Unit,
         onBackClick: () -> Unit,
-        onLinkClick: (ExternalLink) -> Unit
+        onLinkClick: (ExternalLink) -> Unit,
+        onGeneralLinkCreate: () -> Unit
     ) {
         AppScaffold(
             scaffoldState = scaffoldState,
@@ -258,7 +260,8 @@ class ExternalLinkFragment : BaseDialogFragment() {
                     ExternalLinkBlock(
                         generalLink = state.generalLink,
                         additionalLinks = state.additionalLinks,
-                        onLinkClick = onLinkClick
+                        onLinkClick = onLinkClick,
+                        onGeneralLinkCreate = onGeneralLinkCreate
                     )
                 }
                 ShareUsersList(
@@ -284,14 +287,15 @@ class ExternalLinkFragment : BaseDialogFragment() {
     private fun ExternalLinkBlock(
         generalLink: ExternalLink?,
         additionalLinks: List<ExternalLink>,
-        onLinkClick: (ExternalLink) -> Unit
+        onLinkClick: (ExternalLink) -> Unit,
+        onGeneralLinkCreate: () -> Unit
     ) {
         AppDescriptionItem(
             modifier = Modifier.padding(top = 8.dp),
             text = R.string.rooms_info_access_desc
         )
+        AppHeaderItem(title = R.string.rooms_info_general_link)
         if (generalLink != null) {
-            AppHeaderItem(title = R.string.rooms_info_general_link)
             ExternalLinkItem(
                 linkTitle = generalLink.sharedTo.title,
                 access = generalLink.access,
@@ -301,6 +305,12 @@ class ExternalLinkFragment : BaseDialogFragment() {
             ) {
                 onLinkClick.invoke(generalLink)
             }
+        } else {
+            AppTextButton(
+                modifier = Modifier.padding(start = 8.dp),
+                title = R.string.rooms_info_create_link,
+                onClick = onGeneralLinkCreate
+            )
         }
         AppHeaderItem(title = stringResource(id = R.string.rooms_info_additional_links, 0, 5))
         additionalLinks.forEach { link ->
@@ -449,6 +459,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 onBackClick = {},
                 onAddUsers = {},
                 onSetUserAccess = { _, _ -> },
+                onGeneralLinkCreate = {},
                 onLinkClick = {}
             )
         }

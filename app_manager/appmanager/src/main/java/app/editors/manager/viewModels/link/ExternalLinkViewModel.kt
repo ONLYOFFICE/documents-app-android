@@ -83,6 +83,17 @@ class ExternalLinkViewModel(private val roomProvider: RoomProvider, private val 
         }
     }
 
+    fun createGeneralLink() {
+        viewModelScope.launch {
+            try {
+                roomProvider.createExternalLink(roomId)
+                fetchRoomInfo()
+            } catch (httpException: HttpException) {
+                onError(httpException)
+            }
+        }
+    }
+
     private fun onError(httpException: HttpException) {
         viewModelScope.launch {
             val message = when (httpException.code()) {

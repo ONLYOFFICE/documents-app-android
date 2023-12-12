@@ -116,6 +116,12 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
     }
 
+    suspend fun createExternalLink(id: String): Boolean {
+        val response = roomService.getExternalLinks(id)
+        val body = response.body()
+        return if (response.isSuccessful && body != null) true else throw HttpException(response)
+    }
+
     suspend fun updateExternalLink(
         roomId: String,
         access: Int,

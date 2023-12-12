@@ -113,8 +113,8 @@ fun ExternalLinkSettingsScreen(
     MainScreen(
         link = state.link,
         roomType = roomType,
-        onBackListener = {
-            if (state.viewStateChanged) {
+        onBackListener = { skipSave ->
+            if (state.viewStateChanged && !skipSave) {
                 UiUtils.showQuestionDialog(
                     context = context,
                     title = context.getString(R.string.rooms_info_save_link_title),
@@ -155,7 +155,7 @@ fun ExternalLinkSettingsScreen(
 private fun MainScreen(
     link: ExternalLink,
     roomType: Int?,
-    onBackListener: () -> Unit,
+    onBackListener: (Boolean) -> Unit,
     onShareClick: () -> Unit,
     onCopyLink: () -> Unit,
     onDeleteOrRevokeLink: () -> Unit,
@@ -169,7 +169,9 @@ private fun MainScreen(
                     title = if (link.sharedTo.primary)
                         R.string.rooms_info_general_link else
                         R.string.rooms_info_additional_link,
-                    backListener = onBackListener,
+                    backListener = {
+                        onBackListener.invoke(link.sharedTo.isExpired && !linkDateChanged)
+                    },
                     actions = {
                         AppTextButton(
                             title = R.string.toolbar_menu_main_share,
