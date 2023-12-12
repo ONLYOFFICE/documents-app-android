@@ -8,6 +8,5 @@ data class ExternalLink(
     val isLocked: Boolean,
     val isOwner: Boolean,
     val canEditAccess: Boolean,
-    val denyDownload: Boolean,
     val sharedTo: ExternalLinkSharedTo
 )

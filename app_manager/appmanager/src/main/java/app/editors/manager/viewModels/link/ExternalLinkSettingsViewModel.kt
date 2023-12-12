@@ -3,6 +3,7 @@ package app.editors.manager.viewModels.link
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.viewModels.base.BaseViewModel
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
-data class ExternalLinkSettingsState(val link: ExternalLink, val viewStateChanged: Boolean)
+data class ExternalLinkSettingsState(val link: ExternalLinkSharedTo, val viewStateChanged: Boolean)
 
 sealed class ExternalLinkSettingsEffect {
     data class Share(val url: String) : ExternalLinkSettingsEffect()
@@ -29,7 +30,7 @@ sealed class ExternalLinkSettingsEffect {
 }
 
 class ExternalLinkSettingsViewModel(
-    inputLink: ExternalLink,
+    inputLink: ExternalLinkSharedTo,
     private val roomId: String?,
     private val roomProvider: RoomProvider
 ) : BaseViewModel() {
@@ -84,11 +85,30 @@ class ExternalLinkSettingsViewModel(
         operationJob?.cancel()
     }
 
-    fun updateViewState(body: ExternalLink.() -> ExternalLink) {
-        val initial = state.value.link
+    fun updateViewState(body: ExternalLinkSharedTo.() -> ExternalLinkSharedTo) {
         val updated = body.invoke(state.value.link)
-        if (updated.sharedTo != initial.sharedTo) {
-            _state.value = ExternalLinkSettingsState(initial.copy(sharedTo = updated.sharedTo), true)
+        if (updated != state.value.link) {
+            _state.value = ExternalLinkSettingsState(updated, true)
+        }
+    }
+
+    fun createLink() {
+        _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
+        operationJob = viewModelScope.launch {
+            try {
+                with(state.value.link) {
+                    val link = roomProvider.createAdditionalLink(
+                        roomId = roomId.orEmpty(),
+                        denyDownload = denyDownload,
+                        expirationDate = expirationDate,
+                        password = password,
+                        title = title
+                    )
+                    _effect.tryEmit(ExternalLinkSettingsEffect.Copy(link.sharedTo.shareLink))
+                }
+            } catch (httpException: HttpException) {
+                onError(httpException)
+            }
         }
     }
 
@@ -98,13 +118,13 @@ class ExternalLinkSettingsViewModel(
             with(state.value.link) {
                 roomProvider.updateExternalLink(
                     roomId = roomId.orEmpty(),
-                    access = if (!deleteOrRevoke) access else 0,
-                    linkId = sharedTo.id,
-                    linkType = sharedTo.linkType,
-                    denyDownload = sharedTo.denyDownload,
-                    expirationDate = sharedTo.expirationDate,
-                    password = sharedTo.password,
-                    title = sharedTo.title
+                    access = if (!deleteOrRevoke) 2 else 0,
+                    linkId = id,
+                    linkType = linkType,
+                    denyDownload = denyDownload,
+                    expirationDate = expirationDate,
+                    password = password,
+                    title = title
                 )
             }
         } catch (httpException: HttpException) {

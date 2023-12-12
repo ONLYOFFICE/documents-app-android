@@ -13,15 +13,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
@@ -48,9 +49,11 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 // TODO: back handler for ask to save
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ExternalLinkSettingsScreen(
-    link: ExternalLink?,
+    link: ExternalLinkSharedTo?,
+    isCreate: Boolean,
     roomType: Int?,
     roomId: String?,
     onBackListener: () -> Unit
@@ -58,6 +61,7 @@ fun ExternalLinkSettingsScreen(
     if (link == null) return
     val context = LocalContext.current
     val localView = LocalView.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val viewModel = viewModel { ExternalLinkSettingsViewModel(link, roomId, context.roomProvider) }
     val state by viewModel.state.collectAsState()
     val waitingDialog = remember {
@@ -73,14 +77,13 @@ fun ExternalLinkSettingsScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 ExternalLinkSettingsEffect.Loading -> {
+                    keyboardController?.hide()
                     waitingDialog.show()
                     delay(500)
                 }
                 ExternalLinkSettingsEffect.Save -> {
-                    if (waitingDialog.isShowing) {
-                        waitingDialog.dismiss()
-                        onBackListener.invoke()
-                    }
+                    waitingDialog.dismiss()
+                    onBackListener.invoke()
                 }
                 ExternalLinkSettingsEffect.Delete -> {
                     waitingDialog.dismiss()
@@ -96,7 +99,12 @@ fun ExternalLinkSettingsScreen(
                 is ExternalLinkSettingsEffect.Copy -> {
                     waitingDialog.dismiss()
                     KeyboardUtils.setDataToClipboard(context, effect.url)
-                    UiUtils.getSnackBar(localView).setText(R.string.rooms_info_copy_link_to_clipboard).show()
+                    UiUtils.getSnackBar(localView).setText(
+                        if (!isCreate)
+                            R.string.rooms_info_copy_link_to_clipboard else
+                            R.string.rooms_info_create_link_complete
+                    ).show()
+                    onBackListener.invoke()
                 }
                 is ExternalLinkSettingsEffect.Share -> {
                     waitingDialog.dismiss()
@@ -112,6 +120,7 @@ fun ExternalLinkSettingsScreen(
 
     MainScreen(
         link = state.link,
+        isCreate = isCreate,
         roomType = roomType,
         onBackListener = { skipSave ->
             if (state.viewStateChanged && !skipSave) {
@@ -130,6 +139,7 @@ fun ExternalLinkSettingsScreen(
         },
         onShareClick = viewModel::share,
         onCopyLink = viewModel::copy,
+        onCreateLink = viewModel::createLink,
         onDeleteOrRevokeLink = {
             UiUtils.showQuestionDialog(
                 context = context,
@@ -139,25 +149,25 @@ fun ExternalLinkSettingsScreen(
                 description = if (roomType == ApiContract.RoomType.PUBLIC_ROOM)
                     context.getString(R.string.rooms_info_revoke_link_desc) else
                     context.getString(R.string.rooms_info_delete_link_desc),
-                acceptTitle = context.getString(R.string.rooms_info_revoke),
+                acceptTitle = if (roomType == ApiContract.RoomType.PUBLIC_ROOM)
+                    context.getString(R.string.rooms_info_revoke) else
+                    context.getString(R.string.list_context_delete),
                 acceptListener = viewModel::deleteOrRevoke
             )
         },
-        updateViewState = { updated ->
-            viewModel.updateViewState {
-                copy(sharedTo = updated.invoke(sharedTo))
-            }
-        }
+        updateViewState = viewModel::updateViewState
     )
 }
 
 @Composable
 private fun MainScreen(
-    link: ExternalLink,
+    link: ExternalLinkSharedTo,
     roomType: Int?,
+    isCreate: Boolean,
     onBackListener: (Boolean) -> Unit,
     onShareClick: () -> Unit,
     onCopyLink: () -> Unit,
+    onCreateLink: () -> Unit,
     onDeleteOrRevokeLink: () -> Unit,
     updateViewState: (ExternalLinkSharedTo.() -> ExternalLinkSharedTo) -> Unit
 ) {
@@ -166,28 +176,30 @@ private fun MainScreen(
         AppScaffold(
             topBar = {
                 AppTopBar(
-                    title = if (link.sharedTo.primary)
+                    title = if (link.primary)
                         R.string.rooms_info_general_link else
                         R.string.rooms_info_additional_link,
                     backListener = {
-                        onBackListener.invoke(link.sharedTo.isExpired && !linkDateChanged)
+                        onBackListener.invoke(link.isExpired && !linkDateChanged)
                     },
                     actions = {
-                        AppTextButton(
-                            title = R.string.toolbar_menu_main_share,
-                            enabled = !(link.sharedTo.isExpired && !linkDateChanged),
-                            onClick = onShareClick
-                        )
+                        if (!isCreate) {
+                            AppTextButton(
+                                title = R.string.toolbar_menu_main_share,
+                                enabled = !(link.isExpired && !linkDateChanged),
+                                onClick = onShareClick
+                            )
+                        }
                     }
                 )
             }
         ) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 val context = LocalContext.current
-                val title = remember { mutableStateOf<String?>(link.sharedTo.title) }
-                val password = remember { mutableStateOf(link.sharedTo.password) }
-                var denyDownload by remember { mutableStateOf(link.sharedTo.denyDownload) }
-                var expirationString by remember { mutableStateOf(link.sharedTo.expirationDate) }
+                val title = remember { mutableStateOf<String?>(link.title) }
+                val password = remember { mutableStateOf(link.password) }
+                var denyDownload by remember { mutableStateOf(link.denyDownload) }
+                var expirationString by remember { mutableStateOf(link.expirationDate) }
                 var expirationDate by remember { mutableStateOf(TimeUtils.parseDate(expirationString)) }
 
                 LaunchedEffect(denyDownload) {
@@ -209,7 +221,10 @@ private fun MainScreen(
                 }
 
                 AppHeaderItem(title = R.string.rooms_info_link_name)
-                AppTextFieldListItem(state = title)
+                AppTextFieldListItem(
+                    state = title,
+                    hint = stringResource(id = lib.toolkit.base.R.string.text_hint_required)
+                )
                 AppHeaderItem(title = lib.editors.gbase.R.string.context_protection_title)
                 AppSwitchItem(
                     title = R.string.rooms_info_password_access,
@@ -233,7 +248,7 @@ private fun MainScreen(
                     modifier = Modifier.padding(top = 8.dp),
                     text = R.string.rooms_info_file_rectrict_desc
                 )
-                if (!link.sharedTo.primary) {
+                if (!link.primary) {
                     AppHeaderItem(title = R.string.rooms_info_time_limit_title)
                     AppSwitchItem(
                         title = R.string.rooms_info_time_limit,
@@ -252,7 +267,7 @@ private fun MainScreen(
                             Column {
                                 AppArrowItem(
                                     title = R.string.rooms_info_valid_through,
-                                    optionTint = if (link.sharedTo.isExpired && !linkDateChanged)
+                                    optionTint = if (link.isExpired && !linkDateChanged)
                                         MaterialTheme.colors.error else
                                         MaterialTheme.colors.colorTextTertiary,
                                     option = expirationDate?.let { date ->
@@ -270,7 +285,7 @@ private fun MainScreen(
                                         linkDateChanged = true
                                     }
                                 }
-                                if (link.sharedTo.isExpired && !linkDateChanged) {
+                                if (link.isExpired && !linkDateChanged) {
                                     AppDescriptionItem(
                                         modifier = Modifier.padding(top = 8.dp),
                                         text = R.string.rooms_info_link_expired_full,
@@ -281,20 +296,29 @@ private fun MainScreen(
                         }
                     }
                 }
-                AppTextButton(
-                    modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-                    enabled = !(link.sharedTo.isExpired && !linkDateChanged),
-                    title = R.string.rooms_info_copy_link,
-                    onClick = onCopyLink
-                )
-                AppTextButton(
-                    modifier = Modifier.padding(start = 8.dp),
-                    title = if (link.sharedTo.primary && roomType == ApiContract.RoomType.PUBLIC_ROOM)
-                        R.string.rooms_info_revoke_link else
-                        R.string.rooms_info_delete_link,
-                    textColor = MaterialTheme.colors.error,
-                    onClick = onDeleteOrRevokeLink
-                )
+                if (!isCreate) {
+                    AppTextButton(
+                        modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+                        enabled = !(link.isExpired && !linkDateChanged),
+                        title = R.string.rooms_info_copy_link,
+                        onClick = onCopyLink
+                    )
+                    AppTextButton(
+                        modifier = Modifier.padding(start = 8.dp),
+                        title = if (link.primary && roomType == ApiContract.RoomType.PUBLIC_ROOM)
+                            R.string.rooms_info_revoke_link else
+                            R.string.rooms_info_delete_link,
+                        textColor = MaterialTheme.colors.error,
+                        onClick = onDeleteOrRevokeLink
+                    )
+                } else {
+                    AppTextButton(
+                        modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+                        enabled = !title.value.isNullOrBlank(),
+                        title = R.string.rooms_info_create_link,
+                        onClick = onCreateLink
+                    )
+                }
             }
         }
     }
@@ -303,25 +327,18 @@ private fun MainScreen(
 @Preview(apiLevel = 33, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun Preview() {
-    val link = ExternalLink(
-        access = 2,
-        isLocked = false,
-        isOwner = false,
-        canEditAccess = false,
+    val link = ExternalLinkSharedTo(
+        id = "",
+        title = "Shared link",
+        shareLink = "",
+        linkType = 2,
         denyDownload = false,
-        sharedTo = ExternalLinkSharedTo(
-            id = "",
-            title = "Shared link",
-            shareLink = "",
-            linkType = 2,
-            denyDownload = false,
-            isExpired = true,
-            primary = true,
-            requestToken = "",
-            password = null,
-            expirationDate = "2023-12-06T14:00:00.0000000+03:00"
-        )
+        isExpired = true,
+        primary = true,
+        requestToken = "",
+        password = null,
+        expirationDate = "2023-12-06T14:00:00.0000000+03:00"
     )
 
-    MainScreen(link = link, ApiContract.RoomType.CUSTOM_ROOM, {}, {}, {}, {}) {}
+    MainScreen(link, ApiContract.RoomType.CUSTOM_ROOM, false, {}, {}, {}, {}, {}) {}
 }

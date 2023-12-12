@@ -42,7 +42,7 @@ class ExternalLinkViewModel(private val roomProvider: RoomProvider, private val 
                 var generalLink: ExternalLink? = null
                 val additionalLinks = mutableListOf<ExternalLink>()
                 roomProvider.getExternalLinks(roomId).forEach { link ->
-                    if (link.sharedTo.primary) {
+                    if (link.sharedTo.primary == true) {
                         generalLink = link
                     } else {
                         additionalLinks.add(link)
@@ -86,7 +86,7 @@ class ExternalLinkViewModel(private val roomProvider: RoomProvider, private val 
     fun createGeneralLink() {
         viewModelScope.launch {
             try {
-                roomProvider.createExternalLink(roomId)
+                roomProvider.createGeneralLink(roomId)
                 fetchRoomInfo()
             } catch (httpException: HttpException) {
                 onError(httpException)

@@ -1,10 +1,12 @@
 package app.documents.core.providers
 
 import android.graphics.Bitmap
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
+import app.documents.core.network.room.models.RequestCreateExternalLink
 import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
@@ -116,32 +118,50 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
     }
 
-    suspend fun createExternalLink(id: String): Boolean {
-        val response = roomService.getExternalLinks(id)
+    suspend fun createGeneralLink(id: String): Boolean {
+        val response = roomService.createGeneralLink(id)
         val body = response.body()
         return if (response.isSuccessful && body != null) true else throw HttpException(response)
     }
 
     suspend fun updateExternalLink(
-        roomId: String,
-        access: Int,
-        linkId: String,
-        linkType: Int,
+        roomId: String?,
+        access: Int?,
+        linkId: String?,
+        linkType: Int?,
+        denyDownload: Boolean?,
+        expirationDate: String?,
+        password: String?,
+        title: String?
+    ): ExternalLink {
+        val request = RequestUpdateExternalLink(
+            access = access ?: ApiContract.ShareCode.READ,
+            denyDownload = denyDownload == true,
+            expirationDate = expirationDate,
+            linkId = linkId,
+            linkType = linkType ?: 2,
+            password = password,
+            title = title
+        )
+        val response = roomService.updateExternalLink(roomId.orEmpty(), request)
+        val body = response.body()
+        return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
+    }
+
+    suspend fun createAdditionalLink(
+        roomId: String?,
         denyDownload: Boolean,
         expirationDate: String?,
         password: String?,
         title: String
     ): ExternalLink {
-        val request = RequestUpdateExternalLink(
-            access = access,
+        val request = RequestCreateExternalLink(
             denyDownload = denyDownload,
             expirationDate = expirationDate,
-            linkId = linkId,
-            linkType = linkType,
             password = password,
             title = title
         )
-        val response = roomService.updateExternalLink(roomId, request)
+        val response = roomService.createAdditionalLink(roomId.orEmpty(), request)
         val body = response.body()
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
     }

@@ -91,6 +91,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
     companion object {
 
         private const val KEY_ROOM = "key_room"
+        private const val MAX_ADDITIONAL_LINKS_COUNT = 5
         val TAG = ExternalLinkFragment::class.java.simpleName
 
         fun newInstance(room: CloudFolder): ExternalLinkFragment =
@@ -176,18 +177,44 @@ class ExternalLinkFragment : BaseDialogFragment() {
                                     )
                                 },
                                 onGeneralLinkCreate = viewModel::createGeneralLink,
+                                onAdditionalLinkCreate = {
+                                    navController.navigate("${RoomInfoScreens.LinkSettings.name}?create=true")
+                                },
                                 onLinkClick = { link ->
-                                    val json = Json.encodeToString(link)
+                                    val json = Json.encodeToString(link.sharedTo)
                                     navController.navigate("${RoomInfoScreens.LinkSettings.name}?link=$json")
                                 }
                             )
                         }
                         composable(
-                            route = "${RoomInfoScreens.LinkSettings.name}?link={link}",
-                            arguments = listOf(navArgument("link") { type = NavType.StringType })
+                            route = "${RoomInfoScreens.LinkSettings.name}?link={link}&create={create}",
+                            arguments = listOf(
+                                navArgument("link") {
+                                    type = NavType.StringType
+                                    defaultValue = Json.encodeToString(
+                                        ExternalLinkSharedTo(
+                                            id = "",
+                                            title = "",
+                                            shareLink = "",
+                                            linkType = 1,
+                                            password = null,
+                                            denyDownload = false,
+                                            isExpired = false,
+                                            primary = false,
+                                            requestToken = "",
+                                            expirationDate = null
+                                        )
+                                    )
+                                },
+                                navArgument("create") {
+                                    type = NavType.BoolType
+                                    defaultValue = false
+                                }
+                            )
                         ) { backStackEntry ->
                             ExternalLinkSettingsScreen(
                                 link = backStackEntry.arguments?.getString("link")?.let(Json::decodeFromString),
+                                isCreate = backStackEntry.arguments?.getBoolean("create") == true,
                                 roomId = room?.id,
                                 roomType = room?.roomType,
                                 onBackListener = navController::popBackStack
@@ -230,7 +257,8 @@ class ExternalLinkFragment : BaseDialogFragment() {
         onAddUsers: () -> Unit,
         onBackClick: () -> Unit,
         onLinkClick: (ExternalLink) -> Unit,
-        onGeneralLinkCreate: () -> Unit
+        onGeneralLinkCreate: () -> Unit,
+        onAdditionalLinkCreate: () -> Unit
     ) {
         AppScaffold(
             scaffoldState = scaffoldState,
@@ -261,7 +289,8 @@ class ExternalLinkFragment : BaseDialogFragment() {
                         generalLink = state.generalLink,
                         additionalLinks = state.additionalLinks,
                         onLinkClick = onLinkClick,
-                        onGeneralLinkCreate = onGeneralLinkCreate
+                        onGeneralLinkCreate = onGeneralLinkCreate,
+                        onAdditionalLinkCreate = onAdditionalLinkCreate
                     )
                 }
                 ShareUsersList(
@@ -288,7 +317,8 @@ class ExternalLinkFragment : BaseDialogFragment() {
         generalLink: ExternalLink?,
         additionalLinks: List<ExternalLink>,
         onLinkClick: (ExternalLink) -> Unit,
-        onGeneralLinkCreate: () -> Unit
+        onGeneralLinkCreate: () -> Unit,
+        onAdditionalLinkCreate: () -> Unit
     ) {
         AppDescriptionItem(
             modifier = Modifier.padding(top = 8.dp),
@@ -312,7 +342,13 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 onClick = onGeneralLinkCreate
             )
         }
-        AppHeaderItem(title = stringResource(id = R.string.rooms_info_additional_links, 0, 5))
+        AppHeaderItem(
+            title = stringResource(
+                id = R.string.rooms_info_additional_links,
+                additionalLinks.size,
+                MAX_ADDITIONAL_LINKS_COUNT
+            )
+        )
         additionalLinks.forEach { link ->
             ExternalLinkItem(
                 linkTitle = link.sharedTo.title,
@@ -324,10 +360,13 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 onLinkClick.invoke(link)
             }
         }
-        AppTextButton(
-            modifier = Modifier.padding(start = 8.dp),
-            title = R.string.rooms_info_create_link
-        ) {}
+        if (additionalLinks.size < MAX_ADDITIONAL_LINKS_COUNT) {
+            AppTextButton(
+                modifier = Modifier.padding(start = 8.dp),
+                title = R.string.rooms_info_create_link,
+                onClick = onAdditionalLinkCreate
+            )
+        }
     }
 
     @Composable
@@ -425,7 +464,6 @@ class ExternalLinkFragment : BaseDialogFragment() {
             isLocked = false,
             isOwner = false,
             canEditAccess = false,
-            denyDownload = false,
             sharedTo = ExternalLinkSharedTo(
                 id = "",
                 title = "",
@@ -460,6 +498,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 onAddUsers = {},
                 onSetUserAccess = { _, _ -> },
                 onGeneralLinkCreate = {},
+                onAdditionalLinkCreate = {},
                 onLinkClick = {}
             )
         }

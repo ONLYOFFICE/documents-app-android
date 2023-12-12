@@ -181,6 +181,16 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
+    suspend fun createAdditionalLink(
+        @Path("id") id: String,
+        @Body request: RequestCreateExternalLink
+    ): Response<ResponseUpdateExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/link")
     suspend fun createGeneralLink(@Path("id") id: String): Response<BaseResponse>
 
