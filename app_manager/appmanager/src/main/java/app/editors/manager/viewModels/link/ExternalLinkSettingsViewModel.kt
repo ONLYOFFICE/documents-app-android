@@ -23,6 +23,7 @@ sealed class ExternalLinkSettingsEffect {
     data class Share(val url: String) : ExternalLinkSettingsEffect()
     data class Copy(val url: String) : ExternalLinkSettingsEffect()
     data class Error(val message: Int) : ExternalLinkSettingsEffect()
+    data object Delete : ExternalLinkSettingsEffect()
     data object Save : ExternalLinkSettingsEffect()
     data object Loading : ExternalLinkSettingsEffect()
 }
@@ -41,8 +42,11 @@ class ExternalLinkSettingsViewModel(
 
     private var operationJob: Job? = null
 
-    fun delete() {
-
+    fun deleteOrRevoke() {
+        operationJob = viewModelScope.launch {
+            updateExternalLink(deleteOrRevoke = true)
+            _effect.tryEmit(ExternalLinkSettingsEffect.Delete)
+        }
     }
 
     fun save() {
@@ -88,13 +92,13 @@ class ExternalLinkSettingsViewModel(
         }
     }
 
-    private suspend fun updateExternalLink(): ExternalLink? {
+    private suspend fun updateExternalLink(deleteOrRevoke: Boolean = false): ExternalLink? {
         _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
         return try {
             with(state.value.link) {
                 roomProvider.updateExternalLink(
                     roomId = roomId.orEmpty(),
-                    access = access,
+                    access = if (!deleteOrRevoke) access else 0,
                     linkId = sharedTo.id,
                     linkType = sharedTo.linkType,
                     denyDownload = sharedTo.denyDownload,

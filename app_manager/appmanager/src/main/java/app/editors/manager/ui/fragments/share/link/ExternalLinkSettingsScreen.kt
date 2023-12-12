@@ -82,6 +82,17 @@ fun ExternalLinkSettingsScreen(
                         onBackListener.invoke()
                     }
                 }
+                ExternalLinkSettingsEffect.Delete -> {
+                    waitingDialog.dismiss()
+                    onBackListener.invoke()
+                    UiUtils.getSnackBar(localView)
+                        .setText(
+                            if (roomType == ApiContract.RoomType.PUBLIC_ROOM)
+                                R.string.rooms_info_revoke_link_complete else
+                                R.string.rooms_info_delete_link_complete
+                        )
+                        .show()
+                }
                 is ExternalLinkSettingsEffect.Copy -> {
                     waitingDialog.dismiss()
                     KeyboardUtils.setDataToClipboard(context, effect.url)
@@ -119,13 +130,17 @@ fun ExternalLinkSettingsScreen(
         },
         onShareClick = viewModel::share,
         onCopyLink = viewModel::copy,
-        onDeleteLink = {
+        onDeleteOrRevokeLink = {
             UiUtils.showQuestionDialog(
                 context = context,
-                title = context.getString(R.string.rooms_info_delete_link),
-                description = context.getString(R.string.rooms_info_delete_link_message),
-                acceptTitle = context.getString(R.string.list_context_delete),
-                acceptListener = viewModel::delete
+                title = if (roomType == ApiContract.RoomType.PUBLIC_ROOM)
+                    context.getString(R.string.rooms_info_revoke_link) else
+                    context.getString(R.string.rooms_info_delete_link),
+                description = if (roomType == ApiContract.RoomType.PUBLIC_ROOM)
+                    context.getString(R.string.rooms_info_revoke_link_desc) else
+                    context.getString(R.string.rooms_info_delete_link_desc),
+                acceptTitle = context.getString(R.string.rooms_info_revoke),
+                acceptListener = viewModel::deleteOrRevoke
             )
         },
         updateViewState = { updated ->
@@ -143,7 +158,7 @@ private fun MainScreen(
     onBackListener: () -> Unit,
     onShareClick: () -> Unit,
     onCopyLink: () -> Unit,
-    onDeleteLink: () -> Unit,
+    onDeleteOrRevokeLink: () -> Unit,
     updateViewState: (ExternalLinkSharedTo.() -> ExternalLinkSharedTo) -> Unit
 ) {
     ManagerTheme {
@@ -276,7 +291,7 @@ private fun MainScreen(
                         R.string.rooms_info_revoke_link else
                         R.string.rooms_info_delete_link,
                     textColor = MaterialTheme.colors.error,
-                    onClick = onDeleteLink
+                    onClick = onDeleteOrRevokeLink
                 )
             }
         }
