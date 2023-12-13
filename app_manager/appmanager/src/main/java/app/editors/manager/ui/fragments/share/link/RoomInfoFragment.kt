@@ -88,6 +88,7 @@ import lib.compose.ui.views.TopAppBarAction
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
+import lib.toolkit.base.managers.utils.openSendTextActivity
 import lib.toolkit.base.managers.utils.putArgs
 
 class RoomInfoFragment : BaseDialogFragment() {
@@ -349,6 +350,7 @@ class RoomInfoFragment : BaseDialogFragment() {
         onGeneralLinkCreate: () -> Unit,
         onAdditionalLinkCreate: () -> Unit
     ) {
+        val context = LocalContext.current
         AppDescriptionItem(
             modifier = Modifier.padding(top = 8.dp),
             text = R.string.rooms_info_access_desc
@@ -360,10 +362,15 @@ class RoomInfoFragment : BaseDialogFragment() {
                 access = generalLink.access,
                 hasPassword = !generalLink.sharedTo.password.isNullOrEmpty(),
                 expiring = false,
-                isExpired = generalLink.sharedTo.isExpired
-            ) {
-                onLinkClick.invoke(generalLink)
-            }
+                isExpired = generalLink.sharedTo.isExpired,
+                onShareClick = {
+                    context.openSendTextActivity(
+                        context.getString(R.string.toolbar_menu_main_share),
+                        generalLink.sharedTo.shareLink
+                    )
+                },
+                onClick = { onLinkClick.invoke(generalLink) }
+            )
         } else {
             AppTextButton(
                 modifier = Modifier.padding(start = 8.dp),
@@ -384,10 +391,15 @@ class RoomInfoFragment : BaseDialogFragment() {
                 access = link.access,
                 hasPassword = !link.sharedTo.password.isNullOrEmpty(),
                 expiring = !link.sharedTo.expirationDate.isNullOrEmpty(),
-                isExpired = link.sharedTo.isExpired
-            ) {
-                onLinkClick.invoke(link)
-            }
+                isExpired = link.sharedTo.isExpired,
+                onShareClick = {
+                    context.openSendTextActivity(
+                        context.getString(R.string.toolbar_menu_main_share),
+                        link.sharedTo.shareLink
+                    )
+                },
+                onClick = { onLinkClick.invoke(link) }
+            )
         }
         if (additionalLinks.size < MAX_ADDITIONAL_LINKS_COUNT) {
             AppTextButton(

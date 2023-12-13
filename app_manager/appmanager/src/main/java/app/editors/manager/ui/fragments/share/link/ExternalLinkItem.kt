@@ -39,7 +39,8 @@ fun ExternalLinkItem(
     hasPassword: Boolean,
     expiring: Boolean,
     isExpired: Boolean,
-    onClick: () -> Unit,
+    onShareClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -81,7 +82,7 @@ fun ExternalLinkItem(
                 }
             }
         }
-        IconButton(modifier = Modifier.padding(end = 24.dp), onClick = { }) {
+        IconButton(modifier = Modifier.padding(end = 24.dp), onClick = onShareClick) {
             Icon(
                 imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_list_context_share),
                 tint = MaterialTheme.colors.primary,
@@ -134,13 +135,15 @@ private fun Preview() {
                     linkTitle = "Shared link", access = 2,
                     hasPassword = true,
                     expiring = false,
-                    isExpired = false
+                    isExpired = false,
+                    {}
                 ) {}
                 ExternalLinkItem(
                     linkTitle = "Shared link", access = 2,
                     hasPassword = true,
                     expiring = false,
-                    isExpired = true
+                    isExpired = true,
+                    {}
                 ) {}
             }
         }
