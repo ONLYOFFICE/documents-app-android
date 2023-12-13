@@ -275,7 +275,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
                 else -> {
                     viewState.onActionBarTitle("")
-                    if (isRoom) {
+                    if (isRoom && modelExplorerStack.last()?.current?.security?.create == true) {
                         viewState.onStateActionButton(true)
                     } else {
                         viewState.onStateActionButton(isContextEditable)
