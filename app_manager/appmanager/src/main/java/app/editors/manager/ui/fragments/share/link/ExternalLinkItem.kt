@@ -54,7 +54,7 @@ fun ExternalLinkItem(
                 .padding(start = 16.dp)
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(colorResource(id = R.color.colorBlack12)),
+                .background(colorResource(id = R.color.colorIconBackground)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -106,7 +106,7 @@ private fun AttributeIcon(icon: Int, activate: Boolean = true) {
             .size(20.dp)
             .background(
                 if (!activate) {
-                    colorResource(id = R.color.colorBackdrop)
+                    colorResource(id = R.color.colorIconBackground)
                 } else {
                     MaterialTheme.colors.primary
                 }
