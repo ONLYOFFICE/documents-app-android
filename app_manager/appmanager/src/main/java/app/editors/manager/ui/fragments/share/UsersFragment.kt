@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -177,18 +179,17 @@ class UsersFragment : BaseAppFragment() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MainScreen(
-    users: StateFlow<List<User>>,
+    usersFlow: StateFlow<List<User>>,
     usersViewState: StateFlow<UsersViewState>,
     click: (user: User) -> Unit,
     onSuccess: () -> Unit
 ) {
-    val usersList = users.collectAsState().value
-//    val groupUser = remember {
-//        mutableStateOf(usersList.groupBy { it.firstName.first() })
-//    }
+    val usersList = usersFlow.collectAsState().value
     val listState = rememberLazyListState()
+    val groupUser = usersList.groupBy { it.displayName.first().uppercaseChar() }.toSortedMap()
 
     when (val viewState = usersViewState.collectAsState().value) {
         is UsersViewState.Error -> {
@@ -211,12 +212,47 @@ private fun MainScreen(
 
     if (usersList.isNotEmpty()) {
         LazyColumn(state = listState) {
-            itemsIndexed(items = usersList, key = { _, user -> user.id }) { _, user ->
-                UserItem(
-                    user = user,
-                    click
-                )
+            groupUser.keys.forEach { key ->
+                //TODO Maybe use sticky header??? Or delete header???
+//                stickyHeader(key = key) {
+//                        Text(
+//                            text = key.toString(),
+//                            style = MaterialTheme.typography.h5,
+//                            color = MaterialTheme.colors.primary,
+//                            modifier = Modifier.padding(8.dp)
+//                        )
+//                    Spacer(modifier = Modifier.height((-64).dp))
+//                }
+                itemsIndexed(groupUser[key] ?: emptyList(), key = { _, user -> user.id }) { index, user ->
+                    Row(Modifier.animateItemPlacement()) {
+                        if (index == 0) {
+                            Text(
+                                text = key.toString(),
+                                style = MaterialTheme.typography.h5,
+                                color = MaterialTheme.colors.primary,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .width(48.dp)
+                                    .align(Alignment.CenterVertically)
+                                    .padding(start = 16.dp)
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.width(48.dp))
+                        }
+                        UserItem(
+                            user = user,
+                            click
+                        )
+                    }
+
+                }
             }
+//            itemsIndexed(items = usersList, key = { _, user -> user.id }) { _, user ->
+//                UserItem(
+//                    user = user,
+//                    click
+//                )
+//            }
         }
     } else {
         Box(
@@ -256,7 +292,7 @@ private fun UserItem(user: User, click: (user: User) -> Unit) {
         .clickable { click(user) }
         .fillMaxWidth()
         .height(64.dp)
-        .padding(start = 24.dp)) {
+        .padding(start = 16.dp)) {
         GlideImage(
             model = user.avatarMedium, contentDescription = null,
             loading = placeholder(R.drawable.ic_empty_image),
@@ -347,18 +383,20 @@ private fun PreviewSearch() {
 }
 
 @SuppressLint("FlowOperatorInvokedInComposition")
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewMain() {
     ManagerTheme {
         MainScreen(
-            users = MutableStateFlow(
+            usersFlow = MutableStateFlow(
                 listOf(
-                    User().copy(displayName = "User", id = "id", email = "email"),
+                    User().copy(displayName = "user", id = "id", email = "email"),
                     User().copy(displayName = "User", id = "id1", email = "email"),
-                    User().copy(displayName = "User", id = "id2", email = "email"),
-                    User().copy(displayName = "User", id = "id3", email = "email"),
-                    User().copy(displayName = "User", id = "id4", email = "email")
+                    User().copy(displayName = "Mike", id = "id2", email = "email"),
+                    User().copy(displayName = "mike", id = "id3", email = "email"),
+                    User().copy(displayName = "User", id = "id4", email = "email"),
+                    User().copy(displayName = "123", id = "id5", email = "email"),
+                    User().copy(displayName = "5mike", id = "id6", email = "email")
                 )
             ),
             usersViewState = MutableStateFlow(UsersViewState.None), {
@@ -376,7 +414,7 @@ private fun PreviewMain() {
 private fun PreviewEmptyMain() {
     ManagerTheme {
         MainScreen(
-            users = MutableStateFlow(
+            usersFlow = MutableStateFlow(
                 emptyList()
             ),
             usersViewState = MutableStateFlow(UsersViewState.None), {
