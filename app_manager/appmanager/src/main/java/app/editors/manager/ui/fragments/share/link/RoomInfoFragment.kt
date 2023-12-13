@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -84,6 +85,7 @@ import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
+import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
@@ -124,6 +126,8 @@ class RoomInfoFragment : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as? ComposeView)?.setContent {
             ManagerTheme {
+                val context = LocalContext.current
+                val localView = LocalView.current
                 val room = remember { arguments?.getSerializableExt<CloudFolder>(KEY_ROOM) }
                 val scaffoldState = rememberScaffoldState()
                 val viewModel = viewModel { RoomInfoViewModel(requireContext().roomProvider, room?.id.orEmpty()) }
@@ -148,6 +152,12 @@ class RoomInfoFragment : BaseDialogFragment() {
                             is RoomInfoEffect.Error -> {
                                 UiUtils.getShortSnackBar(requireView())
                                     .setText(effect.message)
+                                    .show()
+                            }
+                            is RoomInfoEffect.Create -> {
+                                KeyboardUtils.setDataToClipboard(context, effect.url)
+                                UiUtils.getSnackBar(localView)
+                                    .setText(R.string.rooms_info_copy_link_to_clipboard)
                                     .show()
                             }
                         }

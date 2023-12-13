@@ -118,10 +118,11 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
     }
 
-    suspend fun createGeneralLink(id: String): Boolean {
+    suspend fun createGeneralLink(id: String): String {
         val response = roomService.createGeneralLink(id)
         val body = response.body()
-        return if (response.isSuccessful && body != null) true else throw HttpException(response)
+        return if (response.isSuccessful && body != null)
+            body.response.sharedTo.shareLink else throw HttpException(response)
     }
 
     suspend fun updateExternalLink(
@@ -145,7 +146,8 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         )
         val response = roomService.updateExternalLink(roomId.orEmpty(), request)
         val body = response.body()
-        return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
+        return if (response.isSuccessful && body != null)
+            body.response else throw HttpException(response)
     }
 
     suspend fun createAdditionalLink(

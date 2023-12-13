@@ -27,6 +27,7 @@ data class RoomInfoState(
 sealed class RoomInfoEffect {
 
     data class Error(val message: Int) : RoomInfoEffect()
+    data class Create(val url: String) : RoomInfoEffect()
 }
 
 class RoomInfoViewModel(private val roomProvider: RoomProvider, private val roomId: String) : BaseViewModel() {
@@ -88,7 +89,8 @@ class RoomInfoViewModel(private val roomProvider: RoomProvider, private val room
     fun createGeneralLink() {
         viewModelScope.launch {
             try {
-                roomProvider.createGeneralLink(roomId)
+                val url = roomProvider.createGeneralLink(roomId)
+                _effect.tryEmit(RoomInfoEffect.Create(url))
                 fetchRoomInfo()
             } catch (httpException: HttpException) {
                 onError(httpException)
