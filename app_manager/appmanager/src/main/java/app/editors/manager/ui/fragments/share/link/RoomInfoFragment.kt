@@ -8,8 +8,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -248,6 +250,19 @@ class RoomInfoFragment : BaseDialogFragment() {
     }
 
     @Composable
+    private fun LoadingPlaceholder() {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(id = R.string.placeholder_loading),
+                style = MaterialTheme.typography.body1
+            )
+        }
+    }
+
+    @Composable
     private fun RoomInfoScreen(
         scaffoldState: ScaffoldState,
         state: RoomInfoState,
@@ -282,32 +297,36 @@ class RoomInfoFragment : BaseDialogFragment() {
                 )
             }
         ) {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                val groupedShareList = Share.groupByAccess(state.shareList)
-                if (ApiContract.RoomType.hasExternalLink(roomType)) {
-                    ExternalLinkBlock(
-                        generalLink = state.generalLink,
-                        additionalLinks = state.additionalLinks,
-                        onLinkClick = onLinkClick,
-                        onGeneralLinkCreate = onGeneralLinkCreate,
-                        onAdditionalLinkCreate = onAdditionalLinkCreate
+            if (state.isLoading) {
+                LoadingPlaceholder()
+            } else {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    val groupedShareList = Share.groupByAccess(state.shareList)
+                    if (ApiContract.RoomType.hasExternalLink(roomType)) {
+                        ExternalLinkBlock(
+                            generalLink = state.generalLink,
+                            additionalLinks = state.additionalLinks,
+                            onLinkClick = onLinkClick,
+                            onGeneralLinkCreate = onGeneralLinkCreate,
+                            onAdditionalLinkCreate = onAdditionalLinkCreate
+                        )
+                    }
+                    ShareUsersList(
+                        title = R.string.rooms_info_admin_title,
+                        shareList = groupedShareList[ShareGroup.Admin],
+                        onClick = onSetUserAccess
+                    )
+                    ShareUsersList(
+                        title = R.string.rooms_info_users_title,
+                        shareList = groupedShareList[ShareGroup.User],
+                        onClick = onSetUserAccess
+                    )
+                    ShareUsersList(
+                        title = R.string.rooms_info_expected_title,
+                        shareList = groupedShareList[ShareGroup.Expected],
+                        onClick = onSetUserAccess
                     )
                 }
-                ShareUsersList(
-                    title = R.string.rooms_info_admin_title,
-                    shareList = groupedShareList[ShareGroup.Admin],
-                    onClick = onSetUserAccess
-                )
-                ShareUsersList(
-                    title = R.string.rooms_info_users_title,
-                    shareList = groupedShareList[ShareGroup.User],
-                    onClick = onSetUserAccess
-                )
-                ShareUsersList(
-                    title = R.string.rooms_info_expected_title,
-                    shareList = groupedShareList[ShareGroup.Expected],
-                    onClick = onSetUserAccess
-                )
             }
         }
     }

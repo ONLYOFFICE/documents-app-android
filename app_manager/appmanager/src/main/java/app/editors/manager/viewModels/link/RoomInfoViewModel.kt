@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 data class RoomInfoState(
+    val isLoading: Boolean = true,
     val generalLink: ExternalLink? = null,
     val additionalLinks: List<ExternalLink> = emptyList(),
     val shareList: List<Share> = emptyList()
@@ -49,6 +50,7 @@ class RoomInfoViewModel(private val roomProvider: RoomProvider, private val room
                     }
                 }
                 _state.value = RoomInfoState(
+                    isLoading = false,
                     generalLink = generalLink,
                     additionalLinks = additionalLinks,
                     shareList = roomProvider.getRoomUsers(roomId)
