@@ -17,24 +17,24 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
-data class ExternalLinkState(
+data class RoomInfoState(
     val generalLink: ExternalLink? = null,
     val additionalLinks: List<ExternalLink> = emptyList(),
     val shareList: List<Share> = emptyList()
 )
 
-sealed class ExternalLinkEffect {
+sealed class RoomInfoEffect {
 
-    data class Error(val message: Int) : ExternalLinkEffect()
+    data class Error(val message: Int) : RoomInfoEffect()
 }
 
-class ExternalLinkViewModel(private val roomProvider: RoomProvider, private val roomId: String) : BaseViewModel() {
+class RoomInfoViewModel(private val roomProvider: RoomProvider, private val roomId: String) : BaseViewModel() {
 
-    private val _state: MutableStateFlow<ExternalLinkState> = MutableStateFlow(ExternalLinkState())
-    val state: StateFlow<ExternalLinkState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<RoomInfoState> = MutableStateFlow(RoomInfoState())
+    val state: StateFlow<RoomInfoState> = _state.asStateFlow()
 
-    private val _effect: MutableSharedFlow<ExternalLinkEffect> = MutableSharedFlow(1)
-    val effect: SharedFlow<ExternalLinkEffect> = _effect.asSharedFlow()
+    private val _effect: MutableSharedFlow<RoomInfoEffect> = MutableSharedFlow(1)
+    val effect: SharedFlow<RoomInfoEffect> = _effect.asSharedFlow()
 
     fun fetchRoomInfo() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -42,13 +42,13 @@ class ExternalLinkViewModel(private val roomProvider: RoomProvider, private val 
                 var generalLink: ExternalLink? = null
                 val additionalLinks = mutableListOf<ExternalLink>()
                 roomProvider.getExternalLinks(roomId).forEach { link ->
-                    if (link.sharedTo.primary == true) {
+                    if (link.sharedTo.primary) {
                         generalLink = link
                     } else {
                         additionalLinks.add(link)
                     }
                 }
-                _state.value = ExternalLinkState(
+                _state.value = RoomInfoState(
                     generalLink = generalLink,
                     additionalLinks = additionalLinks,
                     shareList = roomProvider.getRoomUsers(roomId)
@@ -100,7 +100,7 @@ class ExternalLinkViewModel(private val roomProvider: RoomProvider, private val 
                 ApiContract.HttpCodes.CLIENT_FORBIDDEN -> R.string.errors_client_forbidden
                 else -> R.string.errors_unknown_error
             }
-            _effect.tryEmit(ExternalLinkEffect.Error(message))
+            _effect.tryEmit(RoomInfoEffect.Error(message))
         }
     }
 

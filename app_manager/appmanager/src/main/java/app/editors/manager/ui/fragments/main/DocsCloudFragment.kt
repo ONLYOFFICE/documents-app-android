@@ -34,7 +34,7 @@ import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
-import app.editors.manager.ui.fragments.share.link.ExternalLinkFragment
+import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -430,8 +430,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private fun showRoomInfoFragment() {
         (presenter.itemClicked as? CloudFolder)?.let { room ->
-            ExternalLinkFragment.newInstance(room)
-                .show(requireActivity().supportFragmentManager, ExternalLinkFragment.TAG)
+            RoomInfoFragment.newInstance(room)
+                .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
         }
     }
 

@@ -62,9 +62,9 @@ import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
-import app.editors.manager.viewModels.link.ExternalLinkEffect
-import app.editors.manager.viewModels.link.ExternalLinkState
-import app.editors.manager.viewModels.link.ExternalLinkViewModel
+import app.editors.manager.viewModels.link.RoomInfoEffect
+import app.editors.manager.viewModels.link.RoomInfoState
+import app.editors.manager.viewModels.link.RoomInfoViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -86,16 +86,16 @@ import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 
-class ExternalLinkFragment : BaseDialogFragment() {
+class RoomInfoFragment : BaseDialogFragment() {
 
     companion object {
 
         private const val KEY_ROOM = "key_room"
         private const val MAX_ADDITIONAL_LINKS_COUNT = 5
-        val TAG = ExternalLinkFragment::class.java.simpleName
+        val TAG = RoomInfoFragment::class.java.simpleName
 
-        fun newInstance(room: CloudFolder): ExternalLinkFragment =
-            ExternalLinkFragment().putArgs(KEY_ROOM to room)
+        fun newInstance(room: CloudFolder): RoomInfoFragment =
+            RoomInfoFragment().putArgs(KEY_ROOM to room)
 
     }
 
@@ -124,7 +124,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
             ManagerTheme {
                 val room = remember { arguments?.getSerializableExt<CloudFolder>(KEY_ROOM) }
                 val scaffoldState = rememberScaffoldState()
-                val viewModel = viewModel { ExternalLinkViewModel(requireContext().roomProvider, room?.id.orEmpty()) }
+                val viewModel = viewModel { RoomInfoViewModel(requireContext().roomProvider, room?.id.orEmpty()) }
                 val navController = rememberNavController().also {
                     it.addOnDestinationChangedListener { _, destination, _ ->
                         if (destination.route == RoomInfoScreens.RoomInfo.name) {
@@ -143,7 +143,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 LaunchedEffect(Unit) {
                     viewModel.effect.collect { effect ->
                         when (effect) {
-                            is ExternalLinkEffect.Error -> {
+                            is RoomInfoEffect.Error -> {
                                 UiUtils.getShortSnackBar(requireView())
                                     .setText(effect.message)
                                     .show()
@@ -160,11 +160,11 @@ class ExternalLinkFragment : BaseDialogFragment() {
                                 state = state,
                                 roomType = room?.roomType,
                                 roomTitle = room?.title,
-                                onBackClick = this@ExternalLinkFragment::onBackPressed,
+                                onBackClick = this@RoomInfoFragment::onBackPressed,
                                 onAddUsers = {
                                     ShareActivity.launchForResult(
                                         launcher = shareActivityResult,
-                                        fragment = this@ExternalLinkFragment,
+                                        fragment = this@RoomInfoFragment,
                                         item = room,
                                         isInfo = false
                                     )
@@ -250,7 +250,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
     @Composable
     private fun RoomInfoScreen(
         scaffoldState: ScaffoldState,
-        state: ExternalLinkState,
+        state: RoomInfoState,
         roomType: Int?,
         roomTitle: String?,
         onSetUserAccess: (userId: String, access: Int) -> Unit,
@@ -483,7 +483,7 @@ class ExternalLinkFragment : BaseDialogFragment() {
                 scaffoldState = rememberScaffoldState(),
                 roomTitle = "Room title",
                 roomType = 1,
-                state = ExternalLinkState(
+                state = RoomInfoState(
                     generalLink = link,
                     additionalLinks = listOf(link, link.copy(access = 1)),
                     shareList = listOf(

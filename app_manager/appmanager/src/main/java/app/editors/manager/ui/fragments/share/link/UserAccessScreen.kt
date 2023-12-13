@@ -9,7 +9,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.viewModels.link.ExternalLinkViewModel
+import app.editors.manager.viewModels.link.RoomInfoViewModel
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSelectItem
 import lib.compose.ui.views.AppTopBar
@@ -17,7 +17,7 @@ import lib.compose.ui.views.AppTopBar
 @Composable
 fun UserAccessScreen(
     scaffoldState: ScaffoldState,
-    viewModel: ExternalLinkViewModel,
+    viewModel: RoomInfoViewModel,
     navController: NavController,
     roomId: String,
     userId: String,
