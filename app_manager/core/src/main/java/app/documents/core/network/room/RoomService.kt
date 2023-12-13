@@ -5,8 +5,8 @@ import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
 import app.documents.core.network.room.models.*
+import app.documents.core.network.share.models.request.RequestRoomShare
 import io.reactivex.Observable
-import io.reactivex.Single
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -154,5 +154,15 @@ interface RoomService {
     )
     @POST("api/" + ApiContract.API_VERSION + "/files/owner")
     suspend fun setOwner(@Body body: RequestRoomOwner): Response<ResponseBody>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share")
+    suspend fun shareRoom(
+        @Path(value = "id") id: String,
+        @Body body: RequestRoomShare
+    ): Response<ResponseBody>
 
 }

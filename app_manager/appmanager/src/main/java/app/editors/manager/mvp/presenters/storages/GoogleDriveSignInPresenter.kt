@@ -15,7 +15,6 @@ import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.base.BaseStorageSignInView
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.serialization.ExperimentalSerializationApi
 import lib.toolkit.base.managers.http.NetworkClient
 import lib.toolkit.base.managers.utils.AccountData
 import okhttp3.MediaType
@@ -24,7 +23,6 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.util.concurrent.TimeUnit
 
-@ExperimentalSerializationApi
 class GoogleDriveSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView>() {
 
     init {

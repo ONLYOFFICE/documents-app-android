@@ -5,12 +5,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.ContentAlpha
@@ -30,15 +44,21 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import app.documents.core.network.login.models.User
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -52,6 +72,10 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.UserViewModelFactory
 import app.editors.manager.viewModels.main.UsersViewModel
 import app.editors.manager.viewModels.main.UsersViewState
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
+import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import lib.compose.ui.theme.ManagerTheme
@@ -76,12 +100,12 @@ class UsersFragment : BaseAppFragment() {
         }
     }
 
-    private val item: CloudFolder?
-        get() = arguments?.getSerializableExt(ShareActivity.TAG_SHARE_ITEM)
+    private val item: CloudFolder
+        get() = checkNotNull(arguments?.getSerializableExt(ShareActivity.TAG_SHARE_ITEM))
 
     private val viewModel by viewModels<UsersViewModel> {
         UserViewModelFactory(
-            id = item?.id ?: "",
+            id = item,
             shareService = requireContext().shareApi,
             roomProvider = requireContext().roomProvider,
             resourcesProvider = requireContext().appComponent.resourcesProvider,
@@ -93,6 +117,10 @@ class UsersFragment : BaseAppFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (requireActivity() is ShareActivity) {
+            (requireActivity() as ShareActivity).findViewById<AppBarLayout>(R.id.app_bar_layout).isVisible = false
+        }
+
         (view as ComposeView).setContent {
             val isSearchVisible = remember {
                 mutableStateOf(false)
@@ -108,39 +136,39 @@ class UsersFragment : BaseAppFragment() {
                 AppScaffold(
                     scaffoldState = scaffoldState,
                     topBar = {
-                        Crossfade(targetState = isSearchVisible, label = "") {
-                            when (it.value) {
-                                false -> {
-                                    AppTopBar(
-                                        title = stringResource(id = R.string.room_set_owner_title),
-                                        isClose = true,
-                                        backListener = { requireActivity().finish() },
-                                        actions = {
-                                            Icon(
-                                                imageVector = Icons.Outlined.Search,
-                                                contentDescription = stringResource(id = android.R.string.search_go),
-                                                modifier = Modifier.clickable(noRipple = false) {
-                                                    isSearchVisible.value = true
-                                                })
+                        AnimatedVisibility(
+                            visible = !isSearchVisible.value,
+                            enter = fadeIn() + slideInHorizontally(),
+                            exit = fadeOut() + slideOutHorizontally()
+                        ) {
+                            AppTopBar(
+                                title = stringResource(id = R.string.room_set_owner_title),
+                                isClose = true,
+                                backListener = { requireActivity().finish() },
+                                actions = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Search,
+                                        contentDescription = stringResource(id = android.R.string.search_go),
+                                        modifier = Modifier.clickable(noRipple = false) {
+                                            isSearchVisible.value = true
                                         })
-                                }
-
-                                true -> {
-                                    SearchAppBar(
-                                        text = search,
-                                        onTextChange = { value ->
-                                            search.value = value
-                                            viewModel.search(value)
-                                        }, onCloseClicked = {
-                                            isSearchVisible.value = false
-                                        })
-                                }
-                            }
+                                })
                         }
-
+                        AnimatedVisibility(visible = isSearchVisible.value, enter = fadeIn(), exit = fadeOut()) {
+                            SearchAppBar(
+                                text = search,
+                                onTextChange = { value ->
+                                    search.value = value
+                                    viewModel.search(value)
+                                }, onCloseClicked = {
+                                    isSearchVisible.value = false
+                                })
+                        }
                     }
                 ) {
-                    MainScreen(viewModel.usersFlow, viewModel.viewState) {
+                    MainScreen(viewModel.usersFlow, viewModel.viewState, {
+                        viewModel.setOwner(it.id)
+                    }) {
                         requireActivity().finish()
                     }
                 }
@@ -153,9 +181,14 @@ class UsersFragment : BaseAppFragment() {
 private fun MainScreen(
     users: StateFlow<List<User>>,
     usersViewState: StateFlow<UsersViewState>,
+    click: (user: User) -> Unit,
     onSuccess: () -> Unit
 ) {
     val usersList = users.collectAsState().value
+//    val groupUser = remember {
+//        mutableStateOf(usersList.groupBy { it.firstName.first() })
+//    }
+    val listState = rememberLazyListState()
 
     when (val viewState = usersViewState.collectAsState().value) {
         is UsersViewState.Error -> {
@@ -176,9 +209,76 @@ private fun MainScreen(
         }
     }
 
-    LazyColumn {
-        items(items = usersList, key = { it.id }) {
-            Text(text = it.displayName)
+    if (usersList.isNotEmpty()) {
+        LazyColumn(state = listState) {
+            itemsIndexed(items = usersList, key = { _, user -> user.id }) { _, user ->
+                UserItem(
+                    user = user,
+                    click
+                )
+            }
+        }
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = 40.dp,
+                ), contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(
+                    imageVector = ImageVector.vectorResource(id = lib.editors.gbase.R.drawable.image_not_found),
+                    contentDescription = null
+                )
+                Text(
+                    text = stringResource(id = R.string.room_search_not_found),
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 32.dp)
+                )
+                Text(
+                    text = stringResource(id = R.string.room_search_not_found_desc),
+                    style = MaterialTheme.typography.subtitle1,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+        }
+    }
+
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun UserItem(user: User, click: (user: User) -> Unit) {
+    Row(modifier = Modifier
+        .clickable { click(user) }
+        .fillMaxWidth()
+        .height(64.dp)
+        .padding(start = 24.dp)) {
+        GlideImage(
+            model = user.avatarMedium, contentDescription = null,
+            loading = placeholder(R.drawable.ic_empty_image),
+            failure = placeholder(R.drawable.ic_empty_image),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .clip(CircleShape)
+                .size(40.dp)
+        )
+        Column(
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .align(Alignment.CenterVertically)
+        ) {
+            Text(
+                text = user.displayName,
+                style = MaterialTheme.typography.body1
+            )
+            Text(
+                text = user.email ?: "",
+                style = MaterialTheme.typography.body2
+            )
         }
     }
 }
@@ -254,14 +354,34 @@ private fun PreviewMain() {
         MainScreen(
             users = MutableStateFlow(
                 listOf(
-                    User().copy(displayName = "User", id = "id"),
-                    User().copy(displayName = "User", id = "id1"),
-                    User().copy(displayName = "User", id = "id2"),
-                    User().copy(displayName = "User", id = "id3"),
-                    User().copy(displayName = "User", id = "id4")
+                    User().copy(displayName = "User", id = "id", email = "email"),
+                    User().copy(displayName = "User", id = "id1", email = "email"),
+                    User().copy(displayName = "User", id = "id2", email = "email"),
+                    User().copy(displayName = "User", id = "id3", email = "email"),
+                    User().copy(displayName = "User", id = "id4", email = "email")
                 )
             ),
-            usersViewState = MutableStateFlow(UsersViewState.None)
+            usersViewState = MutableStateFlow(UsersViewState.None), {
+
+            }
+        ) {
+
+        }
+    }
+}
+
+@SuppressLint("FlowOperatorInvokedInComposition")
+@Preview
+@Composable
+private fun PreviewEmptyMain() {
+    ManagerTheme {
+        MainScreen(
+            users = MutableStateFlow(
+                emptyList()
+            ),
+            usersViewState = MutableStateFlow(UsersViewState.None), {
+
+            }
         ) {
 
         }

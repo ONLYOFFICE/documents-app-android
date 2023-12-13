@@ -28,6 +28,8 @@ class DocsRoomFragment : DocsCloudFragment() {
                 }
             }
             AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
+        } else {
+            super.onActionDialog(isThirdParty, isDocs)
         }
     }
 

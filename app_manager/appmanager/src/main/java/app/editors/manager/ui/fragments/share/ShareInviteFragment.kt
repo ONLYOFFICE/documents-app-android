@@ -15,6 +15,7 @@ import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.popup.SharePopup
 import com.google.android.material.chip.Chip
+import lib.toolkit.base.managers.utils.getSerializableExt
 
 
 class ShareInviteFragment : BaseAppFragment() {
@@ -23,7 +24,7 @@ class ShareInviteFragment : BaseAppFragment() {
     private var viewBinding: ShareInviteFragmentLayoutBinding? = null
 
     private val item: Item
-        get() = arguments?.getSerializable(ITEM_TAG) as Item
+        get() = checkNotNull(arguments?.getSerializableExt(ITEM_TAG))
 
     private var shareActivity: ShareActivity? = null
 

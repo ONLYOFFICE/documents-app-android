@@ -5,10 +5,9 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import app.editors.manager.databinding.ActivityShareBinding
 import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.databinding.ActivityShareBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.share.AddPagerFragment
 import app.editors.manager.ui.fragments.share.SettingsFragment
@@ -90,7 +89,6 @@ class ShareActivity : BaseAppActivity() {
 
                 }
                 intent.getBooleanExtra(TAG_LEAVE, false) -> {
-                    viewBinding?.appBarLayout?.isVisible = false
                     showFragment(UsersFragment.newInstance(intent.getSerializableExt(TAG_SHARE_ITEM)), null)
                 }
                 else ->  {

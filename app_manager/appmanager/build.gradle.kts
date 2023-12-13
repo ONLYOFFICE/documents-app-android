@@ -65,8 +65,8 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 501
-        versionName = "7.5.1"
+        versionCode = 503
+        versionName = "8.0.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
@@ -99,24 +99,32 @@ android {
         buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
         buildConfigField("String", "BETA_ID", "\"" + appIdBeta + "\"")
         buildConfigField("String", "APP_NAME", "\"" + appName + "\"")
-        buildConfigField("String", "COMMUNITY_ID","\"" + keystoreProperties["COMMUNITY_ID"] + "\"" )
+        buildConfigField("String", "COMMUNITY_ID", "\"" + keystoreProperties["COMMUNITY_ID"] + "\"")
 
         //Twitter
-        buildConfigField("String", "TWITTER_CONSUMER_SECRET","\"" + keystoreProperties["TWITTER_CONSUMER_SECRET"] + "\"" )
-        buildConfigField("String", "TWITTER_CONSUMER_KEY","\"" + keystoreProperties["TWITTER_CONSUMER_KEY"] + "\"" )
+        buildConfigField(
+            "String",
+            "TWITTER_CONSUMER_SECRET",
+            "\"" + keystoreProperties["TWITTER_CONSUMER_SECRET"] + "\""
+        )
+        buildConfigField("String", "TWITTER_CONSUMER_KEY", "\"" + keystoreProperties["TWITTER_CONSUMER_KEY"] + "\"")
 
         //Captcha
-        buildConfigField("String", "CAPTCHA_PUBLIC_KEY_INFO","\"" + keystoreProperties["CAPTCHA_PUBLIC_KEY_INFO"] + "\"" )
-        buildConfigField("String", "CAPTCHA_PUBLIC_KEY_COM","\"" + keystoreProperties["CAPTCHA_PUBLIC_KEY_COM"] + "\"" )
+        buildConfigField(
+            "String",
+            "CAPTCHA_PUBLIC_KEY_INFO",
+            "\"" + keystoreProperties["CAPTCHA_PUBLIC_KEY_INFO"] + "\""
+        )
+        buildConfigField("String", "CAPTCHA_PUBLIC_KEY_COM", "\"" + keystoreProperties["CAPTCHA_PUBLIC_KEY_COM"] + "\"")
 
         //Facebook
-        buildConfigField("String", "FACEBOOK_APP_ID_INFO","\"" + keystoreProperties["FACEBOOK_APP_ID_INFO"] + "\"" )
-        buildConfigField("String", "FACEBOOK_APP_ID","\"" + keystoreProperties["FACEBOOK_APP_ID"] + "\"" )
+        buildConfigField("String", "FACEBOOK_APP_ID_INFO", "\"" + keystoreProperties["FACEBOOK_APP_ID_INFO"] + "\"")
+        buildConfigField("String", "FACEBOOK_APP_ID", "\"" + keystoreProperties["FACEBOOK_APP_ID"] + "\"")
 
         //Tasks
         manifestPlaceholders["tasks"] = keystoreProperties["CUSTOM_TASKS"] as String? ?: ""
 
-        buildConfigField("String", "PUSH_SCHEME","\"" + "oodocuments" + "\"" )
+        buildConfigField("String", "PUSH_SCHEME", "\"" + "oodocuments" + "\"")
     }
 
     splits {
@@ -265,6 +273,7 @@ dependencies {
     // Androidx
     implementation(AndroidX.appCompat)
     implementation(AndroidX.biometric)
+    implementation(AndroidX.fragmentKtx)
 
     // RecyclerView
     implementation(AndroidX.recyclerView)
@@ -319,8 +328,6 @@ dependencies {
     implementation(Lifecycle.liveData)
     implementation(Lifecycle.runtime)
 
-    implementation("androidx.fragment:fragment-ktx:1.5.7")
-
     //Compose
     implementation(Compose.ui)
     implementation(Compose.material)
@@ -328,12 +335,12 @@ dependencies {
     debugImplementation(Compose.tooling)
     implementation(Compose.navigation)
     implementation(AndroidX.composeActivity)
-    implementation( Compose.liveData)
+    implementation(Compose.liveData)
 
     //Jackson
-    implementation (Jackson.core)
-    implementation (Jackson.annotations)
-    implementation (Jackson.databind)
+    implementation(Jackson.core)
+    implementation(Jackson.annotations)
+    implementation(Jackson.databind)
 
     // For compose preview
     debugApi("androidx.customview:customview:1.2.0-alpha02")
