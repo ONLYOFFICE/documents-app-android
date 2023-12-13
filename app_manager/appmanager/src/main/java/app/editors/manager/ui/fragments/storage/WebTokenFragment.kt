@@ -12,14 +12,15 @@ import android.webkit.*
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.documents.core.network.common.contracts.StorageContract
+import app.documents.core.network.common.models.Storage
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageWebBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.StorageUtils
-import app.documents.core.network.common.models.Storage
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.NetworkUtils
+import lib.toolkit.base.managers.utils.getParcelableExt
 import javax.inject.Inject
 
 class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -33,7 +34,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
 
     @Inject
     lateinit var preferenceTool: PreferenceTool
-    
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         App.getApp().appComponent.inject(this)
@@ -44,7 +45,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewBinding = FragmentStorageWebBinding.inflate(layoutInflater, container, false)        
+        viewBinding = FragmentStorageWebBinding.inflate(layoutInflater, container, false)
         return viewBinding?.root
     }
 
@@ -83,8 +84,10 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
             supportActionBar?.setHomeButtonEnabled(true)
             isPageLoad = false
             it.webStorageSwipe.setOnRefreshListener(this)
-            it.webStorageSwipe.setColorSchemeColors(ContextCompat
-                .getColor(requireContext(),lib.toolkit.base.R.color.colorSecondary))
+            it.webStorageSwipe.setColorSchemeColors(
+                ContextCompat
+                    .getColor(requireContext(), lib.toolkit.base.R.color.colorSecondary)
+            )
             webView = it.webStorageWebview.apply {
                 settings.javaScriptEnabled = true
 //                settings.setAppCacheEnabled(false)
@@ -100,16 +103,15 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
 
     private fun getArgs() {
         arguments?.let { bundle ->
-            storage = bundle.getParcelable(TAG_STORAGE)
-            if (storage != null) {
-                url = StorageUtils.getStorageUrl(
-                    storage?.name,
-                    storage?.clientId,
-                    storage?.redirectUrl
-                )
-                redirectUrl = storage?.redirectUrl
-            }
+            storage = bundle.getParcelableExt(TAG_STORAGE, Storage::class.java)
+            url = StorageUtils.getStorageUrl(
+                storage?.name,
+                storage?.clientId,
+                storage?.redirectUrl
+            )
+            redirectUrl = storage?.redirectUrl
         }
+
     }
 
     private fun restoreStates(savedInstanceState: Bundle?) {
@@ -141,7 +143,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
      *       https://login.live.com/oauth20_authorize.srf?client_id=000000004413039F&redirect_uri=https://service.teamlab.info/oauth2.aspx&response_type=code&scope=wl.signin%20wl.skydrive_update%20wl.offline_access
      * */
     private inner class WebViewCallbacks : WebViewClient() {
-        
+
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             if (url.startsWith(redirectUrl!!)) {
                 val uri = Uri.parse(url)
@@ -180,9 +182,9 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
         private const val TAG_STORAGE = "TAG_MEDIA"
         private const val TAG_WEB_VIEW = "TAG_WEB_VIEW"
         private const val TAG_PAGE_LOAD = "TAG_PAGE_LOAD"
-        
+
         fun newInstance(storage: Storage?): WebTokenFragment =
-            WebTokenFragment().apply { 
+            WebTokenFragment().apply {
                 arguments = Bundle(1).apply {
                     putParcelable(TAG_STORAGE, storage)
                 }

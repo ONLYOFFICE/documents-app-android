@@ -722,6 +722,8 @@
     <string name="leave_room_assign">Assign Owner</string>
     <string name="leave_room_message">You have left the room</string>
     <string name="room_set_owner_title">Change the Room Owner</string>
+    <string name="room_search_not_found">No users found</string>
+    <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
 
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>

@@ -3,10 +3,14 @@ package app.editors.manager.viewModels.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.models.User
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.share.ShareService
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +21,7 @@ import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.mutableStateIn
 
 class UserViewModelFactory(
-    private val id: String,
+    private val id: CloudFolder,
     private val shareService: ShareService,
     private val roomProvider: RoomProvider,
     private val resourcesProvider: ResourcesProvider
@@ -36,18 +40,24 @@ sealed class UsersViewState {
 }
 
 class UsersViewModel(
-    private val id: String,
+    private val item: CloudFolder,
     private val shareService: ShareService,
     private val roomProvider: RoomProvider,
-    private val resourcesProvider: ResourcesProvider) : ViewModel() {
+    private val resourcesProvider: ResourcesProvider
+) : ViewModel() {
 
     private val _viewState: MutableStateFlow<UsersViewState> = MutableStateFlow(UsersViewState.None)
     val viewState: StateFlow<UsersViewState> = _viewState
 
     private val _usersFlow: MutableStateFlow<List<User>> = flow {
-        _viewState.emit(UsersViewState.Loading)
-        emit(shareService.getUsers().response.filter { !it.isOwner }.sortedBy { it.displayName })
-        _viewState.emit(UsersViewState.None)
+        try {
+            _viewState.emit(UsersViewState.Loading)
+            emit(shareService.getUsers(getOptions()).response.filter { !it.isOwner }
+                .map { it.copy(avatarMedium = ApiContract.SCHEME_HTTPS + App.getApp().appComponent.networkSettings.getPortal() + it.avatarMedium) })
+            _viewState.emit(UsersViewState.None)
+        } catch (error: Throwable) {
+            emit(emptyList())
+        }
     }.mutableStateIn(viewModelScope, emptyList())
     val usersFlow: StateFlow<List<User>> = _usersFlow
 
@@ -56,21 +66,13 @@ class UsersViewModel(
     fun search(string: String) {
         filterJob?.cancel()
         filterJob = viewModelScope.launch {
+            delay(300L)
             try {
-                delay(200)
                 _viewState.emit(UsersViewState.Loading)
-                if (string.isEmpty()) {
-                    _usersFlow.emit(shareService.getUsers().response.filter { !it.isOwner }.sortedBy { it.displayName })
-                } else {
-                    _usersFlow.emit(shareService.getUsers().response.filter {
-                        !it.isOwner && it.displayName.contains(
-                            string,
-                            true
-                        )
-                    }.sortedBy { it.displayName })
-                }
+                _usersFlow.emit(shareService.getUsers(getOptions(string)).response.filter { !it.isOwner })
                 _viewState.emit(UsersViewState.None)
             } catch (error: Throwable) {
+                if (filterJob?.isCancelled == true) return@launch
                 _viewState.emit(
                     UsersViewState.Error(
                         error.message ?: resourcesProvider.getString(R.string.errors_unknown_error)
@@ -84,7 +86,7 @@ class UsersViewModel(
         viewModelScope.launch {
             _viewState.emit(UsersViewState.Loading)
             try {
-                roomProvider.setRoomOwner(id, userId)
+                roomProvider.setRoomOwner(item.id, userId, App.getApp().accountOnline?.id ?: "")
                 _viewState.emit(UsersViewState.Success)
             } catch (error: Throwable) {
                 _viewState.emit(
@@ -95,5 +97,12 @@ class UsersViewModel(
             }
         }
     }
+
+    private fun getOptions(value: String = ""): Map<String, String> = mapOf(
+        ApiContract.Parameters.ARG_FILTER_VALUE to value,
+        ApiContract.Parameters.ARG_SORT_BY to ApiContract.Parameters.VAL_SORT_BY_FIRST_NAME,
+        ApiContract.Parameters.ARG_SORT_ORDER to ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+        ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS
+    )
 
 }
