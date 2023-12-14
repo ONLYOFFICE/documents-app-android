@@ -1,12 +1,15 @@
 package lib.toolkit.base.managers.utils
 
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Build
 import android.text.format.DateFormat
-import lib.toolkit.base.R
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -134,36 +137,44 @@ object TimeUtils {
         return if (time != null) Date(time) else null
     }
 
-    fun showDateTimePickerDialog(context: Context, date: Date?, onDateTimeSet: (Date) -> Unit) {
+    fun showDateTimePickerDialog(context: Context, onDateTimeSet: (Date) -> Unit) {
+        val fragmentManager = (context as? AppCompatActivity)?.supportFragmentManager
         val tmp = Calendar.getInstance()
-        val today = Calendar.getInstance().also { if (date != null) it.time = date }
 
-        val timePickerDialog = TimePickerDialog(
-            context,
-            R.style.ThemeOverlay_Common_DateTimePicker,
-            { _, hour, minute ->
-                tmp.set(Calendar.HOUR, hour)
-                tmp.set(Calendar.MINUTE, minute)
-                tmp.set(Calendar.SECOND, 0)
-                onDateTimeSet.invoke(tmp.time)
-            },
-            today.get(Calendar.HOUR),
-            today.get(Calendar.MINUTE),
-            DateFormat.is24HourFormat(context)
-        )
+        val timePickerDialog = MaterialTimePicker.Builder()
+            .setTimeFormat(if (DateFormat.is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H)
+            .build()
+            .apply {
+                addOnPositiveButtonClickListener {
+                    tmp.set(Calendar.HOUR_OF_DAY, hour)
+                    tmp.set(Calendar.MINUTE, minute)
+                    onDateTimeSet.invoke(tmp.time)
+                }
+            }
 
-        DatePickerDialog(
-            context,
-            R.style.ThemeOverlay_Common_DateTimePicker,
-            { _, year, month, day ->
-                tmp.set(year, month, day)
-                timePickerDialog.show()
-            },
-            today.get(Calendar.YEAR),
-            today.get(Calendar.MONTH),
-            today.get(Calendar.DAY_OF_MONTH)
-        ).apply { datePicker.minDate = Calendar.getInstance().also { it.add(Calendar.DATE, 1) }.timeInMillis }.show()
-
+        fragmentManager?.let {
+            MaterialDatePicker.Builder
+                .datePicker()
+                .setCalendarConstraints(
+                    CalendarConstraints.Builder()
+                        .setValidator(DateValidatorPointForward.from(System.currentTimeMillis()))
+                        .build()
+                )
+                .build()
+                .apply {
+                    addOnPositiveButtonClickListener { date ->
+                        with(Calendar.getInstance().also { it.time = Date(date) }) {
+                            tmp.set(
+                                get(Calendar.YEAR),
+                                get(Calendar.MONTH),
+                                get(Calendar.DAY_OF_MONTH)
+                            )
+                            timePickerDialog.show(fragmentManager, null)
+                        }
+                    }
+                }
+                .show(fragmentManager, null)
+        }
     }
 
     fun getCurrentLocale(context: Context): Locale? {

@@ -286,7 +286,7 @@ private fun MainScreen(
                                             .format(date)
                                     }
                                 ) {
-                                    TimeUtils.showDateTimePickerDialog(context, expirationDate) { date ->
+                                    TimeUtils.showDateTimePickerDialog(context) { date ->
                                         expirationDate = date
                                         linkDateChanged = true
                                     }
