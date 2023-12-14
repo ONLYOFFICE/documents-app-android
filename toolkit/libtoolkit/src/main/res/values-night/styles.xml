@@ -3,6 +3,7 @@
 
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/colorBackground</item>
     </style>
 
     <!-- ======================================================================================= -->
