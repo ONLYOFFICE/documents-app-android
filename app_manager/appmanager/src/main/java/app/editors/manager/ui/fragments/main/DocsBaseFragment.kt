@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
@@ -1099,6 +1100,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
             else -> {
             }
+        }
+    }
+
+    override fun checkNotificationPermission(function: () -> Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            RequestPermission(requireActivity().activityResultRegistry, {
+                function()
+            }, Manifest.permission.POST_NOTIFICATIONS).request()
+        } else {
+            function()
         }
     }
 

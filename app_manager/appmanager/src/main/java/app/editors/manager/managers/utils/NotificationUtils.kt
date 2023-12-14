@@ -7,7 +7,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.os.bundleOf
@@ -33,15 +32,13 @@ class NotificationUtils(private val context: Context, private val serviceName: S
 
     init {
         // Need for Oreo, else doesn't work
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                serviceName,
-                context.getString(R.string.app_name),
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            channel.enableVibration(false)
-            notificationManager.createNotificationChannel(channel)
-        }
+        val channel = NotificationChannel(
+            serviceName,
+            context.getString(R.string.app_name),
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        channel.enableVibration(false)
+        notificationManager.createNotificationChannel(channel)
     }
 
     fun show(id: Int, notification: Notification?) {
@@ -50,7 +47,7 @@ class NotificationUtils(private val context: Context, private val serviceName: S
 
     fun getNotification(title: String?, group: String?, info: String?): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, serviceName)
-            .setPriority(Notification.PRIORITY_DEFAULT)
+            .setPriority(NotificationManager.IMPORTANCE_DEFAULT )
             .setOngoing(false)
             .setContentTitle(title)
             .setContentText(info)
@@ -147,7 +144,7 @@ class NotificationUtils(private val context: Context, private val serviceName: S
         @StringRes contentText: Int,
         group: String
     ): NotificationCompat.Builder = NotificationCompat.Builder(context, serviceName)
-        .setPriority(Notification.PRIORITY_DEFAULT)
+        .setPriority(NotificationManager.IMPORTANCE_DEFAULT )
         .setOngoing(true)
         .setContentTitle(title)
         .setSmallIcon(R.drawable.ic_notify)
