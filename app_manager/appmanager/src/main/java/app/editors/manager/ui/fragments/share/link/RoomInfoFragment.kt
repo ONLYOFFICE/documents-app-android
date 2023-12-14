@@ -24,10 +24,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -136,7 +134,6 @@ class RoomInfoFragment : BaseDialogFragment() {
                 val context = LocalContext.current
                 val localView = LocalView.current
                 val room = remember { arguments?.getSerializableExt<CloudFolder>(KEY_ROOM) }
-                val scaffoldState = rememberScaffoldState()
                 val viewModel = viewModel { RoomInfoViewModel(requireContext().roomProvider, room?.id.orEmpty()) }
                 val navController = rememberNavController().also {
                     it.addOnDestinationChangedListener { _, destination, _ ->
@@ -175,7 +172,6 @@ class RoomInfoFragment : BaseDialogFragment() {
                     NavHost(navController = navController, startDestination = RoomInfoScreens.RoomInfo.name) {
                         composable(route = RoomInfoScreens.RoomInfo.name) {
                             RoomInfoScreen(
-                                scaffoldState = scaffoldState,
                                 state = state,
                                 roomType = room?.roomType,
                                 roomTitle = room?.title,
@@ -246,14 +242,16 @@ class RoomInfoFragment : BaseDialogFragment() {
                                 navArgument("access") { type = NavType.IntType }
                             )
                         ) { backStackEntry ->
+                            val userId = backStackEntry.arguments?.getString("userId").orEmpty()
+                            val roomId = room?.id.orEmpty()
                             UserAccessScreen(
-                                scaffoldState = scaffoldState,
-                                viewModel = viewModel,
                                 navController = navController,
-                                roomId = room?.id.orEmpty(),
-                                userId = backStackEntry.arguments?.getString("userId").orEmpty(),
+                                roomId = roomId,
+                                userId = userId,
                                 currentAccess = backStackEntry.arguments?.getInt("access")
-                            )
+                            ) { newAccess ->
+                                viewModel.setUserAccess(roomId, userId, newAccess)
+                            }
                         }
                     }
                 }
@@ -281,7 +279,6 @@ class RoomInfoFragment : BaseDialogFragment() {
 
     @Composable
     private fun RoomInfoScreen(
-        scaffoldState: ScaffoldState,
         state: RoomInfoState,
         roomType: Int?,
         roomTitle: String?,
@@ -293,7 +290,7 @@ class RoomInfoFragment : BaseDialogFragment() {
         onAdditionalLinkCreate: () -> Unit
     ) {
         AppScaffold(
-            scaffoldState = scaffoldState,
+            useTablePaddings = false,
             topBar = {
                 AppTopBar(
                     title = {
@@ -527,7 +524,6 @@ class RoomInfoFragment : BaseDialogFragment() {
 
         ManagerTheme {
             RoomInfoScreen(
-                scaffoldState = rememberScaffoldState(),
                 roomTitle = "Room title",
                 roomType = 1,
                 state = RoomInfoState(

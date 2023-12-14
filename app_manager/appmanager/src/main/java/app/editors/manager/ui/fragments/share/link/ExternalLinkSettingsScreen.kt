@@ -179,6 +179,7 @@ private fun MainScreen(
         }
 
         AppScaffold(
+            useTablePaddings = false,
             topBar = {
                 AppTopBar(
                     title = if (link.primary)
