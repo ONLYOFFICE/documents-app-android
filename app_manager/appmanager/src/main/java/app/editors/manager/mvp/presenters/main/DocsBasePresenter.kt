@@ -33,7 +33,6 @@ import app.documents.core.storage.recent.RecentDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
@@ -292,7 +291,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         modelExplorerStack.currentId?.let { id ->
             val requestCreate = RequestCreate().apply {
-                this.title = title?.takeIf { title.isNotEmpty() } ?: context.getString(R.string.dialogs_edit_create_docs)
+                this.title =
+                    title?.takeIf { title.isNotEmpty() } ?: context.getString(R.string.dialogs_edit_create_docs)
             }
 
             fileProvider?.let { provider ->
@@ -614,15 +614,18 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun download(downloadTo: Uri) {
-        if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
-            viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
-        } else if (modelExplorerStack.countSelectedItems > 0) {
-            downloadSelected(downloadTo)
-        } else {
-            itemClicked?.let { item ->
-                when (item) {
-                    is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
-                    is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
+        viewState.checkNotificationPermission {
+            if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
+                viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
+            } else if (modelExplorerStack.countSelectedItems > 0) {
+                downloadSelected(downloadTo)
+            } else {
+                itemClicked?.let { item ->
+
+                    when (item) {
+                        is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
+                        is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
+                    }
                 }
             }
         }
@@ -1521,10 +1524,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     private fun onFailureHandle(throwable: Throwable?) {
         when (throwable) {
-            is NoConnectivityException -> {
-                viewState.onError(context.getString(R.string.errors_connection_error))
-                onNetworkHandle()
-            }
             is UnknownHostException -> {
                 viewState.onError(context.getString(R.string.errors_unknown_host_error))
             }

@@ -3,7 +3,6 @@ package app.editors.manager.managers.tools
 import android.util.Log
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
-import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.models.error.AppErrors
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -125,9 +124,6 @@ class ErrorHandler @Inject constructor(
 
     private fun onFailureHandle(error: Throwable, handler: (error: AppErrors) -> Unit) {
         when (error) {
-            is NoConnectivityException -> {
-                handler(AppErrors.HttpError(resourcesProvider.getString(R.string.errors_connection_error)))
-            }
             is UnknownHostException -> {
                 handler(AppErrors.HttpError(resourcesProvider.getString(R.string.errors_unknown_host_error)))
             }

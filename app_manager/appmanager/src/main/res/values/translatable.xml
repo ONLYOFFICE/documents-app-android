@@ -726,6 +726,9 @@
     <string name="room_set_owner_title">Change the Room Owner</string>
     <string name="room_search_not_found">No users found</string>
     <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
+    <string name="room_restore_title">Restore room?</string>
+    <string name="rooms_restore_title">Restore rooms?</string>
+    <string name="room_restore_desc">All shared links in rooms will become active, and its contents will be available to everyone with the link. Do you want to restore rooms?</string>
 
     <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
     <string name="rooms_info_general_link">General link</string>

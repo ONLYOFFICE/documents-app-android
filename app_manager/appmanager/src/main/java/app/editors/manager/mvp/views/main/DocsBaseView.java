@@ -6,17 +6,20 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.util.List;
 
 import app.documents.core.network.manager.models.base.Entity;
 import app.documents.core.network.manager.models.explorer.CloudFile;
-import app.documents.core.network.manager.models.explorer.CloudFolder;
 import app.documents.core.network.manager.models.explorer.Explorer;
 import app.documents.core.network.manager.models.explorer.Item;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.views.base.BaseViewExt;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 import moxy.viewstate.strategy.OneExecutionStateStrategy;
 import moxy.viewstate.strategy.StateStrategyType;
 
@@ -154,4 +157,7 @@ public interface DocsBaseView extends BaseViewExt {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onOpenDocumentServer(@Nullable CloudFile file, @Nullable String info, @NonNull boolean isEdit);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void checkNotificationPermission(@NotNull Function0<Unit> function);
 }

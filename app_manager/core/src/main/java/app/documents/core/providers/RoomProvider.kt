@@ -83,9 +83,9 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 .subscribeOn(Schedulers.io())
                 .flatMap { itemId -> roomService.deleteRoom(itemId, RequestDeleteRoom()) }
                 .map { it.body() }
-                .buffer(items.size)
+                .lastElement()
                 .observeOn(AndroidSchedulers.mainThread())
-                .map { responses -> responses[0] }
+                .flatMapObservable { Observable.just(it) }
         } else if (id.isNotEmpty()) {
             roomService.deleteRoom(id, RequestDeleteRoom())
                 .subscribeOn(Schedulers.io())
