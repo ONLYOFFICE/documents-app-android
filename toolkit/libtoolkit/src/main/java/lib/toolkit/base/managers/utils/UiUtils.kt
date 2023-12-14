@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
@@ -31,6 +32,7 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.R
@@ -488,7 +490,6 @@ object UiUtils {
         return activity.window.decorView.rootWindowInsets.systemWindowInsetTop
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @JvmStatic
     fun getNavigationBarHeightInsets(activity: Activity): Int {
         return activity.window.decorView.rootWindowInsets.systemWindowInsetBottom
@@ -709,6 +710,32 @@ object UiUtils {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    fun showMaterial3QuestionDialog(
+        context: Context,
+        title: String,
+        description: String? = null,
+        acceptListener: () -> Unit,
+        cancelListener: (() -> Unit)? = null,
+        acceptTitle: String? = context.getString(android.R.string.ok),
+        cancelTitle: String? = context.getString(android.R.string.cancel)
+    ) {
+        MaterialAlertDialogBuilder(context)
+            .setTitle(title)
+            .setMessage(description)
+            .setPositiveButton(acceptTitle) { dialog, _ ->
+                acceptListener.invoke()
+                dialog.dismiss()
+            }
+            .setNegativeButton(cancelTitle) { dialog, _ ->
+                cancelListener?.invoke()
+                dialog.dismiss()
+            }
+            .show().apply {
+                getButton(DialogInterface.BUTTON_POSITIVE).isAllCaps = false
+                getButton(DialogInterface.BUTTON_NEGATIVE).isAllCaps = false
+            }
     }
 
     fun isDarkMode(context: Context): Boolean {
