@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentDialog
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -46,7 +47,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -108,20 +108,11 @@ class RoomInfoFragment : BaseDialogFragment() {
         RoomInfo, UserAccess, LinkSettings
     }
 
-    private var navController: NavController? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!UiUtils.isTablet(requireContext())) {
-            setStyle(
-                STYLE_NORMAL,
-                R.style.FullScreenDialog
-            )
-        }
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return ComponentDialog(requireContext())
+        return ComponentDialog(
+            requireContext(),
+            if (!UiUtils.isTablet(requireContext())) R.style.FullScreenDialog else 0
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -133,6 +124,7 @@ class RoomInfoFragment : BaseDialogFragment() {
             ManagerTheme {
                 val context = LocalContext.current
                 val localView = LocalView.current
+                val portal = remember { context.accountOnline?.portal }
                 val room = remember { arguments?.getSerializableExt<CloudFolder>(KEY_ROOM) }
                 val viewModel = viewModel { RoomInfoViewModel(requireContext().roomProvider, room?.id.orEmpty()) }
                 val navController = rememberNavController().also {
@@ -141,7 +133,6 @@ class RoomInfoFragment : BaseDialogFragment() {
                             viewModel.fetchRoomInfo()
                         }
                     }
-                    this.navController = it
                 }
                 val state by viewModel.state.collectAsState()
                 val shareActivityResult = rememberLauncherForActivityResult(
@@ -175,6 +166,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                                 state = state,
                                 roomType = room?.roomType,
                                 roomTitle = room?.title,
+                                portal = portal,
                                 onBackClick = this@RoomInfoFragment::onBackPressed,
                                 onAddUsers = {
                                     ShareActivity.launchForResult(
@@ -259,11 +251,6 @@ class RoomInfoFragment : BaseDialogFragment() {
         }
     }
 
-    override fun onBackPressed(): Boolean {
-        if (navController?.popBackStack() == false) super.onBackPressed()
-        return true
-    }
-
     @Composable
     private fun LoadingPlaceholder() {
         Box(
@@ -282,6 +269,7 @@ class RoomInfoFragment : BaseDialogFragment() {
         state: RoomInfoState,
         roomType: Int?,
         roomTitle: String?,
+        portal: String?,
         onSetUserAccess: (userId: String, access: Int) -> Unit,
         onAddUsers: () -> Unit,
         onBackClick: () -> Unit,
@@ -289,6 +277,8 @@ class RoomInfoFragment : BaseDialogFragment() {
         onGeneralLinkCreate: () -> Unit,
         onAdditionalLinkCreate: () -> Unit
     ) {
+        BackHandler(onBack = onBackClick)
+
         AppScaffold(
             useTablePaddings = false,
             topBar = {
@@ -327,16 +317,19 @@ class RoomInfoFragment : BaseDialogFragment() {
                     }
                     ShareUsersList(
                         title = R.string.rooms_info_admin_title,
+                        portal = portal,
                         shareList = groupedShareList[ShareGroup.Admin],
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
                         title = R.string.rooms_info_users_title,
+                        portal = portal,
                         shareList = groupedShareList[ShareGroup.User],
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
                         title = R.string.rooms_info_expected_title,
+                        portal = portal,
                         shareList = groupedShareList[ShareGroup.Expected],
                         onClick = onSetUserAccess
                     )
@@ -414,10 +407,8 @@ class RoomInfoFragment : BaseDialogFragment() {
     }
 
     @Composable
-    fun ShareUsersList(title: Int, shareList: List<Share>?, onClick: (String, Int) -> Unit) {
-        val context = LocalContext.current
+    fun ShareUsersList(title: Int, portal: String?, shareList: List<Share>?, onClick: (String, Int) -> Unit) {
         var visible by remember { mutableStateOf(true) }
-        val portal = remember { context.accountOnline?.portal }
 
         if (!shareList.isNullOrEmpty()) {
             Column {
@@ -510,7 +501,7 @@ class RoomInfoFragment : BaseDialogFragment() {
             canEditAccess = false,
             sharedTo = ExternalLinkSharedTo(
                 id = "",
-                title = "",
+                title = "Shared link",
                 shareLink = "",
                 linkType = 2,
                 denyDownload = false,
@@ -525,10 +516,16 @@ class RoomInfoFragment : BaseDialogFragment() {
         ManagerTheme {
             RoomInfoScreen(
                 roomTitle = "Room title",
-                roomType = 1,
+                roomType = ApiContract.RoomType.CUSTOM_ROOM,
+                portal = "",
                 state = RoomInfoState(
+                    isLoading = false,
                     generalLink = link,
-                    additionalLinks = listOf(link, link.copy(access = 1)),
+                    additionalLinks = listOf(
+                        link.copy(sharedTo = link.sharedTo.copy(title = "Link 1", expirationDate = "123")),
+                        link.copy(sharedTo = link.sharedTo.copy(title = "Link 2", password = "123")),
+                        link.copy(sharedTo = link.sharedTo.copy(title = "Link 3", isExpired = true)),
+                    ),
                     shareList = listOf(
                         Share(access = "1", sharedTo = SharedTo(displayName = "User 1"), isOwner = true),
                         Share(access = "9", sharedTo = SharedTo(displayName = "User 2")),

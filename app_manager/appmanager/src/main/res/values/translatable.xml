@@ -727,7 +727,7 @@
     <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
     <string name="rooms_info_general_link">General link</string>
     <string name="rooms_info_additional_link">Additional link</string>
-    <string name="rooms_info_additional_links">Additional links (%1d/%2d)</string>
+    <string name="rooms_info_additional_links">"Additional links (%d/%d)"</string>
     <string name="rooms_info_create_link">Create and copy</string>
     <string name="rooms_info_create_link_complete">Link successfully created and copied to clipboard</string>
     <string name="rooms_info_delete_link">Delete link</string>

@@ -340,10 +340,10 @@ private fun Preview() {
         linkType = 2,
         denyDownload = false,
         isExpired = true,
-        primary = true,
+        primary = false,
         requestToken = "",
         password = null,
-        expirationDate = "2023-12-06T14:00:00.0000000+03:00"
+        expirationDate = "2023-12-06T14:00:00.0000000+03:00",
     )
 
     MainScreen(link, ApiContract.RoomType.CUSTOM_ROOM, false, {}, {}, {}, {}, {}) {}
