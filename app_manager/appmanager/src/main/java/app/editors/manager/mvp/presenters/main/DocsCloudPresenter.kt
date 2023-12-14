@@ -783,14 +783,29 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun archiveRoom(isArchive: Boolean = true) {
         roomProvider?.let {
             disposable.add(
-                it.archiveRoom(itemClicked?.id ?: "", isArchive = isArchive)
-                    .doOnSubscribe { viewState.onSwipeEnable(true) }
-                    .subscribe({ response ->
-                        if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
-                            viewState.onArchiveRoom(isArchive)
-                            viewState.onSwipeEnable(false)
-                        }
-                    }, ::fetchError)
+                if (isSelectionMode) {
+                    Observable.fromArray(modelExplorerStack.selectedFolders).flatMapIterable { room ->
+                        room.map { item -> item.id }
+                    }.flatMap { id-> it.archiveRoom(id, isArchive) }
+                        .doOnSubscribe { viewState.onSwipeEnable(true) }
+                        .lastElement()
+                        .subscribe({ response ->
+                            if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
+                                viewState.onSwipeEnable(false)
+                                setSelection(false)
+                                refresh()
+                            }
+                        }, ::fetchError)
+                } else {
+                    it.archiveRoom(itemClicked?.id ?: "", isArchive = isArchive)
+                        .doOnSubscribe { viewState.onSwipeEnable(true) }
+                        .subscribe({ response ->
+                            if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
+                                viewState.onArchiveRoom(isArchive)
+                                viewState.onSwipeEnable(false)
+                            }
+                        }, ::fetchError)
+                }
             )
         }
     }

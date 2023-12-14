@@ -13,6 +13,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
@@ -52,17 +53,20 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     @InjectPresenter
     lateinit var cloudPresenter: DocsCloudPresenter
 
-    private val filterActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            onRefresh()
-        }
-    }
-
     @ProvidePresenter
     fun providePresenter(): DocsCloudPresenter {
         val account = getApp().appComponent.accountOnline
         return account?.let { DocsCloudPresenter(it) }
-            ?: throw RuntimeException("Cloud account can't be null")
+            ?: run {
+                (requireActivity() as IMainActivity).onLogOut()
+                DocsCloudPresenter(CloudAccount(id = ""))
+            }
+    }
+
+    private val filterActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            onRefresh()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -153,8 +157,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         recyclerView?.scrollToPosition(0)
     }
 
-    override fun showMoveCopyDialog(names: ArrayList<String>, action: String, titleFolder: String) {
-        moveCopyDialog = MoveCopyDialog.newInstance(names, action, titleFolder)
+    override fun showMoveCopyDialog(names: ArrayList<String>, action: String, title: String) {
+        moveCopyDialog = MoveCopyDialog.newInstance(names, action, title)
         moveCopyDialog?.dialogButtonOnClick = this
         moveCopyDialog?.show(parentFragmentManager, MoveCopyDialog.TAG)
     }
@@ -164,6 +168,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             ActionBottomDialog.Buttons.STORAGE -> {
                 showStorageActivity(cloudPresenter.isUserSection)
             }
+
             else -> {
                 super.onActionButtonClick(buttons)
             }

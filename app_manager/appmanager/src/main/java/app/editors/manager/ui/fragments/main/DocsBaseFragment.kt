@@ -61,6 +61,7 @@ import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
+import lib.toolkit.base.managers.utils.RequestPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension

@@ -1,7 +1,8 @@
 package app.editors.manager.mvp.models.states
 
 import app.documents.core.network.manager.models.explorer.Explorer
-import java.util.*
+import java.util.LinkedList
+import java.util.TreeMap
 import javax.inject.Inject
 
 /*
@@ -10,7 +11,7 @@ import javax.inject.Inject
 class OperationsState @Inject constructor() {
 
     enum class OperationType {
-        NONE, MOVE, COPY, INSERT, RESTORE
+        NONE, MOVE, COPY, INSERT, RESTORE, DELETE
     }
 
     class Operation(val operationType: OperationType, val explorer: Explorer)

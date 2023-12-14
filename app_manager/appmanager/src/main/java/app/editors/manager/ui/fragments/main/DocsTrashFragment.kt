@@ -5,14 +5,16 @@ import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.editors.manager.R
+import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
-class DocsTrashFragment: DocsCloudFragment() {
+class DocsTrashFragment : DocsCloudFragment() {
 
     private val isArchive: Boolean get() = section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
 
@@ -30,6 +32,7 @@ class DocsTrashFragment: DocsCloudFragment() {
                     super.onAcceptClick(dialogs, value, tag)
                 }
             }
+
             else -> super.onAcceptClick(dialogs, value, tag)
         }
     }
@@ -49,7 +52,7 @@ class DocsTrashFragment: DocsCloudFragment() {
 
     override fun onStateMenuSelection() {
         super.onStateMenuSelection()
-        deleteItem?.isVisible = true
+        deleteItem?.isVisible = !isArchive
     }
 
     private fun initViews() {
@@ -67,11 +70,12 @@ class DocsTrashFragment: DocsCloudFragment() {
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             is ExplorerContextItem.Restore -> {
                 if (isArchive) {
-                    cloudPresenter.archiveRoom(false)
+                    showRestoreDialog()
                 } else {
                     cloudPresenter.moveCopyOperation(OperationsState.OperationType.RESTORE)
                 }
             }
+
             else -> super.onContextButtonClick(contextItem)
         }
         contextBottomDialog?.dismiss()
@@ -102,8 +106,11 @@ class DocsTrashFragment: DocsCloudFragment() {
         cloudPresenter.isTrashMode = false
     }
 
-    override fun setMenuFilterEnabled(isEnabled: Boolean) {
-        filterItem?.isVisible = !isArchive
+    override fun getFilters(): Boolean {
+        return if (isArchive) {
+            val filter = presenter.preferenceTool.filter
+            filter.roomType != RoomFilterType.None || filter.author.id.isNotEmpty()
+        } else super.getFilters()
     }
 
     override val mainActionBarClickListener: (MainPopupItem) -> Unit = { item ->
@@ -115,12 +122,31 @@ class DocsTrashFragment: DocsCloudFragment() {
         } else super.mainActionBarClickListener(item)
     }
 
+    override val selectActionBarClickListener: (SelectPopupItem) -> Unit = { item ->
+        when (item) {
+            SelectPopupItem.Operation.Restore -> showRestoreDialog()
+            SelectPopupItem.Operation.Delete -> presenter.delete()
+            else -> super.selectActionBarClickListener(item)
+        }
+    }
+
     override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
         super.showSelectActionPopup(
             SelectPopupItem.Operation.Move,
             SelectPopupItem.Operation.Copy,
             SelectPopupItem.Download
         )
+    }
+
+    private fun showRestoreDialog(isSelected: Boolean = false) {
+        UiUtils.showMaterial3QuestionDialog(
+            context = requireContext(),
+            title = if (isSelected) getString(R.string.rooms_restore_title) else getString(R.string.room_restore_title),
+            description = getString(R.string.room_restore_desc),
+            acceptTitle = getString(R.string.trash_snackbar_move_button),
+            acceptListener = {
+                cloudPresenter.archiveRoom(false)
+            })
     }
 
     companion object {
