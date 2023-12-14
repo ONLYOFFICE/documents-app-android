@@ -1,6 +1,7 @@
 package app.editors.manager.ui.fragments.share.link
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -48,7 +49,6 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-// TODO: back handler for ask to save
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ExternalLinkSettingsScreen(
@@ -173,6 +173,11 @@ private fun MainScreen(
 ) {
     ManagerTheme {
         var linkDateChanged by remember { mutableStateOf(false) }
+
+        BackHandler {
+            onBackListener.invoke(link.isExpired && !linkDateChanged)
+        }
+
         AppScaffold(
             topBar = {
                 AppTopBar(
