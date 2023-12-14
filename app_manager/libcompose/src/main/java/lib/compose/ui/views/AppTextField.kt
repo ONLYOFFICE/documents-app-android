@@ -63,9 +63,11 @@ fun AppTextField(
     hint: String = "",
     singleLine: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text,
+    keyboardOptions: KeyboardOptions? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     label: Int? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
     focusManager: FocusManager? = null,
     errorState: MutableState<String?>? = null,
     onValueChange: ((String) -> Unit)? = null,
@@ -97,12 +99,13 @@ fun AppTextField(
             label = { label?.let { Text(stringResource(id = label)) } },
             placeholder = { Text(text = hint) },
             trailingIcon = trailingIcon,
+            leadingIcon = leadingIcon,
             visualTransformation = visualTransformation,
             keyboardActions = KeyboardActions(
                 onDone = { onDone?.invoke() },
                 onNext = { if (state.value.isNotEmpty()) focusManager?.moveFocus(FocusDirection.Down) }
             ),
-            keyboardOptions = KeyboardOptions(
+            keyboardOptions = keyboardOptions ?: KeyboardOptions(
                 imeAction = onDone?.let { ImeAction.Done } ?: ImeAction.Next,
                 keyboardType = keyboardType
             ),

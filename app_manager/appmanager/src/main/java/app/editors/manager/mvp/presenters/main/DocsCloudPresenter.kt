@@ -12,6 +12,8 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestFavorites
+import app.documents.core.network.share.models.request.Invitation
+import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.storage.account.CloudAccount
@@ -273,7 +275,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
                 else -> {
                     viewState.onActionBarTitle("")
-                    if (isRoom) {
+                    if (isRoom && modelExplorerStack.last()?.current?.security?.create == true) {
                         viewState.onStateActionButton(true)
                     } else {
                         viewState.onStateActionButton(isContextEditable)
@@ -894,6 +896,45 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     }
                 }
             }
+        }
+    }
+
+    fun checkRoomOwner() {
+        if (itemClicked is CloudFolder) {
+            viewState.onLeaveRoomDialog(
+                R.string.leave_room_title,
+                if (isItemOwner) R.string.leave_room_owner_desc else R.string.leave_room_desc,
+                "leave",
+                isItemOwner
+            )
+        }
+    }
+
+    fun leaveRoom() {
+        if (!isItemOwner) {
+            showDialogWaiting(null)
+            presenterScope.launch {
+                request(
+                    func = {
+                        context.shareApi.shareRoom(
+                            itemClicked?.id ?: "", RequestRoomShare(
+                                invitations = listOf(Invitation(id = account.id, access = ApiContract.Access.None.code))
+                            )
+                        )
+                    },
+                    onSuccess = {
+                        viewState.onDialogClose()
+                        viewState.onSnackBar(context.getString(R.string.leave_room_message))
+                        refresh()
+                    },
+                    onError = {
+                        viewState.onDialogClose()
+                        fetchError(it)
+                    }
+                )
+            }
+        } else {
+            viewState.showSetOwnerFragment(itemClicked as CloudFolder)
         }
     }
 }

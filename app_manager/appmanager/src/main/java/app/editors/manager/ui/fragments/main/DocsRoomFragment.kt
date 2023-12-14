@@ -13,6 +13,7 @@ import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.setFragmentResultListener
+import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class DocsRoomFragment : DocsCloudFragment() {
 
@@ -27,6 +28,8 @@ class DocsRoomFragment : DocsCloudFragment() {
                 }
             }
             AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
+        } else {
+            super.onActionDialog(isThirdParty, isDocs)
         }
     }
 
@@ -76,11 +79,21 @@ class DocsRoomFragment : DocsCloudFragment() {
             is ExplorerContextItem.Edit -> cloudPresenter.editRoom()
             is ExplorerContextItem.ExternalLink -> cloudPresenter.copyGeneralLink()
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
+            is ExplorerContextItem.Delete -> cloudPresenter.checkRoomOwner()
             else -> super.onContextButtonClick(contextItem)
         }
         contextBottomDialog?.dismiss()
     }
 
+    override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
+        when (tag) {
+            "leave" -> {
+                cloudPresenter.leaveRoom()
+            }
+            else -> super.onAcceptClick(dialogs, value, tag)
+        }
+    }
+    
     override fun getFilters(): Boolean {
         return if (isRoom) {
             val filter = presenter.preferenceTool.filter

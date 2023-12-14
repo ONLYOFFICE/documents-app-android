@@ -13,7 +13,6 @@ android {
 
     defaultConfig {
         minSdk = AppDependency.MIN_SDK_VERSION
-        targetSdk = AppDependency.TARGET_SDK_VERSION
 
         buildConfigField("String", "SUBDOMAIN", "\"personal\"")
         buildConfigField("String", "DEFAULT_HOST", "\"onlyoffice.com\"")

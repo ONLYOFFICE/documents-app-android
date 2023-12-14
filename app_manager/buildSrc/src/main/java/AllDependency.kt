@@ -35,6 +35,7 @@ object AndroidX {
     const val cardView = "androidx.cardview:cardview:1.0.0"
     const val constraint = "androidx.constraintlayout:constraintlayout:2.1.4"
     const val ktx = "androidx.core:core-ktx:$kotlinKtxVersion"
+    const val fragmentKtx = "androidx.fragment:fragment-ktx:1.6.2"
     const val biometric = "androidx.biometric:biometric:1.1.0"
 
 }
@@ -51,10 +52,10 @@ object Retrofit {
 }
 
 object Kotlin {
-    const val version = "1.9.10"
-    const val kspVersion = "1.9.10-1.0.13"
+    const val version = "1.9.21"
+    const val kspVersion = "1.9.21-1.0.15"
     private const val coroutinesVersion = "1.7.3"
-    private const val serializationVersion = "1.5.1"
+    private const val serializationVersion = "1.6.0"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
     const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -81,7 +82,7 @@ object Google {
 object Firebase {
     private const val firebaseCoreVersion = "21.1.1"
     private const val firebaseConfigVersion = "21.6.0"
-    private const val firebaseMessagingVersion = "23.3.1"
+    private const val firebaseMessagingVersion = "23.4.0"
     private const val firebaseCrashlyticsVersion = "18.6.0"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
@@ -116,11 +117,13 @@ object Lifecycle {
 object Compose {
     const val version = "1.5.4"
     const val versionMaterial = "1.5.4"
-    const val versionCompiler = "1.5.3"
+    const val versionCompiler = "1.5.6"
+    const val composeMaterial3 = "1.1.2"
     private const val navigationVersion = "2.7.5"
 
     const val ui = "androidx.compose.ui:ui:$version"
     const val material = "androidx.compose.material:material:$versionMaterial"
+    const val material3 = "androidx.compose.material:material3:$composeMaterial3"
     const val preview = "androidx.compose.ui:ui-tooling-preview:$version"
     const val tooling = "androidx.compose.ui:ui-tooling:$version"
     const val navigation = "androidx.navigation:navigation-compose:$navigationVersion"

@@ -13,9 +13,7 @@
         <item name="android:textColorPrimary">@color/colorTextPrimary</item>
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="android:statusBarColor">@color/colorAppBar</item>
-        <item name="android:navigationBarColor">@color/colorBackground</item>
         <item name="android:windowBackground">@color/colorBackground</item>
-
         <item name="elevationOverlayEnabled">false</item>
         <item name="android:textDirection">locale</item>
         <item name="android:supportsRtl">true</item>

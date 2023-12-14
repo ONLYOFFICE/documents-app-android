@@ -310,7 +310,7 @@ private fun MainScreen(
                 title = if (isEdit) stringResource(id = R.string.list_context_edit_room) else stringResource(id = R.string.dialog_create_room),
                 isClose = true,
                 actions = {
-                    TextButton(onClick = { onBackPressed() }) {
+                    TextButton(onClick = { onBackPressed() }, enabled = viewState !is ViewState.Loading) {
                         Text(
                             text = if (isEdit) "Edit" else stringResource(id = R.string.login_create_signin_create_button),
                             modifier = Modifier.clickable {

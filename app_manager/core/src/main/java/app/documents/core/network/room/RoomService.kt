@@ -207,4 +207,15 @@ interface RoomService {
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share")
     suspend fun setRoomUserAccess(@Path("id") id: String, @Body body: RequestRoomShare): Response<ResponseRoomShare>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share")
+    suspend fun shareRoom(
+        @Path(value = "id") id: String,
+        @Body body: RequestRoomShare
+    ): Response<ResponseBody>
+
 }

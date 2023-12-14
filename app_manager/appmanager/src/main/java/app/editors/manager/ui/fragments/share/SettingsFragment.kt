@@ -466,7 +466,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         private const val TAG_SHOW_POPUP = "TAG_SHOW_POPUP"
         private const val TAG_POSITION_POPUP = "TAG_POSITION_POPUP"
 
-        fun newInstance(item: Item): SettingsFragment {
+        fun newInstance(item: Item?): SettingsFragment {
             return SettingsFragment().apply {
                 arguments = Bundle(1).apply {
                     putSerializable(TAG_ITEM, item)

@@ -33,8 +33,7 @@ class AddRoomViewModelFactory(
     private val roomProvider: RoomProvider,
     private val roomInfo: CloudFolder? = null,
     private val isCopy: Boolean = false
-) :
-    ViewModelProvider.AndroidViewModelFactory(application) {
+) : ViewModelProvider.AndroidViewModelFactory(application) {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return AddRoomViewModel(application, roomProvider, roomInfo, isCopy) as T
     }
@@ -248,12 +247,18 @@ class AddRoomViewModel(
         if (!addTags.contains(tag.text)) {
             addTags.add(tag.text)
         }
+        if (deleteTags.contains(tag.text)) {
+            deleteTags.remove(tag.text)
+        }
         _viewState.value = ViewState.Success(null, ChipViewState(tag, false))
     }
 
     fun deleteTag(tag: ChipData) {
         if (!deleteTags.contains(tag.text)) {
             deleteTags.add(tag.text)
+        }
+        if (addTags.contains(tag.text)) {
+            addTags.remove(tag.text)
         }
         _viewState.value = ViewState.Success(null, ChipViewState(tag, true))
     }

@@ -11,6 +11,7 @@ import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestRenameRoom
+import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
@@ -20,6 +21,7 @@ import app.documents.core.network.share.models.request.RequestRoomShare
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.delay
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -182,11 +184,11 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     }
 
     suspend fun setLogo(id: String, logo: Bitmap) {
-        val logId = UUID.randomUUID().toString()
+        val logoId = UUID.randomUUID().toString()
         val uploadResponse = roomService.uploadLogo(
             MultipartBody.Part.createFormData(
-                logId,
-                "$logId.png",
+                logoId,
+                "$logoId.png",
                 RequestBody.create(MediaType.get("image/*"), logo.toByteArray())
             )
         )
@@ -202,6 +204,16 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 )
             )
         }
+    }
+
+    suspend fun setRoomOwner(id: String, userId: String, ownerId: String) {
+        val resultSetOwner = roomService.setOwner(RequestRoomOwner(userId, listOf(id)))
+        delay(200)
+        val resultShare = roomService.shareRoom(id, RequestRoomShare(
+            listOf(Invitation(id = ownerId, access = ApiContract.ShareCode.NONE))
+        ))
+        if (!resultSetOwner.isSuccessful) throw HttpException(resultSetOwner)
+        if (!resultShare.isSuccessful) throw HttpException(resultShare)
     }
 
 }
