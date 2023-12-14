@@ -124,7 +124,7 @@ fun ExternalLinkSettingsScreen(
         roomType = roomType,
         onBackListener = { skipSave ->
             if (state.viewStateChanged && !skipSave) {
-                UiUtils.showQuestionDialog(
+                UiUtils.showMaterial3QuestionDialog(
                     context = context,
                     title = context.getString(R.string.rooms_info_save_link_title),
                     description = context.getString(R.string.rooms_info_save_link_question),
@@ -141,7 +141,7 @@ fun ExternalLinkSettingsScreen(
         onCopyLink = viewModel::copy,
         onCreateLink = viewModel::createLink,
         onDeleteOrRevokeLink = {
-            UiUtils.showQuestionDialog(
+            UiUtils.showMaterial3QuestionDialog(
                 context = context,
                 title = if (roomType == ApiContract.RoomType.PUBLIC_ROOM)
                     context.getString(R.string.rooms_info_revoke_link) else

@@ -610,7 +610,11 @@ object UiUtils {
         params.topMargin = context.resources.getDimensionPixelSize(R.dimen.default_margin_large)
         params.gravity = Gravity.CENTER
 
-        val progress = ProgressBar(context, null, if (isCircle) android.R.attr.progressBarStyle else android.R.attr.progressBarStyleHorizontal)
+        val progress = ProgressBar(
+            context,
+            null,
+            if (isCircle) android.R.attr.progressBarStyle else android.R.attr.progressBarStyleHorizontal
+        )
             .apply {
                 if (!isCircle) layoutParams = params
                 isIndeterminate = true
@@ -768,6 +772,43 @@ object UiUtils {
             .show().apply {
                 getButton(DialogInterface.BUTTON_POSITIVE).isAllCaps = false
                 getButton(DialogInterface.BUTTON_NEGATIVE).isAllCaps = false
+            }
+    }
+
+    fun showMaterial3QuestionDialog(
+        context: Context,
+        title: String,
+        description: String? = null,
+        acceptListener: () -> Unit,
+        neutralListener: (() -> Unit)? = null,
+        cancelListener: (() -> Unit)? = null,
+        acceptTitle: String? = context.getString(android.R.string.ok),
+        neutralTitle: String? = null,
+        cancelTitle: String? = context.getString(android.R.string.cancel)
+    ) {
+        MaterialAlertDialogBuilder(context)
+            .setTitle(title)
+            .setMessage(description)
+            .setPositiveButton(acceptTitle) { dialog, _ ->
+                acceptListener.invoke()
+                dialog.dismiss()
+            }
+            .setNegativeButton(cancelTitle) { dialog, _ ->
+                cancelListener?.invoke()
+                dialog.dismiss()
+            }
+            .apply {
+                if (neutralListener != null && neutralTitle != null) {
+                    setNeutralButton(neutralTitle) { dialog, _ ->
+                        neutralListener.invoke()
+                        dialog.dismiss()
+                    }
+                }
+            }
+            .show().apply {
+                getButton(DialogInterface.BUTTON_POSITIVE).isAllCaps = false
+                getButton(DialogInterface.BUTTON_NEGATIVE).isAllCaps = false
+                getButton(DialogInterface.BUTTON_NEUTRAL).isAllCaps = false
             }
     }
 
