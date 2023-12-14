@@ -73,32 +73,6 @@ object ActivitiesUtils {
 
     @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     @JvmStatic
-    fun showMultipleFilePicker(fragment: Fragment, title: String?, requestCode: Int) {
-        fragment.startActivityForResult(Intent.createChooser(getIntentMultipleFilePicker(), title), requestCode)
-    }
-
-    @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    @JvmStatic
-    fun showMultipleFilePicker(fragment: Fragment, @StringRes titleId: Int, requestCode: Int) {
-        showMultipleFilePicker(
-            fragment,
-            fragment.getString(titleId),
-            requestCode
-        )
-    }
-
-    @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    @JvmStatic
-    fun showMultipleFilePicker(fragment: Fragment, requestCode: Int) {
-        showMultipleFilePicker(
-            fragment,
-            null,
-            requestCode
-        )
-    }
-
-    @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    @JvmStatic
     fun showSingleFilePicker(activity: Activity, title: String?, requestCode: Int) {
         activity.startActivityForResult(Intent.createChooser(getIntentSingleFilePicker(), title), requestCode)
     }
