@@ -2,18 +2,19 @@ package app.editors.manager.ui.adapters.holders
 
 import android.view.View
 import androidx.core.view.isVisible
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
-import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 
 class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
-    BaseViewHolderExplorer<CloudFile>(itemView, adapter) {
+    BaseViewHolderExplorer<CloudFile>(itemView, adapter), SelectableIcon {
 
     private var viewBinding = ListExplorerFilesBinding.bind(itemView)
+    override val selectableView = viewBinding.viewIconSelectableLayout.root
 
     init {
         viewBinding.listExplorerFileLayout.setOnClickListener{ view ->
@@ -51,22 +52,8 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             listExplorerFileContext.isVisible = true
             listExplorerFileFavorite.isVisible = file.favorite
 
-            viewIconSelectableLayout.viewIconSelectableImage.background = null
-            viewIconSelectableLayout.viewIconSelectableMask.background = null
             viewIconSelectableLayout.viewIconSelectableImage.setFileIcon(file.fileExst)
-
-            // For selection mode add background/foreground
-            if (adapter.isSelectMode) {
-                listExplorerFileContext.isVisible = false
-                if (file.isSelected) {
-                    viewIconSelectableLayout.viewIconSelectableMask.setBackgroundResource(R.drawable.drawable_list_image_select_mask)
-                } else {
-                    viewIconSelectableLayout.viewIconSelectableLayout
-                        .setBackgroundResource(R.drawable.drawable_list_image_select_background)
-                }
-            } else {
-                viewIconSelectableLayout.viewIconSelectableLayout.background = null
-            }
+            setSelected(adapter.isSelectMode, file.isSelected)
         }
     }
 

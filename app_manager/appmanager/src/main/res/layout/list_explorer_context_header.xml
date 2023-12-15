@@ -5,18 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height">
 
-    <ImageView
+    <include
         android:id="@+id/icon"
+        layout="@layout/view_icon_selectable"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="@dimen/default_margin_medium"
-        android:scaleType="center"
         app:layout_constraintEnd_toEndOf="@id/title"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/title"

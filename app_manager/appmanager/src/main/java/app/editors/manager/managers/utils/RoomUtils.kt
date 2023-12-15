@@ -39,11 +39,12 @@ object RoomUtils {
 
     fun getRoomInitials(title: String): String? {
         return try {
-            when (title.length) {
+            val words = title.split(" ")
+            when (words.size) {
                 1 -> title[0].toString()
-                2 -> title.split("").let { "${it[0][0]}${it[1][0]}" }
-                else -> title.split("").let { "${it[0][0]}${it[it.lastIndex][0]}" }
-            }
+                2 -> "${words[0][0]}${words[1][0]}"
+                else -> "${words[0][0]}${words[words.lastIndex][0]}"
+            }.uppercase()
         } catch (_: IndexOutOfBoundsException) {
             null
         }

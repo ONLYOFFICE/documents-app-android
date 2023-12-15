@@ -1,38 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Workaround for foreground < v23 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/view_icon_selectable_layout"
     android:layout_width="@dimen/image_size"
     android:layout_height="@dimen/image_size">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/view_icon_selectable_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:background="@drawable/drawable_shape_circle"
         android:scaleType="center"
-        android:visibility="gone"
+        android:visibility="visible"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_type_folder" />
-
-    <!--        android:background="@drawable/drawable_list_image_select_background"-->
-    <!--        android:foreground="@drawable/drawable_list_image_select_foreground"-->
 
     <TextView
         android:id="@+id/view_icon_selectable_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="@drawable/drawable_image_circle"
-        android:backgroundTintMode="src_over"
+        android:background="@drawable/drawable_shape_circle"
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
-        android:includeFontPadding="false"
-        android:letterSpacing="0.015"
         android:maxLength="2"
-        android:textAlignment="center"
         android:textColor="@color/colorWhite"
         android:textSize="18sp"
+        android:visibility="gone"
         tools:backgroundTint="#61C059"
         tools:text="PR" />
 

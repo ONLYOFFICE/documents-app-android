@@ -1,5 +1,7 @@
 package app.editors.manager.ui.adapters.holders
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.View
 import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -11,9 +13,10 @@ import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.TimeUtils
 
 class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
-    BaseViewHolderExplorer<CloudFolder>(view, adapter) {
+    BaseViewHolderExplorer<CloudFolder>(view, adapter), SelectableIcon {
 
     private var viewBinding = ListExplorerFolderBinding.bind(view)
+    override val selectableView = viewBinding.viewIconSelectableLayout.root
 
     init {
         viewBinding.listExplorerFolderLayout.setOnClickListener { v: View? ->
@@ -50,7 +53,7 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
 
             listExplorerRoomPin.isVisible = folder.pinned
             setFolderIcon(folder)
-//            setSelected(adapter.isSelectMode, folder.isSelected)
+            setSelected(adapter.isSelectMode, folder.isSelected)
 
             // Show/hide context button
             if (adapter.isSelectMode || adapter.isFoldersMode) {
@@ -71,6 +74,11 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
                 viewIconSelectableImage.isVisible = false
                 viewIconSelectableText.isVisible = true
                 viewIconSelectableText.text = initials
+                viewIconSelectableText.backgroundTintList =
+                    ColorStateList.valueOf(
+                        folder.logo?.color?.let { color -> Color.parseColor("#$color") }
+                            ?: root.context.getColor(lib.toolkit.base.R.color.colorPrimary)
+                    )
             }
         }
     }

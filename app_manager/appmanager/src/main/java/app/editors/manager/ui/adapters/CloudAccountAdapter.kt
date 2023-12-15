@@ -140,7 +140,7 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     fun setSelection(isSelection: Boolean) {
         if (isSelection) {
-            binding.accountAvatar.foreground = getDrawable(R.drawable.drawable_list_image_select_mask)
+            binding.accountAvatar.foreground = getDrawable(R.drawable.drawable_list_image_select_foreground)
         } else {
             binding.accountAvatar.foreground = getDrawable(R.drawable.drawable_list_image_select_background)
         }

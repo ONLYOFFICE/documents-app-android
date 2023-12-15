@@ -2,13 +2,13 @@ package app.editors.manager.ui.adapters.holders
 
 import android.view.View
 import androidx.work.WorkManager
+import app.documents.core.network.manager.models.explorer.UploadFile
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerUploadFilesBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
-import app.documents.core.network.manager.models.explorer.UploadFile
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.StringUtils
-import java.util.*
+import java.util.Locale
 
 class UploadFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
     BaseViewHolderExplorer<UploadFile>(itemView, adapter) {
@@ -32,8 +32,6 @@ class UploadFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
                 updateProgress(file)
             }
             listExplorerUploadFileName.text = file.name
-            viewIconSelectableLayout.viewIconSelectableLayout.background = null
-            viewIconSelectableLayout.viewIconSelectableMask.background = null
             file.uri?.path?.let { path ->
                 viewIconSelectableLayout.viewIconSelectableImage.setFileIcon(StringUtils.getExtensionFromPath(path))
             }
