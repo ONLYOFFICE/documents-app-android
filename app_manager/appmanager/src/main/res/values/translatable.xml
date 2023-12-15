@@ -729,6 +729,8 @@
     <string name="room_restore_title">Restore room?</string>
     <string name="rooms_restore_title">Restore rooms?</string>
     <string name="room_restore_desc">All shared links in rooms will become active, and its contents will be available to everyone with the link. Do you want to restore rooms?</string>
+    <string name="rooms_move_to_public_title">Move to Public room</string>
+    <string name="rooms_move_to_public_title_desc">This room and all its contents are available to anyone with the link. Do you want to continue?</string>
 
     <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
     <string name="rooms_info_general_link">General link</string>

@@ -437,6 +437,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME -> presenter.rename(value)
                     DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER -> presenter.createFolder(value)
                     DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> presenter.deleteItems()
+                    DocsBasePresenter.TAG_DIALOG_MOVE_TO_PUBLIC -> presenter.move()
                     DocsBasePresenter.TAG_DIALOG_ACTION_SHEET -> presenter.createDocs(
                         value
                                 + "." + ApiContract.Extension.XLSX.lowercase()

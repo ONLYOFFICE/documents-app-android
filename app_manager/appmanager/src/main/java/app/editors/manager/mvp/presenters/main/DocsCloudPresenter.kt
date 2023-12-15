@@ -952,4 +952,17 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.showSetOwnerFragment(itemClicked as CloudFolder)
         }
     }
+
+    fun tryMove() {
+        val item = itemClicked
+        if (item is CloudFolder && item.roomType == ApiContract.RoomType.PUBLIC_ROOM) {
+            viewState.onDialogQuestion(
+                context.getString(R.string.rooms_move_to_public_title),
+                context.getString(R.string.rooms_move_to_public_title_desc),
+                TAG_DIALOG_MOVE_TO_PUBLIC
+            )
+        } else {
+            move()
+        }
+    }
 }
