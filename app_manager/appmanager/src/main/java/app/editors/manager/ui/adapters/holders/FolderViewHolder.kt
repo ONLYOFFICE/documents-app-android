@@ -1,22 +1,17 @@
 package app.editors.manager.ui.adapters.holders
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.view.View
 import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFolderBinding
-import app.editors.manager.managers.utils.ManagerUiUtils.setFolderIcon
-import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.TimeUtils
 
 class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
-    BaseViewHolderExplorer<CloudFolder>(view, adapter), SelectableIcon {
+    BaseViewHolderExplorer<CloudFolder>(view, adapter) {
 
     private var viewBinding = ListExplorerFolderBinding.bind(view)
-    override val selectableView = viewBinding.viewIconSelectableLayout.root
 
     init {
         viewBinding.listExplorerFolderLayout.setOnClickListener { v: View? ->
@@ -52,34 +47,15 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
             listExplorerFolderContext.isVisible = true
 
             listExplorerRoomPin.isVisible = folder.pinned
-            setFolderIcon(folder)
-            setSelected(adapter.isSelectMode, folder.isSelected)
+            viewIconSelectableLayout.item = folder
+            viewIconSelectableLayout.selectMode = adapter.isSelectMode
+            viewIconSelectableLayout.itemSelected = folder.isSelected
 
             // Show/hide context button
             if (adapter.isSelectMode || adapter.isFoldersMode) {
                 listExplorerFolderContext.isVisible = false
             }
 
-        }
-    }
-
-    private fun setFolderIcon(folder: CloudFolder) {
-        val initials = RoomUtils.getRoomInitials(folder.title)
-        with(viewBinding.viewIconSelectableLayout) {
-            if (!folder.logo?.large.isNullOrEmpty() || (folder.isRoom && initials.isNullOrEmpty())) {
-                viewIconSelectableText.isVisible = false
-                viewIconSelectableImage.isVisible = true
-                viewIconSelectableImage.setFolderIcon(folder, adapter.isRoot)
-            } else {
-                viewIconSelectableImage.isVisible = false
-                viewIconSelectableText.isVisible = true
-                viewIconSelectableText.text = initials
-                viewIconSelectableText.backgroundTintList =
-                    ColorStateList.valueOf(
-                        folder.logo?.color?.let { color -> Color.parseColor("#$color") }
-                            ?: root.context.getColor(lib.toolkit.base.R.color.colorPrimary)
-                    )
-            }
         }
     }
 

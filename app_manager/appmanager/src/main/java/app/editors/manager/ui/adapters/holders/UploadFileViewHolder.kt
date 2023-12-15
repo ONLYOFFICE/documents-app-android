@@ -5,7 +5,6 @@ import androidx.work.WorkManager
 import app.documents.core.network.manager.models.explorer.UploadFile
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerUploadFilesBinding
-import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.StringUtils
 import java.util.Locale
@@ -33,7 +32,7 @@ class UploadFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             }
             listExplorerUploadFileName.text = file.name
             file.uri?.path?.let { path ->
-                viewIconSelectableLayout.viewIconSelectableImage.setFileIcon(StringUtils.getExtensionFromPath(path))
+                viewIconSelectableLayout.setIconFromExtension(StringUtils.getExtensionFromPath(path))
             }
         }
     }

@@ -5,16 +5,14 @@ import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
-import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 
 class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
-    BaseViewHolderExplorer<CloudFile>(itemView, adapter), SelectableIcon {
+    BaseViewHolderExplorer<CloudFile>(itemView, adapter) {
 
     private var viewBinding = ListExplorerFilesBinding.bind(itemView)
-    override val selectableView = viewBinding.viewIconSelectableLayout.root
 
     init {
         viewBinding.listExplorerFileLayout.setOnClickListener{ view ->
@@ -52,8 +50,9 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             listExplorerFileContext.isVisible = true
             listExplorerFileFavorite.isVisible = file.favorite
 
-            viewIconSelectableLayout.viewIconSelectableImage.setFileIcon(file.fileExst)
-            setSelected(adapter.isSelectMode, file.isSelected)
+            viewIconSelectableLayout.item = file
+            viewIconSelectableLayout.selectMode = adapter.isSelectMode
+            viewIconSelectableLayout.itemSelected = file.isSelected
         }
     }
 

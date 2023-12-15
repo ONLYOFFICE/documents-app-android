@@ -5,9 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height">
 
-    <include
+    <app.editors.manager.ui.views.custom.ItemIconImageView
         android:id="@+id/icon"
-        layout="@layout/view_icon_selectable"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="12dp"

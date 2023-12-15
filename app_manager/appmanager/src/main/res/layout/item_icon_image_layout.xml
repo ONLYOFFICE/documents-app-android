@@ -2,12 +2,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/view_icon_selectable_layout"
     android:layout_width="@dimen/image_size"
+    android:layout_gravity="center"
     android:layout_height="@dimen/image_size">
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/view_icon_selectable_image"
+        android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
@@ -19,7 +19,7 @@
         tools:src="@drawable/ic_type_folder" />
 
     <TextView
-        android:id="@+id/view_icon_selectable_text"
+        android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/drawable_shape_circle"
