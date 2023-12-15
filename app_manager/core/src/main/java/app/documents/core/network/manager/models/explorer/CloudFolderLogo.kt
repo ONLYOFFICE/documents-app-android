@@ -12,5 +12,7 @@ data class CloudFolderLogo(
     @SerializedName("medium")
     @Expose val medium: String? = null,
     @SerializedName("small")
-    @Expose val small: String? = null
+    @Expose val small: String? = null,
+    @SerializedName("color")
+    @Expose val color: String? = null
 ) : Serializable
