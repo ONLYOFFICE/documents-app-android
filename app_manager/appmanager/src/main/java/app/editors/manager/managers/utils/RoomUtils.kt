@@ -37,4 +37,16 @@ object RoomUtils {
         return RoomInfo(icon, title, des)
     }
 
+    fun getRoomInitials(title: String): String? {
+        return try {
+            when (title.length) {
+                1 -> title[0].toString()
+                2 -> title.split("").let { "${it[0][0]}${it[1][0]}" }
+                else -> title.split("").let { "${it[0][0]}${it[it.lastIndex][0]}" }
+            }
+        } catch (_: IndexOutOfBoundsException) {
+            null
+        }
+    }
+
 }

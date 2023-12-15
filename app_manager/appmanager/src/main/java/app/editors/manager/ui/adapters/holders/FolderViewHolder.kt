@@ -2,10 +2,11 @@ package app.editors.manager.ui.adapters.holders
 
 import android.view.View
 import androidx.core.view.isVisible
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFolderBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFolderIcon
-import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import lib.toolkit.base.managers.utils.TimeUtils
 
@@ -46,28 +47,30 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
             listExplorerFolderName.text = folder.title
             listExplorerFolderInfo.text = folderInfo
             listExplorerFolderContext.isVisible = true
-            viewIconSelectableLayout.viewIconSelectableImage.background = null
-            viewIconSelectableLayout.viewIconSelectableMask.background = null
-            viewIconSelectableLayout.viewIconSelectableImage.setFolderIcon(folder, adapter.isRoot)
 
             listExplorerRoomPin.isVisible = folder.pinned
+            setFolderIcon(folder)
+//            setSelected(adapter.isSelectMode, folder.isSelected)
 
             // Show/hide context button
             if (adapter.isSelectMode || adapter.isFoldersMode) {
                 listExplorerFolderContext.isVisible = false
             }
 
-            // For selection mode add background/foreground
-            if (adapter.isSelectMode) {
-                if (folder.isSelected) {
-                    viewIconSelectableLayout.viewIconSelectableMask
-                        .setBackgroundResource(R.drawable.drawable_list_image_select_mask)
-                } else {
-                    viewIconSelectableLayout.viewIconSelectableLayout
-                        .setBackgroundResource(R.drawable.drawable_list_image_select_background)
-                }
+        }
+    }
+
+    private fun setFolderIcon(folder: CloudFolder) {
+        val initials = RoomUtils.getRoomInitials(folder.title)
+        with(viewBinding.viewIconSelectableLayout) {
+            if (!folder.logo?.large.isNullOrEmpty() || (folder.isRoom && initials.isNullOrEmpty())) {
+                viewIconSelectableText.isVisible = false
+                viewIconSelectableImage.isVisible = true
+                viewIconSelectableImage.setFolderIcon(folder, adapter.isRoot)
             } else {
-                viewIconSelectableLayout.viewIconSelectableLayout.background = null
+                viewIconSelectableImage.isVisible = false
+                viewIconSelectableText.isVisible = true
+                viewIconSelectableText.text = initials
             }
         }
     }

@@ -2,23 +2,39 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/view_icon_selectable_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="@dimen/image_size"
+    android:layout_height="@dimen/image_size">
 
     <ImageView
         android:id="@+id/view_icon_selectable_image"
-        android:layout_width="@dimen/image_size"
-        android:layout_height="@dimen/image_size"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:clickable="false"
         android:scaleType="center"
+        android:visibility="gone"
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_type_folder" />
 
-    <FrameLayout
-        android:id="@+id/view_icon_selectable_mask"
+    <!--        android:background="@drawable/drawable_list_image_select_background"-->
+    <!--        android:foreground="@drawable/drawable_list_image_select_foreground"-->
+
+    <TextView
+        android:id="@+id/view_icon_selectable_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:background="@drawable/drawable_image_circle"
+        android:backgroundTintMode="src_over"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:letterSpacing="0.015"
+        android:maxLength="2"
+        android:textAlignment="center"
+        android:textColor="@color/colorWhite"
+        android:textSize="18sp"
+        tools:backgroundTint="#61C059"
+        tools:text="PR" />
+
 </FrameLayout>
 
