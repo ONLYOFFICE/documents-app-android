@@ -32,7 +32,22 @@ sealed class MainPopupItem(
         object Author : SortBy(R.string.filter_title_author, ApiContract.Parameters.VAL_SORT_BY_OWNER)
         object RoomTags : SortBy(R.string.toolbar_menu_sort_tags, ApiContract.Parameters.VAL_SORT_BY_TAGS)
         object RoomType : SortBy(R.string.toolbar_menu_sort_type, ApiContract.Parameters.VAL_SORT_BY_ROOM_TYPE)
+
+        companion object {
+
+            fun getByValue(value: String?): SortBy? = when (value) {
+                ApiContract.Parameters.VAL_SORT_BY_TITLE -> Title
+                ApiContract.Parameters.VAL_SORT_BY_TYPE -> Type
+                ApiContract.Parameters.VAL_SORT_BY_SIZE -> Size
+                ApiContract.Parameters.VAL_SORT_BY_OWNER -> Author
+                ApiContract.Parameters.VAL_SORT_BY_TAGS -> RoomTags
+                ApiContract.Parameters.VAL_SORT_BY_ROOM_TYPE -> RoomType
+                ApiContract.Parameters.VAL_SORT_BY_UPDATED -> Date
+                else -> null
+            }
+        }
     }
+
 }
 
 class MainPopup(

@@ -29,6 +29,7 @@ import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
+import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -259,6 +260,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (item != null && !isFastClick) {
             val state = ExplorerContextState(
                 item = item,
+                headerInfo = app.editors.manager.managers.utils.StringUtils.getCloudItemInfo(
+                    context = requireContext(),
+                    item = item,
+                    userId = requireContext().accountOnline?.id
+                ),
                 sectionType = getSection().type,
                 isSearching = presenter.isFilteringMode,
                 isRoot = presenter.isRoot

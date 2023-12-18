@@ -2,12 +2,13 @@ package app.editors.manager.ui.adapters.holders
 
 import android.view.View
 import androidx.core.view.isVisible
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ListExplorerFolderBinding
 import app.editors.manager.managers.utils.ManagerUiUtils.setFolderIcon
-import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.editors.manager.managers.utils.StringUtils
 import app.editors.manager.ui.adapters.ExplorerAdapter
-import lib.toolkit.base.managers.utils.TimeUtils
 
 class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
     BaseViewHolderExplorer<CloudFolder>(view, adapter) {
@@ -30,21 +31,16 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
     }
 
     override fun bind(folder: CloudFolder) {
-        // Get folder info
-        val folderInfo = TimeUtils.getWeekDate(folder.updated)
-
-        if (adapter.preferenceTool.selfId.equals(folder.createdBy.id, ignoreCase = true)) {
-            if (!adapter.isSectionMy) {
-                folderInfo + PLACEHOLDER_POINT +
-                        adapter.context.getString(R.string.item_owner_self)
-            }
-        } else if (folder.createdBy.displayName.isNotEmpty()) {
-            folderInfo + PLACEHOLDER_POINT + folder.createdBy.displayName
-        }
-
         with(viewBinding) {
             listExplorerFolderName.text = folder.title
-            listExplorerFolderInfo.text = folderInfo
+            listExplorerFolderInfo.text = StringUtils.getCloudItemInfo(
+                context = adapter.context,
+                item = folder,
+                userId = adapter.context.accountOnline?.id,
+                sortBy = adapter.preferenceTool.sortBy,
+                isSectionMy = adapter.isSectionMy
+            )
+
             listExplorerFolderContext.isVisible = true
             viewIconSelectableLayout.viewIconSelectableImage.background = null
             viewIconSelectableLayout.viewIconSelectableMask.background = null
