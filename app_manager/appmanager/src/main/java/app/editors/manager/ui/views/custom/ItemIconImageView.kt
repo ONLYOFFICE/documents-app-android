@@ -40,19 +40,6 @@ class ItemIconImageView : FrameLayout {
                 AppCompatResources.getDrawable(context, R.drawable.drawable_list_image_select_foreground) else null
         }
 
-    var item: Item? = null
-        set(value) {
-            field = value
-            when (value) {
-                is CloudFile -> setCloudFile(value)
-                is CloudFolder -> setCloudFolder(value)
-                else -> throw IllegalArgumentException(
-                    "Item must be ${CloudFile::class.simpleName}" +
-                            " or ${CloudFolder::class.simpleName}"
-                )
-            }
-        }
-
     private val imageView: ImageView get() = binding.image
 
     private val textView: TextView get() = binding.text
@@ -60,6 +47,17 @@ class ItemIconImageView : FrameLayout {
     init {
         val view = inflate(context, R.layout.item_icon_image_layout, this)
         binding = ItemIconImageLayoutBinding.bind(view)
+    }
+
+    fun setItem(item: Item, isRoot: Boolean = false) {
+        when (item) {
+            is CloudFile -> setCloudFile(item)
+            is CloudFolder -> setCloudFolder(item, isRoot)
+            else -> throw IllegalArgumentException(
+                "Item must be ${CloudFile::class.simpleName}" +
+                        " or ${CloudFolder::class.simpleName}"
+            )
+        }
     }
 
     fun setIconFromExtension(extension: String) {
@@ -70,7 +68,7 @@ class ItemIconImageView : FrameLayout {
         imageView.setFileIcon(file.fileExst)
     }
 
-    private fun setCloudFolder(folder: CloudFolder) {
+    private fun setCloudFolder(folder: CloudFolder, isRoot: Boolean) {
         val initials = RoomUtils.getRoomInitials(folder.title)
         if (folder.isRoom) {
             if (!folder.logo?.large.isNullOrEmpty()) {
@@ -90,7 +88,7 @@ class ItemIconImageView : FrameLayout {
         } else {
             textView.isVisible = false
             imageView.isVisible = true
-            imageView.setFolderIcon(folder, false)
+            imageView.setFolderIcon(folder, isRoot)
         }
     }
 

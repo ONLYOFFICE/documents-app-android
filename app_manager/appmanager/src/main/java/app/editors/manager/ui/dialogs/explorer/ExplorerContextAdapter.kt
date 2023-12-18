@@ -48,7 +48,7 @@ class ExplorerContextAdapter(
 
         fun bind(header: ExplorerContextItem.Header) {
             with(viewBinding) {
-                icon.item = header.state.item
+                icon.setItem(header.state.item, header.state.isRoot)
                 title.text = header.state.item.title
                 subtitle.text = header.info
             }

@@ -50,7 +50,7 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             listExplorerFileContext.isVisible = true
             listExplorerFileFavorite.isVisible = file.favorite
 
-            viewIconSelectableLayout.item = file
+            viewIconSelectableLayout.setItem(file)
             viewIconSelectableLayout.selectMode = adapter.isSelectMode
             viewIconSelectableLayout.itemSelected = file.isSelected
         }

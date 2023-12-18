@@ -47,7 +47,7 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
             listExplorerFolderContext.isVisible = true
 
             listExplorerRoomPin.isVisible = folder.pinned
-            viewIconSelectableLayout.item = folder
+            viewIconSelectableLayout.setItem(folder, adapter.isRoot)
             viewIconSelectableLayout.selectMode = adapter.isSelectMode
             viewIconSelectableLayout.itemSelected = folder.isSelected
 
