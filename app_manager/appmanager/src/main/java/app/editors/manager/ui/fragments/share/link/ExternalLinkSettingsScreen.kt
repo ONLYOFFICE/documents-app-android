@@ -124,7 +124,7 @@ fun ExternalLinkSettingsScreen(
         roomType = roomType,
         onBackListener = { skipSave ->
             if (state.viewStateChanged && !skipSave) {
-                UiUtils.showMaterial3QuestionDialog(
+                UiUtils.showQuestionDialog(
                     context = context,
                     title = context.getString(R.string.rooms_info_save_link_title),
                     description = context.getString(R.string.rooms_info_save_link_question),
@@ -141,17 +141,23 @@ fun ExternalLinkSettingsScreen(
         onCopyLink = viewModel::copy,
         onCreateLink = viewModel::createLink,
         onDeleteOrRevokeLink = {
-            UiUtils.showMaterial3QuestionDialog(
+            UiUtils.showQuestionDialog(
                 context = context,
-                title = if (roomType == ApiContract.RoomType.PUBLIC_ROOM)
-                    context.getString(R.string.rooms_info_revoke_link) else
-                    context.getString(R.string.rooms_info_delete_link),
-                description = if (roomType == ApiContract.RoomType.PUBLIC_ROOM)
-                    context.getString(R.string.rooms_info_revoke_link_desc) else
-                    context.getString(R.string.rooms_info_delete_link_desc),
-                acceptTitle = if (roomType == ApiContract.RoomType.PUBLIC_ROOM)
-                    context.getString(R.string.rooms_info_revoke) else
-                    context.getString(R.string.list_context_delete),
+                title = if (roomType == ApiContract.RoomType.PUBLIC_ROOM) {
+                    context.getString(R.string.rooms_info_revoke_link)
+                } else {
+                    context.getString(R.string.rooms_info_delete_link)
+                },
+                description = if (roomType == ApiContract.RoomType.PUBLIC_ROOM) {
+                    context.getString(R.string.rooms_info_revoke_link_desc)
+                } else {
+                    context.getString(R.string.rooms_info_delete_link_desc)
+                },
+                acceptTitle = if (roomType == ApiContract.RoomType.PUBLIC_ROOM) {
+                    context.getString(R.string.rooms_info_revoke)
+                } else {
+                    context.getString(R.string.list_context_delete)
+                },
                 acceptListener = viewModel::deleteOrRevoke
             )
         },

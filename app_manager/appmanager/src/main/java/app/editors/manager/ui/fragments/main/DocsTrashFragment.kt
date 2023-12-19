@@ -23,20 +23,6 @@ class DocsTrashFragment : DocsCloudFragment() {
         initViews()
     }
 
-    override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
-        when (tag) {
-            DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> {
-                if (isResumed && isArchive) {
-                    cloudPresenter.deleteRoom()
-                } else if (isResumed && section == ApiContract.SectionType.CLOUD_TRASH) {
-                    super.onAcceptClick(dialogs, value, tag)
-                }
-            }
-
-            else -> super.onAcceptClick(dialogs, value, tag)
-        }
-    }
-
     override fun onItemClick(view: View, position: Int) {
         if (presenter.isSelectionMode) {
             super.onItemClick(view, position)
@@ -93,7 +79,28 @@ class DocsTrashFragment : DocsCloudFragment() {
     }
 
     override fun showDeleteDialog(count: Int, toTrash: Boolean, tag: String) {
-        super.showDeleteDialog(count, false, tag)
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = if (count > 0) {
+                resources.getQuantityString(R.plurals.dialogs_question_delete_title, count, count)
+            } else {
+                getString(R.string.dialogs_question_delete_all_title)
+            },
+            description = if (isArchive) {
+                resources.getQuantityString(R.plurals.dialogs_question_message_to_trash, count)
+            } else {
+                resources.getQuantityString(R.plurals.dialogs_question_message_delete, count)
+            },
+            acceptTitle = getString(R.string.dialogs_question_accept_delete),
+            cancelTitle = getString(R.string.dialogs_common_cancel_button),
+            acceptErrorTint = true,
+            acceptListener =  {
+                if (isResumed && isArchive) {
+                    cloudPresenter.deleteRoom()
+                } else if (isResumed && section == ApiContract.SectionType.CLOUD_TRASH) {
+                    super.onAcceptClick(CommonDialog.Dialogs.QUESTION, null, tag)
+                }
+            })
     }
 
     override fun onResume() {
@@ -139,7 +146,7 @@ class DocsTrashFragment : DocsCloudFragment() {
     }
 
     private fun showRestoreDialog(isSelected: Boolean = false) {
-        UiUtils.showMaterial3QuestionDialog(
+        UiUtils.showQuestionDialog(
             context = requireContext(),
             title = if (isSelected) getString(R.string.rooms_restore_title) else getString(R.string.room_restore_title),
             description = getString(R.string.room_restore_desc),

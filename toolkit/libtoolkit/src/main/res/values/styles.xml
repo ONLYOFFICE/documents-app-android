@@ -320,4 +320,20 @@
         <item name="android:windowExitAnimation">@anim/popup_out</item>
     </style>
 
+    <!--    Material dialog-->
+
+    <style name="App.Dialog.Alert" parent="@style/ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="materialAlertDialogTitleTextStyle">@style/Widget.Common.TextView.Title</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/App.Dialog.Body</item>
+        <item name="buttonBarPositiveButtonStyle">@style/App.Dialog.Buttons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/App.Dialog.Buttons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/App.Dialog.Buttons</item>
+    </style>
+
+    <style name="App.Dialog.Body" parent="Widget.Common.TextView.Small.Secondary">
+            <item name="android:maxLines">20</item>
+    </style>
+
+    <style name="App.Dialog.Buttons" parent="Widget.Common.Button.TextButton" />
+
 </resources>

@@ -97,7 +97,7 @@ class RoomInfoFragment : BaseDialogFragment() {
 
         private const val KEY_ROOM = "key_room"
         private const val MAX_ADDITIONAL_LINKS_COUNT = 5
-        val TAG = RoomInfoFragment::class.java.simpleName
+        val TAG: String = RoomInfoFragment::class.java.simpleName
 
         fun newInstance(room: CloudFolder): RoomInfoFragment =
             RoomInfoFragment().putArgs(KEY_ROOM to room)

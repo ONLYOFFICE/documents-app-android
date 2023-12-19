@@ -147,7 +147,7 @@ fun AddRoomItem(
             ) {
                 Text(
                     text = stringResource(id = title),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.body1,
                     modifier = Modifier
                         .align(Alignment.Start)
                 )
