@@ -6,12 +6,16 @@ import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
+import app.documents.core.network.room.models.RequestCreateExternalLink
 import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestRenameRoom
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
+import app.documents.core.network.room.models.RequestUpdateExternalLink
+import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.Invitation
 import app.documents.core.network.share.models.request.RequestRoomShare
 import io.reactivex.Observable
@@ -110,6 +114,75 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return roomService.deleteLogo(id).isSuccessful
     }
 
+    suspend fun getExternalLinks(id: String): List<ExternalLink> {
+        val response = roomService.getExternalLinks(id)
+        val body = response.body()
+        return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
+    }
+
+    suspend fun createGeneralLink(id: String): String {
+        val response = roomService.createGeneralLink(id)
+        val body = response.body()
+        return if (response.isSuccessful && body != null)
+            body.response.sharedTo.shareLink else throw HttpException(response)
+    }
+
+    suspend fun updateExternalLink(
+        roomId: String?,
+        access: Int?,
+        linkId: String?,
+        linkType: Int?,
+        denyDownload: Boolean?,
+        expirationDate: String?,
+        password: String?,
+        title: String?
+    ): ExternalLink {
+        val request = RequestUpdateExternalLink(
+            access = access ?: ApiContract.ShareCode.READ,
+            denyDownload = denyDownload == true,
+            expirationDate = expirationDate,
+            linkId = linkId,
+            linkType = linkType ?: 2,
+            password = password,
+            title = title
+        )
+        val response = roomService.updateExternalLink(roomId.orEmpty(), request)
+        val body = response.body()
+        return if (response.isSuccessful && body != null)
+            body.response else throw HttpException(response)
+    }
+
+    suspend fun createAdditionalLink(
+        roomId: String?,
+        denyDownload: Boolean,
+        expirationDate: String?,
+        password: String?,
+        title: String
+    ): ExternalLink {
+        val request = RequestCreateExternalLink(
+            denyDownload = denyDownload,
+            expirationDate = expirationDate,
+            password = password,
+            title = title
+        )
+        val response = roomService.createAdditionalLink(roomId.orEmpty(), request)
+        val body = response.body()
+        return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
+    }
+
+    suspend fun getRoomUsers(id: String): List<Share> {
+        val response = roomService.getRoomUsers(id)
+        val body = response.body()
+        return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
+    }
+
+    suspend fun setRoomUserAccess(roomId: String, userId: String, access: Int): Share? {
+        val body = RequestRoomShare(listOf(Invitation(id = userId, access = access)))
+        val response = roomService.setRoomUserAccess(roomId, body)
+        return if (response.isSuccessful)
+            response.body()?.response?.members?.getOrNull(0) else throw HttpException(response)
+    }
+
     suspend fun setLogo(id: String, logo: Bitmap) {
         val logoId = UUID.randomUUID().toString()
         val uploadResponse = roomService.uploadLogo(
@@ -123,7 +196,8 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             roomService.setLogo(
                 id,
                 RequestSetLogo(
-                    tmpFile = JSONObject(uploadResponse.body()?.string() ?: "").optJSONObject("response")?.optString("data")
+                    tmpFile = JSONObject(uploadResponse.body()?.string() ?: "").optJSONObject("response")
+                        ?.optString("data")
                         ?: "",
                     width = logo.width,
                     height = logo.height

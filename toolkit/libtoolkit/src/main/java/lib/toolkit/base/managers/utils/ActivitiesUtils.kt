@@ -430,7 +430,17 @@ fun FragmentActivity.openSendFileActivity(title: Int, uri: Uri) {
     } else {
         startActivity(getSendFileIntent(title, file = uri.toFile()))
     }
+}
 
+fun Context.openSendTextActivity(title: String, text: String) {
+    val sendIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, text)
+        type = "text/plain"
+    }
+
+    val shareIntent = Intent.createChooser(sendIntent, title)
+    startActivity(shareIntent)
 }
 
 fun Fragment.launchAfterResume(block: () -> Unit) {

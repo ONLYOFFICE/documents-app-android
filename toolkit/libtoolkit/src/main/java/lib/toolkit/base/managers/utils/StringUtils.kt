@@ -292,11 +292,7 @@ object StringUtils {
 
     @JvmStatic
     fun getHtmlSpanned(html: String): Spanned {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
-        } else {
-            Html.fromHtml(html)
-        }
+        return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
     }
 
     @JvmStatic

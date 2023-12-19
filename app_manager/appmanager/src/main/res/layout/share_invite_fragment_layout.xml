@@ -4,27 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:chipSpacingVertical="@dimen/default_margin_small"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:orientation="vertical"
+    android:theme="@style/AppTheme">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailCompleteLayout"
         style="@style/Widget.Common.TextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_margin_large"
         android:hint="@string/login_enterprise_email_hint"
-        android:layout_marginTop="@dimen/default_margin_medium"
-        android:padding="@dimen/default_margin_medium"
+        app:cursorErrorColor="@color/colorError"
+        app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/chipGroup">
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/emailCompleteTextView"
@@ -34,8 +28,26 @@
             android:imeOptions="actionDone"
             android:inputType="textEmailAddress"
             tools:ignore="LabelFor" />
+
+        <requestFocus />
+
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroup"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/default_margin_large"
+        android:layout_marginTop="@dimen/default_margin_large"
+        android:animateLayoutChanges="true"
+        app:chipSpacing="@dimen/default_margin_medium"
+        app:layout_constraintBottom_toTopOf="@id/share_panel_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/emailCompleteLayout"
+        app:layout_constraintVertical_bias="0">
+
+    </com.google.android.material.chip.ChipGroup>
 
     <include
         android:id="@+id/share_panel_layout"

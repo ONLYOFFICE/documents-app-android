@@ -314,6 +314,8 @@ object ApiContract {
         const val COLLABORATION_ROOM = 2
         const val CUSTOM_ROOM = 5
         const val PUBLIC_ROOM = 6
+
+        fun hasExternalLink(roomType: Int?): Boolean = arrayOf(CUSTOM_ROOM, PUBLIC_ROOM).contains(roomType)
     }
 
     object SectionPath {
@@ -323,7 +325,7 @@ object ApiContract {
         const val PROJECTS = "@projects"
         const val TRASH = "@trash"
         const val FAVORITES = "@favorites"
-        const val ROOMS ="rooms"
+        const val ROOMS = "rooms"
     }
 
     object Operation {

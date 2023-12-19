@@ -25,6 +25,8 @@
     <color name="colorOutline">#66545458</color>
     <color name="colorCloudItem">@color/colorWhite12</color>
     <color name="colorButtonBackground">@color/colorSurface</color>
+    <color name="colorChipBackground">@color/colorSurface</color>
+    <color name="colorIconBackground">@color/colorSurface</color>
 
     <!-- Editors -->
     <color name="colorDocTint">#3B92F3</color>

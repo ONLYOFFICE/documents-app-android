@@ -1,8 +1,8 @@
 package app.editors.manager.mvp.models.ui
 
 import android.graphics.drawable.Drawable
-import app.editors.manager.R
 import app.documents.core.network.manager.models.base.ItemProperties
+import app.editors.manager.R
 import kotlinx.serialization.Transient
 import lib.toolkit.base.managers.utils.StringUtils
 
@@ -12,7 +12,8 @@ data class UserUi(
     val displayName: String,
     val avatarUrl: String,
     var avatar: Drawable? = null,
-    val status: Int
+    val status: Int,
+    val isAdmin: Boolean
 ): ItemProperties(), ShareViewType, Comparable<UserUi>{
 
     @Transient

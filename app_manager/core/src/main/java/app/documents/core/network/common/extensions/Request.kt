@@ -118,6 +118,14 @@ suspend fun <C : Collection<T>, T, R> C.request(
     }
 }
 
+fun <R : BaseResponse> R.checkStatusCode(onError: (Throwable) -> Unit): R {
+    if (statusCode.isNotEmpty()) {
+        val code = statusCode.toInt()
+        if (code >= ApiContract.HttpCodes.CLIENT_ERROR) onError.invoke(httpExtension)
+    }
+    return this
+}
+
 private val BaseResponse.httpExtension: HttpException
     get() = HttpException(
         Response.error<ResponseBody>(

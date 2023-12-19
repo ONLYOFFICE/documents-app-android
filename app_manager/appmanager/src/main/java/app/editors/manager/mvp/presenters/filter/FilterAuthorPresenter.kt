@@ -42,7 +42,7 @@ class FilterAuthorPresenter : BasePresenter<FilterAuthorView>() {
     private fun loadAvatars(users: List<Author.User>) {
         presenterScope.launch {
             users.request(
-                func = { user -> GlideUtils.getAvatarFromUrl(context, user.avatarUrl) },
+                func = { user -> GlideUtils.setAvatarFromUrl(context, user.avatarUrl) },
                 map = { user, avatar -> user.also { it.avatar = avatar } },
                 onEach = viewState::onUpdateAvatar
             )

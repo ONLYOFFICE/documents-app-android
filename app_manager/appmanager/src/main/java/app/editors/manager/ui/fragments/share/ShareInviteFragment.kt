@@ -15,6 +15,7 @@ import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.popup.SharePopup
 import com.google.android.material.chip.Chip
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 
 
@@ -76,7 +77,7 @@ class ShareInviteFragment : BaseAppFragment() {
     private fun initListeners() {
         viewBinding?.sharePanelLayout?.sharePanelAddButton?.setOnClickListener {
             if (getEmails().isEmpty()) {
-                viewBinding?.emailCompleteTextView?.error = getString(R.string.share_invite_error_empty)
+                viewBinding?.emailCompleteLayout?.error = getString(R.string.share_invite_error_empty)
                 return@setOnClickListener
             }
             showFragment(ChooseAccessFragment.newInstance(item, getEmails()), ChooseAccessFragment.TAG, false)
@@ -119,16 +120,19 @@ class ShareInviteFragment : BaseAppFragment() {
 
         // space or comma is detected
         autoCompleteTextView.addTextChangedListener {
-            viewBinding?.emailCompleteTextView?.error = null
+            viewBinding?.emailCompleteLayout?.error = null
             if (it != null && it.isEmpty()) {
                 return@addTextChangedListener
             }
 
             if (it?.last() == ',' || it?.last() == ' ') {
                 val name = it.substring(0, it.length - 1)
-                addTag(name)
-
+                if (!StringUtils.isEmailValid(name)) {
+                    viewBinding?.emailCompleteLayout?.error = getString(R.string.errors_email_syntax_error)
+                    return@addTextChangedListener
+                }
                 viewBinding?.emailCompleteTextView?.text = null
+                addTag(name)
             }
         }
 
@@ -146,10 +150,12 @@ class ShareInviteFragment : BaseAppFragment() {
     }
 
     private fun addChipToGroup(name: String, items: MutableList<String>) {
-        val chip = Chip(context).apply {
+        val view = layoutInflater.inflate(R.layout.single_choice_chip_email_layout, viewBinding?.chipGroup, false)
+        val chip = (view as Chip).apply {
             text = name
             isCheckable = false
             isCloseIconVisible = true
+            setCloseIconTintResource(lib.toolkit.base.R.color.colorError)
         }
         viewBinding?.chipGroup?.addView(chip)
 

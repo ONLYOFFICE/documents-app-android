@@ -12,6 +12,7 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.hardware.display.DisplayManager
 import android.os.Build
+import android.text.Html
 import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.util.TypedValue
@@ -559,11 +560,7 @@ object UiUtils {
 
     @JvmStatic
     fun isMultiWindow(activity: Activity): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            activity.isInMultiWindowMode
-        } else {
-            false
-        }
+        return activity.isInMultiWindowMode
     }
 
     @JvmStatic
@@ -610,10 +607,14 @@ object UiUtils {
         params.topMargin = context.resources.getDimensionPixelSize(R.dimen.default_margin_large)
         params.gravity = Gravity.CENTER
 
-        val progress = ProgressBar(context, null, if (isCircle) android.R.attr.progressBarStyle else android.R.attr.progressBarStyleHorizontal)
+        val progress = ProgressBar(
+            context,
+            null,
+            if (isCircle) android.R.attr.progressBarStyle else android.R.attr.progressBarStyleHorizontal
+        )
             .apply {
+                if (!isCircle) layoutParams = params
                 isIndeterminate = true
-                layoutParams = params
 
                 val color = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorPrimary)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -624,20 +625,14 @@ object UiUtils {
             }
 
         container.addView(progress)
-        return AlertDialog.Builder(context)
+        return MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert)
             .setTitle(title)
             .setNegativeButton(cancelTitle) { dialog, _ ->
                 cancelListener()
                 dialog.dismiss()
             }
             .setView(container)
-            .show()
-    }
-
-    fun getProgressDialog(
-        context: Context
-    ): Dialog {
-        return AlertDialog.Builder(context).create()
+            .create()
     }
 
     fun showEditDialog(
@@ -662,12 +657,10 @@ object UiUtils {
         text.setText(value)
         text.setSelection(value?.length ?: 0)
         text.layoutParams = params
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            text.focusable = View.FOCUSABLE
-        }
+        text.focusable = View.FOCUSABLE
         container.addView(text)
 
-        AlertDialog.Builder(context)
+        MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert)
             .setTitle(title)
             .setMessage(description)
             .setPositiveButton(acceptTitle) { dialog, _ ->
@@ -694,47 +687,47 @@ object UiUtils {
         title: String,
         description: String? = null,
         acceptListener: () -> Unit,
+        neutralListener: (() -> Unit)? = null,
         cancelListener: (() -> Unit)? = null,
         acceptTitle: String? = context.getString(android.R.string.ok),
+        acceptErrorTint: Boolean = false,
+        neutralTitle: String? = null,
         cancelTitle: String? = context.getString(android.R.string.cancel)
     ) {
-        AlertDialog.Builder(context)
-            .setTitle(title)
-            .setMessage(description)
-            .setPositiveButton(acceptTitle) { dialog, _ ->
-                acceptListener.invoke()
-                dialog.dismiss()
-            }
-            .setNegativeButton(cancelTitle) { dialog, _ ->
-                cancelListener?.invoke()
-                dialog.dismiss()
-            }
-            .show()
-    }
+        val errorColor = "<font color='${
+            java.lang.String.format(
+                "#%06X",
+                0xFFFFFF and ContextCompat.getColor(context, R.color.colorError)
+            )
+        }'>$acceptTitle</font>"
 
-    fun showMaterial3QuestionDialog(
-        context: Context,
-        title: String,
-        description: String? = null,
-        acceptListener: () -> Unit,
-        cancelListener: (() -> Unit)? = null,
-        acceptTitle: String? = context.getString(android.R.string.ok),
-        cancelTitle: String? = context.getString(android.R.string.cancel)
-    ) {
-        MaterialAlertDialogBuilder(context)
+        MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert)
             .setTitle(title)
             .setMessage(description)
             .setPositiveButton(acceptTitle) { dialog, _ ->
                 acceptListener.invoke()
                 dialog.dismiss()
+            }
+            .apply {
+                if (neutralListener != null && neutralTitle != null) {
+                    setNeutralButton(neutralTitle) { dialog, _ ->
+                        neutralListener.invoke()
+                        dialog.dismiss()
+                    }
+                }
             }
             .setNegativeButton(cancelTitle) { dialog, _ ->
                 cancelListener?.invoke()
                 dialog.dismiss()
             }
             .show().apply {
+                if (acceptErrorTint) {
+                    getButton(DialogInterface.BUTTON_POSITIVE).text =
+                        Html.fromHtml(errorColor, Html.FROM_HTML_MODE_LEGACY)
+                }
                 getButton(DialogInterface.BUTTON_POSITIVE).isAllCaps = false
                 getButton(DialogInterface.BUTTON_NEGATIVE).isAllCaps = false
+                getButton(DialogInterface.BUTTON_NEUTRAL).isAllCaps = false
             }
     }
 
@@ -754,7 +747,7 @@ object UiUtils {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
 
-            addOnPositiveButtonClickListener{ time -> listener.invoke(dateFormat.format(time))}
+            addOnPositiveButtonClickListener { time -> listener.invoke(dateFormat.format(time)) }
         }
     }
 

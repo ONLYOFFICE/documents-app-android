@@ -1,11 +1,11 @@
 package app.editors.manager.ui.fragments.share
 
-import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.forEach
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.editors.manager.R
 import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.R
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.AddEmailUi
 import app.editors.manager.mvp.models.ui.GroupUi
@@ -25,31 +25,17 @@ import moxy.presenter.ProvidePresenter
 
 class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
-    enum class Type {
-        USERS, GROUPS, NONE
-    }
-
     @InjectPresenter
     lateinit var addPresenter: AddPresenter
 
-    @Suppress("DEPRECATION")
-    @ProvidePresenter
-    fun providePresenter(): AddPresenter {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            AddPresenter(
-                arguments?.getSerializable(TAG_ITEM, Item::class.java) as Item,
-                arguments?.getSerializable(TAG_TYPE, Type::class.java) as Type
-            )
-        } else {
-            AddPresenter(
-                arguments?.getSerializable(TAG_ITEM) as Item,
-                arguments?.getSerializable(TAG_TYPE) as Type
-            )
-        }
-    }
+    private val item: Item by lazy { checkNotNull(arguments?.getSerializableExt(TAG_ITEM)) }
+    private val type: AddPresenter.Type by lazy { checkNotNull(arguments?.getSerializableExt(TAG_TYPE)) }
+    private val isRoom: Boolean by lazy { (item as? CloudFolder)?.isRoom == true }
 
     private var shareAdapter: ShareAdapter? = null
-    private var type: Type? = null
+
+    @ProvidePresenter
+    fun providePresenter(): AddPresenter = AddPresenter(item, type)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -65,16 +51,16 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
             when (item) {
                 is UserUi -> item.isSelected = !item.isSelected
                 is GroupUi -> item.isSelected = !item.isSelected
-                else -> arguments?.getSerializableExt<Item>(TAG_ITEM)?.let { room ->
+                is AddEmailUi -> {
                     showParentFragment(
-                        ShareInviteFragment.newInstance(room),
+                        ShareInviteFragment.newInstance(this.item),
                         ShareInviteFragment.TAG,
                         false
                     )
                 }
             }
         }
-        shareAdapter?.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
+        shareAdapter?.notifyItemChanged(position, ShareAdapter.PAYLOAD_SET_SELECT)
         setCountChecked()
     }
 
@@ -94,18 +80,16 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
     }
 
     override fun onGetUsers(list: List<ViewType>) {
-        setPlaceholder(true, list.isNotEmpty())
+        val empty = list.isEmpty()
+        setPlaceholder(true, empty)
         swipeRefreshLayout?.isRefreshing = false
         shareAdapter?.setMode(BaseAdapter.Mode.USERS)
-        if ((arguments?.getSerializableExt<CloudFolder>(TAG_ITEM))?.isRoom == true) {
-            shareAdapter?.setItems(mutableListOf(AddEmailUi()) + list)
-        } else {
-            shareAdapter?.setItems(list)
-        }
+        shareAdapter?.setItems(if (isRoom) mutableListOf(AddEmailUi()) + list else list)
+        (parentFragment as? AddPagerFragment)?.selectionMenu?.forEach { it.isVisible = !empty }
     }
 
     override fun onGetGroups(list: List<ViewType>) {
-        setPlaceholder(false, list.isNotEmpty())
+        setPlaceholder(false, list.isEmpty())
         swipeRefreshLayout?.isRefreshing = false
         shareAdapter?.setMode(BaseAdapter.Mode.GROUPS)
         shareAdapter?.setItems(list.map {
@@ -137,32 +121,14 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
         // Stub
     }
 
-    override fun onUpdateSearch(users: MutableList<ViewType>?) {
-        // Stub
-    }
-
-    override fun onUpdateAvatar(user: UserUi) {
-        shareAdapter?.let { adapter ->
-            val position = adapter.updateItem(user)
-            adapter.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         updateSelectionMenu()
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        getArgs()
         initViews()
         restoreViews(savedInstanceState)
-    }
-
-    private fun getArgs() {
-        arguments?.let {
-            type = it.getSerializable(TAG_TYPE) as Type
-        }
     }
 
     private fun initViews() {
@@ -182,19 +148,29 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
     private fun requestData() {
         swipeRefreshLayout?.isRefreshing = true
-        addPresenter.shared
+        addPresenter.fetchSharedList()
     }
 
     private fun setPlaceholder(isUsers: Boolean, isEmpty: Boolean) {
         if (isUsers) {
             placeholderViews?.setTemplatePlaceholder(
-                if (isEmpty)
-                    PlaceholderViews.Type.NONE else PlaceholderViews.Type.USERS
-            )
+                if (isEmpty) {
+                    if (isRoom) {
+                        PlaceholderViews.Type.OTHER_ACCOUNTS
+                    } else {
+                        PlaceholderViews.Type.USERS
+                    }
+                } else PlaceholderViews.Type.NONE
+            ) {
+                showParentFragment(
+                    ShareInviteFragment.newInstance(this.item),
+                    ShareInviteFragment.TAG,
+                    false
+                )
+            }
         } else {
             placeholderViews?.setTemplatePlaceholder(
-                if (isEmpty)
-                    PlaceholderViews.Type.NONE else PlaceholderViews.Type.GROUPS
+                if (isEmpty) PlaceholderViews.Type.GROUPS else PlaceholderViews.Type.NONE
             )
         }
     }
@@ -209,20 +185,18 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
 
     private fun updateSelectionMenu() {
         (parentFragment as AddPagerFragment).selectionMenu?.let { menu ->
-            type?.let { type ->
-                menu.findItem(R.id.menu_share_deselect)?.isVisible = addPresenter.isSelected(type)
-                menu.findItem(R.id.menu_share_select_all)?.isVisible = !addPresenter.isSelectedAll(type)
-            }
+            menu.findItem(R.id.menu_share_deselect)?.isVisible = addPresenter.isSelected
+            menu.findItem(R.id.menu_share_select_all)?.isVisible = !addPresenter.isSelectedAll
         }
     }
 
     fun setSelectedAll(isSelected: Boolean) {
         shareAdapter?.let { adapter ->
             when (type) {
-                Type.USERS -> adapter.setItems(adapter.itemsList
+                AddPresenter.Type.Users -> adapter.setItems(adapter.itemsList
                     .filterIsInstance(UserUi::class.java)
                     .map { it.apply { this.isSelected = isSelected } })
-                Type.GROUPS -> adapter.setItems(adapter.itemsList
+                AddPresenter.Type.Groups -> adapter.setItems(adapter.itemsList
                     .filterIsInstance(GroupUi::class.java)
                     .map { it.apply { this.isSelected = isSelected } })
                 else -> {}
@@ -249,7 +223,7 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
         const val TAG_TYPE = "TAG_TYPE"
 
         @JvmStatic
-        fun newInstance(item: Item?, type: Type?): AddFragment {
+        fun newInstance(item: Item?, type: AddPresenter.Type?): AddFragment {
             return AddFragment().apply {
                 arguments = Bundle(2).apply {
                     putSerializable(TAG_ITEM, checkNotNull(item))

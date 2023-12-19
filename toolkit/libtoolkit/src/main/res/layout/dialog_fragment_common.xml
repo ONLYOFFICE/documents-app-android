@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:theme="@style/DialogCommonTheme"
-    app:cardCornerRadius="@dimen/default_corner_radius_medium">
+    app:cardCornerRadius="@dimen/default_corner_radius_small">
 
     <LinearLayout
         android:id="@+id/dialogContainer"
@@ -71,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginTop="@dimen/screen_margin_large"
+            android:layout_marginTop="@dimen/default_margin_medium"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/dialogCommonFrameLayout">
@@ -81,7 +81,7 @@
                 style="@style/Widget.Common.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/screen_margin_medium"
+                android:layout_marginEnd="@dimen/default_margin_small"
                 tools:text="Cancel" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -89,7 +89,7 @@
                 style="@style/Widget.Common.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/screen_margin_medium"
+                android:layout_marginEnd="@dimen/default_margin_small"
                 tools:text="Accept" />
         </LinearLayout>
 

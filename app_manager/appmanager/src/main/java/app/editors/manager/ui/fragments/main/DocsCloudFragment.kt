@@ -35,6 +35,7 @@ import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
+import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -197,7 +198,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             ExplorerContextItem.Share -> showShareActivity(cloudPresenter.itemClicked)
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
             ExplorerContextItem.CreateRoom -> cloudPresenter.createRoomFromFolder()
-            ExplorerContextItem.RoomInfo -> ShareActivity.show(this, cloudPresenter.itemClicked, true)
+            ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.ShareDelete -> showQuestionDialog(
                 title = getString(R.string.dialogs_question_share_remove),
                 string = "${cloudPresenter.itemClicked?.title}",
@@ -316,17 +317,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     protected val section: Int
         get() = arguments?.getInt(KEY_SECTION) ?: ApiContract.SectionType.UNKNOWN
 
-    private fun disableMenu() {
-        menu?.let {
-            deleteItem?.isEnabled = false
-        }
-    }
-
-    private fun init() {
-        explorerAdapter?.isSectionMy = section == ApiContract.SectionType.CLOUD_USER
-        cloudPresenter.checkBackStack()
-    }
-
     override fun onSwipeRefresh(): Boolean {
         if (!super.onSwipeRefresh()) {
             cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
@@ -430,6 +420,24 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     protected open fun getFilters(): Boolean {
         val filter = presenter.preferenceTool.filter
         return filter.type != FilterType.None || filter.author.id.isNotEmpty() || filter.excludeSubfolder
+    }
+
+    private fun init() {
+        explorerAdapter?.isSectionMy = section == ApiContract.SectionType.CLOUD_USER
+        cloudPresenter.checkBackStack()
+    }
+
+    private fun disableMenu() {
+        menu?.let {
+            deleteItem?.isEnabled = false
+        }
+    }
+
+    private fun showRoomInfoFragment() {
+        (presenter.itemClicked as? CloudFolder)?.let { room ->
+            RoomInfoFragment.newInstance(room)
+                .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
+        }
     }
 
     private fun showFilter() {

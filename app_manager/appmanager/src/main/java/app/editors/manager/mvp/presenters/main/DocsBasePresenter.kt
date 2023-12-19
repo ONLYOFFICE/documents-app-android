@@ -1699,6 +1699,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         const val TAG_DIALOG_CANCEL_BATCH_OPERATIONS = "TAG_DIALOG_CANCEL_BATCH_OPERATIONS"
         const val TAG_DIALOG_CANCEL_CONVERSION = "TAG_DIALOG_CANCEL_CONVERSION"
         const val TAG_DIALOG_CLEAR_DISPOSABLE = "TAG_DIALOG_CLEAR_DISPOSABLE"
+        const val TAG_DIALOG_MOVE_TO_PUBLIC = "TAG_DIALOG_MOVE_TO_PUBLIC"
 
         /**
          * Requests values

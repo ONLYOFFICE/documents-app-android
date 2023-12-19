@@ -46,6 +46,7 @@ fun AppArrowItem(
     arrowVisible: Boolean = true,
     dividerVisible: Boolean = true,
     enabled: Boolean = true,
+    singleLine: Boolean = true,
     onClick: (() -> Unit)? = null
 ) {
     AppListItem(
@@ -59,6 +60,7 @@ fun AppArrowItem(
         title = title,
         titleColor = titleColor,
         subtitle = subtitle,
+        singleLine = singleLine,
         endContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 option?.let { option ->
