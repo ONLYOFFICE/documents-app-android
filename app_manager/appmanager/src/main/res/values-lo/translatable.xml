@@ -657,11 +657,8 @@
     <string name="share_invite_user">ເຊີນຜູ້ໃຊ້</string>
     <string name="storage_web_dav_settings_server">ເຊີບເວີ</string>
     <string name="storage_web_dav_settings_required">ຕ້ອງການ</string>
-    <string name="context_room_archive">ບ່ອນມ້ຽນເອກະສານສຳຄັນ</string>
     <string name="context_room_archive_message">ຫ້ອງຖືກຍ້າຍໄປບ່ອນມ້ຽນແລ້ວ</string>
     <string name="context_rooms_archive_message">ຫ້ອງຖືກຍ້າຍໄປບ່ອນມ້ຽນແລ້ວ</string>
-    <string name="context_room_unarchive">ຍ້າຍຈາກບ່ອນມ້ຽນ</string>
-    <string name="context_room_unarchive_message">ລຶບຫ້ອງອອກຈາກບ່ອນມ້ຽນແລ້ວ</string>
     <string name="list_context_pin_to_top">ປັກໝຸດຢູ່ເທິງສຸດ</string>
     <string name="list_rooms_title">ຫ້ອງ</string>
     <string name="list_context_unpin">ຖອນປັກໝຸດ</string>

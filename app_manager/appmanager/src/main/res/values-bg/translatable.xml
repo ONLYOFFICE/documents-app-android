@@ -504,11 +504,8 @@
     <string name="share_invite_user">Поканете потребители</string>
     <string name="storage_web_dav_settings_server">Сървър</string>
     <string name="storage_web_dav_settings_required">Задължителен</string>
-    <string name="context_room_archive">Архив</string>
     <string name="context_room_archive_message">Стаята е преместена в архив</string>
     <string name="context_rooms_archive_message">Стаите са преместени в архив</string>
-    <string name="context_room_unarchive">Преместване от архив</string>
-    <string name="context_room_unarchive_message">Стаята е премахната от архива</string>
     <string name="list_context_pin_to_top">Закачете отгоре</string>
     <string name="list_rooms_title">Стаи</string>
     <string name="list_context_unpin">Откачи</string>

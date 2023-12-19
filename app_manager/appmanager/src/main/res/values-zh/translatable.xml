@@ -570,11 +570,8 @@
     <string name="share_invite_user">邀请用户</string>
     <string name="storage_web_dav_settings_server">服务器</string>
     <string name="storage_web_dav_settings_required">必备</string>
-    <string name="context_room_archive">存档</string>
     <string name="context_room_archive_message">房间移至存档</string>
     <string name="context_rooms_archive_message">房间已经移至存档</string>
-    <string name="context_room_unarchive">从存档中移出</string>
-    <string name="context_room_unarchive_message">房间从存档中删除成功</string>
     <string name="list_context_pin_to_top">置顶</string>
     <string name="list_rooms_title">房间</string>
     <string name="list_context_unpin">取消置顶</string>

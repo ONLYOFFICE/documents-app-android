@@ -43,7 +43,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Archive,
-                ExplorerContextItem.Restore(true),
+                ExplorerContextItem.Restore,
                 ExplorerContextItem.Delete(state)
             )
 
@@ -82,7 +82,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Upload,
                 ExplorerContextItem.Rename,
-                ExplorerContextItem.Restore(false),
+                ExplorerContextItem.Restore,
                 ExplorerContextItem.ShareDelete,
                 ExplorerContextItem.Delete(state)
             )

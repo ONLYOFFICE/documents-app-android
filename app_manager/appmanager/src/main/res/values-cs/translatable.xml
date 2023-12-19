@@ -646,11 +646,8 @@
     <string name="share_invite_user">Pozvat uživatele</string>
     <string name="storage_web_dav_settings_server">Server</string>
     <string name="storage_web_dav_settings_required">Požadované</string>
-    <string name="context_room_archive">Archiv</string>
     <string name="context_room_archive_message">Místnost přesunuta do archivu</string>
     <string name="context_rooms_archive_message">Místnosti přesunuté do archivu</string>
-    <string name="context_room_unarchive">Přesun z archivu</string>
-    <string name="context_room_unarchive_message">Místnost vyjmutá z archivu</string>
     <string name="list_context_pin_to_top">Připnout na začátek</string>
     <string name="list_rooms_title">Místnosti</string>
     <string name="list_context_unpin">Zrušit připnutí</string>

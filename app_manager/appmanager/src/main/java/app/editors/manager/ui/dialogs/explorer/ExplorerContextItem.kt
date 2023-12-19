@@ -127,12 +127,12 @@ sealed class ExplorerContextItem(
 
     object Archive : ExplorerContextItem(
         icon = R.drawable.ic_room_archive,
-        title = R.string.context_room_archive
+        title = R.string.context_room_move_to_archive
     ), ExplorerContextBlockOrder.Remove
 
-    class Restore(isRoom: Boolean) : ExplorerContextItem(
+    object Restore : ExplorerContextItem(
         icon = R.drawable.ic_trash_restore,
-        title = if (!isRoom) R.string.device_trash_files_restore else R.string.context_room_unarchive
+        title = R.string.device_trash_files_restore
     ), ExplorerContextBlockOrder.Remove
 
     object ShareDelete : ExplorerContextItem(

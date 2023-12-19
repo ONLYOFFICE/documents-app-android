@@ -791,6 +791,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         .lastElement()
                         .subscribe({ response ->
                             if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
+                                viewState.onArchiveRoom(isArchive, modelExplorerStack.selectedFolders.size)
                                 viewState.onSwipeEnable(false)
                                 setSelection(false)
                                 refresh()
@@ -964,5 +965,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         } else {
             move()
         }
+    }
+
+    fun getSelectedItemsCount(): Int {
+        return modelExplorerStack.countSelectedItems
     }
 }

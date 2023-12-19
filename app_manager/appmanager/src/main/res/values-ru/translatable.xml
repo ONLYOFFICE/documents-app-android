@@ -522,11 +522,8 @@
     <string name="share_invite_user">Пригласить пользователей</string>
     <string name="storage_web_dav_settings_server">Сервер</string>
     <string name="storage_web_dav_settings_required">Требуется</string>
-    <string name="context_room_archive">Архив</string>
     <string name="context_room_archive_message">Комната перемещена в архив</string>
     <string name="context_rooms_archive_message">Комнаты перемещены в архив</string>
-    <string name="context_room_unarchive">Переместить из архива</string>
-    <string name="context_room_unarchive_message">Комната перемещена из архива</string>
     <string name="list_context_pin_to_top">Закрепить вверху</string>
     <string name="list_rooms_title">Комнаты</string>
     <string name="list_context_unpin">Открепить</string>

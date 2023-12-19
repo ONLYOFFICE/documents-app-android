@@ -504,11 +504,8 @@
     <string name="share_invite_user">Inviter des utilisateurs</string>
     <string name="storage_web_dav_settings_server">Serveur</string>
     <string name="storage_web_dav_settings_required">Obligatoire</string>
-    <string name="context_room_archive">Archive</string>
     <string name="context_room_archive_message">Salle déplacée vers l\'archive</string>
     <string name="context_rooms_archive_message">Salles déplacées vers l\'archive</string>
-    <string name="context_room_unarchive">Déplacer à partir de l\'archive</string>
-    <string name="context_room_unarchive_message">Salle retirée de l\'archive</string>
     <string name="list_context_pin_to_top">Épingler en haut</string>
     <string name="list_rooms_title">Salles</string>
     <string name="list_context_unpin">Désépingler</string>

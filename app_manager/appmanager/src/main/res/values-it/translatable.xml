@@ -504,11 +504,8 @@
     <string name="share_invite_user">Invita gli utenti</string>
     <string name="storage_web_dav_settings_server">Server</string>
     <string name="storage_web_dav_settings_required">Richiesto</string>
-    <string name="context_room_archive">Archivio</string>
     <string name="context_room_archive_message">Stanza è spostata nell\'archivio</string>
     <string name="context_rooms_archive_message">Stanze sono spostate nell\'archivio</string>
-    <string name="context_room_unarchive">Spostare dall\'archivio</string>
-    <string name="context_room_unarchive_message">Stanza è rimossa dall\'archivio</string>
     <string name="list_context_pin_to_top">Fissare in alto</string>
     <string name="list_rooms_title">Stanze</string>
     <string name="list_context_unpin">Rimuovere</string>

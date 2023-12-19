@@ -145,15 +145,15 @@ class DocsTrashFragment : DocsCloudFragment() {
         )
     }
 
-    private fun showRestoreDialog(isSelected: Boolean = false) {
+    private fun showRestoreDialog() {
+        val count = cloudPresenter.getSelectedItemsCount() or 1
         UiUtils.showQuestionDialog(
             context = requireContext(),
-            title = if (isSelected) getString(R.string.rooms_restore_title) else getString(R.string.room_restore_title),
-            description = getString(R.string.room_restore_desc),
+            title = resources.getQuantityString(R.plurals.rooms_restore_title, count),
+            description = resources.getQuantityString(R.plurals.rooms_restore_desc, count),
             acceptTitle = getString(R.string.trash_snackbar_move_button),
-            acceptListener = {
-                cloudPresenter.archiveRoom(false)
-            })
+            acceptListener = { cloudPresenter.archiveRoom(false) }
+        )
     }
 
     companion object {

@@ -513,11 +513,8 @@
     <string name="share_invite_user">Benutzer einladen</string>
     <string name="storage_web_dav_settings_server">Server</string>
     <string name="storage_web_dav_settings_required">Erforderlich</string>
-    <string name="context_room_archive">Archiv</string>
     <string name="context_room_archive_message">Raum ins Archiv verschoben</string>
     <string name="context_rooms_archive_message">Räume ins Archiv verschoben</string>
-    <string name="context_room_unarchive">Ins Archiv verschieben</string>
-    <string name="context_room_unarchive_message">Raum aus dem Archiv entfernt</string>
     <string name="list_context_pin_to_top">Oben anheften</string>
     <string name="list_rooms_title">Räume</string>
     <string name="list_context_unpin">Entpinnen</string>

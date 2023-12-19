@@ -695,11 +695,15 @@
     <string name="filter_show_results">Show %1$s results</string>
     <string name="filter_button_reset">RESET</string>
 
-    <string name="context_room_archive">Archive</string>
+    <string name="context_room_move_to_archive">Move to archive</string>
     <string name="context_room_archive_message">Room moved to archive</string>
     <string name="context_rooms_archive_message">Rooms moved to archive</string>
-    <string name="context_room_unarchive">Move from archive</string>
-    <string name="context_room_unarchive_message">Room removed from archive</string>
+
+    <plurals name="context_rooms_unarchive_message">
+        <item quantity="one">Room successfully restored</item>
+        <item quantity="other">Rooms successfully restored</item>
+    </plurals>
+
     <string name="list_context_pin_to_top">Pin to top</string>
     <string name="list_rooms_title">Rooms</string>
     <string name="list_context_unpin">Unpin</string>
@@ -726,9 +730,17 @@
     <string name="room_set_owner_title">Change the Room Owner</string>
     <string name="room_search_not_found">No users found</string>
     <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
-    <string name="room_restore_title">Restore room?</string>
-    <string name="rooms_restore_title">Restore rooms?</string>
-    <string name="room_restore_desc">All shared links in rooms will become active, and its contents will be available to everyone with the link. Do you want to restore rooms?</string>
+
+    <plurals name="rooms_restore_title">
+        <item quantity="one">Restore room?</item>
+        <item quantity="other">Restore rooms?</item>
+    </plurals>
+
+    <plurals name="rooms_restore_desc">
+        <item quantity="one">All shared links in room will become active, and its contents will be available to everyone with the link. Do you want to restore room?</item>
+        <item quantity="other">All shared links in rooms will become active, and its contents will be available to everyone with the link. Do you want to restore rooms?</item>
+    </plurals>
+
     <string name="rooms_move_to_public_title">Move to Public room</string>
     <string name="rooms_move_to_public_title_desc">This room and all its contents are available to anyone with the link. Do you want to continue?</string>
 

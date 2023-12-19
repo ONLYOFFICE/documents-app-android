@@ -504,11 +504,8 @@
     <string name="share_invite_user">Zaproś użytkowników</string>
     <string name="storage_web_dav_settings_server">Serwer</string>
     <string name="storage_web_dav_settings_required">Wymagane</string>
-    <string name="context_room_archive">Archiwum</string>
     <string name="context_room_archive_message">Pokój został przeniesiony do archiwum</string>
     <string name="context_rooms_archive_message">Pokoje zostały przeniesione do archiwum</string>
-    <string name="context_room_unarchive">Przenieś z archiwum</string>
-    <string name="context_room_unarchive_message">Pokój został usunięty z archiwum</string>
     <string name="list_context_pin_to_top">Przypnij u góry</string>
     <string name="list_rooms_title">Pokoje</string>
     <string name="list_context_unpin">Odepnij</string>

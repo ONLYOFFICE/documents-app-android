@@ -18,7 +18,7 @@ interface DocsCloudView : DocsBaseView {
     fun onStateUpdateFilterMenu()
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onArchiveRoom(isArchived: Boolean)
+    fun onArchiveRoom(isArchived: Boolean, count: Int = 1)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onArchiveSelectedRooms(rooms: List<Entity>)

@@ -704,19 +704,19 @@ object UiUtils {
         MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert)
             .setTitle(title)
             .setMessage(description)
-            .setPositiveButton(acceptTitle) { dialog, _ ->
+            .setPositiveButton(acceptTitle?.capitalize()) { dialog, _ ->
                 acceptListener.invoke()
                 dialog.dismiss()
             }
             .apply {
                 if (neutralListener != null && neutralTitle != null) {
-                    setNeutralButton(neutralTitle) { dialog, _ ->
+                    setNeutralButton(neutralTitle.capitalize()) { dialog, _ ->
                         neutralListener.invoke()
                         dialog.dismiss()
                     }
                 }
             }
-            .setNegativeButton(cancelTitle) { dialog, _ ->
+            .setNegativeButton(cancelTitle?.capitalize()) { dialog, _ ->
                 cancelListener?.invoke()
                 dialog.dismiss()
             }
