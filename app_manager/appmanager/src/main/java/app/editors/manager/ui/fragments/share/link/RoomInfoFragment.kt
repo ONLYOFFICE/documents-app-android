@@ -126,6 +126,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                 val localView = LocalView.current
                 val portal = remember { context.accountOnline?.portal }
                 val room = remember { arguments?.getSerializableExt<CloudFolder>(KEY_ROOM) }
+                val canEditRoom = room?.security?.editRoom == true
                 val viewModel = viewModel { RoomInfoViewModel(requireContext().roomProvider, room?.id.orEmpty()) }
                 val navController = rememberNavController().also {
                     it.addOnDestinationChangedListener { _, destination, _ ->
@@ -164,6 +165,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                         composable(route = RoomInfoScreens.RoomInfo.name) {
                             RoomInfoScreen(
                                 state = state,
+                                canEditRoom = canEditRoom,
                                 roomType = room?.roomType,
                                 roomTitle = room?.title,
                                 portal = portal,
@@ -267,6 +269,7 @@ class RoomInfoFragment : BaseDialogFragment() {
     @Composable
     private fun RoomInfoScreen(
         state: RoomInfoState,
+        canEditRoom: Boolean,
         roomType: Int?,
         roomTitle: String?,
         portal: String?,
@@ -295,7 +298,11 @@ class RoomInfoFragment : BaseDialogFragment() {
                         }
                     },
                     actions = {
-                        TopAppBarAction(icon = R.drawable.ic_add_users, onClick = onAddUsers)
+                        TopAppBarAction(
+                            icon = R.drawable.ic_add_users,
+                            onClick = onAddUsers,
+                            enabled = canEditRoom
+                        )
                     },
                     backListener = onBackClick
                 )
@@ -310,6 +317,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                         ExternalLinkBlock(
                             generalLink = state.generalLink,
                             additionalLinks = state.additionalLinks,
+                            canEditRoom = canEditRoom,
                             onLinkClick = onLinkClick,
                             onGeneralLinkCreate = onGeneralLinkCreate,
                             onAdditionalLinkCreate = onAdditionalLinkCreate
@@ -342,16 +350,21 @@ class RoomInfoFragment : BaseDialogFragment() {
     private fun ExternalLinkBlock(
         generalLink: ExternalLink?,
         additionalLinks: List<ExternalLink>,
+        canEditRoom: Boolean,
         onLinkClick: (ExternalLink) -> Unit,
         onGeneralLinkCreate: () -> Unit,
         onAdditionalLinkCreate: () -> Unit
     ) {
         val context = LocalContext.current
-        AppDescriptionItem(
-            modifier = Modifier.padding(top = 8.dp),
-            text = R.string.rooms_info_access_desc
-        )
-        AppHeaderItem(title = R.string.rooms_info_general_link)
+        if (!canEditRoom && (generalLink != null || additionalLinks.isNotEmpty()) || canEditRoom) {
+            AppDescriptionItem(
+                modifier = Modifier.padding(top = 8.dp),
+                text = R.string.rooms_info_access_desc
+            )
+        }
+        if (!canEditRoom && generalLink != null || canEditRoom) {
+            AppHeaderItem(title = R.string.rooms_info_general_link)
+        }
         if (generalLink != null) {
             ExternalLinkItem(
                 linkTitle = generalLink.sharedTo.title,
@@ -359,28 +372,35 @@ class RoomInfoFragment : BaseDialogFragment() {
                 hasPassword = !generalLink.sharedTo.password.isNullOrEmpty(),
                 expiring = false,
                 isExpired = generalLink.sharedTo.isExpired,
+                canEdit = canEditRoom,
                 onShareClick = {
                     context.openSendTextActivity(
                         context.getString(R.string.toolbar_menu_main_share),
                         generalLink.sharedTo.shareLink
                     )
                 },
-                onClick = { onLinkClick.invoke(generalLink) }
+                onClick = { onLinkClick.invoke(generalLink) }.takeIf { canEditRoom }
             )
-        } else {
+        }
+
+        if (canEditRoom && generalLink == null) {
             AppTextButton(
                 modifier = Modifier.padding(start = 8.dp),
                 title = R.string.rooms_info_create_link,
                 onClick = onGeneralLinkCreate
             )
         }
-        AppHeaderItem(
-            title = stringResource(
-                id = R.string.rooms_info_additional_links,
-                additionalLinks.size,
-                MAX_ADDITIONAL_LINKS_COUNT
+
+        if (!canEditRoom && additionalLinks.isNotEmpty() || canEditRoom) {
+            AppHeaderItem(
+                title = stringResource(
+                    id = R.string.rooms_info_additional_links,
+                    additionalLinks.size,
+                    MAX_ADDITIONAL_LINKS_COUNT
+                )
             )
-        )
+        }
+
         additionalLinks.forEach { link ->
             ExternalLinkItem(
                 linkTitle = link.sharedTo.title,
@@ -388,16 +408,17 @@ class RoomInfoFragment : BaseDialogFragment() {
                 hasPassword = !link.sharedTo.password.isNullOrEmpty(),
                 expiring = !link.sharedTo.expirationDate.isNullOrEmpty(),
                 isExpired = link.sharedTo.isExpired,
+                canEdit = canEditRoom,
                 onShareClick = {
                     context.openSendTextActivity(
                         context.getString(R.string.toolbar_menu_main_share),
                         link.sharedTo.shareLink
                     )
                 },
-                onClick = { onLinkClick.invoke(link) }
+                onClick = { onLinkClick.invoke(link) }.takeIf { canEditRoom }
             )
         }
-        if (additionalLinks.size < MAX_ADDITIONAL_LINKS_COUNT) {
+        if (additionalLinks.size < MAX_ADDITIONAL_LINKS_COUNT && canEditRoom) {
             AppTextButton(
                 modifier = Modifier.padding(start = 8.dp),
                 title = R.string.rooms_info_create_link,
@@ -517,6 +538,7 @@ class RoomInfoFragment : BaseDialogFragment() {
             RoomInfoScreen(
                 roomTitle = "Room title",
                 roomType = ApiContract.RoomType.CUSTOM_ROOM,
+                canEditRoom = true,
                 portal = "",
                 state = RoomInfoState(
                     isLoading = false,
