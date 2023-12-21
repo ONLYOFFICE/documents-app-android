@@ -11,11 +11,10 @@
     android:foreground="?attr/selectableItemBackground"
     android:paddingBottom="@dimen/line_separator_height">
 
-    <include
+    <app.editors.manager.ui.views.custom.ItemIconImageView
         android:id="@+id/view_icon_selectable_layout"
-        layout="@layout/view_icon_selectable"
-        android:layout_width="@dimen/image_size"
-        android:layout_height="@dimen/image_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/screen_margin_large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
