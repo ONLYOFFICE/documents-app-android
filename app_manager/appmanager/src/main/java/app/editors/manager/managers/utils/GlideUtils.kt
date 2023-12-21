@@ -13,8 +13,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -98,7 +96,6 @@ object GlideUtils {
                     RequestOptions()
                         .timeout(30 * 1000)
                         .error(placeholder)
-                        .transform(CenterCrop(), RoundedCorners(16))
                 )
                 .into(this)
         }

@@ -44,22 +44,9 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             listExplorerFileContext.isVisible = true
             listExplorerFileFavorite.isVisible = file.favorite
 
-            viewIconSelectableLayout.viewIconSelectableImage.background = null
-            viewIconSelectableLayout.viewIconSelectableMask.background = null
-            viewIconSelectableLayout.viewIconSelectableImage.setFileIcon(file.fileExst)
-
-            // For selection mode add background/foreground
-            if (adapter.isSelectMode) {
-                listExplorerFileContext.isVisible = false
-                if (file.isSelected) {
-                    viewIconSelectableLayout.viewIconSelectableMask.setBackgroundResource(R.drawable.drawable_list_image_select_mask)
-                } else {
-                    viewIconSelectableLayout.viewIconSelectableLayout
-                        .setBackgroundResource(R.drawable.drawable_list_image_select_background)
-                }
-            } else {
-                viewIconSelectableLayout.viewIconSelectableLayout.background = null
-            }
+            viewIconSelectableLayout.setItem(file)
+            viewIconSelectableLayout.selectMode = adapter.isSelectMode
+            viewIconSelectableLayout.itemSelected = file.isSelected
         }
     }
 

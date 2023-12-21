@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerContextHeaderBinding
 import app.editors.manager.databinding.ListExplorerContextItemBinding
-import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import lib.toolkit.base.managers.extensions.inflate
 
@@ -49,12 +48,8 @@ class ExplorerContextAdapter(
 
         fun bind(header: ExplorerContextItem.Header) {
             with(viewBinding) {
-                if (!header.logo.isNullOrEmpty()) {
-                    icon.setRoomLogo(header.logo, R.drawable.ic_type_folder)
-                } else {
-                    icon.setImageResource(header.icon)
-                }
-                title.text = header.fileName
+                icon.setItem(header.state.item, header.state.isRoot)
+                title.text = header.state.item.title
                 subtitle.text = header.info
             }
         }

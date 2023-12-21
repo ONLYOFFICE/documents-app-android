@@ -42,29 +42,17 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
             )
 
             listExplorerFolderContext.isVisible = true
-            viewIconSelectableLayout.viewIconSelectableImage.background = null
-            viewIconSelectableLayout.viewIconSelectableMask.background = null
-            viewIconSelectableLayout.viewIconSelectableImage.setFolderIcon(folder, adapter.isRoot)
 
             listExplorerRoomPin.isVisible = folder.pinned
+            viewIconSelectableLayout.setItem(folder, adapter.isRoot)
+            viewIconSelectableLayout.selectMode = adapter.isSelectMode
+            viewIconSelectableLayout.itemSelected = folder.isSelected
 
             // Show/hide context button
             if (adapter.isSelectMode || adapter.isFoldersMode) {
                 listExplorerFolderContext.isVisible = false
             }
 
-            // For selection mode add background/foreground
-            if (adapter.isSelectMode) {
-                if (folder.isSelected) {
-                    viewIconSelectableLayout.viewIconSelectableMask
-                        .setBackgroundResource(R.drawable.drawable_list_image_select_mask)
-                } else {
-                    viewIconSelectableLayout.viewIconSelectableLayout
-                        .setBackgroundResource(R.drawable.drawable_list_image_select_background)
-                }
-            } else {
-                viewIconSelectableLayout.viewIconSelectableLayout.background = null
-            }
         }
     }
 

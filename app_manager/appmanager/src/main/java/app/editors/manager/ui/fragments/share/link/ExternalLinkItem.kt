@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import lib.compose.ui.addIfNotNull
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.views.AppScaffold
@@ -39,14 +40,15 @@ fun ExternalLinkItem(
     hasPassword: Boolean,
     expiring: Boolean,
     isExpired: Boolean,
+    canEdit: Boolean,
     onShareClick: () -> Unit,
-    onClick: () -> Unit
+    onClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
             .height(dimensionResource(id = R.dimen.item_onehalf_line_height))
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .addIfNotNull(onClick) { clickable(onClick = it) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -82,19 +84,21 @@ fun ExternalLinkItem(
                 }
             }
         }
-        IconButton(modifier = Modifier.padding(end = 24.dp), onClick = onShareClick) {
+        if (canEdit) {
+            IconButton(modifier = Modifier.padding(end = 24.dp), onClick = onShareClick) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_list_context_share),
+                    tint = MaterialTheme.colors.primary,
+                    contentDescription = null
+                )
+            }
             Icon(
-                imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_list_context_share),
-                tint = MaterialTheme.colors.primary,
+                modifier = Modifier.padding(end = 12.dp),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
+                tint = MaterialTheme.colors.colorTextTertiary,
                 contentDescription = null
             )
         }
-        Icon(
-            modifier = Modifier.padding(end = 12.dp),
-            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
-            tint = MaterialTheme.colors.colorTextTertiary,
-            contentDescription = null
-        )
     }
 }
 
@@ -132,10 +136,12 @@ private fun Preview() {
         AppScaffold {
             Column {
                 ExternalLinkItem(
-                    linkTitle = "Shared link", access = 2,
+                    linkTitle = "Shared link",
+                    access = 2,
                     hasPassword = true,
                     expiring = false,
                     isExpired = false,
+                    canEdit = true,
                     {}
                 ) {}
                 ExternalLinkItem(
@@ -143,6 +149,7 @@ private fun Preview() {
                     hasPassword = true,
                     expiring = false,
                     isExpired = true,
+                    canEdit = false,
                     {}
                 ) {}
             }

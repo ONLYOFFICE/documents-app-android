@@ -52,4 +52,17 @@ object RoomUtils {
 
     fun getAccessTitleOrOwner(share: Share): Int =
         if (share.isOwner) R.string.share_access_room_owner else getAccessTitle(share.intAccess)
+    fun getRoomInitials(title: String): String? {
+        return try {
+            val words = title.split(" ")
+            when (words.size) {
+                1 -> title[0].toString()
+                2 -> "${words[0][0]}${words[1][0]}"
+                else -> "${words[0][0]}${words[words.lastIndex][0]}"
+            }.uppercase()
+        } catch (_: IndexOutOfBoundsException) {
+            null
+        }
+    }
+
 }

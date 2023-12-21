@@ -29,7 +29,7 @@ class ShareAddItemViewHolder(
         with(binding) {
             if (item is ItemProperties && item.isSelected) {
                 shareAddItemAvatar.foreground =
-                    AppCompatResources.getDrawable(root.context, R.drawable.drawable_list_image_select_mask)
+                    AppCompatResources.getDrawable(root.context, R.drawable.drawable_list_image_select_foreground)
             } else {
                 shareAddItemAvatar.foreground = null
             }
