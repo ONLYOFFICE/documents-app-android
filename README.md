@@ -5,7 +5,7 @@
 
 ONLYOFFICE Documents is a free office application for Android devices that includes text editor, spreadsheet, presentation and PDF viewers allowing to work on your documents even on-the-go.
 
-Allow you to manage and edit documents stored both on ONLYOFFICE portals and various cloud services. Avalible at [Google Play](https://play.google.com/store/apps/details?id=com.onlyoffice.documents).
+Allow you to manage and edit documents stored both on ONLYOFFICE portals and various cloud services. Available at [Google Play](https://play.google.com/store/apps/details?id=com.onlyoffice.documents).
 
 ## Licensing
 ONLYOFFICE Documents for Android is released under AGPLv3 license. See the LICENSE file for more information.
