@@ -178,11 +178,12 @@ class RoomInfoFragment : BaseDialogFragment() {
                                         isInfo = false
                                     )
                                 },
-                                onSetUserAccess = { userId, access ->
+                                onSetUserAccess = { userId, access, ownerOrAdmin ->
                                     navController.navigate(
                                         RoomInfoScreens.UserAccess.name +
                                                 "?userId=$userId" +
-                                                "&access=$access"
+                                                "&access=$access" +
+                                                "&ownerOrAdmin=$ownerOrAdmin"
                                     )
                                 },
                                 onGeneralLinkCreate = viewModel::createGeneralLink,
@@ -230,10 +231,14 @@ class RoomInfoFragment : BaseDialogFragment() {
                             )
                         }
                         composable(
-                            route = "${RoomInfoScreens.UserAccess.name}?userId={userId}&access={access}",
+                            route = "${RoomInfoScreens.UserAccess.name}?" +
+                                    "userId={userId}&" +
+                                    "access={access}&" +
+                                    "ownerOrAdmin={ownerOrAdmin}",
                             arguments = listOf(
                                 navArgument("userId") { type = NavType.StringType },
-                                navArgument("access") { type = NavType.IntType }
+                                navArgument("access") { type = NavType.IntType },
+                                navArgument("ownerOrAdmin") { type = NavType.BoolType }
                             )
                         ) { backStackEntry ->
                             val userId = backStackEntry.arguments?.getString("userId").orEmpty()
@@ -242,7 +247,8 @@ class RoomInfoFragment : BaseDialogFragment() {
                                 navController = navController,
                                 roomId = roomId,
                                 userId = userId,
-                                currentAccess = backStackEntry.arguments?.getInt("access")
+                                currentAccess = backStackEntry.arguments?.getInt("access"),
+                                ownerOrAdmin = backStackEntry.arguments?.getBoolean("ownerOrAdmin") == true,
                             ) { newAccess ->
                                 viewModel.setUserAccess(roomId, userId, newAccess)
                             }
@@ -273,7 +279,7 @@ class RoomInfoFragment : BaseDialogFragment() {
         roomType: Int?,
         roomTitle: String?,
         portal: String?,
-        onSetUserAccess: (userId: String, access: Int) -> Unit,
+        onSetUserAccess: (userId: String, access: Int, ownerOrAdmin: Boolean) -> Unit,
         onAddUsers: () -> Unit,
         onBackClick: () -> Unit,
         onLinkClick: (ExternalLink) -> Unit,
@@ -428,7 +434,7 @@ class RoomInfoFragment : BaseDialogFragment() {
     }
 
     @Composable
-    fun ShareUsersList(title: Int, portal: String?, shareList: List<Share>?, onClick: (String, Int) -> Unit) {
+    fun ShareUsersList(title: Int, portal: String?, shareList: List<Share>?, onClick: (String, Int, Boolean) -> Unit) {
         var visible by remember { mutableStateOf(true) }
 
         if (!shareList.isNullOrEmpty()) {
@@ -458,7 +464,11 @@ class RoomInfoFragment : BaseDialogFragment() {
                     Column {
                         shareList.forEach { share ->
                             ShareUserItem(share = share, portal = portal) {
-                                onClick.invoke(share.sharedTo.id, share.intAccess)
+                                onClick.invoke(
+                                    share.sharedTo.id,
+                                    share.intAccess,
+                                    share.sharedTo.isOwner || share.sharedTo.isAdmin
+                                )
                             }
                         }
                     }
@@ -558,7 +568,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                 ),
                 onBackClick = {},
                 onAddUsers = {},
-                onSetUserAccess = { _, _ -> },
+                onSetUserAccess = { _, _, _-> },
                 onGeneralLinkCreate = {},
                 onAdditionalLinkCreate = {},
                 onLinkClick = {}

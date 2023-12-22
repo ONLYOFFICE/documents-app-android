@@ -22,6 +22,7 @@ fun UserAccessScreen(
     roomId: String,
     userId: String,
     currentAccess: Int?,
+    ownerOrAdmin: Boolean,
     onSetUserAccess: (newAccess: Int) -> Unit,
 ) {
 
@@ -34,13 +35,7 @@ fun UserAccessScreen(
         }
     ) {
         Column {
-            listOf(
-                ApiContract.ShareCode.ROOM_ADMIN,
-                ApiContract.ShareCode.POWER_USER,
-                ApiContract.ShareCode.EDITOR,
-                ApiContract.ShareCode.READ,
-                ApiContract.ShareCode.NONE
-            ).forEach { access ->
+            getAccessList(ownerOrAdmin).forEach { access ->
                 AppSelectItem(
                     title = RoomUtils.getAccessTitle(access),
                     selected = currentAccess == access,
@@ -55,6 +50,23 @@ fun UserAccessScreen(
     }
 }
 
+private fun getAccessList(ownerOrAdmin: Boolean) = when {
+    ownerOrAdmin -> listOf(
+        ApiContract.ShareCode.ROOM_ADMIN,
+        ApiContract.ShareCode.NONE
+    )
+    else -> listOf(
+        ApiContract.ShareCode.ROOM_ADMIN,
+        ApiContract.ShareCode.POWER_USER,
+        ApiContract.ShareCode.EDITOR,
+        ApiContract.ShareCode.FILL_FORMS,
+        ApiContract.ShareCode.REVIEW,
+        ApiContract.ShareCode.COMMENT,
+        ApiContract.ShareCode.READ,
+        ApiContract.ShareCode.NONE
+    )
+}
+
 @Preview
 @Composable
 private fun Preview() {
@@ -64,6 +76,7 @@ private fun Preview() {
             roomId = "",
             userId = "",
             currentAccess = 2,
+            ownerOrAdmin = false,
             onSetUserAccess = {}
         )
     }
