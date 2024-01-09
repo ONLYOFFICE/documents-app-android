@@ -237,7 +237,7 @@ private fun MainScreen(
                     state = title,
                     hint = stringResource(id = lib.toolkit.base.R.string.text_hint_required)
                 )
-                AppHeaderItem(title = lib.editors.gbase.R.string.context_protection_title)
+                AppHeaderItem(title = R.string.context_protection_title)
                 AppSwitchItem(
                     title = R.string.rooms_info_password_access,
                     checked = password.value != null,
