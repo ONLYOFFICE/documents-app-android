@@ -6,7 +6,6 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ListExplorerFolderBinding
-import app.editors.manager.managers.utils.ManagerUiUtils.setFolderIcon
 import app.editors.manager.managers.utils.StringUtils
 import app.editors.manager.ui.adapters.ExplorerAdapter
 
@@ -41,18 +40,13 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
                 isSectionMy = adapter.isSectionMy
             )
 
-            listExplorerFolderContext.isVisible = true
+            // Show/hide context button
+            listExplorerFolderContext.isVisible = !adapter.isSelectMode && !adapter.isFoldersMode
 
             listExplorerRoomPin.isVisible = folder.pinned
             viewIconSelectableLayout.setItem(folder, adapter.isRoot)
             viewIconSelectableLayout.selectMode = adapter.isSelectMode
             viewIconSelectableLayout.itemSelected = folder.isSelected
-
-            // Show/hide context button
-            if (adapter.isSelectMode || adapter.isFoldersMode) {
-                listExplorerFolderContext.isVisible = false
-            }
-
         }
     }
 
