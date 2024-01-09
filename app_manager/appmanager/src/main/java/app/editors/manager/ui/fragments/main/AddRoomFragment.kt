@@ -2,6 +2,7 @@
 
 package app.editors.manager.ui.fragments.main
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
@@ -468,6 +469,12 @@ private fun ChooseImageBottomView(
             }
         })
 
+    val cameraPermission = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            photoLauncher.launch(photo)
+        }
+    }
+
     val galleryLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(), onResult = {
             scope.launch {
@@ -500,8 +507,8 @@ private fun ChooseImageBottomView(
         ) {
             val tempPhoto =
                 FileUtils.createFile(File(context.cacheDir.absolutePath), TimeUtils.fileTimeStamp, "png")
-            photo = ContentResolverUtils.getFileUri(context, tempPhoto!!).also { uri ->
-                photoLauncher.launch(uri)
+            photo = ContentResolverUtils.getFileUri(context, tempPhoto!!).also {
+                cameraPermission.launch(Manifest.permission.CAMERA)
             }
         }
         AppArrowItem(
