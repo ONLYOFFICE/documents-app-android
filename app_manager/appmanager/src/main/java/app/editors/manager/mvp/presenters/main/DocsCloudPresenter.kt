@@ -75,13 +75,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         roomProvider = context.roomProvider
         fileProvider = context.cloudFileProvider.apply {
             roomCallback = object : CloudFileProvider.RoomCallback {
+
                 override fun isRoomRoot(id: String?): Boolean {
-                    return isRoom && modelExplorerStack.rootId == id
+                    val parts = modelExplorerStack.last()?.pathParts.orEmpty()
+                    return if (parts.isNotEmpty()) isRoom && parts[0].id == id else false
                 }
 
-                override fun isArchive(): Boolean {
-                    return currentSectionType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
-                }
+                override fun isArchive(): Boolean = ApiContract.SectionType.isArchive(currentSectionType)
             }
         }
     }
@@ -378,9 +378,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun getBackStack(): Boolean {
         val backStackResult = super.getBackStack()
         if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type.filterVal) {
-            refresh()
-        } else if (isRoom && isRoot) {
-            resetFilters()
             refresh()
         }
         return backStackResult

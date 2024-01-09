@@ -810,22 +810,25 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     protected open fun Map<String, String>.putFilters(): Map<String, String> {
-        val filter = preferenceTool.filter
         return plus(
             mutableMapOf<String, String>().apply {
-                put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
-                if (filter.type != FilterType.None || isFilteringMode && filteringValue.isNotEmpty())
-                    put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
-                if (App.getApp().accountOnline?.isPersonal() == false) {
-                    if (ApiContract.SectionType.isRoom(currentSectionType)) {
-                        put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filter.author.id)
-                    } else {
+                val filter = preferenceTool.filter
+                if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot) {
+                    if (filter.roomType != RoomFilterType.None) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
+                    }
+                    put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filter.author.id)
+                } else {
+                    put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
+                    if (filter.type != FilterType.None || isFilteringMode && filteringValue.isNotEmpty()) {
+                        put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
+                    }
+                    if (App.getApp().accountOnline?.isPersonal() == false) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)
                     }
                 }
-                if (filter.roomType != RoomFilterType.None)
-                    put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
-            })
+            }
+        )
     }
 
     private fun cancelGetRequests() {

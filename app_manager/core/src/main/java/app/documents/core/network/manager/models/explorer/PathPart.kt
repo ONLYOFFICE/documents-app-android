@@ -3,14 +3,14 @@ package app.documents.core.network.manager.models.explorer
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class PathParts {
+data class PathPart(
 
     @SerializedName("id")
     @Expose
-    var id = ""
+    val id: String = "",
 
     @SerializedName("title")
     @Expose
-    var title = ""
+    val title: String = ""
 
-}
+)
