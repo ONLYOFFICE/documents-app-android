@@ -2,6 +2,7 @@ package app.documents.core.network.manager.models.explorer
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class PathPart(
 
@@ -12,5 +13,4 @@ data class PathPart(
     @SerializedName("title")
     @Expose
     val title: String = ""
-
-)
+): Serializable
