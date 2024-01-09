@@ -97,7 +97,6 @@ import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.ChipData
 import lib.compose.ui.views.RoomChip
-import lib.editors.gbase.ui.views.compose.link.clickable
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FragmentUtils
@@ -352,7 +351,7 @@ private fun MainScreen(
                             .align(Alignment.CenterVertically)
                             .clip(CircleShape)
                             .size(40.dp)
-                            .clickable(noRipple = false, onClick = {
+                            .clickable(onClick = {
                                 keyboardController.clearFocus()
                                 scope.launch {
                                     modalBottomSheetState.show()
@@ -457,6 +456,8 @@ private fun ChooseImageBottomView(
     val context = LocalContext.current
     var photo: Uri? = null
 
+    val isDialogOpen = remember { mutableStateOf(false) }
+
     val photoLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicture(), onResult = { success ->
             if (success) {
@@ -505,7 +506,7 @@ private fun ChooseImageBottomView(
         }
         AppArrowItem(
             title = stringResource(id = R.string.list_action_image_from_library),
-            startIcon = lib.editors.gbase.R.drawable.ic_image,
+            startIcon = lib.toolkit.base.R.drawable.ic_image,
             startIconTint = MaterialTheme.colors.onSurface,
             arrowVisible = false,
             dividerVisible = false
