@@ -2,10 +2,9 @@ package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
 import android.os.Build
-import androidx.annotation.RequiresApi
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.account.copyWithToken
-import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -21,7 +20,6 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -216,7 +214,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     }
 
     fun checkPassCode(isCode: Boolean? = null) {
-        if (preferenceTool.isPasscodeLockEnable && isCode == null) {
+        if (!preferenceTool.passcode.isNullOrEmpty() && isCode == null) {
             viewState.onCodeActivity()
         }
     }

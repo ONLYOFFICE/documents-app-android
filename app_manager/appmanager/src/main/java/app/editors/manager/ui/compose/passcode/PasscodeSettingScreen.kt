@@ -22,7 +22,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import app.editors.manager.managers.utils.BiometricsUtils
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDivider
@@ -33,10 +32,11 @@ import lib.toolkit.base.R
 
 @Composable
 fun PasscodeSettingScreen(
-    enabledPasscode: Boolean,
-    enabledFingerprint: Boolean,
-    navController: NavController,
-    onFingerPrintEnable: (Boolean) -> Unit,
+    passcodeEnabled: Boolean,
+    fingerprintEnabled: Boolean,
+    onPasscodeEnable: (Boolean) -> Unit,
+    onFingerprintEnable: (Boolean) -> Unit,
+    onChangePassword: () -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(topBar = {
@@ -57,37 +57,15 @@ fun PasscodeSettingScreen(
             ) {
                 AppSwitchItem(
                     title = app.editors.manager.R.string.app_Settings_passcode_enable,
-                    checked = enabledPasscode,
-                    dividerVisible = enabledPasscode,
-                    onCheck = { state ->
-                        if (state) {
-                            navController.navigate(PasscodeScreens.SetPasscode.screen) {
-                                navController.graph.startDestinationRoute?.let {
-                                    popUpTo(it) {
-                                        saveState = false
-                                    }
-                                }
-                                launchSingleTop = true
-                            }
-                        } else {
-                            navController.navigate(PasscodeScreens.DisablePasscode.screen) {
-                                navController.graph.startDestinationRoute?.let {
-                                    popUpTo(it) {
-                                        saveState = false
-                                    }
-                                }
-                                launchSingleTop = true
-                            }
-                        }
-                    }
+                    checked = passcodeEnabled,
+                    dividerVisible = passcodeEnabled,
+                    onCheck = onPasscodeEnable
                 )
-                if (enabledPasscode) {
+                if (passcodeEnabled) {
                     Row(
                         modifier = Modifier
                             .height(dimensionResource(id = R.dimen.item_one_line_height))
-                            .clickable(onClick = {
-                                navController.navigate(PasscodeScreens.ChangePasscode.screen)
-                            })
+                            .clickable(onClick = onChangePassword)
                             .padding(horizontal = 16.dp)
                             .fillMaxSize()
                     ) {
@@ -117,13 +95,13 @@ fun PasscodeSettingScreen(
                     style = MaterialTheme.typography.body2,
                     color = MaterialTheme.colors.colorTextSecondary
                 )
-                if (enabledPasscode && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
+                if (passcodeEnabled && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
                     VerticalSpacer(R.dimen.default_margin_large)
                     AppDivider()
                     AppSwitchItem(
                         title = app.editors.manager.R.string.app_settings_passcode_fingerprint,
-                        checked = enabledFingerprint,
-                        onCheck = onFingerPrintEnable
+                        checked = fingerprintEnabled,
+                        onCheck = onFingerprintEnable
                     )
                 }
             }

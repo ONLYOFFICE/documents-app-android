@@ -1,9 +1,9 @@
 package app.editors.manager.ui.compose.passcode
 
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +27,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +47,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.editors.manager.R
+import app.editors.manager.managers.utils.KeyStoreUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import lib.compose.ui.theme.ManagerTheme
@@ -55,56 +56,134 @@ import lib.compose.ui.theme.Previews
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.views.VerticalSpacer
-import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.UiUtils
+
+
+private const val MAX_PASSCODE_LENGTH = 4
 
 data class PasscodeOperationState(
     val mode: PasscodeOperationMode,
-    val fingerprintEnabled: Boolean
+    val fingerprintEnabled: Boolean = false
 )
 
 sealed class PasscodeOperationMode(
     val title: Int,
     val subtitle: Int?,
-    val error: Int?,
-    val confirmPassword: String?
+    val error: Int?
 ) {
-    data class UnlockApp(private val password: String) : PasscodeOperationMode(
-        title = app.editors.manager.R.string.app_settings_passscode_enter_full_title,
-        subtitle = null,
-        error = app.editors.manager.R.string.app_settings_passcode_change_disable_error,
-        confirmPassword = password
-    )
 
-    data class SetPasscode(private val password: String) : PasscodeOperationMode(
-        title = app.editors.manager.R.string.app_settings_passcode_enter_title,
-        subtitle = app.editors.manager.R.string.app_settings_passcode_enter_subtitle,
-        error = null,
-        confirmPassword = password
+    data object UnlockApp : PasscodeOperationMode(
+        title = R.string.app_settings_passscode_enter_full_title,
+        subtitle = null,
+        error = R.string.app_settings_passcode_change_disable_error
     )
 
     data object ChangePasscode : PasscodeOperationMode(
-        title = app.editors.manager.R.string.app_settings_passcode_confirm_title,
-        subtitle = app.editors.manager.R.string.app_settings_passcode_confirm_subtitle,
-        error = app.editors.manager.R.string.app_settings_passcode_confirm_error,
-        confirmPassword = null
+        title = R.string.app_settings_passcode_change_disable_title,
+        subtitle = null,
+        error = R.string.app_settings_passcode_change_disable_error
     )
 
+    data object SetPasscode : PasscodeOperationMode(
+        title = R.string.app_settings_passcode_enter_title,
+        subtitle = R.string.app_settings_passcode_enter_subtitle,
+        error = null
+    )
 
+    data object ResetPasscode : PasscodeOperationMode(
+        title = R.string.app_settings_passcode_change_disable_title,
+        subtitle = null,
+        error = R.string.app_settings_passcode_change_disable_error
+    )
+
+    data object Confirm : PasscodeOperationMode(
+        title = R.string.app_settings_passcode_confirm_title,
+        subtitle = R.string.app_settings_passcode_confirm_subtitle,
+        error = R.string.app_settings_passcode_confirm_error
+    )
 }
-
-private const val MAX_PASSCODE_LENGTH = 4
 
 @Composable
 fun PasscodeOperationScreen(
-    state: PasscodeOperationState,
-    onFingerprintClick: () -> Unit,
-    onConfirmSuccess: (PasscodeOperationMode) -> Unit
+    initialState: PasscodeOperationState,
+    encryptedPasscode: String? = null,
+    onFingerprintClick: () -> Unit = {},
+    onConfirmSuccess: (PasscodeOperationMode, String) -> Unit,
 ) {
-    val error = remember { mutableStateOf(false) }
-    val enteredCode = remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
+    var state by remember { mutableStateOf(initialState) }
+    val enteredCode = remember { mutableStateOf("") }
+    var tmpCode by remember { mutableStateOf("") }
+    val error = remember { mutableStateOf(false) }
     var buttonPressLocking by remember { mutableStateOf(false) }
+
+    fun checkPasscode(enterCode: String, confirmingCode: String?, onFailure: () -> Unit = {}, onSuccess: () -> Unit) {
+        coroutineScope.launch {
+            if (enterCode != confirmingCode) {
+                error.value = true
+                buttonPressLocking = true
+                delay(2000L)
+                buttonPressLocking = false
+                error.value = false
+                enteredCode.value = ""
+                onFailure.invoke()
+            } else {
+                onSuccess.invoke()
+            }
+        }
+    }
+
+    fun onEnterFinish() {
+        when (state.mode) {
+            PasscodeOperationMode.ChangePasscode -> {
+                val savedPasscode = encryptedPasscode?.let(KeyStoreUtils::decryptData)
+                checkPasscode(
+                    enterCode = enteredCode.value,
+                    confirmingCode = savedPasscode,
+                    onSuccess = {
+                        enteredCode.value = ""
+                        state = state.copy(mode = PasscodeOperationMode.SetPasscode)
+                    }
+                )
+            }
+            PasscodeOperationMode.SetPasscode -> {
+                tmpCode = enteredCode.value
+                enteredCode.value = ""
+                state = state.copy(mode = PasscodeOperationMode.Confirm)
+            }
+            PasscodeOperationMode.UnlockApp, PasscodeOperationMode.ResetPasscode -> {
+                val savedPasscode = encryptedPasscode?.let(KeyStoreUtils::decryptData)
+                checkPasscode(
+                    enterCode = enteredCode.value,
+                    confirmingCode = savedPasscode,
+                    onSuccess = { onConfirmSuccess.invoke(initialState.mode, enteredCode.value) }
+                )
+            }
+            PasscodeOperationMode.Confirm -> {
+                checkPasscode(
+                    enterCode = enteredCode.value,
+                    confirmingCode = tmpCode,
+                    onFailure = {
+                        when (initialState.mode) {
+                            is PasscodeOperationMode.ChangePasscode -> {
+                                tmpCode = ""
+                                enteredCode.value = ""
+                                state = state.copy(mode = PasscodeOperationMode.SetPasscode)
+                            }
+                            is PasscodeOperationMode.SetPasscode -> {
+                                tmpCode = ""
+                                enteredCode.value = ""
+                                state = state.copy(mode = PasscodeOperationMode.SetPasscode)
+
+                            }
+                            else -> {}
+                        }
+                    },
+                    onSuccess = { onConfirmSuccess.invoke(initialState.mode, enteredCode.value) }
+                )
+            }
+        }
+    }
 
     fun onButtonPress(number: Int) {
         coroutineScope.launch {
@@ -121,14 +200,7 @@ fun PasscodeOperationScreen(
             }
 
             if (enteredCode.value.length == MAX_PASSCODE_LENGTH) {
-                if (state.mode.confirmPassword != null) {
-                    enteredCode.value = ""
-                    error.value = state.mode.confirmPassword != enteredCode.value
-                    buttonPressLocking = true
-                    delay(2000L)
-                    buttonPressLocking = false
-                    error.value = false
-                }
+                onEnterFinish()
             }
         }
     }
@@ -154,34 +226,37 @@ fun PasscodeOperationScreen(
                 textAlign = TextAlign.Center
             )
 
-            VerticalSpacer(height = R.dimen.default_margin_large)
+            VerticalSpacer(height = lib.toolkit.base.R.dimen.default_margin_large)
 
-            if (!error.value && state.mode.subtitle != null) {
+            AnimatedContent(
+                targetState = error.value,
+                transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+                label = ""
+            ) { error ->
                 Text(
-                    text = stringResource(id = state.mode.subtitle),
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.colorTextSecondary,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            AnimatedContent(targetState = error.value, label = "") {
-                Text(
-                    modifier = Modifier.alpha(if (it) 1f else 0f),
+                    modifier = Modifier.alpha(if (error) 1f else 0f),
                     text = state.mode.error?.let { stringResource(id = it) }.orEmpty(),
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.error,
                     textAlign = TextAlign.Center
                 )
+                if (!error && state.mode.subtitle != null) {
+                    Text(
+                        text = stringResource(id = state.mode.subtitle!!),
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.colorTextSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
-            VerticalSpacer(height = R.dimen.default_margin_xxlarge)
+            VerticalSpacer(height = lib.toolkit.base.R.dimen.default_margin_xxlarge)
 
             IndicatorsRowBlock(
                 errorState = error,
                 enteredCodeState = enteredCode
             )
 
-            VerticalSpacer(height = R.dimen.default_margin_xxxlarge)
+            VerticalSpacer(height = lib.toolkit.base.R.dimen.default_margin_xxxlarge)
             LazyVerticalGrid(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 columns = GridCells.Fixed(3),
@@ -203,16 +278,18 @@ fun PasscodeOperationScreen(
                     }
                 }
                 item {
-                    KeyboardButton(
-                        visible = true,
-                        onClick = onFingerprintClick
-                    ) {
-                        Icon(
-                            painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
-                            contentDescription = "fingerprint_icon",
-                            tint = MaterialTheme.colors.primary,
-                            modifier = Modifier.size(48.dp)
-                        )
+                    if (state.fingerprintEnabled) {
+                        KeyboardButton(
+                            visible = true,
+                            onClick = onFingerprintClick
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_fingerprint),
+                                contentDescription = "fingerprint_icon",
+                                tint = MaterialTheme.colors.primary,
+                                modifier = Modifier.size(48.dp)
+                            )
+                        }
                     }
                 }
                 item {
@@ -237,7 +314,7 @@ fun PasscodeOperationScreen(
                         }
                     ) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(id = app.editors.manager.R.drawable.ic_backspace),
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_backspace),
                             contentDescription = "backspace_icon",
                             tint = MaterialTheme.colors.colorTextSecondary,
                             modifier = Modifier.size(48.dp)
@@ -256,27 +333,16 @@ private fun IndicatorsRowBlock(enteredCodeState: MutableState<String>, errorStat
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         items(MAX_PASSCODE_LENGTH) {
-            val initialColor = MaterialTheme.colors.colorTextTertiary
-            val enteredColor = MaterialTheme.colors.primary
-            val errorColor = MaterialTheme.colors.error
-            val colorAnimation = remember { Animatable(initialColor) }
-
-            LaunchedEffect(enteredCodeState.value, errorState.value) {
-                colorAnimation.animateTo(
-                    initialVelocity = initialColor,
-                    targetValue = when {
-                        errorState.value -> errorColor
-                        it < enteredCodeState.value.length -> enteredColor
-                        else -> initialColor
-                    },
-                    animationSpec = tween(easing = LinearEasing)
-                )
+            val dotColor = when {
+                errorState.value -> MaterialTheme.colors.error
+                it < enteredCodeState.value.length -> MaterialTheme.colors.primary
+                else -> MaterialTheme.colors.colorTextTertiary
             }
 
             Icon(
-                imageVector = ImageVector.vectorResource(id = app.editors.manager.R.drawable.ic_passcode_dot),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_passcode_dot),
                 contentDescription = "filled_dot_$it",
-                tint = colorAnimation.value
+                tint = dotColor
             )
         }
     }
@@ -311,12 +377,10 @@ private fun Preview() {
         Scaffold {
             Surface(modifier = Modifier.padding(it)) {
                 PasscodeOperationScreen(
-                    state = PasscodeOperationState(
-                        PasscodeOperationMode.UnlockApp("1234"),
-                        false
-                    ),
+                    encryptedPasscode = null,
+                    initialState = PasscodeOperationState(PasscodeOperationMode.ChangePasscode, false),
                     onFingerprintClick = {},
-                    onConfirmSuccess = {}
+                    onConfirmSuccess = { _, _ -> }
                 )
             }
         }

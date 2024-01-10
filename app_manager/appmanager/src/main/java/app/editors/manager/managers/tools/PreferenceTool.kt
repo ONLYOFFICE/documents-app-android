@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.mvp.models.filter.Filter
-import java.util.*
+import java.util.TreeSet
 import javax.inject.Inject
 
 class PreferenceTool @Inject constructor(val context: Context) {
@@ -214,7 +214,7 @@ class PreferenceTool @Inject constructor(val context: Context) {
         }
 
     var passcode: String?
-        get() = sharedPreferences.getString(KEY_PASSCODE, "")
+        get() = sharedPreferences.getString(KEY_PASSCODE, null)
         set(passcode) {
             sharedPreferences.edit().putString(KEY_PASSCODE, passcode).apply()
         }

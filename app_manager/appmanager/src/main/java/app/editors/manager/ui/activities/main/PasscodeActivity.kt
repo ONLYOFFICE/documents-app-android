@@ -4,10 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.utils.BiometricsUtils
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.compose.passcode.PasscodeMainScreen
+import app.editors.manager.ui.compose.passcode.PasscodeOperationMode
 import lib.compose.ui.theme.ManagerTheme
 import javax.inject.Inject
 
@@ -39,15 +42,34 @@ class PasscodeActivity : BaseAppActivity() {
             ManagerTheme {
                 PasscodeMainScreen(
                     preferenceTool = preferencesTool,
-                    isEnterPasscode = intent.getBooleanExtra(ENTER_PASSCODE_KEY, false),
-                    data = intent.extras,
-                    backPressed = ::finish
+                    enterPasscodeKey = intent.getBooleanExtra(ENTER_PASSCODE_KEY, false),
+                    onSuccess = { mode ->
+                        if (mode is PasscodeOperationMode.UnlockApp) {
+                            MainActivity.show(this, true)
+                        }
+                        finish()
+                    },
+                    onFingerprintClick = {
+                        BiometricsUtils.biometricAuthenticate(
+                            promtInfo = BiometricsUtils.initBiometricDialog(
+                                title = getString(R.string.app_settings_passcode_fingerprint_title),
+                                negative = getString(lib.editors.gbase.R.string.common_cancel)
+                            ),
+                            fragment = this,
+                            onSuccess = {
+                                MainActivity.show(this, true)
+                                finish()
+                            },
+                            onError = ::onBiometricError
+                        )
+                    },
+                    onBackClick = ::finish
                 )
             }
         }
     }
 
-    fun onBiometricError(errorMessage: String) {
+    private fun onBiometricError(errorMessage: String) {
         showSnackBar(errorMessage)
     }
 }
