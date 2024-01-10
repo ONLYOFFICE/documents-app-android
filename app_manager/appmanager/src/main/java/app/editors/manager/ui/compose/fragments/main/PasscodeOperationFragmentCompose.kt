@@ -1,241 +1,324 @@
 package app.editors.manager.ui.compose.fragments.main
 
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.editors.manager.managers.utils.BiometricsUtils
-import app.editors.manager.ui.activities.main.PasscodeActivity
-import app.editors.manager.viewModels.main.PasscodeLockState
-import app.editors.manager.viewModels.main.SetPasscodeViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.Previews
+import lib.compose.ui.theme.colorTextSecondary
+import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.UiUtils
 
+data class PasscodeOperationState(
+    val mode: PasscodeOperationMode,
+    val fingerprintEnabled: Boolean
+)
 
-sealed class KeyboardLastRow {
-    object NumberItem : KeyboardLastRow()
-    object ImageItem : KeyboardLastRow()
-    object FingerprintImage : KeyboardLastRow()
+sealed class PasscodeOperationMode(
+    val title: Int,
+    val subtitle: Int?,
+    val error: Int?,
+    val confirmPassword: String?
+) {
+    data class UnlockApp(private val password: String) : PasscodeOperationMode(
+        title = app.editors.manager.R.string.app_settings_passscode_enter_full_title,
+        subtitle = null,
+        error = app.editors.manager.R.string.app_settings_passcode_change_disable_error,
+        confirmPassword = password
+    )
+
+    data class SetPasscode(private val password: String) : PasscodeOperationMode(
+        title = app.editors.manager.R.string.app_settings_passcode_enter_title,
+        subtitle = app.editors.manager.R.string.app_settings_passcode_enter_subtitle,
+        error = null,
+        confirmPassword = password
+    )
+
+    data object ChangePasscode : PasscodeOperationMode(
+        title = app.editors.manager.R.string.app_settings_passcode_confirm_title,
+        subtitle = app.editors.manager.R.string.app_settings_passcode_confirm_subtitle,
+        error = app.editors.manager.R.string.app_settings_passcode_confirm_error,
+        confirmPassword = null
+    )
+
+
 }
 
 private const val MAX_PASSCODE_LENGTH = 4
-private const val KEYBOARD_COLUMN_VALUE = 3
 
 @Composable
-fun PasscodeOperation(
-    viewModel: SetPasscodeViewModel,
-    title: String,
-    subtitle: String = "",
-    isEnterCodeFragment: Boolean = false,
-    isConfirmCode: Boolean = true,
-    onEnterCode: (Int) -> Unit,
-    onState: ((PasscodeLockState) -> Unit)? = null,
+fun PasscodeOperationScreen(
+    state: PasscodeOperationState,
+    onFingerprintClick: () -> Unit,
+    onConfirmSuccess: (PasscodeOperationMode) -> Unit
 ) {
-    val keyboard = if (!UiUtils.isRTL()) {
-        (1..9).chunked(KEYBOARD_COLUMN_VALUE)
-    } else {
-        (9 downTo 1).chunked(KEYBOARD_COLUMN_VALUE).reversed()
-    }
+    val error = remember { mutableStateOf(false) }
+    val enteredCode = remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    var buttonPressLocking by remember { mutableStateOf(false) }
 
-    val lastRow: List<KeyboardLastRow> = listOf(
-        KeyboardLastRow.FingerprintImage,
-        KeyboardLastRow.NumberItem,
-        KeyboardLastRow.ImageItem
-    )
+    fun onButtonPress(number: Int) {
+        coroutineScope.launch {
+            if (buttonPressLocking) {
+                return@launch
+            }
 
-    val codeCount by viewModel.codeCount.observeAsState(-1)
-    val isError by viewModel.error.observeAsState(initial = false)
-    val passcodeState by viewModel.passcodeLockState.observeAsState()
-    val fingerprintState by viewModel.isFingerprintEnable.observeAsState()
+            if (error.value) {
+                error.value = false
+            }
 
-    passcodeState?.let { onState?.invoke(it) }
+            if (enteredCode.value.length < MAX_PASSCODE_LENGTH) {
+                enteredCode.value += "$number"
+            }
 
-    Column(
-        modifier = Modifier
-            .padding(
-                start = dimensionResource(id = R.dimen.screen_left_right_padding),
-                end = dimensionResource(id = R.dimen.screen_left_right_padding),
-                top = if (UiUtils.isTablet(LocalContext.current)) 100.dp else 170.dp
-            )
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = title, style = MaterialTheme.typography.h6, color = MaterialTheme.colors.onBackground, textAlign = TextAlign.Center)
-        VerticalSpacer(height = R.dimen.default_margin_large)
-        if (!isError) {
-            Text(text = subtitle, style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onBackground, textAlign = TextAlign.Center)
-        } else {
-            Text(
-                text = (passcodeState as PasscodeLockState.Error).errorMessage,
-                fontSize = 14.sp,
-                color = MaterialTheme.colors.error,
-                textAlign = TextAlign.Center
-            )
-            viewModel.resetCodeCount()
-        }
-
-        VerticalSpacer(height = R.dimen.default_margin_xxlarge)
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            items(MAX_PASSCODE_LENGTH) {
-                if (!isError) {
-                    if (it <= codeCount) {
-                        Icon(
-                            painter = painterResource(id = app.editors.manager.R.drawable.passcode_filled_dot),
-                            contentDescription = "filled_dot",
-                            tint = MaterialTheme.colors.primary
-                        )
-                    } else {
-                        Icon(
-                            painter = painterResource(id = app.editors.manager.R.drawable.passcode_normal_dot),
-                            contentDescription = "normal_dot",
-                            tint = MaterialTheme.colors.onBackground
-                        )
-                    }
-                } else {
-                    Icon(
-                        painter = painterResource(id = app.editors.manager.R.drawable.passcode_error_dot),
-                        contentDescription = "error_dot",
-                        tint = MaterialTheme.colors.error
-                    )
+            if (enteredCode.value.length == MAX_PASSCODE_LENGTH) {
+                if (state.mode.confirmPassword != null) {
+                    enteredCode.value = ""
+                    error.value = state.mode.confirmPassword != enteredCode.value
+                    buttonPressLocking = true
+                    delay(2000L)
+                    buttonPressLocking = false
+                    error.value = false
                 }
             }
         }
-        VerticalSpacer(height = R.dimen.passcode_keyboard_margin)
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp),
+    }
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .background(MaterialTheme.colors.background)
+            .fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier.run {
+                if (UiUtils.isTablet(LocalContext.current))
+                    width(320.dp) else
+                    fillMaxWidth()
+            },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(keyboard) { rowItem ->
-                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                    for (number in rowItem) {
-                        Button(
-                            onClick = {
-                                onEnterCode.invoke(number)
-                            },
-                            colors = ButtonDefaults.textButtonColors(
-                                backgroundColor = Color.Transparent
-                            ),
-                            enabled = !isError,
-                            elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-                            modifier = Modifier
-                                .padding(bottom = dimensionResource(id = R.dimen.default_margin_xlarge))
-                                .width(68.dp)
-                                .height(58.dp)
-                        ) {
-                            Text(
-                                text = "$number",
-                                fontSize = 20.sp,
-                                color = MaterialTheme.colors.onBackground
-                            )
-                        }
-                    }
+            Text(
+                text = stringResource(id = state.mode.title),
+                style = MaterialTheme.typography.h6,
+                color = MaterialTheme.colors.onSurface,
+                textAlign = TextAlign.Center
+            )
 
-                }
+            VerticalSpacer(height = R.dimen.default_margin_large)
+
+            if (!error.value && state.mode.subtitle != null) {
+                Text(
+                    text = stringResource(id = state.mode.subtitle),
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.colorTextSecondary,
+                    textAlign = TextAlign.Center
+                )
             }
-        }
 
+            AnimatedContent(targetState = error.value, label = "") {
+                Text(
+                    modifier = Modifier.alpha(if (it) 1f else 0f),
+                    text = state.mode.error?.let { stringResource(id = it) }.orEmpty(),
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.error,
+                    textAlign = TextAlign.Center
+                )
+            }
+            VerticalSpacer(height = R.dimen.default_margin_xxlarge)
 
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp), horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            items(lastRow) { item ->
-                when (item) {
-                    KeyboardLastRow.FingerprintImage -> {
-                        if (fingerprintState == true && isEnterCodeFragment && BiometricsUtils.isFingerprintsExist(LocalContext.current as PasscodeActivity)) {
-                            IconButton(onClick = { viewModel.openBiometricDialog() }, enabled = !isError) {
-                                Icon(
-                                    painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
-                                    contentDescription = "fingerprint_icon",
-                                    tint = MaterialTheme.colors.primary,
-                                    modifier = Modifier
-                                        .width(68.dp)
-                                        .height(58.dp)
-                                )
-                            }
-                        }
+            IndicatorsRowBlock(
+                errorState = error,
+                enteredCodeState = enteredCode
+            )
+
+            VerticalSpacer(height = R.dimen.default_margin_xxxlarge)
+            LazyVerticalGrid(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                columns = GridCells.Fixed(3),
+                userScrollEnabled = false,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                items(IntRange(1, 9).toList()) { number ->
+                    KeyboardButton(
+                        visible = true,
+                        onClick = { onButtonPress(number) }
+                    ) {
+                        Text(
+                            text = "$number",
+                            fontWeight = FontWeight.W400,
+                            fontSize = 34.sp,
+                            color = MaterialTheme.colors.onBackground
+                        )
                     }
-                    KeyboardLastRow.ImageItem -> {
-                        IconButton(
-                            onClick = {
-                                if (isConfirmCode) viewModel.confirmCodeBackSpace() else viewModel.codeBackspace()
-                            },
-                            enabled = !isError,
-                        ) {
-                            Icon(
-                                painter = painterResource(id = app.editors.manager.R.drawable.ic_backspace),
-                                contentDescription = "backspace_icon",
-                                tint = MaterialTheme.colors.onBackground,
-                                modifier = Modifier
-                                    .width(68.dp)
-                                    .height(58.dp)
-
-                            )
-                        }
+                }
+                item {
+                    KeyboardButton(
+                        visible = true,
+                        onClick = onFingerprintClick
+                    ) {
+                        Icon(
+                            painter = painterResource(id = app.editors.manager.R.drawable.ic_fingerprint),
+                            contentDescription = "fingerprint_icon",
+                            tint = MaterialTheme.colors.primary,
+                            modifier = Modifier.size(48.dp)
+                        )
                     }
-                    KeyboardLastRow.NumberItem -> {
-                        Button(
-                            onClick = {
-                                onEnterCode.invoke(0)
-                            },
-                            enabled = !isError,
-                            colors = ButtonDefaults.textButtonColors(
-                                backgroundColor = Color.Transparent
-                            ),
-                            elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-                            modifier = Modifier
-                                .padding(
-                                    bottom = dimensionResource(id = R.dimen.default_margin_xlarge),
-                                    start = if (fingerprintState == false || !isEnterCodeFragment) 68.dp else 0.dp
-                                )
-                                .width(68.dp)
-                                .height(58.dp)
-                        ) {
-                            Text(
-                                text = "0",
-                                fontSize = 20.sp,
-                                color = MaterialTheme.colors.onBackground
-                            )
+                }
+                item {
+                    KeyboardButton(
+                        visible = true,
+                        onClick = { onButtonPress(0) }
+                    ) {
+                        Text(
+                            text = "0",
+                            fontWeight = FontWeight.W400,
+                            fontSize = 34.sp,
+                            color = MaterialTheme.colors.onBackground
+                        )
+                    }
+                }
+                item {
+                    KeyboardButton(
+                        visible = true,
+                        onClick = {
+                            enteredCode.value = enteredCode.value.dropLast(1)
+                            error.value = false
                         }
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = app.editors.manager.R.drawable.ic_backspace),
+                            contentDescription = "backspace_icon",
+                            tint = MaterialTheme.colors.colorTextSecondary,
+                            modifier = Modifier.size(48.dp)
+                        )
                     }
                 }
             }
         }
     }
+}
 
+@Composable
+private fun IndicatorsRowBlock(enteredCodeState: MutableState<String>, errorState: MutableState<Boolean>) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(0.33f),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        items(MAX_PASSCODE_LENGTH) {
+            val initialColor = MaterialTheme.colors.colorTextTertiary
+            val enteredColor = MaterialTheme.colors.primary
+            val errorColor = MaterialTheme.colors.error
+            val colorAnimation = remember { Animatable(initialColor) }
 
+            LaunchedEffect(enteredCodeState.value, errorState.value) {
+                colorAnimation.animateTo(
+                    initialVelocity = initialColor,
+                    targetValue = when {
+                        errorState.value -> errorColor
+                        it < enteredCodeState.value.length -> enteredColor
+                        else -> initialColor
+                    },
+                    animationSpec = tween(easing = LinearEasing)
+                )
+            }
+
+            Icon(
+                imageVector = ImageVector.vectorResource(id = app.editors.manager.R.drawable.ic_passcode_dot),
+                contentDescription = "filled_dot_$it",
+                tint = colorAnimation.value
+            )
+        }
+    }
+}
+
+@Composable
+private fun KeyboardButton(
+    visible: Boolean,
+    onClick: () -> Unit,
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(
+        modifier = Modifier.aspectRatio(1.5f),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(CircleShape)
+                .aspectRatio(1f)
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center,
+            content = content
+        )
+    }
+}
+
+@Preview
+@Previews.Tablet
+@Composable
+private fun Preview() {
+    ManagerTheme {
+        Scaffold {
+            Surface(modifier = Modifier.padding(it)) {
+                PasscodeOperationScreen(
+                    state = PasscodeOperationState(
+                        PasscodeOperationMode.UnlockApp("1234"),
+                        false
+                    ),
+                    onFingerprintClick = {},
+                    onConfirmSuccess = {}
+                )
+            }
+        }
+    }
 }
