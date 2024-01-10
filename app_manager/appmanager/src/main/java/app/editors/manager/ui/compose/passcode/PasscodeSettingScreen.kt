@@ -1,4 +1,4 @@
-package app.editors.manager.ui.compose.fragments.main
+package app.editors.manager.ui.compose.passcode
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -11,8 +11,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,8 +24,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.editors.manager.managers.utils.BiometricsUtils
-import app.editors.manager.ui.compose.activities.main.PasscodeScreens
-import app.editors.manager.viewModels.main.SetPasscodeViewModel
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppSwitchItem
@@ -36,19 +32,17 @@ import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
 
 @Composable
-fun PasscodeLock(
-    viewModel: SetPasscodeViewModel,
+fun PasscodeSettingScreen(
+    enabledPasscode: Boolean,
+    enabledFingerprint: Boolean,
     navController: NavController,
-    backPressed: () -> Unit
+    onFingerPrintEnable: (Boolean) -> Unit,
+    onBackClick: () -> Unit
 ) {
-    val isEnablePasscode by viewModel.isPasscodeEnable.observeAsState(initial = false)
-    val isEnableFingerprint by viewModel.isFingerprintEnable.observeAsState(initial = false)
-
-
     Scaffold(topBar = {
         AppTopBar(
             title = app.editors.manager.R.string.app_settings_passcode,
-            backListener = backPressed
+            backListener = onBackClick
         )
     }) { padding ->
         Surface(modifier = Modifier.padding(padding), color = MaterialTheme.colors.background) {
@@ -63,8 +57,8 @@ fun PasscodeLock(
             ) {
                 AppSwitchItem(
                     title = app.editors.manager.R.string.app_Settings_passcode_enable,
-                    checked = isEnablePasscode,
-                    dividerVisible = isEnablePasscode,
+                    checked = enabledPasscode,
+                    dividerVisible = enabledPasscode,
                     onCheck = { state ->
                         if (state) {
                             navController.navigate(PasscodeScreens.SetPasscode.screen) {
@@ -87,7 +81,7 @@ fun PasscodeLock(
                         }
                     }
                 )
-                if (isEnablePasscode) {
+                if (enabledPasscode) {
                     Row(
                         modifier = Modifier
                             .height(dimensionResource(id = R.dimen.item_one_line_height))
@@ -113,6 +107,7 @@ fun PasscodeLock(
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                             append(stringResource(id = app.editors.manager.R.string.app_settings_passcode))
                         }
+                        append(" ")
                         append(stringResource(id = app.editors.manager.R.string.app_settings_passcode_description))
                     },
                     modifier = Modifier.padding(
@@ -122,15 +117,13 @@ fun PasscodeLock(
                     style = MaterialTheme.typography.body2,
                     color = MaterialTheme.colors.colorTextSecondary
                 )
-                if (isEnablePasscode && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
+                if (enabledPasscode && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
                     VerticalSpacer(R.dimen.default_margin_large)
                     AppDivider()
                     AppSwitchItem(
                         title = app.editors.manager.R.string.app_settings_passcode_fingerprint,
-                        checked = isEnableFingerprint,
-                        onCheck = {
-                            viewModel.setFingerprintState(!isEnableFingerprint)
-                        }
+                        checked = enabledFingerprint,
+                        onCheck = onFingerPrintEnable
                     )
                 }
             }

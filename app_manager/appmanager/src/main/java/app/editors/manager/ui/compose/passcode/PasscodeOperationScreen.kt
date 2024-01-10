@@ -1,4 +1,4 @@
-package app.editors.manager.ui.compose.fragments.main
+package app.editors.manager.ui.compose.passcode
 
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
