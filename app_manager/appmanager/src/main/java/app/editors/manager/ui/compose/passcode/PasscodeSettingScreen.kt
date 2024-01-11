@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +25,6 @@ import app.editors.manager.managers.utils.BiometricsUtils
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppSwitchItem
-import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
 
@@ -39,71 +37,64 @@ fun PasscodeSettingScreen(
     onChangePassword: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    Scaffold(topBar = {
-        AppTopBar(
-            title = app.editors.manager.R.string.app_settings_passcode,
-            backListener = onBackClick
-        )
-    }) { padding ->
-        Surface(modifier = Modifier.padding(padding), color = MaterialTheme.colors.background) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(
-                        start = dimensionResource(id = R.dimen.screen_left_right_padding),
-                        end = dimensionResource(id = R.dimen.screen_left_right_padding)
-                    )
-                    .fillMaxSize()
-            ) {
-                AppSwitchItem(
-                    title = app.editors.manager.R.string.app_Settings_passcode_enable,
-                    checked = passcodeEnabled,
-                    dividerVisible = passcodeEnabled,
-                    onCheck = onPasscodeEnable
+    Surface(color = MaterialTheme.colors.background) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(
+                    start = dimensionResource(id = R.dimen.screen_left_right_padding),
+                    end = dimensionResource(id = R.dimen.screen_left_right_padding)
                 )
-                if (passcodeEnabled) {
-                    Row(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.item_one_line_height))
-                            .clickable(onClick = onChangePassword)
-                            .padding(horizontal = 16.dp)
-                            .fillMaxSize()
-                    ) {
-                        Text(
-                            text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_change),
-                            modifier = Modifier.align(Alignment.CenterVertically),
-                            style = MaterialTheme.typography.body1.copy(
-                                color = colorResource(id = R.color.colorPrimary)
-                            )
+                .fillMaxSize()
+        ) {
+            AppSwitchItem(
+                title = app.editors.manager.R.string.app_Settings_passcode_enable,
+                checked = passcodeEnabled,
+                dividerVisible = passcodeEnabled,
+                onCheck = onPasscodeEnable
+            )
+            if (passcodeEnabled) {
+                Row(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.item_one_line_height))
+                        .clickable(onClick = onChangePassword)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize()
+                ) {
+                    Text(
+                        text = stringResource(id = app.editors.manager.R.string.app_settings_passcode_change),
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        style = MaterialTheme.typography.body1.copy(
+                            color = colorResource(id = R.color.colorPrimary)
                         )
-                    }
-                }
-                AppDivider()
-                VerticalSpacer(height = R.dimen.default_margin_large)
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append(stringResource(id = app.editors.manager.R.string.app_settings_passcode))
-                        }
-                        append(" ")
-                        append(stringResource(id = app.editors.manager.R.string.app_settings_passcode_description))
-                    },
-                    modifier = Modifier.padding(
-                        start = dimensionResource(id = R.dimen.default_margin_large),
-                        end = dimensionResource(id = R.dimen.default_margin_large)
-                    ),
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.colorTextSecondary
-                )
-                if (passcodeEnabled && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
-                    VerticalSpacer(R.dimen.default_margin_large)
-                    AppDivider()
-                    AppSwitchItem(
-                        title = app.editors.manager.R.string.app_settings_passcode_fingerprint,
-                        checked = fingerprintEnabled,
-                        onCheck = onFingerprintEnable
                     )
                 }
+            }
+            AppDivider()
+            VerticalSpacer(height = R.dimen.default_margin_large)
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(stringResource(id = app.editors.manager.R.string.app_settings_passcode))
+                    }
+                    append(" ")
+                    append(stringResource(id = app.editors.manager.R.string.app_settings_passcode_description))
+                },
+                modifier = Modifier.padding(
+                    start = dimensionResource(id = R.dimen.default_margin_large),
+                    end = dimensionResource(id = R.dimen.default_margin_large)
+                ),
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.colorTextSecondary
+            )
+            if (passcodeEnabled && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
+                VerticalSpacer(R.dimen.default_margin_large)
+                AppDivider()
+                AppSwitchItem(
+                    title = app.editors.manager.R.string.app_settings_passcode_fingerprint,
+                    checked = fingerprintEnabled,
+                    onCheck = onFingerprintEnable
+                )
             }
         }
     }

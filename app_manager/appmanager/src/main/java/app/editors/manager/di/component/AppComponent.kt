@@ -45,7 +45,7 @@ import app.editors.manager.mvp.presenters.storages.GoogleDriveSignInPresenter
 import app.editors.manager.mvp.presenters.storages.OneDriveSingInPresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
-import app.editors.manager.ui.activities.main.AppLocaleHelper
+import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -58,6 +58,7 @@ import app.editors.manager.ui.fragments.login.EnterpriseSignInFragment
 import app.editors.manager.ui.fragments.login.EnterpriseSmsFragment
 import app.editors.manager.ui.fragments.login.PersonalPortalFragment
 import app.editors.manager.ui.fragments.login.SplashFragment
+import app.editors.manager.ui.fragments.main.AppSettingsFragment
 import app.editors.manager.ui.fragments.main.CloudsFragment
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.WebViewerFragment
@@ -157,6 +158,7 @@ interface AppComponent {
     fun inject(docsOneDrivePresenter: DocsOneDrivePresenter?)
     fun inject(docsDropboxPresenter: DocsDropboxPresenter?)
     fun inject(docsGoogleDrivePresenter: DocsGoogleDrivePresenter?)
+    fun inject(appSettingsFragment: AppSettingsFragment)
 
     /*
     * Media

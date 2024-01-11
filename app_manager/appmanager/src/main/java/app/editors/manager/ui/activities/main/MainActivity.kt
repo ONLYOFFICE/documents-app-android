@@ -37,7 +37,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.*
@@ -350,7 +349,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onCodeActivity() {
         PasscodeActivity.show(this, true, intent.extras)
-        finish()
+        finishAndRemoveTask()
     }
 
     override fun showActionButton(isShow: Boolean) {

@@ -208,24 +208,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
-        <activity
-            android:name="app.editors.manager.ui.activities.main.AboutActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:theme="@style/NoActionBarTheme"
-            android:windowSoftInputMode="adjustPan|stateHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="app.editors.manager.ui.activities.main.MainActivity" />
-        </activity>
 
         <activity
             android:name="app.editors.manager.ui.activities.main.PasscodeActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            tools:ignore="LockedOrientationActivity">
+            android:screenOrientation="fullSensor">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
@@ -262,10 +250,7 @@
             android:name="app.editors.manager.ui.activities.main.FilterActivity"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
-        <activity
-            android:name="app.editors.manager.ui.activities.main.AppLocalePickerActivity"
-            android:theme="@style/NoActionBarTheme"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+
         <activity
             android:name="app.editors.manager.ui.activities.main.AppLocaleConfirmationActivity"
             android:theme="@style/NoActionBarTheme"

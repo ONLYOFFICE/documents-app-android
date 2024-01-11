@@ -1,5 +1,6 @@
 package app.editors.manager.ui.compose.passcode
 
+import android.content.pm.ActivityInfo
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -51,6 +52,7 @@ import app.editors.manager.R
 import app.editors.manager.managers.utils.KeyStoreUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import lib.compose.ui.LockScreenOrientation
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.Previews
 import lib.compose.ui.theme.colorTextSecondary
@@ -205,6 +207,7 @@ fun PasscodeOperationScreen(
         }
     }
 
+    LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -219,33 +222,41 @@ fun PasscodeOperationScreen(
             },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = stringResource(id = state.mode.title),
-                style = MaterialTheme.typography.h6,
-                color = MaterialTheme.colors.onSurface,
-                textAlign = TextAlign.Center
-            )
+            AnimatedContent(
+                targetState = state.mode.title,
+                transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+                label = "animated_text_title"
+            ) { title ->
+                Text(
+                    text = stringResource(id = title),
+                    style = MaterialTheme.typography.h6,
+                    color = MaterialTheme.colors.onSurface,
+                    textAlign = TextAlign.Center
+                )
+            }
 
             VerticalSpacer(height = lib.toolkit.base.R.dimen.default_margin_large)
 
             AnimatedContent(
                 targetState = error.value,
                 transitionSpec = { fadeIn().togetherWith(fadeOut()) },
-                label = ""
+                label = "animated_text_title"
             ) { error ->
                 Text(
                     modifier = Modifier.alpha(if (error) 1f else 0f),
                     text = state.mode.error?.let { stringResource(id = it) }.orEmpty(),
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.error,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    minLines = 2
                 )
                 if (!error && state.mode.subtitle != null) {
                     Text(
                         text = stringResource(id = state.mode.subtitle!!),
                         style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.colorTextSecondary,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        minLines = 2
                     )
                 }
             }
@@ -264,7 +275,7 @@ fun PasscodeOperationScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                items(IntRange(1, 9).toList()) { number ->
+                items((1..9).toList()) { number ->
                     KeyboardButton(
                         visible = true,
                         onClick = { onButtonPress(number) }
@@ -378,7 +389,7 @@ private fun Preview() {
             Surface(modifier = Modifier.padding(it)) {
                 PasscodeOperationScreen(
                     encryptedPasscode = null,
-                    initialState = PasscodeOperationState(PasscodeOperationMode.ChangePasscode, false),
+                    initialState = PasscodeOperationState(PasscodeOperationMode.SetPasscode, false),
                     onFingerprintClick = {},
                     onConfirmSuccess = { _, _ -> }
                 )

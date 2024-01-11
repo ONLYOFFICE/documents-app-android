@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
@@ -11,6 +12,8 @@ import app.editors.manager.managers.utils.BiometricsUtils
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.compose.passcode.PasscodeMainScreen
 import app.editors.manager.ui.compose.passcode.PasscodeOperationMode
+import app.editors.manager.viewModels.main.PasscodeViewModel
+import app.editors.manager.viewModels.main.PasscodeViewModelFactory
 import lib.compose.ui.theme.ManagerTheme
 import javax.inject.Inject
 
@@ -31,7 +34,11 @@ class PasscodeActivity : BaseAppActivity() {
     }
 
     @Inject
-    lateinit var preferencesTool: PreferenceTool
+    lateinit var preferenceTool: PreferenceTool
+
+    private val passcodeViewModel by viewModels<PasscodeViewModel> {
+        PasscodeViewModelFactory(preferenceTool = preferenceTool)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,13 +48,13 @@ class PasscodeActivity : BaseAppActivity() {
         setContent {
             ManagerTheme {
                 PasscodeMainScreen(
-                    preferenceTool = preferencesTool,
+                    viewModel = passcodeViewModel,
                     enterPasscodeKey = intent.getBooleanExtra(ENTER_PASSCODE_KEY, false),
                     onSuccess = { mode ->
                         if (mode is PasscodeOperationMode.UnlockApp) {
                             MainActivity.show(this, true)
+                            finish()
                         }
-                        finish()
                     },
                     onFingerprintClick = {
                         BiometricsUtils.biometricAuthenticate(
