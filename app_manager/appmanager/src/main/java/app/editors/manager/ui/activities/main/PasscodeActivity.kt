@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
@@ -22,14 +23,9 @@ class PasscodeActivity : BaseAppActivity() {
 
     companion object {
         val TAG: String = PasscodeActivity::class.java.simpleName
-        const val ENTER_PASSCODE_KEY = "ENTER_PASSCODE_KEY"
 
-
-        fun show(context: Context, isEnterPasscode: Boolean = false, bundle: Bundle? = null) {
-            context.startActivity(Intent(context, PasscodeActivity::class.java).apply {
-                putExtra(ENTER_PASSCODE_KEY, isEnterPasscode)
-                bundle?.let { putExtras(it) }
-            })
+        fun show(context: Context) {
+            context.startActivity(Intent(context, PasscodeActivity::class.java))
         }
     }
 
@@ -47,33 +43,41 @@ class PasscodeActivity : BaseAppActivity() {
 
         setContent {
             ManagerTheme {
+                LaunchedEffect(Unit) {
+                    if (preferenceTool.isFingerprintEnable) {
+                        onShowBiometric()
+                    }
+                }
+
                 PasscodeMainScreen(
                     viewModel = passcodeViewModel,
-                    enterPasscodeKey = intent.getBooleanExtra(ENTER_PASSCODE_KEY, false),
+                    enterPasscodeKey = true,
                     onSuccess = { mode ->
                         if (mode is PasscodeOperationMode.UnlockApp) {
                             MainActivity.show(this, true)
                             finish()
                         }
                     },
-                    onFingerprintClick = {
-                        BiometricsUtils.biometricAuthenticate(
-                            promtInfo = BiometricsUtils.initBiometricDialog(
-                                title = getString(R.string.app_settings_passcode_fingerprint_title),
-                                negative = getString(lib.editors.gbase.R.string.common_cancel)
-                            ),
-                            fragment = this,
-                            onSuccess = {
-                                MainActivity.show(this, true)
-                                finish()
-                            },
-                            onError = ::onBiometricError
-                        )
-                    },
+                    onFingerprintClick = ::onShowBiometric,
                     onBackClick = ::finish
                 )
             }
         }
+    }
+
+    private fun onShowBiometric() {
+        BiometricsUtils.biometricAuthenticate(
+            promtInfo = BiometricsUtils.initBiometricDialog(
+                title = getString(R.string.app_settings_passcode_fingerprint_title),
+                negative = getString(lib.editors.gbase.R.string.common_cancel)
+            ),
+            fragment = this,
+            onSuccess = {
+                MainActivity.show(this, true)
+                finish()
+            },
+            onError = ::onBiometricError
+        )
     }
 
     private fun onBiometricError(errorMessage: String) {

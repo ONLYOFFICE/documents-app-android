@@ -87,7 +87,7 @@ class SplashFragment : BaseAppFragment() {
                     MainActivity.show(requireContext())
                     requireActivity().finish()
                 } else {
-                    PasscodeActivity.show(requireContext(), true, requireActivity().intent.extras)
+                    PasscodeActivity.show(requireContext())
                 }
             }
     }
