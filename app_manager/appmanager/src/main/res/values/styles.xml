@@ -16,4 +16,8 @@
         <item name="android:windowCloseOnTouchOutside">false</item>
     </style>
 
+    <style name="PasscodeActivityTheme" parent="NoActionBarTheme">
+        <item name="android:statusBarColor">@color/colorBackground</item>
+    </style>
+
 </resources>

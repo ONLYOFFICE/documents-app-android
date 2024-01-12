@@ -1,7 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -295,13 +294,7 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onSuccessLogin() {
         hideDialog()
-        requireContext().startActivity(Intent(requireContext(), MainActivity::class.java).apply {
-//             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                 flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT
-//             }
-            putExtra(MainActivity.KEY_CODE, true)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        })
+        MainActivity.show(requireContext())
     }
 
     override fun onWaiting() {

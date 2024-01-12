@@ -57,6 +57,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     private var reviewInfo: ReviewInfo? = null
     private var isAppColdStart = true
 
+    var needPasscodeUnlock: Boolean = true
     var isDialogOpen: Boolean = false
 
     override fun onFirstViewAttach() {
@@ -213,8 +214,8 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         }
     }
 
-    fun checkPassCode(isCode: Boolean? = null) {
-        if (!preferenceTool.passcode.isNullOrEmpty() && isCode == null) {
+    fun checkPassCode() {
+        if (preferenceTool.passcodeLock.enabled && needPasscodeUnlock) {
             viewState.onCodeActivity()
         }
     }
@@ -305,4 +306,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         preferenceTool.isRateOn = false
     }
 
+    fun checkOnBoardingShowed() {
+        if (!preferenceTool.onBoarding) {
+            viewState.onShowOnBoarding()
+        }
+    }
 }

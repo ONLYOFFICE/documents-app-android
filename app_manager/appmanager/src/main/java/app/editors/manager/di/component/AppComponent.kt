@@ -57,7 +57,6 @@ import app.editors.manager.ui.fragments.login.EnterprisePortalFragment
 import app.editors.manager.ui.fragments.login.EnterpriseSignInFragment
 import app.editors.manager.ui.fragments.login.EnterpriseSmsFragment
 import app.editors.manager.ui.fragments.login.PersonalPortalFragment
-import app.editors.manager.ui.fragments.login.SplashFragment
 import app.editors.manager.ui.fragments.main.AppSettingsFragment
 import app.editors.manager.ui.fragments.main.CloudsFragment
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
@@ -133,7 +132,6 @@ interface AppComponent {
     fun inject(webDavInterceptor: WebDavInterceptor?)
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
     fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
-    fun inject(splashFragment: SplashFragment?)
     fun inject(googleDriveSignInPresenter: GoogleDriveSignInPresenter?)
     fun inject(onlyOfficeCloudPresenter: OnlyOfficeCloudPresenter)
     fun inject(cloudsFragment: CloudsFragment)

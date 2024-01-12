@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
@@ -76,13 +77,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
         private const val ACCOUNT_KEY = "ACCOUNT_KEY"
         private const val URL_KEY = "url"
-        const val KEY_CODE = "code"
 
-        fun show(context: Context, isCode: Boolean? = true, bundle: Bundle? = null) {
+        fun show(context: Context) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                isCode?.let { putExtra(KEY_CODE, isCode) }
-                bundle?.let { putExtras(bundle) }
             })
         }
     }
@@ -100,6 +98,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             presenter.navigationItemClick(item.itemId)
             true
         }
+    }
+
+    private val passCodeLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        presenter.needPasscodeUnlock = it.resultCode != RESULT_OK
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -172,6 +174,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        presenter.needPasscodeUnlock = false
         if (resultCode == RESULT_CANCELED) {
             when (requestCode) {
                 REQUEST_ACTIVITY_PORTAL -> {
@@ -199,9 +202,20 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        presenter.checkOnBoardingShowed()
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
         init(savedInstanceState)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        presenter.needPasscodeUnlock = true
+    }
+
+    override fun onResume() {
+        presenter.checkPassCode()
+        super.onResume()
     }
 
     override fun onDestroy() {
@@ -226,6 +240,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         recentViewModel.isRecent.observe(this) { recents ->
             viewBinding.bottomNavigation.menu.getItem(0).isEnabled = recents.isNotEmpty()
         }
+
     }
 
     private fun initViews() {
@@ -261,11 +276,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             }
         }
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-        if (intent.extras?.contains(KEY_CODE) == true) {
-            presenter.checkPassCode(true)
-        } else {
-            presenter.checkPassCode()
-        }
     }
 
     private fun setAppBarStates() {
@@ -348,8 +358,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun onCodeActivity() {
-        PasscodeActivity.show(this)
-        finishAndRemoveTask()
+        passCodeLauncher.launch(Intent(this, PasscodeActivity::class.java))
     }
 
     override fun showActionButton(isShow: Boolean) {
