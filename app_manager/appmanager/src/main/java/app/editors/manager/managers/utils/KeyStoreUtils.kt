@@ -4,9 +4,11 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import app.editors.manager.BuildConfig
-import app.editors.manager.app.App
 import lib.toolkit.base.managers.utils.CryptUtils
-import java.security.*
+import java.security.KeyPairGenerator
+import java.security.KeyStore
+import java.security.PrivateKey
+import java.security.PublicKey
 import javax.crypto.Cipher
 import javax.crypto.IllegalBlockSizeException
 
@@ -15,6 +17,8 @@ object KeyStoreUtils {
     private const val ANDROID_KEY_STORE = "AndroidKeyStore"
     private const val RSA_ECB_PKCS1_PADDING = "RSA/ECB/PKCS1Padding"
     private const val KEY_ALGORITHM_RSA = "RSA"
+
+    private var isKeyStore: Boolean = false
 
     fun init() {
         try {
@@ -39,12 +43,12 @@ object KeyStoreUtils {
             kpGen.initialize(spec)
             kpGen.generateKeyPair()
         } catch (error: RuntimeException) {
-            App.getApp().isKeyStore = false
+            isKeyStore = false
         }
     }
 
     fun encryptData(data: String): String {
-        if (App.getApp().isKeyStore) {
+        if (isKeyStore) {
             val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
             ks.load(null)
 
@@ -61,20 +65,20 @@ object KeyStoreUtils {
                 return CryptUtils.encryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
             }
 
-            return Base64.encodeToString(encryptedData, Base64.DEFAULT)
+            return Base64.encodeToString(encryptedData, Base64.URL_SAFE)
         } else {
             return CryptUtils.encryptAES128(data, BuildConfig.COMMUNITY_ID) ?: ""
         }
     }
 
     fun decryptData(data: String): String {
-       if (App.getApp().isKeyStore) {
+       if (isKeyStore) {
            val ks = KeyStore.getInstance(ANDROID_KEY_STORE)
            ks.load(null)
 
            val privateKey = ks.getKey(BuildConfig.COMMUNITY_ID, null) as PrivateKey
 
-           val encrypted = Base64.decode(data, Base64.DEFAULT)
+           val encrypted = Base64.decode(data, Base64.URL_SAFE)
 
            val cipher = Cipher.getInstance(RSA_ECB_PKCS1_PADDING)
 

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import app.editors.manager.managers.utils.BiometricsUtils
+import app.editors.manager.mvp.models.states.PasscodeLockState
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppSwitchItem
@@ -30,8 +31,7 @@ import lib.toolkit.base.R
 
 @Composable
 fun PasscodeSettingScreen(
-    passcodeEnabled: Boolean,
-    fingerprintEnabled: Boolean,
+    passcodeLockState: PasscodeLockState,
     onPasscodeEnable: (Boolean) -> Unit,
     onFingerprintEnable: (Boolean) -> Unit,
     onChangePassword: () -> Unit,
@@ -49,11 +49,11 @@ fun PasscodeSettingScreen(
         ) {
             AppSwitchItem(
                 title = app.editors.manager.R.string.app_Settings_passcode_enable,
-                checked = passcodeEnabled,
-                dividerVisible = passcodeEnabled,
+                checked = passcodeLockState.enabled,
+                dividerVisible = passcodeLockState.enabled,
                 onCheck = onPasscodeEnable
             )
-            if (passcodeEnabled) {
+            if (passcodeLockState.enabled) {
                 Row(
                     modifier = Modifier
                         .height(dimensionResource(id = R.dimen.item_one_line_height))
@@ -87,12 +87,12 @@ fun PasscodeSettingScreen(
                 style = MaterialTheme.typography.body2,
                 color = MaterialTheme.colors.colorTextSecondary
             )
-            if (passcodeEnabled && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
+            if (passcodeLockState.enabled && BiometricsUtils.isFingerprintsExist(LocalContext.current)) {
                 VerticalSpacer(R.dimen.default_margin_large)
                 AppDivider()
                 AppSwitchItem(
                     title = app.editors.manager.R.string.app_settings_passcode_fingerprint,
-                    checked = fingerprintEnabled,
+                    checked = passcodeLockState.fingerprintEnabled,
                     onCheck = onFingerprintEnable
                 )
             }

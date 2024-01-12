@@ -23,23 +23,22 @@ fun PasscodeMainScreen(
     viewModel: PasscodeViewModel,
     enterPasscodeKey: Boolean,
     onFingerprintClick: () -> Unit = {},
-    onSuccess: (PasscodeOperationMode) ->  Unit = {},
-    onBackClick: () -> Unit
+    onSuccess: () ->  Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     val navController = rememberNavController()
-    val passcodeState by viewModel.passcodeState.collectAsState()
+    val passcodeLockState by viewModel.passcodeState.collectAsState()
 
     BackHandler(onBack = onBackClick)
     NavHost(
         navController = navController,
-        startDestination = if (!passcodeState.passcode.isNullOrEmpty() && enterPasscodeKey)
+        startDestination = if (passcodeLockState.enabled && enterPasscodeKey)
             PasscodeScreen.Unlock.route else
             PasscodeScreen.Main.route
     ) {
         composable(route = PasscodeScreen.Main.route) {
             PasscodeSettingScreen(
-                passcodeEnabled = !passcodeState.passcode.isNullOrEmpty(),
-                fingerprintEnabled = passcodeState.fingerprintEnabled,
+                passcodeLockState = passcodeLockState,
                 onPasscodeEnable = { enabled ->
                     if (enabled) {
                         navController.navigate(PasscodeScreen.Set.route)
@@ -54,41 +53,41 @@ fun PasscodeMainScreen(
         }
         composable(route = PasscodeScreen.Unlock.route) {
             PasscodeOperationScreen(
-                encryptedPasscode = passcodeState.passcode,
+                encryptedPasscode = passcodeLockState.passcode,
                 initialState = PasscodeOperationState(
                     mode = PasscodeOperationMode.UnlockApp,
-                    fingerprintEnabled = passcodeState.fingerprintEnabled && enterPasscodeKey
+                    fingerprintEnabled = passcodeLockState.fingerprintEnabled && enterPasscodeKey
                 ),
-                onConfirmSuccess = { mode, _ -> onSuccess.invoke(mode) },
+                onConfirmSuccess = { onSuccess.invoke() },
                 onFingerprintClick = onFingerprintClick
             )
         }
         composable(route = PasscodeScreen.Set.route) {
             PasscodeOperationScreen(
                 initialState = PasscodeOperationState(mode = PasscodeOperationMode.SetPasscode),
-                onConfirmSuccess = { mode, passcode ->
+                onConfirmSuccess = { passcode ->
                     viewModel.setPasscode(passcode)
-                    onSuccess.invoke(mode)
+                    onSuccess.invoke()
                 }
             )
         }
         composable(route = PasscodeScreen.Change.route) {
             PasscodeOperationScreen(
-                encryptedPasscode = passcodeState.passcode,
+                encryptedPasscode = passcodeLockState.passcode,
                 initialState = PasscodeOperationState(mode = PasscodeOperationMode.ChangePasscode),
-                onConfirmSuccess = { mode, passcode ->
+                onConfirmSuccess = { passcode ->
                     viewModel.setPasscode(passcode)
-                    onSuccess.invoke(mode)
+                    onSuccess.invoke()
                 }
             )
         }
         composable(route = PasscodeScreen.Reset.route) {
             PasscodeOperationScreen(
-                encryptedPasscode = passcodeState.passcode,
+                encryptedPasscode = passcodeLockState.passcode,
                 initialState = PasscodeOperationState(mode = PasscodeOperationMode.ResetPasscode),
-                onConfirmSuccess = { mode, _ ->
+                onConfirmSuccess = {
                     viewModel.resetPasscode()
-                    onSuccess.invoke(mode)
+                    onSuccess.invoke()
                 }
             )
         }

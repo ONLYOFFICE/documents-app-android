@@ -16,7 +16,7 @@ data class AppSettingsState(
     val themeMode: Int = 0,
     val analytics: Boolean = false,
     val wifi: Boolean = false,
-    val passcode: Boolean = false
+    val passcodeEnabled: Boolean = false
 )
 
 class AppSettingsViewModelFactory(
@@ -46,7 +46,7 @@ class AppSettingsViewModel(
             cache = cache,
             analytics = preferenceTool.isAnalyticEnable,
             wifi = preferenceTool.uploadWifiState,
-            passcode = preferenceTool.isPasscodeLockEnable,
+            passcodeEnabled = preferenceTool.passcodeLock.enabled,
             themeMode = themePrefs.mode
         )
     )

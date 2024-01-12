@@ -110,7 +110,7 @@ fun PasscodeOperationScreen(
     initialState: PasscodeOperationState,
     encryptedPasscode: String? = null,
     onFingerprintClick: () -> Unit = {},
-    onConfirmSuccess: (PasscodeOperationMode, String) -> Unit,
+    onConfirmSuccess: (String) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     var state by remember { mutableStateOf(initialState) }
@@ -158,7 +158,7 @@ fun PasscodeOperationScreen(
                 checkPasscode(
                     enterCode = enteredCode.value,
                     confirmingCode = savedPasscode,
-                    onSuccess = { onConfirmSuccess.invoke(initialState.mode, enteredCode.value) }
+                    onSuccess = { onConfirmSuccess.invoke(enteredCode.value) }
                 )
             }
             PasscodeOperationMode.Confirm -> {
@@ -181,7 +181,7 @@ fun PasscodeOperationScreen(
                             else -> {}
                         }
                     },
-                    onSuccess = { onConfirmSuccess.invoke(initialState.mode, enteredCode.value) }
+                    onSuccess = { onConfirmSuccess.invoke(enteredCode.value) }
                 )
             }
         }
@@ -391,7 +391,7 @@ private fun Preview() {
                     encryptedPasscode = null,
                     initialState = PasscodeOperationState(PasscodeOperationMode.SetPasscode, false),
                     onFingerprintClick = {},
-                    onConfirmSuccess = { _, _ -> }
+                    onConfirmSuccess = {}
                 )
             }
         }

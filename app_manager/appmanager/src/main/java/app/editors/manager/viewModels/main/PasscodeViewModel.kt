@@ -4,15 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.KeyStoreUtils
+import app.editors.manager.mvp.models.states.PasscodeLockState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-
-data class PasscodeState(
-    val passcode: String?,
-    val fingerprintEnabled: Boolean
-)
 
 class PasscodeViewModelFactory(private val preferenceTool: PreferenceTool) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -27,27 +23,27 @@ class PasscodeViewModelFactory(private val preferenceTool: PreferenceTool) : Vie
 
 class PasscodeViewModel(private val preferenceTool: PreferenceTool) : ViewModel() {
 
-    private val _passcodeState: MutableStateFlow<PasscodeState> = MutableStateFlow(
-        PasscodeState(
-            passcode = preferenceTool.passcode,
-            fingerprintEnabled = preferenceTool.isFingerprintEnable
+    private val _passcodeState: MutableStateFlow<PasscodeLockState> = MutableStateFlow(
+        PasscodeLockState(
+            passcode = preferenceTool.passcodeLock.passcode,
+            fingerprintEnabled = preferenceTool.passcodeLock.fingerprintEnabled
         )
     )
-    val passcodeState: StateFlow<PasscodeState> = _passcodeState.asStateFlow()
+    val passcodeState: StateFlow<PasscodeLockState> = _passcodeState.asStateFlow()
 
     fun setPasscode(passcode: String) {
         val encryptedPasscode = KeyStoreUtils.encryptData(passcode)
-        preferenceTool.passcode = encryptedPasscode
+        preferenceTool.passcodeLock = preferenceTool.passcodeLock.copy(passcode = encryptedPasscode)
         _passcodeState.update { it.copy(passcode = encryptedPasscode) }
     }
 
     fun resetPasscode() {
-        preferenceTool.passcode = null
+        preferenceTool.passcodeLock = PasscodeLockState()
         _passcodeState.update { it.copy(passcode = null) }
     }
 
     fun onFingerprintEnable(enabled: Boolean) {
-        preferenceTool.isFingerprintEnable = enabled
+        preferenceTool.passcodeLock = preferenceTool.passcodeLock.copy(fingerprintEnabled = enabled)
         _passcodeState.update { it.copy(fingerprintEnabled = enabled) }
     }
 }

@@ -34,8 +34,8 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.activities.main.AboutScreen
-import app.editors.manager.ui.compose.locale.AppLocalePickerScreen
 import app.editors.manager.ui.activities.main.IMainActivity
+import app.editors.manager.ui.compose.locale.AppLocalePickerScreen
 import app.editors.manager.ui.compose.passcode.PasscodeMainScreen
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.AppSettingsState
@@ -165,7 +165,7 @@ class AppSettingsFragment : BaseAppFragment() {
                                 viewModel = passcodeViewModel,
                                 enterPasscodeKey = false,
                                 onBackClick = navController::popBackStack,
-                                onSuccess = { navController.popBackStack() }
+                                onSuccess = navController::popBackStack
                             )
                         }
                         composable(Screen.LocalePicker.route) {
@@ -373,7 +373,7 @@ class AppSettingsFragment : BaseAppFragment() {
                     themeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
                     analytics = false,
                     wifi = true,
-                    passcode = true
+                    passcodeEnabled = true
                 ),
                 onThemeClick = {},
                 onWifiState = {},
