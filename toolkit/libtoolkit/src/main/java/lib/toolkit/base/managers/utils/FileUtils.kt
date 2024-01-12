@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Environment
 import android.os.StatFs
-import android.util.Base64
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
 import lib.toolkit.base.BuildConfig
@@ -190,10 +189,12 @@ object FileUtils {
     }
 
     @JvmStatic
-    fun readSdkVersion(context: Context, path: String = "sdk.version") = context.assets.open(path).use { input ->
+    fun readSdkVersion(context: Context, path: String = "sdk.version"): String {
         try {
-            input.reader(Charsets.UTF_8).use { reader ->
-                reader.readText()
+            context.assets.open(path).use { input ->
+                return input.reader(Charsets.UTF_8).use { reader ->
+                    reader.readText()
+                }
             }
         } catch (e: FileNotFoundException) {
             return ""
@@ -220,8 +221,8 @@ object FileUtils {
 
     @JvmStatic
     fun copyAsset(context: Context, asset: String, to: String) {
-        BufferedInputStream(context.assets.open(asset))?.use { input ->
-            BufferedOutputStream(FileOutputStream("$to/$asset"))?.use { output ->
+        BufferedInputStream(context.assets.open(asset)).use { input ->
+            BufferedOutputStream(FileOutputStream("$to/$asset")).use { output ->
                 output.write(input.readBytes())
             }
         }
