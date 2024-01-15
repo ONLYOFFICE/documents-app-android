@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.editors.manager.R
 import app.editors.manager.managers.utils.KeyStoreUtils
+import app.editors.manager.managers.utils.VibrationUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import lib.compose.ui.LockScreenOrientation
@@ -112,16 +113,21 @@ fun PasscodeOperationScreen(
     onFingerprintClick: () -> Unit = {},
     onConfirmSuccess: (String) -> Unit,
 ) {
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var state by remember { mutableStateOf(initialState) }
     val enteredCode = remember { mutableStateOf("") }
     var tmpCode by remember { mutableStateOf("") }
     val error = remember { mutableStateOf(false) }
     var buttonPressLocking by remember { mutableStateOf(false) }
+    val vibration = remember { VibrationUtils.getService(context) }
 
     fun checkPasscode(enterCode: String, confirmingCode: String?, onFailure: () -> Unit = {}, onSuccess: () -> Unit) {
         coroutineScope.launch {
             if (enterCode != confirmingCode) {
+                vibration.cancel()
+                vibration.vibrate(VibrationUtils.errorEffect)
+
                 error.value = true
                 buttonPressLocking = true
                 delay(2000L)
@@ -176,7 +182,6 @@ fun PasscodeOperationScreen(
                                 tmpCode = ""
                                 enteredCode.value = ""
                                 state = state.copy(mode = PasscodeOperationMode.SetPasscode)
-
                             }
                             else -> {}
                         }
@@ -192,6 +197,9 @@ fun PasscodeOperationScreen(
             if (buttonPressLocking) {
                 return@launch
             }
+
+            vibration.cancel()
+            vibration.vibrate(VibrationUtils.clickEffect)
 
             if (error.value) {
                 error.value = false
@@ -292,7 +300,11 @@ fun PasscodeOperationScreen(
                     if (state.fingerprintEnabled) {
                         KeyboardButton(
                             visible = true,
-                            onClick = onFingerprintClick
+                            onClick = {
+                                if (!buttonPressLocking) {
+                                    onFingerprintClick.invoke()
+                                }
+                            }
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_fingerprint),
@@ -320,8 +332,10 @@ fun PasscodeOperationScreen(
                     KeyboardButton(
                         visible = true,
                         onClick = {
-                            enteredCode.value = enteredCode.value.dropLast(1)
-                            error.value = false
+                            if (!buttonPressLocking) {
+                                enteredCode.value = enteredCode.value.dropLast(1)
+                                error.value = false
+                            }
                         }
                     ) {
                         Icon(
