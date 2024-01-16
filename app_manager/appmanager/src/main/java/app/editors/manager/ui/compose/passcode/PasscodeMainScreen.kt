@@ -23,7 +23,7 @@ fun PasscodeMainScreen(
     viewModel: PasscodeViewModel,
     enterPasscodeKey: Boolean,
     onFingerprintClick: () -> Unit = {},
-    onSuccess: () ->  Unit = {},
+    onSuccess: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {
     val navController = rememberNavController()
@@ -56,15 +56,22 @@ fun PasscodeMainScreen(
                 encryptedPasscode = passcodeLockState.passcode,
                 initialState = PasscodeOperationState(
                     mode = PasscodeOperationMode.UnlockApp,
-                    fingerprintEnabled = passcodeLockState.fingerprintEnabled && enterPasscodeKey
+                    passcodeLockState = passcodeLockState
                 ),
-                onConfirmSuccess = { onSuccess.invoke() },
+                onConfirmSuccess = {
+                    viewModel.onDisablingReset()
+                    onSuccess.invoke()
+                },
+                onConfirmFailed = viewModel::onFailedConfirm,
                 onFingerprintClick = onFingerprintClick
             )
         }
         composable(route = PasscodeScreen.Set.route) {
             PasscodeOperationScreen(
-                initialState = PasscodeOperationState(mode = PasscodeOperationMode.SetPasscode),
+                initialState = PasscodeOperationState(
+                    mode = PasscodeOperationMode.SetPasscode,
+                    passcodeLockState = passcodeLockState
+                ),
                 onConfirmSuccess = { passcode ->
                     viewModel.setPasscode(passcode)
                     onSuccess.invoke()
@@ -74,8 +81,13 @@ fun PasscodeMainScreen(
         composable(route = PasscodeScreen.Change.route) {
             PasscodeOperationScreen(
                 encryptedPasscode = passcodeLockState.passcode,
-                initialState = PasscodeOperationState(mode = PasscodeOperationMode.ChangePasscode),
+                initialState = PasscodeOperationState(
+                    mode = PasscodeOperationMode.ChangePasscode,
+                    passcodeLockState = passcodeLockState
+                ),
+                onConfirmFailed = viewModel::onFailedConfirm,
                 onConfirmSuccess = { passcode ->
+                    viewModel.onDisablingReset()
                     viewModel.setPasscode(passcode)
                     onSuccess.invoke()
                 }
@@ -84,8 +96,13 @@ fun PasscodeMainScreen(
         composable(route = PasscodeScreen.Reset.route) {
             PasscodeOperationScreen(
                 encryptedPasscode = passcodeLockState.passcode,
-                initialState = PasscodeOperationState(mode = PasscodeOperationMode.ResetPasscode),
+                initialState = PasscodeOperationState(
+                    mode = PasscodeOperationMode.ResetPasscode,
+                    passcodeLockState = passcodeLockState
+                ),
+                onConfirmFailed = viewModel::onFailedConfirm,
                 onConfirmSuccess = {
+                    viewModel.onDisablingReset()
                     viewModel.resetPasscode()
                     onSuccess.invoke()
                 }

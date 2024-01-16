@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.LaunchedEffect
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.managers.utils.BiometricsUtils
@@ -34,18 +33,21 @@ class PasscodeActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ManagerTheme {
-                LaunchedEffect(Unit) {
-                    if (appComponent.preference.passcodeLock.fingerprintEnabled) {
-                        onShowBiometric()
-                    }
-                }
-
                 PasscodeMainScreen(
                     viewModel = passcodeViewModel,
                     enterPasscodeKey = true,
                     onSuccess = ::onSuccessUnlock,
                     onFingerprintClick = ::onShowBiometric,
                 )
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        with(appComponent.preference.passcodeLock) {
+            if (fingerprintEnabled && !manyAttemptsLock) {
+                onShowBiometric()
             }
         }
     }

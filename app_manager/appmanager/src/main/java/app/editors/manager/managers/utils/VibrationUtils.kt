@@ -12,7 +12,7 @@ object VibrationUtils {
         get() = VibrationEffect.createOneShot(10, 25)
 
     val errorEffect: VibrationEffect
-        get() = VibrationEffect.createOneShot(50, 50)
+        get() = VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
 
     fun getService(context: Context): Vibrator {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

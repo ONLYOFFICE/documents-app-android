@@ -5,8 +5,7 @@ import android.content.SharedPreferences
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.states.PasscodeLockState
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import app.editors.manager.mvp.models.states.toJson
 import java.util.TreeSet
 import javax.inject.Inject
 
@@ -219,9 +218,9 @@ class PreferenceTool @Inject constructor(val context: Context) {
         }
 
     var passcodeLock: PasscodeLockState
-        get() = sharedPreferences.getString(KEY_PASSCODE_LOCK, null)?.let(Json::decodeFromString) ?: PasscodeLockState()
+        get() = PasscodeLockState.fromJson(sharedPreferences.getString(KEY_PASSCODE_LOCK, null))
         set(passcode) {
-            sharedPreferences.edit().putString(KEY_PASSCODE_LOCK, Json.encodeToString(passcode)).apply()
+            sharedPreferences.edit().putString(KEY_PASSCODE_LOCK, passcode.toJson()).apply()
         }
 
     var dbTimestamp: Long

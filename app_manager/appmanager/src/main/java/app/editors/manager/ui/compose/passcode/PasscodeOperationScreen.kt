@@ -28,6 +28,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +37,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import app.editors.manager.R
 import app.editors.manager.managers.utils.KeyStoreUtils
 import app.editors.manager.managers.utils.VibrationUtils
+import app.editors.manager.mvp.models.states.PasscodeLockState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import lib.compose.ui.LockScreenOrientation
@@ -66,7 +67,7 @@ private const val MAX_PASSCODE_LENGTH = 4
 
 data class PasscodeOperationState(
     val mode: PasscodeOperationMode,
-    val fingerprintEnabled: Boolean = false
+    val passcodeLockState: PasscodeLockState
 )
 
 sealed class PasscodeOperationMode(
@@ -111,14 +112,16 @@ fun PasscodeOperationScreen(
     initialState: PasscodeOperationState,
     encryptedPasscode: String? = null,
     onFingerprintClick: () -> Unit = {},
+    onConfirmFailed: () -> Unit = {},
     onConfirmSuccess: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var state by remember { mutableStateOf(initialState) }
+    val subtitleState = remember { mutableStateOf(initialState.mode.subtitle?.let(context::getString).orEmpty()) }
     val enteredCode = remember { mutableStateOf("") }
     var tmpCode by remember { mutableStateOf("") }
-    val error = remember { mutableStateOf(false) }
+    val errorState = remember { mutableStateOf(false) }
     var buttonPressLocking by remember { mutableStateOf(false) }
     val vibration = remember { VibrationUtils.getService(context) }
 
@@ -128,11 +131,15 @@ fun PasscodeOperationScreen(
                 vibration.cancel()
                 vibration.vibrate(VibrationUtils.errorEffect)
 
-                error.value = true
                 buttonPressLocking = true
+                subtitleState.value = state.mode.error?.let(context::getString).orEmpty()
+                errorState.value = true
+
                 delay(2000L)
                 buttonPressLocking = false
-                error.value = false
+                subtitleState.value = state.mode.subtitle?.let(context::getString).orEmpty()
+                errorState.value = false
+
                 enteredCode.value = ""
                 onFailure.invoke()
             } else {
@@ -148,6 +155,7 @@ fun PasscodeOperationScreen(
                 checkPasscode(
                     enterCode = enteredCode.value,
                     confirmingCode = savedPasscode,
+                    onFailure = onConfirmFailed,
                     onSuccess = {
                         enteredCode.value = ""
                         state = state.copy(mode = PasscodeOperationMode.SetPasscode)
@@ -164,6 +172,7 @@ fun PasscodeOperationScreen(
                 checkPasscode(
                     enterCode = enteredCode.value,
                     confirmingCode = savedPasscode,
+                    onFailure = onConfirmFailed,
                     onSuccess = { onConfirmSuccess.invoke(enteredCode.value) }
                 )
             }
@@ -201,8 +210,8 @@ fun PasscodeOperationScreen(
             vibration.cancel()
             vibration.vibrate(VibrationUtils.clickEffect)
 
-            if (error.value) {
-                error.value = false
+            if (errorState.value) {
+                errorState.value = false
             }
 
             if (enteredCode.value.length < MAX_PASSCODE_LENGTH) {
@@ -211,6 +220,42 @@ fun PasscodeOperationScreen(
 
             if (enteredCode.value.length == MAX_PASSCODE_LENGTH) {
                 onEnterFinish()
+            }
+        }
+    }
+
+    LaunchedEffect(state.mode.subtitle) {
+        subtitleState.value = state.mode.subtitle?.let(context::getString).orEmpty()
+    }
+
+    LaunchedEffect(initialState.passcodeLockState.attemptsUnlockTime) {
+        if (initialState.passcodeLockState.manyAttemptsLock) {
+            coroutineScope.launch {
+                val timestamp = initialState.passcodeLockState.attemptsUnlockTime ?: 0
+                buttonPressLocking = true
+                while (true) {
+                    val timeLeft = ((timestamp - System.currentTimeMillis()) / 1000).toInt()
+                    subtitleState.value = when {
+                        timeLeft < 1 -> break
+                        timeLeft > 59 -> {
+                            context.resources.getQuantityString(
+                                R.plurals.app_settings_passcode_many_attempt_minutes,
+                                timeLeft / 60,
+                                timeLeft / 60
+                            )
+                        }
+                        else -> {
+                            context.resources.getQuantityString(
+                                R.plurals.app_settings_passcode_many_attempt_seconds,
+                                timeLeft,
+                                timeLeft
+                            )
+                        }
+                    }
+                    delay(1000)
+                }
+                subtitleState.value = initialState.mode.subtitle?.let(context::getString).orEmpty()
+                buttonPressLocking = false
             }
         }
     }
@@ -245,33 +290,11 @@ fun PasscodeOperationScreen(
 
             VerticalSpacer(height = lib.toolkit.base.R.dimen.default_margin_large)
 
-            AnimatedContent(
-                targetState = error.value,
-                transitionSpec = { fadeIn().togetherWith(fadeOut()) },
-                label = "animated_text_title"
-            ) { error ->
-                Text(
-                    modifier = Modifier.alpha(if (error) 1f else 0f),
-                    text = state.mode.error?.let { stringResource(id = it) }.orEmpty(),
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.error,
-                    textAlign = TextAlign.Center,
-                    minLines = 2
-                )
-                if (!error && state.mode.subtitle != null) {
-                    Text(
-                        text = stringResource(id = state.mode.subtitle!!),
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.colorTextSecondary,
-                        textAlign = TextAlign.Center,
-                        minLines = 2
-                    )
-                }
-            }
+            SubtitleBlock(textState = subtitleState, errorState = errorState)
             VerticalSpacer(height = lib.toolkit.base.R.dimen.default_margin_xxlarge)
 
             IndicatorsRowBlock(
-                errorState = error,
+                errorState = errorState,
                 enteredCodeState = enteredCode
             )
 
@@ -297,7 +320,7 @@ fun PasscodeOperationScreen(
                     }
                 }
                 item {
-                    if (state.fingerprintEnabled) {
+                    if (state.passcodeLockState.fingerprintEnabled) {
                         KeyboardButton(
                             visible = true,
                             onClick = {
@@ -334,7 +357,7 @@ fun PasscodeOperationScreen(
                         onClick = {
                             if (!buttonPressLocking) {
                                 enteredCode.value = enteredCode.value.dropLast(1)
-                                error.value = false
+                                errorState.value = false
                             }
                         }
                     ) {
@@ -348,6 +371,24 @@ fun PasscodeOperationScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SubtitleBlock(textState: MutableState<String>, errorState: MutableState<Boolean>) {
+    AnimatedContent(
+        targetState = textState.value,
+        transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+        label = "animated_text_subtitle"
+    ) { text ->
+        val color = if (errorState.value) MaterialTheme.colors.error else MaterialTheme.colors.colorTextSecondary
+        Text(
+            text = text,
+            style = MaterialTheme.typography.body1,
+            color = color,
+            textAlign = TextAlign.Center,
+            minLines = 2
+        )
     }
 }
 
@@ -403,7 +444,7 @@ private fun Preview() {
             Surface(modifier = Modifier.padding(it)) {
                 PasscodeOperationScreen(
                     encryptedPasscode = null,
-                    initialState = PasscodeOperationState(PasscodeOperationMode.SetPasscode, false),
+                    initialState = PasscodeOperationState(PasscodeOperationMode.ChangePasscode, PasscodeLockState()),
                     onFingerprintClick = {},
                     onConfirmSuccess = {}
                 )
