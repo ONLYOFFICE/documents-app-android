@@ -260,6 +260,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     private fun checkState(savedInstanceState: Bundle?) {
+        presenter.needPasscodeUnlock = savedInstanceState == null
         savedInstanceState?.let {
             viewBinding.appBarToolbar.bind(Json.decodeFromString(it.getString(ACCOUNT_KEY) ?: ""))
         } ?: run {
