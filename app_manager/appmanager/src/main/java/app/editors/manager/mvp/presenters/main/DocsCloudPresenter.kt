@@ -783,7 +783,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 if (isSelectionMode) {
                     Observable.fromArray(modelExplorerStack.selectedFolders).flatMapIterable { room ->
                         room.map { item -> item.id }
-                    }.flatMap { id-> it.archiveRoom(id, isArchive) }
+                    }.flatMap { id -> it.archiveRoom(id, isArchive) }
                         .doOnSubscribe { viewState.onSwipeEnable(true) }
                         .lastElement()
                         .subscribe({ response ->
@@ -896,17 +896,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onConversionProgress(0, extension)
         (fileProvider as? CloudFileProvider)?.let { fileProvider ->
             conversionJob = presenterScope.launch {
-                fileProvider.convertToOOXML(itemClicked?.id.orEmpty()).collectLatest {
-                    withContext(Dispatchers.Main) {
-                        viewState.onConversionProgress(it, extension)
-                        if (it == 100) {
-                            delay(300L)
-                            viewState.onDialogClose()
-                            refresh()
-                            viewState.onScrollToPosition(0)
-                            conversionJob?.cancel()
+                try {
+                    fileProvider.convertToOOXML(itemClicked?.id.orEmpty()).collectLatest {
+                        withContext(Dispatchers.Main) {
+                            viewState.onConversionProgress(it, extension)
+                            if (it == 100) {
+                                delay(300L)
+                                viewState.onDialogClose()
+                                refresh()
+                                viewState.onScrollToPosition(0)
+                                conversionJob?.cancel()
+                            }
                         }
                     }
+                } catch (error: Throwable) {
+                    if (conversionJob?.isCancelled == true) return@launch
+                    viewState.onDialogClose()
+                    fetchError(error)
                 }
             }
         }

@@ -434,14 +434,14 @@ interface ManagerService {
     fun getDocService(): Single<Response<ResponseBody>>
 
     @Headers(
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/checkconversion")
     fun startConversion(@Path(value = "fileId") id: String): Single<Response<ResponseBody>>
 
     @Headers(
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/checkconversion")
