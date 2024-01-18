@@ -1,5 +1,6 @@
 package app.editors.manager.viewModels.main
 
+import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.editors.manager.managers.tools.PreferenceTool
@@ -60,7 +61,7 @@ class PasscodeViewModel(private val preferenceTool: PreferenceTool) : ViewModel(
             }
             updateState {
                 copy(
-                    attemptsUnlockTime = System.currentTimeMillis() + enablingTime,
+                    attemptsUnlockTime = SystemClock.elapsedRealtime() + enablingTime,
                     failedUnlockCount = 0
                 )
             }

@@ -1,6 +1,7 @@
 package app.editors.manager.ui.compose.passcode
 
 import android.content.pm.ActivityInfo
+import android.os.SystemClock
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -234,7 +235,7 @@ fun PasscodeOperationScreen(
                 val timestamp = initialState.passcodeLockState.attemptsUnlockTime ?: 0
                 buttonPressLocking = true
                 while (true) {
-                    val timeLeft = ((timestamp - System.currentTimeMillis()) / 1000).toInt()
+                    val timeLeft = ((timestamp - SystemClock.elapsedRealtime()) / 1000).toInt()
                     subtitleState.value = when {
                         timeLeft < 1 -> break
                         timeLeft > 59 -> {

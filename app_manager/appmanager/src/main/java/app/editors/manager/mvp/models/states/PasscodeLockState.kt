@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.models.states
 
+import android.os.SystemClock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
@@ -18,7 +19,7 @@ data class PasscodeLockState(
         get() = !passcode.isNullOrEmpty()
 
     val manyAttemptsLock: Boolean
-        get() = attemptsUnlockTime != null && attemptsUnlockTime > System.currentTimeMillis()
+        get() = attemptsUnlockTime != null && attemptsUnlockTime > SystemClock.elapsedRealtime()
 
     companion object {
 
