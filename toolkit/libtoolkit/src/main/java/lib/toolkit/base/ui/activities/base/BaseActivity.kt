@@ -26,9 +26,19 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import lib.toolkit.base.R
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.FragmentUtils
+import lib.toolkit.base.managers.utils.KeyboardUtils
+import lib.toolkit.base.managers.utils.PermissionUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
-import lib.toolkit.base.ui.dialogs.common.holders.*
+import lib.toolkit.base.ui.dialogs.common.holders.CustomHolder
+import lib.toolkit.base.ui.dialogs.common.holders.EditLineHolder
+import lib.toolkit.base.ui.dialogs.common.holders.EditMultilineHolder
+import lib.toolkit.base.ui.dialogs.common.holders.InfoHolder
+import lib.toolkit.base.ui.dialogs.common.holders.ProgressHolder
+import lib.toolkit.base.ui.dialogs.common.holders.QuestionHolder
+import lib.toolkit.base.ui.dialogs.common.holders.WaitingHolder
 import moxy.MvpAppCompatActivity
 
 
@@ -51,6 +61,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         const val REQUEST_ACTIVITY_PORTAL = 114
         const val REQUEST_ACTIVITY_SAVE = 115
         const val REQUEST_ACTIVITY_EXPORT = 116
+        const val REQUEST_ACTIVITY_UNLOCK = 117
 
         const val PERMISSION_WRITE_STORAGE = 101
         const val PERMISSION_READ_STORAGE = 102

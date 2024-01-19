@@ -1,10 +1,10 @@
 package app.editors.manager.ui.activities.main
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.fragment.app.FragmentActivity
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.managers.utils.BiometricsUtils
@@ -18,10 +18,11 @@ import lib.compose.ui.theme.ManagerTheme
 class PasscodeActivity : BaseAppActivity() {
 
     companion object {
+
         val TAG: String = PasscodeActivity::class.java.simpleName
 
-        fun show(context: Context) {
-            context.startActivity(Intent(context, PasscodeActivity::class.java))
+        fun show(activity: FragmentActivity) {
+            activity.startActivityForResult(Intent(activity, PasscodeActivity::class.java), REQUEST_ACTIVITY_UNLOCK)
         }
     }
 

@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.work.WorkManager
@@ -100,10 +99,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    private val passCodeLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        presenter.needPasscodeUnlock = it.resultCode != RESULT_OK
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(ACCOUNT_KEY, Json.encodeToString(viewBinding.appBarToolbar.account))
         super.onSaveInstanceState(outState)
@@ -174,7 +169,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        presenter.needPasscodeUnlock = false
+        if (requestCode == REQUEST_ACTIVITY_UNLOCK) {
+            presenter.needPasscodeUnlock = resultCode != RESULT_OK
+        } else {
+            presenter.needPasscodeUnlock = false
+        }
         if (resultCode == RESULT_CANCELED) {
             when (requestCode) {
                 REQUEST_ACTIVITY_PORTAL -> {
@@ -359,7 +358,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun onCodeActivity() {
-        passCodeLauncher.launch(Intent(this, PasscodeActivity::class.java))
+        PasscodeActivity.show(this)
     }
 
     override fun showActionButton(isShow: Boolean) {

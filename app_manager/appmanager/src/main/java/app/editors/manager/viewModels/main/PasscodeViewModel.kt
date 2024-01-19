@@ -27,12 +27,28 @@ class PasscodeViewModel(private val preferenceTool: PreferenceTool) : ViewModel(
     companion object {
 
         private const val PASSCODE_MAX_FAILED_ATTEMPTS = 3
-        private const val PASSCODE_MAX_DISABLING_INCREMENT = 10
-        private const val PASSCODE_FAILED_LOCKING_STEP = 30_000
+        private const val PASSCODE_MAX_LOCK_INCREMENT = 10
+        private const val PASSCODE_TIME_LOCK_STEP = 30_000
     }
 
-    private val _passcodeState: MutableStateFlow<PasscodeLockState> = MutableStateFlow(preferenceTool.passcodeLock)
+    private val _passcodeState: MutableStateFlow<PasscodeLockState> = MutableStateFlow(initState())
     val passcodeState: StateFlow<PasscodeLockState> = _passcodeState.asStateFlow()
+
+    private fun initState(): PasscodeLockState {
+        return with(preferenceTool.passcodeLock) {
+            val estimatedUnlockTime = attemptsLockIncrement * PASSCODE_TIME_LOCK_STEP
+            var actualUnlockTime = attemptsUnlockTime
+            if (actualUnlockTime != null && actualUnlockTime - SystemClock.elapsedRealtime() > estimatedUnlockTime) {
+                actualUnlockTime = estimatedUnlockTime.toLong()
+                copy(attemptsUnlockTime = actualUnlockTime)
+            } else this@with
+        }
+    }
+
+    private fun updateState(block: PasscodeLockState.() -> PasscodeLockState) {
+        preferenceTool.passcodeLock = preferenceTool.passcodeLock.block()
+        _passcodeState.update(block)
+    }
 
     fun setPasscode(passcode: String) {
         updateState { copy(passcode = KeyStoreUtils.encryptData(passcode)) }
@@ -55,8 +71,8 @@ class PasscodeViewModel(private val preferenceTool: PreferenceTool) : ViewModel(
         var attempts = preferenceTool.passcodeLock.failedUnlockCount
         if (++attempts >= PASSCODE_MAX_FAILED_ATTEMPTS) {
             val increment = preferenceTool.passcodeLock.attemptsLockIncrement
-            val enablingTime = increment * PASSCODE_FAILED_LOCKING_STEP
-            if (increment <= PASSCODE_MAX_DISABLING_INCREMENT) {
+            val enablingTime = increment * PASSCODE_TIME_LOCK_STEP
+            if (increment <= PASSCODE_MAX_LOCK_INCREMENT) {
                 updateState { copy(attemptsLockIncrement = increment + 1) }
             }
             updateState {
@@ -68,10 +84,5 @@ class PasscodeViewModel(private val preferenceTool: PreferenceTool) : ViewModel(
         } else {
             updateState { copy(failedUnlockCount = attempts) }
         }
-    }
-
-    private fun updateState(block: PasscodeLockState.() -> PasscodeLockState) {
-        preferenceTool.passcodeLock = preferenceTool.passcodeLock.block()
-        _passcodeState.update(block)
     }
 }
