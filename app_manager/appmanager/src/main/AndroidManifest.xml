@@ -100,7 +100,7 @@
             android:exported="true"
             android:filterTouchesWhenObscured="true"
             android:finishOnTaskLaunch="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
             android:clearTaskOnLaunch="true"
             android:supportsPictureInPicture="true"
             android:theme="@style/NoActionBarTheme"
