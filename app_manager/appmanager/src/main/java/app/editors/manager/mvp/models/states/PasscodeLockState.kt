@@ -2,7 +2,6 @@ package app.editors.manager.mvp.models.states
 
 import android.os.SystemClock
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -26,7 +25,7 @@ data class PasscodeLockState(
         fun fromJson(json: String?): PasscodeLockState {
             return try {
                 Json.decodeFromString(json ?: return PasscodeLockState())
-            } catch (_: SerializationException) {
+            } catch (_: Exception) {
                 PasscodeLockState()
             }
         }

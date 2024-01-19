@@ -36,7 +36,7 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_WIFI_STATE = "KEY_WIFI_STATE"
         private const val KEY_ANALYTIC = "KEY_ANALYTIC"
         private const val KEY_STORAGE_ACCESS = "KEY_STORAGE_ACCESS"
-        private const val KEY_PASSCODE_LOCK = "KEY_PASSCODE_LOCK"
+        private const val KEY_PASSCODE = "KEY_PASSCODE"
         private const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
         private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
         private const val KEY_FILTER = "KEY_FILTER"
@@ -218,9 +218,9 @@ class PreferenceTool @Inject constructor(val context: Context) {
         }
 
     var passcodeLock: PasscodeLockState
-        get() = PasscodeLockState.fromJson(sharedPreferences.getString(KEY_PASSCODE_LOCK, null))
+        get() = PasscodeLockState.fromJson(sharedPreferences.getString(KEY_PASSCODE, null))
         set(passcode) {
-            sharedPreferences.edit().putString(KEY_PASSCODE_LOCK, passcode.toJson()).apply()
+            sharedPreferences.edit().putString(KEY_PASSCODE, passcode.toJson()).apply()
         }
 
     var dbTimestamp: Long
