@@ -156,7 +156,7 @@ object ActivitiesUtils {
     fun showEmail(context: Context, chooseTitle: String, to: String, subject: String, body: String) {
         val selectorIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"))
         val intent = Intent(Intent.ACTION_SEND)
-        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(to));
+        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(to))
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
         intent.putExtra(Intent.EXTRA_TEXT, body)
         intent.selector = selectorIntent
@@ -247,6 +247,13 @@ object ActivitiesUtils {
     }
 }
 
+fun Intent.clearIntent() {
+    replaceExtras(Bundle())
+    action = ""
+    data = null
+    flags = 0
+}
+
 class DocumentsPicker(
     activityResultRegistry: ActivityResultRegistry,
     private val callback: (uris: List<Uri>?) -> Unit,
@@ -269,12 +276,12 @@ class CreateDocument : ActivityResultContract<String, Uri?>() {
             .putExtra(Intent.EXTRA_TITLE, input)
     }
 
-    final override fun getSynchronousResult(
+    override fun getSynchronousResult(
         context: Context,
         input: String
     ): SynchronousResult<Uri?>? = null
 
-    final override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
         return intent.takeIf { resultCode == Activity.RESULT_OK }?.data
     }
 }

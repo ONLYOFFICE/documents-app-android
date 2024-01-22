@@ -164,10 +164,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             fragment.getArgs(intent)
         }
 
-        intent?.apply {
-            data = null
-            clipData = null
-        }
+        intent?.clearIntent()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -225,6 +222,13 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
         recentViewModel.isRecent.observe(this) { recents ->
             viewBinding.bottomNavigation.menu.getItem(0).isEnabled = recents.isNotEmpty()
+        }
+
+        if (intent?.action == Intent.ACTION_VIEW) {
+            intent.data?.let {
+                presenter.checkFileData(it)
+                intent.clearIntent()
+            }
         }
     }
 
