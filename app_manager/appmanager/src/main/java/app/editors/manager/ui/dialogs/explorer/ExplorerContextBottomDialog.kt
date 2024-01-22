@@ -27,7 +27,11 @@ class ExplorerContextBottomDialog : BaseBottomDialog() {
         fun onContextButtonClick(contextItem: ExplorerContextItem)
     }
 
-    var onClickListener: OnClickListener? = null
+    private val onClickListener: OnClickListener?
+        get() = parentFragmentManager
+            .fragments
+            .filterIsInstance<OnClickListener>()
+            .takeIf { it.isNotEmpty() }?.last()
 
     private var viewBinding: ListExplorerContextMenuBinding? = null
     private val viewModel: ExplorerContextViewModel by viewModels()
@@ -44,9 +48,14 @@ class ExplorerContextBottomDialog : BaseBottomDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewBinding?.contextList?.layoutManager = LinearLayoutManager(requireContext())
-        viewBinding?.contextList?.adapter = ExplorerContextAdapter(onClickListener).also { adapter ->
+        viewBinding?.contextList?.adapter = ExplorerContextAdapter(::onClick).also { adapter ->
             adapter.setItems(viewModel.getContextItems(arguments?.getSerializableExt(KEY_EXPLORER_CONTEXT_STATE)))
         }
+    }
+
+    private fun onClick(explorerContextItem: ExplorerContextItem) {
+        onClickListener?.onContextButtonClick(explorerContextItem)
+        dismiss()
     }
 
 }

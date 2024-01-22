@@ -109,7 +109,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
             is ExplorerContextItem.ExternalLink -> presenter.externalLink
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onOpenLocalFile(file: CloudFile) {

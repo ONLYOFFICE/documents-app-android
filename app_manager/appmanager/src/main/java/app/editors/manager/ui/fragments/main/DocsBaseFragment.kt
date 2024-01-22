@@ -109,7 +109,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected var searchCloseButton: ImageView? = null
     protected var explorerAdapter: ExplorerAdapter? = null
 
-    var contextBottomDialog: ExplorerContextBottomDialog? = null
     var actionBottomDialog: ActionBottomDialog? = null
     var moveCopyDialog: MoveCopyDialog? = null
 
@@ -121,7 +120,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     private val lifecycleEventObserver = LifecycleEventObserver { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
-            contextBottomDialog?.onClickListener = this
             actionBottomDialog?.onClickListener = this
         }
     }
@@ -365,7 +363,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             else -> {}
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
@@ -1247,8 +1244,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     protected fun showExplorerContextBottomDialog(state: ExplorerContextState) {
         ExplorerContextBottomDialog.newInstance(state).also { dialog ->
-            dialog.onClickListener = this
-            contextBottomDialog = dialog
             dialog.show(parentFragmentManager, ExplorerContextBottomDialog.TAG)
         }
     }

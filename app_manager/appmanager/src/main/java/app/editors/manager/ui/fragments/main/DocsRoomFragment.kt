@@ -82,7 +82,6 @@ class DocsRoomFragment : DocsCloudFragment() {
             is ExplorerContextItem.Delete -> cloudPresenter.checkRoomOwner()
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {

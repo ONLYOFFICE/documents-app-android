@@ -214,7 +214,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun continueClick(tag: String?, action: String?) {
@@ -366,7 +365,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onConversionQuestion() {
-        contextBottomDialog?.dismiss()
         (presenter.itemClicked as? CloudFile)?.let { file ->
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.conversion_dialog_title)

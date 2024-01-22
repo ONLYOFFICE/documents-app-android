@@ -281,7 +281,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             is ExplorerContextItem.Delete -> presenter.deleteRecent()
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onRender(state: RecentState) {
