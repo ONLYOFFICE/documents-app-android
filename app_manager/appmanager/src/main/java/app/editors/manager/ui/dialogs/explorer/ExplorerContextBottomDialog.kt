@@ -27,11 +27,13 @@ class ExplorerContextBottomDialog : BaseBottomDialog() {
         fun onContextButtonClick(contextItem: ExplorerContextItem)
     }
 
-    private val onClickListener: OnClickListener?
-        get() = parentFragmentManager
-            .fragments
-            .filterIsInstance<OnClickListener>()
-            .takeIf { it.isNotEmpty() }?.last()
+    private val onClickListener: OnClickListener
+        get() = try {
+            parentFragmentManager.fragments
+                .first { it.isResumed && it is OnClickListener } as OnClickListener
+        } catch (_: NoSuchElementException) {
+            throw RuntimeException("Parent fragment must be inherited from ${OnClickListener::class.java}")
+        }
 
     private var viewBinding: ListExplorerContextMenuBinding? = null
     private val viewModel: ExplorerContextViewModel by viewModels()
@@ -54,7 +56,7 @@ class ExplorerContextBottomDialog : BaseBottomDialog() {
     }
 
     private fun onClick(explorerContextItem: ExplorerContextItem) {
-        onClickListener?.onContextButtonClick(explorerContextItem)
+        onClickListener.onContextButtonClick(explorerContextItem)
         dismiss()
     }
 
