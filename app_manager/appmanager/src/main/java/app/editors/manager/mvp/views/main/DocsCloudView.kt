@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
@@ -30,7 +31,7 @@ interface DocsCloudView : DocsBaseView {
     fun onConversionProgress(progress: Int, extension: String? = null)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onCreateRoom(type: Int = 2, cloudFolder: CloudFolder, isCopy: Boolean = false)
+    fun onCreateRoom(type: Int = 2, item: Item, isCopy: Boolean = false)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onLeaveRoomDialog(@StringRes title: Int, @StringRes question: Int, tag: String, isOwner: Boolean)

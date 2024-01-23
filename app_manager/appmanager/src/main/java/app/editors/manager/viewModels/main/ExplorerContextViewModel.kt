@@ -72,7 +72,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Share.takeIf { !networkSettings.isDocSpace },
-                ExplorerContextItem.CreateRoom,
+                ExplorerContextItem.CreateRoom.takeIf { networkSettings.isDocSpace },
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.favorite),
                 ExplorerContextItem.Send,

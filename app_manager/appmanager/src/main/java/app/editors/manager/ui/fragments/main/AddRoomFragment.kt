@@ -74,7 +74,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
@@ -122,13 +122,13 @@ class AddRoomFragment : BaseFragment() {
 
         val TAG: String = AddRoomFragment::class.java.simpleName
 
-        fun newInstance(roomType: Int, room: CloudFolder?, isCopy: Boolean = false) =
+        fun newInstance(roomType: Int, room: Item?, isCopy: Boolean = false) =
             AddRoomFragment().putArgs(TAG_ROOM_TYPE to roomType, TAG_ROOM_INFO to room, TAG_COPY to isCopy)
 
         fun show(
             fragmentManager: FragmentManager,
             roomType: Int,
-            roomInfo: CloudFolder? = null,
+            roomInfo: Item? = null,
             isCopy: Boolean = false
         ) {
             FragmentUtils.showFragment(
@@ -144,7 +144,7 @@ class AddRoomFragment : BaseFragment() {
     private lateinit var navController: NavHostController
 
     private val isEdit: Boolean
-        get() = arguments?.getSerializableExt<CloudFolder>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
+        get() = arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
 
     override fun onBackPressed(): Boolean {
         requireContext().appComponent.accountOnline?.token

@@ -2,7 +2,6 @@ package app.editors.manager.ui.dialogs.explorer
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.manager.models.explorer.CloudFolder
 import lib.toolkit.base.managers.utils.StringUtils
 
 
@@ -116,7 +115,7 @@ interface ExplorerContextItemVisible {
         }
 
     private val ExplorerContextState.createRoom: Boolean
-        get() = item is CloudFolder && item.security.create
+        get() = item.security.create || item is CloudFile
 
     private val ExplorerContextState.location: Boolean
         get() = isSearching

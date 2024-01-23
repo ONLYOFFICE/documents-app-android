@@ -853,10 +853,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun createRoomFromFolder() {
-        if (itemClicked is CloudFolder) {
-            viewState.onCreateRoom(cloudFolder = itemClicked as CloudFolder, isCopy = true)
+        itemClicked?.let {
+            viewState.onCreateRoom(item = it, isCopy = true)
         }
     }
+
 
     fun deleteRoom() {
         if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
