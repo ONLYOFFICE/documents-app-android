@@ -464,10 +464,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         modelExplorerStack.currentId?.also { destFolder ->
             destFolderId = destFolder
             operationStack?.let { stack ->
-                if (destFolder == stack.currentId) {
-                    viewState.onError(context.getString(R.string.operation_error_move_to_same))
-                    return false
-                }
                 if (stack.selectedItems > 0) {
                     if (isContainsPathInPath(stack.selectedFoldersIds)) {
                         viewState.onError(context.getString(R.string.operation_error_move_to_same_subfolder))
@@ -555,11 +551,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         modelExplorerStack.currentId?.also { destFolder ->
             destFolderId = destFolder
             operationStack?.let { stack ->
-                if (destFolder == stack.currentId) {
-                    viewState.onError(context.getString(R.string.operation_error_move_to_same))
-                    return false
-                }
-
                 if (stack.selectedItems > 0) {
                     if (isContainsPathInPath(stack.selectedFoldersIds)) {
                         viewState.onError(context.getString(R.string.operation_error_move_to_same_subfolder))
