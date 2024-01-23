@@ -2,6 +2,7 @@ package app.editors.manager.mvp.models.models
 
 import android.os.Parcel
 import android.os.Parcelable
+import app.documents.core.network.common.contracts.ApiContract
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.JsonElement
@@ -47,6 +48,13 @@ data class OpenDataModel(
         override fun newArray(size: Int): Array<OpenDataModel?> {
             return arrayOfNulls(size)
         }
+    }
+
+    fun getPortalWithoutScheme(): String? {
+        if (portal == null) return null
+        if (portal.contains(ApiContract.SCHEME_HTTPS)) return portal.replace(ApiContract.SCHEME_HTTPS, "")
+        if (portal.contains(ApiContract.SCHEME_HTTP)) return portal.replace(ApiContract.SCHEME_HTTP, "")
+        return portal
     }
 }
 
