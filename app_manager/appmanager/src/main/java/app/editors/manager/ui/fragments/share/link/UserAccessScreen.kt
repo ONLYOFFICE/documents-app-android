@@ -20,6 +20,7 @@ import lib.compose.ui.views.AppTopBar
 fun UserAccessScreen(
     navController: NavController,
     roomId: String,
+    roomType: Int?,
     userId: String,
     currentAccess: Int?,
     ownerOrAdmin: Boolean,
@@ -35,7 +36,7 @@ fun UserAccessScreen(
         }
     ) {
         Column {
-            getAccessList(ownerOrAdmin).forEach { access ->
+            getAccessList(ownerOrAdmin, roomType).forEach { access ->
                 AppSelectItem(
                     title = RoomUtils.getAccessTitle(access),
                     selected = currentAccess == access,
@@ -50,9 +51,16 @@ fun UserAccessScreen(
     }
 }
 
-private fun getAccessList(ownerOrAdmin: Boolean) = when {
+private fun getAccessList(ownerOrAdmin: Boolean, roomType: Int?) = when {
     ownerOrAdmin -> listOf(
         ApiContract.ShareCode.ROOM_ADMIN,
+        ApiContract.ShareCode.NONE
+    )
+    roomType == ApiContract.RoomType.COLLABORATION_ROOM -> listOf(
+        ApiContract.ShareCode.ROOM_ADMIN,
+        ApiContract.ShareCode.POWER_USER,
+        ApiContract.ShareCode.EDITOR,
+        ApiContract.ShareCode.READ,
         ApiContract.ShareCode.NONE
     )
     else -> listOf(
@@ -67,17 +75,17 @@ private fun getAccessList(ownerOrAdmin: Boolean) = when {
     )
 }
 
-@Preview
+@Preview(locale = "ru")
 @Composable
 private fun Preview() {
     ManagerTheme {
         UserAccessScreen(
             navController = rememberNavController(),
             roomId = "",
+            roomType = ApiContract.RoomType.COLLABORATION_ROOM,
             userId = "",
             currentAccess = 2,
-            ownerOrAdmin = false,
-            onSetUserAccess = {}
-        )
+            ownerOrAdmin = false
+        ) {}
     }
 }

@@ -246,6 +246,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                             UserAccessScreen(
                                 navController = navController,
                                 roomId = roomId,
+                                roomType = room?.roomType,
                                 userId = userId,
                                 currentAccess = backStackEntry.arguments?.getInt("access"),
                                 ownerOrAdmin = backStackEntry.arguments?.getBoolean("ownerOrAdmin") == true,
@@ -434,7 +435,7 @@ class RoomInfoFragment : BaseDialogFragment() {
     }
 
     @Composable
-    fun ShareUsersList(title: Int, portal: String?, shareList: List<Share>?, onClick: (String, Int, Boolean) -> Unit) {
+    private fun ShareUsersList(title: Int, portal: String?, shareList: List<Share>?, onClick: (String, Int, Boolean) -> Unit) {
         var visible by remember { mutableStateOf(true) }
 
         if (!shareList.isNullOrEmpty()) {
