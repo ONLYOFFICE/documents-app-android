@@ -14,15 +14,12 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 data class ExternalLinkSettingsState(val link: ExternalLinkSharedTo, val viewStateChanged: Boolean)
 
 sealed class ExternalLinkSettingsEffect {
-    data class Share(val url: String) : ExternalLinkSettingsEffect()
-    data class Copy(val url: String) : ExternalLinkSettingsEffect()
     data class Error(val message: Int) : ExternalLinkSettingsEffect()
     data object Delete : ExternalLinkSettingsEffect()
     data object Save : ExternalLinkSettingsEffect()
@@ -51,33 +48,10 @@ class ExternalLinkSettingsViewModel(
     }
 
     fun save() {
+        _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
         operationJob = viewModelScope.launch {
             updateExternalLink()
             _effect.tryEmit(ExternalLinkSettingsEffect.Save)
-        }
-    }
-
-    fun share() {
-        operationJob = viewModelScope.launch {
-            val url = updateExternalLink()?.sharedTo?.shareLink
-            if (url != null) {
-                _effect.tryEmit(ExternalLinkSettingsEffect.Share(url))
-                _state.update { it.copy(viewStateChanged = false) }
-            } else {
-                onError(null)
-            }
-        }
-    }
-
-    fun copy() {
-        operationJob = viewModelScope.launch {
-            val url = updateExternalLink()?.sharedTo?.shareLink
-            if (url != null) {
-                _effect.tryEmit(ExternalLinkSettingsEffect.Copy(url))
-                _state.update { it.copy(viewStateChanged = false) }
-            } else {
-                onError(null)
-            }
         }
     }
 
@@ -97,14 +71,14 @@ class ExternalLinkSettingsViewModel(
         operationJob = viewModelScope.launch {
             try {
                 with(state.value.link) {
-                    val link = roomProvider.createAdditionalLink(
+                    roomProvider.createAdditionalLink(
                         roomId = roomId.orEmpty(),
                         denyDownload = denyDownload,
                         expirationDate = expirationDate,
                         password = password,
                         title = title
                     )
-                    _effect.tryEmit(ExternalLinkSettingsEffect.Copy(link.sharedTo.shareLink))
+                    _effect.tryEmit(ExternalLinkSettingsEffect.Save)
                 }
             } catch (httpException: HttpException) {
                 onError(httpException)

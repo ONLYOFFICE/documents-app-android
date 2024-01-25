@@ -8,6 +8,7 @@ import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.viewModels.base.BaseViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -26,6 +27,8 @@ data class RoomInfoState(
 
 sealed class RoomInfoEffect {
 
+    data object ShowOperationDialog : RoomInfoEffect()
+    data object CloseDialog : RoomInfoEffect()
     data class Error(val message: Int) : RoomInfoEffect()
     data class Create(val url: String) : RoomInfoEffect()
 }
@@ -37,6 +40,12 @@ class RoomInfoViewModel(private val roomProvider: RoomProvider, private val room
 
     private val _effect: MutableSharedFlow<RoomInfoEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<RoomInfoEffect> = _effect.asSharedFlow()
+
+    private var operationJob: Job? = null
+
+    override fun onCleared() {
+        operationJob?.cancel()
+    }
 
     fun fetchRoomInfo() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -63,23 +72,12 @@ class RoomInfoViewModel(private val roomProvider: RoomProvider, private val room
     }
 
     fun setUserAccess(roomId: String, userId: String, access: Int) {
-        viewModelScope.launch {
+        _effect.tryEmit(RoomInfoEffect.ShowOperationDialog)
+        operationJob = viewModelScope.launch {
             try {
-                val share = roomProvider.setRoomUserAccess(roomId, userId, access)
-                if (share != null) {
-                    val shareList = _state.value.shareList
-                    val index = shareList.indexOfFirst { it.sharedTo.id == userId }
-                    val modifiedList = shareList.toMutableList()
-
-                    if (access == ApiContract.ShareCode.NONE) {
-                        modifiedList.removeAt(index)
-                    } else {
-                        modifiedList[index] = shareList[index].copy(access = share.access)
-                    }
-                    _state.value = _state.value.copy(shareList = modifiedList)
-                } else {
-                    fetchRoomInfo()
-                }
+                roomProvider.setRoomUserAccess(roomId, userId, access)
+                fetchRoomInfo()
+                _effect.tryEmit(RoomInfoEffect.CloseDialog)
             } catch (httpException: HttpException) {
                 onError(httpException)
             }
@@ -87,15 +85,21 @@ class RoomInfoViewModel(private val roomProvider: RoomProvider, private val room
     }
 
     fun createGeneralLink() {
-        viewModelScope.launch {
+        _effect.tryEmit(RoomInfoEffect.ShowOperationDialog)
+        operationJob = viewModelScope.launch {
             try {
                 val url = roomProvider.createGeneralLink(roomId)
                 _effect.tryEmit(RoomInfoEffect.Create(url))
                 fetchRoomInfo()
+                _effect.tryEmit(RoomInfoEffect.CloseDialog)
             } catch (httpException: HttpException) {
                 onError(httpException)
             }
         }
+    }
+
+    fun cancelOperation() {
+        operationJob?.cancel()
     }
 
     private fun onError(httpException: HttpException) {
