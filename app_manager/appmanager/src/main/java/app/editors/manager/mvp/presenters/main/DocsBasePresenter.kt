@@ -1211,7 +1211,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } ?: Explorer()
     }
 
-    protected open fun openFolder(id: String?, position: Int) {
+    open fun openFolder(id: String?, position: Int) {
         modelExplorerStack.listPosition = position
         viewState.onSwipeEnable(true)
         getItemsById(id)

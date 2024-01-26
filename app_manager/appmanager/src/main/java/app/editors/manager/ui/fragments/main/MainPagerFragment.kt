@@ -10,12 +10,12 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
-import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.views.main.MainPagerView
@@ -25,11 +25,18 @@ import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
+import app.editors.manager.ui.views.pager.ViewPagerAdapter.Container
 import lib.toolkit.base.managers.utils.UiUtils
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
-class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener {
+interface IMainPagerFragment {
+
+    fun setPagerPosition(sectionType: Int, onEndScrolling: () -> Unit)
+}
+
+class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener,
+    IMainPagerFragment {
 
     companion object {
 
@@ -59,7 +66,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     @ProvidePresenter
     fun providePresenter() = MainPagerPresenter(arguments?.getString(KEY_ACCOUNT))
 
-    private var adapter: ViewPagerAdapter? = null
+    private var adapter: AdapterForPages? = null
     private var activity: IMainActivity? = null
     private var isScroll = true
     private var isVisibleRoot = true
@@ -114,7 +121,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root)
         placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
         checkBundle()
-//        presenter.getState(requireActivity().intent.data)
+        //        presenter.getState(requireActivity().intent.data)
     }
 
     @Suppress("JSON_FORMAT_REDUNDANT")
@@ -157,7 +164,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     fun setExpandToolbar() {
-//        mMainActivity.expandToolBar();
+        //        mMainActivity.expandToolBar();
     }
 
     fun setVisibilityActionButton(isShow: Boolean) {
@@ -178,27 +185,26 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun onRender(stringAccount: String, sections: List<Explorer>?) {
-        val fragments = arrayListOf<ViewPagerAdapter.Container>()
         sections?.let {
-            for (section in sections) {
-                when (section.current.rootFolderType) {
-                    ApiContract.SectionType.CLOUD_PRIVATE_ROOM, ApiContract.SectionType.CLOUD_RECENT -> continue
+            val fragments = sections.mapNotNull { section ->
+                when (val folderType = section.current.rootFolderType) {
+                    ApiContract.SectionType.CLOUD_PRIVATE_ROOM, ApiContract.SectionType.CLOUD_RECENT -> null
                     else -> {
-                        fragments.add(
-                            ViewPagerAdapter.Container(
-                                when (val folderType = section.current.rootFolderType) {
-                                    ApiContract.SectionType.CLOUD_TRASH, ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
-                                        DocsTrashFragment.newInstance(stringAccount, folderType, section.current.id)
-                                    }
-                                    ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
-                                        DocsRoomFragment.newInstance(stringAccount, folderType, section.current.id)
-                                    }
-                                    else -> {
-                                        DocsCloudFragment.newInstance(stringAccount, folderType, section.current.id)
-                                    }
-                                },
-                                getTabTitle(section.current.rootFolderType)
-                            )
+                        MainPagerContainer(
+                            fragment = when (folderType) {
+                                ApiContract.SectionType.CLOUD_TRASH,
+                                ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
+                                    DocsTrashFragment.newInstance(stringAccount, folderType, section.current.id)
+                                }
+                                ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
+                                    DocsRoomFragment.newInstance(stringAccount, folderType, section.current.id)
+                                }
+                                else -> {
+                                    DocsCloudFragment.newInstance(stringAccount, folderType, section.current.id)
+                                }
+                            },
+                            title = getTabTitle(folderType),
+                            sectionType = folderType
                         )
                     }
                 }
@@ -222,7 +228,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
 
-    private fun setAdapter(fragments: List<ViewPagerAdapter.Container>) {
+    private fun setAdapter(fragments: List<MainPagerContainer>) {
         adapter = AdapterForPages(childFragmentManager, fragments)
         viewBinding?.mainViewPager?.offscreenPageLimit = OFFSCREEN_COUNT
         viewBinding?.mainViewPager?.adapter = adapter
@@ -231,7 +237,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }
         activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
         if (requireContext().appComponent.networkSettings.isDocSpace) {
-            viewBinding?.mainViewPager?.currentItem = fragments.indexOf(fragments.find { it.mFragment is DocsRoomFragment })
+            viewBinding?.mainViewPager?.currentItem =
+                fragments.indexOf(fragments.find { it.mFragment is DocsRoomFragment })
         } else {
             adapter?.selectedPage = selectedPage
         }
@@ -294,18 +301,39 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             else -> ""
         }
 
+    override fun setPagerPosition(
+        sectionType: Int,
+        onEndScrolling: () -> Unit
+    ) {
+        adapter?.let { adapter ->
+            val index = adapter.fragmentList.indexOfFirst { it.sectionType == sectionType }
+            if (index > -1) {
+                viewBinding?.mainViewPager?.let { pager ->
+                    pager.currentItem = index
+                    pager.postDelayed(onEndScrolling, 500)
+                }
+            }
+        }
+    }
+
     /*
      * Adapter and page change listener
      * */
+    private data class MainPagerContainer(
+        val fragment: Fragment,
+        val title: String,
+        val sectionType: Int
+    ) : Container(fragment, title)
+
     private inner class AdapterForPages(
         manager: FragmentManager,
-        fragmentList: List<Container?>
+        val fragmentList: List<MainPagerContainer>
     ) : ViewPagerAdapter(manager, fragmentList) {
 
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
             activity?.showActionButton(false)
-            this@MainPagerFragment.selectedPage = mSelectedPage
+            this@MainPagerFragment.selectedPage = selectedPage
             (getActiveFragment(viewBinding?.mainViewPager) as DocsCloudFragment).onScrollPage()
         }
     }

@@ -8,12 +8,13 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
+import lib.compose.ui.views.PlaceholderView
 import lib.toolkit.base.managers.tools.ResourcesProvider
 
 class PlaceholderViews(val view: View?) {
 
     enum class Type {
-        NONE, CONNECTION, EMPTY, SEARCH, SHARE, ACCESS,
+        NONE, CONNECTION, EMPTY, EMPTY_ROOM, SEARCH, SHARE, ACCESS,
         SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD, LOAD_GROUPS, LOAD_USERS, OTHER_ACCOUNTS
     }
 
@@ -63,6 +64,7 @@ class PlaceholderViews(val view: View?) {
     }
 
     fun setTemplatePlaceholder(type: Type?, onButtonClick: () -> Unit = {}) {
+        binding.composeView.isVisible = false
         when (type) {
             Type.NONE, null -> {
                 setVisibility(false)
@@ -91,6 +93,18 @@ class PlaceholderViews(val view: View?) {
                 setTitle(R.string.placeholder_media_error)
                 setTitleColor(lib.toolkit.base.R.color.colorTextSecondary)
                 setRetryTint(lib.toolkit.base.R.color.colorSecondary)
+            }
+            Type.EMPTY_ROOM -> {
+                with(binding.composeView) {
+                    isVisible = true
+                    setContent {
+                        PlaceholderView(
+                            image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
+                            title = context.getString(R.string.room_placeholder_created_room_title),
+                            subtitle = context.getString(R.string.room_placeholder_created_room_subtitle)
+                        )
+                    }
+                }
             }
         }
         setVisibility(true)

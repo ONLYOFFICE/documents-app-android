@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,36 +23,38 @@ import lib.compose.ui.theme.colorTextSecondary
 
 @Composable
 fun PlaceholderView(image: Int, title: String, subtitle: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(bottom = 60.dp)
-                .width(IntrinsicSize.Min),
-            horizontalAlignment = Alignment.CenterHorizontally
+    Surface(color = MaterialTheme.colors.background) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Image(
+            Column(
                 modifier = Modifier
                     .padding(bottom = 60.dp)
-                    .width(IntrinsicSize.Max),
-                imageVector = ImageVector.vectorResource(image),
-                alpha = 0.4f,
-                contentDescription = null
-            )
-            Text(
-                modifier = Modifier.padding(bottom = 16.dp),
-                text = title,
-                style = MaterialTheme.typography.h6,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.subtitle1,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.colorTextSecondary
-            )
+                    .width(IntrinsicSize.Min),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    modifier = Modifier
+                        .padding(bottom = 60.dp)
+                        .width(IntrinsicSize.Max),
+                    imageVector = ImageVector.vectorResource(image),
+                    alpha = 0.4f,
+                    contentDescription = null
+                )
+                Text(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    text = title,
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.subtitle1,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colors.colorTextSecondary
+                )
+            }
         }
     }
 }

@@ -126,7 +126,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter implements ViewPager.
     /*
      * Data container for fragments
      * */
-    public static final class Container {
+    public static class Container {
 
         public final Fragment mFragment;
         public final String mTitle;

@@ -11,6 +11,7 @@ import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
+import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.setFragmentResultListener
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -101,8 +102,17 @@ class DocsRoomFragment : DocsCloudFragment() {
         } else super.getFilters()
     }
 
+    override fun onPlaceholder(type: PlaceholderViews.Type) {
+        if (type == PlaceholderViews.Type.EMPTY) {
+            super.onPlaceholder(PlaceholderViews.Type.EMPTY_ROOM)
+        } else {
+            super.onPlaceholder(type)
+        }
+    }
 
     companion object {
+
+        val TAG = DocsRoomFragment::class.java.simpleName
 
         fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
             return DocsRoomFragment().apply {

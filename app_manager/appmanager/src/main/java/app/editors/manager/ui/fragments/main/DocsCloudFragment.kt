@@ -421,7 +421,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             if (cloudFolder != null && !isCopy) {
                 onRefresh()
             } else {
-                cloudPresenter.getItemsById(args.getString("id"))
+                openRoom(id = args.getString("id"))
             }
         }
         AddRoomDialog.newInstance(type, cloudFolder, isCopy)
@@ -465,6 +465,21 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 }
         } else {
             filterActivity.launch(FilterActivity.getIntent(this, presenter.folderId, section, presenter.isRoot))
+        }
+    }
+
+    private fun openRoom(id: String?) {
+        val mainPagerFragment = requireActivity().supportFragmentManager
+            .fragments
+            .filterIsInstance<IMainPagerFragment>()
+            .first()
+
+        val docsRoomFragment = parentFragmentManager
+            .fragments
+            .find { it::class == DocsRoomFragment::class } as? DocsRoomFragment
+
+        mainPagerFragment.setPagerPosition(ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+            docsRoomFragment?.presenter?.openFolder(id, 0)
         }
     }
 
