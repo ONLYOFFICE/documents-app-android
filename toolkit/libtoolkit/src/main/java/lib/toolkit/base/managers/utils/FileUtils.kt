@@ -14,6 +14,7 @@ import android.os.Environment
 import android.os.StatFs
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
+import androidx.documentfile.provider.DocumentFile
 import lib.toolkit.base.BuildConfig
 import okhttp3.ResponseBody
 import java.io.*
@@ -291,21 +292,6 @@ object FileUtils {
                 return true
             }
         }
-
-        return false
-    }
-
-    @RequiresPermission(allOf = [WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE])
-    @JvmStatic
-    fun copyFile(from: String, to: String): Boolean {
-        BufferedInputStream(FileInputStream(from)).use { input ->
-            BufferedOutputStream(FileOutputStream(to)).use { output ->
-                output.write(input.readBytes())
-                output.flush()
-                return true
-            }
-        }
-
         return false
     }
 
@@ -334,7 +320,11 @@ object FileUtils {
         isExternal: Boolean = true
     ): Cache? {
         return getCache(context, dstFileName, dstFolderName, isExternal)?.apply {
-            to = addExtension(getExtension(StringUtils.getExtensionFromPath(uri.path ?: "")), to!!)
+            to = if (uri.scheme == "content") {
+                addExtension(getExtension(StringUtils.getExtensionFromPath(DocumentFile.fromSingleUri(context, uri)?.name ?: "")), to!!)
+            } else{
+                addExtension(getExtension(StringUtils.getExtensionFromPath(uri.path ?: "")), to!!)
+            }
             copyFile(context, uri, to!!)
         }
     }
