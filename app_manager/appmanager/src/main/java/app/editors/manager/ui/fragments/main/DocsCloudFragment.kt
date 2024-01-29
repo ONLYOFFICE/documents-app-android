@@ -8,7 +8,9 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.os.bundleOf
 import androidx.fragment.app.clearFragmentResultListener
+import androidx.fragment.app.setFragmentResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -469,18 +471,15 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private fun openRoom(id: String?) {
-        val mainPagerFragment = requireActivity().supportFragmentManager
-            .fragments
-            .filterIsInstance<IMainPagerFragment>()
-            .first()
-
-        val docsRoomFragment = parentFragmentManager
-            .fragments
-            .find { it::class == DocsRoomFragment::class } as? DocsRoomFragment
-
-        mainPagerFragment.setPagerPosition(ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
-            docsRoomFragment?.presenter?.openFolder(id, 0)
-        }
+        try {
+            requireActivity().supportFragmentManager
+                .fragments
+                .filterIsInstance<IMainPagerFragment>()
+                .first()
+                .setPagerPosition(ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+                    setFragmentResult("result", bundleOf(DocsRoomFragment.KEY_RESULT_ROOM_ID to id))
+                }
+        } catch (_: NoSuchElementException) { }
     }
 
     override fun onLeaveRoomDialog(title: Int, question: Int, tag: String, isOwner: Boolean) {

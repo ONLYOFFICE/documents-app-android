@@ -32,7 +32,7 @@ import moxy.presenter.ProvidePresenter
 
 interface IMainPagerFragment {
 
-    fun setPagerPosition(sectionType: Int, onEndScrolling: () -> Unit)
+    fun setPagerPosition(sectionType: Int, onPageChanged: () -> Unit = {})
 }
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener,
@@ -303,14 +303,14 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     override fun setPagerPosition(
         sectionType: Int,
-        onEndScrolling: () -> Unit
+        onPageChanged: () -> Unit
     ) {
         adapter?.let { adapter ->
             val index = adapter.fragmentList.indexOfFirst { it.sectionType == sectionType }
             if (index > -1) {
                 viewBinding?.mainViewPager?.let { pager ->
                     pager.currentItem = index
-                    pager.postDelayed(onEndScrolling, 500)
+                    pager.postDelayed(onPageChanged, 500)
                 }
             }
         }

@@ -2,6 +2,7 @@ package app.editors.manager.ui.fragments.main
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.core.view.forEach
 import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.RoomFilterType
@@ -19,6 +20,16 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 class DocsRoomFragment : DocsCloudFragment() {
 
     private val isRoom get() = cloudPresenter.isCurrentRoom && cloudPresenter.isRoot
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setFragmentResultListener { bundle ->
+            val roomId = bundle?.getString(KEY_RESULT_ROOM_ID)
+            if (!roomId.isNullOrEmpty()) {
+                presenter.openFolder(roomId, 0)
+            }
+        }
+    }
 
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
         if (isRoom) {
@@ -113,6 +124,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     companion object {
 
         val TAG = DocsRoomFragment::class.java.simpleName
+        const val KEY_RESULT_ROOM_ID = "key_result_room_id"
 
         fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
             return DocsRoomFragment().apply {
