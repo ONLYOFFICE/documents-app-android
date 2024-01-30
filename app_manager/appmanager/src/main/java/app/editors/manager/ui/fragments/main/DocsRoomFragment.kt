@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.forEach
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
@@ -114,7 +115,8 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
-        if (type == PlaceholderViews.Type.EMPTY) {
+        val isRoom = ((presenter.itemClicked as? CloudFolder)?.roomType ?: -1) > -1
+        if (type == PlaceholderViews.Type.EMPTY && isRoom) {
             super.onPlaceholder(PlaceholderViews.Type.EMPTY_ROOM)
         } else {
             super.onPlaceholder(type)
