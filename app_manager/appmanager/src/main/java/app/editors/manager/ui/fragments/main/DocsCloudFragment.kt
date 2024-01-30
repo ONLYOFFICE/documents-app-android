@@ -477,7 +477,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 .filterIsInstance<IMainPagerFragment>()
                 .first()
                 .setPagerPosition(ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
-                    setFragmentResult("result", bundleOf(DocsRoomFragment.KEY_RESULT_ROOM_ID to id))
+                    setFragmentResult(KEY_ROOM_CREATED_REQUEST, bundleOf(DocsRoomFragment.KEY_RESULT_ROOM_ID to id))
                 }
         } catch (_: NoSuchElementException) { }
     }
@@ -504,6 +504,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         const val KEY_SECTION = "section"
         const val KEY_PATH = "path"
         const val KEY_ACCOUNT = "key_account"
+        const val KEY_ROOM_CREATED_REQUEST = "key_room_created_result"
 
         fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
             return DocsCloudFragment().apply {

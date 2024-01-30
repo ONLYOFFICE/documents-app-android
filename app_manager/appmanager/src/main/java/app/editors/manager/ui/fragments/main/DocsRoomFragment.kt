@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.forEach
-import app.documents.core.network.manager.models.explorer.CloudFolder
+import androidx.fragment.app.setFragmentResultListener
 import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
@@ -24,8 +24,8 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setFragmentResultListener { bundle ->
-            val roomId = bundle?.getString(KEY_RESULT_ROOM_ID)
+        setFragmentResultListener(KEY_ROOM_CREATED_REQUEST) { _, bundle ->
+            val roomId = bundle.getString(KEY_RESULT_ROOM_ID)
             if (!roomId.isNullOrEmpty()) {
                 presenter.openFolder(roomId, 0)
             }
@@ -115,7 +115,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
-        val isRoom = ((presenter.itemClicked as? CloudFolder)?.roomType ?: -1) > -1
+        val isRoom = (presenter.currentFolder?.roomType ?: -1) > -1
         if (type == PlaceholderViews.Type.EMPTY && isRoom) {
             super.onPlaceholder(PlaceholderViews.Type.EMPTY_ROOM)
         } else {
