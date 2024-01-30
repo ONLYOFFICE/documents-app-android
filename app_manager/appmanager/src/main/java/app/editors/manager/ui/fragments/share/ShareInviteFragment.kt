@@ -63,7 +63,7 @@ class ShareInviteFragment : BaseAppFragment() {
 
     private fun initViews() {
         viewBinding?.sharePanelLayout?.sharePanelAddButton?.setText(R.string.on_boarding_next_button)
-        viewBinding?.sharePanelLayout?.sharePanelAddButton?.isEnabled = false
+        viewBinding?.sharePanelLayout?.sharePanelAddButton?.isEnabled = currentTags.isNotEmpty()
         viewBinding?.sharePanelLayout?.buttonPopupLayout?.isVisible = false
         viewBinding?.sharePanelLayout?.buttonPopupLayout?.setOnClickListener { popupLayout ->
             SharePopup(requireContext(), R.layout.popup_share_menu).apply {
@@ -110,10 +110,14 @@ class ShareInviteFragment : BaseAppFragment() {
         // done keyboard button is pressed
         autoCompleteTextView.setOnEditorActionListener { textView, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val name = textView.text.toString()
-                textView.text = null
-                addTag(name)
-                return@setOnEditorActionListener true
+                val text = textView.text.toString()
+                if (StringUtils.isEmailValid(text)) {
+                    textView.text = null
+                    addTag(text)
+                    return@setOnEditorActionListener true
+                } else {
+                    viewBinding?.emailCompleteLayout?.error = getString(R.string.errors_email_syntax_error)
+                }
             }
             false
         }

@@ -1,4 +1,4 @@
-package app.documents.core.network.models.share.response
+package app.documents.core.network.room.models
 
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.share.models.Share

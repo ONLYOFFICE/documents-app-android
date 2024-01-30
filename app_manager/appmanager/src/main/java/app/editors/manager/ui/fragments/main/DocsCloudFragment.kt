@@ -13,6 +13,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
@@ -40,8 +41,8 @@ import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import lib.editors.gbase.managers.utils.DialogUtils
 import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializable
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -407,11 +408,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    override fun onCreateRoom(type: Int, cloudFolder: CloudFolder, isCopy: Boolean) {
-        showAddRoomFragment(type, cloudFolder, isCopy)
+    override fun onCreateRoom(type: Int, item: Item, isCopy: Boolean) {
+        showAddRoomFragment(type, item, isCopy)
     }
 
-    protected fun showAddRoomFragment(type: Int, cloudFolder: CloudFolder? = null, isCopy: Boolean = false) {
+    protected fun showAddRoomFragment(type: Int, cloudFolder: Item? = null, isCopy: Boolean = false) {
         requireActivity().supportFragmentManager.setFragmentResultListener(
             AddRoomFragment.TAG_RESULT, this
         ) { _, args ->

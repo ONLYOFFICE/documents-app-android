@@ -4,7 +4,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
-import app.documents.core.network.models.share.response.ResponseRoomShare
+import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.room.models.*
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.response.ResponseExternalLink

@@ -2,6 +2,7 @@
 
 package app.editors.manager.ui.fragments.main
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
@@ -73,7 +74,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
@@ -97,7 +98,6 @@ import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.ChipData
 import lib.compose.ui.views.RoomChip
-import lib.editors.gbase.ui.views.compose.link.clickable
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FragmentUtils
@@ -122,13 +122,13 @@ class AddRoomFragment : BaseFragment() {
 
         val TAG: String = AddRoomFragment::class.java.simpleName
 
-        fun newInstance(roomType: Int, room: CloudFolder?, isCopy: Boolean = false) =
+        fun newInstance(roomType: Int, room: Item?, isCopy: Boolean = false) =
             AddRoomFragment().putArgs(TAG_ROOM_TYPE to roomType, TAG_ROOM_INFO to room, TAG_COPY to isCopy)
 
         fun show(
             fragmentManager: FragmentManager,
             roomType: Int,
-            roomInfo: CloudFolder? = null,
+            roomInfo: Item? = null,
             isCopy: Boolean = false
         ) {
             FragmentUtils.showFragment(
@@ -144,7 +144,7 @@ class AddRoomFragment : BaseFragment() {
     private lateinit var navController: NavHostController
 
     private val isEdit: Boolean
-        get() = arguments?.getSerializableExt<CloudFolder>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
+        get() = arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
 
     override fun onBackPressed(): Boolean {
         requireContext().appComponent.accountOnline?.token
@@ -352,7 +352,7 @@ private fun MainScreen(
                             .align(Alignment.CenterVertically)
                             .clip(CircleShape)
                             .size(40.dp)
-                            .clickable(noRipple = false, onClick = {
+                            .clickable(onClick = {
                                 keyboardController.clearFocus()
                                 scope.launch {
                                     modalBottomSheetState.show()
@@ -457,6 +457,8 @@ private fun ChooseImageBottomView(
     val context = LocalContext.current
     var photo: Uri? = null
 
+    val isDialogOpen = remember { mutableStateOf(false) }
+
     val photoLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicture(), onResult = { success ->
             if (success) {
@@ -466,6 +468,12 @@ private fun ChooseImageBottomView(
                 }
             }
         })
+
+    val cameraPermission = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            photoLauncher.launch(photo)
+        }
+    }
 
     val galleryLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(), onResult = {
@@ -499,13 +507,13 @@ private fun ChooseImageBottomView(
         ) {
             val tempPhoto =
                 FileUtils.createFile(File(context.cacheDir.absolutePath), TimeUtils.fileTimeStamp, "png")
-            photo = ContentResolverUtils.getFileUri(context, tempPhoto!!).also { uri ->
-                photoLauncher.launch(uri)
+            photo = ContentResolverUtils.getFileUri(context, tempPhoto!!).also {
+                cameraPermission.launch(Manifest.permission.CAMERA)
             }
         }
         AppArrowItem(
             title = stringResource(id = R.string.list_action_image_from_library),
-            startIcon = lib.editors.gbase.R.drawable.ic_image,
+            startIcon = lib.toolkit.base.R.drawable.ic_image,
             startIconTint = MaterialTheme.colors.onSurface,
             arrowVisible = false,
             dividerVisible = false

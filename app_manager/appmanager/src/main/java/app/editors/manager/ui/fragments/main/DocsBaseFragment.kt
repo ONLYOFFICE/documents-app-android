@@ -93,7 +93,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         const val REQUEST_PDF = 10004
         const val REQUEST_DOWNLOAD = 10005
         const val REQUEST_STORAGE_ACCESS = 10006
-
     }
 
     /*
@@ -888,7 +887,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onActionDialogClose() {
         (requireActivity() as? OnBottomDialogCloseListener)?.onBottomDialogClose()
-
     }
 
     override fun onCloseCommonDialog() {

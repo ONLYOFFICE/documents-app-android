@@ -10,7 +10,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
@@ -31,7 +33,7 @@ import lib.compose.ui.views.ChipData
 class AddRoomViewModelFactory(
     private val application: Application,
     private val roomProvider: RoomProvider,
-    private val roomInfo: CloudFolder? = null,
+    private val roomInfo: Item? = null,
     private val isCopy: Boolean = false
 ) : ViewModelProvider.AndroidViewModelFactory(application) {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -62,12 +64,12 @@ data class ChipViewState(
 class AddRoomViewModel(
     private val context: Application,
     private val roomProvider: RoomProvider,
-    private val roomInfo: CloudFolder? = null,
+    private val roomInfo: Item? = null,
     private val isCopy: Boolean = false
 ) : AndroidViewModel(application = context) {
 
     private val _roomState: MutableStateFlow<AddRoomData> = MutableStateFlow(
-        if (roomInfo != null) {
+        if (roomInfo != null && roomInfo is CloudFolder) {
             AddRoomData(
                 type = if (roomInfo.roomType == -1) 2 else roomInfo.roomType,
                 name = roomInfo.title,
@@ -226,7 +228,8 @@ class AddRoomViewModel(
         if (!isCopy) return false
         //TODO check only the first operation???
         context.api.copyCoroutines(RequestBatchOperation(destFolderId = id).apply {
-            folderIds = listOf(roomInfo.id)
+            folderIds = if (roomInfo is CloudFolder) listOf(roomInfo.id) else emptyList()
+            fileIds = if (roomInfo is CloudFile) listOf(roomInfo.id) else emptyList()
         }).response.forEach { operation ->
             if (operation.finished) return false
             while (true) {

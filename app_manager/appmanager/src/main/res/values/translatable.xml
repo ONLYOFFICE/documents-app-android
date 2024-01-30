@@ -809,7 +809,7 @@
     <string name="app_settings_main_help">Help</string>
     <string name="settings_language">Language</string>
     <string name="clear_recents">"Clear recents?"</string>
-
+    <string name="context_protection_title">Protection</string>
     <!--  TODO example  -->
     <string name="settings_language_confirmation_message">
         Now application is using english language because of the system language has changed

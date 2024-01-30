@@ -1,8 +1,12 @@
 package app.documents.core.network.manager.models.explorer
 
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
+import java.lang.reflect.Type
 
 data class Explorer(
     @SerializedName("files")
@@ -17,9 +21,9 @@ data class Explorer(
     @Expose
     var current: Current = Current(),
 
-//    @SerializedName("pathParts")
-//    @Expose
-//    var pathParts: List<String> = ArrayList(),
+    @SerializedName("pathParts")
+    @Expose
+    var pathParts: List<PathPart> = ArrayList(),
 
     @SerializedName("startIndex")
     @Expose
@@ -34,6 +38,7 @@ data class Explorer(
     var total: Int = 0,
 
     var destFolderId: String = "",
+
     var filterType: String = ""
 ) : Serializable {
 
@@ -48,5 +53,17 @@ data class Explorer(
 
     fun clone(): Explorer {
         return copy()
+    }
+}
+
+internal class PathPartTypeAdapter : JsonDeserializer<PathPart> {
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): PathPart {
+        return if (json.isJsonObject) {
+            val jsonObject = json.asJsonObject
+            PathPart(id = jsonObject["id"].asString, title = jsonObject["title"].asString)
+        } else {
+            PathPart(id = json.asString)
+        }
     }
 }

@@ -84,7 +84,6 @@ import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTopBar
-import lib.editors.gbase.ui.views.compose.link.clickable
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 
@@ -151,7 +150,7 @@ class UsersFragment : BaseAppFragment() {
                                     Icon(
                                         imageVector = Icons.Outlined.Search,
                                         contentDescription = stringResource(id = android.R.string.search_go),
-                                        modifier = Modifier.clickable(noRipple = false) {
+                                        modifier = Modifier.clickable {
                                             isSearchVisible.value = true
                                         })
                                 })
@@ -264,7 +263,7 @@ private fun MainScreen(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Image(
-                    imageVector = ImageVector.vectorResource(id = lib.editors.gbase.R.drawable.image_not_found),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.image_not_found),
                     contentDescription = null
                 )
                 Text(

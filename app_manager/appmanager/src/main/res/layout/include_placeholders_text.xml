@@ -16,7 +16,7 @@
         android:layout_marginTop="80dp"
         tools:text="Placeholder text" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:visibility="gone"
         android:id="@+id/inviteByEmailButton"
         style="@style/Widget.Common.TextView.Clickable"
